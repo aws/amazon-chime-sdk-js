@@ -171,7 +171,6 @@
 <span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
 
 <span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController, eventReporter);
-})
 </code></pre>
 					<p>After in 3.x:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
@@ -181,12 +180,116 @@
 <span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
 <span class="hljs-keyword">const</span> eventController = <span class="hljs-keyword">new</span> DefaultEventController(configuration, logger, eventReporter)
 <span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController, eventController);
-})
 </code></pre>
 					<a href="#foreachobserver-use-cases" id="foreachobserver-use-cases" style="color: inherit; text-decoration: none;">
 						<h3><code>forEachObserver</code> use cases</h3>
 					</a>
-					<p>The <code>eventDidReceive</code> function that was part of <code>AudioVideoObserver</code> has been moved to <code>EventObserver</code> which is a observer that the <code>EventController</code> now handles. Because of this if you were you were to call <code>eventDidReceive</code> through <code>forEachObserver</code> on <code>AudioVideoController</code> this functionallity will no longer be possible in 3.x, however you will still be able to call <code>eventDidReceive</code> by using the <code>publishEvent</code> method on <code>EventController</code>. If you have a use case not covered by this method you can implement your own <code>EventController</code> or make a feature request.</p>
+					<p>The <code>eventDidReceive</code> function that was part of <code>AudioVideoObserver</code> has been moved to <code>EventObserver</code> which is a observer that the <code>EventController</code> now handles. Because of this if you were you were to call <code>eventDidReceive</code> through <code>forEachObserver</code> on <code>AudioVideoController</code> this functionality will no longer be possible in 3.x, however you will still be able to call <code>eventDidReceive</code> by using the <code>publishEvent</code> method on <code>EventController</code>. If you have a use case not covered by this method you can implement your own <code>EventController</code> or make a feature request.</p>
+					<a href="#webrtc-metrics" id="webrtc-metrics" style="color: inherit; text-decoration: none;">
+						<h3>WebRTC Metrics</h3>
+					</a>
+					<p>Before in 2.x:</p>
+					<p>The <code>DefaultStatsCollector</code> used a hybrid approach to obtain WebRTC stats from browser:</p>
+					<ul>
+						<li>For Chromium-based browsers, call <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax">legacy (non-promise-based) <code>getStats</code> API</a></li>
+						<li>For any other browsers, call <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax">standardized (promise-based) <code>getStats</code> API</a></li>
+					</ul>
+					<p>After in 3.x:</p>
+					<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax">legacy (non-promise-based) <code>getStats</code> API</a> will be removed and <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax">standardized (promise-based) <code>getStats</code> API</a> will be used for all browsers.</p>
+					<p>SDK exposed some common WebRTC metrics publicly via the <code>metricsDidReceive</code> event. We did not make any change to <code>metricsDidReceive</code> itself. However In V3, the legacy WebRTC metric specs will be removed or replaced by equivalent standardized metrics. Here is a table that summarizes all the changes and offers the steps to migrate.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>No.</th>
+								<th>MetricSpec</th>
+								<th>SpecName</th>
+								<th>Migration Step</th>
+								<th>Details</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>1</td>
+								<td>observableMetricSpec</td>
+								<td>audioSpeakerDelayMs</td>
+								<td>None</td>
+								<td>Before: <strong>googCurrentDelayMs</strong><br><br>Now: <strong>jitterBufferMs</strong> = (Current.jitterBufferDelay - Previous.jitterBufferDelay) / (Current.jitterBufferEmittedCount - Previous.jitterBufferEmittedCount) * 1000</td>
+							</tr>
+							<tr>
+								<td>2</td>
+								<td>observableMetricSpec</td>
+								<td>audioDecoderLoss</td>
+								<td>None</td>
+								<td>Before: <strong>googDecodingCTN</strong><br><br>Now: <strong>decoderLoss</strong> = (Current.concealedSamples - Previous.concealedSamples) / (Current.totalSamplesReceived - Previous.totalSamplesReceived) * 100</td>
+							</tr>
+							<tr>
+								<td>3</td>
+								<td>observableMetricSpec</td>
+								<td>googNackCountReceivedPerSecond</td>
+								<td>This spec is removed, use <strong>nackCount</strong> instead</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>4</td>
+								<td>observableMetricSpec</td>
+								<td>availableSendBandwidth</td>
+								<td>This spec is removed, use <strong>availableOutgoingBitrate</strong> instead</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>5</td>
+								<td>observableMetricSpec</td>
+								<td>availableReceiveBandwidth</td>
+								<td>This spec is removed, use <strong>availableIncomingBitrate</strong> instead</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>6</td>
+								<td>observableVideoMetricSpec</td>
+								<td>videoUpstreamGoogFrameHeight</td>
+								<td>This spec is removed, use <strong>videoUpstreamFrameHeight</strong> instead</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>7</td>
+								<td>observableVideoMetricSpec</td>
+								<td>videoUpstreamGoogFrameWidth</td>
+								<td>This spec is removed, use <strong>videoUpstreamFrameWidth</strong> instead.</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>8</td>
+								<td>observableVideoMetricSpec</td>
+								<td>videoDownstreamGoogFrameHeight</td>
+								<td>This spec is removed, use <strong>videoDownstreamFrameHeight</strong> instead</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>9</td>
+								<td>observableVideoMetricSpec</td>
+								<td>videoDownstreamGoogFrameWidth</td>
+								<td>This spec is removed, use <strong>videoDownstreamFrameWidth</strong> instead</td>
+								<td></td>
+							</tr>
+					</tbody></table>
+					<a href="#get-raw-rtcstatsreport" id="get-raw-rtcstatsreport" style="color: inherit; text-decoration: none;">
+						<h4>Get raw RTCStatsReport</h4>
+					</a>
+					<p>We add a new <code>rtcStatsReport</code> property to <code>DefaultClientMetricReport</code> to store raw <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport"><code>RTCStatsReport</code></a> and expose it via <code>metricsDidReceive(clientMetricReport: ClientMetricReport)</code> event. You can get the <code>rtcStatsReport</code> via <code>clientMetricReport.getRTCStatsReport()</code>. These metrics are updated every second.</p>
+					<p>Before in 2.x:</p>
+					<blockquote>
+						<p>Note: The <code>getRTCPeerConnectionStats()</code> is on its way to be deprecated. Please use the new API <code>clientMetricReport.getRTCStatsReport()</code> returned by <code>metricsDidReceive(clientMetricReport)</code> callback instead.</p>
+					</blockquote>
+					<pre><code class="language-typescript">  <span class="hljs-keyword">const</span> report: RTCStatsReport = <span class="hljs-keyword">await</span> audioVideo.getRTCPeerConnectionStats();
+</code></pre>
+					<p>After in 3.x:</p>
+					<p>It&#39;s recommended to use this one. It can also improve the performance a bit as now you don&#39;t need to explicitly call <code>getStats</code> API again.</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> observer = {
+  metricsDidReceive(clientMetricReport: ClientMetricReport): <span class="hljs-built_in">void</span> {
+    <span class="hljs-keyword">const</span> report: RTCStatsReport = clientMetricReport.getRTCStatsReport();
+  }
+};
+audioVideo.addObserver(observer);
+</code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Migration%20to_3_0%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>

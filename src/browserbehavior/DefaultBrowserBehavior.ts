@@ -131,10 +131,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return 'max-bundle';
   }
 
-  requiresPromiseBasedWebRTCGetStats(): boolean {
-    return !this.hasChromiumWebRTC();
-  }
-
   requiresNoExactMediaStreamConstraints(): boolean {
     return this.isSamsungInternet();
   }

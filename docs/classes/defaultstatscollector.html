@@ -94,7 +94,6 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultstatscollector.html#filterrawmetricreports" class="tsd-kind-icon">filter<wbr>Raw<wbr>Metric<wbr>Reports</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultstatscollector.html#isvalidchromerawmetric" class="tsd-kind-icon">is<wbr>Valid<wbr>Chrome<wbr>Raw<wbr>Metric</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultstatscollector.html#isvalidrawmetricreport" class="tsd-kind-icon">is<wbr>Valid<wbr>Raw<wbr>Metric<wbr>Report</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultstatscollector.html#isvalidssrc" class="tsd-kind-icon">is<wbr>Valid<wbr>Ssrc</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultstatscollector.html#isvalidstandardrawmetric" class="tsd-kind-icon">is<wbr>Valid<wbr>Standard<wbr>Raw<wbr>Metric</a></li>
@@ -120,13 +119,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Stats<wbr>Collector<span class="tsd-signature-symbol">(</span>audioVideoController<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, browserBehavior<span class="tsd-signature-symbol">: </span><a href="../interfaces/browserbehavior.html" class="tsd-signature-type">BrowserBehavior</a>, interval<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultstatscollector.html" class="tsd-signature-type">DefaultStatsCollector</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Stats<wbr>Collector<span class="tsd-signature-symbol">(</span>audioVideoController<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, interval<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultstatscollector.html" class="tsd-signature-type">DefaultStatsCollector</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L41">src/statscollector/DefaultStatsCollector.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L39">src/statscollector/DefaultStatsCollector.ts:39</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -136,9 +135,6 @@
 								</li>
 								<li>
 									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
-								</li>
-								<li>
-									<h5>browserBehavior: <a href="../interfaces/browserbehavior.html" class="tsd-signature-type">BrowserBehavior</a></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> interval: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DefaultStatsCollector.INTERVAL_MS</span></h5>
@@ -161,7 +157,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L424">src/statscollector/DefaultStatsCollector.ts:424</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L400">src/statscollector/DefaultStatsCollector.ts:400</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -175,10 +171,56 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="isvalidchromerawmetric" class="tsd-anchor"></a>
-					<h3>is<wbr>Valid<wbr>Chrome<wbr>Raw<wbr>Metric</h3>
+					<a name="isvalidrawmetricreport" class="tsd-anchor"></a>
+					<h3>is<wbr>Valid<wbr>Raw<wbr>Metric<wbr>Report</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Chrome<wbr>Raw<wbr>Metric<span class="tsd-signature-symbol">(</span>rawMetricReport<span class="tsd-signature-symbol">: </span><a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Raw<wbr>Metric<wbr>Report<span class="tsd-signature-symbol">(</span>rawMetricReport<span class="tsd-signature-symbol">: </span><a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L396">src/statscollector/DefaultStatsCollector.ts:396</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rawMetricReport: <a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="isvalidssrc" class="tsd-anchor"></a>
+					<h3>is<wbr>Valid<wbr>Ssrc</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Ssrc<span class="tsd-signature-symbol">(</span>rawMetricReport<span class="tsd-signature-symbol">: </span><a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L384">src/statscollector/DefaultStatsCollector.ts:384</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rawMetricReport: <a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="isvalidstandardrawmetric" class="tsd-anchor"></a>
+					<h3>is<wbr>Valid<wbr>Standard<wbr>Raw<wbr>Metric</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Standard<wbr>Raw<wbr>Metric<span class="tsd-signature-symbol">(</span>rawMetricReport<span class="tsd-signature-symbol">: </span><a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -203,75 +245,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="isvalidrawmetricreport" class="tsd-anchor"></a>
-					<h3>is<wbr>Valid<wbr>Raw<wbr>Metric<wbr>Report</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Raw<wbr>Metric<wbr>Report<span class="tsd-signature-symbol">(</span>rawMetricReport<span class="tsd-signature-symbol">: </span><a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L416">src/statscollector/DefaultStatsCollector.ts:416</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>rawMetricReport: <a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="isvalidssrc" class="tsd-anchor"></a>
-					<h3>is<wbr>Valid<wbr>Ssrc</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Ssrc<span class="tsd-signature-symbol">(</span>rawMetricReport<span class="tsd-signature-symbol">: </span><a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L404">src/statscollector/DefaultStatsCollector.ts:404</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>rawMetricReport: <a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="isvalidstandardrawmetric" class="tsd-anchor"></a>
-					<h3>is<wbr>Valid<wbr>Standard<wbr>Raw<wbr>Metric</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Standard<wbr>Raw<wbr>Metric<span class="tsd-signature-symbol">(</span>rawMetricReport<span class="tsd-signature-symbol">: </span><a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L385">src/statscollector/DefaultStatsCollector.ts:385</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>rawMetricReport: <a href="../globals.html#rawmetricreport" class="tsd-signature-type">RawMetricReport</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="logaudioevent" class="tsd-anchor"></a>
 					<h3>log<wbr>Audio<wbr>Event</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -281,7 +254,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L96">src/statscollector/DefaultStatsCollector.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L93">src/statscollector/DefaultStatsCollector.ts:93</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -312,7 +285,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L83">src/statscollector/DefaultStatsCollector.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L80">src/statscollector/DefaultStatsCollector.ts:80</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -347,7 +320,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/statscollector.html">StatsCollector</a>.<a href="../interfaces/statscollector.html#loglifecycleevent">logLifecycleEvent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L144">src/statscollector/DefaultStatsCollector.ts:144</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L141">src/statscollector/DefaultStatsCollector.ts:141</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -374,7 +347,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/statscollector.html">StatsCollector</a>.<a href="../interfaces/statscollector.html#logmeetingsessionstatus">logMeetingSessionStatus</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L123">src/statscollector/DefaultStatsCollector.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L120">src/statscollector/DefaultStatsCollector.ts:120</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -397,7 +370,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L88">src/statscollector/DefaultStatsCollector.ts:88</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L85">src/statscollector/DefaultStatsCollector.ts:85</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -428,7 +401,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L101">src/statscollector/DefaultStatsCollector.ts:101</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L98">src/statscollector/DefaultStatsCollector.ts:98</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -459,7 +432,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L76">src/statscollector/DefaultStatsCollector.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L73">src/statscollector/DefaultStatsCollector.ts:73</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -493,7 +466,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L81">src/statscollector/DefaultStatsCollector.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L78">src/statscollector/DefaultStatsCollector.ts:78</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -524,7 +497,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L175">src/statscollector/DefaultStatsCollector.ts:175</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L172">src/statscollector/DefaultStatsCollector.ts:172</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -559,7 +532,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/statscollector.html">StatsCollector</a>.<a href="../interfaces/statscollector.html#stop">stop</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L203">src/statscollector/DefaultStatsCollector.ts:203</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L200">src/statscollector/DefaultStatsCollector.ts:200</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -576,7 +549,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L51">src/statscollector/DefaultStatsCollector.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L48">src/statscollector/DefaultStatsCollector.ts:48</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -611,9 +584,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultstatscollector.html#filterrawmetricreports" class="tsd-kind-icon">filter<wbr>Raw<wbr>Metric<wbr>Reports</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="defaultstatscollector.html#isvalidchromerawmetric" class="tsd-kind-icon">is<wbr>Valid<wbr>Chrome<wbr>Raw<wbr>Metric</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultstatscollector.html#isvalidrawmetricreport" class="tsd-kind-icon">is<wbr>Valid<wbr>Raw<wbr>Metric<wbr>Report</a>

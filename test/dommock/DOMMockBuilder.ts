@@ -831,45 +831,118 @@ export default class DOMMockBuilder {
         return transceiver;
       }
 
-      getStats(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        successCallback?: (res: any) => void,
-        failureCallback?: (error: Error) => void
-      ): Promise<RawMetricReport[]> {
-        const isChrome = !!(successCallback && failureCallback);
+      getStats(): Promise<RawMetricReport[]> {
         const reports = [
           {
             names: (): string[] => ['stat1'],
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             stat: (_name: string): any => 'stat1-value',
-            id: 'send',
-            type: isChrome ? 'ssrc' : 'inbound-rtp',
-            ssrc: 1,
+            id: 'RTCInboundRTPAudioStream',
             timestamp: 1,
-            mediaType: 'video',
+            type: 'inbound-rtp',
+            ssrc: 1,
+            kind: 'audio',
+            ...mockBehavior.rtcPeerConnectionGetStatsReport,
+          },
+          {
+            names: (): string[] => ['stat2'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            stat: (_name: string): any => 'stat2-value',
+            id: 'RTCInboundRTPVideoStream',
+            timestamp: 1,
+            type: 'inbound-rtp',
+            ssrc: 1,
+            kind: 'video',
+            ...mockBehavior.rtcPeerConnectionGetStatsReport,
+          },
+          {
+            names: (): string[] => ['stat3'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            stat: (_name: string): any => 'stat3-value',
+            id: 'RTCOutboundRTPAudioStream',
+            timestamp: 1,
+            type: 'outbound-rtp',
+            ssrc: 1,
+            kind: 'audio',
+            ...mockBehavior.rtcPeerConnectionGetStatsReport,
+          },
+          {
+            names: (): string[] => ['stat4'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            stat: (_name: string): any => 'stat4-value',
+            id: 'RTCOutboundRTPVideoStream',
+            timestamp: 1,
+            type: 'outbound-rtp',
+            ssrc: 1,
+            kind: 'video',
+            ...mockBehavior.rtcPeerConnectionGetStatsReport,
+          },
+          {
+            names: (): string[] => ['stat5'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            stat: (_name: string): any => 'stat5-value',
+            id: 'RTCRemoteInboundRtpAudioStream',
+            timestamp: 1,
+            type: 'remote-inbound-rtp',
+            ssrc: 1,
+            kind: 'audio',
+            ...mockBehavior.rtcPeerConnectionGetStatsReport,
+          },
+          {
+            names: (): string[] => ['stat6'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            stat: (_name: string): any => 'stat6-value',
+            id: 'RTCRemoteInboundRtpVideoStream',
+            timestamp: 1,
+            type: 'remote-inbound-rtp',
+            ssrc: 1,
+            kind: 'video',
+            ...mockBehavior.rtcPeerConnectionGetStatsReport,
+          },
+          {
+            names: (): string[] => ['stat7'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            stat: (_name: string): any => 'stat7-value',
+            id: 'RTCRemoteOutboundRTPAudioStream',
+            timestamp: 1,
+            type: 'remote-outbound-rtp',
+            ssrc: 1,
+            kind: 'audio',
+            ...mockBehavior.rtcPeerConnectionGetStatsReport,
+          },
+          {
+            names: (): string[] => ['stat8'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            stat: (_name: string): any => 'stat8-value',
+            id: 'RTCRemoteOutboundRTPVideoStream',
+            timestamp: 1,
+            type: 'remote-outbound-rtp',
+            ssrc: 1,
+            kind: 'video',
+            ...mockBehavior.rtcPeerConnectionGetStatsReport,
+          },
+          {
+            names: (): string[] => ['stat9'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            stat: (_name: string): any => 'stat9-value',
+            id: 'RTCIceCandidatePair',
+            timestamp: 1,
+            type: 'candidate-pair',
+            state: 'succeeded',
+            nominated: true,
+            writable: true,
             ...mockBehavior.rtcPeerConnectionGetStatsReport,
           },
         ];
         const error = new Error('Failed to getStats()');
 
-        if (isChrome) {
+        return new Promise((resolve, reject) => {
           if (mockBehavior.rtcPeerConnectionGetStatsSucceeds) {
-            successCallback({
-              result: () => reports,
-            });
+            resolve(reports);
           } else {
-            failureCallback(error);
+            reject(error);
           }
-          return null;
-        } else {
-          return new Promise((resolve, reject) => {
-            if (mockBehavior.rtcPeerConnectionGetStatsSucceeds) {
-              resolve(reports);
-            } else {
-              reject(error);
-            }
-          });
-        }
+        });
       }
 
       getSenders(): RTCRtpSender[] {

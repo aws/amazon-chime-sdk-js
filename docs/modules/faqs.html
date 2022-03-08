@@ -310,25 +310,21 @@ configuration.connectionHealthPolicyConfiguration = healthPolicyConfiguration;
 						<h3>How do I get connection indicator for media quality?</h3>
 					</a>
 					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics">getObservableVideoMetrics</a> API exposes video quality statistics. The <code>getObservableVideoMetrics</code> API returns following metrics:</p>
-					<pre><code>// Upstream metrics of local attendee
-<span class="hljs-built_in">videoUpstreamBitrate,</span>
-<span class="hljs-built_in">videoUpstreamPacketsSent,</span>
-<span class="hljs-built_in">videoUpstreamPacketLossPercent,</span>
-<span class="hljs-built_in">videoUpstreamFramesEncodedPerSecond,</span>
-<span class="hljs-built_in">videoUpstreamGoogFrameHeight,</span> (for chromium based browsers)
-<span class="hljs-built_in">videoUpstreamGoogFrameWidth,</span>(for chromium based browsers)
-<span class="hljs-built_in">videoUpstreamFrameHeight,</span>
-<span class="hljs-built_in">videoUpstreamFrameWidth,</span>
+					<pre><code class="language-js"><span class="hljs-comment">// Upstream metrics of local attendee</span>
+videoUpstreamBitrate,
+videoUpstreamPacketsSent,
+videoUpstreamPacketLossPercent,
+videoUpstreamFramesEncodedPerSecond,
+videoUpstreamFrameHeight,
+videoUpstreamFrameWidth,
 
-// Downstream metrics of remote attendees
-<span class="hljs-built_in">videoDownstreamBitrate,</span>
-<span class="hljs-built_in">videoDownstreamPacketLossPercent,</span>
-<span class="hljs-built_in">videoDownstreamPacketsReceived,</span>
-<span class="hljs-built_in">videoDownstreamFramesDecodedPerSecond,</span>
-<span class="hljs-built_in">videoDownstreamGoogFrameHeight,</span>
-<span class="hljs-built_in">videoDownstreamGoogFrameWidth,</span>
-<span class="hljs-built_in">videoDownstreamFrameHeight,</span>
-<span class="hljs-built_in">videoDownstreamFrameWidth,</span>
+<span class="hljs-comment">// Downstream metrics of remote attendees</span>
+videoDownstreamBitrate,
+videoDownstreamPacketLossPercent,
+videoDownstreamPacketsReceived,
+videoDownstreamFramesDecodedPerSecond,
+videoDownstreamFrameHeight,
+videoDownstreamFrameWidth,
 </code></pre>
 					<p>See this <a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html">guide</a> for more information.</p>
 					<a href="#demos" id="demos" style="color: inherit; text-decoration: none;">

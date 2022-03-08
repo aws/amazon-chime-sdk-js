@@ -11,9 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add compression support when sending and receiving sdp messages.
 - Add automatic language identification support from Amazon Transcribe for live transcription APIs.
+- Add `rtcStatsReport` property to `DefaultClientMetricReport` to store raw [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport) and expose it via `metricsDidReceive` event.
 
 ### Removed
+
 - Removed SDP interface.
+- Remove [legacy (non-promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax) call in `DefaultStatsCollector`. This API was previously used to obtain WebRTC metrics only for Chromium-based browsers. Now SDK obtains WebRTC metrics for all browsers via [standardized (promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax).
+- Remove `browserBehavior` from the constructor of `DefaultStatsCollector`.
+
 ### Changed
 
 - Change `resolveSpec` and `resolveOptions` in BackgroundBlurVideoFrameProcessor and BackgroundReplacementVideoFrameProcessor to clone parameter objects.

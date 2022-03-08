@@ -87,15 +87,12 @@ export default class SignalingAndMetricsConnectionMonitor
     const videoUpstreamPacketPerSecond = metricReport.videoPacketSentPerSecond;
     const videoUpstreamBitrate = metricReport.videoUpstreamBitrate;
 
-    const availableSendBandwidth =
-      metricReport.availableSendBandwidth || metricReport.availableOutgoingBitrate;
-    const availableRecvBandwidth =
-      metricReport.availableReceiveBandwidth || metricReport.availableIncomingBitrate;
+    const availableSendBandwidth = metricReport.availableOutgoingBitrate;
+    const availableRecvBandwidth = metricReport.availableIncomingBitrate;
 
     const audioSpeakerDelayMs = metricReport.audioSpeakerDelayMs;
 
-    const nackCountPerSecond =
-      metricReport.nackCountReceivedPerSecond || metricReport.googNackCountReceivedPerSecond;
+    const nackCountPerSecond = metricReport.nackCountReceivedPerSecond;
 
     // Firefox does not presently have aggregated bandwidth estimation
     if (typeof availableSendBandwidth === 'number' && !isNaN(availableSendBandwidth)) {

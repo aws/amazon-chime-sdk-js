@@ -182,10 +182,8 @@ export default class MonitorTask
       return false;
     }
 
-    const availableSendBandwidth =
-      metricReport.availableSendBandwidth || metricReport.availableOutgoingBitrate;
-    const nackCountPerSecond =
-      metricReport.nackCountReceivedPerSecond || metricReport.googNackCountReceivedPerSecond;
+    const availableSendBandwidth = metricReport.availableOutgoingBitrate;
+    const nackCountPerSecond = metricReport.nackCountReceivedPerSecond;
 
     let needResubscribe = false;
 

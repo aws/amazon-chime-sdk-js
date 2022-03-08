@@ -6,8 +6,6 @@ import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
-import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
@@ -44,10 +42,6 @@ describe('DefaultStatsCollector', () => {
   const eventNamePrefix = 'meeting';
   const interval = 10;
   const CLIENT_TYPE = 'amazon-chime-sdk-js';
-  const CHROME_USERAGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36';
-  const FIREFOX_USERAGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
 
   let logger: NoOpDebugLogger;
   let domMockBehavior = new DOMMockBehavior();
@@ -57,12 +51,6 @@ describe('DefaultStatsCollector', () => {
   let statsCollector: DefaultStatsCollector;
   let configuration: MeetingSessionConfiguration;
   let clientMetricReport: DefaultClientMetricReport;
-  let browser: BrowserBehavior = new DefaultBrowserBehavior();
-  const setUserAgent = (userAgent: string): void => {
-    // @ts-ignore
-    navigator.userAgent = userAgent;
-    browser = new DefaultBrowserBehavior();
-  };
 
   beforeEach(() => {
     logger = new NoOpDebugLogger();
@@ -70,8 +58,7 @@ describe('DefaultStatsCollector', () => {
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     signalingClient = new DefaultSignalingClient(new DefaultWebSocketAdapter(logger), logger);
     audioVideoController = new TestAudioVideoController();
-    setUserAgent(CHROME_USERAGENT);
-    statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+    statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
     configuration = new TestAudioVideoController().configuration;
     clientMetricReport = new DefaultClientMetricReport(
       logger,
@@ -102,8 +89,7 @@ describe('DefaultStatsCollector', () => {
     let logEventTimeAttributes: { [id: string]: string };
 
     beforeEach(() => {
-      browser = new DefaultBrowserBehavior();
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
       logEventTimeAttributes = {
         call_id: configuration.meetingId,
         client_type: CLIENT_TYPE,
@@ -139,8 +125,7 @@ describe('DefaultStatsCollector', () => {
     let logEventAttributes: { [id: string]: string };
 
     beforeEach(() => {
-      browser = new DefaultBrowserBehavior();
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
       logEventAttributes = {
         call_id: configuration.meetingId,
         client_type: CLIENT_TYPE,
@@ -252,13 +237,13 @@ describe('DefaultStatsCollector', () => {
 
   describe('metrics', () => {
     beforeEach(() => {
-      browser = new DefaultBrowserBehavior();
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
     });
 
-    describe('callback-based getStats', () => {
+    describe('Promise-based getStats', () => {
       it('starts and stops WebRTC metrics collection', done => {
         const spy = sinon.spy(audioVideoController.rtcPeerConnection, 'getStats');
+        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
@@ -280,7 +265,7 @@ describe('DefaultStatsCollector', () => {
         }
         audioVideoController = new NoPeerAudioVideoController();
         audioVideoController.addObserver(new TestObserver());
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
@@ -298,7 +283,6 @@ describe('DefaultStatsCollector', () => {
         statsCollector = new DefaultStatsCollector(
           audioVideoController,
           new TestLogger(),
-          browser,
           interval
         );
 
@@ -314,7 +298,7 @@ describe('DefaultStatsCollector', () => {
       });
 
       it('uses the default interval and cannot start more than once', () => {
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser);
+        statsCollector = new DefaultStatsCollector(audioVideoController, logger);
         expect(statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger))).to.be
           .true;
         expect(statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger))).to.be
@@ -330,83 +314,16 @@ describe('DefaultStatsCollector', () => {
           }
         }
         audioVideoController.addObserver(new TestObserver());
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
-      });
-    });
-
-    describe('Promise-based getStats', () => {
-      it('starts and stops WebRTC metrics collection', done => {
-        const spy = sinon.spy(audioVideoController.rtcPeerConnection, 'getStats');
-        setUserAgent(FIREFOX_USERAGENT);
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
-        statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
-        new TimeoutScheduler(interval + 5).start(() => {
-          statsCollector.stop();
-          expect(spy.calledOnce).to.be.true;
-          done();
-        });
-      });
-
-      it('fails to get stats from the peer connection', done => {
-        let errorMessage: string;
-        class TestLogger extends NoOpDebugLogger {
-          error(msg: string): void {
-            errorMessage = msg;
-          }
-        }
-        setUserAgent(FIREFOX_USERAGENT);
-        statsCollector = new DefaultStatsCollector(
-          audioVideoController,
-          new TestLogger(),
-          browser,
-          interval
-        );
-        domMockBehavior.rtcPeerConnectionGetStatsSucceeds = false;
-        const spy = sinon.spy(audioVideoController.rtcPeerConnection, 'getStats');
-
-        statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
-        new TimeoutScheduler(interval + 5).start(() => {
-          statsCollector.stop();
-          expect(spy.calledOnce).to.be.true;
-          expect(errorMessage.includes('Failed to getStats')).to.be.true;
-          done();
-        });
       });
     });
   });
 
   describe('validators', () => {
-    describe('isValidChromeRawMetric', () => {
-      it('checks Chrome raw metrics', () => {
-        browser = new DefaultBrowserBehavior();
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
-        statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
-        expect(
-          statsCollector.isValidChromeRawMetric({
-            type: 'ssrc',
-          })
-        ).to.be.true;
-        expect(
-          statsCollector.isValidChromeRawMetric({
-            type: 'VideoBwe',
-          })
-        ).to.be.true;
-        expect(
-          statsCollector.isValidChromeRawMetric({
-            type: 'googCandidatePair',
-            googWritable: 'true',
-            googReadable: 'true',
-          })
-        ).to.be.true;
-        statsCollector.stop();
-      });
-    });
-
-    describe('isValidFirefoxRawMetric', () => {
-      it('checks Firefox raw metrics', () => {
-        setUserAgent(FIREFOX_USERAGENT);
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+    describe('isValidRawMetricReport', () => {
+      it('checks type of raw metric report', () => {
+        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         expect(
           statsCollector.isValidStandardRawMetric({
@@ -414,48 +331,27 @@ describe('DefaultStatsCollector', () => {
             state: 'succeeded',
           })
         ).to.be.true;
-        statsCollector.stop();
-      });
-
-      it('checks Firefox raw metrics', () => {
-        setUserAgent(FIREFOX_USERAGENT);
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
-        statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         expect(
           statsCollector.isValidStandardRawMetric({
             type: 'inbound-rtp',
           })
         ).to.be.true;
-        statsCollector.stop();
-      });
-
-      it('checks Firefox raw metrics when the current browser version matches the expected major version', () => {
-        setUserAgent(
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/66.0'
-        );
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
-        statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         expect(
           statsCollector.isValidStandardRawMetric({
             type: 'outbound-rtp',
-            isRemote: false,
           })
         ).to.be.true;
-        statsCollector.stop();
-      });
-
-      it('checks Firefox raw metrics if the current browser version is lower than the expected major version', () => {
-        setUserAgent(
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/64.0'
-        );
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
-        statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         expect(
           statsCollector.isValidStandardRawMetric({
-            type: 'outbound-rtp',
-            isRemote: false,
+            type: 'remote-inbound-rtp',
           })
         ).to.be.true;
+        expect(
+          statsCollector.isValidStandardRawMetric({
+            type: 'remote-outbound-rtp',
+          })
+        ).to.be.true;
+
         statsCollector.stop();
       });
     });
@@ -467,17 +363,10 @@ describe('DefaultStatsCollector', () => {
             return 1;
           }
         }
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
-          expect(
-            statsCollector.isValidSsrc({
-              type: 'ssrc',
-              id: 'id',
-              mediaType: 'video',
-            })
-          ).to.be.true;
           expect(
             statsCollector.isValidSsrc({
               type: 'inbound-rtp',
@@ -494,14 +383,14 @@ describe('DefaultStatsCollector', () => {
           ).to.be.true;
           expect(
             statsCollector.isValidSsrc({
-              type: 'ssrc',
+              type: 'inbound-rtp',
               id: 'id',
               mediaType: 'audio',
             })
           ).to.be.true;
           expect(
             statsCollector.isValidSsrc({
-              type: 'ssrc',
+              type: 'outbound-rtp',
               id: 'outbound',
               mediaType: 'video',
             })
@@ -516,14 +405,13 @@ describe('DefaultStatsCollector', () => {
             return 0;
           }
         }
-        browser = new DefaultBrowserBehavior();
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
           expect(
             statsCollector.isValidSsrc({
-              type: 'ssrc',
+              type: 'inbound-rtp',
               id: 'id',
               mediaType: 'video',
             })
@@ -535,7 +423,7 @@ describe('DefaultStatsCollector', () => {
 
     describe('filterRawMetricReports', () => {
       it('filters out invalid reports', done => {
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           expect(
@@ -560,9 +448,9 @@ describe('DefaultStatsCollector', () => {
         }
       }
 
-      const metric = 'googActualEncBitrate';
+      const metric = 'availableIncomingBitrate';
       const globalMetricReport = new GlobalMetricReport();
-      globalMetricReport.currentMetrics[metric] = 10;
+      globalMetricReport.currentMetrics[metric] = 1000;
       clientMetricReport.globalMetricReport = globalMetricReport;
 
       const spy = sinon.spy(clientMetricReport.globalMetricMap[metric], 'transform');
@@ -582,8 +470,7 @@ describe('DefaultStatsCollector', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.AUDIO;
       streamMetricReport.direction = ClientMetricReportDirection.UPSTREAM;
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
-      setUserAgent(FIREFOX_USERAGENT);
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
       statsCollector.start(
         signalingClient,
         new DefaultVideoStreamIndex(logger),
@@ -596,11 +483,11 @@ describe('DefaultStatsCollector', () => {
     });
 
     it('cannot add the metric frame if the type does not exist in the metric spec', done => {
-      const metric = 'googActualEncBitrate';
+      const metric = 'availableIncomingBitrate';
       delete clientMetricReport.globalMetricMap[metric].type;
 
       const globalMetricReport = new GlobalMetricReport();
-      globalMetricReport.currentMetrics[metric] = 10;
+      globalMetricReport.currentMetrics[metric] = 1000;
       clientMetricReport.globalMetricReport = globalMetricReport;
 
       statsCollector.start(
@@ -614,20 +501,8 @@ describe('DefaultStatsCollector', () => {
       });
     });
 
-    it('can process non-stream Chrome reports', done => {
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        type: 'VideoBwe',
-      };
-
-      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
-      new TimeoutScheduler(interval + 5).start(() => {
-        statsCollector.stop();
-        done();
-      });
-    });
-
     it('updates the report using the video upstream metrics map', done => {
-      const metric = 'googRtt';
+      const metric = 'roundTripTime';
       const globalMetricReport = new GlobalMetricReport();
       globalMetricReport.currentMetrics[metric] = 10;
       clientMetricReport.globalMetricReport = globalMetricReport;
@@ -635,8 +510,7 @@ describe('DefaultStatsCollector', () => {
         [metric]: 10,
       };
 
-      setUserAgent(FIREFOX_USERAGENT);
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
+      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
       statsCollector.start(
         signalingClient,
         new DefaultVideoStreamIndex(logger),

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
-import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
 import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
@@ -32,7 +31,6 @@ type StatsReportItem = any;
 
 export default class DefaultStatsCollector implements StatsCollector {
   private static readonly INTERVAL_MS = 1000;
-  private static readonly FIREFOX_UPDATED_GET_STATS_VERSION = '66.0.0';
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
 
   private intervalScheduler: IntervalScheduler | null = null;
@@ -43,7 +41,6 @@ export default class DefaultStatsCollector implements StatsCollector {
   constructor(
     private audioVideoController: AudioVideoController,
     private logger: Logger,
-    private browserBehavior: BrowserBehavior,
     private readonly interval: number = DefaultStatsCollector.INTERVAL_MS
   ) {}
 
@@ -194,8 +191,8 @@ export default class DefaultStatsCollector implements StatsCollector {
     }
 
     this.intervalScheduler = new IntervalScheduler(this.interval);
-    this.intervalScheduler.start(() => {
-      this.getStatsWrapper();
+    this.intervalScheduler.start(async () => {
+      await this.getStatsWrapper();
     });
     return true;
   }
@@ -353,7 +350,9 @@ export default class DefaultStatsCollector implements StatsCollector {
    */
 
   private isStreamRawMetricReport(type: string): boolean {
-    return type === 'ssrc' || type === 'inbound-rtp' || type === 'outbound-rtp';
+    return ['inbound-rtp', 'outbound-rtp', 'remote-inbound-rtp', 'remote-outbound-rtp'].includes(
+      type
+    );
   }
 
   private getMediaType(rawMetricReport: RawMetricReport): MediaType {
@@ -371,34 +370,15 @@ export default class DefaultStatsCollector implements StatsCollector {
   /**
    * Metric report filter.
    */
-  isValidChromeRawMetric(rawMetricReport: RawMetricReport): boolean {
-    return (
-      this.browserBehavior.hasChromiumWebRTC() &&
-      (rawMetricReport.type === 'ssrc' ||
-        rawMetricReport.type === 'VideoBwe' ||
-        (rawMetricReport.type === 'googCandidatePair' &&
-          rawMetricReport.googWritable === 'true' &&
-          rawMetricReport.googReadable === 'true'))
-    );
-  }
 
   isValidStandardRawMetric(rawMetricReport: RawMetricReport): boolean {
-    const valid: boolean =
+    return (
       rawMetricReport.type === 'inbound-rtp' ||
       rawMetricReport.type === 'outbound-rtp' ||
-      (rawMetricReport.type === 'candidate-pair' && rawMetricReport.state === 'succeeded');
-
-    if (this.browserBehavior.hasFirefoxWebRTC()) {
-      if (
-        this.compareMajorVersion(DefaultStatsCollector.FIREFOX_UPDATED_GET_STATS_VERSION) === -1
-      ) {
-        return valid;
-      } else {
-        return valid && rawMetricReport.isRemote === false;
-      }
-    }
-
-    return valid;
+      rawMetricReport.type === 'remote-inbound-rtp' ||
+      rawMetricReport.type === 'remote-outbound-rtp' ||
+      (rawMetricReport.type === 'candidate-pair' && rawMetricReport.state === 'succeeded')
+    );
   }
 
   isValidSsrc(rawMetricReport: RawMetricReport): boolean {
@@ -414,11 +394,7 @@ export default class DefaultStatsCollector implements StatsCollector {
   }
 
   isValidRawMetricReport(rawMetricReport: RawMetricReport): boolean {
-    return (
-      (this.isValidChromeRawMetric(rawMetricReport) ||
-        this.isValidStandardRawMetric(rawMetricReport)) &&
-      this.isValidSsrc(rawMetricReport)
-    );
+    return this.isValidStandardRawMetric(rawMetricReport) && this.isValidSsrc(rawMetricReport);
   }
 
   filterRawMetricReports(rawMetricReports: RawMetricReport[]): RawMetricReport[] {
@@ -449,59 +425,23 @@ export default class DefaultStatsCollector implements StatsCollector {
   /**
    * Get raw webrtc metrics.
    */
-  private getStatsWrapper(): void {
+  private async getStatsWrapper(): Promise<void> {
     if (!this.audioVideoController.rtcPeerConnection) {
       return;
     }
-    const rawMetricReports: RawMetricReport[] = [];
-    if (!this.browserBehavior.requiresPromiseBasedWebRTCGetStats()) {
-      // @ts-ignore
-      this.audioVideoController.rtcPeerConnection.getStats(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (res: any) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          res.result().forEach((report: any) => {
-            const item: { [name: string]: StatsReportItem } = {};
-            report.names().forEach((name: string) => {
-              item[name] = report.stat(name);
-            });
-            item.id = report.id;
-            item.type = report.type;
-            item.timestamp = report.timestamp;
-            rawMetricReports.push(item);
-          });
-          this.handleRawMetricReports(rawMetricReports);
-        },
-        // @ts-ignore
-        (error: Error) => {
-          this.logger.error(error.message);
-        }
-      );
-    } else {
-      // @ts-ignore
-      this.audioVideoController.rtcPeerConnection
-        .getStats()
-        .then((report: RTCStatsReport) => {
-          report.forEach((item: StatsReportItem) => {
-            rawMetricReports.push(item);
-          });
-          this.handleRawMetricReports(rawMetricReports);
-        })
-        .catch((error: Error) => {
-          this.logger.error(error.message);
-        });
-    }
-  }
 
-  private compareMajorVersion(version: string): number {
-    const currentMajorVersion = parseInt(this.browserBehavior.version().split('.')[0]);
-    const expectedMajorVersion = parseInt(version.split('.')[0]);
-    if (expectedMajorVersion === currentMajorVersion) {
-      return 0;
+    const rawMetricReports: RawMetricReport[] = [];
+
+    // @ts-ignore
+    try {
+      const report = await this.audioVideoController.rtcPeerConnection.getStats();
+      this.clientMetricReport.rtcStatsReport = report;
+      report.forEach((item: StatsReportItem) => {
+        rawMetricReports.push(item);
+      });
+      this.handleRawMetricReports(rawMetricReports);
+    } catch (error) {
+      this.logger.error(error.message);
     }
-    if (expectedMajorVersion > currentMajorVersion) {
-      return 1;
-    }
-    return -1;
   }
 }

@@ -216,7 +216,18 @@ export default class DefaultAudioVideoController
     return this._eventController;
   }
 
+  /**
+   * This API will be deprecated in favor of `ClientMetricReport.getRTCStatsReport()`.
+   *
+   * It makes an additional call to the `getStats` API and therefore may cause slight performance degradation.
+   *
+   * Please subscribe to `metricsDidReceive(clientMetricReport: ClientMetricReport)` callback,
+   * and get the raw `RTCStatsReport` via `clientMetricReport.getRTCStatsReport()`.
+   */
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport> {
+    this.logger.warn(
+      'The `getRTCPeerConnectionStats()` is on its way to be deprecated. Please use the new API `clientMetricReport.getRTCStatsReport()` returned by `metricsDidReceive(clientMetricReport)` callback instead. It makes an additional call to the `getStats` API and therefore may cause slight performance degradation.'
+    );
     if (!this.rtcPeerConnection) {
       return null;
     }
@@ -568,11 +579,7 @@ export default class DefaultAudioVideoController
     );
     this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
-    this.meetingSessionContext.statsCollector = new DefaultStatsCollector(
-      this,
-      this.logger,
-      this.meetingSessionContext.browserBehavior
-    );
+    this.meetingSessionContext.statsCollector = new DefaultStatsCollector(this, this.logger);
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
       this._realtimeController,

@@ -59,11 +59,7 @@ describe('CleanRestartedSessionTask', () => {
       context.audioVideoController.videoTileController,
       new ConnectionHealthData(),
       new TestPingPong(),
-      new DefaultStatsCollector(
-        context.audioVideoController,
-        new NoOpDebugLogger(),
-        browserBehavior
-      )
+      new DefaultStatsCollector(context.audioVideoController, new NoOpDebugLogger())
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
 

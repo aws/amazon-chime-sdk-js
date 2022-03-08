@@ -359,9 +359,17 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#getrtcpeerconnectionstats">getRTCPeerConnectionStats</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L30">src/audiovideocontroller/AudioVideoControllerFacade.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L38">src/audiovideocontroller/AudioVideoControllerFacade.ts:38</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This API will be deprecated in favor of <code>ClientMetricReport.getRTCStatsReport()</code>.</p>
+								</div>
+								<p>It makes an additional call to the <code>getStats</code> API and therefore may cause slight performance degradation.</p>
+								<p>Please subscribe to <code>metricsDidReceive(clientMetricReport: ClientMetricReport)</code> callback,
+								and get the raw <code>RTCStatsReport</code> via <code>clientMetricReport.getRTCStatsReport()</code>.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -383,7 +391,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#getremotevideosources">getRemoteVideoSources</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L34">src/audiovideocontroller/AudioVideoControllerFacade.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L42">src/audiovideocontroller/AudioVideoControllerFacade.ts:42</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -654,7 +662,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#setaudioprofile">setAudioProfile</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L40">src/audiovideocontroller/AudioVideoControllerFacade.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L48">src/audiovideocontroller/AudioVideoControllerFacade.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
