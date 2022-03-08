@@ -134,7 +134,8 @@ describe('VideoPriorityBasedPolicy', () => {
     metricReport: DefaultClientMetricReport,
     nackCnt: number,
     packetsLost: number,
-    isGoogStat: boolean = true
+    isGoogStat: boolean = true,
+    usedBandwidthKbps: number = 10
   ): void {
     metricReport.currentTimestampMs = 2000;
     metricReport.previousTimestampMs = 1000;
@@ -151,7 +152,7 @@ describe('VideoPriorityBasedPolicy', () => {
     }
     streamReport1.previousMetrics['packetsLost'] = 0;
     streamReport1.currentMetrics['packetsLost'] = packetsLost;
-    streamReport1.currentMetrics['bytesReceived'] = 200;
+    streamReport1.currentMetrics['bytesReceived'] = usedBandwidthKbps * 1000;
 
     metricReport.streamMetricReports[1] = streamReport1;
   }
@@ -554,8 +555,9 @@ describe('VideoPriorityBasedPolicy', () => {
       expect(resub).to.equal(false);
 
       incrementTime(2000);
-      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 1100 * 1000;
-      setPacketLoss(metricReport, 0, 0);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 750 * 1000;
+      // Override with used kbps in this case and put packet loss below threshold
+      setPacketLoss(metricReport, 0, 1, true, 1100);
       policy.updateMetrics(metricReport);
       const bitrates = updateBitrateFrame(2, 200, 1100);
       videoStreamIndex.integrateBitratesFrame(bitrates);
