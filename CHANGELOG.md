@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
     
 ### Changed
+- Adjust the recovery behavior of `VideoPriorityBasedPolicy` to not get stuck at low estimates, not overeact to spurious packet loss when probing, and not let the time between probes raise to 60 seconds (reduced to maximum of 30 seconds).
     
 ### Fixed
 - Fix a video orientation issue when Background Blur/Background Replacement is enabled.
