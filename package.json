@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.2",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -106,7 +106,7 @@
     "protobufjs": "~6.8.8",
     "resize-observer": "^1.0.0",
     "ua-parser-js": "^1.0.1",
-    "pako":"^2.0.4"
+    "pako": "^2.0.4"
   },
   "license": "Apache-2.0",
   "repository": {
@@ -150,4 +150,3 @@
     "printWidth": 100
   }
 }
-
