@@ -42,6 +42,9 @@ const ignoredTypes = [
   'BackgroundReplacementVideoFrameProcessorDelegate',
   'BackgroundReplacementFilter',
 
+  // These are classes we don't want to export
+  'DefaultStatsCollector',
+
   // Generated versioning data.
   'version',
 

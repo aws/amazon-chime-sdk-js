@@ -20,7 +20,6 @@ import {
 import { Maybe } from '../utils/Types';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import AudioLogEvent from './AudioLogEvent';
-import StatsCollector from './StatsCollector';
 import VideoLogEvent from './VideoLogEvent';
 
 // eslint-disable-next-line
@@ -29,7 +28,7 @@ type RawMetricReport = any;
 // eslint-disable-next-line
 type StatsReportItem = any;
 
-export default class DefaultStatsCollector implements StatsCollector {
+export default class DefaultStatsCollector {
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
 
@@ -42,7 +41,7 @@ export default class DefaultStatsCollector implements StatsCollector {
     private audioVideoController: AudioVideoController,
     private logger: Logger,
     private readonly interval: number = DefaultStatsCollector.INTERVAL_MS
-  ) {}
+  ) { }
 
   // TODO: Update toAttribute() and toSuffix() methods to convert raw data to a required type.
   toAttribute(str: string): string {
@@ -74,8 +73,8 @@ export default class DefaultStatsCollector implements StatsCollector {
     _name: string,
     _duration: number,
     _attributes?: { [id: string]: string }
-  ): void => {};
-  metricsLogEvent = (_name: string, _attributes: { [id: string]: string }): void => {};
+  ): void => { };
+  metricsLogEvent = (_name: string, _attributes: { [id: string]: string }): void => { };
 
   logLatency(eventName: string, timeMs: number, attributes?: { [id: string]: string }): void {
     const event = this.toSuffix(eventName);

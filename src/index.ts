@@ -97,7 +97,6 @@ import DefaultSessionStateController from './sessionstatecontroller/DefaultSessi
 import DefaultSigV4 from './sigv4/DefaultSigV4';
 import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
-import DefaultStatsCollector from './statscollector/DefaultStatsCollector';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
 import DefaultTranscriptionController from './transcript/DefaultTranscriptionController';
 import DefaultUserAgentParser from './useragentparser/DefaultUserAgentParser';
@@ -244,7 +243,6 @@ import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplin
 import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
 import SingleNodeAudioTransformDevice from './devicecontroller/SingleNodeAudioTransformDevice';
-import StatsCollector from './statscollector/StatsCollector';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
 import SubscribeAndReceiveSubscribeAckTask from './task/SubscribeAndReceiveSubscribeAckTask';
 import TargetDisplaySize from './videodownlinkbandwidthpolicy/TargetDisplaySize';
@@ -418,7 +416,6 @@ export {
   DefaultSigV4,
   DefaultSignalingClient,
   DefaultSimulcastUplinkPolicy,
-  DefaultStatsCollector,
   DefaultTransceiverController,
   DefaultTranscriptionController,
   DefaultUserAgentParser,
@@ -572,7 +569,6 @@ export {
   SimulcastVideoStreamIndex,
   SingleNodeAudioTransformDevice,
   Some,
-  StatsCollector,
   StreamMetricReport,
   SubscribeAndReceiveSubscribeAckTask,
   TargetDisplaySize,

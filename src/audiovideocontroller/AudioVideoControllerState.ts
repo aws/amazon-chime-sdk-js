@@ -18,7 +18,7 @@ import RemovableObserver from '../removableobserver/RemovableObserver';
 import SDP from '../sdp/SDP';
 import SignalingClient from '../signalingclient/SignalingClient';
 import { SdkIndexFrame, SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
-import StatsCollector from '../statscollector/StatsCollector';
+import DefaultStatsCollector from '../statscollector/DefaultStatsCollector';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
@@ -121,7 +121,7 @@ export default class AudioVideoControllerState {
 
   volumeIndicatorAdapter: VolumeIndicatorAdapter | null = null;
 
-  statsCollector: StatsCollector | null = null;
+  statsCollector: DefaultStatsCollector | null = null;
 
   connectionMonitor: ConnectionMonitor | null = null;
 
