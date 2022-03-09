@@ -9,8 +9,6 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
-import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
@@ -84,7 +82,6 @@ describe('MonitorTask', () => {
   const assert: Chai.AssertStatic = chai.assert;
   const behavior = new DOMMockBehavior();
   const logger = new NoOpDebugLogger();
-  const browserBehavior = new DefaultBrowserBehavior();
 
   let task: MonitorTask;
   let context: AudioVideoControllerState;
@@ -132,12 +129,8 @@ describe('MonitorTask', () => {
   }
 
   class TestStatsCollector extends DefaultStatsCollector {
-    constructor(
-      audioVideoController: AudioVideoController,
-      logger: Logger,
-      browserBehavior: BrowserBehavior
-    ) {
-      super(audioVideoController, logger, browserBehavior);
+    constructor(audioVideoController: AudioVideoController, logger: Logger) {
+      super(audioVideoController, logger);
     }
     start(): boolean {
       return false;
@@ -168,11 +161,7 @@ describe('MonitorTask', () => {
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
-    context.statsCollector = new DefaultStatsCollector(
-      context.audioVideoController,
-      logger,
-      browserBehavior
-    );
+    context.statsCollector = new DefaultStatsCollector(context.audioVideoController, logger);
     context.reconnectController = new DefaultReconnectController(
       RECONNECT_TIMEOUT_MS,
       new FullJitterBackoff(
@@ -183,11 +172,7 @@ describe('MonitorTask', () => {
     );
     context.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
     context.connectionMonitor = new TestConnectionMonitor();
-    context.statsCollector = new TestStatsCollector(
-      context.audioVideoController,
-      logger,
-      browserBehavior
-    );
+    context.statsCollector = new TestStatsCollector(context.audioVideoController, logger);
 
     context.signalingClient = new DefaultSignalingClient(
       new DefaultWebSocketAdapter(context.logger),
@@ -529,8 +514,8 @@ describe('MonitorTask', () => {
         fractionLoss: RawMetrics = null;
         videoPacketSentPerSecond: RawMetrics = 1000;
         videoUpstreamBitrate: RawMetrics = 100;
-        availableSendBandwidth: RawMetrics = 1200 * 1000;
-        availableReceiveBandwidth: RawMetrics = 1000 * 1000;
+        availableOutgoingBitrate: RawMetrics = 1200 * 1000;
+        availableIncomingBitrate: RawMetrics = 1000 * 1000;
 
         getObservableMetrics(): { [id: string]: number } {
           return {
@@ -538,8 +523,8 @@ describe('MonitorTask', () => {
             audioPacketsReceivedFractionLoss: this.fractionLoss,
             videoPacketSentPerSecond: this.videoPacketSentPerSecond,
             videoUpstreamBitrate: this.videoUpstreamBitrate,
-            availableSendBandwidth: this.availableSendBandwidth,
-            availableReceiveBandwidth: this.availableReceiveBandwidth,
+            availableOutgoingBitrate: this.availableOutgoingBitrate,
+            availableIncomingBitrate: this.availableIncomingBitrate,
           };
         }
       }
@@ -617,8 +602,8 @@ describe('MonitorTask', () => {
       fractionLoss: RawMetrics = null;
       videoPacketSentPerSecond: RawMetrics = 1000;
       videoUpstreamBitrate: RawMetrics = 100;
-      availableSendBandwidth: RawMetrics = 1200 * 1000;
-      availableReceiveBandwidth: RawMetrics = 1000 * 1000;
+      availableOutgoingBitrate: RawMetrics = 1200 * 1000;
+      availableIncomingBitrate: RawMetrics = 1000 * 1000;
 
       getObservableMetrics(): { [id: string]: number } {
         return {
@@ -626,8 +611,8 @@ describe('MonitorTask', () => {
           audioPacketsReceivedFractionLoss: this.fractionLoss,
           videoPacketSentPerSecond: this.videoPacketSentPerSecond,
           videoUpstreamBitrate: this.videoUpstreamBitrate,
-          availableSendBandwidth: this.availableSendBandwidth,
-          availableReceiveBandwidth: this.availableReceiveBandwidth,
+          availableOutgoingBitrate: this.availableOutgoingBitrate,
+          availableIncomingBitrate: this.availableIncomingBitrate,
         };
       }
     }
@@ -708,8 +693,8 @@ describe('MonitorTask', () => {
       fractionLoss: RawMetrics = null;
       videoPacketSentPerSecond: RawMetrics = 1000;
       videoUpstreamBitrate: RawMetrics = 100;
-      availableSendBandwidth: RawMetrics = 1200 * 1000;
-      availableReceiveBandwidth: RawMetrics = 1000 * 1000;
+      availableOutgoingBitrate: RawMetrics = 1200 * 1000;
+      availableIncomingBitrate: RawMetrics = 1000 * 1000;
 
       getObservableMetrics(): { [id: string]: number } {
         return {
@@ -717,8 +702,8 @@ describe('MonitorTask', () => {
           audioPacketsReceivedFractionLoss: this.fractionLoss,
           videoPacketSentPerSecond: this.videoPacketSentPerSecond,
           videoUpstreamBitrate: this.videoUpstreamBitrate,
-          availableSendBandwidth: this.availableSendBandwidth,
-          availableReceiveBandwidth: this.availableReceiveBandwidth,
+          availableOutgoingBitrate: this.availableOutgoingBitrate,
+          availableIncomingBitrate: this.availableIncomingBitrate,
         };
       }
     }

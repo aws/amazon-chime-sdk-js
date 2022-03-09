@@ -32,7 +32,7 @@ describe('NoVideoDownlinkBandwidthPolicy', () => {
       policy.updateIndex(emptyVideoStreamIndex);
       expect(policy.wantsResubscribe()).to.be.false;
       const metricReport = new DefaultClientMetricReport(logger);
-      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 500;
+      metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 500;
       policy.updateMetrics(metricReport);
       expect(policy.wantsResubscribe()).to.be.false;
     });

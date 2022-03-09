@@ -60,6 +60,14 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('stop');
   }
 
+  /**
+   * This API will be deprecated in favor of `ClientMetricReport.getRTCStatsReport()`.
+   *
+   * It makes an additional call to the `getStats` API and therefore may cause slight performance degradation.
+   *
+   * Please subscribe to `metricsDidReceive(clientMetricReport: ClientMetricReport)` callback,
+   * and get the raw `RTCStatsReport` via `clientMetricReport.getRTCStatsReport()`.
+   */
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport> {
     this.trace('getRTCPeerConnectionStats', selector ? selector.id : null);
     return this.audioVideoController.getRTCPeerConnectionStats(selector);

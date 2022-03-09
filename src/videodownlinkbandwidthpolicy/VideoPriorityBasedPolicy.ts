@@ -199,22 +199,16 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.prevDownlinkStats = this.downlinkStats;
     this.downlinkStats = new LinkMediaStats();
     const metricReport = clientMetricReport.getObservableMetrics();
-    // Currently we have different stats between different browsers.
-    // availableReceiveBandwidth is the old legacy Google stat
+
     // availableIncomingBitrate is the standard stat but is not available in Firefox yet so only Safari for now.
-    if (!isNaN(metricReport.availableIncomingBitrate)) {
-      this.downlinkStats.bandwidthEstimateKbps = metricReport.availableIncomingBitrate / 1000;
-    } else {
-      this.downlinkStats.bandwidthEstimateKbps = metricReport.availableReceiveBandwidth / 1000;
-    }
+    this.downlinkStats.bandwidthEstimateKbps = metricReport.availableIncomingBitrate / 1000;
+
     for (const ssrcStr in clientMetricReport.streamMetricReports) {
       const ssrc = Number.parseInt(ssrcStr, 10);
       const metrics = clientMetricReport.streamMetricReports[ssrc];
       if (metrics.direction === Direction.DOWNSTREAM && metrics.mediaType === MediaType.VIDEO) {
         // Only use video stream metrics
-        if (metrics.currentMetrics.hasOwnProperty('googNacksSent')) {
-          this.downlinkStats.nackCount += clientMetricReport.countPerSecond('googNacksSent', ssrc);
-        } else if (metrics.currentMetrics.hasOwnProperty('nackCount')) {
+        if (metrics.currentMetrics.hasOwnProperty('nackCount')) {
           this.downlinkStats.nackCount += clientMetricReport.countPerSecond('nackCount', ssrc);
         }
 

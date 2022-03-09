@@ -38,11 +38,6 @@ export default interface BrowserBehavior {
   requiresBundlePolicy(): RTCBundlePolicy;
 
   /**
-   * Returns whether the browser uses a promise-based WebRTC getStats API
-   */
-  requiresPromiseBasedWebRTCGetStats(): boolean;
-
-  /**
    * Returns whether it is needed to check connection attributes in SDP
    */
   requiresCheckForSdpConnectionAttributes(): boolean;

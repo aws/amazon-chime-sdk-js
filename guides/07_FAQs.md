@@ -255,14 +255,13 @@ Remote mute is the ability of one attendee in a meeting to mute another attendee
 ### How do I get connection indicator for media quality?
 
 The [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics) API exposes video quality statistics. The `getObservableVideoMetrics` API returns following metrics:
-```
+
+```js
 // Upstream metrics of local attendee
 videoUpstreamBitrate,
 videoUpstreamPacketsSent,
 videoUpstreamPacketLossPercent,
 videoUpstreamFramesEncodedPerSecond,
-videoUpstreamGoogFrameHeight, (for chromium based browsers)
-videoUpstreamGoogFrameWidth,(for chromium based browsers)
 videoUpstreamFrameHeight,
 videoUpstreamFrameWidth,
 
@@ -271,11 +270,10 @@ videoDownstreamBitrate,
 videoDownstreamPacketLossPercent,
 videoDownstreamPacketsReceived,
 videoDownstreamFramesDecodedPerSecond,
-videoDownstreamGoogFrameHeight,
-videoDownstreamGoogFrameWidth,
 videoDownstreamFrameHeight,
 videoDownstreamFrameWidth,
 ```
+
 See this [guide](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html) for more information. 
 
 ## Demos

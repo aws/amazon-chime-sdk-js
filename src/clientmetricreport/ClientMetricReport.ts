@@ -15,4 +15,9 @@ export default interface ClientMetricReport {
    * Gets video client media metrics
    */
   getObservableVideoMetrics?(): { [id: string]: { [id: string]: {} } };
+
+  /**
+   * Gets raw RTCStatsReport from `RTCPeerConnection.getStats()` API
+   */
+  getRTCStatsReport?(): RTCStatsReport;
 }

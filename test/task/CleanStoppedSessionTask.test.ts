@@ -8,7 +8,6 @@ import AudioVideoController from '../../src/audiovideocontroller/AudioVideoContr
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
 import Logger from '../../src/logger/Logger';
@@ -51,12 +50,8 @@ describe('CleanStoppedSessionTask', () => {
   let request: SignalingClientConnectionRequest;
 
   class TestStatsCollector extends DefaultStatsCollector {
-    constructor(
-      audioVideoController: AudioVideoController,
-      logger: Logger,
-      browser: BrowserBehavior
-    ) {
-      super(audioVideoController, logger, browser);
+    constructor(audioVideoController: AudioVideoController, logger: Logger) {
+      super(audioVideoController, logger);
     }
     start(): boolean {
       return false;
@@ -77,11 +72,7 @@ describe('CleanStoppedSessionTask', () => {
     context.realtimeController = context.audioVideoController.realtimeController;
     context.videoTileController = context.audioVideoController.videoTileController;
     context.mediaStreamBroker = new NoOpMediaStreamBroker();
-    context.statsCollector = new TestStatsCollector(
-      context.audioVideoController,
-      context.logger,
-      browserBehavior
-    );
+    context.statsCollector = new TestStatsCollector(context.audioVideoController, context.logger);
     context.connectionMonitor = new TestConnectionMonitor();
     context.transceiverController = new DefaultTransceiverController(
       context.logger,

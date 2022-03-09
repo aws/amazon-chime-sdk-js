@@ -126,7 +126,7 @@ describe('AllHighestVideoBandwidthPolicy', () => {
 
     it('returns correct indices and bandwidth has no impact on result', () => {
       const metricReport = new DefaultClientMetricReport(logger);
-      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 1000;
+      metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 1000;
 
       policy.updateIndex(index);
       policy.updateMetrics(metricReport);

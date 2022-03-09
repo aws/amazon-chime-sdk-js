@@ -68,11 +68,7 @@ describe('AttachMediaInputTask', () => {
     context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
     context.videosToReceive = new DefaultVideoStreamIdSet();
     context.videoSubscriptions = [];
-    context.statsCollector = new DefaultStatsCollector(
-      context.audioVideoController,
-      logger,
-      context.browserBehavior
-    );
+    context.statsCollector = new DefaultStatsCollector(context.audioVideoController, logger);
     context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('self-attendees');
     task = new AttachMediaInputTask(context);
   });

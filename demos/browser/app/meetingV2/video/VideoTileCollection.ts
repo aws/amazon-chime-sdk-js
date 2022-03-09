@@ -31,8 +31,6 @@ const ConfigLevelToTargetDisplaySize: { [Key in ConfigLevel]: TargetDisplaySize 
 };
 
 const VideoUpstreamMetricsKeyStats: { [key: string]: string } = {
-  videoUpstreamGoogFrameHeight: 'Frame Height',
-  videoUpstreamGoogFrameWidth: 'Frame Width',
   videoUpstreamFrameHeight: 'Frame Height',
   videoUpstreamFrameWidth: 'Frame Width',
   videoUpstreamBitrate: 'Bitrate (bps)',
@@ -42,8 +40,6 @@ const VideoUpstreamMetricsKeyStats: { [key: string]: string } = {
 };
 
 const VideoDownstreamMetricsKeyStats: { [key: string]: string } = {
-  videoDownstreamGoogFrameHeight: 'Frame Height',
-  videoDownstreamGoogFrameWidth: 'Frame Width',
   videoDownstreamFrameHeight: 'Frame Height',
   videoDownstreamFrameWidth: 'Frame Width',
   videoDownstreamBitrate: 'Bitrate (bps)',

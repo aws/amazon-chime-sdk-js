@@ -5,8 +5,6 @@ import * as chai from 'chai';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
-import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/SignalingAndMetricsConnectionMonitor';
@@ -24,7 +22,6 @@ import DOMMockBuilder from '../dommock/DOMMockBuilder';
 type RawMetrics = any;
 
 describe('SignalingAndMetricsConnectionMonitor', () => {
-  const browser: BrowserBehavior = new DefaultBrowserBehavior();
   let domMockBuilder: DOMMockBuilder;
   let audioVideoController: NoOpAudioVideoController;
   let realTimeController: DefaultRealtimeController;
@@ -101,12 +98,10 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     fractionLoss: RawMetrics = null;
     videoPacketSentPerSecond: RawMetrics = 1000;
     videoUpstreamBitrate: RawMetrics = 100;
-    availableSendBandwidth: RawMetrics = 100;
-    availableReceiveBandwidth: RawMetrics = 100;
+    availableOutgoingBitrate: RawMetrics = 100;
+    availableIncomingBitrate: RawMetrics = 100;
     videoUpstreamPacketsSent: RawMetrics = 100;
     videoUpstreamFramesEncodedPerSecond: RawMetrics = 100;
-    videoUpstreamGoogFrameHeight: RawMetrics = 100;
-    videoUpstreamGoogFrameWidth: RawMetrics = 100;
     videoUpstreamFrameHeight: RawMetrics = 100;
     videoUpstreamFrameWidth: RawMetrics = 100;
     videoDownstreamBitrate: RawMetrics = 100;
@@ -114,8 +109,6 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     videoDownstreamFramesDecodedPerSecond: RawMetrics = 100;
     videoDownstreamFrameHeight: RawMetrics = 100;
     videoDownstreamFrameWidth: RawMetrics = 100;
-    videoDownstreamGoogFrameHeight: RawMetrics = 100;
-    videoDownstreamGoogFrameWidth: RawMetrics = 100;
 
     getObservableMetrics(): { [id: string]: number } {
       return {
@@ -123,8 +116,8 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
         audioPacketsReceivedFractionLoss: this.fractionLoss,
         videoPacketSentPerSecond: this.videoPacketSentPerSecond,
         videoUpstreamBitrate: this.videoUpstreamBitrate,
-        availableSendBandwidth: this.availableSendBandwidth,
-        availableReceiveBandwidth: this.availableReceiveBandwidth,
+        availableOutgoingBitrate: this.availableOutgoingBitrate,
+        availableIncomingBitrate: this.availableIncomingBitrate,
       };
     }
 
@@ -135,8 +128,6 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
         videoUpstreamFramesEncodedPerSecond: this.videoUpstreamFramesEncodedPerSecond,
         videoUpstreamFrameHeight: this.videoUpstreamFrameHeight,
         videoUpstreamFrameWidth: this.videoUpstreamFrameWidth,
-        videoUpstreamGoogFrameHeight: this.videoUpstreamGoogFrameHeight,
-        videoUpstreamGoogFrameWidth: this.videoUpstreamGoogFrameWidth,
       };
     }
   }
@@ -176,7 +167,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
       videoTileController,
       connectionHealthData,
       new TestPingPong(),
-      new DefaultStatsCollector(audioVideoController, new NoOpDebugLogger(), browser)
+      new DefaultStatsCollector(audioVideoController, new NoOpDebugLogger())
     );
     connectionMonitor.start();
     testClientMetricReport = new TestClientMetricReport();
@@ -343,9 +334,9 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
       }
 
       audioVideoController.addObserver(new TestAudioVideoObserver());
-      testClientMetricReport.availableSendBandwidth = bandwidth1;
+      testClientMetricReport.availableOutgoingBitrate = bandwidth1;
       sendClientMetricReport(testClientMetricReport);
-      testClientMetricReport.availableSendBandwidth = bandwidth2;
+      testClientMetricReport.availableOutgoingBitrate = bandwidth2;
       sendClientMetricReport(testClientMetricReport);
     });
 
@@ -365,9 +356,9 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
       }
 
       audioVideoController.addObserver(new TestAudioVideoObserver());
-      testClientMetricReport.availableReceiveBandwidth = bandwidth1;
+      testClientMetricReport.availableIncomingBitrate = bandwidth1;
       sendClientMetricReport(testClientMetricReport);
-      testClientMetricReport.availableReceiveBandwidth = bandwidth2;
+      testClientMetricReport.availableIncomingBitrate = bandwidth2;
       sendClientMetricReport(testClientMetricReport);
     });
 
@@ -411,11 +402,11 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
       }
 
       audioVideoController.addObserver(new TestAudioVideoObserver());
-      testClientMetricReport.availableSendBandwidth = 100;
-      testClientMetricReport.availableReceiveBandwidth = 1000;
+      testClientMetricReport.availableOutgoingBitrate = 100;
+      testClientMetricReport.availableIncomingBitrate = 1000;
       sendClientMetricReport(testClientMetricReport);
-      testClientMetricReport.availableSendBandwidth = '100';
-      testClientMetricReport.availableReceiveBandwidth = '1000';
+      testClientMetricReport.availableOutgoingBitrate = '100';
+      testClientMetricReport.availableIncomingBitrate = '1000';
       sendClientMetricReport(testClientMetricReport);
     });
 

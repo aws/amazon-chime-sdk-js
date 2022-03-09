@@ -53,26 +53,26 @@ describe('DefaultClientMetricReport', () => {
   describe('decoderLossPercent', () => {
     const metricName = 'this-name-is-ignored';
 
-    it('returns 0 if decoder calls is 0', () => {
+    it('returns 0 if received samples is 0', () => {
       const report = new GlobalMetricReport();
-      report.currentMetrics['googDecodingNormal'] = 0;
-      report.currentMetrics['googDecodingCTN'] = 0;
+      report.currentMetrics['concealedSamples'] = 0;
+      report.currentMetrics['totalSamplesReceived'] = 0;
       clientMetricReport.globalMetricReport = report;
       expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
     });
 
     it('returns 0 if decoder abnormal is 0', () => {
       const report = new GlobalMetricReport();
-      report.currentMetrics['googDecodingNormal'] = 1;
-      report.currentMetrics['googDecodingCTN'] = 1;
+      report.currentMetrics['concealedSamples'] = 1;
+      report.currentMetrics['totalSamplesReceived'] = 1;
       clientMetricReport.globalMetricReport = report;
       expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
     });
 
     it('returns the loss percent', () => {
       const report = new GlobalMetricReport();
-      report.currentMetrics['googDecodingNormal'] = 1;
-      report.currentMetrics['googDecodingCTN'] = 2;
+      report.currentMetrics['concealedSamples'] = 1;
+      report.currentMetrics['totalSamplesReceived'] = 2;
       clientMetricReport.globalMetricReport = report;
       expect(clientMetricReport.decoderLossPercent(metricName)).to.equal((1 * 100) / 2);
     });
@@ -80,8 +80,8 @@ describe('DefaultClientMetricReport', () => {
     it('returns the loss percent from the stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
-      report.currentMetrics['googDecodingNormal'] = 1;
-      report.currentMetrics['googDecodingCTN'] = 2;
+      report.currentMetrics['concealedSamples'] = 1;
+      report.currentMetrics['totalSamplesReceived'] = 2;
       clientMetricReport.streamMetricReports[ssrc] = report;
       expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal((1 * 100) / 2);
     });
@@ -229,6 +229,37 @@ describe('DefaultClientMetricReport', () => {
     });
   });
 
+  describe('jitterBufferMs', () => {
+    const metricName = 'this-name-is-ignored';
+
+    it('returns 0 if jitter buffer delay is 0', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentMetrics['jitterBufferDelay'] = 0;
+      report.currentMetrics['jitterBufferEmittedCount'] = 1;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.jitterBufferMs(metricName, ssrc)).to.equal(0);
+    });
+
+    it('returns 0 if jitter buffer emitted count is 0', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentMetrics['jitterBufferDelay'] = 1;
+      report.currentMetrics['jitterBufferEmittedCount'] = 0;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.jitterBufferMs(metricName, ssrc)).to.equal(0);
+    });
+
+    it('returns the jitter buffer ms from the stream metric reports', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentMetrics['jitterBufferDelay'] = 1;
+      report.currentMetrics['jitterBufferEmittedCount'] = 2;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.jitterBufferMs(metricName, ssrc)).to.equal((1 / 2) * 1000);
+    });
+  });
+
   describe('getMetricMap', () => {
     it('returns the global metric map if not passing the media type and the direction', () => {
       expect(clientMetricReport.getMetricMap()).to.equal(clientMetricReport.globalMetricMap);
@@ -265,34 +296,16 @@ describe('DefaultClientMetricReport', () => {
     });
 
     describe('without media', () => {
-      it('returns the transformed metric from the observable metric spec', () => {
-        const report = new GlobalMetricReport();
-        report.currentMetrics['googAvailableSendBandwidth'] = 10;
-        clientMetricReport.globalMetricReport = report;
-        expect(clientMetricReport.getObservableMetricValue('availableSendBandwidth')).to.equal(
-          clientMetricReport.identityValue('googAvailableSendBandwidth')
-        );
-      });
-
-      it('returns the transformed metric from the observable metric spec', () => {
-        const report = new GlobalMetricReport();
-        report.currentMetrics['googAvailableReceiveBandwidth'] = 10;
-        clientMetricReport.globalMetricReport = report;
-        expect(clientMetricReport.getObservableMetricValue('availableReceiveBandwidth')).to.equal(
-          clientMetricReport.identityValue('googAvailableReceiveBandwidth')
-        );
-      });
-
       it('returns the transformed metric from the global metric spec', () => {
         const report = new GlobalMetricReport();
-        report.currentMetrics['googAvailableReceiveBandwidth'] = 10;
+        report.currentMetrics['availableIncomingBitrate'] = 10;
         clientMetricReport.globalMetricReport = report;
 
         // Force setting "source" for the test coverage in case we are adding a new metric spec with "source".
-        clientMetricReport.globalMetricMap['googAvailableReceiveBandwidth']['source'] =
-          'googAvailableReceiveBandwidth';
-        expect(clientMetricReport.getObservableMetricValue('availableReceiveBandwidth')).to.equal(
-          clientMetricReport.identityValue('googAvailableReceiveBandwidth')
+        clientMetricReport.globalMetricMap['availableIncomingBitrate']['source'] =
+          'availableIncomingBitrate';
+        expect(clientMetricReport.getObservableMetricValue('availableIncomingBitrate')).to.equal(
+          clientMetricReport.identityValue('availableIncomingBitrate')
         );
       });
     });
@@ -374,7 +387,7 @@ describe('DefaultClientMetricReport', () => {
   describe('getObservableMetrics', () => {
     it('returns the observable metrics as a JS object', () => {
       const metrics = clientMetricReport.getObservableMetrics();
-      expect(Object.keys(metrics).length).to.equal(14);
+      expect(Object.keys(metrics).length).to.equal(11);
     });
   });
 
@@ -441,17 +454,20 @@ describe('DefaultClientMetricReport', () => {
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
       expect(Object.keys(videoStreamMetrics).length).to.equal(0);
     });
+
+    it('returns raw RTCStatsReport report', () => {
+      clientMetricReport.rtcStatsReport = {} as RTCStatsReport;
+      const rawMetricReport = clientMetricReport.getRTCStatsReport();
+      expect(rawMetricReport).to.equal(clientMetricReport.rtcStatsReport);
+    });
   });
 
   describe('clone', () => {
     it('clones', () => {
-      clientMetricReport.globalMetricReport = new GlobalMetricReport();
-      clientMetricReport.streamMetricReports = { 1: new StreamMetricReport() };
-      clientMetricReport.currentTimestampMs = 100;
-      clientMetricReport.previousTimestampMs = 0;
       const cloned = clientMetricReport.clone();
       expect(cloned.globalMetricReport).to.equal(clientMetricReport.globalMetricReport);
       expect(cloned.streamMetricReports).to.equal(clientMetricReport.streamMetricReports);
+      expect(cloned.rtcStatsReport).to.equal(clientMetricReport.rtcStatsReport);
       expect(cloned.currentTimestampMs).to.equal(clientMetricReport.currentTimestampMs);
       expect(cloned.previousTimestampMs).to.equal(clientMetricReport.previousTimestampMs);
     });
