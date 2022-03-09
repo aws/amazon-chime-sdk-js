@@ -43,7 +43,7 @@ const ignoredTypes = [
   'BackgroundReplacementFilter',
 
   // These are classes we don't want to export
-  'DefaultStatsCollector',
+  'StatsCollector',
 
   // Generated versioning data.
   'version',

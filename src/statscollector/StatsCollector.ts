@@ -41,13 +41,19 @@ export default class DefaultStatsCollector {
     private audioVideoController: AudioVideoController,
     private logger: Logger,
     private readonly interval: number = DefaultStatsCollector.INTERVAL_MS
-  ) { }
+  ) {}
 
   // TODO: Update toAttribute() and toSuffix() methods to convert raw data to a required type.
+  /**
+   * Converts string to attribute format.
+   */
   toAttribute(str: string): string {
     return this.toSuffix(str).substring(1);
   }
 
+  /**
+   * Converts string to suffix format.
+   */
   private toSuffix(str: string): string {
     if (str.toLowerCase() === str) {
       // e.g. lower_case -> _lower_case
@@ -73,14 +79,20 @@ export default class DefaultStatsCollector {
     _name: string,
     _duration: number,
     _attributes?: { [id: string]: string }
-  ): void => { };
-  metricsLogEvent = (_name: string, _attributes: { [id: string]: string }): void => { };
+  ): void => {};
+  metricsLogEvent = (_name: string, _attributes: { [id: string]: string }): void => {};
 
+  /**
+   * Logs the latency.
+   */
   logLatency(eventName: string, timeMs: number, attributes?: { [id: string]: string }): void {
     const event = this.toSuffix(eventName);
     this.logEventTime('meeting' + event, timeMs, attributes);
   }
 
+  /**
+   * Logs the state timeout.
+   */
   logStateTimeout(stateName: string, attributes?: { [id: string]: string }): void {
     const state = this.toSuffix(stateName);
     this.logEvent('meeting_session_state_timeout', {
@@ -89,11 +101,17 @@ export default class DefaultStatsCollector {
     });
   }
 
+  /**
+   * Logs the audio event.
+   */
   logAudioEvent(eventName: AudioLogEvent, attributes?: { [id: string]: string }): void {
     const event = 'audio' + this.toSuffix(AudioLogEvent[eventName]);
     this.logEvent(event, attributes);
   }
 
+  /**
+   * Logs the video event.
+   */
   logVideoEvent(eventName: VideoLogEvent, attributes?: { [id: string]: string }): void {
     const event = 'video' + this.toSuffix(VideoLogEvent[eventName]);
     this.logEvent(event, attributes);
@@ -116,6 +134,9 @@ export default class DefaultStatsCollector {
     this.metricsAddTime(eventName, timeMs, finalAttributes);
   }
 
+  /**
+   * Logs the session status.
+   */
   logMeetingSessionStatus(status: MeetingSessionStatus): void {
     // TODO: Generate the status event name given the status code.
     const statusEventName = `${status.statusCode()}`;
@@ -137,6 +158,9 @@ export default class DefaultStatsCollector {
     }
   }
 
+  /**
+   * Logs the lifecycle event.
+   */
   logLifecycleEvent(
     lifecycleEvent: MeetingSessionLifecycleEvent,
     condition: MeetingSessionLifecycleEventCondition
@@ -152,6 +176,9 @@ export default class DefaultStatsCollector {
     this.logEvent('meeting_session_lifecycle', attributes);
   }
 
+  /**
+   * Logs the events.
+   */
   private logEvent(eventName: string, attributes: { [id: string]: string } = {}): void {
     const finalAttributes = {
       ...attributes,
@@ -165,9 +192,8 @@ export default class DefaultStatsCollector {
   }
 
   /**
-   * WEBRTC METRICS COLLECTION.
+   * Starts collecting statistics.
    */
-
   start(
     signalingClient: SignalingClient,
     videoStreamIndex: VideoStreamIndex,
@@ -196,6 +222,9 @@ export default class DefaultStatsCollector {
     return true;
   }
 
+  /*
+   * Stops the stats collector.
+   */
   stop(): void {
     this.logger.info('Stopping DefaultStatsCollector');
     if (this.intervalScheduler) {
@@ -207,7 +236,6 @@ export default class DefaultStatsCollector {
   /**
    * Convert raw metrics to client metric report.
    */
-
   private updateMetricValues(rawMetricReport: RawMetricReport, isStream: boolean): void {
     const metricReport = isStream
       ? this.clientMetricReport.streamMetricReports[Number(rawMetricReport.ssrc)]
@@ -237,6 +265,9 @@ export default class DefaultStatsCollector {
     }
   }
 
+  /**
+   * Converts RawMetricReport to StreamMetricReport and GlobalMetricReport and stores them as clientMetricReport.
+   */
   private processRawMetricReports(rawMetricReports: RawMetricReport[]): void {
     this.clientMetricReport.currentSsrcs = {};
     const timeStamp = Date.now();
@@ -259,7 +290,7 @@ export default class DefaultStatsCollector {
             Number(rawMetricReport.ssrc)
           ] = streamMetricReport;
         } else {
-          // Update stream ID in case we have overriden it locally in the case of remote video
+          // Update stream ID in case we have overridden it locally in the case of remote video
           // updates completed without a negotiation
           existingStreamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
             Number(rawMetricReport.ssrc)
@@ -276,9 +307,8 @@ export default class DefaultStatsCollector {
   }
 
   /**
-   * Protobuf packaging.
+   * Packages a metric spec into the MetricFrame.
    */
-
   private addMetricFrame(
     metricName: string,
     clientMetricFrame: SdkClientMetricFrame,
@@ -307,6 +337,9 @@ export default class DefaultStatsCollector {
     }
   }
 
+  /**
+   * Packages metrics in GlobalMetricReport into the MetricFrame.
+   */
   private addGlobalMetricsToProtobuf(clientMetricFrame: SdkClientMetricFrame): void {
     const metricMap = this.clientMetricReport.getMetricMap();
     for (const metricName in this.clientMetricReport.globalMetricReport.currentMetrics) {
@@ -314,6 +347,9 @@ export default class DefaultStatsCollector {
     }
   }
 
+  /**
+   * Packages metrics in StreamMetricReport into the MetricFrame.
+   */
   private addStreamMetricsToProtobuf(clientMetricFrame: SdkClientMetricFrame): void {
     for (const ssrc in this.clientMetricReport.streamMetricReports) {
       const streamMetricReport = this.clientMetricReport.streamMetricReports[ssrc];
@@ -331,6 +367,9 @@ export default class DefaultStatsCollector {
     }
   }
 
+  /**
+   * Packages all metrics into the MetricFrame.
+   */
   private makeClientMetricProtobuf(): SdkClientMetricFrame {
     const clientMetricFrame = SdkClientMetricFrame.create();
     clientMetricFrame.globalMetrics = [];
@@ -340,24 +379,32 @@ export default class DefaultStatsCollector {
     return clientMetricFrame;
   }
 
+  /**
+   * Sends the MetricFrame to Tincan via ProtoBuf.
+   */
   private sendClientMetricProtobuf(clientMetricFrame: SdkClientMetricFrame): void {
     this.signalingClient.sendClientMetrics(clientMetricFrame);
   }
 
   /**
-   * Helper functions.
+   * Checks if the type of RawMetricReport is stream related.
    */
-
   private isStreamRawMetricReport(type: string): boolean {
     return ['inbound-rtp', 'outbound-rtp', 'remote-inbound-rtp', 'remote-outbound-rtp'].includes(
       type
     );
   }
 
+  /**
+   * Returns the MediaType for a RawMetricReport.
+   */
   private getMediaType(rawMetricReport: RawMetricReport): MediaType {
     return rawMetricReport.mediaType === 'audio' ? MediaType.AUDIO : MediaType.VIDEO;
   }
 
+  /**
+   * Returns the Direction for a RawMetricReport.
+   */
   private getDirectionType(rawMetricReport: RawMetricReport): Direction {
     return rawMetricReport.id.toLowerCase().indexOf('send') !== -1 ||
       rawMetricReport.id.toLowerCase().indexOf('outbound') !== -1 ||
@@ -367,9 +414,8 @@ export default class DefaultStatsCollector {
   }
 
   /**
-   * Metric report filter.
+   * Checks if a RawMetricReport belongs to certain types.
    */
-
   isValidStandardRawMetric(rawMetricReport: RawMetricReport): boolean {
     return (
       rawMetricReport.type === 'inbound-rtp' ||
@@ -380,6 +426,9 @@ export default class DefaultStatsCollector {
     );
   }
 
+  /**
+   * Checks if a RawMetricReport is stream related.
+   */
   isValidSsrc(rawMetricReport: RawMetricReport): boolean {
     let validSsrc = true;
     if (
@@ -392,10 +441,16 @@ export default class DefaultStatsCollector {
     return validSsrc;
   }
 
+  /**
+   * Checks if a RawMetricReport is valid.
+   */
   isValidRawMetricReport(rawMetricReport: RawMetricReport): boolean {
     return this.isValidStandardRawMetric(rawMetricReport) && this.isValidSsrc(rawMetricReport);
   }
 
+  /**
+   * Filters RawMetricReports and keeps the required parts.
+   */
   filterRawMetricReports(rawMetricReports: RawMetricReport[]): RawMetricReport[] {
     const filteredRawMetricReports = [];
     for (const rawMetricReport of rawMetricReports) {
@@ -406,6 +461,9 @@ export default class DefaultStatsCollector {
     return filteredRawMetricReports;
   }
 
+  /**
+   * Performs a series operation on RawMetricReport.
+   */
   private handleRawMetricReports(rawMetricReports: RawMetricReport[]): void {
     const filteredRawMetricReports = this.filterRawMetricReports(rawMetricReports);
     this.logger.debug(() => {
@@ -422,7 +480,7 @@ export default class DefaultStatsCollector {
   }
 
   /**
-   * Get raw webrtc metrics.
+   * Gets raw WebRTC metrics.
    */
   private async getStatsWrapper(): Promise<void> {
     if (!this.audioVideoController.rtcPeerConnection) {

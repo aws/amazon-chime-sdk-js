@@ -37,7 +37,7 @@ import SignalingClientVideoSubscriptionConfiguration from '../signalingclient/Si
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import { SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
-import DefaultStatsCollector from '../statscollector/DefaultStatsCollector';
+import StatsCollector from '../statscollector/StatsCollector';
 import AttachMediaInputTask from '../task/AttachMediaInputTask';
 import CleanRestartedSessionTask from '../task/CleanRestartedSessionTask';
 import CleanStoppedSessionTask from '../task/CleanStoppedSessionTask';
@@ -579,7 +579,7 @@ export default class DefaultAudioVideoController
     );
     this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
-    this.meetingSessionContext.statsCollector = new DefaultStatsCollector(this, this.logger);
+    this.meetingSessionContext.statsCollector = new StatsCollector(this, this.logger);
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
       this._realtimeController,

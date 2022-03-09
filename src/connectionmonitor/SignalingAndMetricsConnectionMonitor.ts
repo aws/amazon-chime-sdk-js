@@ -8,7 +8,7 @@ import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData
 import PingPong from '../pingpong/PingPong';
 import PingPongObserver from '../pingpongobserver/PingPongObserver';
 import RealtimeController from '../realtimecontroller/RealtimeController';
-import DefaultStatsCollector from '../statscollector/DefaultStatsCollector';
+import StatsCollector from '../statscollector/StatsCollector';
 import { Maybe } from '../utils/Types';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import ConnectionMonitor from './ConnectionMonitor';
@@ -26,7 +26,7 @@ export default class SignalingAndMetricsConnectionMonitor
     private videoTileController: VideoTileController,
     private connectionHealthData: ConnectionHealthData,
     private pingPong: PingPong,
-    private statsCollector: DefaultStatsCollector
+    private statsCollector: StatsCollector
   ) {
     this.realtimeController.realtimeSubscribeToLocalSignalStrengthChange(
       (signalStrength: number) => {

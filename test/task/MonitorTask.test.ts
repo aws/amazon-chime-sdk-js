@@ -42,7 +42,7 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import AudioLogEvent from '../../src/statscollector/AudioLogEvent';
-import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
+import StatsCollector from '../../src/statscollector/StatsCollector';
 import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import MonitorTask from '../../src/task/MonitorTask';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
@@ -128,7 +128,7 @@ describe('MonitorTask', () => {
     }
   }
 
-  class TestStatsCollector extends DefaultStatsCollector {
+  class TestStatsCollector extends StatsCollector {
     constructor(audioVideoController: AudioVideoController, logger: Logger) {
       super(audioVideoController, logger);
     }
@@ -161,7 +161,7 @@ describe('MonitorTask', () => {
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
-    context.statsCollector = new DefaultStatsCollector(context.audioVideoController, logger);
+    context.statsCollector = new StatsCollector(context.audioVideoController, logger);
     context.reconnectController = new DefaultReconnectController(
       RECONNECT_TIMEOUT_MS,
       new FullJitterBackoff(
