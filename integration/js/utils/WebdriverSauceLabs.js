@@ -203,6 +203,15 @@ class SaucelabsSession {
       .withCapabilities(cap)
       .forBrowser(capabilities.browserName)
       .build();
+
+    // Selenium is supposed to have a default timeout of 30 seconds, but on IOS Safari
+    // it is undefined. This will override the timeout in this case or any similar cases.
+    const defaultTimeout = 30000;
+    let timeouts = await driver.manage().getTimeouts()
+    if (timeouts.script == undefined || timeouts.script < defaultTimeout) {
+      await driver.manage().setTimeouts({script: defaultTimeout})
+    }
+    
     return new SaucelabsSession(driver, domain, appName);
   }
   constructor(inDriver, domain, appName) {
