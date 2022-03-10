@@ -6,9 +6,9 @@ import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
@@ -49,7 +49,7 @@ describe('StatsCollector', () => {
   let audioVideoController: NoOpAudioVideoController;
   let statsCollector: StatsCollector;
   let configuration: MeetingSessionConfiguration;
-  let clientMetricReport: DefaultClientMetricReport;
+  let clientMetricReport: ClientMetricReport;
 
   beforeEach(() => {
     logger = new NoOpDebugLogger();
@@ -59,7 +59,7 @@ describe('StatsCollector', () => {
     audioVideoController = new TestAudioVideoController();
     statsCollector = new StatsCollector(audioVideoController, logger, interval);
     configuration = new TestAudioVideoController().configuration;
-    clientMetricReport = new DefaultClientMetricReport(
+    clientMetricReport = new ClientMetricReport(
       logger,
       new DefaultVideoStreamIndex(logger),
       audioVideoController.configuration.credentials.attendeeId
@@ -253,7 +253,7 @@ describe('StatsCollector', () => {
 
       it('cannot get stats if the peer connection does not exist', done => {
         class TestObserver implements AudioVideoObserver {
-          metricsDidReceive(_clientMetricReport: DefaultClientMetricReport): void {
+          metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
             done();
           }
         }
@@ -303,7 +303,7 @@ describe('StatsCollector', () => {
 
       it('notifies observers', done => {
         class TestObserver implements AudioVideoObserver {
-          metricsDidReceive(_clientMetricReport: DefaultClientMetricReport): void {
+          metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
             statsCollector.stop();
             done();
           }

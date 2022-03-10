@@ -5,7 +5,7 @@ import * as chai from 'chai';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
@@ -84,16 +84,16 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   }
 
   class TestPingPong implements PingPong {
-    addObserver(_observer: PingPongObserver): void { }
-    removeObserver(_observer: PingPongObserver): void { }
-    forEachObserver(_observerFunc: (_observer: PingPongObserver) => void): void { }
+    addObserver(_observer: PingPongObserver): void {}
+    removeObserver(_observer: PingPongObserver): void {}
+    forEachObserver(_observerFunc: (_observer: PingPongObserver) => void): void {}
     start(): void {
       pingPongStartCalled = true;
     }
-    stop(): void { }
+    stop(): void {}
   }
 
-  class TestClientMetricReport extends DefaultClientMetricReport {
+  class TestClientMetricReport extends ClientMetricReport {
     packetsReceived: RawMetrics = null;
     fractionLoss: RawMetrics = null;
     videoPacketSentPerSecond: RawMetrics = 1000;
@@ -137,7 +137,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   let connectionMonitor: SignalingAndMetricsConnectionMonitor;
   let testClientMetricReport: TestClientMetricReport;
 
-  function sendClientMetricReport(clientMetricReport: DefaultClientMetricReport): void {
+  function sendClientMetricReport(clientMetricReport: ClientMetricReport): void {
     audioVideoController.forEachObserver(observer => {
       Maybe.of(observer.metricsDidReceive).map(f => f.bind(observer)(clientMetricReport));
     });

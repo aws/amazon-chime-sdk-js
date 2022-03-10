@@ -28,11 +28,11 @@ export default interface AudioVideoControllerFacade {
   start(options?: { signalingOnly?: boolean }): void;
   stop(): void;
   /**
-   * This API will be deprecated in favor of `DefaultClientMetricReport.getRTCStatsReport()`.
+   * This API will be deprecated in favor of `ClientMetricReport.getRTCStatsReport()`.
    *
    * It makes an additional call to the `getStats` API and therefore may cause slight performance degradation.
    *
-   * Please subscribe to `metricsDidReceive(clientMetricReport: DefaultClientMetricReport)` callback,
+   * Please subscribe to `metricsDidReceive(clientMetricReport: ClientMetricReport)` callback,
    * and get the raw `RTCStatsReport` via `clientMetricReport.getRTCStatsReport()`.
    */
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport>;

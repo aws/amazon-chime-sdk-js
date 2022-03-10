@@ -9,10 +9,10 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
 import ClientVideoStreamReceivingReport from '../../src/clientmetricreport/ClientVideoStreamReceivingReport';
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
@@ -134,12 +134,12 @@ describe('MonitorTask', () => {
     start(): boolean {
       return false;
     }
-    stop(): void { }
+    stop(): void {}
   }
 
   class TestConnectionMonitor implements ConnectionMonitor {
-    start(): void { }
-    stop(): void { }
+    start(): void {}
+    stop(): void {}
   }
 
   beforeEach(() => {
@@ -359,11 +359,11 @@ describe('MonitorTask', () => {
   });
 
   describe('metricsDidReceive', () => {
-    it('can only handle DefaultClientMetricReport with StreamMetricReport', () => {
+    it('can only handle ClientMetricReport with StreamMetricReport', () => {
       context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
       task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
 
-      class TestClientMetricReport extends DefaultClientMetricReport {
+      class TestClientMetricReport extends ClientMetricReport {
         getObservableMetrics(): { [id: string]: number } {
           return;
         }
@@ -377,7 +377,7 @@ describe('MonitorTask', () => {
       clientMetricReport.streamMetricReports = undefined;
       task.metricsDidReceive(clientMetricReport);
 
-      const defaultClientMetricReport = new DefaultClientMetricReport(logger);
+      const defaultClientMetricReport = new ClientMetricReport(logger);
       const ssrc = 6789;
       defaultClientMetricReport.streamMetricReports[ssrc] = new StreamMetricReport();
       task.metricsDidReceive(defaultClientMetricReport);
@@ -392,7 +392,7 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new ClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -420,7 +420,7 @@ describe('MonitorTask', () => {
       streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new ClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);
@@ -459,7 +459,7 @@ describe('MonitorTask', () => {
       streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new ClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);
@@ -481,7 +481,7 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new ClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -501,7 +501,7 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new ClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -509,7 +509,7 @@ describe('MonitorTask', () => {
     it('could trigger resubscription', done => {
       // eslint-disable-next-line
       type RawMetrics = any;
-      class TestClientMetricReport extends DefaultClientMetricReport {
+      class TestClientMetricReport extends ClientMetricReport {
         packetsReceived: RawMetrics = null;
         fractionLoss: RawMetrics = null;
         videoPacketSentPerSecond: RawMetrics = 1000;
@@ -531,7 +531,7 @@ describe('MonitorTask', () => {
       let firstTimeUplink = 0;
       let firstTimeDownlink = 0;
       class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
-        updateMetrics(_metricReport: DefaultClientMetricReport): void {
+        updateMetrics(_metricReport: ClientMetricReport): void {
           return;
         }
 
@@ -597,7 +597,7 @@ describe('MonitorTask', () => {
   it('will not trigger resubscription if paused', done => {
     // eslint-disable-next-line
     type RawMetrics = any;
-    class TestClientMetricReport extends DefaultClientMetricReport {
+    class TestClientMetricReport extends ClientMetricReport {
       packetsReceived: RawMetrics = null;
       fractionLoss: RawMetrics = null;
       videoPacketSentPerSecond: RawMetrics = 1000;
@@ -619,7 +619,7 @@ describe('MonitorTask', () => {
     let firstTimeUplink = 0;
     let firstTimeDownlink = 0;
     class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
-      updateMetrics(_metricReport: DefaultClientMetricReport): void {
+      updateMetrics(_metricReport: ClientMetricReport): void {
         return;
       }
 
@@ -688,7 +688,7 @@ describe('MonitorTask', () => {
   it('will trigger resubscription if paused and resumed', done => {
     // eslint-disable-next-line
     type RawMetrics = any;
-    class TestClientMetricReport extends DefaultClientMetricReport {
+    class TestClientMetricReport extends ClientMetricReport {
       packetsReceived: RawMetrics = null;
       fractionLoss: RawMetrics = null;
       videoPacketSentPerSecond: RawMetrics = 1000;
@@ -710,7 +710,7 @@ describe('MonitorTask', () => {
     let firstTimeUplink = 0;
     let firstTimeDownlink = 0;
     class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
-      updateMetrics(_metricReport: DefaultClientMetricReport): void {
+      updateMetrics(_metricReport: ClientMetricReport): void {
         return;
       }
 

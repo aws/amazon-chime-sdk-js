@@ -3,21 +3,21 @@
 
 import * as chai from 'chai';
 
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import Direction from '../../src/clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 
-describe('DefaultClientMetricReport', () => {
+describe('ClientMetricReport', () => {
   const expect: Chai.ExpectStatic = chai.expect;
-  let clientMetricReport: DefaultClientMetricReport;
+  let clientMetricReport: ClientMetricReport;
   const selfAttendeeId = 'attendee-1';
 
   beforeEach(() => {
-    clientMetricReport = new DefaultClientMetricReport(
+    clientMetricReport = new ClientMetricReport(
       new NoOpDebugLogger(),
       new DefaultVideoStreamIndex(new NoOpDebugLogger()),
       selfAttendeeId
@@ -497,7 +497,7 @@ describe('DefaultClientMetricReport', () => {
 
   describe('error logging', () => {
     it('returns undefined observable video metrics if no VideoStreamIndex and selfAttendeeId defined stream metric reports', () => {
-      clientMetricReport = new DefaultClientMetricReport(new NoOpDebugLogger());
+      clientMetricReport = new ClientMetricReport(new NoOpDebugLogger());
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.mediaType = MediaType.VIDEO;

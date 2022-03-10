@@ -9,7 +9,7 @@ import MediaType from './ClientMetricReportMediaType';
 import GlobalMetricReport from './GlobalMetricReport';
 import StreamMetricReport from './StreamMetricReport';
 
-export default class DefaultClientMetricReport {
+export default class ClientMetricReport {
   globalMetricReport: GlobalMetricReport = new GlobalMetricReport();
   streamMetricReports: { [id: number]: StreamMetricReport } = {};
   rtcStatsReport: RTCStatsReport = {} as RTCStatsReport;
@@ -445,6 +445,9 @@ export default class DefaultClientMetricReport {
     },
   };
 
+  /**
+   * Returns the value of the specific metric in observableMetricSpec.
+   */
   getObservableMetricValue(metricName: string): number {
     const observableMetricSpec = this.observableMetricSpec[metricName];
     const metricMap = this.getMetricMap(observableMetricSpec.media, observableMetricSpec.dir);
@@ -470,6 +473,9 @@ export default class DefaultClientMetricReport {
     return 0;
   }
 
+  /**
+   * Returns the value of the specific metric in observableVideoMetricSpec.
+   */
   getObservableVideoMetricValue(metricName: string, ssrcNum: number): number {
     const observableVideoMetricSpec = this.observableVideoMetricSpec[metricName];
     const metricMap = this.getMetricMap(
@@ -492,6 +498,9 @@ export default class DefaultClientMetricReport {
     }
   }
 
+  /**
+   * Returns the value of metrics in observableMetricSpec.
+   */
   getObservableMetrics(): { [id: string]: number } {
     const metric: { [id: string]: number } = {};
     for (const metricName in this.observableMetricSpec) {
@@ -500,6 +509,9 @@ export default class DefaultClientMetricReport {
     return metric;
   }
 
+  /**
+   * Returns the value of metrics in observableVideoMetricSpec for each SSRC.
+   */
   getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } } {
     const videoStreamMetrics: { [id: string]: { [id: string]: {} } } = {};
     if (!this.videoStreamIndex || !this.selfAttendeeId) {
@@ -535,20 +547,18 @@ export default class DefaultClientMetricReport {
     return videoStreamMetrics;
   }
 
+  /**
+   * Returns the raw RTCStatsReport from RTCPeerConnection.getStats() API.
+   */
   getRTCStatsReport(): RTCStatsReport {
     return this.rtcStatsReport;
   }
 
   /**
-   * Utilities
+   * Deep clones the ClientMetricReport and returns it.
    */
-
-  clone(): DefaultClientMetricReport {
-    const cloned = new DefaultClientMetricReport(
-      this.logger,
-      this.videoStreamIndex,
-      this.selfAttendeeId
-    );
+  clone(): ClientMetricReport {
+    const cloned = new ClientMetricReport(this.logger, this.videoStreamIndex, this.selfAttendeeId);
     cloned.globalMetricReport = this.globalMetricReport;
     cloned.streamMetricReports = this.streamMetricReports;
     cloned.rtcStatsReport = this.rtcStatsReport;
@@ -557,6 +567,9 @@ export default class DefaultClientMetricReport {
     return cloned;
   }
 
+  /**
+   * Prints out the globalMetricReport, streamMetricReports and the corresponding timestamps from the current ClientMetricReport.
+   */
   print(): void {
     const clientMetricReport = {
       globalMetricReport: this.globalMetricReport,
@@ -569,6 +582,9 @@ export default class DefaultClientMetricReport {
     });
   }
 
+  /**
+   * Removes the SSRCs that is no longer valid.
+   */
   removeDestroyedSsrcs(): void {
     for (const ssrc in this.streamMetricReports) {
       if (!this.currentSsrcs[ssrc]) {

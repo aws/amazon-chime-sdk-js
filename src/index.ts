@@ -55,6 +55,7 @@ import CheckVideoConnectivityFeedback from './meetingreadinesschecker/CheckVideo
 import CheckVideoInputFeedback from './meetingreadinesschecker/CheckVideoInputFeedback';
 import CleanRestartedSessionTask from './task/CleanRestartedSessionTask';
 import CleanStoppedSessionTask from './task/CleanStoppedSessionTask';
+import ClientMetricReport from './clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from './clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from './clientmetricreport/ClientMetricReportMediaType';
 import ClientVideoStreamReceivingReport from './clientmetricreport/ClientVideoStreamReceivingReport';
@@ -78,7 +79,6 @@ import DefaultAudioMixController from './audiomixcontroller/DefaultAudioMixContr
 import DefaultAudioVideoController from './audiovideocontroller/DefaultAudioVideoController';
 import DefaultAudioVideoFacade from './audiovideofacade/DefaultAudioVideoFacade';
 import DefaultBrowserBehavior from './browserbehavior/DefaultBrowserBehavior';
-import DefaultClientMetricReport from './clientmetricreport/DefaultClientMetricReport';
 import DefaultContentShareController from './contentsharecontroller/DefaultContentShareController';
 import DefaultDeviceController from './devicecontroller/DefaultDeviceController';
 import DefaultDevicePixelRatioMonitor from './devicepixelratiomonitor/DefaultDevicePixelRatioMonitor';
@@ -373,6 +373,7 @@ export {
   CheckVideoInputFeedback,
   CleanRestartedSessionTask,
   CleanStoppedSessionTask,
+  ClientMetricReport,
   ClientMetricReportDirection,
   ClientMetricReportMediaType,
   ClientVideoStreamReceivingReport,
@@ -396,7 +397,6 @@ export {
   DefaultAudioVideoController,
   DefaultAudioVideoFacade,
   DefaultBrowserBehavior,
-  DefaultClientMetricReport,
   DefaultContentShareController,
   DefaultDeviceController,
   DefaultDevicePixelRatioMonitor,

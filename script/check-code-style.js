@@ -33,7 +33,7 @@ const walk = (dir) => {
   }
 
   const list = fs.readdirSync(dir);
-  list.forEach(function(file) {
+  list.forEach(function (file) {
     file = dir + '/' + file;
     let stat = fs.statSync(file);
     if (stat && stat.isDirectory()) {
@@ -53,7 +53,7 @@ const failed = (file, reason, description) => {
   exitCode = 1;
 };
 
-const components = () => {
+const dirs = () => {
   return fs
     .readdirSync('src')
     .filter(
@@ -63,7 +63,7 @@ const components = () => {
         !path.basename(dir).startsWith('.') &&
         !path.basename(dir).includes('signalingprotocol') &&
         !path.basename(dir).includes('screensignalingprotocol') &&
-        !path.basename(dir).includes('utils') && 
+        !path.basename(dir).includes('utils') &&
         !path.basename(dir).includes('cspmonitor')
     );
 };
@@ -118,22 +118,31 @@ tests().forEach(file => {
   }
 });
 
-const isIgnoredForInterfaceCheck = (file) => {
-  return ['applicationmetadata'].includes(file);
+const isDirIgnoredForInterfaceCheck = (dir) => {
+  return ['applicationmetadata'].includes(dir);
 };
 
-components().forEach(component => {
-  if (isIgnored(component)) {
-    return;
-  }
-  if (isIgnoredForInterfaceCheck(component)) {
+const isFileIgnoredForInterfaceCheck = (file) => {
+  return ['SDP.ts', 'StatsCollector.ts', 'ClientMetricReport.ts'].includes(file);
+};
+
+dirs().forEach(dir => {
+  if (isIgnored(dir)) {
     return;
   }
 
-  const componentDir = path.join('src', component);
-  fs.readdirSync(componentDir).forEach(file => {
-    let filePath = path.join(componentDir, file);
-    if (path.basename(filePath, '.ts').toLowerCase() !== path.basename(componentDir)) {
+  if (isDirIgnoredForInterfaceCheck(dir)) {
+    return;
+  }
+
+  const dirPath = path.join('src', dir);
+  fs.readdirSync(dirPath).forEach(file => {
+    if (isFileIgnoredForInterfaceCheck(file)) {
+      return;
+    }
+
+    let filePath = path.join(dirPath, file);
+    if (path.basename(filePath, '.ts').toLowerCase() !== path.basename(dirPath)) {
       // not a interface
       return;
     }
@@ -147,7 +156,7 @@ components().forEach(component => {
         if (commentStartRegex.test(lines[i])) {
           if (lines[i - 1].trim() !== '*/') {
             failed(
-              component,
+              dir,
               `interface ${file} method ${lines[i].trim()} is missing comment`,
               'Ensure that each interface method has a comment explaining what it does and information about the possible inputs and expected outputs.'
             );
@@ -203,8 +212,8 @@ allFiles().forEach(file => {
     // Exclude demos and comment lines. Some of our block comments
     // include code examples that refer to console.log.
     if (fileLines[i].includes('console.log') &&
-        !fileLines[i].match(/^\s+(?:\*|\/[\*\/])/) &&
-        !file.includes('demos/')) {
+      !fileLines[i].match(/^\s+(?:\*|\/[\*\/])/) &&
+      !file.includes('demos/')) {
       failed(pos, 'contains console.log: ' + fileLines[i], 'Ensure that source does not contain console.log');
     }
   }

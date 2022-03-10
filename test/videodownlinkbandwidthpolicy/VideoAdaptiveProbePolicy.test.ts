@@ -5,9 +5,9 @@ import * as chai from 'chai';
 
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
@@ -133,7 +133,7 @@ describe('VideoAdaptiveProbePolicy', () => {
   }
 
   function setPacketLoss(
-    metricReport: DefaultClientMetricReport,
+    metricReport: ClientMetricReport,
     nackCnt: number,
     packetsLost: number
   ): void {
@@ -225,7 +225,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       const received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([1, 3, 11, 22]);
 
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableOutgoingBitrate'] = 4000 * 1000;
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 4000 * 1000;
@@ -263,7 +263,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       policy.MIN_TIME_BETWEEN_PROBE = 20;
       // @ts-ignore
       policy.STARTUP_PERIOD_MS = 5;
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableOutgoingBitrate'] = 4000 * 1000;
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 4000 * 1000;
@@ -379,7 +379,7 @@ describe('VideoAdaptiveProbePolicy', () => {
     it('prefers content', () => {
       prepareVideoStreamIndex(videoStreamIndex);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 2800 * 1000;
       policy.updateMetrics(metricReport);
@@ -426,7 +426,7 @@ describe('VideoAdaptiveProbePolicy', () => {
     it('Includes paused stream in subscribe', () => {
       updateIndexFrame(videoStreamIndex, 4, 300, 600);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 2800 * 1000;
       let resub = policy.wantsResubscribe();
@@ -488,7 +488,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3600 * 1000;
       policy.updateMetrics(metricReport);
@@ -549,7 +549,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3600 * 1000;
       policy.updateMetrics(metricReport);
@@ -612,7 +612,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3600 * 1000;
       policy.updateMetrics(metricReport);
@@ -668,7 +668,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3600 * 1000;
       policy.updateMetrics(metricReport);

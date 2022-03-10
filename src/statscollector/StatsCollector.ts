@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
+import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
-import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import StreamMetricReport from '../clientmetricreport/StreamMetricReport';
 import Logger from '../logger/Logger';
 import MeetingSessionLifecycleEvent from '../meetingsession/MeetingSessionLifecycleEvent';
@@ -35,7 +35,7 @@ export default class DefaultStatsCollector {
   private intervalScheduler: IntervalScheduler | null = null;
   private signalingClient: SignalingClient;
   private videoStreamIndex: VideoStreamIndex;
-  private clientMetricReport: DefaultClientMetricReport;
+  private clientMetricReport: ClientMetricReport;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -197,7 +197,7 @@ export default class DefaultStatsCollector {
   start(
     signalingClient: SignalingClient,
     videoStreamIndex: VideoStreamIndex,
-    clientMetricReport?: DefaultClientMetricReport
+    clientMetricReport?: ClientMetricReport
   ): boolean {
     if (this.intervalScheduler) {
       return false;
@@ -208,7 +208,7 @@ export default class DefaultStatsCollector {
     if (clientMetricReport) {
       this.clientMetricReport = clientMetricReport;
     } else {
-      this.clientMetricReport = new DefaultClientMetricReport(
+      this.clientMetricReport = new ClientMetricReport(
         this.logger,
         this.videoStreamIndex,
         this.audioVideoController.configuration.credentials.attendeeId

@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
-import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import Logger from '../logger/Logger';
 import { LogLevel } from '../logger/LogLevel';
@@ -192,7 +192,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.defaultVideoPreferences = prefs.build();
   }
 
-  updateMetrics(clientMetricReport: DefaultClientMetricReport): void {
+  updateMetrics(clientMetricReport: ClientMetricReport): void {
     if (!this.videoIndex || this.videoIndex.allStreams().empty()) {
       return;
     }

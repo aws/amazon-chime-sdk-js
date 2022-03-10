@@ -116,7 +116,7 @@ export default class DefaultAudioVideoController
   private preStartObserver: SignalingClientObserver | undefined;
   private mayNeedRenegotiationForSimulcastLayerChange: boolean = false;
   private maxUplinkBandwidthKbps: number;
-
+  private hasGetRTCPeerConnectionStatsDeprecationMessageBeenSent: boolean = false;
   // `connectWithPromises`, `connectWithTasks`, and `actionUpdateWithRenegotiation` all
   // contains a significant portion of asynchronous tasks, so we need to explicitly defer
   // any task operation which may be performed on the event queue that may modify
@@ -217,17 +217,22 @@ export default class DefaultAudioVideoController
   }
 
   /**
-   * This API will be deprecated in favor of `DefaultClientMetricReport.getRTCStatsReport()`.
+   * This API will be deprecated in favor of `ClientMetricReport.getRTCStatsReport()`.
    *
    * It makes an additional call to the `getStats` API and therefore may cause slight performance degradation.
    *
-   * Please subscribe to `metricsDidReceive(clientMetricReport: DefaultClientMetricReport)` callback,
+   * Please subscribe to `metricsDidReceive(clientMetricReport: ClientMetricReport)` callback,
    * and get the raw `RTCStatsReport` via `clientMetricReport.getRTCStatsReport()`.
    */
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport> {
-    this.logger.warn(
-      'The `getRTCPeerConnectionStats()` is on its way to be deprecated. Please use the new API `clientMetricReport.getRTCStatsReport()` returned by `metricsDidReceive(clientMetricReport)` callback instead. It makes an additional call to the `getStats` API and therefore may cause slight performance degradation.'
-    );
+    /* istanbul ignore else */
+    if (!this.hasGetRTCPeerConnectionStatsDeprecationMessageBeenSent) {
+      this.logger.warn(
+        'The `getRTCPeerConnectionStats()` is on its way to be deprecated. It makes an additional call to the `getStats` API and therefore may cause slight performance degradation. Please use the new API `clientMetricReport.getRTCStatsReport()` returned by `metricsDidReceive(clientMetricReport)` callback instead.'
+      );
+      this.hasGetRTCPeerConnectionStatsDeprecationMessageBeenSent = true;
+    }
+
     if (!this.rtcPeerConnection) {
       return null;
     }

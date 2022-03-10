@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
+import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
@@ -34,7 +34,7 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
     this.optimalReceiveSet = this.calculateOptimalReceiveSet(videoIndex);
   }
 
-  updateMetrics(_clientMetricReport: DefaultClientMetricReport): void {}
+  updateMetrics(_clientMetricReport: ClientMetricReport): void {}
 
   wantsResubscribe(): boolean {
     return !this.subscribedReceiveSet.equal(this.optimalReceiveSet);

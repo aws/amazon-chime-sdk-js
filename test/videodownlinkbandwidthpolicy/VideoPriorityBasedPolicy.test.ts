@@ -7,9 +7,9 @@ import * as sinon from 'sinon';
 import { VideoPriorityBasedPolicyConfig } from '../../src';
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
@@ -131,7 +131,7 @@ describe('VideoPriorityBasedPolicy', () => {
   }
 
   function setPacketLoss(
-    metricReport: DefaultClientMetricReport,
+    metricReport: ClientMetricReport,
     nackCnt: number,
     packetsLost: number,
     isGoogStat: boolean = true,
@@ -222,7 +222,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
       // After startup period which is 6000 ms
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3000 * 1000;
       policy.updateMetrics(metricReport);
@@ -266,7 +266,7 @@ describe('VideoPriorityBasedPolicy', () => {
       const tile3 = tileController.getAllVideoTiles()[0];
       expect(tile3.state().boundAttendeeId).to.equal('attendee-3');
 
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3000 * 1000;
       policy.updateMetrics(metricReport);
@@ -370,7 +370,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('no priority to priority', () => {
       updateIndexFrame(videoStreamIndex, 5, 0, 600);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       // This is lower than the default kbps so it should use it due to startup period
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 2400 * 1000;
@@ -399,7 +399,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('priority to no priority', () => {
       updateIndexFrame(videoStreamIndex, 4, 0, 600);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 2400 * 1000;
       policy.updateMetrics(metricReport);
@@ -425,7 +425,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('priority value comparison checker', () => {
       updateIndexFrame(videoStreamIndex, 4, 0, 600);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 2400 * 1000;
       policy.updateMetrics(metricReport);
@@ -467,7 +467,7 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.addObserver(observer);
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 10000 * 1000;
       const preferences = VideoPreferences.prepare();
@@ -605,7 +605,7 @@ describe('VideoPriorityBasedPolicy', () => {
       tile4.stateRef().boundAttendeeId = 'attendee-4';
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 2100 * 1000;
       policy.updateMetrics(metricReport);
@@ -683,7 +683,7 @@ describe('VideoPriorityBasedPolicy', () => {
       tile4.stateRef().boundAttendeeId = 'attendee-4';
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 2100 * 1000;
       policy.updateMetrics(metricReport);
@@ -769,7 +769,7 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.addObserver(observer);
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 10000 * 1000;
       const preferences = VideoPreferences.prepare();
@@ -855,7 +855,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('Stream not added until enough bandwidth', () => {
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 10000 * 1000;
       const preferences = VideoPreferences.prepare();
@@ -970,7 +970,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('Video Tile cleaned up if never subscribed', () => {
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 10000 * 1000;
       const preferences = VideoPreferences.prepare();
@@ -1066,7 +1066,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('Video Tile cleaned up removed from preference list', () => {
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 10000 * 1000;
       const preferences = VideoPreferences.prepare();
@@ -1143,7 +1143,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('dont change subscription with small change', () => {
       updateIndexFrame(videoStreamIndex, 4, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 10000 * 1000;
       const preferences = VideoPreferences.prepare();
@@ -1201,7 +1201,7 @@ describe('VideoPriorityBasedPolicy', () => {
       expect(received.array()).to.deep.equal([2]);
 
       incrementTime(2100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 1000 * 1000;
       setPacketLoss(metricReport, 30, 20);
@@ -1222,7 +1222,7 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.setVideoPriorityBasedPolicyConfigs(config);
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 10000 * 1000;
       const preferences = VideoPreferences.prepare();
@@ -1305,7 +1305,7 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.setVideoPriorityBasedPolicyConfigs(config);
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 10000 * 1000;
       const preferences = VideoPreferences.prepare();
@@ -1374,13 +1374,13 @@ describe('VideoPriorityBasedPolicy', () => {
     it('can be no-op if there are no streams available to subscribe', () => {
       videoStreamIndex.integrateIndexFrame(new SdkIndexFrame());
       policy.updateIndex(videoStreamIndex);
-      policy.updateMetrics(new DefaultClientMetricReport(logger));
+      policy.updateMetrics(new ClientMetricReport(logger));
     });
 
     it('can update metrics', () => {
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       const streamReport1 = new StreamMetricReport();
       streamReport1.streamId = 1;
       streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
@@ -1433,7 +1433,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
       // After startup period which is 6000 ms
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3000 * 1000;
       setPacketLoss(metricReport, 0, 0, false);
