@@ -3,7 +3,6 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
-import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../clientmetricreport/ClientMetricReportMediaType';
 import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
@@ -49,7 +48,7 @@ export default class MonitorTask
   // See comment above invocation of `pauseResubscribeCheck` in `DefaultAudioVideoController`
   // for explanation.
   private isResubscribeCheckPaused: boolean = false;
-  private pendingMetricsReport: ClientMetricReport | undefined = undefined;
+  private pendingMetricsReport: DefaultClientMetricReport | undefined = undefined;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -166,7 +165,7 @@ export default class MonitorTask
     this.currentVideoDownlinkBandwidthEstimationKbps = newBandwidthKbps;
   }
 
-  private checkResubscribe(clientMetricReport: ClientMetricReport): boolean {
+  private checkResubscribe(clientMetricReport: DefaultClientMetricReport): boolean {
     if (this.isResubscribeCheckPaused) {
       this.context.logger.info(
         'Resubscribe check is paused, setting incoming client metric report as pending'
@@ -216,7 +215,7 @@ export default class MonitorTask
     return needResubscribe;
   }
 
-  metricsDidReceive(clientMetricReport: ClientMetricReport): void {
+  metricsDidReceive(clientMetricReport: DefaultClientMetricReport): void {
     const defaultClientMetricReport = clientMetricReport as DefaultClientMetricReport;
     if (!defaultClientMetricReport) {
       return;

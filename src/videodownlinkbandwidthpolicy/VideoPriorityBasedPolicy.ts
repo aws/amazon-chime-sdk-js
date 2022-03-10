@@ -3,7 +3,7 @@
 
 import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
-import ClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
+import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import Logger from '../logger/Logger';
 import { LogLevel } from '../logger/LogLevel';
@@ -192,7 +192,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.defaultVideoPreferences = prefs.build();
   }
 
-  updateMetrics(clientMetricReport: ClientMetricReport): void {
+  updateMetrics(clientMetricReport: DefaultClientMetricReport): void {
     if (!this.videoIndex || this.videoIndex.allStreams().empty()) {
       return;
     }

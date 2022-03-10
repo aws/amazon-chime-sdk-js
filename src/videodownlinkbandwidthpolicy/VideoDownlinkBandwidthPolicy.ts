@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
+import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoTileController from '../videotilecontroller/VideoTileController';
@@ -26,7 +26,7 @@ export default interface VideoDownlinkBandwidthPolicy {
   /**
    * Update connection metrics
    */
-  updateMetrics(clientMetricReport: ClientMetricReport): void;
+  updateMetrics(clientMetricReport: DefaultClientMetricReport): void;
 
   /**
    * Returns true if the policy has decided that a change to subscribed

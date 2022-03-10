@@ -3,7 +3,7 @@
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
-import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
+import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import PingPong from '../pingpong/PingPong';
 import PingPongObserver from '../pingpongobserver/PingPongObserver';
@@ -76,7 +76,7 @@ export default class SignalingAndMetricsConnectionMonitor
     this.updateConnectionHealth();
   }
 
-  metricsDidReceive(clientMetricReport: ClientMetricReport): void {
+  metricsDidReceive(clientMetricReport: DefaultClientMetricReport): void {
     let packetsReceived = 0;
     let fractionPacketsLostInbound = 0;
     const metricReport = clientMetricReport.getObservableMetrics();

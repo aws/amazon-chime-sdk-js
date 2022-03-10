@@ -641,10 +641,10 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>This API will be deprecated in favor of <code>ClientMetricReport.getRTCStatsReport()</code>.</p>
+									<p>This API will be deprecated in favor of <code>DefaultClientMetricReport.getRTCStatsReport()</code>.</p>
 								</div>
 								<p>It makes an additional call to the <code>getStats</code> API and therefore may cause slight performance degradation.</p>
-								<p>Please subscribe to <code>metricsDidReceive(clientMetricReport: ClientMetricReport)</code> callback,
+								<p>Please subscribe to <code>metricsDidReceive(clientMetricReport: DefaultClientMetricReport)</code> callback,
 								and get the raw <code>RTCStatsReport</code> via <code>clientMetricReport.getRTCStatsReport()</code>.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>

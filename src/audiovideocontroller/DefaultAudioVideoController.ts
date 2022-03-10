@@ -217,11 +217,11 @@ export default class DefaultAudioVideoController
   }
 
   /**
-   * This API will be deprecated in favor of `ClientMetricReport.getRTCStatsReport()`.
+   * This API will be deprecated in favor of `DefaultClientMetricReport.getRTCStatsReport()`.
    *
    * It makes an additional call to the `getStats` API and therefore may cause slight performance degradation.
    *
-   * Please subscribe to `metricsDidReceive(clientMetricReport: ClientMetricReport)` callback,
+   * Please subscribe to `metricsDidReceive(clientMetricReport: DefaultClientMetricReport)` callback,
    * and get the raw `RTCStatsReport` via `clientMetricReport.getRTCStatsReport()`.
    */
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport> {

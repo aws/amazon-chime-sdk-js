@@ -4,13 +4,12 @@
 import Logger from '../logger/Logger';
 import { SdkMetric } from '../signalingprotocol/SignalingProtocol.js';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
-import ClientMetricReport from './ClientMetricReport';
 import Direction from './ClientMetricReportDirection';
 import MediaType from './ClientMetricReportMediaType';
 import GlobalMetricReport from './GlobalMetricReport';
 import StreamMetricReport from './StreamMetricReport';
 
-export default class DefaultClientMetricReport implements ClientMetricReport {
+export default class DefaultClientMetricReport {
   globalMetricReport: GlobalMetricReport = new GlobalMetricReport();
   streamMetricReports: { [id: number]: StreamMetricReport } = {};
   rtcStatsReport: RTCStatsReport = {} as RTCStatsReport;

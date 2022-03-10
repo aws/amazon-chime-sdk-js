@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
+import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
@@ -79,7 +79,7 @@ export default interface AudioVideoObserver {
   /**
    * Called when the media stats are available.
    */
-  metricsDidReceive?(clientMetricReport: ClientMetricReport): void;
+  metricsDidReceive?(clientMetricReport: DefaultClientMetricReport): void;
 
   /**
    * Called when connection health has changed.

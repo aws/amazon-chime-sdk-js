@@ -6,7 +6,6 @@ import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
-import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
 import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
@@ -254,7 +253,7 @@ describe('StatsCollector', () => {
 
       it('cannot get stats if the peer connection does not exist', done => {
         class TestObserver implements AudioVideoObserver {
-          metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          metricsDidReceive(_clientMetricReport: DefaultClientMetricReport): void {
             done();
           }
         }
@@ -304,7 +303,7 @@ describe('StatsCollector', () => {
 
       it('notifies observers', done => {
         class TestObserver implements AudioVideoObserver {
-          metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          metricsDidReceive(_clientMetricReport: DefaultClientMetricReport): void {
             statsCollector.stop();
             done();
           }

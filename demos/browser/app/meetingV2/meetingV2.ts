@@ -19,7 +19,7 @@ import {
   BackgroundReplacementVideoFrameProcessor,
   BackgroundReplacementVideoFrameProcessorObserver,
   BackgroundReplacementOptions,
-  ClientMetricReport,
+  DefaultClientMetricReport,
   ClientVideoStreamReceivingReport,
   ConsoleLogger,
   ContentShareObserver,
@@ -1544,7 +1544,7 @@ export class DemoMeetingApp
     );
   }
 
-  metricsDidReceive(clientMetricReport: ClientMetricReport): void {
+  metricsDidReceive(clientMetricReport: DefaultClientMetricReport): void {
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
 

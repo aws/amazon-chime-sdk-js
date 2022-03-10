@@ -55,7 +55,6 @@ import CheckVideoConnectivityFeedback from './meetingreadinesschecker/CheckVideo
 import CheckVideoInputFeedback from './meetingreadinesschecker/CheckVideoInputFeedback';
 import CleanRestartedSessionTask from './task/CleanRestartedSessionTask';
 import CleanStoppedSessionTask from './task/CleanStoppedSessionTask';
-import ClientMetricReport from './clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from './clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from './clientmetricreport/ClientMetricReportMediaType';
 import ClientVideoStreamReceivingReport from './clientmetricreport/ClientVideoStreamReceivingReport';
@@ -374,7 +373,6 @@ export {
   CheckVideoInputFeedback,
   CleanRestartedSessionTask,
   CleanStoppedSessionTask,
-  ClientMetricReport,
   ClientMetricReportDirection,
   ClientMetricReportMediaType,
   ClientVideoStreamReceivingReport,

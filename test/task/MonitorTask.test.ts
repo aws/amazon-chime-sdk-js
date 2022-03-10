@@ -9,7 +9,6 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
-import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
 import ClientVideoStreamReceivingReport from '../../src/clientmetricreport/ClientVideoStreamReceivingReport';
@@ -135,12 +134,12 @@ describe('MonitorTask', () => {
     start(): boolean {
       return false;
     }
-    stop(): void {}
+    stop(): void { }
   }
 
   class TestConnectionMonitor implements ConnectionMonitor {
-    start(): void {}
-    stop(): void {}
+    start(): void { }
+    stop(): void { }
   }
 
   beforeEach(() => {
@@ -364,7 +363,7 @@ describe('MonitorTask', () => {
       context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
       task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
 
-      class TestClientMetricReport implements ClientMetricReport {
+      class TestClientMetricReport extends DefaultClientMetricReport {
         getObservableMetrics(): { [id: string]: number } {
           return;
         }
@@ -374,7 +373,8 @@ describe('MonitorTask', () => {
         }
       }
       task.metricsDidReceive(undefined);
-      const clientMetricReport = new TestClientMetricReport();
+      const clientMetricReport = new TestClientMetricReport(logger);
+      clientMetricReport.streamMetricReports = undefined;
       task.metricsDidReceive(clientMetricReport);
 
       const defaultClientMetricReport = new DefaultClientMetricReport(logger);
@@ -531,7 +531,7 @@ describe('MonitorTask', () => {
       let firstTimeUplink = 0;
       let firstTimeDownlink = 0;
       class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
-        updateMetrics(_metricReport: ClientMetricReport): void {
+        updateMetrics(_metricReport: DefaultClientMetricReport): void {
           return;
         }
 
@@ -619,7 +619,7 @@ describe('MonitorTask', () => {
     let firstTimeUplink = 0;
     let firstTimeDownlink = 0;
     class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
-      updateMetrics(_metricReport: ClientMetricReport): void {
+      updateMetrics(_metricReport: DefaultClientMetricReport): void {
         return;
       }
 
@@ -710,7 +710,7 @@ describe('MonitorTask', () => {
     let firstTimeUplink = 0;
     let firstTimeDownlink = 0;
     class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
-      updateMetrics(_metricReport: ClientMetricReport): void {
+      updateMetrics(_metricReport: DefaultClientMetricReport): void {
         return;
       }
 
