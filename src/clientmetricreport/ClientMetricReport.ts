@@ -9,6 +9,10 @@ import MediaType from './ClientMetricReportMediaType';
 import GlobalMetricReport from './GlobalMetricReport';
 import StreamMetricReport from './StreamMetricReport';
 
+/**
+ * [[ClientMetricReport]] gets the media metrics used by ConnectionMonitor to
+ * update connection health data.
+ */
 export default class ClientMetricReport {
   globalMetricReport: GlobalMetricReport = new GlobalMetricReport();
   streamMetricReports: { [id: number]: StreamMetricReport } = {};
@@ -555,7 +559,7 @@ export default class ClientMetricReport {
   }
 
   /**
-   * Deep clones the ClientMetricReport and returns it.
+   * Clones the ClientMetricReport and returns it.
    */
   clone(): ClientMetricReport {
     const cloned = new ClientMetricReport(this.logger, this.videoStreamIndex, this.selfAttendeeId);
@@ -583,7 +587,7 @@ export default class ClientMetricReport {
   }
 
   /**
-   * Removes the SSRCs that is no longer valid.
+   * Removes the SSRCs that are no longer valid.
    */
   removeDestroyedSsrcs(): void {
     for (const ssrc in this.streamMetricReports) {

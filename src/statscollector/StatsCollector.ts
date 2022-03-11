@@ -28,7 +28,10 @@ type RawMetricReport = any;
 // eslint-disable-next-line
 type StatsReportItem = any;
 
-export default class DefaultStatsCollector {
+/**
+ * [[StatsCollector]] gathers statistics and sends metrics.
+ */
+export default class StatsCollector {
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
 
@@ -40,7 +43,7 @@ export default class DefaultStatsCollector {
   constructor(
     private audioVideoController: AudioVideoController,
     private logger: Logger,
-    private readonly interval: number = DefaultStatsCollector.INTERVAL_MS
+    private readonly interval: number = StatsCollector.INTERVAL_MS
   ) {}
 
   // TODO: Update toAttribute() and toSuffix() methods to convert raw data to a required type.
@@ -125,11 +128,11 @@ export default class DefaultStatsCollector {
     const finalAttributes = {
       ...attributes,
       call_id: this.audioVideoController.configuration.meetingId,
-      client_type: DefaultStatsCollector.CLIENT_TYPE,
+      client_type: StatsCollector.CLIENT_TYPE,
       metric_type: 'latency',
     };
     this.logger.debug(() => {
-      return `[DefaultStatsCollector] ${eventName}: ${JSON.stringify(finalAttributes)}`;
+      return `[StatsCollector] ${eventName}: ${JSON.stringify(finalAttributes)}`;
     });
     this.metricsAddTime(eventName, timeMs, finalAttributes);
   }
@@ -183,10 +186,10 @@ export default class DefaultStatsCollector {
     const finalAttributes = {
       ...attributes,
       call_id: this.audioVideoController.configuration.meetingId,
-      client_type: DefaultStatsCollector.CLIENT_TYPE,
+      client_type: StatsCollector.CLIENT_TYPE,
     };
     this.logger.debug(() => {
-      return `[DefaultStatsCollector] ${eventName}: ${JSON.stringify(finalAttributes)}`;
+      return `[StatsCollector] ${eventName}: ${JSON.stringify(finalAttributes)}`;
     });
     this.metricsLogEvent(eventName, finalAttributes);
   }
@@ -194,27 +197,18 @@ export default class DefaultStatsCollector {
   /**
    * Starts collecting statistics.
    */
-  start(
-    signalingClient: SignalingClient,
-    videoStreamIndex: VideoStreamIndex,
-    clientMetricReport?: ClientMetricReport
-  ): boolean {
+  start(signalingClient: SignalingClient, videoStreamIndex: VideoStreamIndex): boolean {
     if (this.intervalScheduler) {
       return false;
     }
-    this.logger.info('Starting DefaultStatsCollector');
+    this.logger.info('Starting StatsCollector');
     this.signalingClient = signalingClient;
     this.videoStreamIndex = videoStreamIndex;
-    if (clientMetricReport) {
-      this.clientMetricReport = clientMetricReport;
-    } else {
-      this.clientMetricReport = new ClientMetricReport(
-        this.logger,
-        this.videoStreamIndex,
-        this.audioVideoController.configuration.credentials.attendeeId
-      );
-    }
-
+    this.clientMetricReport = new ClientMetricReport(
+      this.logger,
+      this.videoStreamIndex,
+      this.audioVideoController.configuration.credentials.attendeeId
+    );
     this.intervalScheduler = new IntervalScheduler(this.interval);
     this.intervalScheduler.start(async () => {
       await this.getStatsWrapper();
@@ -226,7 +220,7 @@ export default class DefaultStatsCollector {
    * Stops the stats collector.
    */
   stop(): void {
-    this.logger.info('Stopping DefaultStatsCollector');
+    this.logger.info('Stopping StatsCollector');
     if (this.intervalScheduler) {
       this.intervalScheduler.stop();
     }
@@ -307,7 +301,7 @@ export default class DefaultStatsCollector {
   }
 
   /**
-   * Packages a metric spec into the MetricFrame.
+   * Packages a metric into the MetricFrame.
    */
   private addMetricFrame(
     metricName: string,
