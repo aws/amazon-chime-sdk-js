@@ -96,13 +96,5 @@ jobs:
         run: |
           demo_current_version=$(.github/script/get-demo-browser-current-version)
           echo "Current demo version: " $demo_current_version
-          echo "Current released npm version:" ${{ steps.npm_version.outputs.npm_version }}
-          if [[ *$demo_current_version* != "^#${{ steps.npm_version.outputs.npm_version }}" ]];
-          then
-            echo "Demo npm version is not the same as the current released version"
-            exit 1
-          else
-            npm run build --app=meetingReadinessChecker
-            script/github-action-awscli-installation
-            node ./.github/script/call-canary-deploy-demo-prod $demo_current_version
-          fi
+          script/github-action-awscli-installation
+          node ./.github/script/call-canary-deploy-demo-prod $demo_current_version
