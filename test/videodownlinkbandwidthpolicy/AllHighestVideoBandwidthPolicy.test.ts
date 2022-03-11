@@ -4,7 +4,7 @@
 import * as chai from 'chai';
 
 import { Attendee, VideoSource } from '../../src';
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import {
@@ -125,7 +125,7 @@ describe('AllHighestVideoBandwidthPolicy', () => {
     });
 
     it('returns correct indices and bandwidth has no impact on result', () => {
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 1000;
 
       policy.updateIndex(index);

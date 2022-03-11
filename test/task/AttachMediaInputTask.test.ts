@@ -9,7 +9,7 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
-import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
+import StatsCollector from '../../src/statscollector/StatsCollector';
 import AttachMediaInputTask from '../../src/task/AttachMediaInputTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -68,7 +68,7 @@ describe('AttachMediaInputTask', () => {
     context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
     context.videosToReceive = new DefaultVideoStreamIdSet();
     context.videoSubscriptions = [];
-    context.statsCollector = new DefaultStatsCollector(context.audioVideoController, logger);
+    context.statsCollector = new StatsCollector(context.audioVideoController, logger);
     context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('self-attendees');
     task = new AttachMediaInputTask(context);
   });

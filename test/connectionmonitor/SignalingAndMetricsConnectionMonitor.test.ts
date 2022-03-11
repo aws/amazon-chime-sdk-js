@@ -12,7 +12,7 @@ import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import PingPong from '../../src/pingpong/PingPong';
 import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
-import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
+import StatsCollector from '../../src/statscollector/StatsCollector';
 import { Maybe } from '../../src/utils/Types';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
@@ -93,7 +93,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     stop(): void {}
   }
 
-  class TestClientMetricReport implements ClientMetricReport {
+  class TestClientMetricReport extends ClientMetricReport {
     packetsReceived: RawMetrics = null;
     fractionLoss: RawMetrics = null;
     videoPacketSentPerSecond: RawMetrics = 1000;
@@ -167,10 +167,10 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
       videoTileController,
       connectionHealthData,
       new TestPingPong(),
-      new DefaultStatsCollector(audioVideoController, new NoOpDebugLogger())
+      new StatsCollector(audioVideoController, new NoOpDebugLogger())
     );
     connectionMonitor.start();
-    testClientMetricReport = new TestClientMetricReport();
+    testClientMetricReport = new TestClientMetricReport(new NoOpDebugLogger());
   });
 
   afterEach(() => {

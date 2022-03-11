@@ -9,8 +9,6 @@ import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver'
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
-import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
@@ -21,7 +19,7 @@ import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionSta
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import AudioLogEvent from '../../src/statscollector/AudioLogEvent';
-import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
+import StatsCollector from '../../src/statscollector/StatsCollector';
 import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
@@ -29,7 +27,7 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
-describe('DefaultStatsCollector', () => {
+describe('StatsCollector', () => {
   class TestAudioVideoController extends NoOpAudioVideoController {
     testPeer: RTCPeerConnection = new RTCPeerConnection();
 
@@ -48,9 +46,8 @@ describe('DefaultStatsCollector', () => {
   let domMockBuilder: DOMMockBuilder;
   let signalingClient: DefaultSignalingClient;
   let audioVideoController: NoOpAudioVideoController;
-  let statsCollector: DefaultStatsCollector;
+  let statsCollector: StatsCollector;
   let configuration: MeetingSessionConfiguration;
-  let clientMetricReport: DefaultClientMetricReport;
 
   beforeEach(() => {
     logger = new NoOpDebugLogger();
@@ -58,13 +55,8 @@ describe('DefaultStatsCollector', () => {
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     signalingClient = new DefaultSignalingClient(new DefaultWebSocketAdapter(logger), logger);
     audioVideoController = new TestAudioVideoController();
-    statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+    statsCollector = new StatsCollector(audioVideoController, logger, interval);
     configuration = new TestAudioVideoController().configuration;
-    clientMetricReport = new DefaultClientMetricReport(
-      logger,
-      new DefaultVideoStreamIndex(logger),
-      audioVideoController.configuration.credentials.attendeeId
-    );
   });
 
   afterEach(() => {
@@ -89,7 +81,7 @@ describe('DefaultStatsCollector', () => {
     let logEventTimeAttributes: { [id: string]: string };
 
     beforeEach(() => {
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
       logEventTimeAttributes = {
         call_id: configuration.meetingId,
         client_type: CLIENT_TYPE,
@@ -125,7 +117,7 @@ describe('DefaultStatsCollector', () => {
     let logEventAttributes: { [id: string]: string };
 
     beforeEach(() => {
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
       logEventAttributes = {
         call_id: configuration.meetingId,
         client_type: CLIENT_TYPE,
@@ -237,13 +229,13 @@ describe('DefaultStatsCollector', () => {
 
   describe('metrics', () => {
     beforeEach(() => {
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
     });
 
     describe('Promise-based getStats', () => {
       it('starts and stops WebRTC metrics collection', done => {
         const spy = sinon.spy(audioVideoController.rtcPeerConnection, 'getStats');
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+        statsCollector = new StatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
@@ -265,7 +257,7 @@ describe('DefaultStatsCollector', () => {
         }
         audioVideoController = new NoPeerAudioVideoController();
         audioVideoController.addObserver(new TestObserver());
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+        statsCollector = new StatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
@@ -280,11 +272,7 @@ describe('DefaultStatsCollector', () => {
             errorMessage = msg;
           }
         }
-        statsCollector = new DefaultStatsCollector(
-          audioVideoController,
-          new TestLogger(),
-          interval
-        );
+        statsCollector = new StatsCollector(audioVideoController, new TestLogger(), interval);
 
         domMockBehavior.rtcPeerConnectionGetStatsSucceeds = false;
         const spy = sinon.spy(audioVideoController.rtcPeerConnection, 'getStats');
@@ -298,7 +286,7 @@ describe('DefaultStatsCollector', () => {
       });
 
       it('uses the default interval and cannot start more than once', () => {
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger);
+        statsCollector = new StatsCollector(audioVideoController, logger);
         expect(statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger))).to.be
           .true;
         expect(statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger))).to.be
@@ -314,7 +302,7 @@ describe('DefaultStatsCollector', () => {
           }
         }
         audioVideoController.addObserver(new TestObserver());
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+        statsCollector = new StatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
       });
     });
@@ -323,7 +311,7 @@ describe('DefaultStatsCollector', () => {
   describe('validators', () => {
     describe('isValidRawMetricReport', () => {
       it('checks type of raw metric report', () => {
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+        statsCollector = new StatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         expect(
           statsCollector.isValidStandardRawMetric({
@@ -363,7 +351,7 @@ describe('DefaultStatsCollector', () => {
             return 1;
           }
         }
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+        statsCollector = new StatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
@@ -405,7 +393,7 @@ describe('DefaultStatsCollector', () => {
             return 0;
           }
         }
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+        statsCollector = new StatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
@@ -423,7 +411,7 @@ describe('DefaultStatsCollector', () => {
 
     describe('filterRawMetricReports', () => {
       it('filters out invalid reports', done => {
-        statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
+        statsCollector = new StatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           expect(
@@ -441,41 +429,121 @@ describe('DefaultStatsCollector', () => {
   });
 
   describe('protobuf packaging', () => {
-    it('adds the metric frame from the global metric report and creates the stream metric report', done => {
-      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
-        allStreams(): DefaultVideoStreamIdSet {
-          return new DefaultVideoStreamIdSet([1, 2, 3]);
-        }
-      }
+    it('global metric report', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReport = {
+        id: 'RTCIceCandidatePair',
+        type: 'candidate-pair',
+        state: 'succeeded',
+        availableIncomingBitrate: 1000,
+      };
 
-      const metric = 'availableIncomingBitrate';
-      const globalMetricReport = new GlobalMetricReport();
-      globalMetricReport.currentMetrics[metric] = 1000;
-      clientMetricReport.globalMetricReport = globalMetricReport;
-
-      const spy = sinon.spy(clientMetricReport.globalMetricMap[metric], 'transform');
-      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger), clientMetricReport);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
       new TimeoutScheduler(interval + 5).start(() => {
         statsCollector.stop();
-        expect(spy.calledOnce).to.be.true;
         done();
       });
     });
 
-    it('adds the metric frame from the stream metric report', done => {
-      const metric = 'packetsLost';
+    it('stream metric report and videoStreamIndex has no stream', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReport = {
+        id: 'RTCInboundRTPVideoStream',
+        type: 'inbound-rtp',
+        kind: 'video',
+        packetsLost: 10,
+      };
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('stream metric report and videoStreamIndex has streams', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+      domMockBehavior.rtcPeerConnectionGetStatsReport = {
+        id: 'RTCInboundRTPVideoStream',
+        type: 'inbound-rtp',
+        kind: 'video',
+        packetsLost: 10,
+        jitterBufferDelay: 100,
+      };
+
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('stream metric report and videoStreamIndex has streams and there are existing streamMetricReports', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReport = {
+        id: 'RTCInboundRTPVideoStream',
+        type: 'inbound-rtp',
+        kind: 'video',
+        packetsLost: 10,
+        jitterBufferDelay: 100,
+      };
+
       const streamMetricReport = new StreamMetricReport();
-      streamMetricReport.currentMetrics[metric] = 10;
       streamMetricReport.streamId = 1;
       streamMetricReport.mediaType = ClientMetricReportMediaType.AUDIO;
       streamMetricReport.direction = ClientMetricReportDirection.UPSTREAM;
-      clientMetricReport.streamMetricReports[1] = streamMetricReport;
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
-      statsCollector.start(
-        signalingClient,
-        new DefaultVideoStreamIndex(logger),
-        clientMetricReport
-      );
+      streamMetricReport.currentMetrics['packetsLost'] = 10;
+      streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      // @ts-ignore
+      statsCollector.clientMetricReport.streamMetricReports[1] = streamMetricReport;
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('adds the metric frame from the stream metric report when videoStreamIndex has streams', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+      domMockBehavior.rtcPeerConnectionGetStatsReport = {
+        id: 'RTCInboundRTPVideoStream',
+        type: 'inbound-rtp',
+        kind: 'video',
+        packetsLost: 10,
+        jitterBufferDelay: 100,
+      };
+
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
       new TimeoutScheduler(interval + 5).start(() => {
         statsCollector.stop();
         done();
@@ -483,18 +551,13 @@ describe('DefaultStatsCollector', () => {
     });
 
     it('cannot add the metric frame if the type does not exist in the metric spec', done => {
-      const metric = 'availableIncomingBitrate';
-      delete clientMetricReport.globalMetricMap[metric].type;
-
-      const globalMetricReport = new GlobalMetricReport();
-      globalMetricReport.currentMetrics[metric] = 1000;
-      clientMetricReport.globalMetricReport = globalMetricReport;
-
-      statsCollector.start(
-        signalingClient,
-        new DefaultVideoStreamIndex(logger),
-        clientMetricReport
-      );
+      domMockBehavior.rtcPeerConnectionGetStatsReport = {
+        id: 'RTCIceCandidatePair',
+        type: 'candidate-pair',
+        state: 'succeeded',
+        availableIncomingBitrate: 1000,
+      };
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
       new TimeoutScheduler(interval + 5).start(() => {
         statsCollector.stop();
         done();
@@ -502,20 +565,15 @@ describe('DefaultStatsCollector', () => {
     });
 
     it('updates the report using the video upstream metrics map', done => {
-      const metric = 'roundTripTime';
-      const globalMetricReport = new GlobalMetricReport();
-      globalMetricReport.currentMetrics[metric] = 10;
-      clientMetricReport.globalMetricReport = globalMetricReport;
       domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        [metric]: 10,
+        id: 'RTCIceCandidatePair',
+        type: 'candidate-pair',
+        state: 'succeeded',
+        roundTripTime: 10,
       };
 
-      statsCollector = new DefaultStatsCollector(audioVideoController, logger, interval);
-      statsCollector.start(
-        signalingClient,
-        new DefaultVideoStreamIndex(logger),
-        clientMetricReport
-      );
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
       new TimeoutScheduler(interval + 5).start(() => {
         statsCollector.stop();
         done();

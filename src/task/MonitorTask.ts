@@ -7,7 +7,6 @@ import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../clientmetricreport/ClientMetricReportMediaType';
 import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
-import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import StreamMetricReport from '../clientmetricreport/StreamMetricReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
@@ -217,7 +216,7 @@ export default class MonitorTask
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
-    const defaultClientMetricReport = clientMetricReport as DefaultClientMetricReport;
+    const defaultClientMetricReport = clientMetricReport as ClientMetricReport;
     if (!defaultClientMetricReport) {
       return;
     }

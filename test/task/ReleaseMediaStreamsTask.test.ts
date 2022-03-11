@@ -15,7 +15,7 @@ import DefaultReconnectController from '../../src/reconnectcontroller/DefaultRec
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
-import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
+import StatsCollector from '../../src/statscollector/StatsCollector';
 import ReleaseMediaStreamsTask from '../../src/task/ReleaseMediaStreamsTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -43,7 +43,7 @@ describe('ReleaseMediaStreamsTask', () => {
   let signalingClient: SignalingClient;
   let request: SignalingClientConnectionRequest;
 
-  class TestStatsCollector extends DefaultStatsCollector {
+  class TestStatsCollector extends StatsCollector {
     constructor(audioVideoController: AudioVideoController, logger: Logger) {
       super(audioVideoController, logger);
     }

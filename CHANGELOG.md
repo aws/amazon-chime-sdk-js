@@ -11,7 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Remove `StatsCollector` interface.
+- Remove `ClientMetricReport` interface.
+- Remove `clientMetricReport` parameter from `StatsCollector.start()` API.
+
 ### Changed
+
+- Rename `DefaultStatsCollector` to `StatsCollector`.
+- Rename `DefaultClientMetricReport` to `ClientMetricReport`.
 
 ### Fixed
 

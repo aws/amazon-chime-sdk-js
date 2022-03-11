@@ -3,7 +3,7 @@
 
 import * as chai from 'chai';
 
-import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
@@ -31,7 +31,7 @@ describe('NoVideoDownlinkBandwidthPolicy', () => {
       expect(policy.wantsResubscribe()).to.be.false;
       policy.updateIndex(emptyVideoStreamIndex);
       expect(policy.wantsResubscribe()).to.be.false;
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new ClientMetricReport(logger);
       metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 500;
       policy.updateMetrics(metricReport);
       expect(policy.wantsResubscribe()).to.be.false;

@@ -11,7 +11,7 @@ import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/Si
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import PingPong from '../../src/pingpong/PingPong';
 import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
-import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
+import StatsCollector from '../../src/statscollector/StatsCollector';
 import CleanRestartedSessionTask from '../../src/task/CleanRestartedSessionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -59,7 +59,7 @@ describe('CleanRestartedSessionTask', () => {
       context.audioVideoController.videoTileController,
       new ConnectionHealthData(),
       new TestPingPong(),
-      new DefaultStatsCollector(context.audioVideoController, new NoOpDebugLogger())
+      new StatsCollector(context.audioVideoController, new NoOpDebugLogger())
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
 

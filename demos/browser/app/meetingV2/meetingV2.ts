@@ -103,7 +103,6 @@ let SHOULD_DIE_ON_FATALS = (() => {
   return fatalYes || (isLocal && !fatalNo);
 })();
 
-let DEBUG_LOG_PPS = true;
 
 export let fatal: (e: Error) => void;
 
@@ -312,6 +311,7 @@ export class DemoMeetingApp
   markdown = require('markdown-it')({ linkify: true });
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
+  lastReceivedPackets = 0;
   meetingSessionPOSTLogger: MeetingSessionPOSTLogger;
   meetingEventPOSTLogger: MeetingSessionPOSTLogger;
 
@@ -867,10 +867,6 @@ export class DemoMeetingApp
           this.displayButtonStates();
           this.switchToFlow('flow-meeting');
 
-          if (DEBUG_LOG_PPS) {
-            this.logPPS();
-            DEBUG_LOG_PPS = false;   // Only do this once.
-          }
         } catch (error) {
           document.getElementById('failed-join').innerText = `Meeting ID: ${this.meeting}`;
           document.getElementById('failed-join-error').innerText = `Error: ${error.message}`;
@@ -1079,12 +1075,12 @@ export class DemoMeetingApp
       (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = languageIdentificationCb.checked;
       (document.getElementById('language-options').classList.toggle('hidden', !languageIdentificationCb.checked));
       (document.getElementById('preferred-language').classList.toggle('hidden', !languageIdentificationCb.checked));
-      (document.getElementById('transcribe-language')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
-      (document.getElementById('content-identification-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
-      (document.getElementById('content-redaction-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
-      (document.getElementById('custom-language-model-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
-      (document.getElementById('transcribe-entity')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
-      (document.getElementById('language-model-input-text')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('transcribe-language') as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('content-identification-checkbox') as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('content-redaction-checkbox') as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('custom-language-model-checkbox') as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('transcribe-entity') as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('language-model-input-text') as HTMLInputElement).disabled = languageIdentificationCb.checked;
     });
 
     const languageOptionsDropDown = document.getElementById('language-options') as HTMLInputElement;
@@ -1156,11 +1152,11 @@ export class DemoMeetingApp
           }
 
           let preferredLanguageSelected = (document.getElementById('preferred-language-selection') as HTMLInputElement).value;
-          if (preferredLanguageSelected){
+          if (preferredLanguageSelected) {
             transcriptionStreamParams.preferredLanguage = preferredLanguageSelected;
           }
         }
-        
+
         if (isChecked('partial-stabilization-checkbox')) {
           transcriptionStreamParams.enablePartialResultsStability = true;
         }
@@ -1333,46 +1329,28 @@ export class DemoMeetingApp
     });
   }
 
-  logPPS() {
-    let start = 0;
-    let packets = 0;
-    setInterval(async () => {
-      if (!this.audioVideo) {
-        return;
-      }
+  logPPS(clientMetricReport: ClientMetricReport) {
+    const { currentTimestampMs, previousTimestampMs } = clientMetricReport;
+    const rtcStatsReport = clientMetricReport.getRTCStatsReport();
+    rtcStatsReport.forEach(report => {
+      if (report.type === 'outbound-rtp') {
+        // Skip initial metric.
+        if (report.packetsSent === 0 && previousTimestampMs === 0) return;
+        const deltaTime = currentTimestampMs - previousTimestampMs;
+        const deltaPackets = report.packetsSent - this.lastReceivedPackets;
+        const pps = (1000 * deltaPackets) / deltaTime;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const stats = await this.audioVideo.getRTCPeerConnectionStats() as RTCStatsReport & RTCStats & Map<string, any>;
-
-      if (!stats) {
-        return;
-      }
-
-      if (!start) {
-        start = Date.now();
-        return;
-      }
-
-      for (const [_, entry] of stats.entries()) {
-        if (entry.type === 'outbound-rtp') {
-          const now = Date.now();
-          const deltat = now - start;
-          const deltap = entry.packetsSent - packets;
-          const pps = (1000 * deltap) / deltat;
-
-          let overage = 0;
-          if ((pps > 52) || (pps < 47)) {
-            console.error('PPS:', pps, `(${++overage})`);
-          } else {
-            overage = 0;
-            console.debug('PPS:', pps);
-          }
-          start = now;
-          packets = entry.packetsSent;
-          return;
+        let overage = 0;
+        if ((pps > 52) || (pps < 47)) {
+          console.error('PPS:', pps, `(${++overage})`);
+        } else {
+          overage = 0;
+          console.debug('PPS:', pps);
         }
+        this.lastReceivedPackets = report.packetsSent;
+        return;
       }
-    }, 1_000);
+    });
   }
 
   getSupportedMediaRegions(): string[] {
@@ -1545,9 +1523,9 @@ export class DemoMeetingApp
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
+    this.logPPS(clientMetricReport);
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
-
     this.displayEstimatedUplinkBandwidth(metricReport.availableOutgoingBitrate);
     this.displayEstimatedDownlinkBandwidth(metricReport.availableIncomingBitrate);
 
