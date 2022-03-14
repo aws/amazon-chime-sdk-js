@@ -5,15 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.29.0] - 2022-02-24
+## [2.30.0] - 2022-03-08
     
 ### Added
     
 ### Removed
     
 ### Changed
-    
+
 ### Fixed
+    
+## [2.29.0] - 2022-03-10
+    
+### Added
+- Add automatic language identification support from Amazon Transcribe for live transcription.
+    
+### Removed
+    
+### Changed
+- Adjust the recovery behavior of `VideoPriorityBasedPolicy` to not get stuck at low estimates, not overeact to spurious packet loss when probing, and not let the time between probes raise to 60 seconds (reduced to maximum of 30 seconds).
+
+### Fixed
+- Fix a video orientation issue when Background Blur/Background Replacement is enabled.
     
 ## [2.28.0] - 2022-02-23
 
@@ -26,6 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix a worker resource leak with `BackgroundBlurProcessor` and `BackgroundReplacementProcessor`.
+- Clone the video preference input in `chooseRemoteVideoSources` API in `VideoPriorityBasedPolicy` to avoid mutation
+  that can cause video preferences to not be sorted and lead to wrong video subscription determination by the policy.
+- Fix a screen share issue by resetting the sdp compression state during join requests.
 
 ## [2.27.0] - 2022-01-27
     

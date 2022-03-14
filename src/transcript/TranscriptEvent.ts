@@ -14,6 +14,7 @@ import TranscriptionStatus from './TranscriptionStatus';
 import TranscriptionStatusType from './TranscriptionStatusType';
 import TranscriptItem from './TranscriptItem';
 import TranscriptItemType from './TranscriptItemType';
+import TranscriptLanguageWithScore from './TranscriptLanguageWithScore';
 import TranscriptResult from './TranscriptResult';
 
 const TranscriptionStatusTypes = {
@@ -73,6 +74,22 @@ export class TranscriptEventConverter {
             endTimeMs: result.endTime as number,
             alternatives: [],
           };
+
+          if (result.languageCode) {
+            transcriptResult.languageCode = result.languageCode;
+          }
+
+          if (result.languageIdentification && result.languageIdentification.length > 0) {
+            transcriptResult.languageIdentification = [];
+            for (const languageIdentification of result.languageIdentification) {
+              const transcriptLanguageWithScore: TranscriptLanguageWithScore = {
+                languageCode: languageIdentification.languageCode,
+                score: languageIdentification.score,
+              };
+
+              transcriptResult.languageIdentification.push(transcriptLanguageWithScore);
+            }
+          }
 
           for (const alternative of result.alternatives) {
             const transcriptAlternative: TranscriptAlternative = {

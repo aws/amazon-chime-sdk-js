@@ -215,6 +215,9 @@ interface TranscriptionStreamParams {
   partialResultsStability?: string;
   piiEntityTypes?: string;
   languageModelName?: string;
+  identifyLanguage?: boolean;
+  languageOptions?: string;
+  preferredLanguage?: string;
 }
 
 export class DemoMeetingApp
@@ -1053,10 +1056,11 @@ export class DemoMeetingApp
         const contentIdentificationChecked = (document.getElementById('content-identification-checkbox') as HTMLInputElement).checked;
         const contentRedactionChecked = (document.getElementById('content-redaction-checkbox') as HTMLInputElement).checked;
         document.getElementById('engine-transcribe-language').classList.toggle('hidden', !engineTranscribeChecked);
-		    document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-region').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-region').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-content-identification').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-language-identification').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-content-identification').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-redaction').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-partial-stabilization').classList.toggle('hidden', !engineTranscribeChecked);
@@ -1068,6 +1072,22 @@ export class DemoMeetingApp
         }
       });
     });
+
+    const languageIdentificationCb = document.getElementById('identify-language-checkbox') as HTMLInputElement;
+    languageIdentificationCb.addEventListener('click', () => {
+      (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('language-options').classList.toggle('hidden', !languageIdentificationCb.checked));
+      (document.getElementById('preferred-language').classList.toggle('hidden', !languageIdentificationCb.checked));
+      (document.getElementById('transcribe-language')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('content-identification-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('content-redaction-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('custom-language-model-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('transcribe-entity')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('language-model-input-text')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+    });
+
+    const languageOptionsDropDown = document.getElementById('language-options') as HTMLInputElement;
+    languageOptionsDropDown.addEventListener('change', (event => languageOptionsDropDownClickHandler(event)));
 
     const contentIdentificationCb = document.getElementById('content-identification-checkbox') as HTMLInputElement;
     contentIdentificationCb.addEventListener('click', () => {
@@ -1099,17 +1119,47 @@ export class DemoMeetingApp
       const transcriptionStreamParams: TranscriptionStreamParams = {};
       if ((document.getElementById('engine-transcribe') as HTMLInputElement).checked) {
         engine = 'transcribe';
-        languageCode = (document.getElementById('transcribe-language') as HTMLInputElement).value;
         region = (document.getElementById('transcribe-region') as HTMLInputElement).value;
 
-        if (isChecked('content-identification-checkbox')) {
-          transcriptionStreamParams.contentIdentificationType = 'PII';
+        if (!isChecked('identify-language-checkbox')) {
+          languageCode = (document.getElementById('transcribe-language') as HTMLInputElement).value;
+
+          if (isChecked('content-identification-checkbox')) {
+            transcriptionStreamParams.contentIdentificationType = 'PII';
+          }
+
+          if (isChecked('content-redaction-checkbox')) {
+            transcriptionStreamParams.contentRedactionType = 'PII';
+          }
+
+          if (isChecked('content-identification-checkbox') || isChecked('content-redaction-checkbox')) {
+            let piiEntityTypes = getSelectedValues('#transcribe-entity');
+            if (piiEntityTypes !== '') {
+              transcriptionStreamParams.piiEntityTypes = piiEntityTypes;
+            }
+          }
+
+          if (isChecked('custom-language-model-checkbox')) {
+            let languageModelName = (document.getElementById('language-model-input-text') as HTMLInputElement).value;
+            if (languageModelName) {
+              transcriptionStreamParams.languageModelName = languageModelName;
+            }
+          }
         }
 
-        if (isChecked('content-redaction-checkbox')) {
-          transcriptionStreamParams.contentRedactionType = 'PII';
-        }
+        if (isChecked('identify-language-checkbox')) {
+          transcriptionStreamParams.identifyLanguage = true;
+          let languageOptionsSelected = getSelectedValues('#language-options');
+          if (languageOptionsSelected !== '') {
+            transcriptionStreamParams.languageOptions = languageOptionsSelected;
+          }
 
+          let preferredLanguageSelected = (document.getElementById('preferred-language-selection') as HTMLInputElement).value;
+          if (preferredLanguageSelected){
+            transcriptionStreamParams.preferredLanguage = preferredLanguageSelected;
+          }
+        }
+        
         if (isChecked('partial-stabilization-checkbox')) {
           transcriptionStreamParams.enablePartialResultsStability = true;
         }
@@ -1117,23 +1167,6 @@ export class DemoMeetingApp
         let partialResultsStability = (document.getElementById('partial-stability') as HTMLInputElement).value;
         if (partialResultsStability) {
           transcriptionStreamParams.partialResultsStability = partialResultsStability;
-        }
-        if (isChecked('content-identification-checkbox') || isChecked('content-redaction-checkbox')) {
-          const selected = document.querySelectorAll('#transcribe-entity option:checked');
-          let values = '';
-          if (selected.length > 0) {
-            values = Array.from(selected).filter(node => (node as HTMLInputElement).value !== '').map(el => (el as HTMLInputElement).value).join(',');
-          }
-          if (values !== '') {
-            transcriptionStreamParams.piiEntityTypes = values;
-          }
-        }
-
-        if (isChecked('custom-language-model-checkbox')) {
-          let languageModelName = (document.getElementById('language-model-input-text') as HTMLInputElement).value;
-          if (languageModelName) {
-            transcriptionStreamParams.languageModelName = languageModelName;
-          }
         }
       } else if ((document.getElementById('engine-transcribe-medical') as HTMLInputElement).checked) {
         engine = 'transcribe_medical';
@@ -1152,6 +1185,63 @@ export class DemoMeetingApp
       return (document.getElementById(id) as HTMLInputElement).checked;
     }
 
+    // fetches checked values of the list from given selector id
+    function getSelectedValues(id: string): string {
+      let selectors = id + ' ' + 'option:checked';
+      const selectedValues = document.querySelectorAll(selectors);
+      let values = '';
+      if (selectedValues.length > 0) {
+        values = Array.from(selectedValues).filter(node => (node as HTMLInputElement).value !== '').map(el => (el as HTMLInputElement).value).join(',');
+      }
+      return values;
+    }
+
+    function createErrorSpan(message: string): void {
+      let languageOptionsErrorSpan = document.createElement('span');
+      languageOptionsErrorSpan.innerText = message;
+      languageOptionsErrorSpan.classList.add('error-message-color');
+      document.getElementById('language-options-error-message').appendChild(languageOptionsErrorSpan);
+      (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = true;
+    }
+
+    // callback to restrict users from selecting multiple language variant (locale) per language code
+    // e.g. en-US and en-AU as language options cannot be selected for the same transcription
+    // Details in https://docs.aws.amazon.com/transcribe/latest/dg/lang-id-stream.html
+    function languageOptionsDropDownClickHandler(event: Event): boolean {
+      let languageGroupSet = new Set();
+      document.getElementById('language-options-error-message').innerHTML = '';
+      const languageOptionsSelected = document.querySelectorAll('#language-options option:checked');
+      let preferredLanguageDropDown = document.getElementById('preferred-language-selection');
+      if (preferredLanguageDropDown.hasChildNodes) {
+        let options = (preferredLanguageDropDown as HTMLSelectElement).options;
+        for (let i = options.length - 1; i >= 0; i--) {
+          if (options[i].value.length > 0) {
+            preferredLanguageDropDown.removeChild(options[i]);
+          }
+        }
+      }
+
+      for (let i = languageOptionsSelected.length - 1; i >= 0; i--) {
+        let currentItem = languageOptionsSelected.item(i) as HTMLSelectElement;
+        if (languageGroupSet.has(currentItem.parentElement.id)) {
+          createErrorSpan('Please select one language per group');
+          return false;
+        }
+        languageGroupSet.add(currentItem.parentElement.id);
+        let selectedValue = currentItem.value;
+        let option = document.createElement('option');
+        option.value = selectedValue;
+        option.text = currentItem.innerText;
+        document.getElementById('preferred-language-selection').appendChild(option);
+      }
+
+      if (languageOptionsSelected.length == 1) {
+        createErrorSpan('Please select at least 2 language options');
+        return false;
+      } else if (languageOptionsSelected.length >= 2) {
+        (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = false;
+      }
+    }
     const startLiveTranscription = async (engine: string, languageCode: string, region: string, transcriptionStreamParams: TranscriptionStreamParams) => {
       const transcriptionAdditionalParams = JSON.stringify(transcriptionStreamParams);
       const response = await fetch(`${DemoMeetingApp.BASE_URL}start_transcription?title=${encodeURIComponent(this.meeting)}&engine=${encodeURIComponent(engine)}&language=${encodeURIComponent(languageCode)}&region=${encodeURIComponent(region)}&transcriptionStreamParams=${encodeURIComponent(transcriptionAdditionalParams)}`, {
@@ -1982,6 +2072,10 @@ export class DemoMeetingApp
       for (const result of transcriptEvent.results) {
         const resultId = result.resultId;
         const isPartial = result.isPartial;
+        const languageCode = result.languageCode;
+        if (languageCode && LANGUAGES_NO_WORD_SEPARATOR.has(languageCode)) {
+          this.noWordSeparatorForTranscription = true;
+        }
         if (!isPartial) {
           if (result.alternatives[0].entities?.length > 0) {
             for (const entity of result.alternatives[0].entities) {

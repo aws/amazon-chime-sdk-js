@@ -37,7 +37,7 @@ const cleanUp = async (remoteBranch) => {
 const release = async () => {
   spawnOrFail('git', ['fetch origin'], { skipOutput: true });
   const remoteBranch = getCurrentRemoteBranch();
-  if (!remoteBranch || (remoteBranch !== 'origin/main' && (/^origin\/release-[0-9]+\.x$/).test(remoteBranch))) {
+  if (!remoteBranch || (remoteBranch !== 'origin/main' && !(/^origin\/release-[0-9]+\.x$/).test(remoteBranch))) {
     logger.error(`The local branch ${currentBranch} does not track either main or release-<version>.x branch`);
     quit(1);
   }
@@ -46,9 +46,9 @@ const release = async () => {
 
   buildAndPack();
 
-  logger.log('Do you want to upload these files to release branch?\n');
+  logger.log(`Do you want to upload these files to release-${currentVersion} branch?\n`);
   await shouldContinuePrompt();
-  spawnOrFail('git', ['push origin HEAD:release -f']);
+  spawnOrFail('git', [`push origin HEAD:release-${currentVersion} -f`]);
 
   deployDemo(currentVersion);
 

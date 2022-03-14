@@ -134,7 +134,8 @@ describe('VideoPriorityBasedPolicy', () => {
     metricReport: DefaultClientMetricReport,
     nackCnt: number,
     packetsLost: number,
-    isGoogStat: boolean = true
+    isGoogStat: boolean = true,
+    usedBandwidthKbps: number = 10
   ): void {
     metricReport.currentTimestampMs = 2000;
     metricReport.previousTimestampMs = 1000;
@@ -151,7 +152,7 @@ describe('VideoPriorityBasedPolicy', () => {
     }
     streamReport1.previousMetrics['packetsLost'] = 0;
     streamReport1.currentMetrics['packetsLost'] = packetsLost;
-    streamReport1.currentMetrics['bytesReceived'] = 200;
+    streamReport1.currentMetrics['bytesReceived'] = usedBandwidthKbps * 1000;
 
     metricReport.streamMetricReports[1] = streamReport1;
   }
@@ -293,8 +294,34 @@ describe('VideoPriorityBasedPolicy', () => {
   });
 
   describe('chooseRemoteVideoSources', () => {
-    it('Can be called if videoPreferences is undefined', () => {
+    it('Can be called if videoPreferences is empty', () => {
       policy.chooseRemoteVideoSources(VideoPreferences.prepare().build());
+    });
+
+    it('Can be called if videoPreferences is undefined', () => {
+      policy.chooseRemoteVideoSources(undefined);
+    });
+
+    it('Will not be mutated', () => {
+      updateIndexFrame(videoStreamIndex, 2, 0, 600);
+      policy.updateIndex(videoStreamIndex);
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference('attendee-1', 5, TargetDisplaySize.High);
+      preferences.add(p1);
+      const p2 = new VideoPreference('attendee-2', 5, TargetDisplaySize.High);
+      preferences.add(p2);
+      policy.chooseRemoteVideoSources(preferences.build());
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4]);
+
+      p1.priority = 10;
+      policy.chooseRemoteVideoSources(preferences.build());
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4]);
     });
 
     it('observer should get called only when added', async () => {
@@ -528,8 +555,9 @@ describe('VideoPriorityBasedPolicy', () => {
       expect(resub).to.equal(false);
 
       incrementTime(2000);
-      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 1100 * 1000;
-      setPacketLoss(metricReport, 0, 0);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 750 * 1000;
+      // Override with used kbps in this case and put packet loss below threshold
+      setPacketLoss(metricReport, 0, 1, true, 1100);
       policy.updateMetrics(metricReport);
       const bitrates = updateBitrateFrame(2, 200, 1100);
       videoStreamIndex.integrateBitratesFrame(bitrates);
