@@ -3,6 +3,8 @@
 const { versionBump, currentVersion, isPreRelease }  = require('./version-utils');
 const { logger, spawnOrFail, prompt, shouldContinuePrompt, quit, process, path } = require('./cli-utils');
 
+const currentBranch = (spawnOrFail('git', [' branch --show-current'], { skipOutput: true })).trim();
+
 const deployDemo = (version) => {
   const formattedVersion = `${version.replace(/\./g, "-")}`;
   process.chdir(path.join(__dirname, '../demos/serverless'));
@@ -34,7 +36,6 @@ const cleanUp = async (remoteBranch) => {
 
 const release = async () => {
   spawnOrFail('git', ['fetch origin'], { skipOutput: true });
-  const currentBranch = (spawnOrFail('git', [' branch --show-current'], { skipOutput: true })).trim();
   const remoteBranch = getCurrentRemoteBranch();
   if (!remoteBranch || (remoteBranch !== 'origin/main' && (/^origin\/release-[0-9]+\.x$/).test(remoteBranch))) {
     logger.error(`The local branch ${currentBranch} does not track either main or release-<version>.x branch`);
@@ -82,7 +83,7 @@ const main = async () => {
       break;
     case '3':
       const remoteBranch = getCurrentRemoteBranch();
-      if (!remoteBranch || (remoteBranch !== 'origin/release' && (remoteBranch !== 'origin/hotfix'))) {
+      if (!remoteBranch || (!(remoteBranch.includes('origin/release-')) && (remoteBranch !== 'origin/hotfix'))) {
         logger.error(`The local branch ${currentBranch} does not track either release or hotfix branch`);
         quit(1);
       }
