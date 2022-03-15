@@ -1,0 +1,280 @@
+  name: Continuous Integration Workflow
+
+  on:
+    pull_request:
+      branches:
+        - main
+        - 'release-**.x'
+
+  env:
+    SELENIUM_GRID_PROVIDER: saucelabs
+    CLOUD_WATCH_METRIC: false
+    TEST_TYPE: Integration-Test
+    SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+    SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+
+  jobs:
+    build:
+      name: Build and Run Unit Tests
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Using Node.js 16.x
+          uses: actions/setup-node@v1
+          with:
+            node-version: 16.x
+        - name: Clean Install
+          run: npm ci
+        - name: Build
+          run: npm run build:release
+
+    integ-content-share-job-one:
+      name: Content Share Integration Test Suite One
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Content Share Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-content-share-test-suite-one
+
+    integ-content-share-job-two:
+      name: Content Share Integration Test Suite Two
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Content Share Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-content-share-test-suite-two
+
+    integ-background-blur:
+      name: Audio and Video Transforms Integration Test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Background Blur Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-background-blur
+        - name: Run Echo Reduction Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-echo-reduction
+
+    integ-audio:
+      name: Audio Integration Test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Audio Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-audio
+
+    integ-messaging:
+      name: Messaging Integration Test
+      runs-on: ubuntu-latest
+      env:
+        MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Setup userArn
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: integration/js/script/test-setup
+        - name: Run Messaging Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-messaging
+
+    integ-data-message:
+      name: Miscellaneous Integration Test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Data Message Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-data-message
+        - name: Run Meeting Readiness Checker Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-meeting-readiness-checker
+        - name: Run Meeting End Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-meeting-end
+
+    integ-transcription:
+      name: Transcription Integration Test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Transcription Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-transcription
+
+    integ-video:
+      name: Video Integration Test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Video Integ Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-video
+
+    integ-video-app:
+      name: Video Test App Integration Test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Video Test App Integ Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-video-test-app
