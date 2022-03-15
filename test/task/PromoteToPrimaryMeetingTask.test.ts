@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SdkErrorFrame } from 'amazon-chime-sdk-js/build/signalingprotocol/SignalingProtocol';
 import * as chai from 'chai';
 
 import { MeetingSessionStatusCode } from '../../src';
@@ -20,6 +19,7 @@ import SignalingClientEventType from '../../src/signalingclient/SignalingClientE
 import {
   SdkPrimaryMeetingJoinAckFrame,
   SdkSignalFrame,
+  SdkErrorFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import PromoteToPrimaryMeetingTask from '../../src/task/PromoteToPrimaryMeetingTask';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';

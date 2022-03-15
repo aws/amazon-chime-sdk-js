@@ -19,7 +19,6 @@ console.info('Using index path', indexPagePath);
 
 const indexPage = fs.readFileSync(indexPagePath);
 
-
 // Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
 const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
 const currentRegion = process.env.REGION || 'us-east-1';
@@ -31,16 +30,12 @@ const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || 'true';
 const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = endpoint;
 
-
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
 if (endpoint !== 'https://service.chime.aws.amazon.com') {
   chimeSDKMeetings.endpoint = endpoint;
 }
 
 const sts = new AWS.STS({ region: 'us-east-1' })
-
-// For internal debugging - ignore this and its usage.
-const debug = require('./debug.js');
 
 const captureS3Destination = process.env.CAPTURE_S3_DESTINATION;
 if (captureS3Destination) {
@@ -73,6 +68,8 @@ function serve(host = '127.0.0.1:8080') {
         // Return the contents of the index page
         respond(response, 200, 'text/html', indexPage);
       } else if (process.env.DEBUG) {
+        // For internal debugging - ignore this
+        const debug = require('./debug.js');
         const debugResponse = debug.debug(request);
         respond(response, debugResponse.status, 'application/json', JSON.stringify(debugResponse.response, null, 2));
       } else if (request.method === 'POST' && requestUrl.pathname === '/join') {

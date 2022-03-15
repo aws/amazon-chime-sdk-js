@@ -1,10 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  SdkPrimaryMeetingJoinAckFrame,
-  SdkPrimaryMeetingLeaveFrame,
-} from 'amazon-chime-sdk-js/build/signalingprotocol/SignalingProtocol';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
@@ -55,6 +51,8 @@ import {
   SdkStreamMediaType,
   SdkSubscribeAckFrame,
   SdkTurnCredentials,
+  SdkPrimaryMeetingJoinAckFrame,
+  SdkPrimaryMeetingLeaveFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
 import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
