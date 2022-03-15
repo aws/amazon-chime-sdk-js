@@ -17,9 +17,9 @@ import SignalingClientConnectionRequest from '../../src/signalingclient/Signalin
 import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../../src/signalingclient/SignalingClientEventType';
 import {
+  SdkErrorFrame,
   SdkPrimaryMeetingJoinAckFrame,
   SdkSignalFrame,
-  SdkErrorFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import PromoteToPrimaryMeetingTask from '../../src/task/PromoteToPrimaryMeetingTask';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -94,7 +94,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
       );
       primaryMeetingJoinAck = makePrimaryMeetingJoinAckFrame();
       new TimeoutScheduler(100).start(() => webSocketAdapter.send(primaryMeetingJoinAck));
-      await task.run().then(() => { });
+      await task.run().then(() => {});
 
       expect(completionCallbackCalled).to.be.true;
     });
@@ -116,7 +116,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
       );
       primaryMeetingJoinAck = makePrimaryMeetingJoinAckFrame(403);
       new TimeoutScheduler(100).start(() => webSocketAdapter.send(primaryMeetingJoinAck));
-      await task.run().then(() => { });
+      await task.run().then(() => {});
 
       expect(completionCallbackCalled).to.be.true;
     });
@@ -135,7 +135,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
         }
       );
       new TimeoutScheduler(50).start(() => webSocketAdapter.close());
-      await task.run().then(() => { });
+      await task.run().then(() => {});
 
       expect(completionCallbackCalled).to.be.true;
     });
@@ -154,7 +154,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
         }
       );
       new TimeoutScheduler(50).start(() => context.signalingClient.closeConnection());
-      await task.run().then(() => { });
+      await task.run().then(() => {});
 
       expect(completionCallbackCalled).to.be.true;
     });
@@ -176,7 +176,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
         behavior.webSocketSendSucceeds = false;
         webSocketAdapter.send(new Uint8Array([0]));
       });
-      await task.run().then(() => { });
+      await task.run().then(() => {});
 
       expect(completionCallbackCalled).to.be.true;
     });
@@ -204,7 +204,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
           )
         );
       });
-      await task.run().then(() => { });
+      await task.run().then(() => {});
 
       expect(completionCallbackCalled).to.be.true;
     });
@@ -224,7 +224,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
           expect(status.statusCode()).to.equal(MeetingSessionStatusCode.SignalingRequestFailed);
         }
       );
-      await task.run().then(() => { });
+      await task.run().then(() => {});
       expect(completionCallbackCalled).to.be.true;
     });
   });
@@ -247,7 +247,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
       try {
         await task.run();
         assert.fail();
-      } catch (_err) { }
+      } catch (_err) {}
 
       expect(completionCallbackCalled).to.be.true;
     });
@@ -268,7 +268,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
       try {
         await task.run();
         assert.fail();
-      } catch (_err) { }
+      } catch (_err) {}
       expect(completionCallbackCalled).to.be.false;
     });
   });

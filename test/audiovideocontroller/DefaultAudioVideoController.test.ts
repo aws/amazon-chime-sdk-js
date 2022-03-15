@@ -46,13 +46,13 @@ import {
   SdkIndexFrame,
   SdkJoinAckFrame,
   SdkLeaveAckFrame,
+  SdkPrimaryMeetingJoinAckFrame,
+  SdkPrimaryMeetingLeaveFrame,
   SdkSignalFrame,
   SdkStreamDescriptor,
   SdkStreamMediaType,
   SdkSubscribeAckFrame,
   SdkTurnCredentials,
-  SdkPrimaryMeetingJoinAckFrame,
-  SdkPrimaryMeetingLeaveFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
 import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
