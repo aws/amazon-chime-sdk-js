@@ -2121,10 +2121,8 @@ export class DemoMeetingApp
 
       // Transcripts view and the button to show and hide it are initially hidden
       // Show them when when live transcription gets enabled, and do not hide afterwards
-      if (this.primaryExternalMeetingId === undefined || this.primaryExternalMeetingId.length === 0) {
-        this.setButtonVisibility('button-live-transcription', true, 'on');
-        this.transcriptContainerDiv.style.display = 'block';
-      }
+      this.setButtonVisibility('button-live-transcription', true, 'on');
+      this.transcriptContainerDiv.style.display = 'block';
     }
 
     if (transcriptEvent instanceof TranscriptionStatus) {
