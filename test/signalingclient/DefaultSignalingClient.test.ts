@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MeetingSessionCredentials } from 'amazon-chime-sdk-js';
 import * as chai from 'chai';
 
 import { SignalingClientVideoSubscriptionConfiguration } from '../../src';
@@ -9,6 +8,7 @@ import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetada
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
