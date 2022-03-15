@@ -1479,7 +1479,7 @@ export class DemoMeetingApp
 
     // Enable/disable buttons as appropriate
     for (const button in this.buttonStates) {
-      if (button === 'button-speaker' || button === 'button-video-stats') {
+      if (button === 'button-speaker' || button === 'button-video-stats' || button === 'button-live-transcription') {
         continue;
       }
 
