@@ -1506,8 +1506,6 @@ export class DemoMeetingApp
   }
 
   toggleButton(button: string, state?: ButtonState): ButtonState {
-    console.log(`button: ${button} state ${state}`)
-
     if (state) {
       this.buttonStates[button] = state;
     } else if (this.buttonStates[button] === 'on') {
@@ -1528,7 +1526,6 @@ export class DemoMeetingApp
       const element = document.getElementById(button);
       const drop = document.getElementById(`${button}-drop`);
       const on = this.isButtonOn(button);
-      console.log(`on: ${on} for ${element.id}`)
       element.classList.add(on ? 'btn-success' : 'btn-outline-secondary');
       element.classList.remove(on ? 'btn-outline-secondary' : 'btn-success');
       (element.firstElementChild as SVGElement).classList.add(on ? 'svg-active' : 'svg-inactive');
