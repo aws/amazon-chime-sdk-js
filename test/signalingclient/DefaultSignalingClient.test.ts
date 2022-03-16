@@ -7,6 +7,7 @@ import { SignalingClientVideoSubscriptionConfiguration } from '../../src';
 import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
@@ -574,6 +575,48 @@ describe('DefaultSignalingClient', () => {
               done();
             });
             event.client.sendClientMetrics(SdkClientMetricFrame.create());
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+  });
+
+  describe('primary meeting join and leave', () => {
+    it('will send a primary meeting join frame', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.PRIMARY_MEETING_JOIN);
+              done();
+            });
+            event.client.promoteToPrimaryMeeting(new MeetingSessionCredentials());
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a primary meeting leave frame', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.PRIMARY_MEETING_LEAVE);
+              done();
+            });
+            event.client.demoteFromPrimaryMeeting();
           }
         }
       }

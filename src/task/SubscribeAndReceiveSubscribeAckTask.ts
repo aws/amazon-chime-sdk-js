@@ -157,7 +157,10 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       // of the transceivers should have `mid` set by now (see comment above `getMidForStreamId`)
       const mid = this.context.transceiverController.getMidForStreamId(streamId);
       if (mid === undefined) {
-        this.context.logger.warn(`Could not find MID for stream ID: ${streamId}`);
+        if (streamId !== 0) {
+          // Send section or inactive section
+          this.context.logger.warn(`Could not find MID for stream ID: ${streamId}`);
+        }
         continue;
       }
       midsToStreamIds.set(mid, streamId);

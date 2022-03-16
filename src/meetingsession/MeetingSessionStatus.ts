@@ -115,6 +115,8 @@ export default class MeetingSessionStatus {
         return 'The attendee was not present.';
       case MeetingSessionStatusCode.AudioAttendeeRemoved:
         return 'The meeting ended because attendee removed.';
+      case MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting:
+        return 'The Primary meeting credentials provided are no longer valid. chime::DeleteAttendee may have been called on them.';
       /* istanbul ignore next */
       default: {
         // You get a compile-time error if you do not handle any status code.
@@ -132,6 +134,10 @@ export default class MeetingSessionStatus {
         return this.fromAudioStatus(frame.audioStatus.audioStatus);
       }
       return new MeetingSessionStatus(MeetingSessionStatusCode.SignalingRequestFailed);
+    } else if (frame.type === SdkSignalFrame.Type.PRIMARY_MEETING_LEAVE) {
+      return new MeetingSessionStatus(
+        MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting
+      );
     }
     return new MeetingSessionStatus(MeetingSessionStatusCode.OK);
   }
@@ -167,11 +173,19 @@ export default class MeetingSessionStatus {
 
   private static fromSignalingStatus(status: number): MeetingSessionStatus {
     // TODO: Add these numbers to proto definition and reference them here.
+    //
+    // We don't bother adding additional codes with different prefixes, and we probably
+    // shouldn't be prefixing all these errors (e.g. `AuthenticationRejected`) with the media type
+    // since that doesn't make sense.
     switch (status) {
       case 206:
         return new MeetingSessionStatus(MeetingSessionStatusCode.VideoCallSwitchToViewOnly);
       case 509:
         return new MeetingSessionStatus(MeetingSessionStatusCode.VideoCallAtSourceCapacity);
+      case 403:
+        return new MeetingSessionStatus(MeetingSessionStatusCode.AudioAuthenticationRejected);
+      case 409:
+        return new MeetingSessionStatus(MeetingSessionStatusCode.AudioCallAtCapacity);
       default:
         switch (Math.floor(status / 100)) {
           case 2:

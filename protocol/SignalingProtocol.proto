@@ -23,6 +23,9 @@ message SdkSignalFrame {
         CLIENT_METRIC = 21;
         DATA_MESSAGE = 22;
         REMOTE_VIDEO_UPDATE = 24;
+        PRIMARY_MEETING_JOIN = 25;
+        PRIMARY_MEETING_JOIN_ACK = 26;
+        PRIMARY_MEETING_LEAVE = 27;
     }
     required uint64 timestamp_ms = 1;
     required Type type = 2;
@@ -44,6 +47,9 @@ message SdkSignalFrame {
     optional SdkClientMetricFrame client_metric = 22;
     optional SdkDataMessageFrame data_message = 23;
     optional SdkRemoteVideoUpdateFrame remote_video_update = 25;
+    optional SdkPrimaryMeetingJoinFrame primary_meeting_join = 26;
+    optional SdkPrimaryMeetingJoinAckFrame primary_meeting_join_ack = 27;
+    optional SdkPrimaryMeetingLeaveFrame primary_meeting_leave = 28;
 }
 
 message SdkErrorFrame {
@@ -381,4 +387,20 @@ message SdkVideoSubscriptionConfiguration {
    required string mid = 1;
    optional string attendee_id = 2;
    optional uint32 stream_id = 3;
+}
+
+message SdkPrimaryMeetingJoinFrame {
+    optional SdkMeetingSessionCredentials credentials = 1;
+}
+
+message SdkPrimaryMeetingJoinAckFrame {
+}
+
+message SdkPrimaryMeetingLeaveFrame {
+}
+
+message SdkMeetingSessionCredentials {
+    optional string attendee_id = 1;
+    optional string external_user_id = 2;
+    optional string join_token = 3;
 }

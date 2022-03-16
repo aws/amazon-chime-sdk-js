@@ -9,7 +9,6 @@ import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultAct
 import AudioMixObserver from '../../src/audiomixobserver/AudioMixObserver';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
-import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
 import DefaultAudioVideoFacade from '../../src/audiovideofacade/DefaultAudioVideoFacade';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import ContentShareController from '../../src/contentsharecontroller/ContentShareController';
@@ -17,6 +16,9 @@ import ContentShareObserver from '../../src/contentshareobserver/ContentShareObs
 import DataMessage from '../../src/datamessage/DataMessage';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
+import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
+import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
+import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import type VolumeIndicatorCallback from '../../src/realtimecontroller/VolumeIndicatorCallback';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -26,7 +28,7 @@ describe('DefaultAudioVideoFacade', () => {
   const assert: Chai.AssertStatic = chai.assert;
   let domMockBuilder: DOMMockBuilder;
   let controller: NoOpAudioVideoController;
-  let facade: AudioVideoFacade;
+  let facade: DefaultAudioVideoFacade;
   let deviceController: NoOpDeviceController;
   let contentShareController: ContentShareController;
 
@@ -669,6 +671,27 @@ describe('DefaultAudioVideoFacade', () => {
 
     it('will return transcription controller ', () => {
       expect(facade.transcriptionController).to.not.equal(null);
+    });
+
+    it('will call promoteToPrimaryMeeting', () => {
+      const spy = sinon.spy(controller, 'promoteToPrimaryMeeting');
+      const credentials = new MeetingSessionCredentials();
+      facade.promoteToPrimaryMeeting(credentials);
+      expect(spy.withArgs(credentials).calledOnce).to.be.true;
+    });
+
+    it('will call demoteFromPrimaryMeeting', () => {
+      const spy = sinon.spy(controller, 'demoteFromPrimaryMeeting');
+      facade.demoteFromPrimaryMeeting();
+      assert(spy.calledOnceWith());
+    });
+
+    it('AudioVideoWasDemotedFromPrimaryMeeting will stop content share', () => {
+      const spy = sinon.spy(contentShareController, 'stopContentShare');
+      facade.audioVideoWasDemotedFromPrimaryMeeting(
+        new MeetingSessionStatus(MeetingSessionStatusCode.OK)
+      );
+      expect(spy.withArgs().calledOnce).to.be.true;
     });
   });
 });

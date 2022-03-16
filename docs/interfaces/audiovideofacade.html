@@ -130,6 +130,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#choosevideoinputdevice" class="tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#choosevideoinputquality" class="tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Quality</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#createanalysernodeforaudioinput" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#demotefromprimarymeeting" class="tsd-kind-icon">demote<wbr>From<wbr>Primary<wbr>Meeting</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#getallremotevideotiles" class="tsd-kind-icon">get<wbr>All<wbr>Remote<wbr>Video<wbr>Tiles</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#getallvideotiles" class="tsd-kind-icon">get<wbr>All<wbr>Video<wbr>Tiles</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#getcurrentmeetingaudiostream" class="tsd-kind-icon">get<wbr>Current<wbr>Meeting<wbr>Audio<wbr>Stream</a></li>
@@ -145,6 +146,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#mixintoaudioinput" class="tsd-kind-icon">mix<wbr>Into<wbr>Audio<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#pausecontentshare" class="tsd-kind-icon">pause<wbr>Content<wbr>Share</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#pausevideotile" class="tsd-kind-icon">pause<wbr>Video<wbr>Tile</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#promotetoprimarymeeting" class="tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#realtimecanunmutelocalaudio" class="tsd-kind-icon">realtime<wbr>Can<wbr>Unmute<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#realtimeislocalaudiomuted" class="tsd-kind-icon">realtime<wbr>IsLocal<wbr>Audio<wbr>Muted</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#realtimemutelocalaudio" class="tsd-kind-icon">realtime<wbr>Mute<wbr>Local<wbr>Audio</a></li>
@@ -321,7 +323,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#addobserver">addObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L9">src/audiovideocontroller/AudioVideoControllerFacade.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L11">src/audiovideocontroller/AudioVideoControllerFacade.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -596,6 +598,33 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a name="demotefromprimarymeeting" class="tsd-anchor"></a>
+					<h3>demote<wbr>From<wbr>Primary<wbr>Meeting</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">demote<wbr>From<wbr>Primary<wbr>Meeting<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#demotefromprimarymeeting">demoteFromPrimaryMeeting</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L98">src/audiovideocontroller/AudioVideoControllerFacade.ts:98</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Remove the promoted attendee from the Primary meeting. This client will stop sharing audio, video, and data messages.
+									This will revert the end-user to precisely the state they were before a call to <code>promoteToPrimaryMeeting</code></p>
+								</div>
+								<p>This will have no effect if there was no previous successful call to <code>promoteToPrimaryMeeting</code>. This
+									may result in <code>AudioVideoObserver.audioVideoWasDemotedFromPrimaryMeeting</code> but there is no need to wait for that callback
+								to revert UX, etc.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 					<a name="getallremotevideotiles" class="tsd-anchor"></a>
 					<h3>get<wbr>All<wbr>Remote<wbr>Video<wbr>Tiles</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
@@ -678,7 +707,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#getrtcpeerconnectionstats">getRTCPeerConnectionStats</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L38">src/audiovideocontroller/AudioVideoControllerFacade.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L40">src/audiovideocontroller/AudioVideoControllerFacade.ts:40</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -710,7 +739,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#getremotevideosources">getRemoteVideoSources</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L42">src/audiovideocontroller/AudioVideoControllerFacade.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L44">src/audiovideocontroller/AudioVideoControllerFacade.ts:44</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -947,6 +976,65 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a name="promotetoprimarymeeting" class="tsd-anchor"></a>
+					<h3>promote<wbr>ToPrimary<wbr>Meeting</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting<span class="tsd-signature-symbol">(</span>credentials<span class="tsd-signature-symbol">: </span><a href="../classes/meetingsessioncredentials.html" class="tsd-signature-type">MeetingSessionCredentials</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#promotetoprimarymeeting">promoteToPrimaryMeeting</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L88">src/audiovideocontroller/AudioVideoControllerFacade.ts:88</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Allows an attendee in a Replica meeting to immediately transition to a Primary meeting attendee
+										without need for reconnection. The promise should always return a session status
+									even upon failure (i.e. it should never reject). See the guide for more information.</p>
+								</div>
+								<p>The resolved <code>MeetingSessionStatus</code> will contain a <code>MeetingSessionStatusCode</code> of the following:</p>
+								<ul>
+									<li><code>MeetingSessionStatusCode.OK</code>: The promotion was successful (i.e. session token was valid,
+										there was room in the Primary meeting, etc.), audio will begin flowing
+									and the attendee can begin to send data messages, and content/video if the call is not already at limit.</li>
+									<li><code>MeetingSessionStatusCode.AudioAuthenticationRejected</code>: Credentials provided
+										were invalid when connection attempted to Primary meeting. There may be an issue
+										with your mechanism which allocates the Primary meeting attendee for the Replica
+										meeting proxied promotion.  This also may indicate that this API was called in a
+									non-Replica meeting.</li>
+									<li><code>MeetingSessionStatusCode.AudioCallAtCapacity</code>: Credentials provided were correct
+										but there was no room in the Primary meeting.  Promotions to Primary meeting attendee take up a slot, just like
+									regular Primary meeting attendee connections and are limited by the same mechanisms.</li>
+									<li><code>MeetingSessionStatusCode.SignalingBadRequest</code> or <code>MeetingSessionStatusCode.SignalingInternalServerError</code>:
+									Other failure, possibly due to disconnect or timeout. These failures are likely retryable.</li>
+								</ul>
+								<p>Application code may also receive a callback on <code>AudioVideoObserver.videoAvailabilityDidChange</code> to indicate they
+								can begin to share video.</p>
+								<p><code>chime::DeleteAttendee</code> on the Primary meeting attendee will result in <code>AudioVideoObserver.audioVideoWasDemotedFromPrimaryMeeting</code>
+								to indicate the attendee is no longer able to share.</p>
+								<p>Any disconnection will trigger an automatic demotion to avoid unexpected or unwanted promotion state on reconnection.
+									If the attendee still needs to be an interactive participant in the Primary meeting, <code>promoteToPrimaryMeeting</code>
+								should be called again with the same credentials.</p>
+								<p>This function should not be called until the first one resolves.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>credentials: <a href="../classes/meetingsessioncredentials.html" class="tsd-signature-type">MeetingSessionCredentials</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The credentials for the Primary meeting.  This needs to be obtained out of band.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>Promise which resolves to a session status for the request. See possible options above.</p>
 						</li>
 					</ul>
 				</section>
@@ -1772,7 +1860,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L10">src/audiovideocontroller/AudioVideoControllerFacade.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L12">src/audiovideocontroller/AudioVideoControllerFacade.ts:12</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1844,7 +1932,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#setaudioprofile">setAudioProfile</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L48">src/audiovideocontroller/AudioVideoControllerFacade.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L50">src/audiovideocontroller/AudioVideoControllerFacade.ts:50</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1948,7 +2036,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#start">start</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L28">src/audiovideocontroller/AudioVideoControllerFacade.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L30">src/audiovideocontroller/AudioVideoControllerFacade.ts:30</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2105,7 +2193,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#stop">stop</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L29">src/audiovideocontroller/AudioVideoControllerFacade.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerFacade.ts#L31">src/audiovideocontroller/AudioVideoControllerFacade.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -2451,6 +2539,9 @@
 								<a href="audiovideofacade.html#createanalysernodeforaudioinput" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+								<a href="audiovideofacade.html#demotefromprimarymeeting" class="tsd-kind-icon">demote<wbr>From<wbr>Primary<wbr>Meeting</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="audiovideofacade.html#getallremotevideotiles" class="tsd-kind-icon">get<wbr>All<wbr>Remote<wbr>Video<wbr>Tiles</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
@@ -2494,6 +2585,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="audiovideofacade.html#pausevideotile" class="tsd-kind-icon">pause<wbr>Video<wbr>Tile</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+								<a href="audiovideofacade.html#promotetoprimarymeeting" class="tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="audiovideofacade.html#realtimecanunmutelocalaudio" class="tsd-kind-icon">realtime<wbr>Can<wbr>Unmute<wbr>Local<wbr>Audio</a>

@@ -118,6 +118,15 @@
               <label for="event-reporting" class="custom-control-label">Enable event reporting</label>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="replica-meeting-input" class="custom-control-input">
+              <label for="replica-meeting-input" class="custom-control-label">Create meeting as replica</label>
+              <input type="name" id="primary-meeting-external-id" class="form-control" placeholder="Primary Meeting ID">
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="delete-attendee" class="custom-control-input">
+              <label for="delete-attendee" class="custom-control-label">Delete own attendee to leave</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" id="die" class="custom-control-input">
               <label for="die" class="custom-control-label">Abort on fatal errors</label>
             </div>
@@ -582,6 +591,9 @@
         <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Capture audio and video in the cloud" data-toggle="button" aria-pressed="false" autocomplete="off">
           <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
         </button>
+        <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Promote to or demote from Primary meeting" data-toggle="button" aria-pressed="false" autocomplete="off">
+            <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
+        </button>
       </div>
       <div class="col-4 col-lg-3 order-3 order-lg-3 text-right text-lg-right">
         <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4" title="Leave meeting">
@@ -612,6 +624,9 @@
       </div>
       <video id="content-share-video" playsinline crossOrigin="anonymous" style="display:none"></video>
     </div>
+  </div>
+
+  <div id='toast-container' aria-live="polite" aria-atomic="true">
   </div>
 </div>
 
