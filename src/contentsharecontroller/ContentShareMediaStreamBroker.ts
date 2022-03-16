@@ -34,7 +34,7 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
   }
 
   releaseMediaStream(_mediaStreamToRelease: MediaStream): void {
-    this.logger.warn('release media stream called');
+    this.logger.info('release media stream called');
     return;
   }
 

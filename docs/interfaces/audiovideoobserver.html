@@ -77,6 +77,7 @@
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
+					<li><a href="../classes/defaultaudiovideofacade.html" class="tsd-signature-type">DefaultAudioVideoFacade</a></li>
 					<li><a href="../classes/defaultcontentsharecontroller.html" class="tsd-signature-type">DefaultContentShareController</a></li>
 					<li><a href="../classes/monitortask.html" class="tsd-signature-type">MonitorTask</a></li>
 					<li><a href="../classes/signalingandmetricsconnectionmonitor.html" class="tsd-signature-type">SignalingAndMetricsConnectionMonitor</a></li>
@@ -92,6 +93,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideoobserver.html#audiovideodidstart" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Start</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideoobserver.html#audiovideodidstartconnecting" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Start<wbr>Connecting</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideoobserver.html#audiovideodidstop" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Stop</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideoobserver.html#audiovideowasdemotedfromprimarymeeting" class="tsd-kind-icon">audio<wbr>Video<wbr>Was<wbr>Demoted<wbr>From<wbr>Primary<wbr>Meeting</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideoobserver.html#connectiondidbecomegood" class="tsd-kind-icon">connection<wbr>Did<wbr>Become<wbr>Good</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideoobserver.html#connectiondidbecomepoor" class="tsd-kind-icon">connection<wbr>Did<wbr>Become<wbr>Poor</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideoobserver.html#connectiondidsuggeststopvideo" class="tsd-kind-icon">connection<wbr>Did<wbr>Suggest<wbr>Stop<wbr>Video</a></li>
@@ -189,6 +191,44 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>sessionStatus: <a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="audiovideowasdemotedfromprimarymeeting" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> audio<wbr>Video<wbr>Was<wbr>Demoted<wbr>From<wbr>Primary<wbr>Meeting</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">audio<wbr>Video<wbr>Was<wbr>Demoted<wbr>From<wbr>Primary<wbr>Meeting<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideoobserver/AudioVideoObserver.ts#L144">src/audiovideoobserver/AudioVideoObserver.ts:144</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This observer callback will only be called for attendees in Replica meetings.</p>
+								</div>
+								<p>Indicates that the client is no longer authenticated to the Primary meeting
+								and can no longer share media. <code>status</code> will contain a <code>MeetingSessionStatusCode</code> of the following:</p>
+								<ul>
+									<li><code>MeetingSessionStatusCode.OK</code>: <code>demoteFromPrimaryMeeting</code> was used to remove the attendee.</li>
+									<li><code>MeetingSessionStatusCode.AudioAuthenticationRejected</code>: <code>chime::DeleteAttendee</code> was called on the Primary
+									meeting attendee used in <code>promoteToPrimaryMeeting</code>.</li>
+									<li><code>MeetingSessionStatusCode.SignalingBadRequest</code>: Other failure, possibly due to disconnect
+										or timeout. These failures are likely retryable. Any disconnection will trigger an automatic
+									demotion to avoid unexpected or unwanted promotion state on reconnection.</li>
+								</ul>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>status: <a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -697,6 +737,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="audiovideoobserver.html#audiovideodidstop" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Stop</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="audiovideoobserver.html#audiovideowasdemotedfromprimarymeeting" class="tsd-kind-icon">audio<wbr>Video<wbr>Was<wbr>Demoted<wbr>From<wbr>Primary<wbr>Meeting</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="audiovideoobserver.html#connectiondidbecomegood" class="tsd-kind-icon">connection<wbr>Did<wbr>Become<wbr>Good</a>

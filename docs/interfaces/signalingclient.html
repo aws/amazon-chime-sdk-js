@@ -95,12 +95,14 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#closeconnection" class="tsd-kind-icon">close<wbr>Connection</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#demotefromprimarymeeting" class="tsd-kind-icon">demote<wbr>From<wbr>Primary<wbr>Meeting</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#join" class="tsd-kind-icon">join</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#leave" class="tsd-kind-icon">leave</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#mute" class="tsd-kind-icon">mute</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#openconnection" class="tsd-kind-icon">open<wbr>Connection</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#pause" class="tsd-kind-icon">pause</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#pingpong" class="tsd-kind-icon">ping<wbr>Pong</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#promotetoprimarymeeting" class="tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#ready" class="tsd-kind-icon">ready</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#registerobserver" class="tsd-kind-icon">register<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="signalingclient.html#remotevideoupdate" class="tsd-kind-icon">remote<wbr>Video<wbr>Update</a></li>
@@ -126,7 +128,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L106">src/signalingclient/SignalingClient.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L107">src/signalingclient/SignalingClient.ts:107</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -142,6 +144,28 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="demotefromprimarymeeting" class="tsd-anchor"></a>
+					<h3>demote<wbr>From<wbr>Primary<wbr>Meeting</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">demote<wbr>From<wbr>Primary<wbr>Meeting<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L150">src/signalingclient/SignalingClient.ts:150</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Leave the primary meeting and stop sharing audio, video (if started), and data messages.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="join" class="tsd-anchor"></a>
 					<h3>join</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -151,7 +175,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L59">src/signalingclient/SignalingClient.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L60">src/signalingclient/SignalingClient.ts:60</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -182,7 +206,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L87">src/signalingclient/SignalingClient.ts:87</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L88">src/signalingclient/SignalingClient.ts:88</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -204,7 +228,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L113">src/signalingclient/SignalingClient.ts:113</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L114">src/signalingclient/SignalingClient.ts:114</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -235,7 +259,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L44">src/signalingclient/SignalingClient.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L45">src/signalingclient/SignalingClient.ts:45</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -271,7 +295,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L125">src/signalingclient/SignalingClient.ts:125</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L126">src/signalingclient/SignalingClient.ts:126</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -299,7 +323,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L52">src/signalingclient/SignalingClient.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L53">src/signalingclient/SignalingClient.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -322,6 +346,42 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="promotetoprimarymeeting" class="tsd-anchor"></a>
+					<h3>promote<wbr>ToPrimary<wbr>Meeting</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting<span class="tsd-signature-symbol">(</span>credentials<span class="tsd-signature-symbol">: </span><a href="../classes/meetingsessioncredentials.html" class="tsd-signature-type">MeetingSessionCredentials</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L145">src/signalingclient/SignalingClient.ts:145</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Allows an attendee in a replica meeting to join the primary meeting as if
+										they were a normal attendee. Once successfully joined they will receive a callback on
+									<code>SignalingClientObserver.handleSignalingClientEvent</code>.  See documentation of observer for more information.</p>
+								</div>
+								<p>They may also receive another callback on <code>SignalingClientObserver.handleSignalingClientEvent</code> to indicate they
+								can begin to share video.</p>
+								<p>Failure will also be indicated through the <code>SignalingClientObserver.handleSignalingClientEvent</code> callback.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>credentials: <a href="../classes/meetingsessioncredentials.html" class="tsd-signature-type">MeetingSessionCredentials</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The credentials for the primary meeting.  This needs to be obtained out of band.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="ready" class="tsd-anchor"></a>
 					<h3>ready</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -331,7 +391,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L120">src/signalingclient/SignalingClient.ts:120</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L121">src/signalingclient/SignalingClient.ts:121</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -354,7 +414,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L24">src/signalingclient/SignalingClient.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L25">src/signalingclient/SignalingClient.ts:25</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -385,7 +445,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L79">src/signalingclient/SignalingClient.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L80">src/signalingclient/SignalingClient.ts:80</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -426,7 +486,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L31">src/signalingclient/SignalingClient.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L32">src/signalingclient/SignalingClient.ts:32</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -457,7 +517,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L130">src/signalingclient/SignalingClient.ts:130</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L131">src/signalingclient/SignalingClient.ts:131</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -485,7 +545,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L92">src/signalingclient/SignalingClient.ts:92</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L93">src/signalingclient/SignalingClient.ts:93</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -513,7 +573,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L97">src/signalingclient/SignalingClient.ts:97</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L98">src/signalingclient/SignalingClient.ts:98</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -541,7 +601,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L66">src/signalingclient/SignalingClient.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClient.ts#L67">src/signalingclient/SignalingClient.ts:67</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -583,6 +643,9 @@
 								<a href="signalingclient.html#closeconnection" class="tsd-kind-icon">close<wbr>Connection</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="signalingclient.html#demotefromprimarymeeting" class="tsd-kind-icon">demote<wbr>From<wbr>Primary<wbr>Meeting</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="signalingclient.html#join" class="tsd-kind-icon">join</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
@@ -599,6 +662,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="signalingclient.html#pingpong" class="tsd-kind-icon">ping<wbr>Pong</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="signalingclient.html#promotetoprimarymeeting" class="tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="signalingclient.html#ready" class="tsd-kind-icon">ready</a>
