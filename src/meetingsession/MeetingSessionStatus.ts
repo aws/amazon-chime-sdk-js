@@ -173,6 +173,10 @@ export default class MeetingSessionStatus {
 
   private static fromSignalingStatus(status: number): MeetingSessionStatus {
     // TODO: Add these numbers to proto definition and reference them here.
+    //
+    // We don't bother adding additional codes with different prefixes, and we probably
+    // shouldn't be prefixing all these errors (e.g. `AuthenticationRejected`) with the media type
+    // since that doesn't make sense.
     switch (status) {
       case 206:
         return new MeetingSessionStatus(MeetingSessionStatusCode.VideoCallSwitchToViewOnly);
