@@ -54,6 +54,18 @@ const getNewVersion = (currentVersion, versionIncrement) => {
   }
 };
 
+const getTodayDate = () => {
+  // Return local date in ISO format yyyy-mm-dd
+  const today = new Date();
+  const year = today.getFullYear();
+
+  const month = new Intl.DateTimeFormat('en-US', {month: "2-digit"}).format(today);
+
+  const day = new Intl.DateTimeFormat('en-US', {day: "2-digit"}).format(today);
+
+  return year + "-" + month + "-" + day;
+}
+
 // Add an entry for the new version in CHANGELOG.md
 const updateChangelog = (newVersion) => {
   logger.log(`Updating CHANGELOG.md with a new release entry - ${newVersion}`);
@@ -61,7 +73,7 @@ const updateChangelog = (newVersion) => {
   let changeLog = fs.readFileSync(filePath).toString();
   const latestEntryIndex = changeLog.indexOf('## [');
   const newEntry = [
-    [`## [${newVersion}] - ${new Date().toISOString().slice(0, 10)}`],
+    [`## [${newVersion}] - ${getTodayDate()}`],
     ['### Added'],
     ['### Removed'],
     ['### Changed'],
@@ -131,7 +143,7 @@ const versionBump = async (option, branchName) => {
   logger.log(`Do you want to upload these files to ${branchName} branch?\n`);
   await shouldContinuePrompt();
   spawnOrFail('git', [`push origin HEAD:${branchName} -f`]);
-  if (branchName === 'version-bump') {
+  if (branchName.startsWith('version-bump')) {
     logger.log('Please create a pull request to merge the version bump to main.');
   }
   return newVersion;
