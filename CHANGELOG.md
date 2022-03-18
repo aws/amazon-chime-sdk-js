@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
     
 ### Changed
-
+- Re-added: 'Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.'
 ### Fixed
     
 ## [2.29.0] - 2022-03-10
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
 ### Changed
 - Adjust the recovery behavior of `VideoPriorityBasedPolicy` to not get stuck at low estimates, not overeact to spurious packet loss when probing, and not let the time between probes raise to 60 seconds (reduced to maximum of 30 seconds).
-
+- Unintentionally removed: 'Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.'
 ### Fixed
 - Fix a video orientation issue when Background Blur/Background Replacement is enabled.
     
@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+- Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.
 
 ### Fixed
 - Fix a worker resource leak with `BackgroundBlurProcessor` and `BackgroundReplacementProcessor`.
