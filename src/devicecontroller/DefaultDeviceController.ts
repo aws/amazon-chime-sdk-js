@@ -70,6 +70,7 @@ export default class DefaultDeviceController
   private videoInputQualitySettings: VideoQualitySettings = null;
 
   private readonly useWebAudio: boolean = false;
+  private readonly useMediaConstraintsFallback: boolean = true;
 
   private getAudioInputInProgress: boolean = false;
   private getVideoInputInProgress: boolean = false;
@@ -90,12 +91,13 @@ export default class DefaultDeviceController
 
   constructor(
     private logger: Logger,
-    options?: { enableWebAudio?: boolean },
+    options?: { enableWebAudio?: boolean; useMediaConstraintsFallback?: boolean },
     private browserBehavior: ExtendedBrowserBehavior = new DefaultBrowserBehavior(),
     public eventController?: EventController
   ) {
-    const { enableWebAudio = false } = options || {};
+    const { enableWebAudio = false, useMediaConstraintsFallback = true } = options || {};
     this.useWebAudio = enableWebAudio;
+    this.useMediaConstraintsFallback = useMediaConstraintsFallback;
 
     this.videoInputQualitySettings = new VideoQualitySettings(
       DefaultDeviceController.defaultVideoWidth,
@@ -231,22 +233,19 @@ export default class DefaultDeviceController
     this.getAudioInputInProgress = true;
 
     try {
-      let audioStream;
       if (isAudioTransformDevice(device)) {
         // N.B., do not JSON.stringify here — for some kinds of devices this
         // will cause a cyclic object reference error.
         this.logger.info(`Choosing transform input device ${device}`);
 
         await this.chooseAudioTransformInputDevice(device);
-        audioStream = this.getMediaStreamDestinationNode().stream;
       } else {
         this.logger.info(`Choosing intrinsic audio input device ${device}`);
         this.removeTransform();
         await this.chooseInputIntrinsicDevice('audio', device);
-        audioStream = this.activeDevices['audio'].stream;
       }
       this.trace('startAudioInputDevice', device, `success`);
-      return audioStream;
+      return this.useWebAudio ? this.getMediaStreamDestinationNode().stream : this.activeDevices['audio'].stream;
     } catch (error) {
       throw error;
     } finally {
@@ -829,9 +828,11 @@ export default class DefaultDeviceController
 
   private listCachedDevicesOfKind(deviceKind: string): MediaDeviceInfo[] {
     const devicesOfKind: MediaDeviceInfo[] = [];
-    for (const device of this.deviceInfoCache) {
-      if (device.kind === deviceKind) {
-        devicesOfKind.push(device);
+    if (this.deviceInfoCache) {
+      for (const device of this.deviceInfoCache) {
+        if (device.kind === deviceKind) {
+          devicesOfKind.push(device);
+        }
       }
     }
     return devicesOfKind;
@@ -929,7 +930,7 @@ export default class DefaultDeviceController
     selection: DeviceSelection,
     proposedConstraints: MediaStreamConstraints
   ): boolean {
-    // Checking for stream using the fake constraint created in calculateMediaStreamConstraints
+    // Checking for stream using the fake constraint created in getMediaStreamConstraints
     let streamId;
     if (kind === 'audio') {
       // @ts-ignore
@@ -961,7 +962,6 @@ export default class DefaultDeviceController
   }
 
   private getGroupIdFromDeviceId(kind: string, deviceId: string): string {
-    /* istanbul ignore else */
     if (this.deviceInfoCache !== null) {
       const cachedDeviceInfo = this.listCachedDevicesOfKind(`${kind}input`).find(
         (cachedDevice: MediaDeviceInfo) => cachedDevice.deviceId === deviceId
@@ -972,34 +972,9 @@ export default class DefaultDeviceController
         );
         return cachedDeviceInfo.groupId;
       }
-    } else {
-      this.logger.error(
-        'Device cache is not populated. Please make sure to call list devices first'
-      );
     }
     this.logger.debug(`GroupId of deviceId ${deviceId} found in cache is empty`);
     return '';
-  }
-
-  private getActiveDeviceId(kind: string): string | null {
-    /* istanbul ignore else */
-    if (this.activeDevices[kind] && this.activeDevices[kind].constraints) {
-      const activeDeviceMediaTrackConstraints =
-        this.activeDevices[kind].constraints.audio || this.activeDevices[kind].constraints.video;
-      const activeDeviceConstrainDOMStringParameters = (activeDeviceMediaTrackConstraints as MediaTrackConstraints)
-        .deviceId;
-
-      let activeDeviceId: string;
-      if (typeof activeDeviceConstrainDOMStringParameters === 'string') {
-        activeDeviceId = activeDeviceConstrainDOMStringParameters as string;
-      } else {
-        activeDeviceId = (activeDeviceConstrainDOMStringParameters as ConstrainDOMStringParameters)
-          .exact as string;
-      }
-      return activeDeviceId;
-    }
-    /* istanbul ignore next */
-    return null;
   }
 
   private handleGetUserMediaError(error: Error, errorTimeMs?: number): void {
@@ -1071,9 +1046,9 @@ export default class DefaultDeviceController
 
   private async chooseInputIntrinsicDevice(kind: 'audio' | 'video', device: Device): Promise<void> {
     // N.B.,: the input device might already have augmented constraints supplied
-    // by an `AudioTransformDevice`. `calculateMediaStreamConstraints` will respect
+    // by an `AudioTransformDevice`. `getMediaStreamConstraints` will respect
     // settings supplied by the device.
-    const proposedConstraints = this.calculateMediaStreamConstraints(kind, device);
+    const proposedConstraints = this.getMediaStreamConstraints(kind, device);
 
     // TODO: `matchesConstraints` should really return compatible/incompatible/exact --
     // `applyConstraints` can be used to reuse the active device while changing the
@@ -1103,60 +1078,10 @@ export default class DefaultDeviceController
       } else {
         newDevice.stream = await navigator.mediaDevices.getUserMedia(proposedConstraints);
         newDevice.constraints = proposedConstraints;
-
-        await this.handleDeviceChange();
-
-        // We only monitor the first track, and use its device ID for observer notifications.
-        const track = newDevice.stream.getTracks()[0];
-
-        newDevice.endedCallback = (): void => {
-          // Hard to test, but the safety check is worthwhile.
-          /* istanbul ignore else */
-          if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
-            this.logger.warn(
-              `${kind} input device which was active is no longer available, resetting to null device`
-            );
-            this.handleDeviceStreamEnded(kind, this.getActiveDeviceId(kind));
-            delete newDevice.endedCallback;
-          }
-        };
-        track.addEventListener('ended', newDevice.endedCallback, { once: true });
       }
-
-      if (device !== null) {
-        const newDeviceId = this.getMediaTrackSettings(newDevice.stream)?.deviceId;
-        newDevice.groupId = newDeviceId ? this.getGroupIdFromDeviceId(kind, newDeviceId) : '';
-      } else {
-        newDevice.groupId = '';
-      }
-
-      if (kind === 'audio') {
-        // We only monitor the first track, and use its device ID for observer notifications.
-        const track = newDevice.stream.getAudioTracks()[0];
-        if (track) {
-          const id = track.getSettings().deviceId || newDevice.stream;
-
-          newDevice.trackMuteCallback = (): void => {
-            this.mediaStreamMuteObserver(id, true);
-          };
-          newDevice.trackUnmuteCallback = (): void => {
-            this.mediaStreamMuteObserver(id, false);
-          };
-          track.addEventListener('mute', newDevice.trackMuteCallback, { once: false });
-          track.addEventListener('unmute', newDevice.trackUnmuteCallback, { once: false });
-        }
-      }
+      await this.handleNewInputDevice(kind, newDevice);
     } catch (error) {
-      let errorMessage: string;
-      if (error?.name && error.message) {
-        errorMessage = `${error.name}: ${error.message}`;
-      } else if (error?.name) {
-        errorMessage = error.name;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      } else {
-        errorMessage = 'UnknownError';
-      }
+      const errorMessage = this.getErrorMessage(error);
 
       if (kind === 'audio') {
         this.eventController?.publishEvent('audioInputFailed', {
@@ -1174,42 +1099,121 @@ export default class DefaultDeviceController
         )}: ${errorMessage}`
       );
 
+      let hasError = true;
       // This is effectively `error instanceof OverconstrainedError` but works in Node.
       if (error && 'constraint' in error) {
         this.logger.error(`Over-constrained by constraint: ${error.constraint}`);
-      }
-
-      /*
-       * If there is any error while acquiring the audio device, we fall back to null device.
-       * Reason: If device selection fails (e.g. NotReadableError), the peer connection is left hanging
-       * with no active audio track since we release the previously attached track.
-       * If no audio packet has yet been sent to the server, the server will not emit the joined event.
-       */
-      if (kind === 'audio') {
-        this.logger.info(`choosing null ${kind} device instead`);
-        try {
-          newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
-          newDevice.constraints = null;
-          await this.handleNewInputDevice(kind, newDevice);
-        } catch (error) {
-          this.logger.error(
-            `failed to choose null ${kind} device. ${error.name}: ${error.message}`
-          );
+        // Try to reduce the constraints if over-constraints
+        if (this.useMediaConstraintsFallback) {
+          const fallbackConstraints = this.getMediaStreamConstraints(kind, device, true);
+          const fallbackConstraintsJSON = JSON.stringify(fallbackConstraints);
+          if (fallbackConstraintsJSON !== JSON.stringify(proposedConstraints)) {
+            this.logger.info(
+              `retry requesting new ${kind} device with minimal constraint ${fallbackConstraintsJSON}`
+            );
+            try {
+              newDevice.stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+              newDevice.constraints = fallbackConstraints;
+              await this.handleDeviceChange();
+              await this.handleNewInputDevice(kind, newDevice);
+              hasError = false;
+            } catch (e) {
+              this.logger.error(
+                `failed to get ${kind} device for constraints ${fallbackConstraintsJSON}: ${this.getErrorMessage(
+                  e
+                )}`
+              );
+            }
+          }
         }
       }
 
-      this.handleGetUserMediaError(error, Date.now() - startTimeMs);
+      if (hasError) {
+        /*
+         * If there is any error while acquiring the audio device, we fall back to null device.
+         * Reason: If device selection fails (e.g. NotReadableError), the peer connection is left hanging
+         * with no active audio track since we release the previously attached track.
+         * If no audio packet has yet been sent to the server, the server will not emit the joined event.
+         */
+        if (kind === 'audio') {
+          this.logger.info(`choosing null ${kind} device instead`);
+          try {
+            newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
+            newDevice.constraints = null;
+            await this.handleNewInputDevice(kind, newDevice);
+          } catch (error) {
+            this.logger.error(
+              `failed to choose null ${kind} device. ${error.name}: ${error.message}`
+            );
+          }
+        }
+        this.handleGetUserMediaError(error, Date.now() - startTimeMs);
+      }
     } finally {
       this.watchForDeviceChangesIfNecessary();
     }
+  }
 
-    this.logger.info(`got ${kind} device for constraints ${JSON.stringify(proposedConstraints)}`);
-    await this.handleNewInputDevice(kind, newDevice);
+  private getErrorMessage(error: Error): string {
+    if (!error) {
+      return 'UnknownError';
+    }
+    if (error.name && error.message) {
+      return `${error.name}: ${error.message}`;
+    }
+    if (error.name) {
+      return error.name;
+    }
+    if (error.message) {
+      return error.message;
+    }
+  }
 
-    // Notify the device mute state immediately after selection.
+  private async handleNewInputDevice(
+    kind: 'audio' | 'video',
+    newDevice: DeviceSelection
+  ): Promise<void> {
+    this.logger.info(`got ${kind} device for constraints ${JSON.stringify(newDevice.constraints)}`);
+    const newDeviceId = this.getMediaTrackSettings(newDevice.stream)?.deviceId;
+    newDevice.groupId = newDeviceId ? this.getGroupIdFromDeviceId(kind, newDeviceId) : '';
+    this.activeDevices[kind] = newDevice;
+    this.logger.debug(`Set activeDevice to ${JSON.stringify(newDevice)}`);
+    this.watchForDeviceChangesIfNecessary();
+
+    // Add event listener to detect ended event of media track
+    // We only monitor the first track, and use its device ID for observer notifications.
+    const track = newDevice.stream.getTracks()[0];
+
+    newDevice.endedCallback = (): void => {
+      // Hard to test, but the safety check is worthwhile.
+      /* istanbul ignore else */
+      if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
+        this.logger.warn(
+          `${kind} input device which was active is no longer available, resetting to null device`
+        );
+        this.handleDeviceStreamEnded(kind, newDeviceId);
+        delete newDevice.endedCallback;
+      }
+    };
+    track.addEventListener('ended', newDevice.endedCallback, { once: true });
+
+    // Add event listener to mute/unmute event for audio
     if (kind === 'audio') {
-      this.logger.debug('Notifying mute state after selection');
-      for (const track of newDevice.stream.getAudioTracks()) {
+      // We only monitor the first track, and use its device ID for observer notifications.
+      const track = newDevice.stream.getAudioTracks()[0];
+      if (track) {
+        const id = track.getSettings().deviceId || newDevice.stream;
+
+        newDevice.trackMuteCallback = (): void => {
+          this.mediaStreamMuteObserver(id, true);
+        };
+        newDevice.trackUnmuteCallback = (): void => {
+          this.mediaStreamMuteObserver(id, false);
+        };
+        track.addEventListener('mute', newDevice.trackMuteCallback, { once: false });
+        track.addEventListener('unmute', newDevice.trackUnmuteCallback, { once: false });
+
+        this.logger.debug('Notifying mute state after selection');
         if (track.muted) {
           newDevice.trackMuteCallback();
         } else {
@@ -1217,14 +1221,8 @@ export default class DefaultDeviceController
         }
       }
     }
-    return;
-  }
 
-  private async handleNewInputDevice(kind: string, newDevice: DeviceSelection): Promise<void> {
-    this.activeDevices[kind] = newDevice;
-    this.logger.debug(`Set activeDevice to ${JSON.stringify(newDevice)}`);
-    this.watchForDeviceChangesIfNecessary();
-
+    // Trigger audio/video input change event
     if (kind === 'video') {
       // attempts to mirror `this.useWebAudio`. The difference is that audio destination stream stays the same
       // but video sending needs to switch streams.
@@ -1248,82 +1246,125 @@ export default class DefaultDeviceController
 
   private calculateMediaStreamConstraints(
     kind: string,
-    device: Device
-  ): MediaStreamConstraints | null {
-    let trackConstraints: MediaTrackConstraints = {};
-    if (device === '') {
-      device = null;
+    deviceId: string,
+    groupId: string,
+    minimal: boolean
+  ): MediaTrackConstraints | boolean {
+    // No need for any constraints if we want minimal constraint and there is only one device
+    if (minimal && this.listCachedDevicesOfKind(`${kind}input`).length === 1) {
+      return true;
     }
-    const stream = this.intrinsicDeviceAsMediaStream(device);
-    if (device === null) {
-      return null;
-    } else if (typeof device === 'string') {
-      if (
-        this.browserBehavior.requiresNoExactMediaStreamConstraints() &&
-        this.browserBehavior.requiresGroupIdMediaStreamConstraints()
-      ) {
-        // In Samsung Internet browser, navigator.mediaDevices.enumerateDevices()
-        // returns same deviceId but different groupdId for some audioinput and videoinput devices.
-        // To handle this, we select appropriate device using deviceId + groupId.
-        trackConstraints.deviceId = device;
-        trackConstraints.groupId = this.getGroupIdFromDeviceId(kind, device);
-      } /* istanbul ignore next */ else if (
-        this.browserBehavior.requiresNoExactMediaStreamConstraints()
-      ) {
-        // This branch is used to be for iOS 12 and 12.1 which are no longer supported
-        trackConstraints.deviceId = device;
-      } else {
-        trackConstraints.deviceId = { exact: device };
-      }
-    } else if (stream) {
-      // @ts-ignore - create a fake track constraint using the stream id
-      trackConstraints.streamId = stream.id;
-    } else if (isMediaDeviceInfo(device)) {
-      trackConstraints.deviceId = device.deviceId;
-      trackConstraints.groupId = device.groupId;
+    const trackConstraints: MediaTrackConstraints = {};
+    // In Samsung Internet browser, navigator.mediaDevices.enumerateDevices()
+    // returns same deviceId but different groupdId for some audioinput and videoinput devices.
+    // To handle this, we select appropriate device using deviceId + groupId.
+    if (this.browserBehavior.requiresNoExactMediaStreamConstraints()) {
+      trackConstraints.deviceId = deviceId;
     } else {
-      // Take the input set of constraints. Note that this allows
-      // the builder to specify overrides for properties like `autoGainControl`.
-      // @ts-ignore - device is a MediaTrackConstraints
-      trackConstraints = device;
+      trackConstraints.deviceId = { exact: deviceId };
     }
+    if (groupId) {
+      trackConstraints.groupId = groupId;
+    }
+
+    if (minimal) {
+      return trackConstraints;
+    }
+
+    // Video additional constraints
     if (kind === 'video') {
-      trackConstraints.width = trackConstraints.width || {
+      trackConstraints.width = {
         ideal: this.videoInputQualitySettings.videoWidth,
       };
-      trackConstraints.height = trackConstraints.height || {
+      trackConstraints.height = {
         ideal: this.videoInputQualitySettings.videoHeight,
       };
-      trackConstraints.frameRate = trackConstraints.frameRate || {
+      trackConstraints.frameRate = {
         ideal: this.videoInputQualitySettings.videoFrameRate,
       };
+      return trackConstraints;
     }
-    if (kind === 'audio' && this.supportSampleRateConstraint()) {
+
+    // Audio additional constraints
+    if (this.supportSampleRateConstraint()) {
       trackConstraints.sampleRate = { ideal: DefaultDeviceController.defaultSampleRate };
     }
-    if (kind === 'audio' && this.supportSampleSizeConstraint()) {
+    if (this.supportSampleSizeConstraint()) {
       trackConstraints.sampleSize = { ideal: DefaultDeviceController.defaultSampleSize };
     }
-    if (kind === 'audio' && this.supportChannelCountConstraint()) {
+    if (this.supportChannelCountConstraint()) {
       trackConstraints.channelCount = { ideal: DefaultDeviceController.defaultChannelCount };
     }
-    if (kind === 'audio') {
-      const augmented = {
-        echoCancellation: true,
-        googEchoCancellation: true,
-        googEchoCancellation2: true,
-        googAutoGainControl: true,
-        googAutoGainControl2: true,
-        googNoiseSuppression: true,
-        googNoiseSuppression2: true,
-        googHighpassFilter: true,
+    const augmented = {
+      echoCancellation: true,
+      googEchoCancellation: true,
+      googEchoCancellation2: true,
+      googAutoGainControl: true,
+      googAutoGainControl2: true,
+      googNoiseSuppression: true,
+      googNoiseSuppression2: true,
+      googHighpassFilter: true,
+      ...trackConstraints,
+    };
+    return augmented as MediaTrackConstraints;
+  }
 
-        // We allow the provided constraints to override these sensible defaults.
-        ...trackConstraints,
-      };
-      trackConstraints = augmented as MediaTrackConstraints;
-    }
+  private getMediaStreamConstraintsFromTrackConstraints(
+    kind: 'audio' | 'video',
+    trackConstraints: MediaTrackConstraints | boolean
+  ): MediaStreamConstraints {
     return kind === 'audio' ? { audio: trackConstraints } : { video: trackConstraints };
+  }
+
+  private getMediaStreamConstraints(
+    kind: 'audio' | 'video',
+    device: Device,
+    minimal: boolean = false
+  ): MediaStreamConstraints | null {
+    let trackConstraints: MediaTrackConstraints | boolean = {};
+    if (!device) {
+      return null;
+    }
+    const stream = this.intrinsicDeviceAsMediaStream(device);
+    if (stream) {
+      // @ts-ignore - create a fake track constraint using the stream id
+      trackConstraints.streamId = stream.id;
+      return this.getMediaStreamConstraintsFromTrackConstraints(kind, trackConstraints);
+    }
+    if (typeof device === 'string') {
+      let groupId = '';
+      if (this.browserBehavior.requiresGroupIdMediaStreamConstraints()) {
+        if (this.deviceInfoCache !== null) {
+          groupId = this.getGroupIdFromDeviceId(kind, device);
+        } else {
+          this.logger.error(
+            'Device cache is not populated. Please make sure to call list devices first'
+          );
+        }
+      }
+      trackConstraints = this.calculateMediaStreamConstraints(
+        kind,
+        device,
+        groupId,
+        minimal
+      );
+      return this.getMediaStreamConstraintsFromTrackConstraints(kind, trackConstraints);
+    }
+
+    if (isMediaDeviceInfo(device)) {
+      trackConstraints = this.calculateMediaStreamConstraints(
+        kind,
+        device.deviceId,
+        device.groupId,
+        minimal
+      );
+      return this.getMediaStreamConstraintsFromTrackConstraints(kind, trackConstraints);
+    }
+    // Take the input set of constraints.
+    // In this case, we just use the constraints as-is.
+    // @ts-ignore - device is a MediaTrackConstraints
+    trackConstraints = device;
+    return this.getMediaStreamConstraintsFromTrackConstraints(kind, trackConstraints);
   }
 
   private deviceInfoFromDeviceId(

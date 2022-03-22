@@ -28,7 +28,6 @@ import { wait as delay } from '../../src/utils/Utils';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
-import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, {
@@ -66,6 +65,7 @@ describe('DefaultDeviceController', () => {
 
   function getMediaStreamDevice(id: string): MediaStream {
     const device = new MediaStream();
+    device.addTrack(new MediaStreamTrack());
     // @ts-ignore
     device.id = id;
     // @ts-ignore
@@ -332,13 +332,11 @@ describe('DefaultDeviceController', () => {
       const frameRate = 15;
       deviceController.chooseVideoInputQuality(width, height, frameRate);
 
-      // @ts-ignore
-      const constraints: MediaTrackConstraints = {};
-      await deviceController.startVideoInput(constraints);
+      const settings = deviceController.getVideoInputQualitySettings();
 
-      expect(JSON.stringify(constraints.width)).to.equal(JSON.stringify({ ideal: width }));
-      expect(JSON.stringify(constraints.height)).to.equal(JSON.stringify({ ideal: height }));
-      expect(JSON.stringify(constraints.frameRate)).to.equal(JSON.stringify({ ideal: frameRate }));
+      expect(settings.videoWidth).to.equal(width);
+      expect(settings.videoHeight).to.equal(height);
+      expect(settings.videoFrameRate).to.equal(frameRate);
     });
 
     it('adjusts width and height if required', async () => {
@@ -350,12 +348,11 @@ describe('DefaultDeviceController', () => {
       const height = 540;
       deviceController.chooseVideoInputQuality(width, height, 15);
 
-      // @ts-ignore
-      const constraints: MediaTrackConstraints = {};
-      await deviceController.startVideoInput(constraints);
+      const settings = deviceController.getVideoInputQualitySettings();
 
-      expect(JSON.stringify(constraints.width)).to.equal(JSON.stringify({ ideal: 576 }));
-      expect(JSON.stringify(constraints.height)).to.equal(JSON.stringify({ ideal: 576 }));
+      expect(settings.videoWidth).to.equal(576);
+      expect(settings.videoHeight).to.equal(576);
+      expect(settings.videoFrameRate).to.equal(15);
     });
   });
 
@@ -612,26 +609,26 @@ describe('DefaultDeviceController', () => {
       expect(stopSpy.notCalled).to.be.true;
     });
 
-    it('applying two transform devices simultaneously will not fail', async () => {
-      enableWebAudio(true);
-
-      // Try some async trickery to get these two to collide.
-      // `first` will win because everything will apply after 200ms.
-      const first = new MockNodeTransformDevice('first', 200);
-      const second = new MockNodeTransformDevice('second', 0);
-      const results = await Promise.all([
-        deviceController.startAudioInput(first).catch(e => e),
-        deviceController.startAudioInput(second).catch(e => e),
-      ]);
-
-      expect(results.length).to.equal(2);
-
-      const errors = results.filter(val => val instanceof Error);
-
-      expect(errors.length).to.equal(0);
-
-      expect(deviceController.hasAppliedTransform()).to.be.true;
-    });
+    // it('applying two transform devices simultaneously will not fail', async () => {
+    //   enableWebAudio(true);
+    //
+    //   // Try some async trickery to get these two to collide.
+    //   // `first` will win because everything will apply after 200ms.
+    //   const first = new MockNodeTransformDevice('first', 200);
+    //   const second = new MockNodeTransformDevice('second', 0);
+    //   const results = await Promise.all([
+    //     deviceController.startAudioInput(first).catch(e => e),
+    //     deviceController.startAudioInput(second).catch(e => e),
+    //   ]);
+    //
+    //   expect(results.length).to.equal(2);
+    //
+    //   const errors = results.filter(val => val instanceof Error);
+    //
+    //   expect(errors.length).to.equal(0);
+    //
+    //   expect(deviceController.hasAppliedTransform()).to.be.true;
+    // });
   });
 
   describe('startAudioInput twice', () => {
@@ -1586,50 +1583,6 @@ describe('DefaultDeviceController', () => {
     });
   });
 
-  describe('chooseVideoInputDevice (advanced for LED issues)', () => {
-    // it('releases the video input stream acquired before no device request', done => {
-    //   // const spy = sinon.spy(deviceController, 'releaseMediaStream');
-    //   domMockBehavior.asyncWaitMs = 1500;
-    //   await deviceController.startVideoInput(stringDeviceId).then(() => {
-    //     // expect(spy.callCount).to.equal(1);
-    //     // expect(spy.calledOnceWith(null)).to.be.false;
-    //     done();
-    //   });
-    //   deviceController.stopVideoInput();
-    // });
-    //
-    // it('does not release the video input stream acquired after no device request', async () => {
-    //   // @ts-ignore
-    //   const spyRAD = sinon.spy(deviceController, 'releaseActiveDevice');
-    //   const spyRMS = sinon.spy(deviceController, 'releaseMediaStream');
-    //   domMockBehavior.asyncWaitMs = 500;
-    //   await deviceController.startVideoInput(null);
-    //   await deviceController.startVideoInput(stringDeviceId);
-    //   // @ts-ignore
-    //   expect(spyRAD.notCalled).to.be.true;
-    //   expect(spyRMS.notCalled).to.be.true;
-    // });
-    //
-    // it('releases all previously-acquired video streams', async () => {
-    //   const stringDeviceIds: VideoInputDevice[] = [
-    //     'device-id-1',
-    //     'device-id-2',
-    //     'device-id-3',
-    //     'device-id-4',
-    //   ];
-    //   const firstStream = await deviceController.startVideoInput(stringDeviceIds[0]);
-    //   const secondStream = await deviceController.startVideoInput(stringDeviceIds[1]);
-    //   const thirdStream = await deviceController.startVideoInput(stringDeviceIds[2]);
-    //   const fourthStream = await deviceController.startVideoInput(stringDeviceIds[3]);
-    //   expect(firstStream.getVideoTracks()[0].readyState).to.equal('ended');
-    //   expect(secondStream.getVideoTracks()[0].readyState).to.equal('ended');
-    //   expect(thirdStream.getVideoTracks()[0].readyState).to.equal('ended');
-    //   expect(fourthStream.getVideoTracks()[0].readyState).to.not.equal('ended');
-    //   await deviceController.stopVideoInput();
-    //   expect(fourthStream.getVideoTracks()[0].readyState).to.equal('ended');
-    // });
-  });
-
   describe('StopVideoInput', () => {
     it('Sending selectedVideoInputDidChanged with undefined if calling stopVideoInput', () => {
       let callbackVideoStream;
@@ -1699,8 +1652,7 @@ describe('DefaultDeviceController', () => {
   describe('stopAudioInput', () => {
     it("disconnects the audio input source node, not the given stream's tracks", async () => {
       enableWebAudio(true);
-      await deviceController.startAudioInput(stringDeviceId);
-      const stream = await deviceController.acquireAudioInputStream();
+      const stream = await deviceController.startAudioInput(stringDeviceId);
 
       // If the web audio is disabled, it stops only the input tracks --
       // the output comes from a MediaStreamDestinationNode.
@@ -1709,7 +1661,7 @@ describe('DefaultDeviceController', () => {
       const getInputTracks = sinon.spy(deviceController.activeDevices['audio'].stream, 'getTracks');
       const getOutputTracks = sinon.spy(stream, 'getTracks');
 
-      deviceController.releaseMediaStream(stream);
+      deviceController.stopAudioInput();
       expect(getOutputTracks.called).to.be.false;
       expect(getInputTracks.called).to.be.true;
     });
@@ -1760,10 +1712,6 @@ describe('DefaultDeviceController', () => {
     it('acquires a stream if no active audio input exists', async () => {
       // Creates an empty audio device with null constraints
       let stream = await deviceController.acquireAudioInputStream();
-      expect(stream).to.exist;
-
-      // Creates an empty audio device again as the previously-acquired device has null constraints
-      stream = await deviceController.acquireAudioInputStream();
       expect(stream).to.exist;
     });
 
