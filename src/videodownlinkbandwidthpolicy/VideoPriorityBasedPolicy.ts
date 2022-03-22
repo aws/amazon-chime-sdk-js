@@ -286,7 +286,10 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     // Sort streams by bitrate ascending.
     remoteInfos.sort((a, b) => {
       if (a.maxBitrateKbps === b.maxBitrateKbps) {
-        return a.streamId - b.streamId;
+        if (a.avgBitrateKbps === b.avgBitrateKbps) {
+          return a.streamId - b.streamId;
+        }
+        return a.avgBitrateKbps - b.avgBitrateKbps;
       }
       return a.maxBitrateKbps - b.maxBitrateKbps;
     });
@@ -868,7 +871,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
             if (info.attendeeId === preference.attendeeId) {
               const index = chosenStreams.findIndex(
                 stream =>
-                  stream.groupId === info.groupId && stream.maxBitrateKbps < info.maxBitrateKbps
+                  stream.groupId === info.groupId &&
+                  stream.maxBitrateKbps <= info.maxBitrateKbps &&
+                  stream.avgBitrateKbps < info.avgBitrateKbps
               );
               if (index !== -1) {
                 const increaseKbps = info.avgBitrateKbps - chosenStreams[index].avgBitrateKbps;
