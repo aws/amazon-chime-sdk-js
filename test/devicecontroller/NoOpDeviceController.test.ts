@@ -54,7 +54,7 @@ describe('NoOpDeviceController', () => {
     });
   });
 
-  describe('chooseAudioInputDevice', () => {
+  describe('startAudioInput', () => {
     it('fails for intrinsic devices', async () => {
       await deviceController
         .startAudioInput('')
@@ -74,7 +74,13 @@ describe('NoOpDeviceController', () => {
     });
   });
 
-  describe('chooseVideoInputDevice', () => {
+  describe('stopAudioInput', () => {
+    it('can be called', () => {
+      deviceController.stopAudioInput();
+    });
+  });
+
+  describe('startVideoInput', () => {
     it('fails', async () => {
       await deviceController
         .startVideoInput('')
@@ -82,6 +88,12 @@ describe('NoOpDeviceController', () => {
           assert.fail();
         })
         .catch(() => {});
+    });
+  });
+
+  describe('stopVideoInput', () => {
+    it('can be called', () => {
+      deviceController.stopVideoInput();
     });
   });
 

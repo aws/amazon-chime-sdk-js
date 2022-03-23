@@ -1711,7 +1711,7 @@ describe('DefaultDeviceController', () => {
   describe('acquire input streams', () => {
     it('acquires a stream if no active audio input exists', async () => {
       // Creates an empty audio device with null constraints
-      let stream = await deviceController.acquireAudioInputStream();
+      const stream = await deviceController.acquireAudioInputStream();
       expect(stream).to.exist;
     });
 

@@ -33,7 +33,7 @@ export class DemoMeetingApp implements AudioVideoObserver {
     (global as any).app = this;
     try {
       this.initEventListeners();
-      document.getElementById('button-container').style.display = 'none'; 
+      document.getElementById('button-container').style.display = 'none';
     } catch (error) {
       console.log(error);
       return;
@@ -61,10 +61,9 @@ export class DemoMeetingApp implements AudioVideoObserver {
 
     // We only need the video input for this test app
     const videoInputDevices = await this.audioVideo.listVideoInputDevices();
-    await this.audioVideo.chooseAudioInputDevice(null);
-    await this.audioVideo.chooseAudioOutputDevice(null);
+    await this.audioVideo.startAudioInput(null);
     const videoInputDeviceInfo = videoInputDevices[0];
-    await this.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+    await this.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
     this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(logger);
   }
 
@@ -90,7 +89,7 @@ export class DemoMeetingApp implements AudioVideoObserver {
         // Defaults to default video device for now
         const videoInputList = await this.audioVideo.listVideoInputDevices();
         const device = videoInputList && videoInputList[0];
-        await this.audioVideo.chooseVideoInputDevice(device);
+        await this.audioVideo.startVideoInput(device);
         this.audioVideo.startLocalVideoTile();
       } catch (err) {
         console.error(`no video input device selected: ${err}`);
@@ -229,7 +228,7 @@ export class DemoMeetingApp implements AudioVideoObserver {
       const videoTilesListObject = document.getElementById('video-tiles');
       videoTilesListObject.innerText = '';
     });
-    
+
 
   }
 
@@ -261,7 +260,7 @@ export class DemoMeetingApp implements AudioVideoObserver {
 
   audioVideoDidStart(): void {
     console.log('AudioVideoDidStart was called');
-    document.getElementById('button-container').style.display = 'block'; 
+    document.getElementById('button-container').style.display = 'block';
   };
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
@@ -269,7 +268,7 @@ export class DemoMeetingApp implements AudioVideoObserver {
     const sessionStatusCode = sessionStatus.statusCode();
     if (sessionStatusCode === MeetingSessionStatusCode.Left) {
       console.log('You left the session');
-    } 
+    }
     else if (sessionStatusCode === MeetingSessionStatusCode.MeetingEnded) {
       console.log('Meeting Ended');
     } else {

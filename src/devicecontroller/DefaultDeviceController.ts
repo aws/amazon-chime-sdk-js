@@ -245,7 +245,9 @@ export default class DefaultDeviceController
         await this.chooseInputIntrinsicDevice('audio', device);
       }
       this.trace('startAudioInputDevice', device, `success`);
-      return this.useWebAudio ? this.getMediaStreamDestinationNode().stream : this.activeDevices['audio'].stream;
+      return this.useWebAudio
+        ? this.getMediaStreamDestinationNode().stream
+        : this.activeDevices['audio'].stream;
     } catch (error) {
       throw error;
     } finally {
@@ -1342,12 +1344,7 @@ export default class DefaultDeviceController
           );
         }
       }
-      trackConstraints = this.calculateMediaStreamConstraints(
-        kind,
-        device,
-        groupId,
-        minimal
-      );
+      trackConstraints = this.calculateMediaStreamConstraints(kind, device, groupId, minimal);
       return this.getMediaStreamConstraintsFromTrackConstraints(kind, trackConstraints);
     }
 
