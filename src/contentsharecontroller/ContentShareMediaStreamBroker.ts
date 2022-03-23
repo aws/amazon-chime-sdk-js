@@ -116,11 +116,7 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     throw new Error('unsupported');
   }
 
-  addMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {
-    throw new Error('unsupported');
-  }
+  addMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
 
-  removeMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {
-    throw new Error('unsupported');
-  }
+  removeMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
 }
