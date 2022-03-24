@@ -34,16 +34,16 @@ export default class NoOpDeviceController
     return Promise.reject();
   }
 
-  stopAudioInput(): void {
-    return;
+  stopAudioInput(): Promise<void> {
+    return Promise.resolve();
   }
 
   startVideoInput(_device: VideoInputDevice): Promise<MediaStream | undefined> {
     return Promise.reject();
   }
 
-  stopVideoInput(): void {
-    return;
+  stopVideoInput(): Promise<void> {
+    return Promise.resolve();
   }
 
   chooseAudioOutput(_deviceId: string | null): Promise<void> {

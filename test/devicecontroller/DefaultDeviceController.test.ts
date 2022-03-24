@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-//@ts-nocheck
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
@@ -377,7 +375,13 @@ describe('DefaultDeviceController', () => {
     });
   });
 
-  describe('transform mute subscription', () => {
+  describe('mute/unmute local audio', () => {
+    it('No error if no audio selected', async () => {
+      deviceController.muteLocalAudioInputStream();
+      deviceController.muteLocalAudioInputStream();
+      deviceController.unmuteLocalAudioInputStream();
+    });
+
     it('No error if audio transform device is undefined', async () => {
       enableWebAudio(true);
       await deviceController.startAudioInput('foobar');
@@ -501,18 +505,6 @@ describe('DefaultDeviceController', () => {
     });
   });
 
-  describe('releasing', async () => {
-    it('idempotently releases transform devices', async () => {
-      deviceController = new DefaultDeviceController(logger, { enableWebAudio: true });
-
-      const transform = new MockNodeTransformDevice('default');
-      await deviceController.startAudioInput(transform);
-
-      deviceController.stopAudioInput();
-      deviceController.stopAudioInput();
-    });
-  });
-
   describe('startAudioInput handling an OverconstrainedError', () => {
     it('logs appropriately', async () => {
       const watcher = new WatchingLogger('Over-constrained by constraint: testconstraint');
@@ -608,27 +600,6 @@ describe('DefaultDeviceController', () => {
       expect(intrinsicDeviceSpy.calledOnce).to.be.true;
       expect(stopSpy.notCalled).to.be.true;
     });
-
-    // it('applying two transform devices simultaneously will not fail', async () => {
-    //   enableWebAudio(true);
-    //
-    //   // Try some async trickery to get these two to collide.
-    //   // `first` will win because everything will apply after 200ms.
-    //   const first = new MockNodeTransformDevice('first', 200);
-    //   const second = new MockNodeTransformDevice('second', 0);
-    //   const results = await Promise.all([
-    //     deviceController.startAudioInput(first).catch(e => e),
-    //     deviceController.startAudioInput(second).catch(e => e),
-    //   ]);
-    //
-    //   expect(results.length).to.equal(2);
-    //
-    //   const errors = results.filter(val => val instanceof Error);
-    //
-    //   expect(errors.length).to.equal(0);
-    //
-    //   expect(deviceController.hasAppliedTransform()).to.be.true;
-    // });
   });
 
   describe('startAudioInput twice', () => {
@@ -799,7 +770,23 @@ describe('DefaultDeviceController', () => {
       } catch (e) {
         throw new Error('This line should not be reached.');
       } finally {
-        deviceController.removeDeviceChangeObserver(observer);
+        deviceController.removeMediaStreamBrokerObserver(observer);
+      }
+    });
+
+    it('Does not send audio input change event if not implemented', async () => {
+      const observer = {
+        selectedVideoInputDidChanged(_videoStream: MediaStream | undefined): void {},
+      };
+
+      deviceController.addMediaStreamBrokerObserver(observer);
+      try {
+        const audioStream = await deviceController.startAudioInput(stringDeviceId);
+        expect(audioStream).to.not.be.undefined;
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      } finally {
+        deviceController.removeMediaStreamBrokerObserver(observer);
       }
     });
 
@@ -951,6 +938,15 @@ describe('DefaultDeviceController', () => {
       expect(spy.calledOnce).to.be.true;
     });
 
+    it('Can startAudioInput if pass in media stream with no track', async () => {
+      // We should not throw errors or bind any event listeners as there is no track
+      try {
+        await deviceController.startAudioInput(new MediaStream());
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+    });
+
     it('sets to null device when an external device disconnects', async () => {
       enableWebAudio(true);
       try {
@@ -1051,157 +1047,14 @@ describe('DefaultDeviceController', () => {
       }
       expect(spy.calledOnce).to.be.true;
     });
-  });
 
-  describe('handleGetUserMediaError', () => {
-    it('NotReadableError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.NotReadableError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(NotReadableError);
-        expect(e.name).to.be.equal('NotReadableError');
-      }
-    });
-
-    it('TrackStartError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.TrackStartError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(NotReadableError);
-        expect(e.name).to.be.equal('NotReadableError');
-      }
-    });
-
-    it('NotFoundError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.NotFoundError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(NotFoundError);
-        expect(e.name).to.be.equal('NotFoundError');
-        expect(e.message).to.not.equal('This line should not be reached');
-      }
-    });
-
-    it('DevicesNotFoundError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.DevicesNotFoundError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(NotFoundError);
-        expect(e.name).to.be.equal('NotFoundError');
-        expect(e.message).to.not.equal('This line should not be reached');
-      }
-    });
-
-    it('NotAllowedError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.TrackStartError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(NotReadableError);
-        expect(e.name).to.be.equal('NotReadableError');
-        expect(e.message).to.not.equal('This line should not be reached');
-      }
-    });
-
-    it('OverconstrainedError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(OverconstrainedError);
-        expect(e.name).to.be.equal('OverconstrainedError');
-        expect(e.message).to.not.equal('This line should not be reached');
-      }
-    });
-
-    it('ConstraintNotSatisfiedError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.ConstraintNotSatisfiedError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(OverconstrainedError);
-        expect(e.name).to.be.equal('OverconstrainedError');
-        expect(e.message).to.not.equal('This line should not be reached');
-      }
-    });
-
-    it('TypeError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.TypeError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(TypeError);
-        expect(e.name).to.be.equal('TypeError');
-        expect(e.message).to.not.equal('This line should not be reached');
-      }
-    });
-
-    it('AbortError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.AbortError;
-
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(GetUserMediaError);
-        expect(e.name).to.be.equal('GetUserMediaError');
-        expect(e.message).to.not.equal('This line should not be reached');
-      }
-    });
-
-    it('SomeOtherError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.Failure;
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(GetUserMediaError);
-        expect(e.name).to.be.equal('GetUserMediaError');
-        expect(e.message).to.not.equal('This line should not be reached');
-      }
-    });
-
-    it('GetUserMediaError', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.GetUserMediaError;
-      try {
-        await deviceController.startVideoInput(stringDeviceId);
-        throw new Error('This line should not be reached');
-      } catch (e) {
-        expect(e).to.be.instanceof(GetUserMediaError);
-        expect(e.name).to.be.equal('GetUserMediaError');
-        expect(e.message).to.include('Error fetching device.');
-      }
+    it('throw an error if starting another audio input when another is still in progress', () => {
+      deviceController.startAudioInput('abc').then(stream => {
+        expect(stream).to.not.be.undefined;
+      });
+      return expect(deviceController.startAudioInput('def')).to.be.eventually.rejectedWith(
+        'Another start audio input is in progress'
+      );
     });
   });
 
@@ -1271,7 +1124,23 @@ describe('DefaultDeviceController', () => {
       const stream2 = await deviceController.startVideoInput('new-device-id');
       expect(callbackVideoStream).to.not.deep.equal(stream1);
       expect(callbackVideoStream).to.deep.equal(stream2);
-      deviceController.removeDeviceChangeObserver(observer);
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('Does not send video input change event if not implemented', async () => {
+      const observer = {
+        selectedAudioInputDidChanged(_audioStream: MediaStream | undefined): void {},
+      };
+
+      deviceController.addMediaStreamBrokerObserver(observer);
+      try {
+        const videoStream = await deviceController.startVideoInput(stringDeviceId);
+        expect(videoStream).to.not.be.undefined;
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      } finally {
+        deviceController.removeMediaStreamBrokerObserver(observer);
+      }
     });
 
     it('denies the permission by browser', async () => {
@@ -1361,7 +1230,7 @@ describe('DefaultDeviceController', () => {
       expect(callbackVideoStream).to.be.undefined;
       await device.stop();
 
-      deviceController.removeDeviceChangeObserver(observer);
+      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it('does not reuse existing stream if two video streams without IDs are selected within a video transform', async () => {
@@ -1428,6 +1297,26 @@ describe('DefaultDeviceController', () => {
       await deviceController.stopVideoInput();
       await device.stop();
       deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('can choose media stream as device then choose VideoTransformDevice without audio video controller', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      const mockVideoStream = new MediaStream();
+      // @ts-ignore
+      mockVideoStream.active = true;
+      // @ts-ignore
+      mockVideoStream.id = 'sample';
+      // @ts-ignore
+      const mockVideoTrack = new MediaStreamTrack('test', 'video');
+      mockVideoStream.addTrack(mockVideoTrack);
+      domMockBehavior.createElementCaptureStream = mockVideoStream;
+      await deviceController.startVideoInput(mockVideoStream);
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, mockVideoStream, [processor]);
+      await deviceController.startVideoInput(device);
+
+      await deviceController.stopVideoInput();
+      await device.stop();
     });
 
     it('can switch between VideoTransformDevice', async () => {
@@ -1563,6 +1452,391 @@ describe('DefaultDeviceController', () => {
       expect(spy.calledTwice).to.equal(true);
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
+
+    it('Can switch to non-transform device from transform device', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 0,
+        height: 0,
+        deviceId: 'test-same-device',
+        facingMode: 'user',
+      };
+      setupMockCaptureStream();
+
+      let callbackVideoStream = undefined;
+      const observer = {
+        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+          callbackVideoStream = videoStream;
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test-different-device', [processor]);
+      const spy = sinon.spy(device, 'onOutputStreamDisconnect');
+      const stream1 = await deviceController.startVideoInput(device);
+      expect(callbackVideoStream).to.deep.equal(stream1);
+      expect(stream1).to.not.be.undefined;
+
+      const stream2 = await deviceController.startVideoInput('test');
+      expect(callbackVideoStream).to.deep.equal(stream2);
+      expect(stream2).to.not.be.undefined;
+      expect(stream2).to.not.deep.equal(stream1);
+      expect(spy.calledOnce).to.be.true;
+
+      await device.stop();
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('throw an error if starting another video input when another is still in progress', () => {
+      deviceController.startVideoInput('abc').then(stream => {
+        expect(stream).to.not.be.undefined;
+      });
+      return expect(deviceController.startVideoInput('def')).to.be.eventually.rejectedWith(
+        'Another start video input is in progress'
+      );
+    });
+  });
+
+  describe('handleGetUserMediaError', () => {
+    it('NotReadableError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.NotReadableError;
+
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(NotReadableError);
+        expect(e.name).to.be.equal('NotReadableError');
+      }
+    });
+
+    it('TrackStartError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.TrackStartError;
+
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(NotReadableError);
+        expect(e.name).to.be.equal('NotReadableError');
+      }
+    });
+
+    it('NotFoundError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.NotFoundError;
+
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(NotFoundError);
+        expect(e.name).to.be.equal('NotFoundError');
+        expect(e.message).to.not.equal('This line should not be reached');
+      }
+    });
+
+    it('DevicesNotFoundError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.DevicesNotFoundError;
+
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(NotFoundError);
+        expect(e.name).to.be.equal('NotFoundError');
+        expect(e.message).to.not.equal('This line should not be reached');
+      }
+    });
+
+    it('NotAllowedError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.TrackStartError;
+
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(NotReadableError);
+        expect(e.name).to.be.equal('NotReadableError');
+        expect(e.message).to.not.equal('This line should not be reached');
+      }
+    });
+
+    it('OverconstrainedError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(OverconstrainedError);
+        expect(e.name).to.be.equal('OverconstrainedError');
+        expect(e.message).to.not.equal('This line should not be reached');
+      }
+    });
+
+    it('ConstraintNotSatisfiedError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.ConstraintNotSatisfiedError;
+
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(OverconstrainedError);
+        expect(e.name).to.be.equal('OverconstrainedError');
+        expect(e.message).to.not.equal('This line should not be reached');
+      }
+    });
+
+    it('TypeError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.TypeError;
+
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(TypeError);
+        expect(e.name).to.be.equal('TypeError');
+        expect(e.message).to.not.equal('This line should not be reached');
+      }
+    });
+
+    it('AbortError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.AbortError;
+
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(GetUserMediaError);
+        expect(e.name).to.be.equal('GetUserMediaError');
+        expect(e.message).to.not.equal('This line should not be reached');
+      }
+    });
+
+    it('SomeOtherError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.Failure;
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(GetUserMediaError);
+        expect(e.name).to.be.equal('GetUserMediaError');
+        expect(e.message).to.not.equal('This line should not be reached');
+      }
+    });
+
+    it('GetUserMediaError', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaSucceedsOnlyWithConstraints = {};
+      domMockBehavior.getUserMediaResult = UserMediaState.GetUserMediaError;
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+        throw new Error('This line should not be reached');
+      } catch (e) {
+        expect(e).to.be.instanceof(GetUserMediaError);
+        expect(e.name).to.be.equal('GetUserMediaError');
+        expect(e.message).to.include('Error fetching device.');
+      }
+    });
+  });
+
+  describe('getUserMedia failures', () => {
+    it('receives the unknown error message if the error does not exist', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaError = null;
+      eventController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).includes('UnknownError');
+        },
+      });
+      await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
+        'Error fetching device.'
+      );
+    });
+
+    it('receives the error name and the message', async () => {
+      const errorMessage = 'Permission denied';
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
+      eventController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).includes(errorMessage);
+          expect(attributes.audioInputErrorMessage).includes('NotAllowedError');
+        },
+      });
+      await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
+        'Permission denied by browser'
+      );
+    });
+
+    it('receives the error name only if the message is empty', async () => {
+      const errorMessage = '';
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
+      eventController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).to.equal('NotAllowedError');
+        },
+      });
+      await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
+        'Permission denied by browser'
+      );
+    });
+
+    it('receives the error message only if the error name is empty', async () => {
+      const errorMessage = 'Permission denied';
+      const error = new MockError('NotAllowedError', errorMessage);
+      error.name = '';
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaError = error;
+      eventController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).includes(errorMessage);
+        },
+      });
+      await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
+        'Error fetching device.'
+      );
+    });
+
+    it('receives the unknown error message if the error does not have name or message', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      const error = new Error();
+      error.name = '';
+      domMockBehavior.getUserMediaError = error;
+      eventController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).includes('UnknownError');
+        },
+      });
+      await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
+        'Error fetching device.'
+      );
+    });
+  });
+
+  describe('Fallback with minimal constraints', () => {
+    it('retry successfully with OverconstrainedError when there are more than one device', async () => {
+      const logSpy = sinon.spy(logger, 'error');
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      const constraints = { video: { deviceId: { exact: stringDeviceId } } };
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaSucceedsOnlyWithConstraints = constraints;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
+      const stream = await deviceController.startVideoInput(stringDeviceId);
+      expect(stream).to.not.be.undefined;
+      expect(gUM.args.length).to.equal(2);
+      expect(gUM.args[1][0]).to.deep.equal(constraints);
+      expect(logSpy.args.length).to.equal(2);
+      expect(logSpy.args[0][0]).to.contain('failed to get video device for constraints');
+      expect(logSpy.args[1][0]).to.contain('Over-constrained by constraint');
+      logSpy.restore();
+      gUM.restore();
+    });
+
+    it('retry successfully with OverconstrainedError when there is one device', async () => {
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('deviceId1', 'videoinput', '', 'group-id-1'),
+      ];
+      const logSpy = sinon.spy(logger, 'error');
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      const constraints = { video: true };
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaSucceedsOnlyWithConstraints = constraints;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
+      await deviceController.listVideoInputDevices();
+      const stream = await deviceController.startVideoInput(stringDeviceId);
+      expect(stream).to.not.be.undefined;
+      expect(gUM.args.length).to.equal(3); // The first GetUserMedia call is device label trigger
+      expect(gUM.args[2][0]).to.deep.equal(constraints);
+      expect(logSpy.args.length).to.equal(2);
+      expect(logSpy.args[0][0]).to.contain('failed to get video device for constraints');
+      expect(logSpy.args[1][0]).to.contain('Over-constrained by constraint');
+      logSpy.restore();
+      gUM.restore();
+    });
+
+    it('Can failed twice', async () => {
+      const logSpy = sinon.spy(logger, 'error');
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      let error;
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+      } catch (e) {
+        error = e;
+      }
+      expect(gUM.args.length).to.equal(2);
+      expect(gUM.args[1][0]).to.deep.equal({ video: { deviceId: { exact: stringDeviceId } } });
+      expect(logSpy.args.length).to.equal(3);
+      expect(logSpy.args[0][0]).to.contain('failed to get video device for constraints');
+      expect(logSpy.args[1][0]).to.contain('Over-constrained by constraint');
+      expect(logSpy.args[2][0]).to.contain('failed to get video device for constraints');
+      expect(error).to.be.instanceof(OverconstrainedError);
+      expect(error.name).to.be.equal('OverconstrainedError');
+      logSpy.restore();
+      gUM.restore();
+    });
+
+    it('Do not fallback if the original constraint is already minimal', async () => {
+      const logSpy = sinon.spy(logger, 'error');
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      let error;
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
+      try {
+        await deviceController.startVideoInput({ deviceId: { exact: stringDeviceId } });
+      } catch (e) {
+        error = e;
+      }
+      expect(gUM.args.length).to.equal(1);
+      expect(logSpy.args.length).to.equal(2);
+      expect(logSpy.args[0][0]).to.contain('failed to get video device for constraints');
+      expect(logSpy.args[1][0]).to.contain('Over-constrained by constraint');
+      expect(error).to.be.instanceof(OverconstrainedError);
+      expect(error.name).to.be.equal('OverconstrainedError');
+      logSpy.restore();
+      gUM.restore();
+    });
+
+    it('Do not fallback if not enabled in constructor', async () => {
+      deviceController = new DefaultDeviceController(logger, {
+        useMediaConstraintsFallback: false,
+      });
+      const logSpy = sinon.spy(logger, 'error');
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      let error;
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
+      try {
+        await deviceController.startVideoInput(stringDeviceId);
+      } catch (e) {
+        error = e;
+      }
+      expect(gUM.args.length).to.equal(1);
+      expect(logSpy.args.length).to.equal(2);
+      expect(logSpy.args[0][0]).to.contain('failed to get video device for constraints');
+      expect(logSpy.args[1][0]).to.contain('Over-constrained by constraint');
+      expect(error).to.be.instanceof(OverconstrainedError);
+      expect(error.name).to.be.equal('OverconstrainedError');
+      logSpy.restore();
+      gUM.restore();
+    });
   });
 
   describe('Samsung Internet browser', () => {
@@ -1583,73 +1857,80 @@ describe('DefaultDeviceController', () => {
     });
   });
 
-  describe('StopVideoInput', () => {
-    it('Sending selectedVideoInputDidChanged with undefined if calling stopVideoInput', () => {
-      let callbackVideoStream;
-      const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-      deviceController.stopVideoInput();
-      expect(callbackVideoStream).to.be.undefined;
-      deviceController.removeMediaStreamBrokerObserver(observer);
-    });
-
-    it('Sending selectedVideoInputDidChanged with undefined if call after a local video is enabled', async () => {
-      let callbackVideoStream;
-      const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-      const videoStream = await deviceController.startVideoInput(stringDeviceId);
-      const spy = sinon.spy(videoStream.getVideoTracks()[0], 'stop');
-      expect(callbackVideoStream).to.deep.equal(videoStream);
-      deviceController.stopVideoInput();
-      expect(spy.calledOnce).to.be.true;
-      expect(callbackVideoStream).to.be.undefined;
-      deviceController.removeMediaStreamBrokerObserver(observer);
-    });
-
-    it('Sending selectedVideoInputDidChanged with undefined if call after a local video is enabled', async () => {
-      let callbackVideoStream;
-      const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-      const videoStream = await deviceController.startVideoInput(stringDeviceId);
-      const spy = sinon.spy(videoStream.getVideoTracks()[0], 'stop');
-      expect(callbackVideoStream).to.deep.equal(videoStream);
-      deviceController.stopVideoInput();
-      expect(spy.calledOnce).to.be.true;
-      expect(callbackVideoStream).to.be.undefined;
-      deviceController.removeMediaStreamBrokerObserver(observer);
-    });
-
-    it('Sending selectedVideoInputDidChanged with undefined if call after a local video is enabled', async () => {
-      let callbackVideoStream;
-      const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-      const videoStream = await deviceController.startVideoInput(stringDeviceId);
-      const spy = sinon.spy(videoStream.getVideoTracks()[0], 'stop');
-      expect(callbackVideoStream).to.deep.equal(videoStream);
-      deviceController.stopVideoInput();
-      expect(spy.calledOnce).to.be.true;
-      expect(callbackVideoStream).to.be.undefined;
-      deviceController.removeMediaStreamBrokerObserver(observer);
-    });
-  });
-
   describe('stopAudioInput', () => {
+    it('stop current audio device', async () => {
+      let callbackAudioStream = undefined;
+      const observer = {
+        selectedAudioInputDidChanged(audioStream: MediaStream | undefined): void {
+          callbackAudioStream = audioStream;
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      const stream = await deviceController.startAudioInput('abcdef');
+      expect(stream.getAudioTracks().length).to.equal(1);
+      expect(callbackAudioStream).to.deep.equal(stream);
+      const track = stream.getAudioTracks()[0];
+      const spyStopTrack = sinon.spy(track, 'stop');
+      const spyRemoveListener = sinon.spy(track, 'removeEventListener');
+      await deviceController.stopAudioInput();
+      expect(callbackAudioStream).to.be.undefined;
+      expect(spyStopTrack.calledOnce).to.be.true;
+      expect(spyRemoveListener.calledWith('ended')).to.be.true;
+      expect(spyRemoveListener.calledWith('mute')).to.be.true;
+      expect(spyRemoveListener.calledWith('unmute')).to.be.true;
+      // @ts-ignore
+      expect(track.listeners['ended'].length).to.equal(0);
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('stop current audio transform device', async () => {
+      enableWebAudio(true);
+      let callbackAudioStream = undefined;
+      const observer = {
+        selectedAudioInputDidChanged(audioStream: MediaStream | undefined): void {
+          callbackAudioStream = audioStream;
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      const tf = new MockNodeTransformDevice('abdef', 1);
+      const stream = await deviceController.startAudioInput(tf);
+      expect(stream).to.not.be.undefined;
+      const innerStream = await gUM.returnValues.pop();
+      const track = innerStream.getAudioTracks()[0];
+      // @ts-ignore
+      expect(deviceController.audioInputSourceNode).to.not.be.undefined;
+      expect(innerStream.getAudioTracks().length).to.equal(1);
+      // @ts-ignore
+      expect(track.listeners['ended'].length).to.equal(1);
+
+      const spyStopTrack = sinon.spy(track, 'stop');
+      const spyRemoveListener = sinon.spy(track, 'removeEventListener');
+
+      await deviceController.stopAudioInput();
+      expect(callbackAudioStream).to.be.undefined;
+      expect(spyStopTrack.calledOnce).to.be.true;
+      expect(spyRemoveListener.calledWith('ended')).to.be.true;
+      expect(spyRemoveListener.calledWith('mute')).to.be.true;
+      expect(spyRemoveListener.calledWith('unmute')).to.be.true;
+
+      // @ts-ignore
+      expect(deviceController.audioInputSourceNode).to.be.undefined;
+      // @ts-ignore
+      expect(track.listeners['ended'].length).to.equal(0);
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('throw error if called when startAudioInput is in progress', done => {
+      deviceController.startAudioInput(stringDeviceId).then(stream => {
+        expect(stream).to.not.be.undefined;
+        done();
+      });
+      expect(deviceController.stopAudioInput()).to.be.eventually.rejectedWith(
+        'An audio input is starting'
+      );
+    });
+
     it("disconnects the audio input source node, not the given stream's tracks", async () => {
       enableWebAudio(true);
       const stream = await deviceController.startAudioInput(stringDeviceId);
@@ -1661,9 +1942,105 @@ describe('DefaultDeviceController', () => {
       const getInputTracks = sinon.spy(deviceController.activeDevices['audio'].stream, 'getTracks');
       const getOutputTracks = sinon.spy(stream, 'getTracks');
 
-      deviceController.stopAudioInput();
+      await deviceController.stopAudioInput();
       expect(getOutputTracks.called).to.be.false;
       expect(getInputTracks.called).to.be.true;
+    });
+
+    it('idempotently releases transform devices', async () => {
+      deviceController = new DefaultDeviceController(logger, { enableWebAudio: true });
+
+      const transform = new MockNodeTransformDevice('default');
+      await deviceController.startAudioInput(transform);
+
+      deviceController.stopAudioInput();
+      deviceController.stopAudioInput();
+    });
+  });
+
+  describe('stopVideoInput', () => {
+    it('stop current video device', async () => {
+      let callbackVideoStream = undefined;
+      const observer = {
+        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+          callbackVideoStream = videoStream;
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      const stream = await deviceController.startVideoInput('abcdef');
+      expect(callbackVideoStream).to.deep.equal(stream);
+      expect(stream.getVideoTracks().length).to.equal(1);
+      const track = stream.getVideoTracks()[0];
+      const spyStopTrack = sinon.spy(track, 'stop');
+      const spyRemoveListener = sinon.spy(track, 'removeEventListener');
+      await deviceController.stopVideoInput();
+      expect(callbackVideoStream).to.be.undefined;
+      expect(spyStopTrack.calledOnce).to.be.true;
+      expect(spyRemoveListener.calledWith('ended')).to.be.true;
+      expect(spyRemoveListener.calledWith('mute')).to.be.false;
+      expect(spyRemoveListener.calledWith('unmute')).to.be.false;
+      // @ts-ignore
+      expect(track.listeners['ended'].length).to.equal(0);
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('stop current video transform device', async () => {
+      setupMockCaptureStream();
+      let callbackVideoStream = undefined;
+      const observer = {
+        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+          callbackVideoStream = videoStream;
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [
+        new NoOpVideoFrameProcessor(),
+      ]);
+      const stream = await deviceController.startVideoInput(device);
+      expect(stream).to.not.be.undefined;
+      expect(callbackVideoStream).to.deep.equal(stream);
+      const innerStream = await gUM.returnValues.pop();
+      const track = innerStream.getVideoTracks()[0];
+      expect(innerStream.getAudioTracks().length).to.equal(1);
+      // @ts-ignore
+      expect(track.listeners['ended'].length).to.equal(1);
+
+      const spyStopTrack = sinon.spy(track, 'stop');
+      const spyRemoveListener = sinon.spy(track, 'removeEventListener');
+
+      await deviceController.stopVideoInput();
+      expect(callbackVideoStream).to.be.undefined;
+      expect(spyStopTrack.called).to.be.true;
+      expect(spyRemoveListener.calledWith('ended')).to.be.true;
+      expect(spyRemoveListener.calledWith('mute')).to.be.false;
+      expect(spyRemoveListener.calledWith('unmute')).to.be.false;
+      // @ts-ignore
+      expect(track.listeners['ended'].length).to.equal(0);
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('throw error if called when startVideoInput is in progress', done => {
+      deviceController.startVideoInput(stringDeviceId).then(stream => {
+        expect(stream).to.not.be.undefined;
+        done();
+      });
+      expect(deviceController.stopVideoInput()).to.be.eventually.rejectedWith(
+        'A video input is starting'
+      );
+    });
+
+    it('Sending selectedVideoInputDidChanged with undefined if calling stopVideoInput', () => {
+      let callbackVideoStream;
+      const observer = {
+        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+          callbackVideoStream = videoStream;
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      deviceController.stopVideoInput();
+      expect(callbackVideoStream).to.be.undefined;
+      deviceController.removeMediaStreamBrokerObserver(observer);
     });
   });
 
@@ -1679,7 +2056,7 @@ describe('DefaultDeviceController', () => {
         getMediaDeviceInfo(stringDeviceId, null, 'label'),
         getMediaDeviceInfo(stringDeviceId, 'audiooutput', 'label'),
       ];
-      let callbackDevice;
+      let callbackDevice = undefined;
       const observer = {
         selectedAudioOutputDidChanged(device: MediaDeviceInfo | undefined): void {
           callbackDevice = device;
@@ -1688,6 +2065,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addMediaStreamBrokerObserver(observer);
       await deviceController.listAudioOutputDevices();
       await deviceController.chooseAudioOutput(stringDeviceId);
+      // @ts-ignore
       expect(callbackDevice.deviceId).to.equal(stringDeviceId);
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
@@ -1705,6 +2083,15 @@ describe('DefaultDeviceController', () => {
       await deviceController.chooseAudioOutput(null);
       expect(callbackDevice).to.be.null;
       deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('Does not publish selectedAudioOutputDidChanged if not implemented', async () => {
+      const observer = {
+        selectedAudioInputDidChanged(_audioStream: MediaStream | undefined): void {},
+      };
+
+      deviceController.addMediaStreamBrokerObserver(observer);
+      await deviceController.chooseAudioOutput(null);
     });
   });
 
@@ -1735,6 +2122,32 @@ describe('DefaultDeviceController', () => {
       } catch (e) {
         expect(e.message).includes(`no video device chosen`);
       }
+    });
+
+    it('acquires existing video stream', async () => {
+      const stream = await deviceController.startVideoInput(stringDeviceId);
+      expect(stream).to.not.be.undefined;
+      const acquiredStream = await deviceController.acquireVideoInputStream();
+      expect(acquiredStream).to.deep.equal(stream);
+    });
+
+    it('acquires existing video transform stream', async () => {
+      setupMockCaptureStream();
+      const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [
+        new NoOpVideoFrameProcessor(),
+      ]);
+      const stream = await deviceController.startVideoInput(device);
+      expect(stream).to.not.be.undefined;
+      const acquiredStream = await deviceController.acquireVideoInputStream();
+      expect(acquiredStream).to.deep.equal(stream);
+      await deviceController.stopVideoInput();
+      await device.stop();
+    });
+
+    it('throw error if trying to acquire a display input stream', () => {
+      return expect(
+        deviceController.acquireDisplayInputStream({ video: true })
+      ).to.be.eventually.rejectedWith('unsupported');
     });
   });
 
@@ -1913,6 +2326,20 @@ describe('DefaultDeviceController', () => {
       // Deselect so we release the stream.
       deviceController.startAudioInput('default');
       await delay(100);
+    });
+
+    it('Does not do anything if there is no device cache', async () => {
+      let callCount = 0;
+      const observer: DeviceChangeObserver = {
+        audioInputsChanged: (_freshAudioInputDeviceList?: MediaDeviceInfo[]): void => {
+          callCount += 1;
+        },
+      };
+      deviceController.addDeviceChangeObserver(observer);
+      // The device controller calls observer methods in the next event cycle.
+      await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
+      expect(callCount).to.equal(0);
+      deviceController.removeDeviceChangeObserver(observer);
     });
   });
 
@@ -2216,115 +2643,6 @@ describe('DefaultDeviceController', () => {
       await delay(100);
       expect(videoInputStreamEndedCallCount).to.equal(1);
       expect(callbackVideoStream).to.be.undefined;
-    });
-  });
-
-  describe('getUserMedia failures', () => {
-    it('receives the unknown error message if the error does not exist', async () => {
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaError = null;
-      let callbackCount = 0;
-      // So if we fail to select an audio device, we will try to select a null device
-      // That leads to 2 events to be fired `audioInputFailed` then `audioInputSelected` for null device.
-      eventController.addObserver({
-        eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          callbackCount++;
-          if (callbackCount === 1) {
-            expect(name).to.equal('audioInputFailed');
-            expect(attributes.audioInputErrorMessage).includes('UnknownError');
-          } else if (callbackCount === 2) {
-            expect(name).to.equal('audioInputSelected');
-          }
-        },
-      });
-      try {
-        await deviceController.startAudioInput(stringDeviceId);
-      } catch (e) {
-        expect(e.message).to.equal('Error fetching device.');
-      }
-      await delay(1);
-      expect(callbackCount).to.equal(2);
-    });
-
-    it('receives the error name and the message', async () => {
-      const errorMessage = 'Permission denied';
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
-      let callbackCount = 0;
-      // So if we fail to select an audio device, we will try to select a null device
-      // That leads to 2 events to be fired `audioInputFailed` then `audioInputSelected` for null device.
-      eventController.addObserver({
-        eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          callbackCount++;
-          if (callbackCount === 1) {
-            expect(name).to.equal('audioInputFailed');
-            expect(attributes.audioInputErrorMessage).includes('NotAllowedError');
-          } else if (callbackCount === 2) {
-            expect(name).to.equal('audioInputSelected');
-          }
-        },
-      });
-      try {
-        await deviceController.startAudioInput(stringDeviceId);
-      } catch (e) {
-        expect(e.message).to.equal('Permission denied by browser');
-      }
-      await delay(1);
-      expect(callbackCount).to.equal(2);
-    });
-
-    it('receives the error name only if the message is empty', async () => {
-      const errorMessage = '';
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
-      let callbackCount = 0;
-      // So if we fail to select an audio device, we will try to select a null device
-      // That leads to 2 events to be fired `audioInputFailed` then `audioInputSelected` for null device.
-      eventController.addObserver({
-        eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          callbackCount++;
-          if (callbackCount === 1) {
-            expect(name).to.equal('audioInputFailed');
-            expect(attributes.audioInputErrorMessage).includes('NotAllowedError');
-          } else if (callbackCount === 2) {
-            expect(name).to.equal('audioInputSelected');
-          }
-        },
-      });
-      try {
-        await deviceController.startAudioInput(stringDeviceId);
-      } catch (e) {
-        expect(e.message).to.equal('Permission denied by browser');
-      }
-      await delay(1);
-      expect(callbackCount).to.equal(2);
-    });
-
-    it('receives the error message only if the error name is empty', async () => {
-      const errorMessage = 'Permission denied';
-      domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
-      let callbackCount = 0;
-      // So if we fail to select an audio device, we will try to select a null device
-      // That leads to 2 events to be fired `audioInputFailed` then `audioInputSelected` for null device.
-      eventController.addObserver({
-        eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          callbackCount++;
-          if (callbackCount === 1) {
-            expect(name).to.equal('audioInputFailed');
-            expect(attributes.audioInputErrorMessage).to.equal(`NotAllowedError: ${errorMessage}`);
-          } else if (callbackCount === 2) {
-            expect(name).to.equal('audioInputSelected');
-          }
-        },
-      });
-      try {
-        await deviceController.startAudioInput(stringDeviceId);
-      } catch (e) {
-        expect(e.message).to.equal('Permission denied by browser');
-      }
-      await delay(1);
-      expect(callbackCount).to.equal(2);
     });
   });
 

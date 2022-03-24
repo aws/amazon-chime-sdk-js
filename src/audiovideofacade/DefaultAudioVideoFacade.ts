@@ -360,7 +360,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
     return this.deviceController.startAudioInput(device);
   }
 
-  stopAudioInput(): void {
+  async stopAudioInput(): Promise<void> {
     this.trace('stopAudioInputDevice');
     return this.deviceController.stopAudioInput();
   }
@@ -375,7 +375,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
     return this.deviceController.startVideoInput(device);
   }
 
-  stopVideoInput(): void {
+  async stopVideoInput(): Promise<void> {
     this.trace('stopVideoInputDevice');
     return this.deviceController.stopVideoInput();
   }

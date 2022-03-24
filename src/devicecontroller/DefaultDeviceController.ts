@@ -182,14 +182,8 @@ export default class DefaultDeviceController
     // Deselect any audio input devices and throw away the streams.
     // Discard the current video device, if there is one.
     // Discard any audio or video transforms.
-    this.stopAudioInput();
-    this.stopVideoInput();
-
-    // Tear down any Web Audio infrastructure we have hanging around.
-    this.audioInputSourceNode?.disconnect();
-    this.audioInputDestinationNode?.disconnect();
-    this.audioInputSourceNode = undefined;
-    this.audioInputDestinationNode = undefined;
+    await this.stopAudioInput();
+    await this.stopVideoInput();
   }
 
   async listAudioInputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
@@ -245,9 +239,15 @@ export default class DefaultDeviceController
         await this.chooseInputIntrinsicDevice('audio', device);
       }
       this.trace('startAudioInputDevice', device, `success`);
-      return this.useWebAudio
-        ? this.getMediaStreamDestinationNode().stream
-        : this.activeDevices['audio'].stream;
+      // For web audio, the audio destination stream stays the same so audio input did not change
+      if (this.useWebAudio) {
+        this.attachAudioInputStreamToAudioContext(this.activeDevices['audio'].stream);
+        this.pushAudioMeetingStateForPermissions(this.getMediaStreamDestinationNode().stream);
+        return this.getMediaStreamDestinationNode().stream;
+      } else {
+        this.publishSelectedAudioInputDidChangedEvent(this.activeDevices['audio'].stream);
+        return this.activeDevices['audio'].stream;
+      }
     } catch (error) {
       throw error;
     } finally {
@@ -255,7 +255,7 @@ export default class DefaultDeviceController
     }
   }
 
-  stopAudioInput(): void {
+  async stopAudioInput(): Promise<void> {
     if (this.getAudioInputInProgress) {
       throw new Error('An audio input is starting');
     }
@@ -343,6 +343,8 @@ export default class DefaultDeviceController
       // VideoTransformDevice owns input MediaStream
       this.activeDevices['video'] = null;
       await this.chooseInputIntrinsicDevice('video', inner);
+      this.logger.info('apply processors to transform');
+      await this.chosenVideoTransformDevice.transformStream(this.activeDevices['video'].stream);
       return;
     }
 
@@ -368,11 +370,8 @@ export default class DefaultDeviceController
     }
 
     // `transformStream` will start processing.
+    this.logger.info('apply processors to transform');
     await device.transformStream(this.activeDevices['video'].stream);
-
-    this.publishSelectedVideoInputDidChangedEvent(
-      this.chosenVideoTransformDevice.outputMediaStream
-    );
   }
 
   async startVideoInput(device: VideoInputDevice): Promise<MediaStream | undefined> {
@@ -390,6 +389,9 @@ export default class DefaultDeviceController
       if (isVideoTransformDevice(device)) {
         this.logger.info(`Choosing video transform device ${device}`);
         await this.chooseVideoTransformInputDevice(device);
+        this.publishSelectedVideoInputDidChangedEvent(
+          this.chosenVideoTransformDevice.outputMediaStream
+        );
         return this.chosenVideoTransformDevice.outputMediaStream;
       }
 
@@ -400,10 +402,11 @@ export default class DefaultDeviceController
         this.chosenVideoTransformDevice.onOutputStreamDisconnect();
         this.chosenVideoTransformDevice = null;
       }
-
       await this.chooseInputIntrinsicDevice('video', device);
+
       this.trace('startVideoInputDevice', device);
-      return this.activeDevices['video']?.stream;
+      this.publishSelectedVideoInputDidChangedEvent(this.activeDevices['video'].stream);
+      return this.activeDevices['video'].stream;
     } catch (error) {
       throw error;
     } finally {
@@ -411,7 +414,7 @@ export default class DefaultDeviceController
     }
   }
 
-  stopVideoInput(): void {
+  async stopVideoInput(): Promise<void> {
     if (this.getVideoInputInProgress) {
       throw new Error('A video input is starting');
     }
@@ -876,9 +879,9 @@ export default class DefaultDeviceController
   private async handleDeviceStreamEnded(kind: 'audio' | 'video', deviceId: string): Promise<void> {
     try {
       if (kind === 'audio') {
-        await this.chooseInputIntrinsicDevice('audio', null); //Need to switch to empty audio device
+        await this.startAudioInput(null); //Need to switch to empty audio device
       } else {
-        this.stopVideoInput();
+        await this.stopVideoInput();
       }
     } catch (e) {
       /* istanbul ignore next */
@@ -1116,7 +1119,6 @@ export default class DefaultDeviceController
             try {
               newDevice.stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
               newDevice.constraints = fallbackConstraints;
-              await this.handleDeviceChange();
               await this.handleNewInputDevice(kind, newDevice);
               hasError = false;
             } catch (e) {
@@ -1169,6 +1171,7 @@ export default class DefaultDeviceController
     if (error.message) {
       return error.message;
     }
+    return 'UnknownError';
   }
 
   private async handleNewInputDevice(
@@ -1186,18 +1189,20 @@ export default class DefaultDeviceController
     // We only monitor the first track, and use its device ID for observer notifications.
     const track = newDevice.stream.getTracks()[0];
 
-    newDevice.endedCallback = (): void => {
-      // Hard to test, but the safety check is worthwhile.
-      /* istanbul ignore else */
-      if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
-        this.logger.warn(
-          `${kind} input device which was active is no longer available, resetting to null device`
-        );
-        this.handleDeviceStreamEnded(kind, newDeviceId);
-        delete newDevice.endedCallback;
-      }
-    };
-    track.addEventListener('ended', newDevice.endedCallback, { once: true });
+    if (track) {
+      newDevice.endedCallback = (): void => {
+        // Hard to test, but the safety check is worthwhile.
+        /* istanbul ignore else */
+        if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
+          this.logger.warn(
+            `${kind} input device which was active is no longer available, resetting to null device`
+          );
+          this.handleDeviceStreamEnded(kind, newDeviceId);
+          delete newDevice.endedCallback;
+        }
+      };
+      track.addEventListener('ended', newDevice.endedCallback, { once: true });
+    }
 
     // Add event listener to mute/unmute event for audio
     if (kind === 'audio') {
@@ -1221,27 +1226,6 @@ export default class DefaultDeviceController
         } else {
           newDevice.trackUnmuteCallback();
         }
-      }
-    }
-
-    // Trigger audio/video input change event
-    if (kind === 'video') {
-      // attempts to mirror `this.useWebAudio`. The difference is that audio destination stream stays the same
-      // but video sending needs to switch streams.
-      if (this.chosenVideoInputIsTransformDevice()) {
-        this.logger.info('apply processors to transform');
-        await this.chosenVideoTransformDevice.transformStream(this.activeDevices['video'].stream);
-        this.publishSelectedVideoInputDidChangedEvent(
-          this.chosenVideoTransformDevice.outputMediaStream
-        );
-      } else {
-        this.publishSelectedVideoInputDidChangedEvent(this.activeDevices['video'].stream);
-      }
-    } else {
-      if (this.useWebAudio) {
-        this.attachAudioInputStreamToAudioContext(this.activeDevices['audio'].stream);
-      } else {
-        this.publishSelectedAudioInputDidChangedEvent(this.activeDevices['audio'].stream);
       }
     }
   }

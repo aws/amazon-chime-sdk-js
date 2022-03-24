@@ -82,7 +82,7 @@ export default interface DeviceController {
    * Stop the current audio input. This needs to be called to clear out to stop the current audio input resources
    * such as audio stream from microphone.
    */
-  stopAudioInput(): void;
+  stopAudioInput(): Promise<void>;
 
   /**
    * Selects a video input device to use. The constraint may be a device id,
@@ -96,7 +96,7 @@ export default interface DeviceController {
    * Stop the current audio input. This needs to be called to clear out to stop the current video input resources
    * such as audio stream from camera.
    */
-  stopVideoInput(): void;
+  stopVideoInput(): Promise<void>;
 
   /**
    * Selects an audio output device for use. Null specifies the default device.
