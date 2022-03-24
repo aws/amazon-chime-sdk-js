@@ -8,6 +8,12 @@ Installation involves adjusting your `package.json` to depend on version `3.0.0`
 npm install --save amazon-chime-sdk-js@3
 ```
 
+Note that, currently only pre-release NPM versions of `3.0.0` are available until we do the final major version release. Do the following step to install the latest beta version for `amazon-chime-sdk-js`:
+
+```shell
+npm install --save amazon-chime-sdk-js@beta
+```
+
 __Version 3 of the Amazon Chime SDK for JavaScript makes a number of interface changes.__
 
 __In many cases you should not need to adjust your application code at all. This will be the case if:__
