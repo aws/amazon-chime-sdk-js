@@ -12,6 +12,8 @@
     TEST_TYPE: Integration-Test
     SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
     SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  
+  environment: CI Workflow
 
   jobs:
     build:
@@ -34,6 +36,7 @@
     integ-content-share-job-one:
       name: Content Share Integration Test Suite One
       runs-on: ubuntu-latest
+      environment: CI Workflow
       steps:
         - name: Checkout Package
           uses: actions/checkout@v2
