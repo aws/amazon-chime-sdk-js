@@ -999,9 +999,14 @@ export default class DefaultAudioVideoController
     if (!videoStream || videoStream.getVideoTracks().length < 1) {
       throw new Error('could not acquire video track');
     }
+    if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
+      throw new Error('no active meeting and peer connection');
+    }
+
     // Update the active video input on subscription context to match what we just changed
     // so that subsequent meeting actions can reuse and destroy it.
     this.meetingSessionContext.activeVideoInput = videoStream;
+
     // if there is a local tile, a video tile update event should be fired.
     const localTile = this.meetingSessionContext.videoTileController.getLocalVideoTile();
     if (localTile) {
@@ -1019,38 +1024,28 @@ export default class DefaultAudioVideoController
       );
     }
 
-    if (!this.meetingSessionContext.peer) {
-      this.logger.info('no active meeting and peer connection so skip updating local video track.');
-      return Promise.resolve();
-    }
-
-    const videoTrack = videoStream.getVideoTracks()[0];
-
-    await this.meetingSessionContext.transceiverController.setVideoInput(videoTrack);
+    await this.meetingSessionContext.transceiverController.setVideoInput(
+      videoStream.getVideoTracks()[0]
+    );
   }
 
   async replaceLocalAudio(audioStream: MediaStream): Promise<void> {
     if (!audioStream || audioStream.getAudioTracks().length < 1) {
       throw new Error('could not acquire audio track');
     }
-    this.meetingSessionContext.activeAudioInput = audioStream;
-
-    if (!this.meetingSessionContext.peer) {
-      this.logger.info('no active meeting and peer connection so skip updating local audio track.');
-      return Promise.resolve();
+    if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
+      throw new Error('no active meeting and peer connection');
     }
+    this.meetingSessionContext.activeAudioInput = audioStream;
 
     this.connectionHealthData.reset();
     this.connectionHealthData.setConnectionStartTime();
-    const audioTrack = audioStream.getAudioTracks()[0];
 
     const replaceTrackSuccess = await this.meetingSessionContext.transceiverController.replaceAudioTrack(
-      audioTrack
+      audioStream.getAudioTracks()[0]
     );
-    if (replaceTrackSuccess) {
-      return Promise.resolve();
-    } else {
-      return Promise.reject();
+    if (!replaceTrackSuccess) {
+      throw new Error('Failed to replace audio track');
     }
   }
 
@@ -1281,7 +1276,7 @@ export default class DefaultAudioVideoController
   }
 
   private cleanUpAfterStop(): void {
-    this._mediaStreamBroker?.removeMediaStreamBrokerObserver(this);
+    this._mediaStreamBroker.removeMediaStreamBrokerObserver(this);
     this.meetingSessionContext.activeAudioInput = null;
     this.meetingSessionContext.activeVideoInput = null;
   }
@@ -1471,6 +1466,10 @@ export default class DefaultAudioVideoController
   }
 
   async selectedVideoInputDidChanged(videoStream: MediaStream | undefined): Promise<void> {
+    //No active meeting, there is nothing to do
+    if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
+      return;
+    }
     if (this._videoTileController.hasStartedLocalVideoTile()) {
       if (videoStream) {
         await this.replaceLocalVideo(videoStream);
@@ -1481,12 +1480,17 @@ export default class DefaultAudioVideoController
   }
 
   async selectedAudioInputDidChanged(audioStream: MediaStream | undefined): Promise<void> {
+    //No active meeting, there is nothing to do
+    if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
+      return;
+    }
     if (!audioStream) {
       // If audio input stream stopped, try to get empty audio device from media stream broker
       try {
         audioStream = await this.mediaStreamBroker.acquireAudioInputStream();
       } catch (error) {
-        throw new Error('could not acquire audio track from mediaStreamBroker');
+        this.logger.error('Could not acquire audio track from mediaStreamBroker');
+        return;
       }
     }
     await this.replaceLocalAudio(audioStream);

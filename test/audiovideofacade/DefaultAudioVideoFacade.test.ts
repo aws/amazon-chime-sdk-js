@@ -133,6 +133,12 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith());
     });
 
+    it('will call setVideoMaxBandwidthKbps', () => {
+      const spy = sinon.spy(controller, 'setVideoMaxBandwidthKbps');
+      facade.setVideoMaxBandwidthKbps(100);
+      assert(spy.calledOnce);
+    });
+
     it('will call getRTCPeerConnectionStats', async () => {
       const spy = sinon.spy(controller, 'getRTCPeerConnectionStats');
       await facade.getRTCPeerConnectionStats();
@@ -509,8 +515,8 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith());
     });
 
-    it('will call chooseAudioInputDevice', async () => {
-      const spy = sinon.spy(deviceController, 'chooseAudioInputDevice');
+    it('will call startAudioInput', async () => {
+      const spy = sinon.spy(deviceController, 'startAudioInput');
       const arg1 = '';
       try {
         await facade.startAudioInput(arg1);
@@ -518,8 +524,16 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(arg1));
     });
 
-    it('will call chooseVideoInputDevice', async () => {
-      const spy = sinon.spy(deviceController, 'chooseVideoInputDevice');
+    it('will call stopAudioInput', async () => {
+      const spy = sinon.spy(deviceController, 'stopAudioInput');
+      try {
+        await facade.stopAudioInput();
+      } catch (e) {}
+      assert(spy.calledOnce);
+    });
+
+    it('will call startVideoInput', async () => {
+      const spy = sinon.spy(deviceController, 'startVideoInput');
       const arg1 = '';
       try {
         await facade.startVideoInput(arg1);
@@ -533,14 +547,21 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledWith(arg2));
     });
 
+    it('will call stopVideoInput', async () => {
+      const spy = sinon.spy(deviceController, 'stopVideoInput');
+      try {
+        await facade.stopVideoInput();
+      } catch (e) {}
+      assert(spy.calledOnce);
+    });
+
     it('will call chooseVideoInputQuality', () => {
       const spy = sinon.spy(deviceController, 'chooseVideoInputQuality');
       const arg1 = 1;
       const arg2 = 2;
       const arg3 = 3;
-      const arg4 = 4;
-      facade.chooseVideoInputQuality(arg1, arg2, arg3, arg4);
-      assert(spy.calledOnceWith(arg1, arg2, arg3, arg4));
+      facade.chooseVideoInputQuality(arg1, arg2, arg3);
+      assert(spy.calledOnceWith(arg1, arg2, arg3));
     });
 
     it('will call getVideoInputQualitySettings', () => {
@@ -550,7 +571,7 @@ describe('DefaultAudioVideoFacade', () => {
     });
 
     it('will call chooseAudioOutputDevice', async () => {
-      const spy = sinon.spy(deviceController, 'chooseAudioOutputDevice');
+      const spy = sinon.spy(deviceController, 'chooseAudioOutput');
       const arg1 = '';
       try {
         await facade.chooseAudioOutput(arg1);

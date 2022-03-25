@@ -7,6 +7,7 @@ import { DefaultTransceiverController, SDP, ZLIBTextCompressor } from '../../src
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
+import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
@@ -65,7 +66,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
-    context.realtimeController = new DefaultRealtimeController();
+    context.realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
 
     textCompressor = new ZLIBTextCompressor(context.logger);
     webSocketAdapter = new DefaultWebSocketAdapter(context.logger);

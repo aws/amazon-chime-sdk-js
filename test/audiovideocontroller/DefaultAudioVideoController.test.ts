@@ -32,6 +32,7 @@ import EventController from '../../src/eventcontroller/EventController';
 import EventName from '../../src/eventcontroller/EventName';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
+import MediaStreamBrokerObserver from '../../src/mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
@@ -1158,39 +1159,6 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.stop();
     });
 
-    it('performs the FinishDisconnecting action even when stopping and cleaning fail', async () => {
-      class MockDeviceController extends NoOpMediaStreamBroker {
-        releaseMediaStream(_mediaStreamToRelease: MediaStream): void {
-          throw new Error('Force CleanStoppedSessionTask to fail');
-        }
-      }
-
-      let called = false;
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new MockDeviceController(),
-        reconnectController
-      );
-      class TestObserver implements AudioVideoObserver {
-        audioVideoDidStop(): void {
-          called = true;
-        }
-      }
-      audioVideoController.addObserver(new TestObserver());
-      expect(audioVideoController.configuration).to.equal(configuration);
-      await start();
-
-      configuration.connectionTimeoutMs = 100;
-
-      // Stop and wait for the Leave frame in LeaveAndReceiveLeaveAckTask for 100ms.
-      audioVideoController.stop();
-
-      await delay(configuration.connectionTimeoutMs * 2);
-      expect(called).to.be.true;
-    });
-
     it('disables reconnecting once stop is called', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
@@ -2044,14 +2012,26 @@ describe('DefaultAudioVideoController', () => {
 
   describe('restartLocalVideo', () => {
     it('restarts local video', async () => {
-      let called = false;
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireVideoInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          // @ts-ignore
+          mediaStream.id = '1';
+          const track = new MediaStreamTrack();
+          // @ts-ignore
+          track.kind = 'video';
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+      }
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
         webSocketAdapter,
-        new NoOpMediaStreamBroker(),
+        new TestDeviceController(),
         reconnectController
       );
+      let called = false;
       const stopLocalVideoTileSpy = sinon.spy(
         audioVideoController.videoTileController,
         'stopLocalVideoTile'
@@ -2066,8 +2046,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.restartLocalVideo(() => {
         called = true;
       });
-      // restartLocalVideo() triggers 4 updates.
-      await sendICEEventAndSubscribeAckFrame();
+      // restartLocalVideo() triggers 3 updates.
       await sendICEEventAndSubscribeAckFrame();
       await sendICEEventAndSubscribeAckFrame();
       await sendICEEventAndSubscribeAckFrame();
@@ -2109,89 +2088,18 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('replaceLocalVideo', () => {
-    it('fails if device controller has no active video stream', async () => {
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController
-      );
-
-      let success = true;
-      try {
-        await audioVideoController.replaceLocalVideo();
-      } catch (error) {
-        success = false;
-      }
-
-      expect(success).to.be.false;
-
-      class TestDeviceController extends NoOpMediaStreamBroker {
-        async acquireVideoInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          return mediaStream;
-        }
-      }
-
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new TestDeviceController(),
-        reconnectController
-      );
-      success = true;
-      try {
-        await audioVideoController.replaceLocalVideo();
-      } catch (error) {
-        success = false;
-      }
-      expect(success).to.be.false;
-    });
-
-    it('fails if no peer connection is established', async () => {
+    beforeEach(() => {
       class TestDeviceController extends NoOpDeviceController {
         async acquireVideoInputStream(): Promise<MediaStream> {
           const mediaStream = new MediaStream();
-          const track = new MediaStreamTrack();
-          mediaStream.addTrack(track);
-          return mediaStream;
-        }
-      }
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new TestDeviceController(),
-        reconnectController
-      );
-      let success = true;
-      try {
-        await audioVideoController.replaceLocalVideo();
-      } catch (error) {
-        success = false;
-      }
-      expect(success).to.be.false;
-    });
-
-    it('replaces video track for unified plan', async () => {
-      class TestDeviceController extends NoOpDeviceController {
-        async acquireVideoInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
+          // @ts-ignore
+          mediaStream.id = '1';
           const track = new MediaStreamTrack();
           // @ts-ignore
           track.kind = 'video';
           mediaStream.addTrack(track);
           return mediaStream;
         }
-
-        async acquireAudioInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          const track = new MediaStreamTrack();
-          mediaStream.addTrack(track);
-          return mediaStream;
-        }
       }
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -2200,6 +2108,33 @@ describe('DefaultAudioVideoController', () => {
         new TestDeviceController(),
         reconnectController
       );
+    });
+
+    it('throw error video stream has no track', () => {
+      return expect(audioVideoController.replaceLocalVideo(new MediaStream())).to.be.rejectedWith(
+        'could not acquire video track'
+      );
+    });
+
+    it('Throw error if no peer connection is established', async () => {
+      const stream = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      stream.addTrack(track);
+      await expect(audioVideoController.replaceLocalVideo(stream)).to.be.rejectedWith(
+        '' + 'no active meeting and peer connection'
+      );
+    });
+
+    it('replaces video track', async () => {
+      const stream = new MediaStream();
+      // @ts-ignore
+      stream.id = '2';
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      stream.addTrack(track);
 
       let sessionStarted = false;
       let sessionConnecting = false;
@@ -2219,38 +2154,30 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionConnecting).to.be.true;
 
       audioVideoController.videoTileController.startLocalVideoTile();
-      await sendICEEventAndSubscribeAckFrame();
+      const localTile = audioVideoController.videoTileController.getLocalVideoTile();
+      const spy = sinon.spy(localTile, 'bindVideoStream');
+      await delay(defaultDelay); // add some delay so audioVideo.update finish
+      expect(audioVideoController.rtcPeerConnection).to.not.be.null;
 
-      await audioVideoController.replaceLocalVideo();
+      await audioVideoController.replaceLocalVideo(stream);
+      expect(spy.calledTwice).to.be.true;
+      expect(spy.args[0][0]).to.equal(attendeeId);
+      expect(spy.args[0][1]).to.be.true; //local tile param
+      expect(spy.args[0][2].id).to.equal('1');
+      expect(spy.args[1][0]).to.equal(attendeeId);
+      expect(spy.args[1][1]).to.be.true; //local tile param
+      expect(spy.args[1][2].id).to.equal('2');
       await stop();
     });
 
-    it('fails to replace local video if local tile is null', async () => {
-      class TestDeviceController extends NoOpDeviceController {
-        async acquireVideoInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          const track = new MediaStreamTrack();
-          // @ts-ignore
-          track.kind = 'video';
-          mediaStream.addTrack(track);
-          return mediaStream;
-        }
-
-        async acquireAudioInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          const track = new MediaStreamTrack();
-          mediaStream.addTrack(track);
-          return mediaStream;
-        }
-      }
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new TestDeviceController(),
-        reconnectController
-      );
-
+    it('Do not replace local video if local tile is null', async () => {
+      const stream = new MediaStream();
+      // @ts-ignore
+      stream.id = '2';
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      stream.addTrack(track);
       let sessionStarted = false;
       let sessionConnecting = false;
       class TestObserver implements AudioVideoObserver {
@@ -2267,63 +2194,21 @@ describe('DefaultAudioVideoController', () => {
       await start();
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+      expect(audioVideoController.rtcPeerConnection).to.not.be.null;
 
-      await audioVideoController.replaceLocalVideo();
+      await audioVideoController.replaceLocalVideo(stream);
       await stop();
     });
   });
 
-  describe('restartLocalAudio', () => {
-    it('fails if device controller has no active audio stream', async () => {
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController
-      );
-
-      let success = true;
-      const realtimeSetLocalAudioInput = sinon.spy(
-        audioVideoController.realtimeController,
-        'realtimeSetLocalAudioInput'
-      );
-      try {
-        await audioVideoController.restartLocalAudio(() => {});
-      } catch (error) {
-        success = false;
-      }
-      expect(success).to.be.false;
-      expect(realtimeSetLocalAudioInput.called).to.be.false;
-
-      class TestDeviceController extends NoOpMediaStreamBroker {
-        async acquireAudioInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          return mediaStream;
-        }
-      }
-
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new TestDeviceController(),
-        reconnectController
-      );
-      success = true;
-      try {
-        await audioVideoController.restartLocalAudio(() => {});
-      } catch (error) {
-        success = false;
-      }
-      expect(success).to.be.false;
-    });
-
-    it('fails if no peer connection is established', async () => {
+  describe('replaceLocalAudio', () => {
+    beforeEach(() => {
       class TestDeviceController extends NoOpDeviceController {
         async acquireAudioInputStream(): Promise<MediaStream> {
           const mediaStream = new MediaStream();
           const track = new MediaStreamTrack();
+          // @ts-ignore
+          track.kind = 'audio';
           mediaStream.addTrack(track);
           return mediaStream;
         }
@@ -2335,37 +2220,30 @@ describe('DefaultAudioVideoController', () => {
         new TestDeviceController(),
         reconnectController
       );
-      let success = true;
-      const realtimeSetLocalAudioInput = sinon.spy(
-        audioVideoController.realtimeController,
-        'realtimeSetLocalAudioInput'
+    });
+    it('fails if has no active audio stream', () => {
+      return expect(
+        audioVideoController.replaceLocalAudio(new MediaStream())
+      ).to.eventually.be.rejectedWith('could not acquire audio track');
+    });
+
+    it('Throw error if no peer connection is established', async () => {
+      const stream = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'audio';
+      stream.addTrack(track);
+      await expect(audioVideoController.replaceLocalAudio(stream)).to.be.rejectedWith(
+        '' + 'no active meeting and peer connection'
       );
-      try {
-        await audioVideoController.restartLocalAudio(() => {});
-      } catch (error) {
-        success = false;
-      }
-      expect(success).to.be.false;
-      expect(realtimeSetLocalAudioInput.called).to.be.false;
     });
 
     it('replaces audio track', async () => {
-      class TestDeviceController extends NoOpDeviceController {
-        async acquireAudioInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          const track = new MediaStreamTrack();
-          mediaStream.addTrack(track);
-          return mediaStream;
-        }
-      }
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new TestDeviceController(),
-        reconnectController
-      );
-
+      const stream = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'audio';
+      stream.addTrack(track);
       let sessionStarted = false;
       let sessionConnecting = false;
       class TestObserver implements AudioVideoObserver {
@@ -2377,43 +2255,24 @@ describe('DefaultAudioVideoController', () => {
         }
       }
       audioVideoController.addObserver(new TestObserver());
-      const realtimeSetLocalAudioInput = sinon.spy(
-        audioVideoController.realtimeController,
-        'realtimeSetLocalAudioInput'
-      );
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
 
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+      expect(audioVideoController.rtcPeerConnection).to.not.be.null;
 
-      let callbackExecuted = false;
-      await audioVideoController.restartLocalAudio(() => {
-        callbackExecuted = true;
-      });
-      expect(callbackExecuted).to.be.true;
-      expect(realtimeSetLocalAudioInput.called).to.be.true;
+      await audioVideoController.replaceLocalAudio(stream);
       await stop();
     });
 
     it('reject if transceiver fails to replaces audio track', async () => {
-      class TestDeviceController extends NoOpDeviceController {
-        async acquireAudioInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          const track = new MediaStreamTrack();
-          mediaStream.addTrack(track);
-          return mediaStream;
-        }
-      }
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new TestDeviceController(),
-        reconnectController
-      );
-
+      const stream = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'audio';
+      stream.addTrack(track);
       let sessionStarted = false;
       let sessionConnecting = false;
       class TestObserver implements AudioVideoObserver {
@@ -2425,27 +2284,19 @@ describe('DefaultAudioVideoController', () => {
         }
       }
       audioVideoController.addObserver(new TestObserver());
-      const realtimeSetLocalAudioInput = sinon.spy(
-        audioVideoController.realtimeController,
-        'realtimeSetLocalAudioInput'
-      );
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
 
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+      expect(audioVideoController.rtcPeerConnection).to.not.be.null;
 
-      let callbackExecuted = false;
       // @ts-ignore mutate the context state to trigger rejection
       audioVideoController.meetingSessionContext.transceiverController._localAudioTransceiver = null;
-      await expect(
-        audioVideoController.restartLocalAudio(() => {
-          callbackExecuted = true;
-        })
-      ).to.be.rejected;
-      expect(callbackExecuted).to.be.true;
-      expect(realtimeSetLocalAudioInput.called).to.be.true;
+      await expect(audioVideoController.replaceLocalAudio(stream)).to.be.rejectedWith(
+        'Failed to replace audio track'
+      );
       await stop();
     });
   });
@@ -3638,6 +3489,300 @@ describe('DefaultAudioVideoController', () => {
 
       await stop();
       expect(demotionCalled).to.be.true;
+    });
+  });
+
+  describe('setVideoMaxBandwidthKbps', () => {
+    it('can set video max bandwidth', async () => {
+      const policy = new NScaleVideoUplinkBandwidthPolicy('test');
+      const spy = sinon.spy(policy, 'setIdealMaxBandwidthKbps');
+      configuration.videoUplinkBandwidthPolicy = policy;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+      audioVideoController.setVideoMaxBandwidthKbps(100);
+      await stop();
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('can set video max bandwidth before meeting start', async () => {
+      const policy = new NScaleVideoUplinkBandwidthPolicy('test');
+      const spy = sinon.spy(policy, 'setIdealMaxBandwidthKbps');
+      configuration.videoUplinkBandwidthPolicy = policy;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      audioVideoController.setVideoMaxBandwidthKbps(100);
+      await start();
+      await stop();
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('bandwidth has to be positive', () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      expect(() => {
+        audioVideoController.setVideoMaxBandwidthKbps(0);
+      }).to.throw('Max bandwidth kbps has to be more than 0');
+    });
+  });
+
+  describe('selectedAudioInputDidChanged', () => {
+    let mediaStreamBroker: ObserverMediaStreamBroker = undefined;
+    class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
+      private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
+        MediaStreamBrokerObserver
+      >();
+      addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+        this.mediaStreamBrokerObservers.add(observer);
+      }
+      removeMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+        this.mediaStreamBrokerObservers.delete(observer);
+      }
+      triggerAudioInputChangeEvent(audioStream: MediaStream | undefined): void {
+        for (const observer of this.mediaStreamBrokerObservers) {
+          observer.selectedAudioInputDidChanged(audioStream);
+        }
+      }
+      async acquireAudioInputStream(): Promise<MediaStream> {
+        const mediaStream = new MediaStream();
+        const track = new MediaStreamTrack();
+        // @ts-ignore
+        track.kind = 'audio';
+        mediaStream.addTrack(track);
+        return mediaStream;
+      }
+    }
+    beforeEach(() => {
+      mediaStreamBroker = new ObserverMediaStreamBroker();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        mediaStreamBroker,
+        reconnectController
+      );
+    });
+
+    it('Does nothing if meeting has not started yet', () => {
+      const replaceAudioSpy = sinon.spy(audioVideoController, 'replaceLocalAudio');
+      mediaStreamBroker.addMediaStreamBrokerObserver(audioVideoController);
+      mediaStreamBroker.triggerAudioInputChangeEvent(new MediaStream());
+      expect(replaceAudioSpy.notCalled).to.be.true;
+      mediaStreamBroker.removeMediaStreamBrokerObserver(audioVideoController);
+      replaceAudioSpy.restore();
+    });
+
+    it('replace local audio', async () => {
+      const mediaStream = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'audio';
+      mediaStream.addTrack(track);
+
+      await start();
+      const replaceAudioSpy = sinon.spy(audioVideoController, 'replaceLocalAudio');
+      mediaStreamBroker.triggerAudioInputChangeEvent(mediaStream);
+      await delay(defaultDelay); //Wait for the replaceLocalAudio finish as it is an async function in an event
+      expect(replaceAudioSpy.calledOnceWith(mediaStream)).to.be.true;
+      await stop();
+      replaceAudioSpy.restore();
+    });
+
+    it('Try to acquire audio stream if receive undefined audio stream', async () => {
+      await start();
+      const replaceAudioSpy = sinon.spy(audioVideoController, 'replaceLocalAudio');
+      const acquireAudioSpy = sinon.spy(mediaStreamBroker, 'acquireAudioInputStream');
+      mediaStreamBroker.triggerAudioInputChangeEvent(undefined);
+      await delay(defaultDelay); //Wait for the replaceLocalAudio finish as it is an async function in an event
+      expect(replaceAudioSpy.calledOnce).to.be.true;
+      expect(acquireAudioSpy.calledOnce).to.be.true;
+      await stop();
+      replaceAudioSpy.restore();
+      acquireAudioSpy.restore();
+    });
+
+    it('throw error if failed to acquire audio input stream', async () => {
+      class FailedObserverMediaStreamBroker extends ObserverMediaStreamBroker {
+        async acquireAudioInputStream(): Promise<MediaStream> {
+          throw Error('Failed');
+        }
+      }
+      mediaStreamBroker = new FailedObserverMediaStreamBroker();
+      const logger = new NoOpDebugLogger();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        mediaStreamBroker,
+        reconnectController
+      );
+      await start();
+      const replaceAudioSpy = sinon.spy(audioVideoController, 'replaceLocalAudio');
+      const errorLogSpy = sinon.spy(logger, 'error');
+      mediaStreamBroker.triggerAudioInputChangeEvent(undefined);
+      await delay(defaultDelay); //Wait for the replaceLocalAudio finish as it is an async function in an event
+      expect(replaceAudioSpy.notCalled).to.be.true;
+      expect(errorLogSpy.calledOnceWith('Could not acquire audio track from mediaStreamBroker')).to
+        .be.true;
+      await stop();
+      replaceAudioSpy.restore();
+    });
+
+    afterEach(() => {
+      mediaStreamBroker = undefined;
+    });
+  });
+
+  describe('selectedVideoInputDidChanged', () => {
+    let mediaStreamBroker: ObserverMediaStreamBroker = undefined;
+    class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
+      private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
+        MediaStreamBrokerObserver
+      >();
+      addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+        this.mediaStreamBrokerObservers.add(observer);
+      }
+      removeMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+        this.mediaStreamBrokerObservers.delete(observer);
+      }
+      triggerVideoInputChangeEvent(videoStream: MediaStream | undefined): void {
+        for (const observer of this.mediaStreamBrokerObservers) {
+          observer.selectedVideoInputDidChanged(videoStream);
+        }
+      }
+      async acquireVideoInputStream(): Promise<MediaStream> {
+        const mediaStream = new MediaStream();
+        // @ts-ignore
+        mediaStream.id = '1';
+        const track = new MediaStreamTrack();
+        // @ts-ignore
+        track.kind = 'video';
+        mediaStream.addTrack(track);
+        return mediaStream;
+      }
+    }
+    beforeEach(() => {
+      mediaStreamBroker = new ObserverMediaStreamBroker();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        mediaStreamBroker,
+        reconnectController
+      );
+    });
+
+    it('Does nothing if meeting has not started yet', () => {
+      const replaceVideoSpy = sinon.spy(audioVideoController, 'replaceLocalVideo');
+      mediaStreamBroker.addMediaStreamBrokerObserver(audioVideoController);
+      mediaStreamBroker.triggerVideoInputChangeEvent(new MediaStream());
+      expect(replaceVideoSpy.notCalled).to.be.true;
+      mediaStreamBroker.removeMediaStreamBrokerObserver(audioVideoController);
+      replaceVideoSpy.restore();
+    });
+
+    it('Does nothing if local tile is not started yet', async () => {
+      const mediaStream = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      mediaStream.addTrack(track);
+
+      await start();
+      const replaceVideoSpy = sinon.spy(audioVideoController, 'replaceLocalVideo');
+      mediaStreamBroker.triggerVideoInputChangeEvent(mediaStream);
+      expect(replaceVideoSpy.notCalled).to.be.true;
+      await stop();
+      replaceVideoSpy.restore();
+    });
+
+    it('replace local video if local tile started and video stream changes', async () => {
+      const mediaStream = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      mediaStream.addTrack(track);
+
+      await start();
+      audioVideoController.videoTileController.startLocalVideoTile();
+      await sendICEEventAndSubscribeAckFrame();
+      const replaceVideoSpy = sinon.spy(audioVideoController, 'replaceLocalVideo');
+      mediaStreamBroker.triggerVideoInputChangeEvent(mediaStream);
+      await delay(defaultDelay); //Wait for the replaceLocalVideo finish as it is an async function in an event
+      expect(replaceVideoSpy.calledOnceWith(mediaStream)).to.be.true;
+      await stop();
+      replaceVideoSpy.restore();
+    });
+
+    it('stop local video if local tile started and video stream is undefined', async () => {
+      await start();
+      audioVideoController.videoTileController.startLocalVideoTile();
+      await sendICEEventAndSubscribeAckFrame();
+      const replaceVideoSpy = sinon.spy(audioVideoController, 'replaceLocalVideo');
+      const stopLocalVideoSpy = sinon.spy(
+        audioVideoController.videoTileController,
+        'stopLocalVideoTile'
+      );
+      mediaStreamBroker.triggerVideoInputChangeEvent(undefined);
+      await delay(defaultDelay); //Wait for the replaceLocalVideo finish as it is an async function in an event
+      expect(replaceVideoSpy.notCalled).to.be.true;
+      expect(stopLocalVideoSpy.calledOnce).to.be.true;
+      await stop();
+      replaceVideoSpy.restore();
+    });
+
+    afterEach(() => {
+      mediaStreamBroker = undefined;
+    });
+  });
+
+  describe('selectedAudioOutputDidChanged', () => {
+    it('Handle audio output change event', () => {
+      class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
+        private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
+          MediaStreamBrokerObserver
+        >();
+        addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+          this.mediaStreamBrokerObservers.add(observer);
+        }
+        removeMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+          this.mediaStreamBrokerObservers.delete(observer);
+        }
+        triggerAudioOutputChangeEvent(device: MediaDeviceInfo | null): void {
+          for (const observer of this.mediaStreamBrokerObservers) {
+            observer.selectedAudioOutputDidChanged(device);
+          }
+        }
+      }
+      const mediaStreamBroker = new ObserverMediaStreamBroker();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        mediaStreamBroker,
+        reconnectController
+      );
+      const spy = sinon.spy(audioVideoController.audioMixController, 'bindAudioDevice');
+      mediaStreamBroker.addMediaStreamBrokerObserver(audioVideoController);
+      mediaStreamBroker.triggerAudioOutputChangeEvent(null);
+      expect(spy.calledOnceWith(null)).to.be.true;
+      mediaStreamBroker.removeMediaStreamBrokerObserver(audioVideoController);
+      spy.restore();
     });
   });
 });

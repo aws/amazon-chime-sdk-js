@@ -23,6 +23,7 @@ import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventName from '../../src/eventcontroller/EventName';
 import Logger from '../../src/logger/Logger';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
@@ -148,7 +149,7 @@ describe('MonitorTask', () => {
     context = new AudioVideoControllerState();
     context.audioVideoController = new TestAudioVideoController();
     context.logger = logger;
-    context.realtimeController = new TestRealtimeController();
+    context.realtimeController = new TestRealtimeController(new NoOpMediaStreamBroker());
     context.eventController = new DefaultEventController(
       new NoOpAudioVideoController().configuration,
       logger

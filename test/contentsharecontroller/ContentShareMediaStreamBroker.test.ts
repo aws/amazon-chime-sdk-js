@@ -283,23 +283,21 @@ describe('ContentShareMediaStreamBroker', () => {
         contentShareMediaStreamBroker.unmuteLocalAudioInputStream();
       }).to.throw('unsupported');
     });
+  });
 
-    it('addMediaStreamBrokerObserver not supported', () => {
+  describe('media stream broker observer', () => {
+    it('addMediaStreamBrokerObserver', () => {
       const observer = {
         selectedVideoInputDidChanged(_videoStream: MediaStream | undefined): void {},
       };
-      expect(() => {
-        contentShareMediaStreamBroker.addMediaStreamBrokerObserver(observer);
-      }).to.throw('unsupported');
+      contentShareMediaStreamBroker.addMediaStreamBrokerObserver(observer);
     });
 
-    it('removeMediaStreamBrokerObserver not supported', () => {
+    it('removeMediaStreamBrokerObserver', () => {
       const observer = {
         selectedVideoInputDidChanged(_videoStream: MediaStream | undefined): void {},
       };
-      expect(() => {
-        contentShareMediaStreamBroker.removeMediaStreamBrokerObserver(observer);
-      }).to.throw('unsupported');
+      contentShareMediaStreamBroker.removeMediaStreamBrokerObserver(observer);
     });
   });
 });

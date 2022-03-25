@@ -451,9 +451,6 @@ export default class DefaultRealtimeController implements RealtimeController {
   // Internals
 
   private setAudioInputEnabled(enabled: boolean): void {
-    if (!this.mediaStreamBroker) {
-      return;
-    }
     if (enabled) {
       this.mediaStreamBroker.unmuteLocalAudioInputStream();
     } else {
