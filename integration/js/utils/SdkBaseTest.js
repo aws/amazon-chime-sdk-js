@@ -49,7 +49,19 @@ class SdkBaseTest extends KiteBaseTest {
     if (this.useVideoProcessor) {
       this.testName += 'Processor';
     }
-    this.capabilities['name'] = process.env.STAGE !== undefined ? `${this.testName}-${process.env.TEST_TYPE}-${process.env.STAGE}` : `${this.testName}-${process.env.TEST_TYPE}`;
+    if(process.env.STAGE !== undefined) {
+      if(this.cwNamespaceInfix !== '')  {
+        this.capabilities['name'] = `${this.testName}-${this.cwNamespaceInfix}-${process.env.TEST_TYPE}-${process.env.STAGE}`;
+      } else  {
+        this.capabilities['name'] = `${this.testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`;
+      }
+    } else  {
+      if(this.cwNamespaceInfix !== '')  {
+        this.capabilities['name'] = `${this.testName}-${this.cwNamespaceInfix}-${process.env.TEST_TYPE}`;
+      } else  {
+        this.capabilities['name'] = `${this.testName}-${process.env.TEST_TYPE}`;
+      }
+    }
     this.seleniumSessions = [];
     this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
     if (this.numberOfParticipant > 1) {
