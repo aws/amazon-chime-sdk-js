@@ -1981,7 +1981,7 @@ export class DemoMeetingApp
         DefaultModality.MODALITY_CONTENT
       );
       const isSelfAttendee =
-        new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId 
+        new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId
           || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!present) {
         delete this.roster[attendeeId];
@@ -2827,7 +2827,7 @@ export class DemoMeetingApp
           await this.chooseAudioOutput(name);
         } catch (e) {
           fatal(e);
-          this.log('Failed to chooseAudioOutputDevice', e);
+          this.log('Failed to chooseAudioOutput', e);
         }
       }
     );
@@ -2961,7 +2961,7 @@ export class DemoMeetingApp
         await this.chooseAudioOutput(audioOutput.value);
       } catch (e) {
         fatal(e);
-        this.log('failed to chooseAudioOutputDevice', e);
+        this.log('failed to chooseAudioOutput', e);
       }
     }
     const audioMix = document.getElementById('meeting-audio') as HTMLAudioElement;
@@ -3542,9 +3542,6 @@ export class DemoMeetingApp
 
       // Stop Voice Focus.
       await this.voiceFocusDevice?.stop();
-
-      // If you joined and left the meeting, `CleanStoppedSessionTask` will have deselected
-      // any input streams. If you didn't, you need to call `chooseAudioInputDevice` here.
 
       // Clean up the loggers so they don't keep their `onload` listeners around.
       setTimeout(async () => {

@@ -3541,7 +3541,7 @@ describe('DefaultAudioVideoController', () => {
     });
   });
 
-  describe('selectedAudioInputDidChanged', () => {
+  describe('audioInputDidChange', () => {
     let mediaStreamBroker: ObserverMediaStreamBroker = undefined;
     class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
       private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
@@ -3555,7 +3555,7 @@ describe('DefaultAudioVideoController', () => {
       }
       triggerAudioInputChangeEvent(audioStream: MediaStream | undefined): void {
         for (const observer of this.mediaStreamBrokerObservers) {
-          observer.selectedAudioInputDidChanged(audioStream);
+          observer.audioInputDidChange(audioStream);
         }
       }
       async acquireAudioInputStream(): Promise<MediaStream> {
@@ -3648,7 +3648,7 @@ describe('DefaultAudioVideoController', () => {
     });
   });
 
-  describe('selectedVideoInputDidChanged', () => {
+  describe('videoInputDidChange', () => {
     let mediaStreamBroker: ObserverMediaStreamBroker = undefined;
     class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
       private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
@@ -3662,7 +3662,7 @@ describe('DefaultAudioVideoController', () => {
       }
       triggerVideoInputChangeEvent(videoStream: MediaStream | undefined): void {
         for (const observer of this.mediaStreamBrokerObservers) {
-          observer.selectedVideoInputDidChanged(videoStream);
+          observer.videoInputDidChange(videoStream);
         }
       }
       async acquireVideoInputStream(): Promise<MediaStream> {
@@ -3751,7 +3751,7 @@ describe('DefaultAudioVideoController', () => {
     });
   });
 
-  describe('selectedAudioOutputDidChanged', () => {
+  describe('audioOutputDidChange', () => {
     it('Handle audio output change event', () => {
       class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
         private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
@@ -3765,7 +3765,7 @@ describe('DefaultAudioVideoController', () => {
         }
         triggerAudioOutputChangeEvent(device: MediaDeviceInfo | null): void {
           for (const observer of this.mediaStreamBrokerObservers) {
-            observer.selectedAudioOutputDidChanged(device);
+            observer.audioOutputDidChange(device);
           }
         }
       }

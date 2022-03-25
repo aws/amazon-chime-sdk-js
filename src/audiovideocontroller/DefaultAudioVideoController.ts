@@ -1465,7 +1465,7 @@ export default class DefaultAudioVideoController
     });
   }
 
-  async selectedVideoInputDidChanged(videoStream: MediaStream | undefined): Promise<void> {
+  async videoInputDidChange(videoStream: MediaStream | undefined): Promise<void> {
     //No active meeting, there is nothing to do
     if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
       return;
@@ -1479,7 +1479,7 @@ export default class DefaultAudioVideoController
     }
   }
 
-  async selectedAudioInputDidChanged(audioStream: MediaStream | undefined): Promise<void> {
+  async audioInputDidChange(audioStream: MediaStream | undefined): Promise<void> {
     //No active meeting, there is nothing to do
     if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
       return;
@@ -1496,7 +1496,7 @@ export default class DefaultAudioVideoController
     await this.replaceLocalAudio(audioStream);
   }
 
-  async selectedAudioOutputDidChanged(device: MediaDeviceInfo | null): Promise<void> {
+  async audioOutputDidChange(device: MediaDeviceInfo | null): Promise<void> {
     return this.audioMixController.bindAudioDevice(device);
   }
 }

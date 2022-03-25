@@ -382,7 +382,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
 
   chooseAudioOutput(deviceId: string | null): Promise<void> {
     const result = this.deviceController.chooseAudioOutput(deviceId);
-    this.trace('chooseAudioOutputDevice', deviceId);
+    this.trace('chooseAudioOutput', deviceId);
     return result;
   }
 

@@ -288,14 +288,14 @@ describe('ContentShareMediaStreamBroker', () => {
   describe('media stream broker observer', () => {
     it('addMediaStreamBrokerObserver', () => {
       const observer = {
-        selectedVideoInputDidChanged(_videoStream: MediaStream | undefined): void {},
+        videoInputDidChange(_videoStream: MediaStream | undefined): void {},
       };
       contentShareMediaStreamBroker.addMediaStreamBrokerObserver(observer);
     });
 
     it('removeMediaStreamBrokerObserver', () => {
       const observer = {
-        selectedVideoInputDidChanged(_videoStream: MediaStream | undefined): void {},
+        videoInputDidChange(_videoStream: MediaStream | undefined): void {},
       };
       contentShareMediaStreamBroker.removeMediaStreamBrokerObserver(observer);
     });

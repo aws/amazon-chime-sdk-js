@@ -7,20 +7,20 @@
  */
 export default interface MediaStreamBrokerObserver {
   /**
-   * Called when video input stream are changed.
+   * Called when the video input stream is changed.
    * @param videoStream: The new video input media stream
    */
-  selectedVideoInputDidChanged?(videoStream: MediaStream | undefined): void;
+  videoInputDidChange?(videoStream: MediaStream | undefined): void;
 
   /**
-   * Called when audio input stream are changed.
+   * Called when the audio input stream is changed.
    * @param audioStream The new audio input media stream
    */
-  selectedAudioInputDidChanged?(audioStream: MediaStream | undefined): void;
+  audioInputDidChange?(audioStream: MediaStream | undefined): void;
 
   /**
-   * Called when audio output are changed
+   * Called when the audio output is changed
    * @param device The new audio output device
    */
-  selectedAudioOutputDidChanged?(device: MediaDeviceInfo | null): void;
+  audioOutputDidChange?(device: MediaDeviceInfo | null): void;
 }

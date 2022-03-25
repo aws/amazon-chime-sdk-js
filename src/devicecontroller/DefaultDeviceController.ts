@@ -57,7 +57,6 @@ export default class DefaultDeviceController
   private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
     MediaStreamBrokerObserver
   >();
-  // private boundAudioVideoController: AudioVideoController | null;
   private deviceLabelTrigger = (): Promise<MediaStream> => {
     return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
   };
@@ -245,7 +244,7 @@ export default class DefaultDeviceController
         this.pushAudioMeetingStateForPermissions(this.getMediaStreamDestinationNode().stream);
         return this.getMediaStreamDestinationNode().stream;
       } else {
-        this.publishSelectedAudioInputDidChangedEvent(this.activeDevices['audio'].stream);
+        this.publishAudioInputDidChangeEvent(this.activeDevices['audio'].stream);
         return this.activeDevices['audio'].stream;
       }
     } catch (error) {
@@ -267,7 +266,7 @@ export default class DefaultDeviceController
       this.stopTracksAndRemoveCallbacks('audio');
     } finally {
       this.watchForDeviceChangesIfNecessary();
-      this.publishSelectedAudioInputDidChangedEvent(undefined);
+      this.publishAudioInputDidChangeEvent(undefined);
     }
   }
 
@@ -389,9 +388,7 @@ export default class DefaultDeviceController
       if (isVideoTransformDevice(device)) {
         this.logger.info(`Choosing video transform device ${device}`);
         await this.chooseVideoTransformInputDevice(device);
-        this.publishSelectedVideoInputDidChangedEvent(
-          this.chosenVideoTransformDevice.outputMediaStream
-        );
+        this.publishVideoInputDidChangeEvent(this.chosenVideoTransformDevice.outputMediaStream);
         return this.chosenVideoTransformDevice.outputMediaStream;
       }
 
@@ -405,7 +402,7 @@ export default class DefaultDeviceController
       await this.chooseInputIntrinsicDevice('video', device);
 
       this.trace('startVideoInputDevice', device);
-      this.publishSelectedVideoInputDidChangedEvent(this.activeDevices['video'].stream);
+      this.publishVideoInputDidChangeEvent(this.activeDevices['video'].stream);
       return this.activeDevices['video'].stream;
     } catch (error) {
       throw error;
@@ -426,7 +423,7 @@ export default class DefaultDeviceController
       this.stopTracksAndRemoveCallbacks('video');
     } finally {
       this.watchForDeviceChangesIfNecessary();
-      this.publishSelectedVideoInputDidChangedEvent(undefined);
+      this.publishVideoInputDidChangeEvent(undefined);
     }
   }
 
@@ -434,8 +431,8 @@ export default class DefaultDeviceController
     this.audioOutputDeviceId = deviceId;
     this.watchForDeviceChangesIfNecessary();
     const deviceInfo = this.deviceInfoFromDeviceId('audiooutput', this.audioOutputDeviceId);
-    this.publishSelectedAudioOutputDidChangedEvent(deviceInfo);
-    this.trace('chooseAudioOutputDevice', deviceId, null);
+    this.publishAudioOutputDidChangeEvent(deviceInfo);
+    this.trace('chooseAudioOutput', deviceId, null);
     return;
   }
 
@@ -1516,28 +1513,28 @@ export default class DefaultDeviceController
     this.mediaStreamBrokerObservers.delete(observer);
   }
 
-  private publishSelectedVideoInputDidChangedEvent(videoStream: MediaStream | undefined): void {
+  private publishVideoInputDidChangeEvent(videoStream: MediaStream | undefined): void {
     this.forEachMediaStreamBrokerObserver((observer: MediaStreamBrokerObserver) => {
-      if (observer.selectedVideoInputDidChanged) {
-        observer.selectedVideoInputDidChanged(videoStream);
+      if (observer.videoInputDidChange) {
+        observer.videoInputDidChange(videoStream);
       }
     });
     this.pushVideoMeetingStateForPermissions(videoStream);
   }
 
-  private publishSelectedAudioInputDidChangedEvent(audioStream: MediaStream | undefined): void {
+  private publishAudioInputDidChangeEvent(audioStream: MediaStream | undefined): void {
     this.forEachMediaStreamBrokerObserver((observer: MediaStreamBrokerObserver) => {
-      if (observer.selectedAudioInputDidChanged) {
-        observer.selectedAudioInputDidChanged(audioStream);
+      if (observer.audioInputDidChange) {
+        observer.audioInputDidChange(audioStream);
       }
     });
     this.pushAudioMeetingStateForPermissions(audioStream);
   }
 
-  private publishSelectedAudioOutputDidChangedEvent(device: MediaDeviceInfo | null): void {
+  private publishAudioOutputDidChangeEvent(device: MediaDeviceInfo | null): void {
     this.forEachMediaStreamBrokerObserver((observer: MediaStreamBrokerObserver) => {
-      if (observer.selectedAudioOutputDidChanged) {
-        observer.selectedAudioOutputDidChanged(device);
+      if (observer.audioOutputDidChange) {
+        observer.audioOutputDidChange(device);
       }
     });
   }

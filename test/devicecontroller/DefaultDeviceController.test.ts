@@ -758,7 +758,7 @@ describe('DefaultDeviceController', () => {
       let callbackAudioStream = undefined;
 
       const observer = {
-        selectedAudioInputDidChanged(audioStream: MediaStream | undefined): void {
+        audioInputDidChange(audioStream: MediaStream | undefined): void {
           callbackAudioStream = audioStream;
         },
       };
@@ -776,7 +776,7 @@ describe('DefaultDeviceController', () => {
 
     it('Does not send audio input change event if not implemented', async () => {
       const observer = {
-        selectedVideoInputDidChanged(_videoStream: MediaStream | undefined): void {},
+        videoInputDidChange(_videoStream: MediaStream | undefined): void {},
       };
 
       deviceController.addMediaStreamBrokerObserver(observer);
@@ -1114,7 +1114,7 @@ describe('DefaultDeviceController', () => {
     it('Send selected video input change event', async () => {
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1129,7 +1129,7 @@ describe('DefaultDeviceController', () => {
 
     it('Does not send video input change event if not implemented', async () => {
       const observer = {
-        selectedAudioInputDidChanged(_audioStream: MediaStream | undefined): void {},
+        audioInputDidChange(_audioStream: MediaStream | undefined): void {},
       };
 
       deviceController.addMediaStreamBrokerObserver(observer);
@@ -1203,7 +1203,7 @@ describe('DefaultDeviceController', () => {
 
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1277,7 +1277,7 @@ describe('DefaultDeviceController', () => {
 
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1330,7 +1330,7 @@ describe('DefaultDeviceController', () => {
 
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1362,7 +1362,7 @@ describe('DefaultDeviceController', () => {
 
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1395,7 +1395,7 @@ describe('DefaultDeviceController', () => {
 
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1428,7 +1428,7 @@ describe('DefaultDeviceController', () => {
 
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1464,7 +1464,7 @@ describe('DefaultDeviceController', () => {
 
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1861,7 +1861,7 @@ describe('DefaultDeviceController', () => {
     it('stop current audio device', async () => {
       let callbackAudioStream = undefined;
       const observer = {
-        selectedAudioInputDidChanged(audioStream: MediaStream | undefined): void {
+        audioInputDidChange(audioStream: MediaStream | undefined): void {
           callbackAudioStream = audioStream;
         },
       };
@@ -1887,7 +1887,7 @@ describe('DefaultDeviceController', () => {
       enableWebAudio(true);
       let callbackAudioStream = undefined;
       const observer = {
-        selectedAudioInputDidChanged(audioStream: MediaStream | undefined): void {
+        audioInputDidChange(audioStream: MediaStream | undefined): void {
           callbackAudioStream = audioStream;
         },
       };
@@ -1962,7 +1962,7 @@ describe('DefaultDeviceController', () => {
     it('stop current video device', async () => {
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -1988,7 +1988,7 @@ describe('DefaultDeviceController', () => {
       setupMockCaptureStream();
       let callbackVideoStream = undefined;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -2030,10 +2030,10 @@ describe('DefaultDeviceController', () => {
       );
     });
 
-    it('Sending selectedVideoInputDidChanged with undefined if calling stopVideoInput', () => {
+    it('Sending videoInputDidChange with undefined if calling stopVideoInput', () => {
       let callbackVideoStream;
       const observer = {
-        selectedVideoInputDidChanged(videoStream: MediaStream | undefined): void {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
           callbackVideoStream = videoStream;
         },
       };
@@ -2051,14 +2051,14 @@ describe('DefaultDeviceController', () => {
       expect(spy.called).to.be.false;
     });
 
-    it('publish selectedAudioOutputDidChanged', async () => {
+    it('publish audioOutputDidChange', async () => {
       domMockBehavior.enumerateDeviceList = [
         getMediaDeviceInfo(stringDeviceId, null, 'label'),
         getMediaDeviceInfo(stringDeviceId, 'audiooutput', 'label'),
       ];
       let callbackDevice = undefined;
       const observer = {
-        selectedAudioOutputDidChanged(device: MediaDeviceInfo | undefined): void {
+        audioOutputDidChange(device: MediaDeviceInfo | undefined): void {
           callbackDevice = device;
         },
       };
@@ -2070,11 +2070,11 @@ describe('DefaultDeviceController', () => {
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
-    it('publish selectedAudioOutputDidChanged for null device', async () => {
+    it('publish audioOutputDidChange for null device', async () => {
       // domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo(stringDeviceId, null, 'label')];
       let callbackDevice;
       const observer = {
-        selectedAudioOutputDidChanged(device: MediaDeviceInfo | undefined): void {
+        audioOutputDidChange(device: MediaDeviceInfo | undefined): void {
           callbackDevice = device;
         },
       };
@@ -2085,9 +2085,9 @@ describe('DefaultDeviceController', () => {
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
-    it('Does not publish selectedAudioOutputDidChanged if not implemented', async () => {
+    it('Does not publish audioOutputDidChange if not implemented', async () => {
       const observer = {
-        selectedAudioInputDidChanged(_audioStream: MediaStream | undefined): void {},
+        audioInputDidChange(_audioStream: MediaStream | undefined): void {},
       };
 
       deviceController.addMediaStreamBrokerObserver(observer);
@@ -2591,7 +2591,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addDeviceChangeObserver(observer1);
       let callbackAudioStream;
       const observer2 = {
-        selectedAudioInputDidChanged(audioStream: MediaStream | undefined): void {
+        audioInputDidChange(audioStream: MediaStream | undefined): void {
           callbackAudioStream = audioStream;
         },
       };
@@ -2632,7 +2632,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addDeviceChangeObserver(observer1);
       let callbackVideoStream;
       const observer2 = {
-        selectedVideoInputDidChanged(audioStream: MediaStream | undefined): void {
+        videoInputDidChange(audioStream: MediaStream | undefined): void {
           callbackVideoStream = audioStream;
         },
       };
