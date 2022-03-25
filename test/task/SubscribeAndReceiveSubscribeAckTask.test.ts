@@ -114,8 +114,9 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     subscribeAckBuffer.set(buffer, 1);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     context.signalingClient.closeConnection();
+    await delay(behavior.asyncWaitMs);
     domMockBuilder.cleanup();
   });
 

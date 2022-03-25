@@ -83,8 +83,8 @@ function makeColorBars(
   return { listener, scheduler, stream };
 }
 
-export default class VideoHelper {
-  static synthesizeVideoDevice(colorOrPattern: string): MediaStream | null {
+export default class SyntheticVideoDeviceFactory {
+  static create(colorOrPattern: string): MediaStream | null {
     const canvas = document.createElement('canvas') as HTMLCanvasElement;
     canvas.width = 480;
     canvas.height = (canvas.width / 16) * 9;

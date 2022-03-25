@@ -56,9 +56,9 @@ export default class AudioVideoControllerState {
 
   audioMixController: AudioMixController | null = null;
 
-  activeAudioInput: MediaStream | null = null;
+  activeAudioInput: MediaStream | undefined = undefined;
 
-  activeVideoInput: MediaStream | null = null;
+  activeVideoInput: MediaStream | undefined = undefined;
 
   transceiverController: TransceiverController | null = null;
 

@@ -829,7 +829,7 @@ describe('MonitorTask', () => {
     });
 
     it('does not log if the active video input is not available', () => {
-      context.activeVideoInput = null;
+      context.activeVideoInput = undefined;
 
       const spy = sinon.spy(context.statsCollector, 'logVideoEvent');
       task.videoSendHealthDidChange(1024, 5);

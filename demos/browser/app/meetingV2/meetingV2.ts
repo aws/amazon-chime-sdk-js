@@ -90,7 +90,7 @@ import {
   loadBodyPixDependency,
   platformCanSupportBodyPixWithoutDegradation,
 } from './video/filters/SegmentationUtil';
-import VideoHelper from './video/VideoHelper';
+import SyntheticVideoDeviceFactory from './video/SyntheticVideoDeviceFactory';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -1006,7 +1006,7 @@ export class DemoMeetingApp
             fatal(err);
           }
         } else {
-          this.audioVideo.stopVideoInput();
+          await this.audioVideo.stopVideoInput();
           this.toggleButton('button-camera', 'off');
         }
       });
@@ -2980,26 +2980,26 @@ export class DemoMeetingApp
     const device = await this.videoInputSelectionToDevice(this.selectedVideoInput);
     if (device === null) {
       try {
-        this.audioVideo.stopVideoInput();
+        await this.audioVideo.stopVideoInput();
       } catch (e) {
         fatal(e);
-        this.log(`failed to stop video input device`, e);
+        this.log(`failed to stop video input`, e);
       }
       this.log('no video device selected');
       if (showPreview) {
-        const videoPreviewElem = document.getElementById('video-preview') as HTMLVideoElement;
-        await this.audioVideo.stopVideoPreviewForVideoInput(videoPreviewElem);
+        const videoPreviewEl = document.getElementById('video-preview') as HTMLVideoElement;
+        await this.audioVideo.stopVideoPreviewForVideoInput(videoPreviewEl);
       }
     } else {
       try {
         await this.audioVideo.startVideoInput(device);
       } catch (e) {
         fatal(e);
-        this.log(`failed to startVideoInputDevice ${device}`, e);
+        this.log(`failed to start video input ${device}`, e);
       }
       if (showPreview) {
-        const videoPreviewElem = document.getElementById('video-preview') as HTMLVideoElement;
-        this.audioVideo.startVideoPreviewForVideoInput(videoPreviewElem)
+        const videoPreviewEl = document.getElementById('video-preview') as HTMLVideoElement;
+        this.audioVideo.startVideoPreviewForVideoInput(videoPreviewEl);
       }
     }
   }
@@ -3184,11 +3184,11 @@ export class DemoMeetingApp
 
   private videoInputSelectionToIntrinsicDevice(value: string): Device {
     if (value === 'Blue') {
-      return VideoHelper.synthesizeVideoDevice('blue');
+      return SyntheticVideoDeviceFactory.create('blue');
     }
 
     if (value === 'SMPTE Color Bars') {
-      return VideoHelper.synthesizeVideoDevice('smpte');
+      return SyntheticVideoDeviceFactory.create('smpte');
     }
 
     return value;

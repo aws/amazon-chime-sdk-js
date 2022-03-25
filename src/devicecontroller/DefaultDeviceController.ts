@@ -71,8 +71,8 @@ export default class DefaultDeviceController
   private readonly useWebAudio: boolean = false;
   private readonly useMediaConstraintsFallback: boolean = true;
 
-  private getAudioInputInProgress: boolean = false;
-  private getVideoInputInProgress: boolean = false;
+  private isStartAudioInputInProgress: boolean = false;
+  private isStartVideoInputInProgress: boolean = false;
 
   // This handles the dispatch of `mute` and `unmute` events from audio tracks.
   // There's a bit of a semantic mismatch here if input streams allow individual component tracks to be muted,
@@ -220,10 +220,10 @@ export default class DefaultDeviceController
       this.logger.error('Audio input device cannot be undefined');
       return undefined;
     }
-    if (this.getAudioInputInProgress) {
+    if (this.isStartAudioInputInProgress) {
       throw new Error('Another start audio input is in progress');
     }
-    this.getAudioInputInProgress = true;
+    this.isStartAudioInputInProgress = true;
 
     try {
       if (isAudioTransformDevice(device)) {
@@ -250,12 +250,12 @@ export default class DefaultDeviceController
     } catch (error) {
       throw error;
     } finally {
-      this.getAudioInputInProgress = false;
+      this.isStartAudioInputInProgress = false;
     }
   }
 
   async stopAudioInput(): Promise<void> {
-    if (this.getAudioInputInProgress) {
+    if (this.isStartAudioInputInProgress) {
       throw new Error('An audio input is starting');
     }
     try {
@@ -379,10 +379,10 @@ export default class DefaultDeviceController
       return undefined;
     }
 
-    if (this.getVideoInputInProgress) {
+    if (this.isStartVideoInputInProgress) {
       throw new Error('Another start video input is in progress');
     }
-    this.getVideoInputInProgress = true;
+    this.isStartVideoInputInProgress = true;
 
     try {
       if (isVideoTransformDevice(device)) {
@@ -407,12 +407,12 @@ export default class DefaultDeviceController
     } catch (error) {
       throw error;
     } finally {
-      this.getVideoInputInProgress = false;
+      this.isStartVideoInputInProgress = false;
     }
   }
 
   async stopVideoInput(): Promise<void> {
-    if (this.getVideoInputInProgress) {
+    if (this.isStartVideoInputInProgress) {
       throw new Error('A video input is starting');
     }
     try {

@@ -361,7 +361,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const obsever = new TestObserver();
+      audioVideoController.addObserver(obsever);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -387,6 +388,7 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionConnecting).to.be.true;
 
       await stop();
+      audioVideoController.removeObserver(obsever);
     });
 
     // This test is a total copy of the above, making it easier to remove.
@@ -413,7 +415,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -439,6 +442,7 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionConnecting).to.be.true;
 
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('can be started with a pre-start', async () => {
@@ -463,7 +467,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
 
       await audioVideoController.startReturningPromise({ signalingOnly: true });
 
@@ -484,6 +489,7 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionConnecting).to.be.true;
 
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('can stop after only pre-start', async () => {
@@ -561,7 +567,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -576,6 +583,7 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionConnecting).to.be.true;
 
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('can be started without a join ack frame containing turn credentials', async () => {
@@ -598,7 +606,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
 
@@ -616,6 +625,7 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('can be started with customized audio and video policies', async () => {
@@ -645,7 +655,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -681,6 +692,7 @@ describe('DefaultAudioVideoController', () => {
       );
 
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('can be started with customized video simulcast downlink policy', async () => {
@@ -713,7 +725,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -731,7 +744,7 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
       await stop();
-
+      audioVideoController.removeObserver(observer);
       expect(bindTileControllerSpy.calledTwice).to.be.true;
       bindTileControllerSpy.restore();
     });
@@ -761,7 +774,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -779,6 +793,7 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('can be started with customized video simulcast uplink policy', async () => {
@@ -807,7 +822,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -823,6 +839,7 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('can be started and take a bandwidth update', async () => {
@@ -849,7 +866,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -869,6 +887,7 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('can be started and take a bandwidth update without update transceiver controller method', async () => {
@@ -982,10 +1001,12 @@ describe('DefaultAudioVideoController', () => {
           sessionStarted = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       await start();
       expect(sessionStarted).to.be.true;
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('handles an error', async () => {
@@ -1062,6 +1083,7 @@ describe('DefaultAudioVideoController', () => {
       await delay(defaultDelay);
       expect(event).to.equal(5);
       expect(observed).to.equal(3);
+      audioVideoController.removeObserver(observer);
     });
 
     it('can fail but does not reconnect', async () => {
@@ -1090,11 +1112,12 @@ describe('DefaultAudioVideoController', () => {
               'meetingStartFailed',
             ]);
             spy.restore();
-            eventController.removeObserver(observer);
+            audioVideoController.removeObserver(observer);
+            eventController.removeObserver(eventObserver);
             resolve(undefined);
           }
         }
-        const observer = {
+        const eventObserver = {
           eventDidReceive(name: EventName, attributes: EventAttributes): void {
             events.push({
               name,
@@ -1102,8 +1125,9 @@ describe('DefaultAudioVideoController', () => {
             });
           },
         };
-        audioVideoController.addObserver(new TestObserver());
-        eventController.addObserver(observer);
+        const observer = new TestObserver();
+        audioVideoController.addObserver(observer);
+        eventController.addObserver(eventObserver);
       });
 
       // Start and wait for the Join frame in JoinAndReceiveIndexTask.
@@ -1141,11 +1165,13 @@ describe('DefaultAudioVideoController', () => {
           called = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       await start();
       await stop();
       expect(called).to.be.true;
+      audioVideoController.removeObserver(observer);
     });
 
     it('can be stopped without having been started', () => {
@@ -1179,7 +1205,8 @@ describe('DefaultAudioVideoController', () => {
           ).true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       await start();
       expect(
         reconnectController.retryWithBackoff(
@@ -1194,6 +1221,7 @@ describe('DefaultAudioVideoController', () => {
           () => {}
         )
       ).to.be.false;
+      audioVideoController.removeObserver(observer);
     });
   });
 
@@ -1212,7 +1240,8 @@ describe('DefaultAudioVideoController', () => {
           sessionStarted = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       await start();
       const tileId = audioVideoController.videoTileController.startLocalVideoTile();
@@ -1222,6 +1251,7 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
       await stop();
       expect(sessionStarted).to.be.true;
+      audioVideoController.removeObserver(observer);
     });
 
     it(
@@ -1259,7 +1289,8 @@ describe('DefaultAudioVideoController', () => {
             sessionStarted = true;
           }
         }
-        audioVideoController.addObserver(new TestObserver());
+        const observer = new TestObserver();
+        audioVideoController.addObserver(observer);
         expect(audioVideoController.configuration).to.equal(configuration);
         await start();
         const tileId = audioVideoController.videoTileController.startLocalVideoTile();
@@ -1269,6 +1300,7 @@ describe('DefaultAudioVideoController', () => {
         await sendICEEventAndSubscribeAckFrame();
         await stop();
         expect(sessionStarted).to.be.true;
+        audioVideoController.removeObserver(observer);
       }
     );
 
@@ -1286,7 +1318,8 @@ describe('DefaultAudioVideoController', () => {
           sessionStarted = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       await start();
       domMockBehavior.rtcPeerConnectionUseCustomOffer = true;
@@ -1308,6 +1341,7 @@ describe('DefaultAudioVideoController', () => {
       await stop();
       expect(sessionStarted).to.be.true;
       await delay(500);
+      audioVideoController.removeObserver(observer);
     }).timeout(5000);
 
     it('reconnects if the update fails with a task failed meeting status', async () => {
@@ -1329,7 +1363,8 @@ describe('DefaultAudioVideoController', () => {
           called += 1;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
 
       await start();
       configuration.connectionTimeoutMs = 100;
@@ -1345,6 +1380,7 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
       await stop();
       expect(called).to.equal(2);
+      audioVideoController.removeObserver(observer);
     }).timeout(4000);
 
     it('will not skip renegotiation if video streams are not initialized', async () => {
@@ -2146,7 +2182,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -2168,6 +2205,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.args[1][1]).to.be.true; //local tile param
       expect(spy.args[1][2].id).to.equal('2');
       await stop();
+      await audioVideoController.removeObserver(observer);
     });
 
     it('Do not replace local video if local tile is null', async () => {
@@ -2188,7 +2226,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -2198,6 +2237,7 @@ describe('DefaultAudioVideoController', () => {
 
       await audioVideoController.replaceLocalVideo(stream);
       await stop();
+      await audioVideoController.removeObserver(observer);
     });
   });
 
@@ -2254,7 +2294,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -2265,6 +2306,7 @@ describe('DefaultAudioVideoController', () => {
 
       await audioVideoController.replaceLocalAudio(stream);
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('reject if transceiver fails to replaces audio track', async () => {
@@ -2283,7 +2325,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -2298,6 +2341,7 @@ describe('DefaultAudioVideoController', () => {
         'Failed to replace audio track'
       );
       await stop();
+      audioVideoController.removeObserver(observer);
     });
   });
 
@@ -2331,7 +2375,8 @@ describe('DefaultAudioVideoController', () => {
           stopCalled += 1;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       await start();
       await reconnect();
       await reconnect();
@@ -2352,6 +2397,7 @@ describe('DefaultAudioVideoController', () => {
         'audioVideoDidStart',
         'audioVideoDidStop',
       ]);
+      audioVideoController.removeObserver(observer);
     }).timeout(5000);
 
     it('publish meeting reconnected', async () => {
@@ -2402,12 +2448,14 @@ describe('DefaultAudioVideoController', () => {
           called += 1;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       await start();
       audioVideoController.reconnect(new MeetingSessionStatus(MeetingSessionStatusCode.OK), null);
       reconnectController.cancel();
       await stop();
       expect(called).to.equal(1);
+      audioVideoController.removeObserver(observer);
     });
 
     // FinishGatheringICECandidatesTask does not throw the ICEGatheringTimeoutWorkaround error if
@@ -2443,7 +2491,8 @@ describe('DefaultAudioVideoController', () => {
         }
       }
 
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       audioVideoController.start();
 
       delay(200).then(() => {
@@ -2470,6 +2519,7 @@ describe('DefaultAudioVideoController', () => {
         await delay(300);
         // Finally, stop this test.
         await stop();
+        audioVideoController.removeObserver(observer);
       });
     });
 
@@ -2493,7 +2543,8 @@ describe('DefaultAudioVideoController', () => {
           done();
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       // Start and wait for the Join frame in JoinAndReceiveIndexTask.
       audioVideoController.start();
 
@@ -2516,6 +2567,7 @@ describe('DefaultAudioVideoController', () => {
         await sendAudioStreamIdInfoFrame();
         await delay(300);
         await stop();
+        audioVideoController.removeObserver(observer);
       });
     });
 
@@ -2539,7 +2591,8 @@ describe('DefaultAudioVideoController', () => {
           done();
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       const spy = sinon.spy(reconnectController, 'retryWithBackoff');
 
       start().then(() => {
@@ -2552,6 +2605,7 @@ describe('DefaultAudioVideoController', () => {
         delay(configuration.connectionTimeoutMs * 2.5).then(async () => {
           expect(spy.callCount).to.equal(3);
           await stop();
+          audioVideoController.removeObserver(observer);
         });
       });
     });
@@ -2578,7 +2632,8 @@ describe('DefaultAudioVideoController', () => {
           done();
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       start();
 
       // connectionHealthDidChange in MonitorTask is called for the first time
@@ -2593,6 +2648,7 @@ describe('DefaultAudioVideoController', () => {
         await delay(200);
         await sendICEEventAndSubscribeAckFrame();
         await stop();
+        audioVideoController.removeObserver(observer);
       });
     }).timeout(5000);
   });
@@ -2628,7 +2684,8 @@ describe('DefaultAudioVideoController', () => {
           done();
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
 
       // Start and wait for the audio stream ID info frame.
       // SDK uses this info frame to send the attendee presence event.
@@ -2658,6 +2715,7 @@ describe('DefaultAudioVideoController', () => {
         await sendAudioStreamIdInfoFrame();
         await delay(300);
         await stop();
+        audioVideoController.removeObserver(observer);
       });
     });
 
@@ -2691,7 +2749,8 @@ describe('DefaultAudioVideoController', () => {
           done();
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
 
       // Start and wait for the audio stream ID info frame.
       // SDK uses this info frame to send the attendee presence event.
@@ -2721,6 +2780,7 @@ describe('DefaultAudioVideoController', () => {
         await sendAudioStreamIdInfoFrame();
         await delay(300);
         await stop();
+        audioVideoController.removeObserver(observer);
       });
     });
   });
@@ -2758,7 +2818,8 @@ describe('DefaultAudioVideoController', () => {
           called = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       await start();
       audioVideoController.handleMeetingSessionStatus(
         new MeetingSessionStatus(MeetingSessionStatusCode.VideoCallSwitchToViewOnly),
@@ -2768,6 +2829,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.called).to.be.true;
       expect(called).to.be.true;
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('handles IncompatibleSDP', async () => {
@@ -2781,7 +2843,8 @@ describe('DefaultAudioVideoController', () => {
           called = called + 1;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       await start();
       audioVideoController.handleMeetingSessionStatus(
         new MeetingSessionStatus(MeetingSessionStatusCode.IncompatibleSDP),
@@ -2796,6 +2859,7 @@ describe('DefaultAudioVideoController', () => {
       expect(called).to.equal(0);
       await stop();
       expect(called).to.equal(1);
+      audioVideoController.removeObserver(observer);
     });
 
     it('does not reconnect for the terminal status or the unknown status', async () => {
@@ -2805,7 +2869,8 @@ describe('DefaultAudioVideoController', () => {
           called = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       await start();
       audioVideoController.handleMeetingSessionStatus(
         new MeetingSessionStatus(MeetingSessionStatusCode.Left),
@@ -2818,6 +2883,7 @@ describe('DefaultAudioVideoController', () => {
       );
       expect(called).to.be.false;
       await stop();
+      audioVideoController.removeObserver(observer);
     });
 
     it('does not reconnect if the reconnectController is not set in the context', async () => {
@@ -2997,7 +3063,8 @@ describe('DefaultAudioVideoController', () => {
           sessionConnecting = true;
         }
       }
-      audioVideoController.addObserver(new TestObserver());
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -3029,6 +3096,7 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
 
       await stop();
+      audioVideoController.removeObserver(observer);
     });
   });
 
@@ -3273,6 +3341,7 @@ describe('DefaultAudioVideoController', () => {
       await delay(defaultDelay);
       expect(event).to.equal(5);
       expect(observed).to.equal(3);
+      audioVideoController.removeObserver(observer);
     });
 
     it('observer should get called', async () => {
@@ -3321,6 +3390,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
       await delay(defaultDelay);
       await stop();
+      audioVideoController.removeObserver(observer);
       expect(spy.notCalled).to.be.true;
     });
   });
@@ -3369,6 +3439,7 @@ describe('DefaultAudioVideoController', () => {
       expect(promoteSpy.callCount).to.equal(1);
       expect(demoteSpy.callCount).to.equal(1);
       expect(demotionCalled).to.be.true;
+      audioVideoController.removeObserver(observer);
     });
 
     it('fails promotion if timeout', async () => {
@@ -3414,6 +3485,7 @@ describe('DefaultAudioVideoController', () => {
       expect(demoteSpy.callCount).to.equal(0);
       expect(demotionCalled).to.be.false;
       configuration.connectionTimeoutMs = 15000;
+      audioVideoController.removeObserver(observer);
     });
 
     it('calls demotion observer when leave is received', async () => {
@@ -3449,6 +3521,7 @@ describe('DefaultAudioVideoController', () => {
 
       await stop();
       expect(demotionCalled).to.be.true;
+      audioVideoController.removeObserver(observer);
     });
 
     it('calls demotion observer when disconnection occurs', async () => {
@@ -3489,6 +3562,7 @@ describe('DefaultAudioVideoController', () => {
 
       await stop();
       expect(demotionCalled).to.be.true;
+      audioVideoController.removeObserver(observer);
     });
   });
 
@@ -3537,7 +3611,7 @@ describe('DefaultAudioVideoController', () => {
       );
       expect(() => {
         audioVideoController.setVideoMaxBandwidthKbps(0);
-      }).to.throw('Max bandwidth kbps has to be more than 0');
+      }).to.throw('Max bandwidth kbps has to be greater than 0');
     });
   });
 

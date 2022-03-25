@@ -49,8 +49,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
 
-  constructor() {}
-
   version(): string {
     return this.browser.version;
   }

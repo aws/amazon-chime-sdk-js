@@ -734,7 +734,7 @@ export default class DefaultAudioVideoController
     if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
       // Unfortunately, this does not return a promise.
       this.meetingSessionContext.signalingClient?.closeConnection();
-      this.cleanUpAfterStop();
+      this.cleanUpMediaStreamsAfterStop();
       return Promise.resolve();
     }
 
@@ -1003,10 +1003,6 @@ export default class DefaultAudioVideoController
       throw new Error('no active meeting and peer connection');
     }
 
-    // Update the active video input on subscription context to match what we just changed
-    // so that subsequent meeting actions can reuse and destroy it.
-    this.meetingSessionContext.activeVideoInput = videoStream;
-
     // if there is a local tile, a video tile update event should be fired.
     const localTile = this.meetingSessionContext.videoTileController.getLocalVideoTile();
     if (localTile) {
@@ -1027,6 +1023,9 @@ export default class DefaultAudioVideoController
     await this.meetingSessionContext.transceiverController.setVideoInput(
       videoStream.getVideoTracks()[0]
     );
+    // Update the active video input on subscription context to match what we just changed
+    // so that subsequent meeting actions can reuse and destroy it.
+    this.meetingSessionContext.activeVideoInput = videoStream;
   }
 
   async replaceLocalAudio(audioStream: MediaStream): Promise<void> {
@@ -1036,8 +1035,6 @@ export default class DefaultAudioVideoController
     if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
       throw new Error('no active meeting and peer connection');
     }
-    this.meetingSessionContext.activeAudioInput = audioStream;
-
     this.connectionHealthData.reset();
     this.connectionHealthData.setConnectionStartTime();
 
@@ -1047,6 +1044,7 @@ export default class DefaultAudioVideoController
     if (!replaceTrackSuccess) {
       throw new Error('Failed to replace audio track');
     }
+    this.meetingSessionContext.activeAudioInput = audioStream;
   }
 
   private async actionUpdateWithRenegotiation(notify: boolean): Promise<void> {
@@ -1144,7 +1142,7 @@ export default class DefaultAudioVideoController
       }
     }
 
-    this.cleanUpAfterStop();
+    this.cleanUpMediaStreamsAfterStop();
   }
 
   private actionFinishUpdating(): void {
@@ -1275,10 +1273,10 @@ export default class DefaultAudioVideoController
     return `${taskName}/${this.configuration.meetingId}/${this.configuration.credentials.attendeeId}`;
   }
 
-  private cleanUpAfterStop(): void {
+  private cleanUpMediaStreamsAfterStop(): void {
     this._mediaStreamBroker.removeMediaStreamBrokerObserver(this);
-    this.meetingSessionContext.activeAudioInput = null;
-    this.meetingSessionContext.activeVideoInput = null;
+    this.meetingSessionContext.activeAudioInput = undefined;
+    this.meetingSessionContext.activeVideoInput = undefined;
   }
 
   // Extract the meeting status from `Error.message`, relying on specific phrasing
@@ -1358,7 +1356,7 @@ export default class DefaultAudioVideoController
 
   setVideoMaxBandwidthKbps(maxBandwidthKbps: number): void {
     if (maxBandwidthKbps <= 0) {
-      throw new Error('Max bandwidth kbps has to be more than 0');
+      throw new Error('Max bandwidth kbps has to be greater than 0');
     }
 
     if (this.meetingSessionContext && this.meetingSessionContext.videoUplinkBandwidthPolicy) {
@@ -1466,7 +1464,7 @@ export default class DefaultAudioVideoController
   }
 
   async videoInputDidChange(videoStream: MediaStream | undefined): Promise<void> {
-    //No active meeting, there is nothing to do
+    // No active meeting, there is nothing to do
     if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
       return;
     }
@@ -1480,7 +1478,7 @@ export default class DefaultAudioVideoController
   }
 
   async audioInputDidChange(audioStream: MediaStream | undefined): Promise<void> {
-    //No active meeting, there is nothing to do
+    // No active meeting, there is nothing to do
     if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
       return;
     }

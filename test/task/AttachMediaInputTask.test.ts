@@ -135,7 +135,7 @@ describe('AttachMediaInputTask', () => {
     });
 
     it('can remove audio input if audio input is null', done => {
-      context.activeAudioInput = null;
+      context.activeAudioInput = undefined;
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
@@ -147,7 +147,7 @@ describe('AttachMediaInputTask', () => {
     });
 
     it('can remove video input if video input is null ', done => {
-      context.activeVideoInput = null;
+      context.activeVideoInput = undefined;
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);

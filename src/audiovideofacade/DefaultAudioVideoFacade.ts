@@ -356,27 +356,27 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
   }
 
   async startAudioInput(device: AudioInputDevice): Promise<MediaStream | undefined> {
-    this.trace('startAudioInputDevice', device);
+    this.trace('startAudioInput', device);
     return this.deviceController.startAudioInput(device);
   }
 
   async stopAudioInput(): Promise<void> {
-    this.trace('stopAudioInputDevice');
+    this.trace('stopAudioInput');
     return this.deviceController.stopAudioInput();
   }
 
   async startVideoInput(device: VideoInputDevice): Promise<MediaStream | undefined> {
     if (isVideoTransformDevice(device)) {
       // Don't stringify the device to avoid failures when cyclic object references are present.
-      this.trace('startVideoInputDevice with transform device');
+      this.trace('startVideoInput with transform device');
     } else {
-      this.trace('startVideoInputDevice', device);
+      this.trace('startVideoInput', device);
     }
     return this.deviceController.startVideoInput(device);
   }
 
   async stopVideoInput(): Promise<void> {
-    this.trace('stopVideoInputDevice');
+    this.trace('stopVideoInput');
     return this.deviceController.stopVideoInput();
   }
 
