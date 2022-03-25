@@ -7,7 +7,7 @@ import Modality from './Modality';
 export default class DefaultModality implements Modality {
   private static MODALITY_SEPARATOR = ContentShareConstants.Modality[0];
 
-  static MODALITY_CONTENT = ContentShareConstants.Modality.substr(1);
+  static MODALITY_CONTENT = ContentShareConstants.Modality.slice(1);
 
   constructor(private _id: string) {}
 

@@ -67,7 +67,7 @@ export default class Versioning {
    */
   static get buildSHA(): string {
     // Skip the leading 'g'.
-    return VERSION.hash.substr(1);
+    return VERSION.hash.slice(1);
   }
 
   /**
