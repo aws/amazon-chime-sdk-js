@@ -159,13 +159,78 @@ handle them please remove.
 - StateMachineTransitionFailed
 - AudioDeviceSwitched
 
+### `MeetingSessionPOSTLogger` to `POSTLogger`
+
+With Amazon Chime SDK for JavaScript v3, we have removed `MeetingSessionConfiguration` dependency from the `MeetingSessionPOSTLogger`. The `MeetingSessionPOSTLogger` is now renamed to `POSTLogger`.
+
+Builders can add optional fields to `POSTLogger` which will be included when `POSTLogger` sends the HTTP POST logs to builder provided URL:
+
+1. HTTP POST request `headers`.
+2. Informational `metadata`. For example, `meetingId`, `attendeeId`, `appName`. This `metadata` depends on builders and `POSTLogger` will include this `metadata` as part of the request body when making the HTTP POST requests to builder provided URL.
+
+#### Constructor
+
+```js
+
+// You need responses from server-side Chime API. See below for details.
+const meetingResponse = // The response from the CreateMeeting API action.
+const attendeeResponse = // The response from the CreateAttendee API action.
+
+// Before in 2.x
+const meetingSessionConfiguration = new MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+const meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+  'SDK',
+  configuration,
+  20, // LOGGER_BATCH_SIZE
+  2000, // LOGGER_INTERVAL_MS
+  URL,
+  LogLevel.INFO
+);
+
+// After in 3.x
+const postLoggerOptions = {
+  metadata: {
+    appName: 'SDK',
+    meetingId: meetingResponse.Meeting.MeetingId,
+    attendeeId: attendeeResponse.Attendee.AttendeeId,
+  },
+};
+const logger = new POSTLogger(
+  20, // LOGGER_BATCH_SIZE
+  2000, // LOGGER_INTERVAL_MS
+  URL,
+  LogLevel.INFO,
+  postLoggerOptions
+);
+```
+
+#### Set `metadata` after `POSTLogger` creation
+
+```js
+const logger = new POSTLogger(
+  20, // LOGGER_BATCH_SIZE
+  2000, // LOGGER_INTERVAL_MS
+  URL,
+  LogLevel.INFO
+);
+
+const metadata = {
+  appName: 'SDK',
+  meetingId: meetingResponse.Meeting.MeetingId,
+  attendeeId: attendeeResponse.Attendee.AttendeeId,
+};
+
+// After this POSTLogger will include the metadata in HTTP POST request body when sending logs.
+logger.metadata = metadata;
+```
+
 ## Event Controller
 
 We have de-coupled the `EventController` from `AudioVideoController`. Check below for the new changes and if updates are needed for your implementation.
 
 ### Update implementation of custom `EventController`
 
-```js
+```typescript
 interface EventController {
   // Adds an observer for event published to this controller.
   addObserver(observer: EventObserver): void;

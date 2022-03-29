@@ -20,8 +20,8 @@ export default class POSTLogger implements Logger, Destroyable {
   private lock = false;
   private intervalScheduler: IntervalScheduler;
   private eventListener: undefined | (() => void);
-  private _metadata: Record<string, string>;
   private headers: Record<string, string>;
+  metadata: Record<string, string>;
 
   constructor(
     private batchSize: number,
@@ -35,7 +35,7 @@ export default class POSTLogger implements Logger, Destroyable {
   ) {
     if (options) {
       const { metadata, headers } = options;
-      this._metadata = metadata;
+      this.metadata = metadata;
       this.headers = headers;
     }
 
@@ -60,14 +60,6 @@ export default class POSTLogger implements Logger, Destroyable {
       return;
     }
     window.removeEventListener('unload', this.eventListener);
-  }
-
-  get metadata(): Record<string, string> | undefined {
-    return this._metadata;
-  }
-
-  set metadata(metadata: Record<string, string>) {
-    this._metadata = metadata;
   }
 
   debug(debugFunction: string | (() => string)): void {
@@ -108,9 +100,8 @@ export default class POSTLogger implements Logger, Destroyable {
     return this.logCapture.length;
   }
 
-  start(): void {
+  private start(): void {
     this.addEventListener();
-    this.intervalScheduler?.stop();
     this.intervalScheduler = new IntervalScheduler(this.intervalMs);
     this.intervalScheduler.start(async () => {
       if (this.lock === true || this.getLogCaptureSize() === 0) {
@@ -140,7 +131,7 @@ export default class POSTLogger implements Logger, Destroyable {
     });
   }
 
-  stop(): void {
+  private stop(): void {
     // Clean up to avoid resource leaks.
     this.intervalScheduler?.stop();
     this.intervalScheduler = undefined;
@@ -155,16 +146,17 @@ export default class POSTLogger implements Logger, Destroyable {
    * resume logging.
    */
   async destroy(): Promise<void> {
-    this.intervalScheduler?.stop();
-    this.intervalScheduler = undefined;
-    this.removeEventListener();
-    this._metadata = undefined;
+    this.stop();
+    this.metadata = undefined;
+    this.headers = undefined;
     this.logCapture = [];
+    this.sequenceNumber = 0;
+    this.lock = false;
   }
 
   private makeRequestBody(batch: Log[]): string {
     return JSON.stringify({
-      ...this._metadata,
+      ...this.metadata,
       logs: batch,
     });
   }

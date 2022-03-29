@@ -208,6 +208,69 @@ messagingSession.start();
 						<li>StateMachineTransitionFailed</li>
 						<li>AudioDeviceSwitched</li>
 					</ul>
+					<a href="#meetingsessionpostlogger-to-postlogger" id="meetingsessionpostlogger-to-postlogger" style="color: inherit; text-decoration: none;">
+						<h3><code>MeetingSessionPOSTLogger</code> to <code>POSTLogger</code></h3>
+					</a>
+					<p>With Amazon Chime SDK for JavaScript v3, we have removed <code>MeetingSessionConfiguration</code> dependency from the <code>MeetingSessionPOSTLogger</code>. The <code>MeetingSessionPOSTLogger</code> is now renamed to <code>POSTLogger</code>.</p>
+					<p>Builders can add optional fields to <code>POSTLogger</code> which will be included when <code>POSTLogger</code> sends the HTTP POST logs to builder provided URL:</p>
+					<ol>
+						<li>HTTP POST request <code>headers</code>.</li>
+						<li>Informational <code>metadata</code>. For example, <code>meetingId</code>, <code>attendeeId</code>, <code>appName</code>. This <code>metadata</code> depends on builders and <code>POSTLogger</code> will include this <code>metadata</code> as part of the request body when making the HTTP POST requests to builder provided URL.</li>
+					</ol>
+					<a href="#constructor" id="constructor" style="color: inherit; text-decoration: none;">
+						<h4>Constructor</h4>
+					</a>
+					<pre><code class="language-js">
+<span class="hljs-comment">// You need responses from server-side Chime API. See below for details.</span>
+<span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-comment">// The response from the CreateMeeting API action.</span>
+<span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee API action.</span>
+
+<span class="hljs-comment">// Before in 2.x</span>
+<span class="hljs-keyword">const</span> meetingSessionConfiguration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+<span class="hljs-keyword">const</span> meetingSessionPOSTLogger = <span class="hljs-keyword">new</span> MeetingSessionPOSTLogger(
+  <span class="hljs-string">&#x27;SDK&#x27;</span>,
+  configuration,
+  <span class="hljs-number">20</span>, <span class="hljs-comment">// LOGGER_BATCH_SIZE</span>
+  <span class="hljs-number">2000</span>, <span class="hljs-comment">// LOGGER_INTERVAL_MS</span>
+  URL,
+  LogLevel.INFO
+);
+
+<span class="hljs-comment">// After in 3.x</span>
+<span class="hljs-keyword">const</span> postLoggerOptions = {
+  <span class="hljs-attr">metadata</span>: {
+    <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;SDK&#x27;</span>,
+    <span class="hljs-attr">meetingId</span>: meetingResponse.Meeting.MeetingId,
+    <span class="hljs-attr">attendeeId</span>: attendeeResponse.Attendee.AttendeeId,
+  },
+};
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(
+  <span class="hljs-number">20</span>, <span class="hljs-comment">// LOGGER_BATCH_SIZE</span>
+  <span class="hljs-number">2000</span>, <span class="hljs-comment">// LOGGER_INTERVAL_MS</span>
+  URL,
+  LogLevel.INFO,
+  postLoggerOptions
+);
+</code></pre>
+					<a href="#set-metadata-after-postlogger-creation" id="set-metadata-after-postlogger-creation" style="color: inherit; text-decoration: none;">
+						<h4>Set <code>metadata</code> after <code>POSTLogger</code> creation</h4>
+					</a>
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(
+  <span class="hljs-number">20</span>, <span class="hljs-comment">// LOGGER_BATCH_SIZE</span>
+  <span class="hljs-number">2000</span>, <span class="hljs-comment">// LOGGER_INTERVAL_MS</span>
+  URL,
+  LogLevel.INFO
+);
+
+<span class="hljs-keyword">const</span> metadata = {
+  <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;SDK&#x27;</span>,
+  <span class="hljs-attr">meetingId</span>: meetingResponse.Meeting.MeetingId,
+  <span class="hljs-attr">attendeeId</span>: attendeeResponse.Attendee.AttendeeId,
+};
+
+<span class="hljs-comment">// After this POSTLogger will include the metadata in HTTP POST request body when sending logs.</span>
+logger.metadata = metadata;
+</code></pre>
 					<a href="#event-controller" id="event-controller" style="color: inherit; text-decoration: none;">
 						<h2>Event Controller</h2>
 					</a>
@@ -215,15 +278,15 @@ messagingSession.start();
 					<a href="#update-implementation-of-custom-eventcontroller" id="update-implementation-of-custom-eventcontroller" style="color: inherit; text-decoration: none;">
 						<h3>Update implementation of custom <code>EventController</code></h3>
 					</a>
-					<pre><code class="language-js">interface EventController {
+					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> EventController {
   <span class="hljs-comment">// Adds an observer for event published to this controller.</span>
-  addObserver(observer: EventObserver): <span class="hljs-keyword">void</span>;
+  addObserver(observer: EventObserver): <span class="hljs-built_in">void</span>;
 
   <span class="hljs-comment">// Removes an observer for event published to this controller.</span>
-  removeObserver(observer: EventObserver): <span class="hljs-keyword">void</span>;
+  removeObserver(observer: EventObserver): <span class="hljs-built_in">void</span>;
 
   <span class="hljs-comment">// EventReporter that the EventController uses to send events to the Amazon Chime backend.</span>
-  readonly eventReporter?: EventReporter;
+  <span class="hljs-keyword">readonly</span> eventReporter?: EventReporter;
 
   <span class="hljs-comment">// pushMeetingState has been deprecated</span>
 }
@@ -233,7 +296,7 @@ messagingSession.start();
 					</a>
 					<p>The <code>DefaultMeetingSession</code> constructor no longer takes in a <code>EventReporter</code> and instead optionally takes in an <code>EventController</code> or creates one if none is given.</p>
 					<pre><code class="language-js"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(…);
 <span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
 
 <span class="hljs-comment">// Before in 2.x</span>
