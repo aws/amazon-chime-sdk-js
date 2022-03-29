@@ -119,6 +119,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
   afterEach(async () => {
     signalingClient.closeConnection();
+    await (context.audioVideoController as NoOpAudioVideoController).destroy();
     if (domMockBuilder) {
       domMockBuilder.cleanup();
       domMockBuilder = null;
@@ -146,24 +147,6 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       task.run();
     });
-    //    it('does not update the index frame of the video stream index if policies do not exist in the context', done => {
-    //      context.videoDownlinkBandwidthPolicy = null;
-    //      context.videoUplinkBandwidthPolicy = null;
-    //
-    //      const videoStreamIndexSpy: sinon.SinonSpy = sinon.spy(
-    //        context.videoStreamIndex,
-    //        'integrateIndexFrame'
-    //      );
-    //
-    //      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
-    //        webSocketAdapter.send(createIndexSignalBuffer());
-    //        await delay(behavior.asyncWaitMs + 10);
-    //        expect(videoStreamIndexSpy.called).to.be.false;
-    //        done();
-    //      });
-    //
-    //      task.run();
-    //    });
   });
 
   describe('resubscribe', () => {

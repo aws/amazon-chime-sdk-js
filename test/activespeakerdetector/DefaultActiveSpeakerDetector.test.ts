@@ -5,6 +5,7 @@ import * as chai from 'chai';
 
 import DefaultActiveSpeakerDetector from '../../src/activespeakerdetector/DefaultActiveSpeakerDetector';
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
+import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import IntervalScheduler from '../../src/scheduler/IntervalScheduler';
 import { wait as delay } from '../../src/utils/Utils';
@@ -20,7 +21,7 @@ describe('DefaultActiveSpeakerDetector', () => {
 
   describe('construction', () => {
     it('can be constructed', () => {
-      const rt = new DefaultRealtimeController();
+      const rt = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
       expect(detector).to.not.equal(null);
     });
@@ -28,7 +29,7 @@ describe('DefaultActiveSpeakerDetector', () => {
 
   describe('disposal', () => {
     it('can be disposed', async () => {
-      const rt = new DefaultRealtimeController();
+      const rt = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
 
       // Make sure there's something to dispose.
@@ -51,7 +52,7 @@ describe('DefaultActiveSpeakerDetector', () => {
 
   describe('subscribeToActiveSpeakerDetector', () => {
     it('can subscribe to detector', () => {
-      const rt = new DefaultRealtimeController();
+      const rt = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
       const policy = new DefaultActiveSpeakerPolicy();
       const callback = (_attendeeIds: string[]): void => {};
@@ -60,7 +61,7 @@ describe('DefaultActiveSpeakerDetector', () => {
     });
 
     it('attendee id change should trigger the active speaker detector', () => {
-      const rt = new DefaultRealtimeController();
+      const rt = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
       const policy = new DefaultActiveSpeakerPolicy();
       let callbackFired = false;
@@ -82,7 +83,7 @@ describe('DefaultActiveSpeakerDetector', () => {
     });
 
     it('can return sorted active speakers', () => {
-      const rt = new DefaultRealtimeController();
+      const rt = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
       const policy = new DefaultActiveSpeakerPolicy();
       const callback = (attendeeIds: string[]): void => {
@@ -100,7 +101,7 @@ describe('DefaultActiveSpeakerDetector', () => {
     });
 
     it('can switch between active speakers', () => {
-      const rt = new DefaultRealtimeController();
+      const rt = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
       const policy = new DefaultActiveSpeakerPolicy();
       const talkLength = 100;
@@ -195,7 +196,7 @@ describe('DefaultActiveSpeakerDetector', () => {
     });
 
     it('will decay the score over time and turn off active speaker', async () => {
-      const rt = new DefaultRealtimeController();
+      const rt = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const detector = new DefaultActiveSpeakerDetector(
         rt,
         fooAttendee1,
@@ -246,7 +247,7 @@ describe('DefaultActiveSpeakerDetector', () => {
 
   describe('unsubscribeFromActiveSpeakerDetector', () => {
     it('can unsubscribe from detector', () => {
-      const rt = new DefaultRealtimeController();
+      const rt = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
       const policy = new DefaultActiveSpeakerPolicy();
       let callbackFired = false;

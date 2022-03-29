@@ -165,7 +165,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       this.deviceController = deviceController;
       attendeeAudioVideoController = new TestAudioVideoController(this.configuration);
       this.audioVideoController = attendeeAudioVideoController;
-      deviceController.bindToAudioVideoController(this.audioVideoController);
       const contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(this.logger);
       contentAudioVideoController = new TestAudioVideoController(
         DefaultContentShareController.createContentShareMeetingSessionConfigure(this.configuration)

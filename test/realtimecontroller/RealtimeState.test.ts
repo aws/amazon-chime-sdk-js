@@ -17,7 +17,6 @@ describe('RealtimeState', () => {
       const state = new RealtimeState();
       expect(state.muted).to.be.false;
       expect(state.canUnmute).to.be.true;
-      expect(state.audioInput).to.equal(null);
       expect(Object.keys(state.volumeIndicatorCallbacks).length).to.equal(0);
     });
   });

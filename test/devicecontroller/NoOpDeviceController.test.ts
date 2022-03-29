@@ -54,10 +54,10 @@ describe('NoOpDeviceController', () => {
     });
   });
 
-  describe('chooseAudioInputDevice', () => {
+  describe('startAudioInput', () => {
     it('fails for intrinsic devices', async () => {
       await deviceController
-        .chooseAudioInputDevice('')
+        .startAudioInput('')
         .then(() => {
           assert.fail();
         })
@@ -66,7 +66,7 @@ describe('NoOpDeviceController', () => {
 
     it('fails for transform devices', async () => {
       await deviceController
-        .chooseAudioInputDevice(new MockPassthroughTransformDevice(''))
+        .startAudioInput(new MockPassthroughTransformDevice(''))
         .then(() => {
           assert.fail();
         })
@@ -74,21 +74,33 @@ describe('NoOpDeviceController', () => {
     });
   });
 
-  describe('chooseVideoInputDevice', () => {
+  describe('stopAudioInput', () => {
+    it('can be called', () => {
+      deviceController.stopAudioInput();
+    });
+  });
+
+  describe('startVideoInput', () => {
     it('fails', async () => {
       await deviceController
-        .chooseVideoInputDevice('')
+        .startVideoInput('')
         .then(() => {
           assert.fail();
         })
         .catch(() => {});
+    });
+  });
+
+  describe('stopVideoInput', () => {
+    it('can be called', () => {
+      deviceController.stopVideoInput();
     });
   });
 
   describe('chooseAudioOutputDevice', () => {
     it('fails', async () => {
       await deviceController
-        .chooseAudioOutputDevice('')
+        .chooseAudioOutput('')
         .then(() => {
           assert.fail();
         })

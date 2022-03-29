@@ -32,7 +32,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
     if (!this.context.videoTileController.hasStartedLocalVideoTile()) {
       this.context.logger.info('has not started local video tile');
       if (this.context.activeVideoInput) {
-        this.stopVideoInput();
+        this.context.activeVideoInput = undefined;
         // Indicate to the stream index that we are no longer sending video.  We will
         // no longer be tracking irrelevant local sending bitrates sent via received Bitrate message, nor will
         // we track any spurious allocated stream IDs from the backend.
@@ -44,11 +44,12 @@ export default class ReceiveVideoInputTask extends BaseTask {
     // TODO: bind after ICE connection started in case of a failure to resubscribe
     //       or perform error handling to unbind video stream.
     const localTile = this.context.videoTileController.getLocalVideoTile();
-    let videoInput: MediaStream | null = null;
+    let videoInput: MediaStream | undefined = undefined;
     try {
       videoInput = await this.context.mediaStreamBroker.acquireVideoInputStream();
     } catch (error) {
       this.context.logger.warn('could not acquire video input from current device');
+      this.context.videoTileController.stopLocalVideoTile();
     }
     if (this.context.enableSimulcast) {
       const encodingParams = this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
@@ -98,10 +99,5 @@ export default class ReceiveVideoInputTask extends BaseTask {
         this.context.videoDeviceInformation['current_camera_id'] = track.id;
       }
     }
-  }
-
-  private stopVideoInput(): void {
-    this.context.mediaStreamBroker.releaseMediaStream(this.context.activeVideoInput);
-    this.context.activeVideoInput = null;
   }
 }

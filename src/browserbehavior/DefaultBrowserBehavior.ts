@@ -49,17 +49,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
 
-  private recreateAudioContextIfNeeded: boolean;
-
-  constructor({
-    // Temporarily disable this workaround while we work out the kinks.
-    recreateAudioContextIfNeeded = false,
-  }: {
-    recreateAudioContextIfNeeded?: boolean;
-  } = {}) {
-    this.recreateAudioContextIfNeeded = recreateAudioContextIfNeeded;
-  }
-
   version(): string {
     return this.browser.version;
   }
@@ -137,35 +126,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   requiresGroupIdMediaStreamConstraints(): boolean {
     return this.isSamsungInternet();
-  }
-
-  requiresContextRecreationForAudioWorklet(): boolean {
-    if (!this.recreateAudioContextIfNeeded) {
-      return false;
-    }
-
-    // Definitely not Chrome; no worries.
-    if (!('chrome' in global)) {
-      return false;
-    }
-
-    // Everything seems to work fine on platforms other than macOS.
-    if (this.browser.os !== 'Mac OS') {
-      return false;
-    }
-
-    // Electron or Chromium.
-    // All other browsers are fine. But you'd have to be super weird --
-    // faking global.chrome but not having a Chrome UA -- to get this far,
-    // so we have some Istanbul directives on these.
-
-    /* istanbul ignore else */
-    if (this.isChrome() || this.isEdge()) {
-      return true;
-    }
-
-    /* istanbul ignore next */
-    return false;
   }
 
   getDisplayMediaAudioCaptureSupport(): boolean {

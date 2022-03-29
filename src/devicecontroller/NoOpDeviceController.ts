@@ -30,15 +30,23 @@ export default class NoOpDeviceController
     return Promise.resolve([]);
   }
 
-  chooseAudioInputDevice(_device: AudioInputDevice): Promise<void> {
+  startAudioInput(_device: AudioInputDevice): Promise<MediaStream | undefined> {
     return Promise.reject();
   }
 
-  chooseVideoInputDevice(_device: VideoInputDevice): Promise<void> {
+  stopAudioInput(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  startVideoInput(_device: VideoInputDevice): Promise<MediaStream | undefined> {
     return Promise.reject();
   }
 
-  chooseAudioOutputDevice(_deviceId: string | null): Promise<void> {
+  stopVideoInput(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  chooseAudioOutput(_deviceId: string | null): Promise<void> {
     return Promise.reject();
   }
 
@@ -60,12 +68,7 @@ export default class NoOpDeviceController
     return null;
   }
 
-  chooseVideoInputQuality(
-    _width: number,
-    _height: number,
-    _frameRate: number,
-    _maxBandwidthKbps: number
-  ): void {}
+  chooseVideoInputQuality(_width: number, _height: number, _frameRate: number): void {}
 
   getVideoInputQualitySettings(): VideoQualitySettings | null {
     return null;

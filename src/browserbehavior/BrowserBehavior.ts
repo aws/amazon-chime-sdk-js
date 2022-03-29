@@ -48,12 +48,6 @@ export default interface BrowserBehavior {
   requiresNoExactMediaStreamConstraints(): boolean;
 
   /**
-   * Returns whether this browser requires a workaround for Audio Worklet usage
-   * with some Bluetooth devices.
-   */
-  requiresContextRecreationForAudioWorklet(): boolean;
-
-  /**
    * Returns whether the browser is supported
    */
   isSupported(): boolean;

@@ -131,8 +131,9 @@ export default class MonitorTask
       return;
     }
 
-    const tracks =
-      this.context.activeVideoInput !== null ? this.context.activeVideoInput.getTracks() : null;
+    const tracks = this.context.activeVideoInput
+      ? this.context.activeVideoInput.getTracks()
+      : undefined;
     if (!tracks || !tracks[0]) {
       return;
     }

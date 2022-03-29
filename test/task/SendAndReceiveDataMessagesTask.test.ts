@@ -7,6 +7,7 @@ import * as sinon from 'sinon';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
@@ -80,7 +81,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
     context = new AudioVideoControllerState();
     context.signalingClient = new DefaultSignalingClient(webSocketAdapter, logger);
     context.audioVideoController = new NoOpAudioVideoController();
-    context.realtimeController = new DefaultRealtimeController();
+    context.realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
     context.logger = logger;
 
     task = new SendAndReceiveDataMessagesTask(context);

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import AudioVideoController from '../audiovideocontroller/AudioVideoController';
+import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MediaStreamBroker from './MediaStreamBroker';
 
 /**
@@ -20,7 +20,11 @@ export default class NoOpMediaStreamBroker implements MediaStreamBroker {
     return Promise.reject();
   }
 
-  releaseMediaStream(_mediaStreamToRelease: MediaStream): void {}
+  muteLocalAudioInputStream(): void {}
 
-  bindToAudioVideoController(_audioVideoController: AudioVideoController): void {}
+  unmuteLocalAudioInputStream(): void {}
+
+  addMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
+
+  removeMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
 }

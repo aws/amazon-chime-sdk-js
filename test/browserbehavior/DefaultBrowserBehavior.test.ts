@@ -18,12 +18,8 @@ interface LimitedWindow {
 describe('DefaultBrowserBehavior', () => {
   const expect: Chai.ExpectStatic = chai.expect;
 
-  const CHROME_WINDOWS_USER_AGENT =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
   const CHROME_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
-  const FIREFOX_WINDOWS_USER_AGENT =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/75.0';
   const FIREFOX_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/75.0';
   const SAFARI_USER_AGENT =
@@ -43,8 +39,6 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.50 (KHTML, like Gecko) CriOS/95.0.4638.50 Mobile/14E5239e Safari/604.1';
   const FIREFOX_IOS_USER_AGENT =
     'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/29.1.0 Mobile/16B91 Safari/605.1.15';
-  const ELECTRON_MAC_USER_AGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.9.0 Chrome/85.0.4183.93 Electron/10.1.1 Safari/537.36 Sonic Slack_SSB/4.9.0';
   const ELECTRON_WINDOWS_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0.18362; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.9.0 Chrome/85.0.4183.93 Electron/10.1.1 Safari/537.36 Sonic Slack_SSB/4.9.0';
   const WKWEBVIEW_IOS_USER_AGENT =
@@ -285,51 +279,6 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().isChrome()).to.be.false;
       // @ts-ignore
       expect(new DefaultBrowserBehavior().isEdge()).to.be.true;
-    });
-  });
-
-  describe('requiresContextRecreationForAudioWorklet', () => {
-    const dbb = (): DefaultBrowserBehavior =>
-      new DefaultBrowserBehavior({ recreateAudioContextIfNeeded: true });
-
-    it('detects working browsers', () => {
-      setHasGlobalChrome(true);
-      setUserAgent(CHROME_IOS_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
-
-      // It's a Windows UA.
-      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
-
-      // Again, Windows.
-      setUserAgent(ELECTRON_WINDOWS_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
-
-      setUserAgent(CHROME_WINDOWS_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
-
-      setHasGlobalChrome(false);
-
-      setUserAgent(FIREFOX_ANDROID_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
-
-      setUserAgent(FIREFOX_WINDOWS_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
-
-      setUserAgent(FIREFOX_MAC_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
-    });
-
-    it('detects broken browsers', () => {
-      setHasGlobalChrome(true);
-      setUserAgent(ELECTRON_MAC_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.true;
-
-      setUserAgent(CHROMIUM_EDGE_MAC_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.true;
-
-      setUserAgent(CHROME_MAC_USER_AGENT);
-      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.true;
     });
   });
 

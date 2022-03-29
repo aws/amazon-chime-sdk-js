@@ -256,7 +256,6 @@
 								<li class="tsd-kind-class"><a href="classes/receivevideoinputtask.html" class="tsd-kind-icon">Receive<wbr>Video<wbr>Input<wbr>Task</a></li>
 								<li class="tsd-kind-class"><a href="classes/receivevideostreamindextask.html" class="tsd-kind-icon">Receive<wbr>Video<wbr>Stream<wbr>Index<wbr>Task</a></li>
 								<li class="tsd-kind-class"><a href="classes/reconnectionhealthpolicy.html" class="tsd-kind-icon">Reconnection<wbr>Health<wbr>Policy</a></li>
-								<li class="tsd-kind-class"><a href="classes/releasemediastreamstask.html" class="tsd-kind-icon">Release<wbr>Media<wbr>Streams<wbr>Task</a></li>
 								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/runnabletask.html" class="tsd-kind-icon">Runnable<wbr>Task</a></li>
 								<li class="tsd-kind-class"><a href="classes/sdp.html" class="tsd-kind-icon">SDP</a></li>
 								<li class="tsd-kind-class"><a href="classes/sdpmediasection.html" class="tsd-kind-icon">SDPMedia<wbr>Section</a></li>
@@ -370,6 +369,7 @@
 								<li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/maybeprovider.html" class="tsd-kind-icon">Maybe<wbr>Provider</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/mediadevicefactory.html" class="tsd-kind-icon">Media<wbr>Device<wbr>Factory</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/mediastreambroker.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/mediastreambrokerobserver.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker<wbr>Observer</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/meetingeventsclientconfigurationattributes.html" class="tsd-kind-icon">Meeting<wbr>Events<wbr>Client<wbr>Configuration<wbr>Attributes</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/meetingreadinesschecker.html" class="tsd-kind-icon">Meeting<wbr>Readiness<wbr>Checker</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/meetingsession.html" class="tsd-kind-icon">Meeting<wbr>Session</a></li>
@@ -452,7 +452,6 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function"><a href="globals.html#fillsmptecolorbars" class="tsd-kind-icon">fillSMPTEColor<wbr>Bars</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#flatteneventattributes" class="tsd-kind-icon">flatten<wbr>Event<wbr>Attributes</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#isaudiotransformdevice" class="tsd-kind-icon">is<wbr>Audio<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#isdefaultdevice" class="tsd-kind-icon">is<wbr>Default<wbr>Device</a></li>
@@ -460,7 +459,6 @@
 								<li class="tsd-kind-function"><a href="globals.html#isiframed" class="tsd-kind-icon">isIFramed</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#ismediadeviceinfo" class="tsd-kind-icon">is<wbr>Media<wbr>Device<wbr>Info</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a></li>
-								<li class="tsd-kind-function"><a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#tolowercasepropertynames" class="tsd-kind-icon">to<wbr>Lower<wbr>Case<wbr>Property<wbr>Names</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#wait" class="tsd-kind-icon">wait</a></li>
 							</ul>
@@ -480,7 +478,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="audioinputdevice" class="tsd-anchor"></a>
 					<h3>Audio<wbr>Input<wbr>Device</h3>
-					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Input<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audiotransformdevice.html" class="tsd-signature-type">AudioTransformDevice</a></div>
+					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Input<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audiotransformdevice.html" class="tsd-signature-type">AudioTransformDevice</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/AudioInputDevice.ts#L7">src/devicecontroller/AudioInputDevice.ts:7</a></li>
@@ -560,17 +558,16 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="device" class="tsd-anchor"></a>
 					<h3>Device</h3>
-					<div class="tsd-signature tsd-kind-icon">Device<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaTrackConstraints</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
+					<div class="tsd-signature tsd-kind-icon">Device<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaTrackConstraints</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaStream</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/Device.ts#L9">src/devicecontroller/Device.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/Device.ts#L8">src/devicecontroller/Device.ts:8</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>A specifier for how to obtain a media stream from the browser. This
-								can be a <code>MediaStream</code> itself, a set of constraints, a device ID,
-							or <code>null</code> to use the null device.</p>
+							can be a <code>MediaStream</code> itself, a set of constraints, a device ID.</p>
 						</div>
 					</div>
 				</section>
@@ -750,7 +747,7 @@
 					<div class="tsd-signature tsd-kind-icon">Thunk<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L33">src/devicecontroller/DefaultDeviceController.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L32">src/devicecontroller/DefaultDeviceController.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -883,32 +880,6 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function">
-					<a name="fillsmptecolorbars" class="tsd-anchor"></a>
-					<h3>fillSMPTEColor<wbr>Bars</h3>
-					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">fillSMPTEColor<wbr>Bars<span class="tsd-signature-symbol">(</span>canvas<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLCanvasElement</span>, xShift<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L35">src/devicecontroller/DefaultDeviceController.ts:35</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>canvas: <span class="tsd-signature-type">HTMLCanvasElement</span></h5>
-								</li>
-								<li>
-									<h5>xShift: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
 					<a name="flatteneventattributes" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> flatten<wbr>Event<wbr>Attributes</h3>
@@ -1060,7 +1031,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1924">src/devicecontroller/DefaultDeviceController.ts:1924</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1567">src/devicecontroller/DefaultDeviceController.ts:1567</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1101,32 +1072,6 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">device</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">VideoTransformDevice</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function">
-					<a name="makecolorbars" class="tsd-anchor"></a>
-					<h3>make<wbr>Color<wbr>Bars</h3>
-					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">make<wbr>Color<wbr>Bars<span class="tsd-signature-symbol">(</span>canvas<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLCanvasElement</span>, colorOrPattern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>listener<span class="tsd-signature-symbol">: </span><a href="globals.html#thunk" class="tsd-signature-type">Thunk</a><span class="tsd-signature-symbol">; </span>scheduler<span class="tsd-signature-symbol">: </span><a href="classes/intervalscheduler.html" class="tsd-signature-type">IntervalScheduler</a><span class="tsd-signature-symbol">; </span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> }</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L81">src/devicecontroller/DefaultDeviceController.ts:81</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>canvas: <span class="tsd-signature-type">HTMLCanvasElement</span></h5>
-								</li>
-								<li>
-									<h5>colorOrPattern: <span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>listener<span class="tsd-signature-symbol">: </span><a href="globals.html#thunk" class="tsd-signature-type">Thunk</a><span class="tsd-signature-symbol">; </span>scheduler<span class="tsd-signature-symbol">: </span><a href="classes/intervalscheduler.html" class="tsd-signature-type">IntervalScheduler</a><span class="tsd-signature-symbol">; </span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> }</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1771,9 +1716,6 @@
 					<li class=" tsd-kind-class">
 						<a href="classes/reconnectionhealthpolicy.html" class="tsd-kind-icon">Reconnection<wbr>Health<wbr>Policy</a>
 					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/releasemediastreamstask.html" class="tsd-kind-icon">Release<wbr>Media<wbr>Streams<wbr>Task</a>
-					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/runnabletask.html" class="tsd-kind-icon">Runnable<wbr>Task</a>
 					</li>
@@ -2099,6 +2041,9 @@
 						<a href="interfaces/mediastreambroker.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/mediastreambrokerobserver.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/meetingeventsclientconfigurationattributes.html" class="tsd-kind-icon">Meeting<wbr>Events<wbr>Client<wbr>Configuration<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -2300,9 +2245,6 @@
 						<a href="globals.html#pako" class="tsd-kind-icon">pako</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#fillsmptecolorbars" class="tsd-kind-icon">fillSMPTEColor<wbr>Bars</a>
-					</li>
-					<li class=" tsd-kind-function">
 						<a href="globals.html#flatteneventattributes" class="tsd-kind-icon">flatten<wbr>Event<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-function">
@@ -2322,9 +2264,6 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#tolowercasepropertynames" class="tsd-kind-icon">to<wbr>Lower<wbr>Case<wbr>Property<wbr>Names</a>

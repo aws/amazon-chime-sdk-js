@@ -90,6 +90,7 @@ import {
   loadBodyPixDependency,
   platformCanSupportBodyPixWithoutDegradation,
 } from './video/filters/SegmentationUtil';
+import SyntheticVideoDeviceFactory from './video/SyntheticVideoDeviceFactory';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -266,6 +267,7 @@ export class DemoMeetingApp
   meetingSession: MeetingSession | null = null;
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
   audioVideo: AudioVideoFacade | null = null;
+  deviceController: DefaultDeviceController | undefined = undefined;
   canStartLocalVideo: boolean = true;
   defaultBrowserBehaviour: DefaultBrowserBehavior = new DefaultBrowserBehavior();
   videoTileCollection: VideoTileCollection | undefined = undefined;
@@ -678,7 +680,7 @@ export class DemoMeetingApp
               'video-input-quality'
             ) as HTMLSelectElement;
             videoInputQuality.value = '720p';
-            this.audioVideo.chooseVideoInputQuality(1280, 720, 15, 1400);
+            this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
           }
 
           // `this.primaryExternalMeetingId` may by the join request
@@ -840,13 +842,14 @@ export class DemoMeetingApp
       this.log('Video input quality is changed');
       switch (videoInputQuality.value) {
         case '360p':
-          this.audioVideo.chooseVideoInputQuality(640, 360, 15, 600);
+          this.audioVideo.chooseVideoInputQuality(640, 360, 15);
+          this.audioVideo.setVideoMaxBandwidthKbps(600);
           break;
         case '540p':
-          this.audioVideo.chooseVideoInputQuality(960, 540, 15, 1400);
+          this.audioVideo.chooseVideoInputQuality(960, 540, 15);
           break;
         case '720p':
-          this.audioVideo.chooseVideoInputQuality(1280, 720, 15, 1400);
+          this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
           break;
       }
       try {
@@ -879,9 +882,7 @@ export class DemoMeetingApp
         try {
           this.showProgress('progress-join');
           await this.stopAudioPreview();
-          this.audioVideo.stopVideoPreviewForVideoInput(
-            document.getElementById('video-preview') as HTMLVideoElement
-          );
+          await this.openVideoInputFromSelection(null, true);
           // stopVideoProcessor should be called before join; it ensures that state variables and video processor stream are cleaned / removed before joining the meeting.
           // If stopVideoProcessor is not called then the state from preview screen will be carried into the in meeting experience and it will cause undesired side effects.
           await this.stopVideoProcessor();
@@ -1005,8 +1006,8 @@ export class DemoMeetingApp
             fatal(err);
           }
         } else {
-          this.audioVideo.stopLocalVideoTile();
-          // Tile will be removed in response to `videoTileWasRemoved` in `VideoTileCollection`
+          await this.audioVideo.stopVideoInput();
+          this.toggleButton('button-camera', 'off');
         }
       });
     });
@@ -1775,7 +1776,7 @@ export class DemoMeetingApp
       );
     }
     this.eventReporter = await this.setupEventReporter(configuration);
-    const deviceController = new DefaultDeviceController(this.meetingLogger, {
+    this.deviceController = new DefaultDeviceController(this.meetingLogger, {
       enableWebAudio: this.enableWebAudio,
     });
     const urlParameters = new URL(window.location.href).searchParams;
@@ -1798,7 +1799,7 @@ export class DemoMeetingApp
     this.meetingSession = new DefaultMeetingSession(
       configuration,
       this.meetingLogger,
-      deviceController,
+      this.deviceController,
       new DefaultEventController(configuration, this.meetingLogger, this.eventReporter)
     );
 
@@ -1980,7 +1981,7 @@ export class DemoMeetingApp
         DefaultModality.MODALITY_CONTENT
       );
       const isSelfAttendee =
-        new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId 
+        new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId
           || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!present) {
         delete this.roster[attendeeId];
@@ -2823,16 +2824,16 @@ export class DemoMeetingApp
           return;
         }
         try {
-          await this.chooseAudioOutputDevice(name);
+          await this.chooseAudioOutput(name);
         } catch (e) {
           fatal(e);
-          this.log('Failed to chooseAudioOutputDevice', e);
+          this.log('Failed to chooseAudioOutput', e);
         }
       }
     );
   }
 
-  private async chooseAudioOutputDevice(device: string): Promise<void> {
+  private async chooseAudioOutput(device: string): Promise<void> {
     // Set it for the content share stream if we can.
     const videoElem = document.getElementById('content-share-video') as HTMLVideoElement;
     if (this.defaultBrowserBehaviour.supportsSetSinkId()) {
@@ -2840,7 +2841,7 @@ export class DemoMeetingApp
       videoElem.setSinkId(device);
     }
 
-    await this.audioVideo.chooseAudioOutputDevice(device);
+    await this.audioVideo.chooseAudioOutput(device);
   }
 
   private analyserNodeCallback: undefined | (() => void);
@@ -2855,7 +2856,7 @@ export class DemoMeetingApp
     this.currentAudioInputDevice = device;
     this.log('Selecting audio input', device);
     try {
-      await this.audioVideo.chooseAudioInputDevice(device);
+      await this.audioVideo.startAudioInput(device);
     } catch (e) {
       fatal(e);
       this.log(`failed to choose audio input device ${device}`, e);
@@ -2957,10 +2958,10 @@ export class DemoMeetingApp
     if (this.defaultBrowserBehaviour.supportsSetSinkId()) {
       try {
         const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
-        await this.chooseAudioOutputDevice(audioOutput.value);
+        await this.chooseAudioOutput(audioOutput.value);
       } catch (e) {
         fatal(e);
-        this.log('failed to chooseAudioOutputDevice', e);
+        this.log('failed to chooseAudioOutput', e);
       }
     }
     const audioMix = document.getElementById('meeting-audio') as HTMLAudioElement;
@@ -2974,39 +2975,32 @@ export class DemoMeetingApp
 
   private selectedVideoInput: string | null = null;
   async openVideoInputFromSelection(selection: string | null, showPreview: boolean): Promise<void> {
-    if (selection) {
-      this.selectedVideoInput = selection;
-    }
+    this.selectedVideoInput = selection;
     this.log(`Switching to: ${this.selectedVideoInput}`);
     const device = await this.videoInputSelectionToDevice(this.selectedVideoInput);
     if (device === null) {
-      if (showPreview) {
-        this.audioVideo.stopVideoPreviewForVideoInput(
-          document.getElementById('video-preview') as HTMLVideoElement
-        );
-      }
-      this.audioVideo.stopLocalVideoTile();
-      this.toggleButton('button-camera', 'off');
-      // choose video input null is redundant since we expect stopLocalVideoTile to clean up
       try {
-        await this.audioVideo.chooseVideoInputDevice(device);
+        await this.audioVideo.stopVideoInput();
       } catch (e) {
         fatal(e);
-        this.log(`failed to chooseVideoInputDevice ${device}`, e);
+        this.log(`failed to stop video input`, e);
       }
       this.log('no video device selected');
-    }
-    try {
-      await this.audioVideo.chooseVideoInputDevice(device);
-    } catch (e) {
-      fatal(e);
-      this.log(`failed to chooseVideoInputDevice ${device}`, e);
-    }
-
-    if (showPreview) {
-      this.audioVideo.startVideoPreviewForVideoInput(
-        document.getElementById('video-preview') as HTMLVideoElement
-      );
+      if (showPreview) {
+        const videoPreviewEl = document.getElementById('video-preview') as HTMLVideoElement;
+        await this.audioVideo.stopVideoPreviewForVideoInput(videoPreviewEl);
+      }
+    } else {
+      try {
+        await this.audioVideo.startVideoInput(device);
+      } catch (e) {
+        fatal(e);
+        this.log(`failed to start video input ${device}`, e);
+      }
+      if (showPreview) {
+        const videoPreviewEl = document.getElementById('video-preview') as HTMLVideoElement;
+        this.audioVideo.startVideoPreviewForVideoInput(videoPreviewEl);
+      }
     }
   }
 
@@ -3190,11 +3184,11 @@ export class DemoMeetingApp
 
   private videoInputSelectionToIntrinsicDevice(value: string): Device {
     if (value === 'Blue') {
-      return DefaultDeviceController.synthesizeVideoDevice('blue');
+      return SyntheticVideoDeviceFactory.create('blue');
     }
 
     if (value === 'SMPTE Color Bars') {
-      return DefaultDeviceController.synthesizeVideoDevice('smpte');
+      return SyntheticVideoDeviceFactory.create('smpte');
     }
 
     return value;
@@ -3291,8 +3285,8 @@ export class DemoMeetingApp
     return this.chosenVideoTransformDevice;
   }
 
-  private async videoInputSelectionToDevice(value: string): Promise<VideoInputDevice> {
-    if (this.isRecorder() || this.isBroadcaster() || value === 'None') {
+  private async videoInputSelectionToDevice(value: string | null): Promise<VideoInputDevice> {
+    if (this.isRecorder() || this.isBroadcaster() || value === 'None' || value === null) {
       return null;
     }
     const intrinsicDevice = this.videoInputSelectionToIntrinsicDevice(value);
@@ -3534,8 +3528,8 @@ export class DemoMeetingApp
       await this.audioVideo.stopContentShare();
 
       // Drop the audio output.
-      await this.audioVideo.chooseAudioOutputDevice(null);
       this.audioVideo.unbindAudioElement();
+      await this.deviceController.destroy();
 
       // remove blur event observer
       this.blurProcessor?.removeObserver(this.blurObserver);
@@ -3548,9 +3542,6 @@ export class DemoMeetingApp
 
       // Stop Voice Focus.
       await this.voiceFocusDevice?.stop();
-
-      // If you joined and left the meeting, `CleanStoppedSessionTask` will have deselected
-      // any input streams. If you didn't, you need to call `chooseAudioInputDevice` here.
 
       // Clean up the loggers so they don't keep their `onload` listeners around.
       setTimeout(async () => {

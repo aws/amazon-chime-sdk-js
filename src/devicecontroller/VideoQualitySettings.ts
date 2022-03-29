@@ -5,17 +5,10 @@ export default class VideoQualitySettings {
   videoWidth: number;
   videoHeight: number;
   videoFrameRate: number;
-  videoMaxBandwidthKbps: number;
 
-  constructor(
-    videoWidth: number,
-    videoHeight: number,
-    videoFrameRate: number,
-    videoMaxBandwidthKbps: number
-  ) {
+  constructor(videoWidth: number, videoHeight: number, videoFrameRate: number) {
     this.videoWidth = videoWidth;
     this.videoHeight = videoHeight;
     this.videoFrameRate = videoFrameRate;
-    this.videoMaxBandwidthKbps = videoMaxBandwidthKbps;
   }
 }

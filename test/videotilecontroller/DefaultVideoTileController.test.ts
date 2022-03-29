@@ -31,7 +31,8 @@ describe('DefaultVideoTileController', () => {
     mockMediaStream.addTrack(new MediaStreamTrack('mock-track', 'video'));
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    await (audioVideoController as NoOpAudioVideoTileController).destroy();
     domMockBuilder.cleanup();
   });
 

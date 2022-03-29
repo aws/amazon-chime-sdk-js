@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 
 import DataMessage from '../../src/datamessage/DataMessage';
+import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import {
   SdkTranscriptEvent,
@@ -48,7 +49,7 @@ describe('DefaultTranscriptionController', () => {
   describe('construction', () => {
     it('can be constructed', () => {
       const transcriptionController: TranscriptionController = new DefaultTranscriptionController(
-        new DefaultRealtimeController()
+        new DefaultRealtimeController(new NoOpMediaStreamBroker())
       );
       expect(transcriptionController).to.not.equal(null);
     });
@@ -56,7 +57,7 @@ describe('DefaultTranscriptionController', () => {
 
   describe('transcript event callbacks', () => {
     it('all callbacks can receive transcript event if subscribed', () => {
-      const realtimeController = new DefaultRealtimeController();
+      const realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const transcriptionController: TranscriptionController = new DefaultTranscriptionController(
         realtimeController
       );
@@ -88,7 +89,7 @@ describe('DefaultTranscriptionController', () => {
     });
 
     it('will not receive transcript event if unsubscribed', () => {
-      const realtimeController = new DefaultRealtimeController();
+      const realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const transcriptionController: TranscriptionController = new DefaultTranscriptionController(
         realtimeController
       );
@@ -106,7 +107,7 @@ describe('DefaultTranscriptionController', () => {
     });
 
     it('will not affect other callbacks if one callback is unsubscribed', () => {
-      const realtimeController = new DefaultRealtimeController();
+      const realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const transcriptionController: TranscriptionController = new DefaultTranscriptionController(
         realtimeController
       );
