@@ -88,7 +88,6 @@ describe('POSTLogger', () => {
       logger.error('error');
       logger.debug('error');
       expect(logger.getLogCaptureSize()).is.equal(2);
-      await wait(1000);
       await logger.destroy();
     });
 
@@ -143,6 +142,7 @@ describe('POSTLogger', () => {
   });
 
   describe('logging', () => {
+    // The batch sending interval is 50ms, hence have a wait with 100-200ms in this test suite.
     it('should start publishing logs', async () => {
       const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
       await wait(100);
@@ -170,7 +170,7 @@ describe('POSTLogger', () => {
       domMockBehavior.fetchSucceeds = false;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
-      await wait(500);
+      await wait(200);
       await logger.destroy();
     });
 
@@ -178,7 +178,7 @@ describe('POSTLogger', () => {
       const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
       domMockBehavior.fetchSucceeds = false;
       expect(logger.getLogCaptureSize()).is.equal(0);
-      await wait(500);
+      await wait(200);
       await logger.destroy();
     });
 
@@ -188,7 +188,7 @@ describe('POSTLogger', () => {
       domMockBehavior.responseSuccess = true;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
-      await wait(500);
+      await wait(200);
       await logger.destroy();
     });
 
@@ -201,7 +201,7 @@ describe('POSTLogger', () => {
       domMockBehavior.responseSuccess = true;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
-      await wait(500);
+      await wait(200);
       await logger.destroy();
     });
 
@@ -212,7 +212,7 @@ describe('POSTLogger', () => {
       domMockBehavior.responseStatusCode = 500;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
-      await wait(500);
+      await wait(200);
       await logger.destroy();
     });
 

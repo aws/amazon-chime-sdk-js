@@ -255,14 +255,20 @@ messagingSession.start();
 					<a href="#set-metadata-after-postlogger-creation" id="set-metadata-after-postlogger-creation" style="color: inherit; text-decoration: none;">
 						<h4>Set <code>metadata</code> after <code>POSTLogger</code> creation</h4>
 					</a>
-					<pre><code class="language-js"><span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(
+					<p>This can help builders developing a Web application development using React frameworks or other UI frameworks where the component allowing the meeting join comes later based on an HTML form submission and not on initial load of the Web application. Builders may be using Providers, Hooks (if using React) in their application and want to add logs in these components.</p>
+					<p>Now that we have removed the <code>MeetingSessionConfiguration</code> dependency, a <code>POSTLogger</code> can be created earlier in the application flow cycle and builders can add <code>metadata</code> once they receive API responses from server upon a HTML form submission. This way, the <code>POSTLogger</code>&#39;s <code>metadata</code> can be updated as per builders need based on their application flow.</p>
+					<pre><code class="language-typescript">
+<span class="hljs-comment">// Create when your app loads.</span>
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(
   <span class="hljs-number">20</span>, <span class="hljs-comment">// LOGGER_BATCH_SIZE</span>
   <span class="hljs-number">2000</span>, <span class="hljs-comment">// LOGGER_INTERVAL_MS</span>
   URL,
   LogLevel.INFO
 );
 
-<span class="hljs-keyword">const</span> metadata = {
+<span class="hljs-comment">// User provides information to get the meeting and attendee responses.</span>
+<span class="hljs-comment">// Now, set the metadata on POSTLogger so that next logs can be identified and tied to a specific meetingId, attendeeId and an appName.</span>
+<span class="hljs-keyword">const</span> metadata: Record&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; = {
   <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;SDK&#x27;</span>,
   <span class="hljs-attr">meetingId</span>: meetingResponse.Meeting.MeetingId,
   <span class="hljs-attr">attendeeId</span>: attendeeResponse.Attendee.AttendeeId,

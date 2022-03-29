@@ -206,7 +206,13 @@ const logger = new POSTLogger(
 
 #### Set `metadata` after `POSTLogger` creation
 
-```js
+This can help builders developing a Web application development using React frameworks or other UI frameworks where the component allowing the meeting join comes later based on an HTML form submission and not on initial load of the Web application. Builders may be using Providers, Hooks (if using React) in their application and want to add logs in these components.
+
+Now that we have removed the `MeetingSessionConfiguration` dependency, a `POSTLogger` can be created earlier in the application flow cycle and builders can add `metadata` once they receive API responses from server upon a HTML form submission. This way, the `POSTLogger`'s `metadata` can be updated as per builders need based on their application flow.
+
+```typescript
+
+// Create when your app loads.
 const logger = new POSTLogger(
   20, // LOGGER_BATCH_SIZE
   2000, // LOGGER_INTERVAL_MS
@@ -214,7 +220,9 @@ const logger = new POSTLogger(
   LogLevel.INFO
 );
 
-const metadata = {
+// User provides information to get the meeting and attendee responses.
+// Now, set the metadata on POSTLogger so that next logs can be identified and tied to a specific meetingId, attendeeId and an appName.
+const metadata: Record<string, string> = {
   appName: 'SDK',
   meetingId: meetingResponse.Meeting.MeetingId,
   attendeeId: attendeeResponse.Attendee.AttendeeId,
