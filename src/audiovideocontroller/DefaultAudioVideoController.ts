@@ -1026,6 +1026,8 @@ export default class DefaultAudioVideoController
     // Update the active video input on subscription context to match what we just changed
     // so that subsequent meeting actions can reuse and destroy it.
     this.meetingSessionContext.activeVideoInput = videoStream;
+
+    this.logger.info('Local video input is updated');
   }
 
   async replaceLocalAudio(audioStream: MediaStream): Promise<void> {
@@ -1045,6 +1047,7 @@ export default class DefaultAudioVideoController
       throw new Error('Failed to replace audio track');
     }
     this.meetingSessionContext.activeAudioInput = audioStream;
+    this.logger.info('Local audio input is updated');
   }
 
   private async actionUpdateWithRenegotiation(notify: boolean): Promise<void> {
@@ -1464,8 +1467,12 @@ export default class DefaultAudioVideoController
   }
 
   async videoInputDidChange(videoStream: MediaStream | undefined): Promise<void> {
+    this.logger.info('Receive a video input change event');
     // No active meeting, there is nothing to do
     if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
+      this.logger.info(
+        'Skip updating video input because there is no active meeting and peer connection'
+      );
       return;
     }
     if (this._videoTileController.hasStartedLocalVideoTile()) {
@@ -1478,8 +1485,12 @@ export default class DefaultAudioVideoController
   }
 
   async audioInputDidChange(audioStream: MediaStream | undefined): Promise<void> {
+    this.logger.info('Receive an audio input change event');
     // No active meeting, there is nothing to do
     if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
+      this.logger.info(
+        'Skip updating audio input because there is no active meeting and peer connection'
+      );
       return;
     }
     if (!audioStream) {
@@ -1495,6 +1506,7 @@ export default class DefaultAudioVideoController
   }
 
   async audioOutputDidChange(device: MediaDeviceInfo | null): Promise<void> {
+    this.logger.info('Receive an audio output change event');
     return this.audioMixController.bindAudioDevice(device);
   }
 }

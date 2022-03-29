@@ -27,7 +27,7 @@
     "build": "node script/barrelize.js && node script/generate-version.js && npm run tsc:src && npm run tsc:guides && npm run copy",
     "prebuild": "ruby script/conditional-install",
     "prebuild:release": "node script/check-lockfile-version.js && node script/check-voice-focus-version.js && script/prebuild",
-    "build:release": "npm run build && npm run lint && npm run check && npm run doc && npm run test:fast",
+    "build:release": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
     "postbuild:release": "script/postbuild",
     "postbuild": "tsc -p config/tsconfig.import.json",
     "predoc": "rimraf docs && node script/build-guides.js",
