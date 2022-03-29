@@ -341,14 +341,14 @@ messagingSession.start();
 					<blockquote>
 						<p>Note: The <code>getRTCPeerConnectionStats()</code> is on its way to be deprecated. Please use the new API <code>clientMetricReport.getRTCStatsReport()</code> returned by <code>metricsDidReceive(clientMetricReport)</code> callback instead.</p>
 					</blockquote>
-					<pre><code class="language-typescript">  <span class="hljs-keyword">const</span> report: RTCStatsReport = <span class="hljs-keyword">await</span> audioVideo.getRTCPeerConnectionStats();
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> report: RTCStatsReport = <span class="hljs-keyword">await</span> audioVideo.getRTCPeerConnectionStats();
 </code></pre>
 					<p>After in 3.x:</p>
 					<p>It&#39;s recommended to use this one. It can also improve the performance a bit as now you don&#39;t need to explicitly call <code>getStats</code> API again.</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> observer = {
   metricsDidReceive(clientMetricReport: ClientMetricReport): <span class="hljs-built_in">void</span> {
     <span class="hljs-keyword">const</span> report: RTCStatsReport = clientMetricReport.getRTCStatsReport();
-  }
+  },
 };
 audioVideo.addObserver(observer);
 </code></pre>

@@ -2,35 +2,44 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { Destroyable } from '../destroyable/Destroyable';
-import LogLevel from '../logger/LogLevel';
-import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import Log from './Log';
+import Logger from './Logger';
+import LogLevel from './LogLevel';
 
 /**
- * `MeetingSessionPOSTLogger` publishes log messages in batches to a URL
+ * `POSTLogger` publishes log messages in batches to a URL
  * supplied during its construction.
  *
- * Be sure to call {@link MeetingSessionPOSTLogger.destroy} when you're done
+ * Be sure to call {@link POSTLogger.destroy} when you're done
  * with the logger in order to avoid leaks.
  */
-export default class MeetingSessionPOSTLogger implements Destroyable {
+export default class POSTLogger implements Logger, Destroyable {
   private logCapture: Log[] = [];
   private sequenceNumber: number = 0;
   private lock = false;
   private intervalScheduler: IntervalScheduler;
   private eventListener: undefined | (() => void);
+  private _metadata: Record<string, string>;
+  private headers: Record<string, string>;
 
   constructor(
-    private name: string,
-    private configuration: MeetingSessionConfiguration,
     private batchSize: number,
     private intervalMs: number,
     private url: string,
     private level = LogLevel.WARN,
-    private headers?: Record<string, string>
+    options?: {
+      metadata?: Record<string, string>;
+      headers?: Record<string, string>;
+    }
   ) {
-    this.startLogPublishScheduler(this.batchSize);
+    if (options) {
+      const { metadata, headers } = options;
+      this._metadata = metadata;
+      this.headers = headers;
+    }
+
+    this.start();
 
     this.eventListener = () => {
       this.stop();
@@ -51,6 +60,14 @@ export default class MeetingSessionPOSTLogger implements Destroyable {
       return;
     }
     window.removeEventListener('unload', this.eventListener);
+  }
+
+  get metadata(): Record<string, string> | undefined {
+    return this._metadata;
+  }
+
+  set metadata(metadata: Record<string, string>) {
+    this._metadata = metadata;
   }
 
   debug(debugFunction: string | (() => string)): void {
@@ -91,7 +108,7 @@ export default class MeetingSessionPOSTLogger implements Destroyable {
     return this.logCapture.length;
   }
 
-  startLogPublishScheduler(batchSize: number): void {
+  start(): void {
     this.addEventListener();
     this.intervalScheduler?.stop();
     this.intervalScheduler = new IntervalScheduler(this.intervalMs);
@@ -100,7 +117,7 @@ export default class MeetingSessionPOSTLogger implements Destroyable {
         return;
       }
       this.lock = true;
-      const batch = this.logCapture.slice(0, batchSize);
+      const batch = this.logCapture.slice(0, this.batchSize);
       const body = this.makeRequestBody(batch);
       try {
         const response = await fetch(this.url, {
@@ -116,7 +133,7 @@ export default class MeetingSessionPOSTLogger implements Destroyable {
           this.logCapture = this.logCapture.slice(batch.length);
         }
       } catch (error) {
-        console.warn('[MeetingSessionPOSTLogger] ' + error.message);
+        console.warn('[POSTLogger] ' + error.message);
       } finally {
         this.lock = false;
       }
@@ -141,15 +158,13 @@ export default class MeetingSessionPOSTLogger implements Destroyable {
     this.intervalScheduler?.stop();
     this.intervalScheduler = undefined;
     this.removeEventListener();
-    this.configuration = undefined;
+    this._metadata = undefined;
     this.logCapture = [];
   }
 
   private makeRequestBody(batch: Log[]): string {
     return JSON.stringify({
-      meetingId: this.configuration.meetingId,
-      attendeeId: this.configuration.credentials.attendeeId,
-      appName: this.name,
+      ...this._metadata,
       logs: batch,
     });
   }

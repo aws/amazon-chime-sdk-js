@@ -14,7 +14,7 @@ Note that, currently only pre-release NPM versions of `3.0.0` are available unti
 npm install amazon-chime-sdk-js@beta
 ```
 
-__Version 3 of the Amazon Chime SDK for JavaScript makes a number of interface changes.__
+**Version 3 of the Amazon Chime SDK for JavaScript makes a number of interface changes.**
 
 ## Device controller
 
@@ -185,7 +185,7 @@ The `DefaultMeetingSession` constructor no longer takes in a `EventReporter` and
 
 ```js
 const configuration = new MeetingSessionConfiguration(…);
-const logger = new Logger(…);
+const logger = new ConsoleLogger(…);
 const eventReporter = new EventReporter(...)
 
 // Before in 2.x
@@ -217,15 +217,15 @@ SDK exposed some common WebRTC metrics publicly via the `metricsDidReceive` even
 
 | No. | MetricSpec                | SpecName                       | Migration Step                                                   | Details                                                                                                                                                                                                   |
 | --- | ------------------------- | ------------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | observableMetricSpec      | audioSpeakerDelayMs            | None                                                             | Before: __googCurrentDelayMs__<br><br>Now: __jitterBufferMs__ = (Current.jitterBufferDelay - Previous.jitterBufferDelay) / (Current.jitterBufferEmittedCount - Previous.jitterBufferEmittedCount) \* 1000 |
-| 2   | observableMetricSpec      | audioDecoderLoss               | None                                                             | Before: __googDecodingCTN__<br><br>Now: __decoderLoss__ = (Current.concealedSamples - Previous.concealedSamples) / (Current.totalSamplesReceived - Previous.totalSamplesReceived) \* 100                  |
-| 3   | observableMetricSpec      | googNackCountReceivedPerSecond | This spec is removed, use __nackCount__ instead                  |                                                                                                                                                                                                           |
-| 4   | observableMetricSpec      | availableSendBandwidth         | This spec is removed, use __availableOutgoingBitrate__ instead   |                                                                                                                                                                                                           |
-| 5   | observableMetricSpec      | availableReceiveBandwidth      | This spec is removed, use __availableIncomingBitrate__ instead   |                                                                                                                                                                                                           |
-| 6   | observableVideoMetricSpec | videoUpstreamGoogFrameHeight   | This spec is removed, use __videoUpstreamFrameHeight__ instead   |                                                                                                                                                                                                           |
-| 7   | observableVideoMetricSpec | videoUpstreamGoogFrameWidth    | This spec is removed, use __videoUpstreamFrameWidth__ instead.   |                                                                                                                                                                                                           |
-| 8   | observableVideoMetricSpec | videoDownstreamGoogFrameHeight | This spec is removed, use __videoDownstreamFrameHeight__ instead |                                                                                                                                                                                                           |
-| 9   | observableVideoMetricSpec | videoDownstreamGoogFrameWidth  | This spec is removed, use __videoDownstreamFrameWidth__ instead  |                                                                                                                                                                                                           |
+| 1   | observableMetricSpec      | audioSpeakerDelayMs            | None                                                             | Before: **googCurrentDelayMs**<br><br>Now: **jitterBufferMs** = (Current.jitterBufferDelay - Previous.jitterBufferDelay) / (Current.jitterBufferEmittedCount - Previous.jitterBufferEmittedCount) \* 1000 |
+| 2   | observableMetricSpec      | audioDecoderLoss               | None                                                             | Before: **googDecodingCTN**<br><br>Now: **decoderLoss** = (Current.concealedSamples - Previous.concealedSamples) / (Current.totalSamplesReceived - Previous.totalSamplesReceived) \* 100                  |
+| 3   | observableMetricSpec      | googNackCountReceivedPerSecond | This spec is removed, use **nackCount** instead                  |                                                                                                                                                                                                           |
+| 4   | observableMetricSpec      | availableSendBandwidth         | This spec is removed, use **availableOutgoingBitrate** instead   |                                                                                                                                                                                                           |
+| 5   | observableMetricSpec      | availableReceiveBandwidth      | This spec is removed, use **availableIncomingBitrate** instead   |                                                                                                                                                                                                           |
+| 6   | observableVideoMetricSpec | videoUpstreamGoogFrameHeight   | This spec is removed, use **videoUpstreamFrameHeight** instead   |                                                                                                                                                                                                           |
+| 7   | observableVideoMetricSpec | videoUpstreamGoogFrameWidth    | This spec is removed, use **videoUpstreamFrameWidth** instead.   |                                                                                                                                                                                                           |
+| 8   | observableVideoMetricSpec | videoDownstreamGoogFrameHeight | This spec is removed, use **videoDownstreamFrameHeight** instead |                                                                                                                                                                                                           |
+| 9   | observableVideoMetricSpec | videoDownstreamGoogFrameWidth  | This spec is removed, use **videoDownstreamFrameWidth** instead  |                                                                                                                                                                                                           |
 
 ### Get raw RTCStatsReport
 
@@ -236,7 +236,7 @@ Before in 2.x:
 > Note: The `getRTCPeerConnectionStats()` is on its way to be deprecated. Please use the new API `clientMetricReport.getRTCStatsReport()` returned by `metricsDidReceive(clientMetricReport)` callback instead.
 
 ```typescript
-  const report: RTCStatsReport = await audioVideo.getRTCPeerConnectionStats();
+const report: RTCStatsReport = await audioVideo.getRTCPeerConnectionStats();
 ```
 
 After in 3.x:
@@ -247,7 +247,7 @@ It's recommended to use this one. It can also improve the performance a bit as n
 const observer = {
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const report: RTCStatsReport = clientMetricReport.getRTCStatsReport();
-  }
+  },
 };
 audioVideo.addObserver(observer);
 ```

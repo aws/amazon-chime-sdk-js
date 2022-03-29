@@ -27,8 +27,8 @@ import {
   MeetingReadinessChecker,
   MeetingSession,
   MeetingSessionConfiguration,
-  MeetingSessionPOSTLogger,
   MultiLogger,
+  POSTLogger,
   Versioning,
 } from 'amazon-chime-sdk-js';
 
@@ -420,15 +420,21 @@ export class DemoMeetingApp {
       this.logger.inner = consoleLogger;
     } else {
       await this.createLogStream(configuration);
+      const POSTLoggerOptions = {
+        metadata: {
+          appName: 'SDK',
+          meetingId: configuration.meetingId,
+          attendeeId: configuration.credentials.attendeeId,
+        }
+      };
       this.logger.inner = new MultiLogger(
         consoleLogger,
-        new MeetingSessionPOSTLogger(
-          'SDK',
-          configuration,
+        new POSTLogger(
           DemoMeetingApp.LOGGER_BATCH_SIZE,
           DemoMeetingApp.LOGGER_INTERVAL_MS,
           `${DemoMeetingApp.BASE_URL}logs`,
-          logLevel
+          logLevel,
+          POSTLoggerOptions,
         )
       );
     }
