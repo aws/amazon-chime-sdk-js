@@ -13,6 +13,7 @@ const ddb = new AWS.DynamoDB();
 const endpoint = process.env.CHIME_ENDPOINT;
 const currentRegion = process.env.REGION;
 const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS;
+const chimeSDKMeetingsEndpoint = process.env.CHIME_SDK_MEETINGS_ENDPOINT;
 
 // Create an AWS SDK Chime object.
 // Use the MediaRegion property below in CreateMeeting to select the region
@@ -23,8 +24,8 @@ const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint(endpoint);
 
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
-if(endpoint != 'https://service.chime.aws.amazon.com'){
-  chimeSDKMeetings.endpoint = new AWS.Endpoint(endpoint);
+if(chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true'){
+  chimeSDKMeetings.endpoint = new AWS.Endpoint(chimeSDKMeetingsEndpoint);
 }
 
 // return chime meetings SDK client just for Echo Reduction for now.
