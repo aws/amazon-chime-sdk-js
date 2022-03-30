@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DefaultDeviceController from '../devicecontroller/DefaultDeviceController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
+import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 
 export default class ContentShareMediaStreamBroker implements MediaStreamBroker {
   private static defaultFrameRate = 15;
@@ -33,11 +33,6 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     return this._mediaStream;
   }
 
-  releaseMediaStream(_mediaStreamToRelease: MediaStream): void {
-    this.logger.info('release media stream called');
-    return;
-  }
-
   async acquireDisplayInputStream(streamConstraints: MediaStreamConstraints): Promise<MediaStream> {
     if (
       streamConstraints &&
@@ -53,10 +48,6 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     }
     // @ts-ignore https://github.com/microsoft/TypeScript/issues/31821
     return navigator.mediaDevices.getDisplayMedia(streamConstraints);
-  }
-
-  bindToAudioVideoController(_audioVideoController: AudioVideoController): void {
-    throw new Error('unsupported');
   }
 
   async acquireScreenCaptureDisplayInputStream(
@@ -116,4 +107,16 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     }
     this.mediaStream = null;
   }
+
+  muteLocalAudioInputStream(): void {
+    throw new Error('unsupported');
+  }
+
+  unmuteLocalAudioInputStream(): void {
+    throw new Error('unsupported');
+  }
+
+  addMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
+
+  removeMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
 }

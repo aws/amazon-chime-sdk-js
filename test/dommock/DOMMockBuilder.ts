@@ -468,6 +468,32 @@ export default class DOMMockBuilder {
             mediaStream.active = true;
             resolve(mediaStream);
           } else {
+            if (
+              mockBehavior.getUserMediaSucceedsOnlyWithConstraints &&
+              JSON.stringify(constraints) ===
+                JSON.stringify(mockBehavior.getUserMediaSucceedsOnlyWithConstraints)
+            ) {
+              this.gotLabels = true;
+              const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
+              const mediaStream = new mediaStreamMaker();
+              const mediaStreamTrack = new MediaStreamTrack();
+              if (constraints.audio && !constraints.video) {
+                // @ts-ignore
+                mediaStreamTrack.kind = 'audio';
+                // @ts-ignore
+                mediaStreamTrack.label = mockBehavior.getUserMediaAudioLabel;
+              }
+              if (!constraints.audio && constraints.video) {
+                // @ts-ignore
+                mediaStreamTrack.kind = 'video';
+              }
+              mediaStreamTrack;
+              mediaStream.addTrack(mediaStreamTrack);
+              mediaStream.constraints = constraints;
+              mediaStream.active = true;
+              resolve(mediaStream);
+            }
+
             if (typeof mockBehavior.getUserMediaError !== 'undefined') {
               reject(mockBehavior.getUserMediaError);
               return;
@@ -1243,6 +1269,7 @@ export default class DOMMockBuilder {
       constructor() {
         this.stream = new GlobalAny.MediaStream();
         this.stream.id = 'destination-stream-id';
+        this.stream.addTrack(new MediaStreamTrack());
 
         // For testing the "ended" event handler, dispatch the "ended" event right after
         // initialization.

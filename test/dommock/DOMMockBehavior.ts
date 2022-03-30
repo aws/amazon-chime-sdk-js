@@ -9,6 +9,10 @@ export default class DOMMockBehavior {
   getDisplayMediaResult: DisplayMediaState = DisplayMediaState.Success;
   getUserMediaResult: UserMediaState = null;
   getUserMediaSucceeds: boolean = true;
+  // This is used in cases where you want getUserMedia to only succeed with a certain constraints
+  // Make sure to set getUserMediaSucceeds to false
+  // eslint-disable-next-line
+  getUserMediaSucceedsOnlyWithConstraints: any = undefined;
   getUserMediaError: Error = undefined;
   getUserMediaAudioLabel: string = 'Default';
   webSocketOpenSucceeds: boolean = true;

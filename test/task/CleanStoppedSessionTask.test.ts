@@ -142,8 +142,8 @@ describe('CleanStoppedSessionTask', () => {
 
     it('sets audio and video input to null', done => {
       task.run().then(() => {
-        expect(context.activeAudioInput).to.not.be.null;
-        expect(context.activeVideoInput).to.not.be.null;
+        expect(context.activeAudioInput).to.not.be.undefined;
+        expect(context.activeVideoInput).to.not.be.undefined;
         done();
       });
     });
@@ -163,7 +163,7 @@ describe('CleanStoppedSessionTask', () => {
     });
 
     it('clears local video if exists', done => {
-      context.activeAudioInput = null;
+      context.activeAudioInput = undefined;
       const videoInput = new MediaStream();
       context.activeVideoInput = videoInput;
       class TestVideoTileController extends DefaultVideoTileController {
@@ -230,10 +230,10 @@ describe('CleanStoppedSessionTask', () => {
 
     it('clears local audio only', async () => {
       context.activeAudioInput = new MediaStream();
-      context.activeVideoInput = null;
+      context.activeVideoInput = undefined;
       await task.run();
-      expect(context.activeAudioInput).to.not.be.null;
-      expect(context.activeVideoInput).to.be.null;
+      expect(context.activeAudioInput).to.not.be.undefined;
+      expect(context.activeVideoInput).to.be.undefined;
     });
 
     it('stops the stats collector the connection monitor', async () => {

@@ -137,13 +137,13 @@ describe('ReceiveVideoInputTask', () => {
       assert.exists(context.activeVideoInput);
       const task = new ReceiveVideoInputTask(context);
       await task.run();
-      expect(context.activeVideoInput).to.be.null;
+      expect(context.activeVideoInput).to.be.undefined;
     });
 
     it('will not acquire video input if video tile is not started from controller', async () => {
       const task = new ReceiveVideoInputTask(context);
       await task.run();
-      expect(context.activeVideoInput).to.be.null;
+      expect(context.activeVideoInput).to.be.undefined;
     });
 
     it('will fail gracefully if a device permission is not granted', async () => {
@@ -153,7 +153,7 @@ describe('ReceiveVideoInputTask', () => {
       });
       const task = new ReceiveVideoInputTask(context);
       await task.run();
-      expect(context.activeVideoInput).to.be.null;
+      expect(context.activeVideoInput).to.be.undefined;
     });
 
     it('will fail gracefully if a video input is not available from device', async () => {
@@ -163,7 +163,7 @@ describe('ReceiveVideoInputTask', () => {
       });
       const task = new ReceiveVideoInputTask(context);
       await task.run();
-      expect(context.activeVideoInput).to.be.null;
+      expect(context.activeVideoInput).to.be.undefined;
     });
 
     it('will fail gracefully if a video input does not contain media stream track', async () => {

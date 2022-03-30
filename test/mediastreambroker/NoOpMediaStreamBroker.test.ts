@@ -20,12 +20,6 @@ describe('NoOpMediaStreamBroker', () => {
     });
   });
 
-  describe('releaseAudioInputStream', () => {
-    it('can be called', async () => {
-      new NoOpMediaStreamBroker().releaseMediaStream(Substitute.for<MediaStream>());
-    });
-  });
-
   describe('acquireVideoInputStream', () => {
     it('can fail to acquire an video input device', async () => {
       await new NoOpMediaStreamBroker()
@@ -37,12 +31,6 @@ describe('NoOpMediaStreamBroker', () => {
     });
   });
 
-  describe('releaseVideoInputStream', () => {
-    it('can be called', async () => {
-      new NoOpMediaStreamBroker().releaseMediaStream(Substitute.for<MediaStream>());
-    });
-  });
-
   describe('acquireDisplayInputDevice', () => {
     it('can fail to acquire an display input device', async () => {
       await new NoOpMediaStreamBroker()
@@ -51,12 +39,6 @@ describe('NoOpMediaStreamBroker', () => {
           assert.fail();
         })
         .catch(() => {});
-    });
-  });
-
-  describe('releaseDisplayInputStream', () => {
-    it('can be called', () => {
-      new NoOpMediaStreamBroker().releaseMediaStream(Substitute.for<MediaStream>());
     });
   });
 });

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
+import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import DefaultTranscriptionController from '../transcript/DefaultTranscriptionController';
 import TranscriptionController from '../transcript/TranscriptionController';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
@@ -58,7 +59,10 @@ export default class DefaultRealtimeController implements RealtimeController {
   private readonly state: RealtimeState = new RealtimeState();
   private readonly _transcriptionController: TranscriptionController;
 
-  constructor(transcriptionController?: TranscriptionController) {
+  constructor(
+    private mediaStreamBroker: MediaStreamBroker,
+    transcriptionController?: TranscriptionController
+  ) {
     this._transcriptionController =
       transcriptionController || new DefaultTranscriptionController(this);
   }
@@ -117,21 +121,6 @@ export default class DefaultRealtimeController implements RealtimeController {
       if (index !== -1) {
         this.state.attendeeIdChangesCallbacks.splice(index, 1);
       }
-    } catch (e) {
-      this.onError(e);
-    }
-  }
-
-  // Audio Input
-
-  realtimeSetLocalAudioInput(audioInput: MediaStream | null): void {
-    try {
-      if (this.state.audioInput === audioInput) {
-        return;
-      }
-      this.setAudioInputEnabled(false);
-      this.state.audioInput = audioInput;
-      this.setAudioInputEnabled(!this.state.muted);
     } catch (e) {
       this.onError(e);
     }
@@ -462,14 +451,10 @@ export default class DefaultRealtimeController implements RealtimeController {
   // Internals
 
   private setAudioInputEnabled(enabled: boolean): void {
-    if (!this.state.audioInput) {
-      return;
-    }
-    for (const track of this.state.audioInput.getTracks()) {
-      if (track.enabled === enabled) {
-        continue;
-      }
-      track.enabled = enabled;
+    if (enabled) {
+      this.mediaStreamBroker.unmuteLocalAudioInputStream();
+    } else {
+      this.mediaStreamBroker.muteLocalAudioInputStream();
     }
   }
 
@@ -480,9 +465,6 @@ export default class DefaultRealtimeController implements RealtimeController {
     const attendeeIdLocal = this.state.localAttendeeId;
     const mutedLocal = this.state.muted;
     if (attendeeIdRemote !== attendeeIdLocal) {
-      return mutedRemote;
-    }
-    if (this.state.audioInput === null) {
       return mutedRemote;
     }
     return mutedLocal;

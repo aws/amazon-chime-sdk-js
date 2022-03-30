@@ -68,7 +68,6 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       this.eventController
     );
     this._deviceController = deviceController;
-    deviceController.bindToAudioVideoController(this.audioVideoController);
     const contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(this._logger);
     this.contentShareController = new DefaultContentShareController(
       contentShareMediaStreamBroker,

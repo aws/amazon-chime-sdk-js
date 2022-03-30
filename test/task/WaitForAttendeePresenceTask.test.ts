@@ -6,6 +6,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
@@ -31,7 +32,7 @@ describe('WaitForAttendeePresenceTask', () => {
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     context = new AudioVideoControllerState();
     context.logger = new NoOpDebugLogger();
-    context.realtimeController = new DefaultRealtimeController();
+    context.realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
     context.meetingSessionConfiguration = new MeetingSessionConfiguration(
       CreateMeetingResponseMock.MeetingResponseMock,
       CreateMeetingResponseMock.AttendeeResponseMock

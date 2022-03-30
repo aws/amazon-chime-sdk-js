@@ -81,7 +81,7 @@ class VoiceFocusTransformDevice implements AudioTransformDevice, AudioMixObserve
    * If you wish to choose a different inner device, but continue to use Amazon Voice Focus, you
    * can use this method to efficiently create a new device that will reuse
    * the same internal state. Only one of the two devices can be used at a time: switch
-   * between them using {@link DeviceController.chooseAudioInputDevice}.
+   * between them using {@link DeviceController.startAudioInput}.
    *
    * If the same device is passed as is currently in use, `this` is returned.
    *

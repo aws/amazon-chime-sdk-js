@@ -46,8 +46,8 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   async checkAudioInput(audioInputDevice: Device): Promise<CheckAudioInputFeedback> {
     try {
-      await this.meetingSession.audioVideo.chooseAudioInputDevice(audioInputDevice);
-      await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
+      await this.meetingSession.audioVideo.startAudioInput(audioInputDevice);
+      await this.meetingSession.audioVideo.startAudioInput(null);
       return CheckAudioInputFeedback.Succeeded;
     } catch (error) {
       this.logger.error(`MeetingReadinessChecker: Audio input check failed with error ${error}`);
@@ -148,8 +148,8 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   async checkVideoInput(videoInputDevice: Device): Promise<CheckVideoInputFeedback> {
     try {
-      await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDevice);
-      await this.meetingSession.audioVideo.chooseVideoInputDevice(null);
+      await this.meetingSession.audioVideo.startVideoInput(videoInputDevice);
+      await this.meetingSession.audioVideo.startVideoInput(null);
       return CheckVideoInputFeedback.Succeeded;
     } catch (error) {
       this.logger.error(`MeetingReadinessChecker: Video check failed with error ${error}`);
@@ -277,7 +277,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       }
     };
     try {
-      await audioVideo.chooseAudioInputDevice(audioInputDevice);
+      await audioVideo.startAudioInput(audioInputDevice);
     } catch (error) {
       this.logger.error(
         `MeetingReadinessChecker: Failed to get audio input device with error ${error}`
@@ -291,7 +291,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     if (!(await this.startMeeting())) {
       audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
       try {
-        await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
+        await this.meetingSession.audioVideo.startAudioInput(null);
       } catch (e) {
         this.logger.error(`MeetingReadinessChecker: Failed to choose null device with error ${e}`);
       }
@@ -303,7 +303,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
     await this.stopMeeting();
     try {
-      await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
+      await this.meetingSession.audioVideo.startAudioInput(null);
     } catch (e) {
       this.logger.error(`MeetingReadinessChecker: Failed to choose null device with error ${e}`);
     }
@@ -316,7 +316,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     const audioVideo = this.meetingSession.audioVideo;
 
     try {
-      await audioVideo.chooseVideoInputDevice(videoInputDevice);
+      await audioVideo.startVideoInput(videoInputDevice);
     } catch (error) {
       this.logger.error(
         `MeetingReadinessChecker: Failed to get video input device with error ${error}`

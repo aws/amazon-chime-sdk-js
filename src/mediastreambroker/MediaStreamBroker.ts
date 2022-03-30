@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import AudioVideoController from '../audiovideocontroller/AudioVideoController';
+import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 
 /**
  * Media controllers acquire media streams from the [[MediaStreamBroker]], which
  * fulfills the requests either through direct getUserMedia requests or a
- * higher-level intermediary such as a [[DeviceController]]. When a media
- * controller no longer needs a media stream it calls [[releaseMediaStream]].
+ * higher-level intermediary such as a [[DeviceController]].
  */
 export default interface MediaStreamBroker {
   /**
@@ -28,14 +27,24 @@ export default interface MediaStreamBroker {
   acquireDisplayInputStream(streamConstraints: MediaStreamConstraints): Promise<MediaStream>;
 
   /**
-   * Called when a media stream is no longer being used and can be cleaned up
-   * or cached for later used.
+   * Mute the current active local audio input stream.
    */
-  releaseMediaStream(mediaStreamToRelease: MediaStream): void;
+  muteLocalAudioInputStream(): void;
 
   /**
-   * Binds the media stream broker to the audio video controller. This is called
-   * automatically by the meeting session constructor.
+   * Unmute the current active local audio input
    */
-  bindToAudioVideoController(audioVideoController: AudioVideoController): void;
+  unmuteLocalAudioInputStream(): void;
+
+  /**
+   * Add a media stream broker observer to receive events when input/output streams change
+   * @param observer The observer to be added
+   */
+  addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void;
+
+  /**
+   * Remove a media stream broker observer to stop receiving events when input/output streams change
+   * @param observer The observer to be removed
+   */
+  removeMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void;
 }

@@ -45,8 +45,8 @@ import VideoQualitySettings from './VideoQualitySettings';
  * cleanup steps in order to avoid memory leaks:
  *
  * 1. Deselect any audio input or output devices by calling
- *    {@link DeviceController.chooseAudioInputDevice} and {@link
- *    DeviceController.chooseAudioOutputDevice} with `null`.
+ *    {@link DeviceController.startAudioInput} and {@link
+ *    DeviceController.chooseAudioOutput} with `null`.
  * 2. Remove any device change observers that you registered by using
  *    {@link DeviceController.removeDeviceChangeObserver}.
  * 3. Drop your reference to the controller to allow it to be garbage collected.
@@ -76,7 +76,13 @@ export default interface DeviceController {
    * The promise will resolve indicating success or it will throw an appropriate error
    * indicating the failure.
    */
-  chooseAudioInputDevice(device: AudioInputDevice): Promise<void>;
+  startAudioInput(device: AudioInputDevice): Promise<MediaStream | undefined>;
+
+  /**
+   * Stop the current audio input. This needs to be called to clear out to stop the current audio input resources
+   * such as audio stream from microphone.
+   */
+  stopAudioInput(): Promise<void>;
 
   /**
    * Selects a video input device to use. The constraint may be a device id,
@@ -84,14 +90,20 @@ export default interface DeviceController {
    * indicate no device. The promise will resolve indicating success or it will
    * throw an appropriate error indicating the failure.
    */
-  chooseVideoInputDevice(device: VideoInputDevice): Promise<void>;
+  startVideoInput(device: VideoInputDevice): Promise<MediaStream | undefined>;
+
+  /**
+   * Stop the current audio input. This needs to be called to clear out to stop the current video input resources
+   * such as audio stream from camera.
+   */
+  stopVideoInput(): Promise<void>;
 
   /**
    * Selects an audio output device for use. Null specifies the default device.
    * Note: This method will throw an error if browser does not support
    * setSinkId. See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId
    */
-  chooseAudioOutputDevice(deviceId: string | null): Promise<void>;
+  chooseAudioOutput(deviceId: string | null): Promise<void>;
 
   /**
    * Adds an observer to receive callbacks about device changes.
@@ -147,15 +159,9 @@ export default interface DeviceController {
 
   /**
    * Sets the video input quality parameters to request when enabling video. These settings
-   * take effect the next time a video input device is chosen. The default is 960x540 \@ 15 fps
-   * with a max bandwidth of 1400 kbps.
+   * take effect the next time a video input device is chosen. The default is 960x540 \@ 15 fps.
    */
-  chooseVideoInputQuality(
-    width: number,
-    height: number,
-    frameRate: number,
-    maxBandwidthKbps: number
-  ): void;
+  chooseVideoInputQuality(width: number, height: number, frameRate: number): void;
 
   /**
    * Get the current video input quality settings to request when enabling video.

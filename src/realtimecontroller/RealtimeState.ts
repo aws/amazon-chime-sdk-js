@@ -52,11 +52,6 @@ export default class RealtimeState {
   muteAndUnmuteLocalAudioCallbacks: ((muted: boolean) => void)[] = [];
 
   /**
-   * Stores the active audio input
-   */
-  audioInput: MediaStream | null = null;
-
-  /**
    * Stores per-attendee id volume indicator state
    */
   volumeIndicatorState: { [key: string]: RealtimeVolumeIndicator } = {};

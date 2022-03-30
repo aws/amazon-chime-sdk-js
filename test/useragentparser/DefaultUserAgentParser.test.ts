@@ -15,15 +15,21 @@ describe('DefaultUserAgentParser', () => {
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   let userAgentParser: UserAgentParser;
+  let userAgent: string = '';
   let logger: Logger;
 
   beforeEach(() => {
+    // @ts-ignore
+    userAgent = navigator.userAgent;
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     logger = new NoOpLogger();
   });
 
   afterEach(() => {
+    // Tests here modify userAgent directly so try to reset it back to avoid leaking to other tests
+    // @ts-ignore
+    navigator.userAgent = userAgent;
     domMockBuilder.cleanup();
   });
 

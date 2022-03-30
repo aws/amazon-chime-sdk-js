@@ -83,40 +83,121 @@
 					<pre><code class="language-shell">npm install amazon-chime-sdk-js@beta
 </code></pre>
 					<p><strong>Version 3 of the Amazon Chime SDK for JavaScript makes a number of interface changes.</strong></p>
-					<p><strong>In many cases you should not need to adjust your application code at all. This will be the case if:</strong></p>
-					<ul>
-						<li>You do not implement your own <code>EventController</code> or construct <code>DefaultEventController</code> yourself.</li>
-						<li>You do not pass a <code>EventReporter</code> yourself or use the reporter through <code>MeetingSession</code>.</li>
-						<li>You do not explicitly add <code>eventDidReceive</code> observer using <code>addObserver(&lt;class implementing AudioVideoObserver&#39;s eventDidReceive method&gt;)</code> on any instances of an <code>AudioVideoFacade</code> or <code>AudioVideoController</code> such as <code>meetingSession.audioVideo.addObserver(&lt;class implementing AudioVideoObserver&#39;s eventDidReceive method&gt;)</code></li>
-					</ul>
-					<p>If your application does not meet all three criteria, read on.</p>
+					<a href="#device-controller" id="device-controller" style="color: inherit; text-decoration: none;">
+						<h2>Device controller</h2>
+					</a>
+					<a href="#updates-to-the-audio-input-api" id="updates-to-the-audio-input-api" style="color: inherit; text-decoration: none;">
+						<h3>Updates to the audio input API</h3>
+					</a>
+					<p>We&#39;ve changed <code>chooseAudioInputDevice</code> to <code>startAudioInput</code> because you can also pass non-device objects, such as <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints">MediaTrackConstraints</a>.</p>
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> audioInputDeviceInfo = <span class="hljs-comment">// An array item from meetingSession.audioVideo.listAudioInputDevices;</span>
+
+<span class="hljs-comment">// Before</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
+
+<span class="hljs-comment">// After</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startAudioInput(audioInputDeviceInfo.deviceId);
+</code></pre>
+					<p>In v3, you should call <code>stopAudioInput</code> to stop sending an audio stream when your Chime SDK meeting ends.</p>
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
+  <span class="hljs-attr">audioVideoDidStop</span>: <span class="hljs-keyword">async</span> sessionStatus =&gt; {
+    <span class="hljs-comment">// v3</span>
+    <span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
+
+    <span class="hljs-comment">// Or use the destroy API to call stopAudioInput and stopVideoInput.</span>
+    meetingSession.audioVideo.deviceController.destroy()
+  },
+};
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
+					<a href="#updates-to-the-video-input-api" id="updates-to-the-video-input-api" style="color: inherit; text-decoration: none;">
+						<h3>Updates to the video input API</h3>
+					</a>
+					<p>We&#39;ve changed <code>chooseVideoInputDevice</code> to <code>startVideoInput</code> because you can also pass non-device objects, such as <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints">MediaTrackConstraints</a>.</p>
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> videoInputDeviceInfo = <span class="hljs-comment">// An array item from meetingSession.audioVideo.listVideoInputDevices;</span>
+
+<span class="hljs-comment">// Before</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+
+<span class="hljs-comment">// After</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
+</code></pre>
+					<p>In v3, you should call <code>stopVideoInput</code> to stop the video input stream.</p>
+					<pre><code class="language-js"><span class="hljs-comment">// v3</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
+</code></pre>
+					<a href="#updates-to-the-audio-output-api" id="updates-to-the-audio-output-api" style="color: inherit; text-decoration: none;">
+						<h3>Updates to the audio output API</h3>
+					</a>
+					<p>We&#39;ve changed <code>chooseAudioOutputDevice</code> to <code>chooseAudioOutput</code> to follow the naming convention in the input APIs.</p>
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> audioOutputDeviceInfo = <span class="hljs-comment">// An array item from meetingSession.audioVideo.listAudioOutputDevices;</span>
+
+<span class="hljs-comment">// Before</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+
+<span class="hljs-comment">// After</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutput(audioOutputDeviceInfo.deviceId);
+</code></pre>
+					<a href="#updates-to-the-video-preview-apis" id="updates-to-the-video-preview-apis" style="color: inherit; text-decoration: none;">
+						<h3>Updates to the video preview APIs</h3>
+					</a>
+					<p>In v3, <code>startVideoPreviewForVideoInput</code> and <code>stopVideoPreviewForVideoInput</code> do not affect a video input published by <code>startVideoInput</code> (<code>chooseVideoInputDevice</code> in v2) anymore.</p>
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> videoInputDeviceInfo = <span class="hljs-comment">// An array item from meetingSession.audioVideo.listVideoInputDevices;</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
+
+<span class="hljs-keyword">const</span> previewElement = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;video-preview&#x27;</span>);
+meetingSession.audioVideo.startVideoPreviewForVideoInput(previewElement);
+
+meetingSession.audioVideo.stopVideoPreviewForVideoInput(previewElement);
+
+<span class="hljs-comment">// In v3, stopVideoPreviewForVideoInput does not implicitly stop the video published by startVideoInput.</span>
+<span class="hljs-comment">// You should call stopVideoInput if you want to stop sending a video stream.</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
+</code></pre>
+					<a href="#updates-to-the-video-input-quality-api" id="updates-to-the-video-input-quality-api" style="color: inherit; text-decoration: none;">
+						<h3>Updates to the video input quality API</h3>
+					</a>
+					<p>In v3, we&#39;ve removed the <code>maxBandwidthKbps</code> parameter from <code>chooseVideoInputQuality</code> because it&#39;s not related to the video input device.</p>
+					<p>Instead, you can set the ideal video maximum bandwidth using <code>setVideoMaxBandwidthKbps</code>.</p>
+					<pre><code class="language-js"><span class="hljs-comment">// Before</span>
+meetingSession.audioVideo.chooseVideoInputQuality(<span class="hljs-number">960</span>, <span class="hljs-number">540</span>, <span class="hljs-number">15</span>, <span class="hljs-number">1000</span>);
+
+<span class="hljs-comment">// After</span>
+meetingSession.audioVideo.chooseVideoInputQuality(<span class="hljs-number">960</span>, <span class="hljs-number">540</span>, <span class="hljs-number">15</span>);
+meetingSession.audioVideo.setVideoMaxBandwidthKbps(<span class="hljs-number">1000</span>);
+</code></pre>
+					<a href="#removing-synthesize-video-api" id="removing-synthesize-video-api" style="color: inherit; text-decoration: none;">
+						<h3>Removing synthesize video API</h3>
+					</a>
+					<p>In v3, we&#39;ve removed <code>synthesizeVideoDevice</code> and <code>createEmptyVideoDevice</code> APIs.
+					They are now available in our <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/video/SyntheticVideoDeviceFactory.ts">meeting demo</a>.</p>
 					<a href="#messaging" id="messaging" style="color: inherit; text-decoration: none;">
-						<h3>Messaging</h3>
+						<h2>Messaging</h2>
 					</a>
 					<a href="#remove-aws-global-object-from-messagingsessionconfigurationts" id="remove-aws-global-object-from-messagingsessionconfigurationts" style="color: inherit; text-decoration: none;">
-						<h4>Remove AWS global object from <code>MessagingSessionConfiguration.ts</code></h4>
+						<h3>Remove AWS global object from <code>MessagingSessionConfiguration.ts</code></h3>
 					</a>
 					<p><code>MessagingSessionConfiguration</code> used to require to pass in the AWS global object for sigV4 signing which does not
 					work for aws-sdk v3. Starting with Amazon Chime SDK for JavaScript V3, you no longer have to pass in the global AWS object.</p>
-					<p>If your code looked like this:</p>
-					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(<span class="hljs-built_in">this</span>.userArn, <span class="hljs-built_in">this</span>.sessionId, endpoint.Endpoint.Url, chime, AWS);
-</code></pre>
-					<p>change it to</p>
-					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(<span class="hljs-built_in">this</span>.userArn, <span class="hljs-built_in">this</span>.sessionId, endpoint.Endpoint.Url, chime);
+					<pre><code class="language-typescript"><span class="hljs-comment">// Before</span>
+<span class="hljs-built_in">this</span>.configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(<span class="hljs-built_in">this</span>.userArn, <span class="hljs-built_in">this</span>.sessionId, endpoint.Endpoint.Url, chime, AWS);
+
+<span class="hljs-comment">// After</span>
+<span class="hljs-built_in">this</span>.configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(<span class="hljs-built_in">this</span>.userArn, <span class="hljs-built_in">this</span>.sessionId, endpoint.Endpoint.Url, chime);
 </code></pre>
 					<a href="#update-messagingsessionstart-to-return-promiseltvoidgt-instead-of-void" id="update-messagingsessionstart-to-return-promiseltvoidgt-instead-of-void" style="color: inherit; text-decoration: none;">
-						<h4>Update <code>messagingSession.start</code> to return <code>Promise&lt;void&gt;</code> instead of <code>void</code></h4>
+						<h3>Update <code>messagingSession.start</code> to return <code>Promise&lt;void&gt;</code> instead of <code>void</code></h3>
 					</a>
 					<p>In aws-sdk v3, region and credentials can be async function. In order to support aws-sdk v3, we update the start API
 					to async.</p>
-					<p>If your code looked like this:</p>
-					<pre><code class="language-typescript">messagingSession.start();
+					<pre><code class="language-typescript"><span class="hljs-comment">// Before</span>
+messagingSession.start();
+
+<span class="hljs-comment">// After</span>
+<span class="hljs-keyword">await</span> messagingSession.start();
 </code></pre>
-					<p>change it to</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> messagingSession.start();
-</code></pre>
-					<a href="#meetingstatuscode" id="meetingstatuscode" style="color: inherit; text-decoration: none;">
-						<h3>MeetingStatusCode</h3>
+					<a href="#meeting-status-code" id="meeting-status-code" style="color: inherit; text-decoration: none;">
+						<h2>Meeting Status Code</h2>
 					</a>
 					<p>The following meeting status code have been deprecated in v2.x and are now removed in v3.x, if your applications
 					handle them please remove.</p>
@@ -127,69 +208,47 @@
 						<li>StateMachineTransitionFailed</li>
 						<li>AudioDeviceSwitched</li>
 					</ul>
-					<a href="#updating-eventcontroller-use-cases" id="updating-eventcontroller-use-cases" style="color: inherit; text-decoration: none;">
-						<h3>Updating <code>EventController</code> use cases</h3>
+					<a href="#event-controller" id="event-controller" style="color: inherit; text-decoration: none;">
+						<h2>Event Controller</h2>
 					</a>
 					<p>We have de-coupled the <code>EventController</code> from <code>AudioVideoController</code>. Check below for the new changes and if updates are needed for your implementation.</p>
-					<p>Use case 1: Update implementation of custom <code>EventController</code></p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> EventController {
+					<a href="#update-implementation-of-custom-eventcontroller" id="update-implementation-of-custom-eventcontroller" style="color: inherit; text-decoration: none;">
+						<h3>Update implementation of custom <code>EventController</code></h3>
+					</a>
+					<pre><code class="language-js">interface EventController {
   <span class="hljs-comment">// Adds an observer for event published to this controller.</span>
-  addObserver(observer: EventObserver): <span class="hljs-built_in">void</span>;
+  addObserver(observer: EventObserver): <span class="hljs-keyword">void</span>;
 
   <span class="hljs-comment">// Removes an observer for event published to this controller.</span>
-  removeObserver(observer: EventObserver): <span class="hljs-built_in">void</span>;
+  removeObserver(observer: EventObserver): <span class="hljs-keyword">void</span>;
 
   <span class="hljs-comment">// EventReporter that the EventController uses to send events to the Amazon Chime backend.</span>
-  <span class="hljs-keyword">readonly</span> eventReporter?: EventReporter;
+  readonly eventReporter?: EventReporter;
 
   <span class="hljs-comment">// pushMeetingState has been deprecated</span>
 }
 </code></pre>
-					<p>Use case 2: Update creation of <code>EventController</code></p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Before in 2.x:</span>
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
-<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
-…
-<span class="hljs-keyword">const</span> audioVideoController = <span class="hljs-keyword">new</span> DefaultAudioVideoController(configuration, logger, ..., eventReporter);
-<span class="hljs-keyword">const</span> eventController = <span class="hljs-keyword">new</span> DefaultEventController(audioVideoController, eventReporter)
-
-<span class="hljs-comment">// After in 3.x:</span>
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
-<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
-…
-<span class="hljs-keyword">const</span> eventController = <span class="hljs-keyword">new</span> DefaultEventController(configuration, logger, eventReporter)
-<span class="hljs-keyword">const</span> audioVideoController = <span class="hljs-keyword">new</span> DefaultAudioVideoController(configuration, logger, ..., eventController);
-</code></pre>
-					<a href="#updating-eventreporter-use-cases" id="updating-eventreporter-use-cases" style="color: inherit; text-decoration: none;">
-						<h3>Updating <code>EventReporter</code> use cases</h3>
+					<a href="#update-creation-of-eventcontroller" id="update-creation-of-eventcontroller" style="color: inherit; text-decoration: none;">
+						<h3>Update creation of <code>EventController</code>.</h3>
 					</a>
 					<p>The <code>DefaultMeetingSession</code> constructor no longer takes in a <code>EventReporter</code> and instead optionally takes in an <code>EventController</code> or creates one if none is given.</p>
-					<p>Before in 2.x:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
 <span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
 <span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
-…
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
 
-<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController, eventReporter);
-</code></pre>
-					<p>After in 3.x:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
-<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
-…
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+<span class="hljs-comment">// Before in 2.x</span>
+<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, ..., eventReporter);
+
+<span class="hljs-comment">// After in 3.x</span>
 <span class="hljs-keyword">const</span> eventController = <span class="hljs-keyword">new</span> DefaultEventController(configuration, logger, eventReporter)
-<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController, eventController);
+<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, ..., eventController);
 </code></pre>
-					<a href="#foreachobserver-use-cases" id="foreachobserver-use-cases" style="color: inherit; text-decoration: none;">
-						<h3><code>forEachObserver</code> use cases</h3>
+					<a href="#update-eventdidreceive-observer" id="update-eventdidreceive-observer" style="color: inherit; text-decoration: none;">
+						<h3>Update <code>eventDidReceive</code> observer</h3>
 					</a>
-					<p>The <code>eventDidReceive</code> function that was part of <code>AudioVideoObserver</code> has been moved to <code>EventObserver</code> which is a observer that the <code>EventController</code> now handles. Because of this if you were you were to call <code>eventDidReceive</code> through <code>forEachObserver</code> on <code>AudioVideoController</code> this functionality will no longer be possible in 3.x, however you will still be able to call <code>eventDidReceive</code> by using the <code>publishEvent</code> method on <code>EventController</code>. If you have a use case not covered by this method you can implement your own <code>EventController</code> or make a feature request.</p>
+					<p>The <code>eventDidReceive</code> function that was part of <code>AudioVideoObserver</code> has been moved to <code>EventObserver</code> which is an observer that the <code>EventController</code> now handles. Because of this if you were to call <code>eventDidReceive</code> through <code>forEachObserver</code> on <code>AudioVideoController</code> this functionality will no longer be possible in 3.x, however you will still be able to call <code>eventDidReceive</code> by using the <code>publishEvent</code> method on <code>EventController</code>. If you have a use case not covered by this method you can implement your own <code>EventController</code> or make a feature request.</p>
 					<a href="#webrtc-metrics" id="webrtc-metrics" style="color: inherit; text-decoration: none;">
-						<h3>WebRTC Metrics</h3>
+						<h2>WebRTC Metrics</h2>
 					</a>
 					<p>Before in 2.x:</p>
 					<p>The <code>DefaultStatsCollector</code> used a hybrid approach to obtain WebRTC stats from browser:</p>
@@ -275,7 +334,7 @@
 							</tr>
 					</tbody></table>
 					<a href="#get-raw-rtcstatsreport" id="get-raw-rtcstatsreport" style="color: inherit; text-decoration: none;">
-						<h4>Get raw RTCStatsReport</h4>
+						<h3>Get raw RTCStatsReport</h3>
 					</a>
 					<p>We add a new <code>rtcStatsReport</code> property to <code>DefaultClientMetricReport</code> to store raw <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport"><code>RTCStatsReport</code></a> and expose it via <code>metricsDidReceive(clientMetricReport: ClientMetricReport)</code> event. You can get the <code>rtcStatsReport</code> via <code>clientMetricReport.getRTCStatsReport()</code>. These metrics are updated every second.</p>
 					<p>Before in 2.x:</p>

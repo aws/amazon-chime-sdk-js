@@ -101,7 +101,7 @@
 					cleanup steps in order to avoid memory leaks:</p>
 					<ol>
 						<li>Deselect any audio input or output devices by calling
-						<a href="devicecontroller.html#chooseaudioinputdevice">DeviceController.chooseAudioInputDevice</a> and <a href="devicecontroller.html#chooseaudiooutputdevice">DeviceController.chooseAudioOutputDevice</a> with <code>null</code>.</li>
+						<a href="devicecontroller.html#startaudioinput">DeviceController.startAudioInput</a> and <a href="devicecontroller.html#chooseaudiooutput">DeviceController.chooseAudioOutput</a> with <code>null</code>.</li>
 						<li>Remove any device change observers that you registered by using
 						<a href="devicecontroller.html#removedevicechangeobserver">DeviceController.removeDeviceChangeObserver</a>.</li>
 						<li>Drop your reference to the controller to allow it to be garbage collected.</li>
@@ -138,9 +138,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#adddevicechangeobserver" class="tsd-kind-icon">add<wbr>Device<wbr>Change<wbr>Observer</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#chooseaudioinputdevice" class="tsd-kind-icon">choose<wbr>Audio<wbr>Input<wbr>Device</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#chooseaudiooutputdevice" class="tsd-kind-icon">choose<wbr>Audio<wbr>Output<wbr>Device</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#choosevideoinputdevice" class="tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Device</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#chooseaudiooutput" class="tsd-kind-icon">choose<wbr>Audio<wbr>Output</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#choosevideoinputquality" class="tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Quality</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#createanalysernodeforaudioinput" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#getvideoinputqualitysettings" class="tsd-kind-icon">get<wbr>Video<wbr>Input<wbr>Quality<wbr>Settings</a></li>
@@ -150,7 +148,11 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#mixintoaudioinput" class="tsd-kind-icon">mix<wbr>Into<wbr>Audio<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#removedevicechangeobserver" class="tsd-kind-icon">remove<wbr>Device<wbr>Change<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#setdevicelabeltrigger" class="tsd-kind-icon">set<wbr>Device<wbr>Label<wbr>Trigger</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#startaudioinput" class="tsd-kind-icon">start<wbr>Audio<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#startvideoinput" class="tsd-kind-icon">start<wbr>Video<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#startvideopreviewforvideoinput" class="tsd-kind-icon">start<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#stopaudioinput" class="tsd-kind-icon">stop<wbr>Audio<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#stopvideoinput" class="tsd-kind-icon">stop<wbr>Video<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="devicecontroller.html#stopvideopreviewforvideoinput" class="tsd-kind-icon">stop<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</a></li>
 							</ul>
 						</section>
@@ -165,7 +167,7 @@
 					<div class="tsd-signature tsd-kind-icon">event<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="eventcontroller.html" class="tsd-signature-type">EventController</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L168">src/devicecontroller/DeviceController.ts:168</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L174">src/devicecontroller/DeviceController.ts:174</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -187,7 +189,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L99">src/devicecontroller/DeviceController.ts:99</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L111">src/devicecontroller/DeviceController.ts:111</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -206,49 +208,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="chooseaudioinputdevice" class="tsd-anchor"></a>
-					<h3>choose<wbr>Audio<wbr>Input<wbr>Device</h3>
+					<a name="chooseaudiooutput" class="tsd-anchor"></a>
+					<h3>choose<wbr>Audio<wbr>Output</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Audio<wbr>Input<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="../globals.html#audioinputdevice" class="tsd-signature-type">AudioInputDevice</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">choose<wbr>Audio<wbr>Output<span class="tsd-signature-symbol">(</span>deviceId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L79">src/devicecontroller/DeviceController.ts:79</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Selects an audio input device to use. The constraint may be a device id,
-										<code>MediaTrackConstraint</code>, <code>MediaStream</code> (containing audio track), or <code>null</code> to
-										indicate no device. It may also be an <a href="audiotransformdevice.html">AudioTransformDevice</a> to customize the
-									constraints used or to apply Web Audio transforms.</p>
-								</div>
-								<p>The promise will resolve indicating success or it will throw an appropriate error
-								indicating the failure.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>device: <a href="../globals.html#audioinputdevice" class="tsd-signature-type">AudioInputDevice</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="chooseaudiooutputdevice" class="tsd-anchor"></a>
-					<h3>choose<wbr>Audio<wbr>Output<wbr>Device</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Audio<wbr>Output<wbr>Device<span class="tsd-signature-symbol">(</span>deviceId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L94">src/devicecontroller/DeviceController.ts:94</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L106">src/devicecontroller/DeviceController.ts:106</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -269,54 +238,22 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="choosevideoinputdevice" class="tsd-anchor"></a>
-					<h3>choose<wbr>Video<wbr>Input<wbr>Device</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="../globals.html#videoinputdevice" class="tsd-signature-type">VideoInputDevice</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L87">src/devicecontroller/DeviceController.ts:87</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Selects a video input device to use. The constraint may be a device id,
-										<code>MediaTrackConstraint</code>, <code>MediaStream</code> (containing video track), or <code>null</code> to
-										indicate no device. The promise will resolve indicating success or it will
-									throw an appropriate error indicating the failure.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>device: <a href="../globals.html#videoinputdevice" class="tsd-signature-type">VideoInputDevice</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="choosevideoinputquality" class="tsd-anchor"></a>
 					<h3>choose<wbr>Video<wbr>Input<wbr>Quality</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Quality<span class="tsd-signature-symbol">(</span>width<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, height<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, frameRate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, maxBandwidthKbps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Quality<span class="tsd-signature-symbol">(</span>width<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, height<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, frameRate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L153">src/devicecontroller/DeviceController.ts:153</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L164">src/devicecontroller/DeviceController.ts:164</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Sets the video input quality parameters to request when enabling video. These settings
-										take effect the next time a video input device is chosen. The default is 960x540 @ 15 fps
-									with a max bandwidth of 1400 kbps.</p>
+									take effect the next time a video input device is chosen. The default is 960x540 @ 15 fps.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -329,9 +266,6 @@
 								</li>
 								<li>
 									<h5>frameRate: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>maxBandwidthKbps: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -348,7 +282,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L119">src/devicecontroller/DeviceController.ts:119</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L131">src/devicecontroller/DeviceController.ts:131</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -378,7 +312,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L163">src/devicecontroller/DeviceController.ts:163</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L169">src/devicecontroller/DeviceController.ts:169</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -484,7 +418,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L146">src/devicecontroller/DeviceController.ts:146</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L158">src/devicecontroller/DeviceController.ts:158</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -512,7 +446,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L104">src/devicecontroller/DeviceController.ts:104</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L116">src/devicecontroller/DeviceController.ts:116</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -540,7 +474,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L141">src/devicecontroller/DeviceController.ts:141</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L153">src/devicecontroller/DeviceController.ts:153</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -573,6 +507,70 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="startaudioinput" class="tsd-anchor"></a>
+					<h3>start<wbr>Audio<wbr>Input</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="../globals.html#audioinputdevice" class="tsd-signature-type">AudioInputDevice</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L79">src/devicecontroller/DeviceController.ts:79</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Selects an audio input device to use. The constraint may be a device id,
+										<code>MediaTrackConstraint</code>, <code>MediaStream</code> (containing audio track), or <code>null</code> to
+										indicate no device. It may also be an <a href="audiotransformdevice.html">AudioTransformDevice</a> to customize the
+									constraints used or to apply Web Audio transforms.</p>
+								</div>
+								<p>The promise will resolve indicating success or it will throw an appropriate error
+								indicating the failure.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>device: <a href="../globals.html#audioinputdevice" class="tsd-signature-type">AudioInputDevice</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="startvideoinput" class="tsd-anchor"></a>
+					<h3>start<wbr>Video<wbr>Input</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Video<wbr>Input<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="../globals.html#videoinputdevice" class="tsd-signature-type">VideoInputDevice</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L93">src/devicecontroller/DeviceController.ts:93</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Selects a video input device to use. The constraint may be a device id,
+										<code>MediaTrackConstraint</code>, <code>MediaStream</code> (containing video track), or <code>null</code> to
+										indicate no device. The promise will resolve indicating success or it will
+									throw an appropriate error indicating the failure.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>device: <a href="../globals.html#videoinputdevice" class="tsd-signature-type">VideoInputDevice</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="startvideopreviewforvideoinput" class="tsd-anchor"></a>
 					<h3>start<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -582,7 +580,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L128">src/devicecontroller/DeviceController.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L140">src/devicecontroller/DeviceController.ts:140</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -605,6 +603,52 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="stopaudioinput" class="tsd-anchor"></a>
+					<h3>stop<wbr>Audio<wbr>Input</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L85">src/devicecontroller/DeviceController.ts:85</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stop the current audio input. This needs to be called to clear out to stop the current audio input resources
+									such as audio stream from microphone.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="stopvideoinput" class="tsd-anchor"></a>
+					<h3>stop<wbr>Video<wbr>Input</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>Video<wbr>Input<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L99">src/devicecontroller/DeviceController.ts:99</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stop the current audio input. This needs to be called to clear out to stop the current video input resources
+									such as audio stream from camera.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="stopvideopreviewforvideoinput" class="tsd-anchor"></a>
 					<h3>stop<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -614,7 +658,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L134">src/devicecontroller/DeviceController.ts:134</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L146">src/devicecontroller/DeviceController.ts:146</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -657,13 +701,7 @@
 								<a href="devicecontroller.html#adddevicechangeobserver" class="tsd-kind-icon">add<wbr>Device<wbr>Change<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="devicecontroller.html#chooseaudioinputdevice" class="tsd-kind-icon">choose<wbr>Audio<wbr>Input<wbr>Device</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="devicecontroller.html#chooseaudiooutputdevice" class="tsd-kind-icon">choose<wbr>Audio<wbr>Output<wbr>Device</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="devicecontroller.html#choosevideoinputdevice" class="tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Device</a>
+								<a href="devicecontroller.html#chooseaudiooutput" class="tsd-kind-icon">choose<wbr>Audio<wbr>Output</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="devicecontroller.html#choosevideoinputquality" class="tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Quality</a>
@@ -693,7 +731,19 @@
 								<a href="devicecontroller.html#setdevicelabeltrigger" class="tsd-kind-icon">set<wbr>Device<wbr>Label<wbr>Trigger</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="devicecontroller.html#startaudioinput" class="tsd-kind-icon">start<wbr>Audio<wbr>Input</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="devicecontroller.html#startvideoinput" class="tsd-kind-icon">start<wbr>Video<wbr>Input</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="devicecontroller.html#startvideopreviewforvideoinput" class="tsd-kind-icon">start<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="devicecontroller.html#stopaudioinput" class="tsd-kind-icon">stop<wbr>Audio<wbr>Input</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="devicecontroller.html#stopvideoinput" class="tsd-kind-icon">stop<wbr>Video<wbr>Input</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="devicecontroller.html#stopvideopreviewforvideoinput" class="tsd-kind-icon">stop<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</a>

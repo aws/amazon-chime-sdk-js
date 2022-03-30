@@ -16,11 +16,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `StatsCollector` interface.
 - Remove `ClientMetricReport` interface.
 - Remove `clientMetricReport` parameter from `StatsCollector.start()` API.
+- Remove synthesize video APIs such as SMTP.
 
 ### Changed
 
 - Rename `DefaultStatsCollector` to `StatsCollector`.
 - Rename `DefaultClientMetricReport` to `ClientMetricReport`.
+- Change `chooseAudioInputDevice` to explicit APIs `startAudioInput` and `stopAudioInput`. Application will need to
+  call `stopVideoInput` at the end of the call to explicitly stop active audio stream.
+- Change `chooseVideoInputDevice` to explicit APIs `startVideoInput` and `stopVideoInput`. Application will need to 
+  call `stopVideoInput` now to explicitly stop active video stream.
+- Minor name change to `chooseAudioOutputDevice` to `chooseAudioOutput`.
+- `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream. 
+  This allows applications to join meeting without reselecting video again.
+- Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can 
+  set video max bandwidth kbps from `audioVideo.setVideoMaxBandwidthKbps`.
 
 ### Fixed
 

@@ -150,6 +150,7 @@ import Logger from './logger/Logger';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
+import MediaStreamBrokerObserver from './mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingEventsClientConfiguration from './eventsclientconfiguration/MeetingEventsClientConfiguration';
 import MeetingEventsClientConfigurationAttributes from './eventsclientconfiguration/MeetingEventsClientConfigurationAttributes';
 import MeetingHistoryState from './eventcontroller/MeetingHistoryState';
@@ -210,7 +211,6 @@ import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
 import ReconnectController from './reconnectcontroller/ReconnectController';
 import ReconnectionHealthPolicy from './connectionhealthpolicy/ReconnectionHealthPolicy';
-import ReleaseMediaStreamsTask from './task/ReleaseMediaStreamsTask';
 import RemovableAnalyserNode from './devicecontroller/RemovableAnalyserNode';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
@@ -472,6 +472,7 @@ export {
   MediaDeviceFactory,
   MediaDeviceProxyHandler,
   MediaStreamBroker,
+  MediaStreamBrokerObserver,
   MeetingEventsClientConfiguration,
   MeetingEventsClientConfigurationAttributes,
   MeetingHistoryState,
@@ -535,7 +536,6 @@ export {
   ReceiveVideoStreamIndexTask,
   ReconnectController,
   ReconnectionHealthPolicy,
-  ReleaseMediaStreamsTask,
   RemovableAnalyserNode,
   RemovableObserver,
   RunnableTask,

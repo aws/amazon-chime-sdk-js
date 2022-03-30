@@ -385,21 +385,21 @@ audioInputDevices.forEach(<span class="hljs-function"><span class="hljs-params">
 				<p><strong>Use case 2.</strong> Choose audio input and audio output devices by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.
 				Note that you need to call <code>listAudioInputDevices</code> and <code>listAudioOutputDevices</code> first.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> audioInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioInputDevices */</span>;
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startAudioInput(audioInputDeviceInfo.deviceId);
 
 <span class="hljs-keyword">const</span> audioOutputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioOutputDevices */</span>;
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutput(audioOutputDeviceInfo.deviceId);
 </code></pre>
 				<p><strong>Use case 3.</strong> Choose a video input device by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.
 				Note that you need to call <code>listVideoInputDevices</code> first.</p>
 				<p>If there is an LED light next to the attendee&#39;s camera, it will be turned on indicating that it is now capturing from the camera.
 				You probably want to choose a video input device when you start sharing your video.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> videoInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listVideoInputDevices */</span>;
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 
-<span class="hljs-comment">// You can pass null to choose none. If the previously chosen camera has an LED light on,</span>
-<span class="hljs-comment">// it will turn off indicating the camera is no longer capturing.</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
+<span class="hljs-comment">// Stop video input. If the previously chosen camera has an LED light on,</span>
+<span class="hljs-comment">// it will turn off indicating the camera is no longer capturing. </span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
 </code></pre>
 				<p><strong>Use case 4.</strong> Add a device change observer to receive the updated device list.
 					For example, when you pair Bluetooth headsets with your computer, <code>audioInputsChanged</code> and <code>audioOutputsChanged</code> are called
@@ -609,7 +609,7 @@ meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
 
 <span class="hljs-comment">// The camera LED light will turn on indicating that it is now capturing.</span>
 <span class="hljs-comment">// See the &quot;Device&quot; section for details.</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(videoInputDevices[<span class="hljs-number">0</span>].deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDevices[<span class="hljs-number">0</span>].deviceId);
 
 <span class="hljs-keyword">const</span> observer = {
   <span class="hljs-comment">// videoTileDidUpdate is called whenever a new tile is created or tileState changes.</span>
@@ -655,6 +655,10 @@ meetingSession.audioVideo.startLocalVideoTile();
 meetingSession.audioVideo.addObserver(observer);
 
 meetingSession.audioVideo.stopLocalVideoTile();
+
+<span class="hljs-comment">// Stop video input. If the previously chosen camera has an LED light on,</span>
+<span class="hljs-comment">// it will turn off indicating the camera is no longer capturing. </span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
 
 <span class="hljs-comment">// Optional: You can remove the local tile from the session.</span>
 meetingSession.audioVideo.removeLocalVideoTile();
@@ -1701,9 +1705,6 @@ appVersion: string;
 					<li class=" tsd-kind-class">
 						<a href="classes/reconnectionhealthpolicy.html" class="tsd-kind-icon">Reconnection<wbr>Health<wbr>Policy</a>
 					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/releasemediastreamstask.html" class="tsd-kind-icon">Release<wbr>Media<wbr>Streams<wbr>Task</a>
-					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/runnabletask.html" class="tsd-kind-icon">Runnable<wbr>Task</a>
 					</li>
@@ -2029,6 +2030,9 @@ appVersion: string;
 						<a href="interfaces/mediastreambroker.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/mediastreambrokerobserver.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/meetingeventsclientconfigurationattributes.html" class="tsd-kind-icon">Meeting<wbr>Events<wbr>Client<wbr>Configuration<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -2230,9 +2234,6 @@ appVersion: string;
 						<a href="globals.html#pako" class="tsd-kind-icon">pako</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#fillsmptecolorbars" class="tsd-kind-icon">fillSMPTEColor<wbr>Bars</a>
-					</li>
-					<li class=" tsd-kind-function">
 						<a href="globals.html#flatteneventattributes" class="tsd-kind-icon">flatten<wbr>Event<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-function">
@@ -2252,9 +2253,6 @@ appVersion: string;
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#tolowercasepropertynames" class="tsd-kind-icon">to<wbr>Lower<wbr>Case<wbr>Property<wbr>Names</a>

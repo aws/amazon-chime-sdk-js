@@ -84,6 +84,7 @@
 				<ul class="tsd-hierarchy">
 					<li><a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></li>
 					<li><a href="../interfaces/simulcastuplinkobserver.html" class="tsd-signature-type">SimulcastUplinkObserver</a></li>
+					<li><a href="../interfaces/mediastreambrokerobserver.html" class="tsd-signature-type">MediaStreamBrokerObserver</a></li>
 					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type">Destroyable</a></li>
 				</ul>
 			</section>
@@ -121,6 +122,8 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#audioinputdidchange" class="tsd-kind-icon">audio<wbr>Input<wbr>Did<wbr>Change</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#audiooutputdidchange" class="tsd-kind-icon">audio<wbr>Output<wbr>Did<wbr>Change</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="noopaudiovideocontroller.html#demotefromprimarymeeting" class="tsd-kind-icon">demote<wbr>From<wbr>Primary<wbr>Meeting</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#destroy" class="tsd-kind-icon">destroy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#encodingsimulcastlayersdidchange" class="tsd-kind-icon">encoding<wbr>Simulcast<wbr>Layers<wbr>Did<wbr>Change</a></li>
@@ -133,8 +136,8 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="noopaudiovideocontroller.html#promotetoprimarymeeting" class="tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#reconnect" class="tsd-kind-icon">reconnect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#replacelocalaudio" class="tsd-kind-icon">replace<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#replacelocalvideo" class="tsd-kind-icon">replace<wbr>Local<wbr>Video</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#restartlocalaudio" class="tsd-kind-icon">restart<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#restartlocalvideo" class="tsd-kind-icon">restart<wbr>Local<wbr>Video</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#resumereceivingstream" class="tsd-kind-icon">resume<wbr>Receiving<wbr>Stream</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="noopaudiovideocontroller.html#setaudioprofile" class="tsd-kind-icon">set<wbr>Audio<wbr>Profile</a></li>
@@ -145,6 +148,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#stopreturningpromise" class="tsd-kind-icon">stop<wbr>Returning<wbr>Promise</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#update" class="tsd-kind-icon">update</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#updatelocalvideofrompolicy" class="tsd-kind-icon">update<wbr>Local<wbr>Video<wbr>From<wbr>Policy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="noopaudiovideocontroller.html#videoinputdidchange" class="tsd-kind-icon">video<wbr>Input<wbr>Did<wbr>Change</a></li>
 							</ul>
 						</section>
 					</div>
@@ -383,6 +387,56 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="audioinputdidchange" class="tsd-anchor"></a>
+					<h3>audio<wbr>Input<wbr>Did<wbr>Change</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">audio<wbr>Input<wbr>Did<wbr>Change<span class="tsd-signature-symbol">(</span>audioStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/mediastreambrokerobserver.html">MediaStreamBrokerObserver</a>.<a href="../interfaces/mediastreambrokerobserver.html#audioinputdidchange">audioInputDidChange</a></p>
+								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#audioinputdidchange">audioInputDidChange</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1487">src/audiovideocontroller/DefaultAudioVideoController.ts:1487</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>audioStream: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="audiooutputdidchange" class="tsd-anchor"></a>
+					<h3>audio<wbr>Output<wbr>Did<wbr>Change</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">audio<wbr>Output<wbr>Did<wbr>Change<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/mediastreambrokerobserver.html">MediaStreamBrokerObserver</a>.<a href="../interfaces/mediastreambrokerobserver.html#audiooutputdidchange">audioOutputDidChange</a></p>
+								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#audiooutputdidchange">audioOutputDidChange</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1508">src/audiovideocontroller/DefaultAudioVideoController.ts:1508</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>device: <span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="demotefromprimarymeeting" class="tsd-anchor"></a>
 					<h3>demote<wbr>From<wbr>Primary<wbr>Meeting</h3>
@@ -433,7 +487,7 @@
 								<p>Implementation of <a href="../interfaces/simulcastuplinkobserver.html">SimulcastUplinkObserver</a>.<a href="../interfaces/simulcastuplinkobserver.html#encodingsimulcastlayersdidchange">encodingSimulcastLayersDidChange</a></p>
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#encodingsimulcastlayersdidchange">encodingSimulcastLayersDidChange</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1439">src/audiovideocontroller/DefaultAudioVideoController.ts:1439</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1426">src/audiovideocontroller/DefaultAudioVideoController.ts:1426</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -533,7 +587,7 @@
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#getremotevideosources">getRemoteVideoSources</a></p>
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#getremotevideosources">getRemoteVideoSources</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1429">src/audiovideocontroller/DefaultAudioVideoController.ts:1429</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1416">src/audiovideocontroller/DefaultAudioVideoController.ts:1416</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="videosource.html" class="tsd-signature-type">VideoSource</a><span class="tsd-signature-symbol">[]</span></h4>
@@ -551,7 +605,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#handlehasbandwidthpriority">handleHasBandwidthPriority</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1388">src/audiovideocontroller/DefaultAudioVideoController.ts:1388</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1375">src/audiovideocontroller/DefaultAudioVideoController.ts:1375</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -576,7 +630,7 @@
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#handlemeetingsessionstatus">handleMeetingSessionStatus</a></p>
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#handlemeetingsessionstatus">handleMeetingSessionStatus</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1321">src/audiovideocontroller/DefaultAudioVideoController.ts:1321</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1304">src/audiovideocontroller/DefaultAudioVideoController.ts:1304</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -604,7 +658,7 @@
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#pausereceivingstream">pauseReceivingStream</a></p>
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#pausereceivingstream">pauseReceivingStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1417">src/audiovideocontroller/DefaultAudioVideoController.ts:1417</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1404">src/audiovideocontroller/DefaultAudioVideoController.ts:1404</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -654,7 +708,7 @@
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#reconnect">reconnect</a></p>
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#reconnect">reconnect</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1191">src/audiovideocontroller/DefaultAudioVideoController.ts:1191</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1168">src/audiovideocontroller/DefaultAudioVideoController.ts:1168</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -696,10 +750,35 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="replacelocalaudio" class="tsd-anchor"></a>
+					<h3>replace<wbr>Local<wbr>Audio</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">replace<wbr>Local<wbr>Audio<span class="tsd-signature-symbol">(</span>audioStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#replacelocalaudio">replaceLocalAudio</a></p>
+								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#replacelocalaudio">replaceLocalAudio</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1033">src/audiovideocontroller/DefaultAudioVideoController.ts:1033</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>audioStream: <span class="tsd-signature-type">MediaStream</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="replacelocalvideo" class="tsd-anchor"></a>
 					<h3>replace<wbr>Local<wbr>Video</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">replace<wbr>Local<wbr>Video<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">replace<wbr>Local<wbr>Video<span class="tsd-signature-symbol">(</span>videoStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -707,43 +786,13 @@
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#replacelocalvideo">replaceLocalVideo</a></p>
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#replacelocalvideo">replaceLocalVideo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1002">src/audiovideocontroller/DefaultAudioVideoController.ts:1002</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<a name="restartlocalaudio" class="tsd-anchor"></a>
-					<h3>restart<wbr>Local<wbr>Audio</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">restart<wbr>Local<wbr>Audio<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#restartlocalaudio">restartLocalAudio</a></p>
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1045">src/audiovideocontroller/DefaultAudioVideoController.ts:1045</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L998">src/audiovideocontroller/DefaultAudioVideoController.ts:998</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callback: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
+									<h5>videoStream: <span class="tsd-signature-type">MediaStream</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -761,7 +810,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#restartlocalvideo">restartLocalVideo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L979">src/audiovideocontroller/DefaultAudioVideoController.ts:979</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L975">src/audiovideocontroller/DefaultAudioVideoController.ts:975</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -798,7 +847,7 @@
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#resumereceivingstream">resumeReceivingStream</a></p>
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#resumereceivingstream">resumeReceivingStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1423">src/audiovideocontroller/DefaultAudioVideoController.ts:1423</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1410">src/audiovideocontroller/DefaultAudioVideoController.ts:1410</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -848,7 +897,7 @@
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#setvideomaxbandwidthkbps">setVideoMaxBandwidthKbps</a></p>
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#setvideomaxbandwidthkbps">setVideoMaxBandwidthKbps</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1377">src/audiovideocontroller/DefaultAudioVideoController.ts:1377</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1360">src/audiovideocontroller/DefaultAudioVideoController.ts:1360</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -938,7 +987,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#stopreturningpromise">stopReturningPromise</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L729">src/audiovideocontroller/DefaultAudioVideoController.ts:729</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L730">src/audiovideocontroller/DefaultAudioVideoController.ts:730</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -956,7 +1005,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#update">update</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L806">src/audiovideocontroller/DefaultAudioVideoController.ts:806</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L802">src/audiovideocontroller/DefaultAudioVideoController.ts:802</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -985,10 +1034,35 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#updatelocalvideofrompolicy">updateLocalVideoFromPolicy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L940">src/audiovideocontroller/DefaultAudioVideoController.ts:940</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L936">src/audiovideocontroller/DefaultAudioVideoController.ts:936</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="videoinputdidchange" class="tsd-anchor"></a>
+					<h3>video<wbr>Input<wbr>Did<wbr>Change</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">video<wbr>Input<wbr>Did<wbr>Change<span class="tsd-signature-symbol">(</span>videoStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/mediastreambrokerobserver.html">MediaStreamBrokerObserver</a>.<a href="../interfaces/mediastreambrokerobserver.html#videoinputdidchange">videoInputDidChange</a></p>
+								<p>Inherited from <a href="defaultaudiovideocontroller.html">DefaultAudioVideoController</a>.<a href="defaultaudiovideocontroller.html#videoinputdidchange">videoInputDidChange</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/DefaultAudioVideoController.ts#L1469">src/audiovideocontroller/DefaultAudioVideoController.ts:1469</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>videoStream: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1045,6 +1119,12 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="noopaudiovideocontroller.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="noopaudiovideocontroller.html#audioinputdidchange" class="tsd-kind-icon">audio<wbr>Input<wbr>Did<wbr>Change</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="noopaudiovideocontroller.html#audiooutputdidchange" class="tsd-kind-icon">audio<wbr>Output<wbr>Did<wbr>Change</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="noopaudiovideocontroller.html#demotefromprimarymeeting" class="tsd-kind-icon">demote<wbr>From<wbr>Primary<wbr>Meeting</a>
 							</li>
@@ -1082,10 +1162,10 @@
 								<a href="noopaudiovideocontroller.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="noopaudiovideocontroller.html#replacelocalvideo" class="tsd-kind-icon">replace<wbr>Local<wbr>Video</a>
+								<a href="noopaudiovideocontroller.html#replacelocalaudio" class="tsd-kind-icon">replace<wbr>Local<wbr>Audio</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="noopaudiovideocontroller.html#restartlocalaudio" class="tsd-kind-icon">restart<wbr>Local<wbr>Audio</a>
+								<a href="noopaudiovideocontroller.html#replacelocalvideo" class="tsd-kind-icon">replace<wbr>Local<wbr>Video</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="noopaudiovideocontroller.html#restartlocalvideo" class="tsd-kind-icon">restart<wbr>Local<wbr>Video</a>
@@ -1116,6 +1196,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="noopaudiovideocontroller.html#updatelocalvideofrompolicy" class="tsd-kind-icon">update<wbr>Local<wbr>Video<wbr>From<wbr>Policy</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="noopaudiovideocontroller.html#videoinputdidchange" class="tsd-kind-icon">video<wbr>Input<wbr>Did<wbr>Change</a>
 							</li>
 						</ul>
 					</li>

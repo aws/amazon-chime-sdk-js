@@ -96,4 +96,9 @@ export default interface AudioVideoControllerFacade {
    * to revert UX, etc.
    */
   demoteFromPrimaryMeeting(): void;
+
+  /**
+   * Sets the max bandwidth for video publishing
+   */
+  setVideoMaxBandwidthKbps(maxBandwidthKbps: number): void;
 }

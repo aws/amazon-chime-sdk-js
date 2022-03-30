@@ -324,10 +324,10 @@ Note that you need to call `listAudioInputDevices` and `listAudioOutputDevices` 
 
 ```js
 const audioInputDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioInputDevices */;
-await meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
+await meetingSession.audioVideo.startAudioInput(audioInputDeviceInfo.deviceId);
 
 const audioOutputDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioOutputDevices */;
-await meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+await meetingSession.audioVideo.chooseAudioOutput(audioOutputDeviceInfo.deviceId);
 ```
 
 **Use case 3.** Choose a video input device by passing the `deviceId` of a `MediaDeviceInfo` object.
@@ -338,11 +338,11 @@ You probably want to choose a video input device when you start sharing your vid
 
 ```js
 const videoInputDeviceInfo = /* An array item from meetingSession.audioVideo.listVideoInputDevices */;
-await meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+await meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 
-// You can pass null to choose none. If the previously chosen camera has an LED light on,
-// it will turn off indicating the camera is no longer capturing.
-await meetingSession.audioVideo.chooseVideoInputDevice(null);
+// Stop video input. If the previously chosen camera has an LED light on,
+// it will turn off indicating the camera is no longer capturing. 
+await meetingSession.audioVideo.stopVideoInput();
 ```
 
 **Use case 4.** Add a device change observer to receive the updated device list.
@@ -576,7 +576,7 @@ const videoInputDevices = await meetingSession.audioVideo.listVideoInputDevices(
 
 // The camera LED light will turn on indicating that it is now capturing.
 // See the "Device" section for details.
-await meetingSession.audioVideo.chooseVideoInputDevice(videoInputDevices[0].deviceId);
+await meetingSession.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
 
 const observer = {
   // videoTileDidUpdate is called whenever a new tile is created or tileState changes.
@@ -625,6 +625,10 @@ const observer = {
 meetingSession.audioVideo.addObserver(observer);
 
 meetingSession.audioVideo.stopLocalVideoTile();
+
+// Stop video input. If the previously chosen camera has an LED light on,
+// it will turn off indicating the camera is no longer capturing. 
+await meetingSession.audioVideo.stopVideoInput();
 
 // Optional: You can remove the local tile from the session.
 meetingSession.audioVideo.removeLocalVideoTile();
