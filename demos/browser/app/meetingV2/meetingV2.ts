@@ -3601,20 +3601,20 @@ export class DemoMeetingApp
     const didChange = this.canStartLocalVideo !== availability.canStartLocalVideo;
     this.canStartLocalVideo = availability.canStartLocalVideo;
     this.log(`video availability changed: canStartLocalVideo  ${availability.canStartLocalVideo}`);
-    if (didChange && !this.canStartLocalVideo) {
-      this.disableLocalVideo('Can no longer enable local video in conference');
-    } else if (didChange && this.buttonStates['button-camera'] === 'disabled') {
-      // Enable ability to press button again
-      this.toggleButton('button-camera', 'off');
+    if (didChange && !this.meetingSession.audioVideo.hasStartedLocalVideoTile()) {
+      if (!this.canStartLocalVideo) {
+        this.enableLocalVideoButton(false, 'Can no longer enable local video in conference.');
+      } else {
+        // Enable ability to press button again
+        this.enableLocalVideoButton(true, 'You can now enable local video in conference.');
+      }
     }
   }
 
-  private disableLocalVideo(warningMessage: string = null): void {
-    this.toggleButton('button-camera', 'disabled');
+  private enableLocalVideoButton(enabled: boolean, warningMessage: string = ''): void {
+    this.toggleButton('button-camera', enabled? 'off' : 'disabled');
 
-    this.audioVideo.stopLocalVideoTile();
-
-    if (warningMessage !== null) {
+    if (warningMessage) {
       const toastContainer = document.getElementById('toast-container');
       const toast = document.createElement('meeting-toast') as MeetingToast
       toastContainer.appendChild(toast);
@@ -3645,7 +3645,7 @@ export class DemoMeetingApp
 
   videoSendDidBecomeUnavailable(): void {
     this.log('sending video is not available');
-    this.disableLocalVideo('Cannot enable local video due to call being at capacity');
+    this.enableLocalVideoButton(false,'Cannot enable local video due to call being at capacity');
   }
 
   contentShareDidStart(): void {
