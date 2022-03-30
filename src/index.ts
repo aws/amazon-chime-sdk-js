@@ -161,7 +161,6 @@ import MeetingSessionConfiguration from './meetingsession/MeetingSessionConfigur
 import MeetingSessionCredentials from './meetingsession/MeetingSessionCredentials';
 import MeetingSessionLifecycleEvent from './meetingsession/MeetingSessionLifecycleEvent';
 import MeetingSessionLifecycleEventCondition from './meetingsession/MeetingSessionLifecycleEventCondition';
-import MeetingSessionPOSTLogger from './logger/MeetingSessionPOSTLogger';
 import MeetingSessionStatus from './meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from './meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from './meetingsession/MeetingSessionTURNCredentials';
@@ -194,6 +193,8 @@ import NotReadableError from './devicecontroller/NotReadableError';
 import OnceTask from './task/OnceTask';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
 import OverconstrainedError from './devicecontroller/OverconstrainedError';
+import POSTLogger from './logger/POSTLogger';
+import POSTLoggerOptions from './logger/POSTLoggerOptions';
 import ParallelGroupTask from './task/ParallelGroupTask';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
@@ -483,7 +484,6 @@ export {
   MeetingSessionCredentials,
   MeetingSessionLifecycleEvent,
   MeetingSessionLifecycleEventCondition,
-  MeetingSessionPOSTLogger,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionTURNCredentials,
@@ -518,6 +518,8 @@ export {
   OnceTask,
   OpenSignalingConnectionTask,
   OverconstrainedError,
+  POSTLogger,
+  POSTLoggerOptions,
   ParallelGroupTask,
   PartialOrd,
   PermissionDeniedError,

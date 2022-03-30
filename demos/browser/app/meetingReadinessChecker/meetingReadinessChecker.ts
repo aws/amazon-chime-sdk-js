@@ -27,8 +27,8 @@ import {
   MeetingReadinessChecker,
   MeetingSession,
   MeetingSessionConfiguration,
-  MeetingSessionPOSTLogger,
   MultiLogger,
+  POSTLogger,
   Versioning,
 } from 'amazon-chime-sdk-js';
 
@@ -412,24 +412,24 @@ export class DemoMeetingApp {
   async initializeLogger(configuration?: MeetingSessionConfiguration): Promise<void> {
     const logLevel = LogLevel.INFO;
     const consoleLogger = new ConsoleLogger('SDK', logLevel);
-    if (
-      location.hostname === 'localhost' ||
-      location.hostname === '127.0.0.1' ||
-      !configuration
-    ) {
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || !configuration) {
       this.logger.inner = consoleLogger;
     } else {
       await this.createLogStream(configuration);
+      const metadata = {
+        appName: 'SDK',
+        meetingId: configuration.meetingId,
+        attendeeId: configuration.credentials.attendeeId,
+      };
       this.logger.inner = new MultiLogger(
         consoleLogger,
-        new MeetingSessionPOSTLogger(
-          'SDK',
-          configuration,
-          DemoMeetingApp.LOGGER_BATCH_SIZE,
-          DemoMeetingApp.LOGGER_INTERVAL_MS,
-          `${DemoMeetingApp.BASE_URL}logs`,
-          logLevel
-        )
+        new POSTLogger({
+          url: `${DemoMeetingApp.BASE_URL}logs`,
+          batchSize: DemoMeetingApp.LOGGER_BATCH_SIZE,
+          intervalMs: DemoMeetingApp.LOGGER_INTERVAL_MS,
+          logLevel,
+          metadata,
+        })
       );
     }
   }

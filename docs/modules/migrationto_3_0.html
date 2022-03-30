@@ -179,7 +179,7 @@ meetingSession.audioVideo.setVideoMaxBandwidthKbps(<span class="hljs-number">100
 					</a>
 					<p><code>MessagingSessionConfiguration</code> used to require to pass in the AWS global object for sigV4 signing which does not
 					work for aws-sdk v3. Starting with Amazon Chime SDK for JavaScript V3, you no longer have to pass in the global AWS object.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Before</span>
+					<pre><code class="language-js"><span class="hljs-comment">// Before</span>
 <span class="hljs-built_in">this</span>.configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(<span class="hljs-built_in">this</span>.userArn, <span class="hljs-built_in">this</span>.sessionId, endpoint.Endpoint.Url, chime, AWS);
 
 <span class="hljs-comment">// After</span>
@@ -190,7 +190,7 @@ meetingSession.audioVideo.setVideoMaxBandwidthKbps(<span class="hljs-number">100
 					</a>
 					<p>In aws-sdk v3, region and credentials can be async function. In order to support aws-sdk v3, we update the start API
 					to async.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Before</span>
+					<pre><code class="language-js"><span class="hljs-comment">// Before</span>
 messagingSession.start();
 
 <span class="hljs-comment">// After</span>
@@ -208,6 +208,54 @@ messagingSession.start();
 						<li>StateMachineTransitionFailed</li>
 						<li>AudioDeviceSwitched</li>
 					</ul>
+					<a href="#meetingsessionpostlogger-to-postlogger" id="meetingsessionpostlogger-to-postlogger" style="color: inherit; text-decoration: none;">
+						<h2><code>MeetingSessionPOSTLogger</code> to <code>POSTLogger</code></h2>
+					</a>
+					<p>We have renamed <code>MeetingSessionPOSTLogger</code> to <code>POSTLogger</code> and removed the <code>MeetingSessionConfiguration</code> dependency. You don&#39;t need to pass the <code>MeetingSessionConfiguration</code> object to the <code>POSTLogger</code> constructor anymore.</p>
+					<pre><code class="language-js"><span class="hljs-comment">// You need responses from server-side Chime API. See below for details.</span>
+<span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-comment">// The response from the CreateMeeting API action.</span>
+<span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee API action.</span>
+
+<span class="hljs-comment">// Before</span>
+<span class="hljs-keyword">const</span> meetingSessionConfiguration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+<span class="hljs-keyword">const</span> meetingSessionPOSTLogger = <span class="hljs-keyword">new</span> MeetingSessionPOSTLogger(
+  <span class="hljs-string">&#x27;SDK&#x27;</span>,
+  configuration,
+  <span class="hljs-number">20</span>, <span class="hljs-comment">// LOGGER_BATCH_SIZE</span>
+  <span class="hljs-number">2000</span>, <span class="hljs-comment">// LOGGER_INTERVAL_MS</span>
+  URL,
+  LogLevel.INFO
+);
+
+<span class="hljs-comment">// After</span>
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;URL TO POST LOGS&#x27;</span>,
+});
+</code></pre>
+					<p>You can create a <code>POSTLogger</code> object with <code>headers</code>, <code>logLevel</code>, <code>metadata</code>, and other options. See the <code>POSTLoggerOptions</code> documentation for more information.</p>
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;URL TO POST LOGS&#x27;</span>,
+  <span class="hljs-comment">// Add &quot;headers&quot; to each HTTP POST request.</span>
+  <span class="hljs-attr">headers</span>: {
+    <span class="hljs-string">&#x27;Chime-Bearer&#x27;</span>: <span class="hljs-string">&#x27;authentication-token&#x27;</span>
+  },
+  <span class="hljs-attr">logLevel</span>: LogLevel.INFO,
+  <span class="hljs-comment">// Add &quot;metadata&quot; to each HTTP POST request body.</span>
+  <span class="hljs-attr">metadata</span>: {
+    <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;Your app name&#x27;</span>,
+    <span class="hljs-attr">meetingId</span>: meetingResponse.Meeting.MeetingId,
+    <span class="hljs-attr">attendeeId</span>: attendeeResponse.Attendee.AttendeeId,
+  },
+});
+
+<span class="hljs-comment">// You can also set new metadata after initializing POSTLogger.</span>
+<span class="hljs-comment">// For example, you can set metadata after receiving API responses from your server application.</span>
+logger.metadata = {
+  <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;Your app name&#x27;</span>,
+  <span class="hljs-attr">meetingId</span>: meetingResponse.Meeting.MeetingId,
+  <span class="hljs-attr">attendeeId</span>: attendeeResponse.Attendee.AttendeeId,
+};
+</code></pre>
 					<a href="#event-controller" id="event-controller" style="color: inherit; text-decoration: none;">
 						<h2>Event Controller</h2>
 					</a>
@@ -215,15 +263,15 @@ messagingSession.start();
 					<a href="#update-implementation-of-custom-eventcontroller" id="update-implementation-of-custom-eventcontroller" style="color: inherit; text-decoration: none;">
 						<h3>Update implementation of custom <code>EventController</code></h3>
 					</a>
-					<pre><code class="language-js">interface EventController {
+					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> EventController {
   <span class="hljs-comment">// Adds an observer for event published to this controller.</span>
-  addObserver(observer: EventObserver): <span class="hljs-keyword">void</span>;
+  addObserver(observer: EventObserver): <span class="hljs-built_in">void</span>;
 
   <span class="hljs-comment">// Removes an observer for event published to this controller.</span>
-  removeObserver(observer: EventObserver): <span class="hljs-keyword">void</span>;
+  removeObserver(observer: EventObserver): <span class="hljs-built_in">void</span>;
 
   <span class="hljs-comment">// EventReporter that the EventController uses to send events to the Amazon Chime backend.</span>
-  readonly eventReporter?: EventReporter;
+  <span class="hljs-keyword">readonly</span> eventReporter?: EventReporter;
 
   <span class="hljs-comment">// pushMeetingState has been deprecated</span>
 }
@@ -233,7 +281,7 @@ messagingSession.start();
 					</a>
 					<p>The <code>DefaultMeetingSession</code> constructor no longer takes in a <code>EventReporter</code> and instead optionally takes in an <code>EventController</code> or creates one if none is given.</p>
 					<pre><code class="language-js"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(…);
 <span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
 
 <span class="hljs-comment">// Before in 2.x</span>
@@ -341,14 +389,14 @@ messagingSession.start();
 					<blockquote>
 						<p>Note: The <code>getRTCPeerConnectionStats()</code> is on its way to be deprecated. Please use the new API <code>clientMetricReport.getRTCStatsReport()</code> returned by <code>metricsDidReceive(clientMetricReport)</code> callback instead.</p>
 					</blockquote>
-					<pre><code class="language-typescript">  <span class="hljs-keyword">const</span> report: RTCStatsReport = <span class="hljs-keyword">await</span> audioVideo.getRTCPeerConnectionStats();
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> report: RTCStatsReport = <span class="hljs-keyword">await</span> audioVideo.getRTCPeerConnectionStats();
 </code></pre>
 					<p>After in 3.x:</p>
 					<p>It&#39;s recommended to use this one. It can also improve the performance a bit as now you don&#39;t need to explicitly call <code>getStats</code> API again.</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> observer = {
   metricsDidReceive(clientMetricReport: ClientMetricReport): <span class="hljs-built_in">void</span> {
     <span class="hljs-keyword">const</span> report: RTCStatsReport = clientMetricReport.getRTCStatsReport();
-  }
+  },
 };
 audioVideo.addObserver(observer);
 </code></pre>

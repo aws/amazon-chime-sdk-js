@@ -14,7 +14,7 @@ Note that, currently only pre-release NPM versions of `3.0.0` are available unti
 npm install amazon-chime-sdk-js@beta
 ```
 
-__Version 3 of the Amazon Chime SDK for JavaScript makes a number of interface changes.__
+**Version 3 of the Amazon Chime SDK for JavaScript makes a number of interface changes.**
 
 ## Device controller
 
@@ -127,7 +127,7 @@ They are now available in our [meeting demo](https://github.com/aws/amazon-chime
 `MessagingSessionConfiguration` used to require to pass in the AWS global object for sigV4 signing which does not
 work for aws-sdk v3. Starting with Amazon Chime SDK for JavaScript V3, you no longer have to pass in the global AWS object.
 
-```typescript
+```js
 // Before
 this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime, AWS);
 
@@ -140,7 +140,7 @@ this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessio
 In aws-sdk v3, region and credentials can be async function. In order to support aws-sdk v3, we update the start API
 to async.
 
-```typescript
+```js
 // Before
 messagingSession.start();
 
@@ -159,13 +159,66 @@ handle them please remove.
 - StateMachineTransitionFailed
 - AudioDeviceSwitched
 
+## `MeetingSessionPOSTLogger` to `POSTLogger`
+
+We have renamed `MeetingSessionPOSTLogger` to `POSTLogger` and removed the `MeetingSessionConfiguration` dependency. You don't need to pass the `MeetingSessionConfiguration` object to the `POSTLogger` constructor anymore.
+
+```js
+// You need responses from server-side Chime API. See below for details.
+const meetingResponse = // The response from the CreateMeeting API action.
+const attendeeResponse = // The response from the CreateAttendee API action.
+
+// Before
+const meetingSessionConfiguration = new MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+const meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+  'SDK',
+  configuration,
+  20, // LOGGER_BATCH_SIZE
+  2000, // LOGGER_INTERVAL_MS
+  URL,
+  LogLevel.INFO
+);
+
+// After
+const logger = new POSTLogger({
+  url: 'URL TO POST LOGS',
+});
+```
+
+You can create a `POSTLogger` object with `headers`, `logLevel`, `metadata`, and other options. See the `POSTLoggerOptions` documentation for more information.
+
+```js
+const logger = new POSTLogger({
+  url: 'URL TO POST LOGS',
+  // Add "headers" to each HTTP POST request.
+  headers: {
+    'Chime-Bearer': 'authentication-token'
+  },
+  logLevel: LogLevel.INFO,
+  // Add "metadata" to each HTTP POST request body.
+  metadata: {
+    appName: 'Your app name',
+    meetingId: meetingResponse.Meeting.MeetingId,
+    attendeeId: attendeeResponse.Attendee.AttendeeId,
+  },
+});
+
+// You can also set new metadata after initializing POSTLogger.
+// For example, you can set metadata after receiving API responses from your server application.
+logger.metadata = {
+  appName: 'Your app name',
+  meetingId: meetingResponse.Meeting.MeetingId,
+  attendeeId: attendeeResponse.Attendee.AttendeeId,
+};
+```
+
 ## Event Controller
 
 We have de-coupled the `EventController` from `AudioVideoController`. Check below for the new changes and if updates are needed for your implementation.
 
 ### Update implementation of custom `EventController`
 
-```js
+```typescript
 interface EventController {
   // Adds an observer for event published to this controller.
   addObserver(observer: EventObserver): void;
@@ -185,7 +238,7 @@ The `DefaultMeetingSession` constructor no longer takes in a `EventReporter` and
 
 ```js
 const configuration = new MeetingSessionConfiguration(…);
-const logger = new Logger(…);
+const logger = new ConsoleLogger(…);
 const eventReporter = new EventReporter(...)
 
 // Before in 2.x
@@ -217,15 +270,15 @@ SDK exposed some common WebRTC metrics publicly via the `metricsDidReceive` even
 
 | No. | MetricSpec                | SpecName                       | Migration Step                                                   | Details                                                                                                                                                                                                   |
 | --- | ------------------------- | ------------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | observableMetricSpec      | audioSpeakerDelayMs            | None                                                             | Before: __googCurrentDelayMs__<br><br>Now: __jitterBufferMs__ = (Current.jitterBufferDelay - Previous.jitterBufferDelay) / (Current.jitterBufferEmittedCount - Previous.jitterBufferEmittedCount) \* 1000 |
-| 2   | observableMetricSpec      | audioDecoderLoss               | None                                                             | Before: __googDecodingCTN__<br><br>Now: __decoderLoss__ = (Current.concealedSamples - Previous.concealedSamples) / (Current.totalSamplesReceived - Previous.totalSamplesReceived) \* 100                  |
-| 3   | observableMetricSpec      | googNackCountReceivedPerSecond | This spec is removed, use __nackCount__ instead                  |                                                                                                                                                                                                           |
-| 4   | observableMetricSpec      | availableSendBandwidth         | This spec is removed, use __availableOutgoingBitrate__ instead   |                                                                                                                                                                                                           |
-| 5   | observableMetricSpec      | availableReceiveBandwidth      | This spec is removed, use __availableIncomingBitrate__ instead   |                                                                                                                                                                                                           |
-| 6   | observableVideoMetricSpec | videoUpstreamGoogFrameHeight   | This spec is removed, use __videoUpstreamFrameHeight__ instead   |                                                                                                                                                                                                           |
-| 7   | observableVideoMetricSpec | videoUpstreamGoogFrameWidth    | This spec is removed, use __videoUpstreamFrameWidth__ instead.   |                                                                                                                                                                                                           |
-| 8   | observableVideoMetricSpec | videoDownstreamGoogFrameHeight | This spec is removed, use __videoDownstreamFrameHeight__ instead |                                                                                                                                                                                                           |
-| 9   | observableVideoMetricSpec | videoDownstreamGoogFrameWidth  | This spec is removed, use __videoDownstreamFrameWidth__ instead  |                                                                                                                                                                                                           |
+| 1   | observableMetricSpec      | audioSpeakerDelayMs            | None                                                             | Before: **googCurrentDelayMs**<br><br>Now: **jitterBufferMs** = (Current.jitterBufferDelay - Previous.jitterBufferDelay) / (Current.jitterBufferEmittedCount - Previous.jitterBufferEmittedCount) \* 1000 |
+| 2   | observableMetricSpec      | audioDecoderLoss               | None                                                             | Before: **googDecodingCTN**<br><br>Now: **decoderLoss** = (Current.concealedSamples - Previous.concealedSamples) / (Current.totalSamplesReceived - Previous.totalSamplesReceived) \* 100                  |
+| 3   | observableMetricSpec      | googNackCountReceivedPerSecond | This spec is removed, use **nackCount** instead                  |                                                                                                                                                                                                           |
+| 4   | observableMetricSpec      | availableSendBandwidth         | This spec is removed, use **availableOutgoingBitrate** instead   |                                                                                                                                                                                                           |
+| 5   | observableMetricSpec      | availableReceiveBandwidth      | This spec is removed, use **availableIncomingBitrate** instead   |                                                                                                                                                                                                           |
+| 6   | observableVideoMetricSpec | videoUpstreamGoogFrameHeight   | This spec is removed, use **videoUpstreamFrameHeight** instead   |                                                                                                                                                                                                           |
+| 7   | observableVideoMetricSpec | videoUpstreamGoogFrameWidth    | This spec is removed, use **videoUpstreamFrameWidth** instead.   |                                                                                                                                                                                                           |
+| 8   | observableVideoMetricSpec | videoDownstreamGoogFrameHeight | This spec is removed, use **videoDownstreamFrameHeight** instead |                                                                                                                                                                                                           |
+| 9   | observableVideoMetricSpec | videoDownstreamGoogFrameWidth  | This spec is removed, use **videoDownstreamFrameWidth** instead  |                                                                                                                                                                                                           |
 
 ### Get raw RTCStatsReport
 
@@ -236,7 +289,7 @@ Before in 2.x:
 > Note: The `getRTCPeerConnectionStats()` is on its way to be deprecated. Please use the new API `clientMetricReport.getRTCStatsReport()` returned by `metricsDidReceive(clientMetricReport)` callback instead.
 
 ```typescript
-  const report: RTCStatsReport = await audioVideo.getRTCPeerConnectionStats();
+const report: RTCStatsReport = await audioVideo.getRTCPeerConnectionStats();
 ```
 
 After in 3.x:
@@ -247,7 +300,7 @@ It's recommended to use this one. It can also improve the performance a bit as n
 const observer = {
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const report: RTCStatsReport = clientMetricReport.getRTCStatsReport();
-  }
+  },
 };
 audioVideo.addObserver(observer);
 ```

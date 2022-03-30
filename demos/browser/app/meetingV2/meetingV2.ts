@@ -42,7 +42,6 @@ import {
   MeetingEventsClientConfiguration,
   MeetingSession,
   MeetingSessionConfiguration,
-  MeetingSessionPOSTLogger,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
@@ -76,6 +75,7 @@ import {
   ModelSpecBuilder,
   DefaultEventController,
   MeetingSessionCredentials,
+  POSTLogger,
 } from 'amazon-chime-sdk-js';
 
 import TestSound from './audio/TestSound';
@@ -91,6 +91,7 @@ import {
   platformCanSupportBodyPixWithoutDegradation,
 } from './video/filters/SegmentationUtil';
 import SyntheticVideoDeviceFactory from './video/SyntheticVideoDeviceFactory';
+import { getPOSTLogger } from './util/MeetingLogger';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -233,8 +234,6 @@ export class DemoMeetingApp
   ].join('');
   static testVideo: string =
     'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
-  static readonly LOGGER_BATCH_SIZE: number = 85;
-  static readonly LOGGER_INTERVAL_MS: number = 2_000;
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
@@ -320,8 +319,8 @@ export class DemoMeetingApp
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   lastReceivedPackets = 0;
-  meetingSessionPOSTLogger: MeetingSessionPOSTLogger;
-  meetingEventPOSTLogger: MeetingSessionPOSTLogger;
+  meetingSessionPOSTLogger: POSTLogger;
+  meetingEventPOSTLogger: POSTLogger;
 
   hasChromiumWebRTC: boolean = this.defaultBrowserBehaviour.hasChromiumWebRTC();
 
@@ -1754,26 +1753,13 @@ export class DemoMeetingApp
         this.createLogStream(configuration, 'create_log_stream'),
         this.createLogStream(configuration, 'create_browser_event_log_stream'),
       ]);
-      this.meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
-        'SDK',
-        configuration,
-        DemoMeetingApp.LOGGER_BATCH_SIZE,
-        DemoMeetingApp.LOGGER_INTERVAL_MS,
-        `${DemoMeetingApp.BASE_URL}logs`,
-        this.logLevel
-      );
+      
+      this.meetingSessionPOSTLogger = getPOSTLogger(configuration, 'SDK', `${DemoMeetingApp.BASE_URL}logs`, this.logLevel);
       this.meetingLogger = new MultiLogger(
         consoleLogger,
         this.meetingSessionPOSTLogger,
       );
-      this.meetingEventPOSTLogger = new MeetingSessionPOSTLogger(
-        'SDKEvent',
-        configuration,
-        DemoMeetingApp.LOGGER_BATCH_SIZE,
-        DemoMeetingApp.LOGGER_INTERVAL_MS,
-        `${DemoMeetingApp.BASE_URL}log_meeting_event`,
-        this.logLevel
-      );
+      this.meetingEventPOSTLogger = getPOSTLogger(configuration, 'SDKEvent', `${DemoMeetingApp.BASE_URL}log_meeting_event`, this.logLevel);
     }
     this.eventReporter = await this.setupEventReporter(configuration);
     this.deviceController = new DefaultDeviceController(this.meetingLogger, {
@@ -1864,14 +1850,7 @@ export class DemoMeetingApp
       eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, eventReportingLogger);
     } else {
       await this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream');
-      const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
-        'SDKEventIngestion',
-        configuration,
-        DemoMeetingApp.LOGGER_BATCH_SIZE,
-        DemoMeetingApp.LOGGER_INTERVAL_MS,
-        `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
-        LogLevel.DEBUG
-      );
+      const eventReportingPOSTLogger = getPOSTLogger(configuration, 'SDKEventIngestion', `${DemoMeetingApp.BASE_URL}log_event_ingestion`, LogLevel.DEBUG);
       const multiEventReportingLogger = new MultiLogger(
         eventReportingLogger,
         eventReportingPOSTLogger,
