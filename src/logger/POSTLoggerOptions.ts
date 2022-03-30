@@ -27,6 +27,7 @@ export default interface POSTLoggerOptions {
 
   /**
    * Level of logging. Check [[LogLevel]] for more information.
+   * Default value is `LogLevel.WARN`.
    */
   logLevel?: LogLevel;
 

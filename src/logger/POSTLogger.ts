@@ -16,8 +16,8 @@ import POSTLoggerOptions from './POSTLoggerOptions';
  * with the logger in order to avoid leaks.
  */
 export default class POSTLogger implements Logger, Destroyable {
-  private static readonly BATCH_SIZE = 1000;
-  private static readonly INTERVAL_MS = 15000;
+  private static readonly BATCH_SIZE = 85;
+  private static readonly INTERVAL_MS = 2000;
   private url: string;
   private batchSize: number;
   private eventListener: undefined | (() => void);
