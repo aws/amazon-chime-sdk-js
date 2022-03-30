@@ -46,7 +46,7 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   /**
    * Restarts the local audio. This function assumes the peer connection is established and an active
    * audio stream must be chosen in [[DeviceController]]
-   * @param audioStream - The video stream to be replaced with
+   * @param audioStream - The audio stream to be replaced with
    */
   replaceLocalAudio(audioStream: MediaStream): Promise<void>;
 

@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change `chooseAudioInputDevice` to explicit APIs `startAudioInput` and `stopAudioInput`. Application will need to
   call `stopVideoInput` at the end of the call to explicitly stop active audio stream.
 - Change `chooseVideoInputDevice` to explicit APIs `startVideoInput` and `stopVideoInput`. Application will need to 
-  call `stopVideoInput` now to explicitly stop active video stream. 
+  call `stopVideoInput` now to explicitly stop active video stream.
 - Minor name change to `chooseAudioOutputDevice` to `chooseAudioOutput`.
 - `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream. 
   This allows applications to join meeting without reselecting video again.
