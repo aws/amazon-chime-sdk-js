@@ -6,6 +6,7 @@ import IntervalScheduler from '../scheduler/IntervalScheduler';
 import Log from './Log';
 import Logger from './Logger';
 import LogLevel from './LogLevel';
+import POSTLoggerOptions from './POSTLoggerOptions';
 
 /**
  * `POSTLogger` publishes log messages in batches to a URL
@@ -15,29 +16,35 @@ import LogLevel from './LogLevel';
  * with the logger in order to avoid leaks.
  */
 export default class POSTLogger implements Logger, Destroyable {
-  private logCapture: Log[] = [];
-  private sequenceNumber: number = 0;
-  private lock = false;
-  private intervalScheduler: IntervalScheduler;
+  private static readonly BATCH_SIZE = 1000;
+  private static readonly INTERVAL_MS = 15000;
+  private url: string;
+  private batchSize: number;
   private eventListener: undefined | (() => void);
   private headers: Record<string, string>;
+  private intervalMs: number;
+  private intervalScheduler: IntervalScheduler;
+  private logCapture: Log[] = [];
+  private logLevel: LogLevel;
+  private lock = false;
+  private sequenceNumber: number = 0;
   metadata: Record<string, string>;
 
-  constructor(
-    private batchSize: number,
-    private intervalMs: number,
-    private url: string,
-    private level = LogLevel.WARN,
-    options?: {
-      metadata?: Record<string, string>;
-      headers?: Record<string, string>;
-    }
-  ) {
-    if (options) {
-      const { metadata, headers } = options;
-      this.metadata = metadata;
-      this.headers = headers;
-    }
+  constructor(options: POSTLoggerOptions) {
+    const {
+      url,
+      batchSize = POSTLogger.BATCH_SIZE,
+      intervalMs = POSTLogger.INTERVAL_MS,
+      logLevel = LogLevel.WARN,
+      metadata,
+      headers,
+    } = options;
+    this.url = url;
+    this.batchSize = batchSize;
+    this.intervalMs = intervalMs;
+    this.logLevel = logLevel;
+    this.metadata = metadata;
+    this.headers = headers;
 
     this.start();
 
@@ -63,7 +70,7 @@ export default class POSTLogger implements Logger, Destroyable {
   }
 
   debug(debugFunction: string | (() => string)): void {
-    if (LogLevel.DEBUG < this.level) {
+    if (LogLevel.DEBUG < this.logLevel) {
       return;
     }
 
@@ -88,12 +95,12 @@ export default class POSTLogger implements Logger, Destroyable {
     this.log(LogLevel.ERROR, msg);
   }
 
-  setLogLevel(level: LogLevel): void {
-    this.level = level;
+  setLogLevel(logLevel: LogLevel): void {
+    this.logLevel = logLevel;
   }
 
   getLogLevel(): LogLevel {
-    return this.level;
+    return this.logLevel;
   }
 
   getLogCaptureSize(): number {
@@ -152,6 +159,9 @@ export default class POSTLogger implements Logger, Destroyable {
     this.logCapture = [];
     this.sequenceNumber = 0;
     this.lock = false;
+    this.batchSize = 0;
+    this.intervalMs = 0;
+    this.url = undefined;
   }
 
   private makeRequestBody(batch: Log[]): string {
@@ -162,7 +172,7 @@ export default class POSTLogger implements Logger, Destroyable {
   }
 
   private log(type: LogLevel, msg: string): void {
-    if (type < this.level) {
+    if (type < this.logLevel) {
       return;
     }
     const now = Date.now();

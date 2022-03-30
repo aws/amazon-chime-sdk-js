@@ -1,10 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { LogLevel, MeetingSessionConfiguration, POSTLogger } from 'amazon-chime-sdk-js';
-
-const LOGGER_BATCH_SIZE = 85;
-const LOGGER_INTERVAL_MS = 2_000;
+import {
+  LogLevel,
+  MeetingSessionConfiguration,
+  POSTLogger,
+  POSTLoggerOptions,
+} from 'amazon-chime-sdk-js';
 
 export function getPOSTLogger(
   meetingSessionConfiguration: MeetingSessionConfiguration,
@@ -12,12 +14,14 @@ export function getPOSTLogger(
   url: string,
   logLevel: LogLevel
 ) {
-  const POSTLoggerOptions = {
+  const options: POSTLoggerOptions = {
+    url,
+    logLevel,
     metadata: {
       appName,
       meetingId: meetingSessionConfiguration.meetingId,
       attendeeId: meetingSessionConfiguration.credentials.attendeeId,
     },
   };
-  return new POSTLogger(LOGGER_BATCH_SIZE, LOGGER_INTERVAL_MS, url, logLevel, POSTLoggerOptions);
+  return new POSTLogger(options);
 }

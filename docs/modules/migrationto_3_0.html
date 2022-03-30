@@ -208,20 +208,25 @@ messagingSession.start();
 						<li>StateMachineTransitionFailed</li>
 						<li>AudioDeviceSwitched</li>
 					</ul>
-					<a href="#meetingsessionpostlogger-to-postlogger" id="meetingsessionpostlogger-to-postlogger" style="color: inherit; text-decoration: none;">
-						<h3><code>MeetingSessionPOSTLogger</code> to <code>POSTLogger</code></h3>
+					<a href="#meetingsessionpostlogger" id="meetingsessionpostlogger" style="color: inherit; text-decoration: none;">
+						<h2><code>MeetingSessionPOSTLogger</code></h2>
 					</a>
-					<p>With Amazon Chime SDK for JavaScript v3, we have removed <code>MeetingSessionConfiguration</code> dependency from the <code>MeetingSessionPOSTLogger</code>. The <code>MeetingSessionPOSTLogger</code> is now renamed to <code>POSTLogger</code>.</p>
-					<p>Builders can add optional fields to <code>POSTLogger</code> which will be included when <code>POSTLogger</code> sends the HTTP POST logs to builder provided URL:</p>
-					<ol>
-						<li>HTTP POST request <code>headers</code>.</li>
-						<li>Informational <code>metadata</code>. For example, <code>meetingId</code>, <code>attendeeId</code>, <code>appName</code>. This <code>metadata</code> depends on builders and <code>POSTLogger</code> will include this <code>metadata</code> as part of the request body when making the HTTP POST requests to builder provided URL.</li>
-					</ol>
+					<p>We have renamed <code>MeetingSessionPOSTLogger</code> to <code>POSTLogger</code> and removed the <code>MeetingSessionConfiguration</code> dependency. You don&#39;t need to pass the <code>MeetingSessionConfiguration</code> object to the <code>POSTLogger</code> constructor anymore.</p>
+					<p>You can pass below <code>POSTLoggerOptions</code> to the <code>POSTLogger</code> constructor:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> POSTLoggerOptions {
+  <span class="hljs-attr">url</span>: <span class="hljs-built_in">string</span>;
+  batchSize?: <span class="hljs-built_in">number</span>;
+  headers?: Record&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;;
+  intervalMs?: <span class="hljs-built_in">number</span>;
+  logLevel?: LogLevel;
+  metadata?: Record&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;;
+}
+</code></pre>
+					<p>Please check <code>POSTLoggerOptions</code> documentation for more information.</p>
 					<a href="#constructor" id="constructor" style="color: inherit; text-decoration: none;">
-						<h4>Constructor</h4>
+						<h3>Constructor</h3>
 					</a>
-					<pre><code class="language-js">
-<span class="hljs-comment">// You need responses from server-side Chime API. See below for details.</span>
+					<pre><code class="language-js"><span class="hljs-comment">// You need responses from server-side Chime API. See below for details.</span>
 <span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-comment">// The response from the CreateMeeting API action.</span>
 <span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee API action.</span>
 
@@ -237,34 +242,28 @@ messagingSession.start();
 );
 
 <span class="hljs-comment">// After in 3.x</span>
-<span class="hljs-keyword">const</span> postLoggerOptions = {
+<span class="hljs-keyword">const</span> options: POSTLoggerOptions = {
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;URL TO POST LOGS&#x27;</span>,
+  <span class="hljs-attr">logLevel</span>: LogLevel.INFO,
   <span class="hljs-attr">metadata</span>: {
     <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;SDK&#x27;</span>,
     <span class="hljs-attr">meetingId</span>: meetingResponse.Meeting.MeetingId,
     <span class="hljs-attr">attendeeId</span>: attendeeResponse.Attendee.AttendeeId,
   },
 };
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(
-  <span class="hljs-number">20</span>, <span class="hljs-comment">// LOGGER_BATCH_SIZE</span>
-  <span class="hljs-number">2000</span>, <span class="hljs-comment">// LOGGER_INTERVAL_MS</span>
-  URL,
-  LogLevel.INFO,
-  postLoggerOptions
-);
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(options);
 </code></pre>
 					<a href="#set-metadata-after-postlogger-creation" id="set-metadata-after-postlogger-creation" style="color: inherit; text-decoration: none;">
-						<h4>Set <code>metadata</code> after <code>POSTLogger</code> creation</h4>
+						<h3>Set <code>metadata</code> after <code>POSTLogger</code> creation</h3>
 					</a>
-					<p>This can help builders developing a Web application development using React frameworks or other UI frameworks where the component allowing the meeting join comes later based on an HTML form submission and not on initial load of the Web application. Builders may be using Providers, Hooks (if using React) in their application and want to add logs in these components.</p>
-					<p>Now that we have removed the <code>MeetingSessionConfiguration</code> dependency, a <code>POSTLogger</code> can be created earlier in the application flow cycle and builders can add <code>metadata</code> once they receive API responses from server upon a HTML form submission. This way, the <code>POSTLogger</code>&#39;s <code>metadata</code> can be updated as per builders need based on their application flow.</p>
-					<pre><code class="language-typescript">
+					<p>This helps with Web application development using React frameworks or other UI frameworks where the component getting the server responses comes later based on an HTML form submission and not on initial load of the Web application.</p>
+					<p>You may want to add logging in Providers, Hooks (if using React) in your application. Since, we have removed the <code>MeetingSessionConfiguration</code> dependency now, you can create <code>POSTLogger</code> earlier in the application flow and you can add <code>metadata</code> once you receive API responses from server upon a HTML form submission. This way, you can update <code>POSTLogger</code>&#39;s <code>metadata</code> as per your application needs.</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> options: POSTLoggerOptions = {
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;URL TO POST LOGS&#x27;</span>,
+  <span class="hljs-attr">logLevel</span>: LogLevel.INFO,
+};
 <span class="hljs-comment">// Create when your app loads.</span>
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(
-  <span class="hljs-number">20</span>, <span class="hljs-comment">// LOGGER_BATCH_SIZE</span>
-  <span class="hljs-number">2000</span>, <span class="hljs-comment">// LOGGER_INTERVAL_MS</span>
-  URL,
-  LogLevel.INFO
-);
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(options);
 
 <span class="hljs-comment">// User provides information to get the meeting and attendee responses.</span>
 <span class="hljs-comment">// Now, set the metadata on POSTLogger so that next logs can be identified and tied to a specific meetingId, attendeeId and an appName.</span>
@@ -276,6 +275,19 @@ messagingSession.start();
 
 <span class="hljs-comment">// After this POSTLogger will include the metadata in HTTP POST request body when sending logs.</span>
 logger.metadata = metadata;
+</code></pre>
+					<a href="#set-headers-when-creating-postlogger" id="set-headers-when-creating-postlogger" style="color: inherit; text-decoration: none;">
+						<h3>Set <code>headers</code> when creating <code>POSTLogger</code></h3>
+					</a>
+					<p>You may want to add custom authentication <code>headers</code> with each HTTP POST request. You can provide such <code>headers</code> when constructing the <code>POSTLogger</code>.</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> options: POSTLoggerOptions = {
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;URL TO POST LOGS&#x27;</span>,
+  <span class="hljs-attr">headers</span>: {
+    Chime-Bearer: <span class="hljs-string">&#x27;authentication-token&#x27;</span>,
+  },
+};
+
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> POSTLogger(options);
 </code></pre>
 					<a href="#event-controller" id="event-controller" style="color: inherit; text-decoration: none;">
 						<h2>Event Controller</h2>

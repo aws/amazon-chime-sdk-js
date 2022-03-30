@@ -412,30 +412,24 @@ export class DemoMeetingApp {
   async initializeLogger(configuration?: MeetingSessionConfiguration): Promise<void> {
     const logLevel = LogLevel.INFO;
     const consoleLogger = new ConsoleLogger('SDK', logLevel);
-    if (
-      location.hostname === 'localhost' ||
-      location.hostname === '127.0.0.1' ||
-      !configuration
-    ) {
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || !configuration) {
       this.logger.inner = consoleLogger;
     } else {
       await this.createLogStream(configuration);
-      const POSTLoggerOptions = {
-        metadata: {
-          appName: 'SDK',
-          meetingId: configuration.meetingId,
-          attendeeId: configuration.credentials.attendeeId,
-        }
+      const metadata = {
+        appName: 'SDK',
+        meetingId: configuration.meetingId,
+        attendeeId: configuration.credentials.attendeeId,
       };
       this.logger.inner = new MultiLogger(
         consoleLogger,
-        new POSTLogger(
-          DemoMeetingApp.LOGGER_BATCH_SIZE,
-          DemoMeetingApp.LOGGER_INTERVAL_MS,
-          `${DemoMeetingApp.BASE_URL}logs`,
+        new POSTLogger({
+          url: `${DemoMeetingApp.BASE_URL}logs`,
+          batchSize: DemoMeetingApp.LOGGER_BATCH_SIZE,
+          intervalMs: DemoMeetingApp.LOGGER_INTERVAL_MS,
           logLevel,
-          POSTLoggerOptions,
-        )
+          metadata,
+        })
       );
     }
   }

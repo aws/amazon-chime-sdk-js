@@ -194,6 +194,7 @@ import OnceTask from './task/OnceTask';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
 import OverconstrainedError from './devicecontroller/OverconstrainedError';
 import POSTLogger from './logger/POSTLogger';
+import POSTLoggerOptions from './logger/POSTLoggerOptions';
 import ParallelGroupTask from './task/ParallelGroupTask';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
@@ -518,6 +519,7 @@ export {
   OpenSignalingConnectionTask,
   OverconstrainedError,
   POSTLogger,
+  POSTLoggerOptions,
   ParallelGroupTask,
   PartialOrd,
   PermissionDeniedError,

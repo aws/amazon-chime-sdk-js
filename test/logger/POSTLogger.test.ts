@@ -13,7 +13,7 @@ describe('POSTLogger', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   let domMockBuilder: DOMMockBuilder | null = null;
   let domMockBehavior: DOMMockBehavior | null = null;
-  const BASE_URL = 'base_url';
+  const url = 'base_url';
   const intervalMs = 50;
   const batchSize = 2;
 
@@ -30,25 +30,29 @@ describe('POSTLogger', () => {
   });
 
   describe('construction', () => {
-    it('can be constructed', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.WARN);
+    it('can be constructed with just url as required parameter', async () => {
+      const logger = new POSTLogger({ url });
       expect(logger).to.not.equal(null);
       expect(logger.getLogLevel()).to.equal(LogLevel.WARN);
       await logger.destroy();
     });
 
     it('can be with different level', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.DEBUG);
+      const logger = new POSTLogger({ url, batchSize, intervalMs, logLevel: LogLevel.DEBUG });
       expect(logger).to.not.equal(null);
       expect(logger.getLogLevel()).to.equal(LogLevel.DEBUG);
       await logger.destroy();
     });
 
     it('can be constructed with optional metadata', async () => {
-      const options = {
-        metadata: { MeetingId: '12345' },
-      };
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.INFO, options);
+      const metadata = { MeetingId: '12345' };
+      const logger = new POSTLogger({
+        url,
+        batchSize,
+        intervalMs,
+        logLevel: LogLevel.INFO,
+        metadata,
+      });
       expect(logger).to.not.equal(null);
       expect(logger.getLogLevel()).to.equal(LogLevel.INFO);
       expect(logger.metadata['MeetingId']).to.exist;
@@ -59,7 +63,7 @@ describe('POSTLogger', () => {
 
   describe('HTTP POST metadata', () => {
     it('can get and set metadata', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.INFO);
+      const logger = new POSTLogger({ url, batchSize, intervalMs, logLevel: LogLevel.INFO });
       expect(logger).to.not.equal(null);
       expect(logger.getLogLevel()).to.equal(LogLevel.INFO);
       expect(logger.metadata).to.be.undefined;
@@ -74,7 +78,7 @@ describe('POSTLogger', () => {
 
   describe('disposal', () => {
     it('can be disposed', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.WARN);
+      const logger = new POSTLogger({ url, batchSize, intervalMs, logLevel: LogLevel.WARN });
       await logger.destroy();
       // This is safe to call twice.
       await logger.destroy();
@@ -83,7 +87,7 @@ describe('POSTLogger', () => {
 
   describe('logging level', () => {
     it('should log info with LogLevel.INFO and ignore the debug', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.INFO);
+      const logger = new POSTLogger({ url, batchSize, intervalMs, logLevel: LogLevel.INFO });
       logger.info('info');
       logger.error('error');
       logger.debug('error');
@@ -92,11 +96,16 @@ describe('POSTLogger', () => {
     });
 
     it('should log when header is set', async () => {
-      const options = {
-        metadata: { LoggerName: 'POSTLogger' },
-        headers: { 'Content-Type': 'application/json' },
-      };
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.INFO, options);
+      const metadata = { appName: 'SDK' };
+      const headers = { 'Content-Type': 'application/json' };
+      const logger = new POSTLogger({
+        url,
+        batchSize,
+        intervalMs,
+        logLevel: LogLevel.INFO,
+        metadata,
+        headers,
+      });
       logger.info('info');
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(2);
@@ -104,7 +113,7 @@ describe('POSTLogger', () => {
     });
 
     it('should log nothing with LogLevel.OFF', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.OFF);
+      const logger = new POSTLogger({ url, batchSize, intervalMs, logLevel: LogLevel.OFF });
       logger.info('info');
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(0);
@@ -112,7 +121,7 @@ describe('POSTLogger', () => {
     });
 
     it('should skip info and debug logs by default', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       logger.debug(() => {
         return 'debug';
       });
@@ -124,7 +133,7 @@ describe('POSTLogger', () => {
     });
 
     it('should have debug and info logs after setting DEBUG log level', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       logger.debug(() => {
         return 'debug';
       });
@@ -142,22 +151,26 @@ describe('POSTLogger', () => {
   });
 
   describe('logging', () => {
-    // The batch sending interval is 50ms, hence have a wait with 100-200ms in this test suite.
+    // The batch sending interval is 50ms, hence wait for 100-200ms in this test suite.
     it('should start publishing logs', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       await wait(100);
       await logger.destroy();
     });
 
     it('should start publishing logs with metadata', async () => {
-      const options = {
-        metadata: {
-          appName: 'SDK',
-          meetingId: '12345',
-          attendeeId: '12345',
-        },
+      const metadata = {
+        appName: 'SDK',
+        meetingId: '12345',
+        attendeeId: '12345',
       };
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.INFO, options);
+      const logger = new POSTLogger({
+        url,
+        batchSize,
+        intervalMs,
+        logLevel: LogLevel.INFO,
+        metadata,
+      });
       logger.info('first log');
       logger.info('second log');
       logger.info('third log');
@@ -166,7 +179,7 @@ describe('POSTLogger', () => {
     });
 
     it('handles when the fetch call fails', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       domMockBehavior.fetchSucceeds = false;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
@@ -175,7 +188,7 @@ describe('POSTLogger', () => {
     });
 
     it('handles when the fetch call fails and logCapture array is empty', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       domMockBehavior.fetchSucceeds = false;
       expect(logger.getLogCaptureSize()).is.equal(0);
       await wait(200);
@@ -183,7 +196,7 @@ describe('POSTLogger', () => {
     });
 
     it('handles when the fetch call succeeds and response returns 200', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       domMockBehavior.fetchSucceeds = true;
       domMockBehavior.responseSuccess = true;
       logger.error('error');
@@ -193,10 +206,14 @@ describe('POSTLogger', () => {
     });
 
     it('handles when the fetch call succeeds with header and response returns 200', async () => {
-      const options = {
-        headers: { 'Content-Type': 'application/json' },
-      };
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL, LogLevel.INFO, options);
+      const headers = { 'Content-Type': 'application/json' };
+      const logger = new POSTLogger({
+        url,
+        batchSize,
+        intervalMs,
+        logLevel: LogLevel.INFO,
+        headers,
+      });
       domMockBehavior.fetchSucceeds = true;
       domMockBehavior.responseSuccess = true;
       logger.error('error');
@@ -206,7 +223,7 @@ describe('POSTLogger', () => {
     });
 
     it('handles when the fetch call succeeds and response returns 500', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       domMockBehavior.fetchSucceeds = true;
       domMockBehavior.responseSuccess = false;
       domMockBehavior.responseStatusCode = 500;
@@ -217,7 +234,7 @@ describe('POSTLogger', () => {
     });
 
     it('does not die if you pass undefined', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       logger.setLogLevel(LogLevel.DEBUG);
       logger.debug(undefined);
       expect(logger.getLogCaptureSize()).to.equal(1);
@@ -226,7 +243,7 @@ describe('POSTLogger', () => {
     });
 
     it('does not die if you pass a string', async () => {
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       logger.setLogLevel(LogLevel.DEBUG);
       logger.debug('foo');
       expect(logger.getLogCaptureSize()).to.equal(1);
@@ -247,7 +264,7 @@ describe('POSTLogger', () => {
         expect(type).to.equal('unload');
       };
       await wait(200);
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       await logger.destroy();
       await wait(600);
       callbackToCall();
@@ -270,7 +287,7 @@ describe('POSTLogger', () => {
       await wait(60);
       callbackToCall();
       await wait(80);
-      const logger = new POSTLogger(batchSize, intervalMs, BASE_URL);
+      const logger = new POSTLogger({ url, batchSize, intervalMs });
       expect(added).to.be.true;
       delete GlobalAny['window']['addEventListener'];
       await logger.destroy();

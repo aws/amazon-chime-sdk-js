@@ -159,19 +159,26 @@ handle them please remove.
 - StateMachineTransitionFailed
 - AudioDeviceSwitched
 
-### `MeetingSessionPOSTLogger` to `POSTLogger`
+## `MeetingSessionPOSTLogger`
 
-With Amazon Chime SDK for JavaScript v3, we have removed `MeetingSessionConfiguration` dependency from the `MeetingSessionPOSTLogger`. The `MeetingSessionPOSTLogger` is now renamed to `POSTLogger`.
+We have renamed `MeetingSessionPOSTLogger` to `POSTLogger` and removed the `MeetingSessionConfiguration` dependency. You don't need to pass the `MeetingSessionConfiguration` object to the `POSTLogger` constructor anymore.
 
-Builders can add optional fields to `POSTLogger` which will be included when `POSTLogger` sends the HTTP POST logs to builder provided URL:
+You can pass below `POSTLoggerOptions` to the `POSTLogger` constructor:
+```typescript
+interface POSTLoggerOptions {
+  url: string;
+  batchSize?: number;
+  headers?: Record<string, string>;
+  intervalMs?: number;
+  logLevel?: LogLevel;
+  metadata?: Record<string, string>;
+}
+```
+Please check `POSTLoggerOptions` documentation for more information.
 
-1. HTTP POST request `headers`.
-2. Informational `metadata`. For example, `meetingId`, `attendeeId`, `appName`. This `metadata` depends on builders and `POSTLogger` will include this `metadata` as part of the request body when making the HTTP POST requests to builder provided URL.
-
-#### Constructor
+### Constructor
 
 ```js
-
 // You need responses from server-side Chime API. See below for details.
 const meetingResponse = // The response from the CreateMeeting API action.
 const attendeeResponse = // The response from the CreateAttendee API action.
@@ -188,37 +195,31 @@ const meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
 );
 
 // After in 3.x
-const postLoggerOptions = {
+const options: POSTLoggerOptions = {
+  url: 'URL TO POST LOGS',
+  logLevel: LogLevel.INFO,
   metadata: {
     appName: 'SDK',
     meetingId: meetingResponse.Meeting.MeetingId,
     attendeeId: attendeeResponse.Attendee.AttendeeId,
   },
 };
-const logger = new POSTLogger(
-  20, // LOGGER_BATCH_SIZE
-  2000, // LOGGER_INTERVAL_MS
-  URL,
-  LogLevel.INFO,
-  postLoggerOptions
-);
+const logger = new POSTLogger(options);
 ```
 
-#### Set `metadata` after `POSTLogger` creation
+### Set `metadata` after `POSTLogger` creation
 
-This can help builders developing a Web application development using React frameworks or other UI frameworks where the component allowing the meeting join comes later based on an HTML form submission and not on initial load of the Web application. Builders may be using Providers, Hooks (if using React) in their application and want to add logs in these components.
+This helps with Web application development using React frameworks or other UI frameworks where the component getting the server responses comes later based on an HTML form submission and not on initial load of the Web application.
 
-Now that we have removed the `MeetingSessionConfiguration` dependency, a `POSTLogger` can be created earlier in the application flow cycle and builders can add `metadata` once they receive API responses from server upon a HTML form submission. This way, the `POSTLogger`'s `metadata` can be updated as per builders need based on their application flow.
+You may want to add logging in Providers, Hooks (if using React) in your application. Since, we have removed the `MeetingSessionConfiguration` dependency now, you can create `POSTLogger` earlier in the application flow and you can add `metadata` once you receive API responses from server upon a HTML form submission. This way, you can update `POSTLogger`'s `metadata` as per your application needs.
 
 ```typescript
-
+const options: POSTLoggerOptions = {
+  url: 'URL TO POST LOGS',
+  logLevel: LogLevel.INFO,
+};
 // Create when your app loads.
-const logger = new POSTLogger(
-  20, // LOGGER_BATCH_SIZE
-  2000, // LOGGER_INTERVAL_MS
-  URL,
-  LogLevel.INFO
-);
+const logger = new POSTLogger(options);
 
 // User provides information to get the meeting and attendee responses.
 // Now, set the metadata on POSTLogger so that next logs can be identified and tied to a specific meetingId, attendeeId and an appName.
@@ -230,6 +231,21 @@ const metadata: Record<string, string> = {
 
 // After this POSTLogger will include the metadata in HTTP POST request body when sending logs.
 logger.metadata = metadata;
+```
+
+### Set `headers` when creating `POSTLogger`
+
+You may want to add custom authentication `headers` with each HTTP POST request. You can provide such `headers` when constructing the `POSTLogger`.
+
+```typescript
+const options: POSTLoggerOptions = {
+  url: 'URL TO POST LOGS',
+  headers: {
+    Chime-Bearer: 'authentication-token',
+  },
+};
+
+const logger = new POSTLogger(options);
 ```
 
 ## Event Controller
