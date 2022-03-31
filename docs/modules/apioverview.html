@@ -213,25 +213,20 @@ audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt
 					<p>To remove an AudioVideoObserver, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#removeobserver">removeObserver(observer)</a>.</p>
 					<p>You should implement the following key observer callbacks:</p>
 					<ul>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart">audioVideoDidStart</a>: occurs when the audio-video session finishes connecting</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting">audioVideoDidStartConnecting</a>: occurs when the audio-video session is in the process of connecting or reconnecting</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart">audioVideoDidStart</a>: occurs when the audio-video session finishes connecting.</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting">audioVideoDidStartConnecting</a>: occurs when the audio-video session is in the process of connecting or reconnecting.</li>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstop">audioVideoDidStop</a>: occurs when the audio-video session has disconnected. Use the provided <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html">MeetingSessionStatus</a> to determine why the session disconnected.</li>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a>: occurs when either a video stream is started or updated. Use the provided VideoTileState to determine the tile ID and the attendee ID of the video stream.</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a>: occurs when a video stream stops and the reference to the tile (the tile ID) is deleted</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a>: occurs when a video stream stops and the reference to the tile (the tile ID) is deleted.</li>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoavailabilitydidchange">videoAvailabilityDidChange</a>: occurs video availability state has changed such as whether the attendee can start local video or whether remote video is available. See <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionvideoavailability.html">MeetingSessionVideoAvailability</a> for more information.</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable">videoSendDidBecomeUnavailable</a>: occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable">videoSendDidBecomeUnavailable</a>: occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video.</li>
 					</ul>
 					<p>You may optionally listen to the following callbacks to monitor aspects of connection health:</p>
 					<ul>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor">connectionDidBecomePoor</a>: occurs when the connection has been poor for a while</li>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo">connectionDidSuggestStopVideo</a>: occurs when the connection has been poor while using video. You can use this to prompt the attendee to turn off video.</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange">connectionHealthDidChange</a>: occurs when connection health has changed</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired">estimatedDownlinkBandwidthLessThanRequired</a>: occurs when the total downlink video bandwidth estimation is less than the required video bitrate</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a>: occurs periodically when WebRTC media stats are available</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata">videoNotReceivingEnoughData</a>: occurs when one or more remote video streams do not meet the expected average bitrate</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange">videoReceiveBandwidthDidChange</a>: occurs when the available video receive bandwidth changed</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange">videoSendBandwidthDidChange</a>: occurs when available video send bandwidth changed</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange">videoSendHealthDidChange</a>: occurs when the actual video send bitrate or packets-per-second changes</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange">connectionHealthDidChange</a>: occurs when connection health has changed.</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a>: occurs periodically when WebRTC media stats are available.</li>
 					</ul>
 					<a href="#4-start-and-stop-the-session" id="4-start-and-stop-the-session" style="color: inherit; text-decoration: none;">
 						<h2>4. Start and stop the session</h2>

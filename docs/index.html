@@ -967,18 +967,23 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
 				<a href="#monitoring-and-alerts" id="monitoring-and-alerts" style="color: inherit; text-decoration: none;">
 					<h3>Monitoring and alerts</h3>
 				</a>
-				<p><strong>Use case 25.</strong> Add an observer to receive video metrics. See <code>AudioVideoObserver</code> for more available metrics,
-				such as WebRTC statistics processed by Chime SDK.</p>
+				<p><strong>Use case 25.</strong> Add an observer to receive WebRTC metrics processed by Chime SDK such as bitrate, packet loss, and bandwidth. See <code>AudioVideoObserver</code> for more available metrics.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
-  <span class="hljs-attr">videoSendHealthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">bitrateKbps, packetsPerSecond</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending bitrate in kilobits per second: <span class="hljs-subst">${bitrateKbps}</span> and <span class="hljs-subst">${packetsPerSecond}</span>`</span>);
+  <span class="hljs-attr">metricsDidReceive</span>: <span class="hljs-function">(<span class="hljs-params">clientMetricReport</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> metricReport = clientMetricReport.getObservableMetrics();
+
+    <span class="hljs-keyword">const</span> {
+      videoPacketSentPerSecond,
+      videoUpstreamBitrate,
+      availableOutgoingBitrate,
+      availableIncomingBitrate,
+      audioSpeakerDelayMs,
+    } = metricReport;
+
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending video bitrate in kilobits per second: <span class="hljs-subst">${videoUpstreamBitrate / <span class="hljs-number">1000</span>}</span> and sending packets per second: <span class="hljs-subst">${videoPacketSentPerSecond}</span>`</span>);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending bandwidth is <span class="hljs-subst">${availableOutgoingBitrate <span class="hljs-regexp">/ 1000}, and receiving bandwidth is ${availableIncomingBitrate /</span> <span class="hljs-number">1000</span>}</span>`</span>);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Audio speaker delay is <span class="hljs-subst">${audioSpeakerDelayMs}</span>`</span>);
   },
-  <span class="hljs-attr">videoSendBandwidthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">newBandwidthKbps, oldBandwidthKbps</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending bandwidth changed from <span class="hljs-subst">${oldBandwidthKbps}</span> to <span class="hljs-subst">${newBandwidthKbps}</span>`</span>);
-  },
-  <span class="hljs-attr">videoReceiveBandwidthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">newBandwidthKbps, oldBandwidthKbps</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Receiving bandwidth changed from <span class="hljs-subst">${oldBandwidthKbps}</span> to <span class="hljs-subst">${newBandwidthKbps}</span>`</span>);
-  }
 };
 
 meetingSession.audioVideo.addObserver(observer);

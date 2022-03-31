@@ -969,20 +969,25 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
 
 ### Monitoring and alerts
 
-**Use case 25.** Add an observer to receive video metrics. See `AudioVideoObserver` for more available metrics,
-such as WebRTC statistics processed by Chime SDK.
+**Use case 25.** Add an observer to receive WebRTC metrics processed by Chime SDK such as bitrate, packet loss, and bandwidth. See `AudioVideoObserver` for more available metrics.
 
 ```js
 const observer = {
-  videoSendHealthDidChange: (bitrateKbps, packetsPerSecond) => {
-    console.log(`Sending bitrate in kilobits per second: ${bitrateKbps} and ${packetsPerSecond}`);
+  metricsDidReceive: (clientMetricReport) => {
+    const metricReport = clientMetricReport.getObservableMetrics();
+
+    const {
+      videoPacketSentPerSecond,
+      videoUpstreamBitrate,
+      availableOutgoingBitrate,
+      availableIncomingBitrate,
+      audioSpeakerDelayMs,
+    } = metricReport;
+
+    console.log(`Sending video bitrate in kilobits per second: ${videoUpstreamBitrate / 1000} and sending packets per second: ${videoPacketSentPerSecond}`);
+    console.log(`Sending bandwidth is ${availableOutgoingBitrate / 1000}, and receiving bandwidth is ${availableIncomingBitrate / 1000}`);
+    console.log(`Audio speaker delay is ${audioSpeakerDelayMs}`);
   },
-  videoSendBandwidthDidChange: (newBandwidthKbps, oldBandwidthKbps) => {
-    console.log(`Sending bandwidth changed from ${oldBandwidthKbps} to ${newBandwidthKbps}`);
-  },
-  videoReceiveBandwidthDidChange: (newBandwidthKbps, oldBandwidthKbps) => {
-    console.log(`Receiving bandwidth changed from ${oldBandwidthKbps} to ${newBandwidthKbps}`);
-  }
 };
 
 meetingSession.audioVideo.addObserver(observer);

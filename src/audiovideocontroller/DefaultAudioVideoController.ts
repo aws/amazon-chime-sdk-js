@@ -596,7 +596,6 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
       this._realtimeController,
-      this._videoTileController,
       this.connectionHealthData,
       new DefaultPingPong(
         this.meetingSessionContext.signalingClient,

@@ -170,25 +170,21 @@ To remove an AudioVideoObserver, call meetingSession.audioVideo.[removeObserver(
 
 You should implement the following key observer callbacks:
 
-* [audioVideoDidStart](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart): occurs when the audio-video session finishes connecting
-* [audioVideoDidStartConnecting](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting): occurs when the audio-video session is in the process of connecting or reconnecting
+* [audioVideoDidStart](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart): occurs when the audio-video session finishes connecting.
+* [audioVideoDidStartConnecting](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting): occurs when the audio-video session is in the process of connecting or reconnecting.
 * [audioVideoDidStop](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstop): occurs when the audio-video session has disconnected. Use the provided [MeetingSessionStatus](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html) to determine why the session disconnected.
 * [videoTileDidUpdate](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate): occurs when either a video stream is started or updated. Use the provided VideoTileState to determine the tile ID and the attendee ID of the video stream.
-* [videoTileWasRemoved](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved): occurs when a video stream stops and the reference to the tile (the tile ID) is deleted
+* [videoTileWasRemoved](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved): occurs when a video stream stops and the reference to the tile (the tile ID) is deleted.
 * [videoAvailabilityDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoavailabilitydidchange): occurs video availability state has changed such as whether the attendee can start local video or whether remote video is available. See [MeetingSessionVideoAvailability](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionvideoavailability.html) for more information.
-* [videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable): occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video
+* [videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable): occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video.
 
 You may optionally listen to the following callbacks to monitor aspects of connection health:
 
 * [connectionDidBecomePoor](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor): occurs when the connection has been poor for a while
 * [connectionDidSuggestStopVideo](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo): occurs when the connection has been poor while using video. You can use this to prompt the attendee to turn off video.
-* [connectionHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange): occurs when connection health has changed
-* [estimatedDownlinkBandwidthLessThanRequired](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired): occurs when the total downlink video bandwidth estimation is less than the required video bitrate
-* [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive): occurs periodically when WebRTC media stats are available
-* [videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata): occurs when one or more remote video streams do not meet the expected average bitrate
-* [videoReceiveBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange): occurs when the available video receive bandwidth changed
-* [videoSendBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange): occurs when available video send bandwidth changed
-* [videoSendHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange): occurs when the actual video send bitrate or packets-per-second changes
+* [connectionHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange): occurs when connection health has changed.
+* [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive): occurs periodically when WebRTC media stats are available.
+
 
 ## 4. Start and stop the session
 

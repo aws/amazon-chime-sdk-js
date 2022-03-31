@@ -56,7 +56,6 @@ describe('CleanRestartedSessionTask', () => {
     context.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       context.audioVideoController,
       context.audioVideoController.realtimeController,
-      context.audioVideoController.videoTileController,
       new ConnectionHealthData(),
       new TestPingPong(),
       new StatsCollector(context.audioVideoController, new NoOpDebugLogger())

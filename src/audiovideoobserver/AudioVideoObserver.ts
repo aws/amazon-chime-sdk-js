@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
-import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
@@ -43,38 +42,6 @@ export default interface AudioVideoObserver {
    * video tile.
    */
   videoAvailabilityDidChange?(availability: MeetingSessionVideoAvailability): void;
-
-  /**
-   * Called when metric of video outbound traffic is received.
-   */
-  videoSendHealthDidChange?(bitrateKbps: number, packetsPerSecond: number): void;
-
-  /**
-   * Called when available video sending bandwidth changed.
-   */
-  videoSendBandwidthDidChange?(
-    newBandwidthKbps: number,
-    oldBandwidthKbps: number,
-    nackCountPerSecond?: number
-  ): void;
-
-  /**
-   * Called when available video receiving bandwidth changed to trigger video subscription if needed.
-   */
-  videoReceiveBandwidthDidChange?(newBandwidthKbps: number, oldBandwidthKbps: number): void;
-
-  /**
-   * Called when total downlink video bandwidth estimation is less than required video bitrates.
-   */
-  estimatedDownlinkBandwidthLessThanRequired?(
-    estimatedBandwidth: number,
-    requiredBandwidth: number
-  ): void;
-
-  /**
-   * Called when one or more remote video streams do not meet expected average bitrate.
-   */
-  videoNotReceivingEnoughData?(receivingDataMap: ClientVideoStreamReceivingReport[]): void;
 
   /**
    * Called when the media stats are available.
