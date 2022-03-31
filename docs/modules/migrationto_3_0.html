@@ -102,10 +102,10 @@
 					<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
   <span class="hljs-attr">audioVideoDidStop</span>: <span class="hljs-keyword">async</span> sessionStatus =&gt; {
     <span class="hljs-comment">// v3</span>
-    <span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
+    <span class="hljs-keyword">await</span> meetingSession.audioVideo.stopAudioInput();
 
     <span class="hljs-comment">// Or use the destroy API to call stopAudioInput and stopVideoInput.</span>
-    meetingSession.audioVideo.deviceController.destroy()
+    meetingSession.deviceController.destroy();
   },
 };
 meetingSession.audioVideo.addObserver(observer);
@@ -123,7 +123,10 @@ meetingSession.audioVideo.addObserver(observer);
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 </code></pre>
 					<p>In v3, you should call <code>stopVideoInput</code> to stop the video input stream.</p>
-					<pre><code class="language-js"><span class="hljs-comment">// v3</span>
+					<pre><code class="language-js"><span class="hljs-comment">// Before</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
+
+<span class="hljs-comment">// After</span>
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
 </code></pre>
 					<a href="#updates-to-the-audio-output-api" id="updates-to-the-audio-output-api" style="color: inherit; text-decoration: none;">
@@ -430,13 +433,12 @@ audioVideo.addObserver(observer);
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

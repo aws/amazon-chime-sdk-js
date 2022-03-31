@@ -9,15 +9,17 @@ import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
 
 /**
- * [[DeviceController]] keeps track of the devices being used for audio input
+ * [[DeviceControllerFacade]] keeps track of the devices being used for audio input
  * (e.g. microphone), video input (e.g. camera), audio output (e.g. speakers).
  * The list functions return MediaDeviceInfo objects. Once any list function is
  * called, changes in device availability are broadcast to any registered
  * [[DeviceChangeObserver]].
  *
- * Calling a choose function will request permission for the device indicated
- * by the device id or track constraint. Supply null to get the default device.
- * Make sure to choose the audio device before joining the session (even if
+ * Calling a start function will request permission for the device indicated
+ * by the device id, media stream or track constraint.
+ * For audio input, supply null to will generate a dummy audio stream.
+ * Calling stop to stop the input stream.
+ * Make sure to choose the audio input before joining the session (even if
  * it is the default device) so that you can offer the user options if the
  * device cannot be selected before a connection is made.
  *
@@ -40,14 +42,6 @@ import VideoQualitySettings from './VideoQualitySettings';
  *   return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
  * }
  * ```
- *
- * When you are done using a `DeviceController`, you should perform some
- * cleanup steps in order to avoid memory leaks:
- *
- * 1. Call DeviceController.destroy to stopping all active audio and video inputs
- * 2. Remove any device change observers that you registered by using
- *    {@link DeviceControllerFacade.removeDeviceChangeObserver}.
- * 3. Drop your reference to the controller to allow it to be garbage collected.
  */
 export default interface DeviceControllerFacade {
   /**

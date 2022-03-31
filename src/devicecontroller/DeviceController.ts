@@ -4,4 +4,13 @@
 import Destroyable from '../destroyable/Destroyable';
 import DeviceControllerFacade from './DeviceControllerFacade';
 
+/**
+ * When you are done using a `DeviceController`, you should perform some
+ * cleanup steps in order to avoid memory leaks:
+ *
+ * 1. Call DeviceController.destroy to stopping all active audio and video inputs
+ * 2. Remove any device change observers that you registered by using
+ *    {@link DeviceControllerFacade.removeDeviceChangeObserver}.
+ * 3. Drop your reference to the controller to allow it to be garbage collected.
+ */
 export default interface DeviceController extends DeviceControllerFacade, Destroyable {}
