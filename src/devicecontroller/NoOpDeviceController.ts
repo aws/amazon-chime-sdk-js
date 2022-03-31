@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Destroyable from '../destroyable/Destroyable';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import EventController from '../eventcontroller/EventController';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
@@ -14,8 +13,14 @@ import VideoQualitySettings from './VideoQualitySettings';
 export default class NoOpDeviceController
   extends NoOpMediaStreamBroker
   implements DeviceControllerBasedMediaStreamBroker {
+  destroyed = false;
+
   constructor(_options?: { enableWebAudio?: boolean }) {
     super();
+  }
+
+  async destroy(): Promise<void> {
+    this.destroyed = true;
   }
 
   listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
@@ -74,17 +79,11 @@ export default class NoOpDeviceController
     return null;
   }
 }
+
 export class NoOpDeviceControllerWithEventController extends NoOpDeviceController {
   eventController: EventController | undefined;
   constructor(eventController?: EventController) {
     super();
     this.eventController = eventController;
-  }
-}
-
-export class DestroyableNoOpDeviceController extends NoOpDeviceController implements Destroyable {
-  destroyed = false;
-  async destroy(): Promise<void> {
-    this.destroyed = true;
   }
 }

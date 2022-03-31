@@ -12,8 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+- Extend the `DeviceController` interface to include `Destroyable`.
 
 ### Fixed
+- Fix a bug where joining without selecting any audio device failed when Web Audio is on.  
 
 ## [3.0.0-beta.2] - 2022-03-09
 

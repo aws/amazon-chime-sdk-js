@@ -876,8 +876,14 @@ export default class DefaultDeviceController
   private async handleDeviceStreamEnded(kind: 'audio' | 'video', deviceId: string): Promise<void> {
     try {
       if (kind === 'audio') {
+        this.logger.warn(
+          `audio input device which was active is no longer available, resetting to null device`
+        );
         await this.startAudioInput(null); //Need to switch to empty audio device
       } else {
+        this.logger.warn(
+          `video input device which was active is no longer available, stopping video`
+        );
         await this.stopVideoInput();
       }
     } catch (e) {
@@ -1191,9 +1197,6 @@ export default class DefaultDeviceController
         // Hard to test, but the safety check is worthwhile.
         /* istanbul ignore else */
         if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
-          this.logger.warn(
-            `${kind} input device which was active is no longer available, resetting to null device`
-          );
           this.handleDeviceStreamEnded(kind, newDeviceId);
           delete newDevice.endedCallback;
         }
@@ -1361,25 +1364,24 @@ export default class DefaultDeviceController
   }
 
   private async acquireInputStream(kind: string): Promise<MediaStream> {
-    if (kind === 'audio') {
-      if (this.useWebAudio) {
-        const dest = this.getMediaStreamDestinationNode();
-        return dest.stream;
-      }
-    }
-
-    // mirrors `this.useWebAudio`
-    if (kind === 'video') {
-      if (this.chosenVideoInputIsTransformDevice()) {
-        return this.chosenVideoTransformDevice.outputMediaStream;
-      }
-    }
     if (!this.activeDevices[kind]) {
       if (kind === 'audio') {
         this.logger.info(`no ${kind} device chosen, creating empty ${kind} device`);
         await this.startAudioInput(null);
       } else {
         throw new Error(`no ${kind} device chosen`);
+      }
+    }
+
+    if (kind === 'audio') {
+      if (this.useWebAudio) {
+        const dest = this.getMediaStreamDestinationNode();
+        return dest.stream;
+      }
+    }
+    if (kind === 'video') {
+      if (this.chosenVideoInputIsTransformDevice()) {
+        return this.chosenVideoTransformDevice.outputMediaStream;
       }
     }
     return this.activeDevices[kind].stream;

@@ -5,7 +5,6 @@ import * as chai from 'chai';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import NoOpDeviceController, {
-  DestroyableNoOpDeviceController,
   NoOpDeviceControllerWithEventController,
 } from '../../src/devicecontroller/NoOpDeviceController';
 import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
@@ -29,7 +28,7 @@ describe('DefaultMeetingSession', () => {
   describe('constructor', () => {
     it('can be constructed and disposed of', async () => {
       const mockBuilder = new DOMMockBuilder();
-      const deviceController = new DestroyableNoOpDeviceController();
+      const deviceController = new NoOpDeviceController();
       const session = new DefaultMeetingSession(
         new NoOpAudioVideoController().configuration,
         new NoOpLogger(),

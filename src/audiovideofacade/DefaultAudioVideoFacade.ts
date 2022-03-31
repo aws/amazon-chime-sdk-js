@@ -14,7 +14,7 @@ import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import DataMessage from '../datamessage/DataMessage';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import AudioInputDevice from '../devicecontroller/AudioInputDevice';
-import DeviceController from '../devicecontroller/DeviceController';
+import DeviceControllerFacade from '../devicecontroller/DeviceControllerFacade';
 import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
 import VideoInputDevice from '../devicecontroller/VideoInputDevice';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
@@ -32,7 +32,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
     private videoTileController: VideoTileController,
     private realtimeController: RealtimeController,
     private audioMixController: AudioMixController,
-    private deviceController: DeviceController,
+    private deviceController: DeviceControllerFacade,
     private contentShareController: ContentShareController
   ) {}
 
