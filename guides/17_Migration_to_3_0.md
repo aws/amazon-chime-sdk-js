@@ -163,6 +163,67 @@ handle them please remove.
 - StateMachineTransitionFailed
 - AudioDeviceSwitched
 
+## AudioVideo events
+
+We have removed below `AudioVideo` events in v3.
+
+- videoSendHealthDidChange
+- videoSendBandwidthDidChange
+- videoReceiveBandwidthDidChange
+- videoNotReceivingEnoughData
+- estimatedDownlinkBandwidthLessThanRequired
+
+`estimatedDownlinkBandwidthLessThanRequired` and `videoNotReceivingEnoughData` can not be replicated anymore but you can make use of priority-based downlink to manage videos instead.
+
+
+```js
+  // Before
+const observer = {
+  videoSendHealthDidChange: (bitrateKbps, packetsPerSecond) => {
+    console.log(`Sending video bitrate in kilobits per second: ${videoUpstreamBitrate} and ${videoUpstreamPacketPerSecond}`);
+  },
+  videoSendBandwidthDidChange: (newBandwidthKbps, oldBandwidthKbps) => {
+    console.log(`Sending bandwidth is ${availableSendBandwidth}, nack count per second is ${nackCountPerSecond}, and old bandwidth is ${this.oldSendBandwidth}`);
+  },
+  videoReceiveBandwidthDidChange: (newBandwidthKbps, oldBandwidthKbps) => {
+    console.log(`Receiving bandwidth is ${availableRecvBandwidth}, and old bandwidth is ${this.oldRecvBandwidth}`);
+  },
+}
+// After
+const observer = {
+  oldSendBandwidthKbs: 0,
+  oldRecvBandwidthKbs: 0,
+  metricsDidReceive: (clientMetricReport) => {
+    const metricReport = clientMetricReport.getObservableMetrics();
+
+    const {
+      videoPacketSentPerSecond,
+      videoUpstreamBitrate,
+      nackCountPerSecond,
+    } = metricReport;
+    const availableSendBandwidthKbs = metricReport.availableOutgoingBitrate / 1000;
+    const availableRecvBandwidthKbs = metricReport.availableIncomingBitrate / 1000;
+
+    // videoSendHealthDidChange
+    console.log(`Sending video bitrate in kilobits per second: ${videoUpstreamBitrate / 1000} and sending packets per second: ${videoPacketSentPerSecond}`);
+
+    // videoSendBandwidthDidChange
+    if (this.oldSendBandwidthKbs != availableSendBandwidthKbs) {
+      console.log(`Sending bandwidth is ${availableSendBandwidthKbs}, nack count per second is ${nackCountPerSecond}, and old bandwidth is ${this.oldSendBandwidthKbs}`);
+      this.oldSendBandwidthKbs = availableSendBandwidthKbs;
+    }
+
+    // videoReceiveBandwidthDidChange
+    if (this.oldRecvBandwidthKbs != availableRecvBandwidthKbs) {
+      console.log(`Receiving bandwidth is ${availableRecvBandwidthKbs}, and old bandwidth is ${this.oldRecvBandwidthKbs}`);
+      this.oldRecvBandwidthKbs = availableRecvBandwidthKbs;
+    }
+  },
+};
+
+meetingSession.audioVideo.addObserver(observer);
+```
+
 ## `MeetingSessionPOSTLogger` to `POSTLogger`
 
 We have renamed `MeetingSessionPOSTLogger` to `POSTLogger` and removed the `MeetingSessionConfiguration` dependency. You don't need to pass the `MeetingSessionConfiguration` object to the `POSTLogger` constructor anymore.
@@ -245,10 +306,10 @@ const configuration = new MeetingSessionConfiguration(…);
 const logger = new ConsoleLogger(…);
 const eventReporter = new EventReporter(...)
 
-// Before in 2.x
+// Before
 this.meetingSession = new DefaultMeetingSession(configuration, logger, ..., eventReporter);
 
-// After in 3.x
+// After
 const eventController = new DefaultEventController(configuration, logger, eventReporter)
 this.meetingSession = new DefaultMeetingSession(configuration, logger, ..., eventController);
 ```
@@ -259,14 +320,14 @@ The `eventDidReceive` function that was part of `AudioVideoObserver` has been mo
 
 ## WebRTC Metrics
 
-Before in 2.x:
+Before:
 
 The `DefaultStatsCollector` used a hybrid approach to obtain WebRTC stats from browser:
 
 - For Chromium-based browsers, call [legacy (non-promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax)
 - For any other browsers, call [standardized (promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax)
 
-After in 3.x:
+After:
 
 The [legacy (non-promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax) will be removed and [standardized (promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax) will be used for all browsers.
 
@@ -288,7 +349,7 @@ SDK exposed some common WebRTC metrics publicly via the `metricsDidReceive` even
 
 We add a new `rtcStatsReport` property to `DefaultClientMetricReport` to store raw [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport) and expose it via `metricsDidReceive(clientMetricReport: ClientMetricReport)` event. You can get the `rtcStatsReport` via `clientMetricReport.getRTCStatsReport()`. These metrics are updated every second.
 
-Before in 2.x:
+Before:
 
 > Note: The `getRTCPeerConnectionStats()` is on its way to be deprecated. Please use the new API `clientMetricReport.getRTCStatsReport()` returned by `metricsDidReceive(clientMetricReport)` callback instead.
 
@@ -296,7 +357,7 @@ Before in 2.x:
 const report: RTCStatsReport = await audioVideo.getRTCPeerConnectionStats();
 ```
 
-After in 3.x:
+After:
 
 It's recommended to use this one. It can also improve the performance a bit as now you don't need to explicitly call `getStats` API again.
 

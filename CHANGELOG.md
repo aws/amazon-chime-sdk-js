@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Removed
+- Remove `videoSendHealthDidChange`, `videoSendBandwidthDidChange`, `videoNotReceivingEnoughData`, and `videoReceiveBandwidthDidChange`. Use `metricsDidReceive` to obtain metrics instead.
+- Remove `estimatedDownlinkBandwidthLessThanRequired`.
 
 ### Changed
 - Extend the `DeviceController` interface to include `Destroyable`.

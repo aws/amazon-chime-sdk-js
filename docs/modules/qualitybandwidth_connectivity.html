@@ -95,28 +95,6 @@
 					<p>The Amazon Chime SDK for JavaScript produces several kinds of events on the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a> to monitor connectivity and quality. Use the following events and key health metrics to monitor the performance of the meeting session in real time. For code snippets showing how to subscribe to these events, see <a href="https://github.com/aws/amazon-chime-sdk-js#monitoring-and-alerts">Monitoring and Alerts</a>.</p>
 					<p><em>Metrics derived from WebRTC stats are not guaranteed to be present in all browsers. In such cases the value may be missing.</em></p>
 					<p><em>For the browser support columns below, &quot;All&quot; refers to the browsers officially supported by the Chime SDK.</em></p>
-					<a href="#events-for-monitoring-local-attendee-uplink" id="events-for-monitoring-local-attendee-uplink" style="color: inherit; text-decoration: none;">
-						<h3>Events for monitoring local attendee uplink</h3>
-					</a>
-					<table>
-						<thead>
-							<tr>
-								<th>Event</th>
-								<th>Notes</th>
-								<th>Browsers</th>
-							</tr>
-						</thead>
-						<tbody><tr>
-								<td><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange">videoSendHealthDidChange</a></td>
-								<td>Indicates the current average upstream video bitrate being utilized</td>
-								<td>Chromium-based</td>
-							</tr>
-							<tr>
-								<td><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange">videoSendBandwidthDidChange</a></td>
-								<td>Indicates the estimated amount of upstream bandwidth</td>
-								<td>Chromium-based</td>
-							</tr>
-					</tbody></table>
 					<a href="#events-for-monitoring-local-attendee-downlink" id="events-for-monitoring-local-attendee-downlink" style="color: inherit; text-decoration: none;">
 						<h3>Events for monitoring local attendee downlink</h3>
 					</a>
@@ -142,21 +120,6 @@
 								<td><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor">connectionDidBecomePoor</a></td>
 								<td>Similar to the previous metric, but is fired when local video is already turned off.</td>
 								<td>All</td>
-							</tr>
-							<tr>
-								<td><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata">videoNotReceivingEnoughData</a></td>
-								<td>Called when one or more remote attendee video streams do not meet the expected average bitrate which may be due to downlink packet loss.</td>
-								<td>All</td>
-							</tr>
-							<tr>
-								<td><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired">estimatedDownlinkBandwidthLessThanRequired</a></td>
-								<td>Aggregated across all attendees, this event fires when more bandwidth is requested than what the WebRTC estimated downlink bandwidth supports. It is recommended to use this event over <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata">videoNotReceivingEnoughData</a>.</td>
-								<td>Chromium-based</td>
-							</tr>
-							<tr>
-								<td><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange">videoReceiveBandwidthDidChange</a></td>
-								<td>This is the estimated amount of downstream bandwidth</td>
-								<td>Chromium-based</td>
 							</tr>
 					</tbody></table>
 					<a href="#events-for-monitoring-remote-attendee-uplink" id="events-for-monitoring-remote-attendee-uplink" style="color: inherit; text-decoration: none;">
@@ -196,8 +159,9 @@
 					<blockquote>
 						<p>Note: We have built a video WebRTC statistics widget in the demo browser meeting app. This widget is shown as an overlay on the video, when the video is enabled.</p>
 						<p>You get the following WebRTC stats in the video stats widget:</p>
-						<p>Upstream video information: Frame height, Frame width, Bitrate (bps), Packets Sent, Frame Rate (fps).</p>
+						<p>Upstream video information: Frame height, Frame width, Bitrate (bps), Packets Sent, Frame Rate (fps), Audio Jitter.</p>
 						<p>Downstream video information: Frame height, Frame width, Bitrate (bps), Packet Loss (%), Frame Rate (fps).</p>
+						<p>You can also use this event to get the raw <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport"><code>RTCStatsReport</code></a> through <code>clientMetricReport.getRTCStatsReport()</code></p>
 						<p>You can check the implementation in the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts">demo app</a> to build your own custom widget
 						(look for <code>getObservableVideoMetrics</code> method in the demo). This video stats widget is built using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics">getObservableVideoMetrics</a> and the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a> APIs. Through the information provided in these stats, the application can monitor key attributes and take action. For instance if the bitrate or resolution falls below a certain threshold, the user could be notified in some manner, or diagnostic reporting could take place.</p>
 					</blockquote>

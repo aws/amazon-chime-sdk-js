@@ -56,7 +56,7 @@ Applications will receive notifications of remote video being added or removed t
 
 If the application pauses a remote video by calling [pauseVideoTile](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile), then this policy will not include that remote video in the list of available streams and therefore will not automatically subscribe or unsubscribe from it while it is in the paused state.
 
-When using the policy it is recommended that applications do not take action on the downlink monitoring events such as [videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata) or [estimatedDownlinkBandwidthLessThanRequired](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired) since it may conflict with decisions being made within the policy.
+When using the policy it is recommended that applications do not take action on the downlink monitoring metrics from [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive) since it may conflict with decisions being made within the policy.
 
 The VideoAdaptiveProbePolicy can be used with or without simulcast.  To enable it without simulcast set the [MeetingSessionConfiguration.videoDownlinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) to [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html).  If simulcast is not active, then the policy will only be able to add or remove remote videos.
 

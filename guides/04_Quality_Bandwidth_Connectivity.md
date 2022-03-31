@@ -25,13 +25,6 @@ The Amazon Chime SDK for JavaScript produces several kinds of events on the [Aud
 
 *For the browser support columns below, "All" refers to the browsers officially supported by the Chime SDK.*
 
-### Events for monitoring local attendee uplink
-
-|Event | Notes | Browsers |
-|------------ | ------------- | ------------- |
-|[videoSendHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange) | Indicates the current average upstream video bitrate being utilized| Chromium-based |
-|[videoSendBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange) | Indicates the estimated amount of upstream bandwidth| Chromium-based |
-
 ### Events for monitoring local attendee downlink
 
 |Event | Notes | Browsers |
@@ -39,9 +32,6 @@ The Amazon Chime SDK for JavaScript produces several kinds of events on the [Aud
 |[connectionDidSuggestStopVideo](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo) | Indicates that the audio connection is experiencing packet loss. Stopping local video and pausing remote video tiles may help the connection recover by reducing CPU usage and network consumption. | All |
 |[connectionDidBecomeGood](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomegood) | Indicates that the audio connection has improved. | All |
 |[connectionDidBecomePoor](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor) | Similar to the previous metric, but is fired when local video is already turned off. | All |
-|[videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata) | Called when one or more remote attendee video streams do not meet the expected average bitrate which may be due to downlink packet loss. | All |
-|[estimatedDownlinkBandwidthLessThanRequired](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired) | Aggregated across all attendees, this event fires when more bandwidth is requested than what the WebRTC estimated downlink bandwidth supports. It is recommended to use this event over [videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata). | Chromium-based |
-|[videoReceiveBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange) | This is the estimated amount of downstream bandwidth | Chromium-based |
 
 ### Events for monitoring remote attendee uplink
 
@@ -59,9 +49,11 @@ The Amazon Chime SDK for JavaScript produces several kinds of events on the [Aud
 >
 > You get the following WebRTC stats in the video stats widget:
 >
-> Upstream video information: Frame height, Frame width, Bitrate (bps), Packets Sent, Frame Rate (fps).
+> Upstream video information: Frame height, Frame width, Bitrate (bps), Packets Sent, Frame Rate (fps), Audio Jitter.
 >
 > Downstream video information: Frame height, Frame width, Bitrate (bps), Packet Loss (%), Frame Rate (fps).
+>
+> You can also use this event to get the raw [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport) through `clientMetricReport.getRTCStatsReport()`
 >
 > You can check the implementation in the [demo app](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts) to build your own custom widget
 > (look for `getObservableVideoMetrics` method in the demo). This video stats widget is built using the [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics) and the [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive) APIs. Through the information provided in these stats, the application can monitor key attributes and take action. For instance if the bitrate or resolution falls below a certain threshold, the user could be notified in some manner, or diagnostic reporting could take place.

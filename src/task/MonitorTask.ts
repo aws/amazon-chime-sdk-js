@@ -21,7 +21,6 @@ import SignalingClientEventType from '../signalingclient/SignalingClientEventTyp
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import { ISdkBitrateFrame, SdkSignalFrame } from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
-import VideoLogEvent from '../statscollector/VideoLogEvent';
 import { Maybe } from '../utils/Types';
 import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
@@ -37,9 +36,8 @@ export default class MonitorTask
   private reconnectionHealthPolicy: ReconnectionHealthPolicy;
   private unusableAudioWarningHealthPolicy: UnusableAudioWarningConnectionHealthPolicy;
   private prevSignalStrength: number = 1;
-  private static DEFAULT_TIMEOUT_FOR_START_SENDING_VIDEO_MS: number = 30000;
-  private static DEFAULT_DOWNLINK_CALLRATE_OVERSHOOT_FACTOR: number = 1.5;
-  private static DEFAULT_DOWNLINK_CALLRATE_UNDERSHOOT_FACTOR: number = 0.5;
+  private static DEFAULT_DOWNLINK_CALLRATE_OVERSHOOT_FACTOR: number = 2.0;
+  private static DEFAULT_DOWNLINK_CALLRATE_UNDERSHOOT_FACTOR: number = 0.2;
   private currentVideoDownlinkBandwidthEstimationKbps: number = 10000;
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
   private hasSignalingError: boolean = false;
@@ -122,50 +120,6 @@ export default class MonitorTask
     );
   }
 
-  videoSendHealthDidChange(bitrateKbps: number, packetsPerSecond: number): void {
-    if (
-      this.context.videoInputAttachedTimestampMs === 0 ||
-      !this.context.videoTileController.hasStartedLocalVideoTile() ||
-      !this.context.lastKnownVideoAvailability.canStartLocalVideo
-    ) {
-      return;
-    }
-
-    const tracks = this.context.activeVideoInput
-      ? this.context.activeVideoInput.getTracks()
-      : undefined;
-    if (!tracks || !tracks[0]) {
-      return;
-    }
-
-    const durationMs = Date.now() - this.context.videoInputAttachedTimestampMs;
-    if (packetsPerSecond > 0 || bitrateKbps > 0) {
-      this.context.statsCollector.logVideoEvent(
-        VideoLogEvent.SendingSuccess,
-        this.context.videoDeviceInformation
-      );
-      this.context.statsCollector.logLatency(
-        'video_start_sending',
-        durationMs,
-        this.context.videoDeviceInformation
-      );
-      this.context.videoInputAttachedTimestampMs = 0;
-    } else if (durationMs > MonitorTask.DEFAULT_TIMEOUT_FOR_START_SENDING_VIDEO_MS) {
-      this.context.statsCollector.logVideoEvent(
-        VideoLogEvent.SendingFailed,
-        this.context.videoDeviceInformation
-      );
-      this.context.videoInputAttachedTimestampMs = 0;
-    }
-  }
-
-  videoReceiveBandwidthDidChange(newBandwidthKbps: number, oldBandwidthKbps: number): void {
-    this.logger.debug(() => {
-      return `receiving bandwidth changed from prev=${oldBandwidthKbps} Kbps to curr=${newBandwidthKbps} Kbps`;
-    });
-    this.currentVideoDownlinkBandwidthEstimationKbps = newBandwidthKbps;
-  }
-
   private checkResubscribe(clientMetricReport: ClientMetricReport): boolean {
     if (this.isResubscribeCheckPaused) {
       this.context.logger.info(
@@ -235,6 +189,10 @@ export default class MonitorTask
       return;
     }
 
+    const metricReport = clientMetricReport.getObservableMetrics();
+
+    this.currentVideoDownlinkBandwidthEstimationKbps = metricReport.availableIncomingBitrate;
+
     const downlinkVideoStream: Map<number, StreamMetricReport> = new Map<
       number,
       StreamMetricReport
@@ -283,14 +241,11 @@ export default class MonitorTask
       }
     }
     if (fireCallback) {
-      this.logger.debug(() => {
-        return `Downlink video streams are not receiving enough data`;
-      });
-      this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        Maybe.of(observer.videoNotReceivingEnoughData).map(f =>
-          f.bind(observer)(Array.from(videoReceivingBitrateMap.values()))
-        );
-      });
+      this.logger.info(
+        `One or more video streams are not receiving expected amounts of data ${JSON.stringify(
+          Array.from(videoReceivingBitrateMap.values())
+        )}`
+      );
     }
   }
 
@@ -360,11 +315,6 @@ export default class MonitorTask
       this.logger.info(
         `Downlink bandwidth pressure is high: estimated bandwidth ${this.currentVideoDownlinkBandwidthEstimationKbps}Kbps, required bandwidth ${requiredBandwidthKbps}Kbps`
       );
-      this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        Maybe.of(observer.estimatedDownlinkBandwidthLessThanRequired).map(f =>
-          f.bind(observer)(this.currentVideoDownlinkBandwidthEstimationKbps, requiredBandwidthKbps)
-        );
-      });
     }
   }
 

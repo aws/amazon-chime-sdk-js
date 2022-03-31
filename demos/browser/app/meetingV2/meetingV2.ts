@@ -19,7 +19,6 @@ import {
   BackgroundReplacementVideoFrameProcessorObserver,
   BackgroundReplacementOptions,
   ClientMetricReport,
-  ClientVideoStreamReceivingReport,
   ConsoleLogger,
   ContentShareObserver,
   DataMessage,
@@ -1643,23 +1642,6 @@ export class DemoMeetingApp
       this.buttonStates['button-camera'] = 'off';
       this.displayButtonStates();
     }
-  }
-
-  estimatedDownlinkBandwidthLessThanRequired(
-    estimatedDownlinkBandwidthKbps: number,
-    requiredVideoDownlinkBandwidthKbps: number
-  ): void {
-    this.log(
-      `Estimated downlink bandwidth is ${estimatedDownlinkBandwidthKbps} is less than required bandwidth for video ${requiredVideoDownlinkBandwidthKbps}`
-    );
-  }
-
-  videoNotReceivingEnoughData(videoReceivingReports: ClientVideoStreamReceivingReport[]): void {
-    this.log(
-      `One or more video streams are not receiving expected amounts of data ${JSON.stringify(
-        videoReceivingReports
-      )}`
-    );
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {

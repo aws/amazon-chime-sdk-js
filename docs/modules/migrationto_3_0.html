@@ -212,6 +212,64 @@ messagingSession.start();
 						<li>StateMachineTransitionFailed</li>
 						<li>AudioDeviceSwitched</li>
 					</ul>
+					<a href="#audiovideo-events" id="audiovideo-events" style="color: inherit; text-decoration: none;">
+						<h2>AudioVideo events</h2>
+					</a>
+					<p>We have removed below <code>AudioVideo</code> events in v3.</p>
+					<ul>
+						<li>videoSendHealthDidChange</li>
+						<li>videoSendBandwidthDidChange</li>
+						<li>videoReceiveBandwidthDidChange</li>
+						<li>videoNotReceivingEnoughData</li>
+						<li>estimatedDownlinkBandwidthLessThanRequired</li>
+					</ul>
+					<p><code>estimatedDownlinkBandwidthLessThanRequired</code> and <code>videoNotReceivingEnoughData</code> can not be replicated anymore but you can make use of priority-based downlink to manage videos instead.</p>
+					<pre><code class="language-js">  <span class="hljs-comment">// Before</span>
+<span class="hljs-keyword">const</span> observer = {
+  <span class="hljs-attr">videoSendHealthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">bitrateKbps, packetsPerSecond</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending video bitrate in kilobits per second: <span class="hljs-subst">${videoUpstreamBitrate}</span> and <span class="hljs-subst">${videoUpstreamPacketPerSecond}</span>`</span>);
+  },
+  <span class="hljs-attr">videoSendBandwidthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">newBandwidthKbps, oldBandwidthKbps</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending bandwidth is <span class="hljs-subst">${availableSendBandwidth}</span>, nack count per second is <span class="hljs-subst">${nackCountPerSecond}</span>, and old bandwidth is <span class="hljs-subst">${<span class="hljs-built_in">this</span>.oldSendBandwidth}</span>`</span>);
+  },
+  <span class="hljs-attr">videoReceiveBandwidthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">newBandwidthKbps, oldBandwidthKbps</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Receiving bandwidth is <span class="hljs-subst">${availableRecvBandwidth}</span>, and old bandwidth is <span class="hljs-subst">${<span class="hljs-built_in">this</span>.oldRecvBandwidth}</span>`</span>);
+  },
+}
+<span class="hljs-comment">// After</span>
+<span class="hljs-keyword">const</span> observer = {
+  <span class="hljs-attr">oldSendBandwidthKbs</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">oldRecvBandwidthKbs</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">metricsDidReceive</span>: <span class="hljs-function">(<span class="hljs-params">clientMetricReport</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> metricReport = clientMetricReport.getObservableMetrics();
+
+    <span class="hljs-keyword">const</span> {
+      videoPacketSentPerSecond,
+      videoUpstreamBitrate,
+      nackCountPerSecond,
+    } = metricReport;
+    <span class="hljs-keyword">const</span> availableSendBandwidthKbs = metricReport.availableOutgoingBitrate / <span class="hljs-number">1000</span>;
+    <span class="hljs-keyword">const</span> availableRecvBandwidthKbs = metricReport.availableIncomingBitrate / <span class="hljs-number">1000</span>;
+
+    <span class="hljs-comment">// videoSendHealthDidChange</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending video bitrate in kilobits per second: <span class="hljs-subst">${videoUpstreamBitrate / <span class="hljs-number">1000</span>}</span> and sending packets per second: <span class="hljs-subst">${videoPacketSentPerSecond}</span>`</span>);
+
+    <span class="hljs-comment">// videoSendBandwidthDidChange</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.oldSendBandwidthKbs != availableSendBandwidthKbs) {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending bandwidth is <span class="hljs-subst">${availableSendBandwidthKbs}</span>, nack count per second is <span class="hljs-subst">${nackCountPerSecond}</span>, and old bandwidth is <span class="hljs-subst">${<span class="hljs-built_in">this</span>.oldSendBandwidthKbs}</span>`</span>);
+      <span class="hljs-built_in">this</span>.oldSendBandwidthKbs = availableSendBandwidthKbs;
+    }
+
+    <span class="hljs-comment">// videoReceiveBandwidthDidChange</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.oldRecvBandwidthKbs != availableRecvBandwidthKbs) {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Receiving bandwidth is <span class="hljs-subst">${availableRecvBandwidthKbs}</span>, and old bandwidth is <span class="hljs-subst">${<span class="hljs-built_in">this</span>.oldRecvBandwidthKbs}</span>`</span>);
+      <span class="hljs-built_in">this</span>.oldRecvBandwidthKbs = availableRecvBandwidthKbs;
+    }
+  },
+};
+
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 					<a href="#meetingsessionpostlogger-to-postlogger" id="meetingsessionpostlogger-to-postlogger" style="color: inherit; text-decoration: none;">
 						<h2><code>MeetingSessionPOSTLogger</code> to <code>POSTLogger</code></h2>
 					</a>
@@ -288,10 +346,10 @@ logger.metadata = {
 <span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(…);
 <span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
 
-<span class="hljs-comment">// Before in 2.x</span>
+<span class="hljs-comment">// Before</span>
 <span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, ..., eventReporter);
 
-<span class="hljs-comment">// After in 3.x</span>
+<span class="hljs-comment">// After</span>
 <span class="hljs-keyword">const</span> eventController = <span class="hljs-keyword">new</span> DefaultEventController(configuration, logger, eventReporter)
 <span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, ..., eventController);
 </code></pre>
@@ -302,13 +360,13 @@ logger.metadata = {
 					<a href="#webrtc-metrics" id="webrtc-metrics" style="color: inherit; text-decoration: none;">
 						<h2>WebRTC Metrics</h2>
 					</a>
-					<p>Before in 2.x:</p>
+					<p>Before:</p>
 					<p>The <code>DefaultStatsCollector</code> used a hybrid approach to obtain WebRTC stats from browser:</p>
 					<ul>
 						<li>For Chromium-based browsers, call <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax">legacy (non-promise-based) <code>getStats</code> API</a></li>
 						<li>For any other browsers, call <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax">standardized (promise-based) <code>getStats</code> API</a></li>
 					</ul>
-					<p>After in 3.x:</p>
+					<p>After:</p>
 					<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax">legacy (non-promise-based) <code>getStats</code> API</a> will be removed and <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax">standardized (promise-based) <code>getStats</code> API</a> will be used for all browsers.</p>
 					<p>SDK exposed some common WebRTC metrics publicly via the <code>metricsDidReceive</code> event. We did not make any change to <code>metricsDidReceive</code> itself. However In V3, the legacy WebRTC metric specs will be removed or replaced by equivalent standardized metrics. Here is a table that summarizes all the changes and offers the steps to migrate.</p>
 					<table>
@@ -389,13 +447,13 @@ logger.metadata = {
 						<h3>Get raw RTCStatsReport</h3>
 					</a>
 					<p>We add a new <code>rtcStatsReport</code> property to <code>DefaultClientMetricReport</code> to store raw <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport"><code>RTCStatsReport</code></a> and expose it via <code>metricsDidReceive(clientMetricReport: ClientMetricReport)</code> event. You can get the <code>rtcStatsReport</code> via <code>clientMetricReport.getRTCStatsReport()</code>. These metrics are updated every second.</p>
-					<p>Before in 2.x:</p>
+					<p>Before:</p>
 					<blockquote>
 						<p>Note: The <code>getRTCPeerConnectionStats()</code> is on its way to be deprecated. Please use the new API <code>clientMetricReport.getRTCStatsReport()</code> returned by <code>metricsDidReceive(clientMetricReport)</code> callback instead.</p>
 					</blockquote>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> report: RTCStatsReport = <span class="hljs-keyword">await</span> audioVideo.getRTCPeerConnectionStats();
 </code></pre>
-					<p>After in 3.x:</p>
+					<p>After:</p>
 					<p>It&#39;s recommended to use this one. It can also improve the performance a bit as now you don&#39;t need to explicitly call <code>getStats</code> API again.</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> observer = {
   metricsDidReceive(clientMetricReport: ClientMetricReport): <span class="hljs-built_in">void</span> {

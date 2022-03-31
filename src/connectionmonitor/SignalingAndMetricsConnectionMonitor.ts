@@ -10,20 +10,16 @@ import PingPongObserver from '../pingpongobserver/PingPongObserver';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import StatsCollector from '../statscollector/StatsCollector';
 import { Maybe } from '../utils/Types';
-import VideoTileController from '../videotilecontroller/VideoTileController';
 import ConnectionMonitor from './ConnectionMonitor';
 
 export default class SignalingAndMetricsConnectionMonitor
   implements ConnectionMonitor, PingPongObserver, AudioVideoObserver {
   private isActive = false;
   private hasSeenValidPacketMetricsBefore = false;
-  private lastAvailableSendBandwidthKbps: number = 0;
-  private lastAvailableRecvBandwidthKbps: number = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
     private realtimeController: RealtimeController,
-    private videoTileController: VideoTileController,
     private connectionHealthData: ConnectionHealthData,
     private pingPong: PingPong,
     private statsCollector: StatsCollector
@@ -83,32 +79,12 @@ export default class SignalingAndMetricsConnectionMonitor
     const potentialPacketsReceived = metricReport.audioPacketsReceived;
     const potentialFractionPacketsLostInbound = metricReport.audioPacketsReceivedFractionLoss;
 
-    let videoUpstreamBitrateKbps = 0;
-    const videoUpstreamPacketPerSecond = metricReport.videoPacketSentPerSecond;
-    const videoUpstreamBitrate = metricReport.videoUpstreamBitrate;
-
-    const availableSendBandwidth = metricReport.availableOutgoingBitrate;
-    const availableRecvBandwidth = metricReport.availableIncomingBitrate;
-
     const audioSpeakerDelayMs = metricReport.audioSpeakerDelayMs;
 
-    const nackCountPerSecond = metricReport.nackCountReceivedPerSecond;
-
     // Firefox does not presently have aggregated bandwidth estimation
-    if (typeof availableSendBandwidth === 'number' && !isNaN(availableSendBandwidth)) {
-      this.updateAvailableSendBandwidth(availableSendBandwidth / 1000, nackCountPerSecond);
-    }
-    if (typeof availableRecvBandwidth === 'number' && !isNaN(availableRecvBandwidth)) {
-      this.updateAvailableReceiveBandwidth(availableRecvBandwidth / 1000);
-    }
-    if (typeof videoUpstreamBitrate === 'number' && !isNaN(videoUpstreamBitrate)) {
-      videoUpstreamBitrateKbps = videoUpstreamBitrate / 1000;
-    }
     if (typeof audioSpeakerDelayMs === 'number' && !isNaN(audioSpeakerDelayMs)) {
       this.connectionHealthData.setAudioSpeakerDelayMs(audioSpeakerDelayMs);
     }
-
-    this.monitorVideoUplinkHealth(videoUpstreamBitrateKbps, videoUpstreamPacketPerSecond);
 
     if (
       typeof potentialPacketsReceived === 'number' &&
@@ -150,60 +126,10 @@ export default class SignalingAndMetricsConnectionMonitor
     }
   }
 
-  private updateAvailableSendBandwidth(
-    sendBandwidthKbps: number,
-    nackCountPerSecond: number
-  ): void {
-    if (sendBandwidthKbps !== this.lastAvailableSendBandwidthKbps) {
-      if (this.lastAvailableSendBandwidthKbps === 0) {
-        this.lastAvailableSendBandwidthKbps = sendBandwidthKbps;
-        return;
-      }
-      const prevSendBandwidthKbps = this.lastAvailableSendBandwidthKbps;
-      this.lastAvailableSendBandwidthKbps = sendBandwidthKbps;
-      this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        Maybe.of(observer.videoSendBandwidthDidChange).map(f =>
-          f.bind(observer)(sendBandwidthKbps, prevSendBandwidthKbps, nackCountPerSecond)
-        );
-      });
-    }
-  }
-
-  private updateAvailableReceiveBandwidth(recvBandwidthKbps: number): void {
-    if (recvBandwidthKbps !== this.lastAvailableRecvBandwidthKbps) {
-      if (this.lastAvailableRecvBandwidthKbps === 0) {
-        this.lastAvailableRecvBandwidthKbps = recvBandwidthKbps;
-        return;
-      }
-      const prevRecvBandwidthKbps = this.lastAvailableRecvBandwidthKbps;
-      this.lastAvailableRecvBandwidthKbps = recvBandwidthKbps;
-      this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        Maybe.of(observer.videoReceiveBandwidthDidChange).map(f =>
-          f.bind(observer)(recvBandwidthKbps, prevRecvBandwidthKbps)
-        );
-      });
-    }
-  }
-
   private updateConnectionHealth(): void {
     this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
       Maybe.of(observer.connectionHealthDidChange).map(f =>
         f.bind(observer)(this.connectionHealthData.clone())
-      );
-    });
-  }
-
-  private monitorVideoUplinkHealth(
-    videoUpstreamBitrateKbps: number,
-    videoUpstreamPacketsPerSecond: number
-  ): void {
-    if (!this.videoTileController.hasStartedLocalVideoTile()) {
-      return;
-    }
-
-    this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-      Maybe.of(observer.videoSendHealthDidChange).map(f =>
-        f.bind(observer)(videoUpstreamBitrateKbps, videoUpstreamPacketsPerSecond)
       );
     });
   }
