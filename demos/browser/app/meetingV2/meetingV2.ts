@@ -1613,6 +1613,10 @@ export class DemoMeetingApp
 
   videoInputStreamEnded(deviceId: string): void {
     this.log(`Current video input stream from device id ${deviceId} ended.`);
+    if (this.buttonStates['button-camera'] === 'on') { // Video input is ended, update button state
+      this.buttonStates['button-camera'] = 'off';
+      this.displayButtonStates();
+    }
   }
 
   estimatedDownlinkBandwidthLessThanRequired(
@@ -3028,7 +3032,7 @@ export class DemoMeetingApp
       }
     }
 
-    if (value === 'None') {
+    if (value === 'None' || value === '') {
       return null;
     }
 
