@@ -676,6 +676,7 @@ export class DemoMeetingApp
 
           if (this.isViewOnly) {
             this.updateUXForViewOnlyMode();
+            await this.openAudioOutputFromSelection();
             await this.join();
             this.switchToFlow('flow-meeting');
             this.hideProgress('progress-authenticate');
