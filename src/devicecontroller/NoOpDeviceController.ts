@@ -14,8 +14,14 @@ import VideoQualitySettings from './VideoQualitySettings';
 export default class NoOpDeviceController
   extends NoOpMediaStreamBroker
   implements DeviceControllerBasedMediaStreamBroker {
+  destroyed = false;
+
   constructor(_options?: { enableWebAudio?: boolean }) {
     super();
+  }
+
+  async destroy(): Promise<void> {
+    this.destroyed = true;
   }
 
   listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
