@@ -33,6 +33,12 @@ describe('NoOpDeviceController', () => {
     });
   });
 
+  describe('destroy', () => {
+    it('can be destroyed', () => {
+      expect(deviceController).to.exist;
+    });
+  });
+
   describe('listAudioInputDevices', () => {
     it('returns empty list', async () => {
       const devices = await deviceController.listAudioInputDevices();

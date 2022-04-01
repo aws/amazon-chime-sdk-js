@@ -115,6 +115,7 @@ import Device from './devicecontroller/Device';
 import DeviceChangeObserver from './devicechangeobserver/DeviceChangeObserver';
 import DeviceController from './devicecontroller/DeviceController';
 import DeviceControllerBasedMediaStreamBroker from './mediastreambroker/DeviceControllerBasedMediaStreamBroker';
+import DeviceControllerFacade from './devicecontroller/DeviceControllerFacade';
 import DeviceEventAttributes from './eventcontroller/DeviceEventAttributes';
 import DevicePixelRatioMonitor from './devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from './devicepixelratioobserver/DevicePixelRatioObserver';
@@ -435,6 +436,7 @@ export {
   DeviceChangeObserver,
   DeviceController,
   DeviceControllerBasedMediaStreamBroker,
+  DeviceControllerFacade,
   DeviceEventAttributes,
   DevicePixelRatioMonitor,
   DevicePixelRatioObserver,
