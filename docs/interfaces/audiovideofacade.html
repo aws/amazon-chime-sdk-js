@@ -2050,7 +2050,7 @@
 								<div class="lead">
 									<p>Selects an audio input device to use. The constraint may be a device id,
 										<code>MediaTrackConstraint</code>, <code>MediaStream</code> (containing audio track), or <code>null</code> to
-										indicate no device. It may also be an <a href="audiotransformdevice.html">AudioTransformDevice</a> to customize the
+										generate a dummy audio stream. It may also be an <a href="audiotransformdevice.html">AudioTransformDevice</a> to customize the
 									constraints used or to apply Web Audio transforms.</p>
 								</div>
 								<p>The promise will resolve indicating success or it will throw an appropriate error
@@ -2162,9 +2162,9 @@
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Selects a video input device to use. The constraint may be a device id,
-										<code>MediaTrackConstraint</code>, <code>MediaStream</code> (containing video track), or <code>null</code> to
-										indicate no device. The promise will resolve indicating success or it will
-									throw an appropriate error indicating the failure.</p>
+										<code>MediaTrackConstraint</code>, <code>MediaStream</code> (containing video track). It may also be an <a href="videotransformdevice.html">VideoTransformDevice</a>
+										to apply video transform.
+									The promise will resolve indicating success or it will throw an appropriate error indicating the failure.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2309,8 +2309,8 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Stop the current audio input. This needs to be called to clear out to stop the current video input resources
-									such as audio stream from camera.</p>
+									<p>Stop the current video input. This needs to be called to clear out to stop the current video input resources
+									such as video stream from camera.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>

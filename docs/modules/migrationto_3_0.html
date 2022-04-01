@@ -102,10 +102,10 @@
 					<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
   <span class="hljs-attr">audioVideoDidStop</span>: <span class="hljs-keyword">async</span> sessionStatus =&gt; {
     <span class="hljs-comment">// v3</span>
-    <span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
+    <span class="hljs-keyword">await</span> meetingSession.audioVideo.stopAudioInput();
 
     <span class="hljs-comment">// Or use the destroy API to call stopAudioInput and stopVideoInput.</span>
-    meetingSession.audioVideo.deviceController.destroy()
+    meetingSession.deviceController.destroy();
   },
 };
 meetingSession.audioVideo.addObserver(observer);
@@ -123,7 +123,10 @@ meetingSession.audioVideo.addObserver(observer);
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 </code></pre>
 					<p>In v3, you should call <code>stopVideoInput</code> to stop the video input stream.</p>
-					<pre><code class="language-js"><span class="hljs-comment">// v3</span>
+					<pre><code class="language-js"><span class="hljs-comment">// Before</span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
+
+<span class="hljs-comment">// After</span>
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
 </code></pre>
 					<a href="#updates-to-the-audio-output-api" id="updates-to-the-audio-output-api" style="color: inherit; text-decoration: none;">

@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Fix a bug where joining without selecting any audio device failed when Web Audio is enabled.
+- Fix a minor log info for video input ended event where we say resetting to null device when we just stop the video 
+  input.
 
 ## [3.0.0-beta.2] - 2022-03-09
 
