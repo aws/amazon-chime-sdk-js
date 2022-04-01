@@ -42,7 +42,7 @@ import VideoQualitySettings from './VideoQualitySettings';
  * }
  * ```
  */
-export default interface DeviceController {
+export default interface DeviceControllerFacade {
   /**
    * Lists currently available audio input devices. If `forceUpdate` is set to true, the `deviceInfoCache` will be updated from browser.
    */
