@@ -86,7 +86,6 @@
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
 					<li><a href="../classes/defaultdevicecontroller.html" class="tsd-signature-type">DefaultDeviceController</a></li>
-					<li><a href="../classes/destroyablenoopdevicecontroller.html" class="tsd-signature-type">DestroyableNoOpDeviceController</a></li>
 					<li><a href="../classes/noopdevicecontroller.html" class="tsd-signature-type">NoOpDeviceController</a></li>
 					<li><a href="../classes/noopdevicecontrollerwitheventcontroller.html" class="tsd-signature-type">NoOpDeviceControllerWithEventController</a></li>
 				</ul>
@@ -112,6 +111,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="devicecontrollerbasedmediastreambroker.html#chooseaudiooutput" class="tsd-kind-icon">choose<wbr>Audio<wbr>Output</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="devicecontrollerbasedmediastreambroker.html#choosevideoinputquality" class="tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Quality</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="devicecontrollerbasedmediastreambroker.html#createanalysernodeforaudioinput" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="devicecontrollerbasedmediastreambroker.html#destroy" class="tsd-kind-icon">destroy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="devicecontrollerbasedmediastreambroker.html#getvideoinputqualitysettings" class="tsd-kind-icon">get<wbr>Video<wbr>Input<wbr>Quality<wbr>Settings</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="devicecontrollerbasedmediastreambroker.html#listaudioinputdevices" class="tsd-kind-icon">list<wbr>Audio<wbr>Input<wbr>Devices</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="devicecontrollerbasedmediastreambroker.html#listaudiooutputdevices" class="tsd-kind-icon">list<wbr>Audio<wbr>Output<wbr>Devices</a></li>
@@ -142,7 +142,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#eventcontroller">eventController</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L174">src/devicecontroller/DeviceController.ts:174</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L21">src/devicecontroller/DeviceController.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -240,9 +240,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#adddevicechangeobserver">addDeviceChangeObserver</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#adddevicechangeobserver">addDeviceChangeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L111">src/devicecontroller/DeviceController.ts:111</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L102">src/devicecontroller/DeviceControllerFacade.ts:102</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -301,9 +301,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#chooseaudiooutput">chooseAudioOutput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#chooseaudiooutput">chooseAudioOutput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L106">src/devicecontroller/DeviceController.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L97">src/devicecontroller/DeviceControllerFacade.ts:97</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -332,9 +332,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#choosevideoinputquality">chooseVideoInputQuality</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#choosevideoinputquality">chooseVideoInputQuality</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L164">src/devicecontroller/DeviceController.ts:164</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L155">src/devicecontroller/DeviceControllerFacade.ts:155</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -368,9 +368,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#createanalysernodeforaudioinput">createAnalyserNodeForAudioInput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#createanalysernodeforaudioinput">createAnalyserNodeForAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L131">src/devicecontroller/DeviceController.ts:131</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L122">src/devicecontroller/DeviceControllerFacade.ts:122</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -391,6 +391,29 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a name="destroy" class="tsd-anchor"></a>
+					<h3>destroy</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">destroy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="destroyable.html">Destroyable</a>.<a href="destroyable.html#destroy">destroy</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/destroyable/Destroyable.ts#L11">src/destroyable/Destroyable.ts:11</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Dispose of this instance. The instance cannot be used after this method has been called.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 					<a name="getvideoinputqualitysettings" class="tsd-anchor"></a>
 					<h3>get<wbr>Video<wbr>Input<wbr>Quality<wbr>Settings</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
@@ -399,9 +422,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#getvideoinputqualitysettings">getVideoInputQualitySettings</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#getvideoinputqualitysettings">getVideoInputQualitySettings</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L169">src/devicecontroller/DeviceController.ts:169</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L160">src/devicecontroller/DeviceControllerFacade.ts:160</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -422,9 +445,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#listaudioinputdevices">listAudioInputDevices</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#listaudioinputdevices">listAudioInputDevices</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L58">src/devicecontroller/DeviceController.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L49">src/devicecontroller/DeviceControllerFacade.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -451,9 +474,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#listaudiooutputdevices">listAudioOutputDevices</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#listaudiooutputdevices">listAudioOutputDevices</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L68">src/devicecontroller/DeviceController.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L59">src/devicecontroller/DeviceControllerFacade.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -480,9 +503,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#listvideoinputdevices">listVideoInputDevices</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#listvideoinputdevices">listVideoInputDevices</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L63">src/devicecontroller/DeviceController.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L54">src/devicecontroller/DeviceControllerFacade.ts:54</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -509,9 +532,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#mixintoaudioinput">mixIntoAudioInput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#mixintoaudioinput">mixIntoAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L158">src/devicecontroller/DeviceController.ts:158</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L149">src/devicecontroller/DeviceControllerFacade.ts:149</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -561,9 +584,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#removedevicechangeobserver">removeDeviceChangeObserver</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#removedevicechangeobserver">removeDeviceChangeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L116">src/devicecontroller/DeviceController.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L107">src/devicecontroller/DeviceControllerFacade.ts:107</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -622,9 +645,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#setdevicelabeltrigger">setDeviceLabelTrigger</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#setdevicelabeltrigger">setDeviceLabelTrigger</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L153">src/devicecontroller/DeviceController.ts:153</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L144">src/devicecontroller/DeviceControllerFacade.ts:144</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -665,9 +688,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#startaudioinput">startAudioInput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#startaudioinput">startAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L79">src/devicecontroller/DeviceController.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L70">src/devicecontroller/DeviceControllerFacade.ts:70</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -699,9 +722,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#startvideoinput">startVideoInput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#startvideoinput">startVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L93">src/devicecontroller/DeviceController.ts:93</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L84">src/devicecontroller/DeviceControllerFacade.ts:84</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -731,9 +754,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#startvideopreviewforvideoinput">startVideoPreviewForVideoInput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#startvideopreviewforvideoinput">startVideoPreviewForVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L140">src/devicecontroller/DeviceController.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L131">src/devicecontroller/DeviceControllerFacade.ts:131</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -764,9 +787,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#stopaudioinput">stopAudioInput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#stopaudioinput">stopAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L85">src/devicecontroller/DeviceController.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L76">src/devicecontroller/DeviceControllerFacade.ts:76</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -788,9 +811,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#stopvideoinput">stopVideoInput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#stopvideoinput">stopVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L99">src/devicecontroller/DeviceController.ts:99</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L90">src/devicecontroller/DeviceControllerFacade.ts:90</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -812,9 +835,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#stopvideopreviewforvideoinput">stopVideoPreviewForVideoInput</a></p>
+								<p>Inherited from <a href="devicecontrollerfacade.html">DeviceControllerFacade</a>.<a href="devicecontrollerfacade.html#stopvideopreviewforvideoinput">stopVideoPreviewForVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceController.ts#L146">src/devicecontroller/DeviceController.ts:146</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DeviceControllerFacade.ts#L137">src/devicecontroller/DeviceControllerFacade.ts:137</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -901,6 +924,9 @@
 								<a href="devicecontrollerbasedmediastreambroker.html#createanalysernodeforaudioinput" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+								<a href="devicecontrollerbasedmediastreambroker.html#destroy" class="tsd-kind-icon">destroy</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="devicecontrollerbasedmediastreambroker.html#getvideoinputqualitysettings" class="tsd-kind-icon">get<wbr>Video<wbr>Input<wbr>Quality<wbr>Settings</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
@@ -968,13 +994,12 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
