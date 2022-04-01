@@ -38,10 +38,10 @@ In v3, you should call `stopAudioInput` to stop sending an audio stream when you
 const observer = {
   audioVideoDidStop: async sessionStatus => {
     // v3
-    await meetingSession.audioVideo.stopVideoInput();
+    await meetingSession.audioVideo.stopAudioInput();
 
     // Or use the destroy API to call stopAudioInput and stopVideoInput.
-    meetingSession.audioVideo.deviceController.destroy()
+    meetingSession.deviceController.destroy();
   },
 };
 meetingSession.audioVideo.addObserver(observer);
@@ -64,7 +64,10 @@ await meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 In v3, you should call `stopVideoInput` to stop the video input stream.
 
 ```js
-// v3
+// Before
+await meetingSession.audioVideo.chooseVideoInputDevice(null);
+
+// After
 await meetingSession.audioVideo.stopVideoInput();
 ```
 

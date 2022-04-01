@@ -44,9 +44,9 @@ import VideoQualitySettings from './VideoQualitySettings';
  * When you are done using a `DeviceController`, you should perform some
  * cleanup steps in order to avoid memory leaks:
  *
- * 1. Deselect any audio input or output devices by calling
- *    {@link DeviceController.startAudioInput} and {@link
- *    DeviceController.chooseAudioOutput} with `null`.
+ * 1. Deselect any audio input or video input devices by calling
+ *    {@link DeviceController.stopAudioInput} and {@link
+ *    DeviceController.stopVideoInput}.
  * 2. Remove any device change observers that you registered by using
  *    {@link DeviceController.removeDeviceChangeObserver}.
  * 3. Drop your reference to the controller to allow it to be garbage collected.
@@ -70,7 +70,7 @@ export default interface DeviceController {
   /**
    * Selects an audio input device to use. The constraint may be a device id,
    * `MediaTrackConstraint`, `MediaStream` (containing audio track), or `null` to
-   * indicate no device. It may also be an {@link AudioTransformDevice} to customize the
+   * generate a dummy audio stream. It may also be an {@link AudioTransformDevice} to customize the
    * constraints used or to apply Web Audio transforms.
    *
    * The promise will resolve indicating success or it will throw an appropriate error
@@ -86,15 +86,15 @@ export default interface DeviceController {
 
   /**
    * Selects a video input device to use. The constraint may be a device id,
-   * `MediaTrackConstraint`, `MediaStream` (containing video track), or `null` to
-   * indicate no device. The promise will resolve indicating success or it will
-   * throw an appropriate error indicating the failure.
+   * `MediaTrackConstraint`, `MediaStream` (containing video track). It may also be an {@link VideoTransformDevice}
+   * to apply video transform.
+   * The promise will resolve indicating success or it will throw an appropriate error indicating the failure.
    */
   startVideoInput(device: VideoInputDevice): Promise<MediaStream | undefined>;
 
   /**
-   * Stop the current audio input. This needs to be called to clear out to stop the current video input resources
-   * such as audio stream from camera.
+   * Stop the current video input. This needs to be called to clear out to stop the current video input resources
+   * such as video stream from camera.
    */
   stopVideoInput(): Promise<void>;
 

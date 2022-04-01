@@ -2120,7 +2120,7 @@ describe('DefaultDeviceController', () => {
         await deviceController.acquireVideoInputStream();
         throw new Error('This line should not be reached.');
       } catch (e) {
-        expect(e.message).includes(`no video device chosen`);
+        expect(e.message).includes(`No video device chosen`);
       }
     });
 

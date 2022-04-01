@@ -431,7 +431,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const GlobalAny = global as any;
     GlobalAny['window'] &&
-      GlobalAny['window']['addEventListener'] &&
+      GlobalAny['window']['removeEventListener'] &&
       window.removeEventListener('unload', this.unloadHandler);
     this.unloadHandler = null;
   }

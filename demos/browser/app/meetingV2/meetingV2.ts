@@ -295,6 +295,8 @@ export class DemoMeetingApp
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
 
+  isViewOnly = false;
+
   // feature flags
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
@@ -549,6 +551,10 @@ export class DemoMeetingApp
       (document.getElementById('priority-downlink-policy') as HTMLInputElement).disabled = true;
     }
 
+    document.getElementById('join-view-only').addEventListener('change', () => {
+      this.isViewOnly = (document.getElementById('join-view-only') as HTMLInputElement).checked;
+    });
+
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
 
@@ -668,6 +674,13 @@ export class DemoMeetingApp
           (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
 
+          if (this.isViewOnly) {
+            this.updateUXForViewOnlyMode();
+            await this.join();
+            this.switchToFlow('flow-meeting');
+            this.hideProgress('progress-authenticate');
+            return;
+          }
           await this.initVoiceFocus();
           await this.initBackgroundBlur();
           await this.initBackgroundReplacement();
@@ -1474,6 +1487,18 @@ export class DemoMeetingApp
     return configuration.credentials;
   }
 
+  updateUXForViewOnlyMode() {
+    for (const button in this.buttonStates) {
+      if (button === 'button-speaker' || button === 'button-video-stats' || button === 'button-live-transcription') {
+        continue;
+      }
+      this.toggleButton(button, 'disabled');
+    }
+
+    // Mute since we use dummy audio
+    this.audioVideo.realtimeMuteLocalAudio();
+  }
+
   updateUXForReplicaMeetingPromotionState(promotedState: 'promoted' | 'demoted') {
     const isPromoted = promotedState === 'promoted'
 
@@ -1757,7 +1782,7 @@ export class DemoMeetingApp
         this.createLogStream(configuration, 'create_log_stream'),
         this.createLogStream(configuration, 'create_browser_event_log_stream'),
       ]);
-      
+
       this.meetingSessionPOSTLogger = getPOSTLogger(configuration, 'SDK', `${DemoMeetingApp.BASE_URL}logs`, this.logLevel);
       this.meetingLogger = new MultiLogger(
         consoleLogger,
@@ -2411,7 +2436,7 @@ export class DemoMeetingApp
     if (!this.defaultBrowserBehaviour.doesNotSupportMediaDeviceLabels()) {
       this.audioVideo.setDeviceLabelTrigger(
         async (): Promise<MediaStream> => {
-          if (this.isRecorder() || this.isBroadcaster()) {
+          if (this.isRecorder() || this.isBroadcaster() || this.isViewOnly) {
             throw new Error('Recorder or Broadcaster does not need device labels');
           }
           this.switchToFlow('flow-need-permission');
@@ -2778,7 +2803,13 @@ export class DemoMeetingApp
       undefined,
       async (name: string) => {
         try {
-          await this.openVideoInputFromSelection(name, false);
+          // If video is already started sending or the video button is enabled, then reselect a new stream
+          // Otherwise, just update the device.
+          if (this.meetingSession.audioVideo.hasStartedLocalVideoTile()) {
+            await this.openVideoInputFromSelection(name, false);
+          } else {
+            this.selectedVideoInput = name;
+          }
         } catch (err) {
           fatal(err);
         }
