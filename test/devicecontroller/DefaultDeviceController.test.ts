@@ -10,6 +10,7 @@ import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObs
 import AudioInputDevice from '../../src/devicecontroller/AudioInputDevice';
 import AudioTransformDevice from '../../src/devicecontroller/AudioTransformDevice';
 import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
+import Device from '../../src/devicecontroller/Device';
 import GetUserMediaError from '../../src/devicecontroller/GetUserMediaError';
 import NotFoundError from '../../src/devicecontroller/NotFoundError';
 import NotReadableError from '../../src/devicecontroller/NotReadableError';
@@ -806,12 +807,12 @@ describe('DefaultDeviceController', () => {
       }
     });
 
-    it('Do not log error if choose null device with no device cache', () => {
+    it('Do not log error if choose null device with no device cache', async () => {
       const e = sinon.spy(logger, 'error');
       const i = sinon.spy(logger, 'info');
       const w = sinon.spy(logger, 'warn');
 
-      deviceController.startAudioInput(null);
+      await deviceController.startAudioInput(null);
 
       expect(e.notCalled).to.be.true;
       expect(i.called).to.be.true;
@@ -822,12 +823,12 @@ describe('DefaultDeviceController', () => {
       w.restore();
     });
 
-    it('Do not log error if choose a media stream without device Id with no device cache', () => {
+    it('Do not log error if choose a media stream without device Id with no device cache', async () => {
       const e = sinon.spy(logger, 'error');
       const i = sinon.spy(logger, 'info');
       const w = sinon.spy(logger, 'warn');
 
-      deviceController.startAudioInput(new MediaStream());
+      await deviceController.startAudioInput(new MediaStream());
 
       expect(e.notCalled).to.be.true;
       expect(i.called).to.be.true;
@@ -1046,15 +1047,6 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached.');
       }
       expect(spy.calledOnce).to.be.true;
-    });
-
-    it('throw an error if starting another audio input when another is still in progress', () => {
-      deviceController.startAudioInput('abc').then(stream => {
-        expect(stream).to.not.be.undefined;
-      });
-      return expect(deviceController.startAudioInput('def')).to.be.eventually.rejectedWith(
-        'Another start audio input is in progress'
-      );
     });
   });
 
@@ -1486,15 +1478,6 @@ describe('DefaultDeviceController', () => {
       await device.stop();
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
-
-    it('throw an error if starting another video input when another is still in progress', () => {
-      deviceController.startVideoInput('abc').then(stream => {
-        expect(stream).to.not.be.undefined;
-      });
-      return expect(deviceController.startVideoInput('def')).to.be.eventually.rejectedWith(
-        'Another start video input is in progress'
-      );
-    });
   });
 
   describe('handleGetUserMediaError', () => {
@@ -1921,16 +1904,6 @@ describe('DefaultDeviceController', () => {
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
-    it('throw error if called when startAudioInput is in progress', done => {
-      deviceController.startAudioInput(stringDeviceId).then(stream => {
-        expect(stream).to.not.be.undefined;
-        done();
-      });
-      expect(deviceController.stopAudioInput()).to.be.eventually.rejectedWith(
-        'An audio input is starting'
-      );
-    });
-
     it("disconnects the audio input source node, not the given stream's tracks", async () => {
       enableWebAudio(true);
       const stream = await deviceController.startAudioInput(stringDeviceId);
@@ -2020,16 +1993,6 @@ describe('DefaultDeviceController', () => {
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
-    it('throw error if called when startVideoInput is in progress', done => {
-      deviceController.startVideoInput(stringDeviceId).then(stream => {
-        expect(stream).to.not.be.undefined;
-        done();
-      });
-      expect(deviceController.stopVideoInput()).to.be.eventually.rejectedWith(
-        'A video input is starting'
-      );
-    });
-
     it('Sending videoInputDidChange with undefined if calling stopVideoInput', () => {
       let callbackVideoStream;
       const observer = {
@@ -2040,6 +2003,56 @@ describe('DefaultDeviceController', () => {
       deviceController.addMediaStreamBrokerObserver(observer);
       deviceController.stopVideoInput();
       expect(callbackVideoStream).to.be.undefined;
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+  });
+
+  describe('Handling of multiple input calls', () => {
+    it('calling stop after start will stop the video input stream', async () => {
+      const callbackVideoStreams: Array<MediaStream | undefined> = [];
+      const observer = {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
+          callbackVideoStreams.push(videoStream);
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      deviceController.startVideoInput(stringDeviceId);
+      deviceController.stopVideoInput();
+      await delay(100);
+      expect(callbackVideoStreams.length).to.eq(2);
+      expect(callbackVideoStreams[0]).to.not.be.undefined;
+      expect(callbackVideoStreams[1]).to.be.undefined;
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('calling start video input multiple times will result in multiple different streams', async () => {
+      const callbackVideoStreams: Array<MediaStream | undefined> = [];
+      const observer = {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
+          callbackVideoStreams.push(videoStream);
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      const stringDeviceIds: Device[] = [
+        'device-id-1',
+        'device-id-2',
+        'device-id-3',
+        'device-id-4',
+      ];
+      deviceController.startVideoInput(stringDeviceIds[0]);
+      deviceController.startVideoInput(stringDeviceIds[1]);
+      deviceController.startVideoInput(stringDeviceIds[2]);
+      deviceController.startVideoInput(stringDeviceIds[3]);
+      await delay(100);
+      expect(callbackVideoStreams.length).to.eq(4);
+      // @ts-ignore
+      expect(callbackVideoStreams[0].constraints.video.deviceId.exact).to.eq(stringDeviceIds[0]);
+      // @ts-ignore
+      expect(callbackVideoStreams[1].constraints.video.deviceId.exact).to.eq(stringDeviceIds[1]);
+      // @ts-ignore
+      expect(callbackVideoStreams[2].constraints.video.deviceId.exact).to.eq(stringDeviceIds[2]);
+      // @ts-ignore
+      expect(callbackVideoStreams[3].constraints.video.deviceId.exact).to.eq(stringDeviceIds[3]);
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
   });

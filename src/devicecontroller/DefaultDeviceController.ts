@@ -11,6 +11,7 @@ import DefaultMediaDeviceFactory from '../mediadevicefactory/DefaultMediaDeviceF
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import PromiseQueue from '../utils/PromiseQueue';
 import { Maybe } from '../utils/Types';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import AudioInputDevice from './AudioInputDevice';
@@ -71,8 +72,8 @@ export default class DefaultDeviceController
   private readonly useWebAudio: boolean = false;
   private readonly useMediaConstraintsFallback: boolean = true;
 
-  private isStartAudioInputInProgress: boolean = false;
-  private isStartVideoInputInProgress: boolean = false;
+  private audioInputTaskQueue: PromiseQueue = new PromiseQueue();
+  private videoInputTaskQueue: PromiseQueue = new PromiseQueue();
 
   // This handles the dispatch of `mute` and `unmute` events from audio tracks.
   // There's a bit of a semantic mismatch here if input streams allow individual component tracks to be muted,
@@ -216,14 +217,14 @@ export default class DefaultDeviceController
   }
 
   async startAudioInput(device: AudioInputDevice): Promise<MediaStream | undefined> {
+    return await this.audioInputTaskQueue.add(() => this.startAudioInputTask(device));
+  }
+
+  private async startAudioInputTask(device: AudioInputDevice): Promise<MediaStream | undefined> {
     if (device === undefined) {
       this.logger.error('Audio input device cannot be undefined');
       return undefined;
     }
-    if (this.isStartAudioInputInProgress) {
-      throw new Error('Another start audio input is in progress');
-    }
-    this.isStartAudioInputInProgress = true;
 
     try {
       if (isAudioTransformDevice(device)) {
@@ -249,15 +250,14 @@ export default class DefaultDeviceController
       }
     } catch (error) {
       throw error;
-    } finally {
-      this.isStartAudioInputInProgress = false;
     }
   }
 
   async stopAudioInput(): Promise<void> {
-    if (this.isStartAudioInputInProgress) {
-      throw new Error('An audio input is starting');
-    }
+    return this.audioInputTaskQueue.add(() => this.stopAudioInputTask());
+  }
+
+  private async stopAudioInputTask(): Promise<void> {
     try {
       if (this.useWebAudio) {
         this.releaseAudioTransformStream();
@@ -374,15 +374,14 @@ export default class DefaultDeviceController
   }
 
   async startVideoInput(device: VideoInputDevice): Promise<MediaStream | undefined> {
+    return await this.videoInputTaskQueue.add(() => this.startVideoInputTask(device));
+  }
+
+  private async startVideoInputTask(device: VideoInputDevice): Promise<MediaStream | undefined> {
     if (!device) {
       this.logger.error('Invalid video input device');
       return undefined;
     }
-
-    if (this.isStartVideoInputInProgress) {
-      throw new Error('Another start video input is in progress');
-    }
-    this.isStartVideoInputInProgress = true;
 
     try {
       if (isVideoTransformDevice(device)) {
@@ -406,15 +405,14 @@ export default class DefaultDeviceController
       return this.activeDevices['video'].stream;
     } catch (error) {
       throw error;
-    } finally {
-      this.isStartVideoInputInProgress = false;
     }
   }
 
   async stopVideoInput(): Promise<void> {
-    if (this.isStartVideoInputInProgress) {
-      throw new Error('A video input is starting');
-    }
+    return this.videoInputTaskQueue.add(() => this.stopVideoInputTask());
+  }
+
+  private async stopVideoInputTask(): Promise<void> {
     try {
       if (this.chosenVideoInputIsTransformDevice()) {
         this.releaseVideoTransformStream();
