@@ -51,8 +51,8 @@ class TranscriptionTest extends SdkBaseTest {
       }
 
       const hitPct = 100 * hits / total;
-      if (hitPct < 80) {
-        console.log(`Need at least 80% of expected tokens in transcript content, got ${hitPct}%. (isMedicalTranscribe == ${isMedicalTranscribe}, actual == "${actualContent}", expected == "${expectedContent}")`);
+      if (hitPct < 70) {
+        console.log(`Need at least 70% of expected tokens in transcript content, got ${hitPct}%. (isMedicalTranscribe == ${isMedicalTranscribe}, actual == "${actualContent}", expected == "${expectedContent}")`);
         return false;
       } else {
         console.log(`Success, ${hitPct}% of expected tokens present in transcripts`);
