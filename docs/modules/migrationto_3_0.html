@@ -122,7 +122,8 @@ meetingSession.audioVideo.addObserver(observer);
 <span class="hljs-comment">// After</span>
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 </code></pre>
-					<p>In v3, you should call <code>stopVideoInput</code> to stop the video input stream.</p>
+					<p>In v3, you should call <code>stopVideoInput</code> to stop the video input stream. <code>null</code> is no longer a valid input for
+					<code>startVideoInput</code> (<code>null</code> is also removed from <code>Device</code> type).</p>
 					<pre><code class="language-js"><span class="hljs-comment">// Before</span>
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
 
