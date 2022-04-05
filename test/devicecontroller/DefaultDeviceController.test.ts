@@ -2664,12 +2664,12 @@ describe('DefaultDeviceController', () => {
       expect(DefaultDeviceController.getIntrinsicDeviceId(undefined)).to.be.undefined;
     });
 
-    it('Return null if the input device is null', () => {
-      expect(DefaultDeviceController.getIntrinsicDeviceId(null)).to.be.null;
+    it('Return undefined if the input device is null', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId(null)).to.be.undefined;
     });
 
-    it('Return empty string if the input device is an empty string', () => {
-      expect(DefaultDeviceController.getIntrinsicDeviceId('')).to.equal('');
+    it('Return undefined if the input device is an empty string', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId('')).to.be.undefined;
     });
 
     it('Return default if the input device is default string', () => {
@@ -2691,9 +2691,9 @@ describe('DefaultDeviceController', () => {
       expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.undefined;
     });
 
-    it('Return null if the input constraint deviceId is null', () => {
+    it('Return undefined if the input constraint deviceId is null', () => {
       const constraints: MediaTrackConstraints = { deviceId: null };
-      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.null;
+      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.undefined;
     });
 
     it('Return string if the input constraint deviceId is of type string', () => {

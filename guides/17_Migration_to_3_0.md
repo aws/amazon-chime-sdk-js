@@ -61,7 +61,8 @@ await meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.devi
 await meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 ```
 
-In v3, you should call `stopVideoInput` to stop the video input stream.
+In v3, you should call `stopVideoInput` to stop the video input stream. `null` is no longer a valid input for 
+`startVideoInput` (`null` is also removed from `Device` type).
 
 ```js
 // Before

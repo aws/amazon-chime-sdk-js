@@ -709,13 +709,9 @@ export default class DefaultDeviceController
     }
   }
 
-  static getIntrinsicDeviceId(device: Device): string | string[] | null {
-    if (device === undefined) {
+  static getIntrinsicDeviceId(device: Device | null): string | string[] | undefined {
+    if (!device) {
       return undefined;
-    }
-
-    if (device === null) {
-      return null;
     }
 
     if (typeof device === 'string') {
@@ -728,12 +724,8 @@ export default class DefaultDeviceController
 
     const constraints: MediaTrackConstraints = device as MediaTrackConstraints;
     const deviceIdConstraints = constraints.deviceId;
-    if (deviceIdConstraints === undefined) {
+    if (!deviceIdConstraints) {
       return undefined;
-    }
-
-    if (deviceIdConstraints === null) {
-      return null;
     }
 
     if (typeof deviceIdConstraints === 'string' || Array.isArray(deviceIdConstraints)) {
@@ -1065,7 +1057,10 @@ export default class DefaultDeviceController
     return false;
   }
 
-  private async chooseInputIntrinsicDevice(kind: 'audio' | 'video', device: Device): Promise<void> {
+  private async chooseInputIntrinsicDevice(
+    kind: 'audio' | 'video',
+    device: Device | null
+  ): Promise<void> {
     // N.B.,: the input device might already have augmented constraints supplied
     // by an `AudioTransformDevice`. `getMediaStreamConstraints` will respect
     // settings supplied by the device.
