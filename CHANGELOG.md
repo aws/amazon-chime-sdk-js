@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Extend the `DeviceController` interface to include `Destroyable`.
+- Handle multiple start/stop audio/video input calls by calling them in order instead of throwing errors.
 
 ### Fixed
 - Fix a bug where joining without selecting any audio device failed when Web Audio is enabled.
