@@ -4,6 +4,6 @@
 import AudioTransformDevice from './AudioTransformDevice';
 import Device from './Device';
 
-type AudioInputDevice = Device | AudioTransformDevice;
+type AudioInputDevice = Device | AudioTransformDevice | null;
 
 export default AudioInputDevice;

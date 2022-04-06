@@ -271,19 +271,33 @@ describe('ContentShareMediaStreamBroker', () => {
     });
   });
 
-  describe('releaseMediaStream', () => {
-    it('Warning is logged', () => {
-      const spy = sinon.spy(noOpLogger, 'warn');
-      contentShareMediaStreamBroker.releaseMediaStream(null);
-      spy.calledOnceWith('release media stream called');
+  describe('unsupported media stream broker APIs', () => {
+    it('muteLocalAudioInputStream not supported', () => {
+      expect(() => {
+        contentShareMediaStreamBroker.muteLocalAudioInputStream();
+      }).to.throw('unsupported');
+    });
+
+    it('unmuteLocalAudioInputStream not supported', () => {
+      expect(() => {
+        contentShareMediaStreamBroker.unmuteLocalAudioInputStream();
+      }).to.throw('unsupported');
     });
   });
 
-  describe('bindToAudioVideoController', () => {
-    it('not supported', () => {
-      expect(() => {
-        contentShareMediaStreamBroker.bindToAudioVideoController(null);
-      }).to.throw('unsupported');
+  describe('media stream broker observer', () => {
+    it('addMediaStreamBrokerObserver', () => {
+      const observer = {
+        videoInputDidChange(_videoStream: MediaStream | undefined): void {},
+      };
+      contentShareMediaStreamBroker.addMediaStreamBrokerObserver(observer);
+    });
+
+    it('removeMediaStreamBrokerObserver', () => {
+      const observer = {
+        videoInputDidChange(_videoStream: MediaStream | undefined): void {},
+      };
+      contentShareMediaStreamBroker.removeMediaStreamBrokerObserver(observer);
     });
   });
 });

@@ -157,7 +157,6 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultrealtimecontroller.html#realtimesetattendeeidpresence" class="tsd-kind-icon">realtime<wbr>Set<wbr>Attendee<wbr>IdPresence</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultrealtimecontroller.html#realtimesetcanunmutelocalaudio" class="tsd-kind-icon">realtime<wbr>Set<wbr>Can<wbr>Unmute<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultrealtimecontroller.html#realtimesetlocalattendeeid" class="tsd-kind-icon">realtime<wbr>Set<wbr>Local<wbr>Attendee<wbr>Id</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultrealtimecontroller.html#realtimesetlocalaudioinput" class="tsd-kind-icon">realtime<wbr>Set<wbr>Local<wbr>Audio<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultrealtimecontroller.html#realtimesubscribetoattendeeidpresence" class="tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultrealtimecontroller.html#realtimesubscribetofatalerror" class="tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToFatal<wbr>Error</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultrealtimecontroller.html#realtimesubscribetolocalsignalstrengthchange" class="tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToLocal<wbr>Signal<wbr>Strength<wbr>Change</a></li>
@@ -187,17 +186,20 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Realtime<wbr>Controller<span class="tsd-signature-symbol">(</span>transcriptionController<span class="tsd-signature-symbol">?: </span><a href="../interfaces/transcriptioncontroller.html" class="tsd-signature-type">TranscriptionController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultrealtimecontroller.html" class="tsd-signature-type">DefaultRealtimeController</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Realtime<wbr>Controller<span class="tsd-signature-symbol">(</span>mediaStreamBroker<span class="tsd-signature-symbol">: </span><a href="../interfaces/mediastreambroker.html" class="tsd-signature-type">MediaStreamBroker</a>, transcriptionController<span class="tsd-signature-symbol">?: </span><a href="../interfaces/transcriptioncontroller.html" class="tsd-signature-type">TranscriptionController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultrealtimecontroller.html" class="tsd-signature-type">DefaultRealtimeController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L59">src/realtimecontroller/DefaultRealtimeController.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L60">src/realtimecontroller/DefaultRealtimeController.ts:60</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
+								<li>
+									<h5>mediaStreamBroker: <a href="../interfaces/mediastreambroker.html" class="tsd-signature-type">MediaStreamBroker</a></h5>
+								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> transcriptionController: <a href="../interfaces/transcriptioncontroller.html" class="tsd-signature-type">TranscriptionController</a></h5>
 								</li>
@@ -219,7 +221,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L458">src/realtimecontroller/DefaultRealtimeController.ts:458</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L447">src/realtimecontroller/DefaultRealtimeController.ts:447</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/transcriptioncontroller.html" class="tsd-signature-type">TranscriptionController</a></h4>
@@ -240,7 +242,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimecanunmutelocalaudio">realtimeCanUnmuteLocalAudio</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L175">src/realtimecontroller/DefaultRealtimeController.ts:175</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L164">src/realtimecontroller/DefaultRealtimeController.ts:164</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -258,7 +260,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimeislocalaudiomuted">realtimeIsLocalAudioMuted</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L247">src/realtimecontroller/DefaultRealtimeController.ts:247</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L236">src/realtimecontroller/DefaultRealtimeController.ts:236</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -276,7 +278,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimemutelocalaudio">realtimeMuteLocalAudio</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L179">src/realtimecontroller/DefaultRealtimeController.ts:179</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L168">src/realtimecontroller/DefaultRealtimeController.ts:168</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -294,7 +296,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimereceivedatamessage">realtimeReceiveDataMessage</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L425">src/realtimecontroller/DefaultRealtimeController.ts:425</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L414">src/realtimecontroller/DefaultRealtimeController.ts:414</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -318,7 +320,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimesenddatamessage">realtimeSendDataMessage</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L388">src/realtimecontroller/DefaultRealtimeController.ts:388</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L377">src/realtimecontroller/DefaultRealtimeController.ts:377</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -347,7 +349,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L71">src/realtimecontroller/DefaultRealtimeController.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L75">src/realtimecontroller/DefaultRealtimeController.ts:75</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -383,7 +385,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimesetcanunmutelocalaudio">realtimeSetCanUnmuteLocalAudio</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L142">src/realtimecontroller/DefaultRealtimeController.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L131">src/realtimecontroller/DefaultRealtimeController.ts:131</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -406,7 +408,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L66">src/realtimecontroller/DefaultRealtimeController.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L70">src/realtimecontroller/DefaultRealtimeController.ts:70</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -423,30 +425,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="realtimesetlocalaudioinput" class="tsd-anchor"></a>
-					<h3>realtime<wbr>Set<wbr>Local<wbr>Audio<wbr>Input</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Set<wbr>Local<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span>audioInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimesetlocalaudioinput">realtimeSetLocalAudioInput</a></p>
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L127">src/realtimecontroller/DefaultRealtimeController.ts:127</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>audioInput: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="realtimesubscribetoattendeeidpresence" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -456,7 +434,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L90">src/realtimecontroller/DefaultRealtimeController.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L94">src/realtimecontroller/DefaultRealtimeController.ts:94</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -509,7 +487,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L439">src/realtimecontroller/DefaultRealtimeController.ts:439</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L428">src/realtimecontroller/DefaultRealtimeController.ts:428</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -550,7 +528,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L340">src/realtimecontroller/DefaultRealtimeController.ts:340</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L329">src/realtimecontroller/DefaultRealtimeController.ts:329</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -591,7 +569,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L228">src/realtimecontroller/DefaultRealtimeController.ts:228</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L217">src/realtimecontroller/DefaultRealtimeController.ts:217</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -632,7 +610,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L402">src/realtimecontroller/DefaultRealtimeController.ts:402</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L391">src/realtimecontroller/DefaultRealtimeController.ts:391</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -676,7 +654,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L363">src/realtimecontroller/DefaultRealtimeController.ts:363</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L352">src/realtimecontroller/DefaultRealtimeController.ts:352</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -723,7 +701,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L156">src/realtimecontroller/DefaultRealtimeController.ts:156</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L145">src/realtimecontroller/DefaultRealtimeController.ts:145</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -765,7 +743,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimesubscribetovolumeindicator">realtimeSubscribeToVolumeIndicator</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L253">src/realtimecontroller/DefaultRealtimeController.ts:253</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L242">src/realtimecontroller/DefaultRealtimeController.ts:242</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -792,7 +770,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimeunmutelocalaudio">realtimeUnmuteLocalAudio</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L201">src/realtimecontroller/DefaultRealtimeController.ts:201</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L190">src/realtimecontroller/DefaultRealtimeController.ts:190</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -810,7 +788,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimeunsubscribefromreceivedatamessage">realtimeUnsubscribeFromReceiveDataMessage</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L417">src/realtimecontroller/DefaultRealtimeController.ts:417</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L406">src/realtimecontroller/DefaultRealtimeController.ts:406</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -833,7 +811,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L374">src/realtimecontroller/DefaultRealtimeController.ts:374</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L363">src/realtimecontroller/DefaultRealtimeController.ts:363</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -881,7 +859,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/realtimecontroller.html">RealtimeController</a>.<a href="../interfaces/realtimecontroller.html#realtimeunsubscribefromvolumeindicator">realtimeUnsubscribeFromVolumeIndicator</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L271">src/realtimecontroller/DefaultRealtimeController.ts:271</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L260">src/realtimecontroller/DefaultRealtimeController.ts:260</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -907,7 +885,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L106">src/realtimecontroller/DefaultRealtimeController.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L110">src/realtimecontroller/DefaultRealtimeController.ts:110</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -960,7 +938,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L447">src/realtimecontroller/DefaultRealtimeController.ts:447</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L436">src/realtimecontroller/DefaultRealtimeController.ts:436</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1001,7 +979,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L352">src/realtimecontroller/DefaultRealtimeController.ts:352</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L341">src/realtimecontroller/DefaultRealtimeController.ts:341</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1042,7 +1020,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L236">src/realtimecontroller/DefaultRealtimeController.ts:236</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L225">src/realtimecontroller/DefaultRealtimeController.ts:225</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1083,7 +1061,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L164">src/realtimecontroller/DefaultRealtimeController.ts:164</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L153">src/realtimecontroller/DefaultRealtimeController.ts:153</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1124,7 +1102,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L289">src/realtimecontroller/DefaultRealtimeController.ts:289</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/DefaultRealtimeController.ts#L278">src/realtimecontroller/DefaultRealtimeController.ts:278</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1195,9 +1173,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultrealtimecontroller.html#realtimesetlocalattendeeid" class="tsd-kind-icon">realtime<wbr>Set<wbr>Local<wbr>Attendee<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="defaultrealtimecontroller.html#realtimesetlocalaudioinput" class="tsd-kind-icon">realtime<wbr>Set<wbr>Local<wbr>Audio<wbr>Input</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultrealtimecontroller.html#realtimesubscribetoattendeeidpresence" class="tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence</a>
@@ -1273,13 +1248,12 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

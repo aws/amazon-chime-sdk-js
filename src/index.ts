@@ -115,6 +115,7 @@ import Device from './devicecontroller/Device';
 import DeviceChangeObserver from './devicechangeobserver/DeviceChangeObserver';
 import DeviceController from './devicecontroller/DeviceController';
 import DeviceControllerBasedMediaStreamBroker from './mediastreambroker/DeviceControllerBasedMediaStreamBroker';
+import DeviceControllerFacade from './devicecontroller/DeviceControllerFacade';
 import DeviceEventAttributes from './eventcontroller/DeviceEventAttributes';
 import DevicePixelRatioMonitor from './devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from './devicepixelratioobserver/DevicePixelRatioObserver';
@@ -150,6 +151,7 @@ import Logger from './logger/Logger';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
+import MediaStreamBrokerObserver from './mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingEventsClientConfiguration from './eventsclientconfiguration/MeetingEventsClientConfiguration';
 import MeetingEventsClientConfigurationAttributes from './eventsclientconfiguration/MeetingEventsClientConfigurationAttributes';
 import MeetingHistoryState from './eventcontroller/MeetingHistoryState';
@@ -160,7 +162,6 @@ import MeetingSessionConfiguration from './meetingsession/MeetingSessionConfigur
 import MeetingSessionCredentials from './meetingsession/MeetingSessionCredentials';
 import MeetingSessionLifecycleEvent from './meetingsession/MeetingSessionLifecycleEvent';
 import MeetingSessionLifecycleEventCondition from './meetingsession/MeetingSessionLifecycleEventCondition';
-import MeetingSessionPOSTLogger from './logger/MeetingSessionPOSTLogger';
 import MeetingSessionStatus from './meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from './meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from './meetingsession/MeetingSessionTURNCredentials';
@@ -193,10 +194,13 @@ import NotReadableError from './devicecontroller/NotReadableError';
 import OnceTask from './task/OnceTask';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
 import OverconstrainedError from './devicecontroller/OverconstrainedError';
+import POSTLogger from './logger/POSTLogger';
+import POSTLoggerOptions from './logger/POSTLoggerOptions';
 import ParallelGroupTask from './task/ParallelGroupTask';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
+import PromiseQueue from './utils/PromiseQueue';
 import PromoteToPrimaryMeetingTask from './task/PromoteToPrimaryMeetingTask';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from './realtimecontroller/RealtimeController';
@@ -210,7 +214,6 @@ import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
 import ReconnectController from './reconnectcontroller/ReconnectController';
 import ReconnectionHealthPolicy from './connectionhealthpolicy/ReconnectionHealthPolicy';
-import ReleaseMediaStreamsTask from './task/ReleaseMediaStreamsTask';
 import RemovableAnalyserNode from './devicecontroller/RemovableAnalyserNode';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
@@ -434,6 +437,7 @@ export {
   DeviceChangeObserver,
   DeviceController,
   DeviceControllerBasedMediaStreamBroker,
+  DeviceControllerFacade,
   DeviceEventAttributes,
   DevicePixelRatioMonitor,
   DevicePixelRatioObserver,
@@ -472,6 +476,7 @@ export {
   MediaDeviceFactory,
   MediaDeviceProxyHandler,
   MediaStreamBroker,
+  MediaStreamBrokerObserver,
   MeetingEventsClientConfiguration,
   MeetingEventsClientConfigurationAttributes,
   MeetingHistoryState,
@@ -482,7 +487,6 @@ export {
   MeetingSessionCredentials,
   MeetingSessionLifecycleEvent,
   MeetingSessionLifecycleEventCondition,
-  MeetingSessionPOSTLogger,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionTURNCredentials,
@@ -517,11 +521,14 @@ export {
   OnceTask,
   OpenSignalingConnectionTask,
   OverconstrainedError,
+  POSTLogger,
+  POSTLoggerOptions,
   ParallelGroupTask,
   PartialOrd,
   PermissionDeniedError,
   PingPong,
   PingPongObserver,
+  PromiseQueue,
   PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,
   RealtimeController,
@@ -535,7 +542,6 @@ export {
   ReceiveVideoStreamIndexTask,
   ReconnectController,
   ReconnectionHealthPolicy,
-  ReleaseMediaStreamsTask,
   RemovableAnalyserNode,
   RemovableObserver,
   RunnableTask,

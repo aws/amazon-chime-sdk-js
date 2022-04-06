@@ -135,9 +135,9 @@ audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt
 <span class="hljs-keyword">const</span> audioInputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listAudioInputDevices();
 <span class="hljs-keyword">const</span> audioOutputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listAudioOutputDevices();
 <span class="hljs-keyword">const</span> videoInputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listVideoInputDevices();
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDevice.deviceId);
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDevice.deviceId);
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(videoInputDevices.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startAudioInput(audioInputDevice.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutput(audioOutputDevice.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDevices.deviceId);
 </code></pre>
 					<a href="#safari-user-are-not-able-to-join-the-meeting-in-view-only-mode" id="safari-user-are-not-able-to-join-the-meeting-in-view-only-mode" style="color: inherit; text-decoration: none;">
 						<h4>Safari user are not able to join the meeting in view-only mode</h4>
@@ -170,7 +170,7 @@ audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt
 					</a>
 					<p>To send audio to the remote attendees, list the available audio input devices and choose an input to use.</p>
 					<p>To retrieve a list of available audio input devices, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listaudioinputdevices">listAudioInputDevices()</a>.</p>
-					<p>To use the chosen audio input device, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#chooseaudioinputdevice">chooseAudioInputDevice(device)</a>.</p>
+					<p>To use the chosen audio input device, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startaudioinput">startAudioInput(device)</a>.</p>
 					<a href="#2d-preview-microphone-volume-levels-optional" id="2d-preview-microphone-volume-levels-optional" style="color: inherit; text-decoration: none;">
 						<h3>2d. Preview microphone volume levels (optional)</h3>
 					</a>
@@ -181,7 +181,7 @@ audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt
 					</a>
 					<p>On browsers that <a href="https://caniuse.com/#search=setSinkId">support setSinkId</a>, you can optionally list the available audio output devices and choose one to use.</p>
 					<p>To retrieve a list of available audio output devices, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listaudiooutputdevices">listAudioOutputDevices()</a>.</p>
-					<p>To use the chosen audio output device, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#chooseaudiooutputdevice">chooseAudioOutputDevice(deviceId)</a>.</p>
+					<p>To use the chosen audio output device, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#chooseaudiooutput">chooseAudioOutput(deviceId)</a>.</p>
 					<a href="#2f-bind-the-audio-output-to-an-audio-element" id="2f-bind-the-audio-output-to-an-audio-element" style="color: inherit; text-decoration: none;">
 						<h3>2f. Bind the audio output to an audio element</h3>
 					</a>
@@ -193,13 +193,17 @@ audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt
 					</a>
 					<p>To send video to remote attendees, list the available video input devices, optionally select video quality settings, and choose a device to use.</p>
 					<p>To get a list of available video input devices, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listvideoinputdevices">listVideoInputDevices()</a>.</p>
-					<p>You can configure the quality of the video that is sent to the remote attendees by calling meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality">chooseVideoInputQuality(width, height, frameRate, maxBandwidthKbps)</a>. The changes take effect the next time a video input device is chosen. The default quality is 960x540 @ 15 fps with a maximum uplink bandwidth of 1400 kbps. The maximum supported quality settings are 1280x720 @ 30 fps with a maximum uplink bandwidth of 2400 Kbps. Actual quality achieved may vary throughout the call depending on what the device, system, and network can provide.</p>
-					<p>To use the chosen video input device, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputdevice">chooseVideoInputDevice(device)</a>.</p>
+					<p>You can configure the quality of the video that is sent to the remote attendees by calling meetingSession.audioVideo.
+						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality">chooseVideoInputQuality(width, height, frameRate)</a>.
+						The changes take effect the next time a video input device is chosen. The default quality is 960x540 @ 15 fps. The maximum supported quality settings
+					are 1280x720 @ 30 fps. Actual quality achieved may vary throughout the call depending on what the device and system can provide.</p>
+					<p>To start or switch a video input device, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startvideoinput">startVideoInput(device)</a>.</p>
+					<p>To stop the current video input device, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopvideoinput">stopVideoInput</a>.</p>
 					<a href="#2h-preview-local-camera-in-a-video-element-optional" id="2h-preview-local-camera-in-a-video-element-optional" style="color: inherit; text-decoration: none;">
 						<h3>2h. Preview local camera in a video element (optional)</h3>
 					</a>
 					<p>Before the session is started, you can start a preview of the video in an HTMLVideoElement in the DOM.</p>
-					<p>To start video preview, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputdevice">startVideoPreviewForVideoInput(element)</a>.</p>
+					<p>To start video preview, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startvideopreviewforvideoinput">startVideoPreviewForVideoInput(element)</a>.</p>
 					<p>To stop video preview, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopvideopreviewforvideoinput">stopVideoPreviewForVideoInput(element)</a>.</p>
 					<a href="#3-register-an-audio-video-observer" id="3-register-an-audio-video-observer" style="color: inherit; text-decoration: none;">
 						<h2>3. Register an audio-video observer</h2>
@@ -209,25 +213,20 @@ audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt
 					<p>To remove an AudioVideoObserver, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#removeobserver">removeObserver(observer)</a>.</p>
 					<p>You should implement the following key observer callbacks:</p>
 					<ul>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart">audioVideoDidStart</a>: occurs when the audio-video session finishes connecting</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting">audioVideoDidStartConnecting</a>: occurs when the audio-video session is in the process of connecting or reconnecting</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart">audioVideoDidStart</a>: occurs when the audio-video session finishes connecting.</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting">audioVideoDidStartConnecting</a>: occurs when the audio-video session is in the process of connecting or reconnecting.</li>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstop">audioVideoDidStop</a>: occurs when the audio-video session has disconnected. Use the provided <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html">MeetingSessionStatus</a> to determine why the session disconnected.</li>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a>: occurs when either a video stream is started or updated. Use the provided VideoTileState to determine the tile ID and the attendee ID of the video stream.</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a>: occurs when a video stream stops and the reference to the tile (the tile ID) is deleted</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a>: occurs when a video stream stops and the reference to the tile (the tile ID) is deleted.</li>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoavailabilitydidchange">videoAvailabilityDidChange</a>: occurs video availability state has changed such as whether the attendee can start local video or whether remote video is available. See <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionvideoavailability.html">MeetingSessionVideoAvailability</a> for more information.</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable">videoSendDidBecomeUnavailable</a>: occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable">videoSendDidBecomeUnavailable</a>: occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video.</li>
 					</ul>
 					<p>You may optionally listen to the following callbacks to monitor aspects of connection health:</p>
 					<ul>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor">connectionDidBecomePoor</a>: occurs when the connection has been poor for a while</li>
 						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo">connectionDidSuggestStopVideo</a>: occurs when the connection has been poor while using video. You can use this to prompt the attendee to turn off video.</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange">connectionHealthDidChange</a>: occurs when connection health has changed</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired">estimatedDownlinkBandwidthLessThanRequired</a>: occurs when the total downlink video bandwidth estimation is less than the required video bitrate</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a>: occurs periodically when WebRTC media stats are available</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata">videoNotReceivingEnoughData</a>: occurs when one or more remote video streams do not meet the expected average bitrate</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange">videoReceiveBandwidthDidChange</a>: occurs when the available video receive bandwidth changed</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange">videoSendBandwidthDidChange</a>: occurs when available video send bandwidth changed</li>
-						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange">videoSendHealthDidChange</a>: occurs when the actual video send bitrate or packets-per-second changes</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange">connectionHealthDidChange</a>: occurs when connection health has changed.</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a>: occurs periodically when WebRTC media stats are available.</li>
 					</ul>
 					<a href="#4-start-and-stop-the-session" id="4-start-and-stop-the-session" style="color: inherit; text-decoration: none;">
 						<h2>4. Start and stop the session</h2>
@@ -236,6 +235,11 @@ audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt
 					<p>To stop the meeting session, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop">stop()</a>.</p>
 					<p>The <code>stop()</code> method does not clean up observers. You can start and stop a session multiple times using the same observers. In other words observers are not tied to the lifecycle of the session.</p>
 					<p>You can specify a <code>signalingOnly</code> option when calling <code>start</code> to cause only the initial signaling connection to be established, then complete meeting join with a second call to <code>start</code> after choosing audio and video sources. This can improve meeting join latency. You can use this approach if you know that the user wants to join a meeting prior to wanting to share media or having selected input devices — for example, you can initialize the signaling connection early if you have a &#39;lobby&#39; experience after choosing to join but before entering the interactive portion of the meeting.</p>
+					<a href="#4a-set-ideal-video-max-bandwidth-kbps" id="4a-set-ideal-video-max-bandwidth-kbps" style="color: inherit; text-decoration: none;">
+						<h3>4a. Set ideal video max bandwidth kbps</h3>
+					</a>
+					<p>You can call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps">setVideoMaxBandwidthKbps</a> to set the ideal video max bandwidth kbps.
+					The default value is 1400 kbps. Actual quality achieved may vary throughout the call depending on what system and network can provide.</p>
 					<a href="#5-build-a-roster-of-participants-using-the-real-time-api" id="5-build-a-roster-of-participants-using-the-real-time-api" style="color: inherit; text-decoration: none;">
 						<h2>5. Build a roster of participants using the real-time API</h2>
 					</a>
@@ -399,13 +403,12 @@ audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

@@ -35,6 +35,17 @@ let mediaCaptureRegions = [
     "us-west-2",
 ];
 
+// Supported regions for the Amazon Chime SDK Meetings namespace
+// https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html
+const supportedControlRegions = [
+  'ap-southeast-1',
+  'eu-central-1',
+  'us-east-1',
+  'us-west-2',
+  'us-gov-east-1',
+  'us-gov-west-1',
+];
+
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
   console.log(`  -r, --region                         Target region, default '${region}'`);
@@ -238,7 +249,17 @@ function copyAssets() {
   fs.copySync('../browser/dist/speech_stereo.mp3', 'src/speech_stereo.mp3');
 }
 
+function ensureRegion() {
+  if (useChimeSDKMeetings === 'true') {
+    if (!(new Set(supportedControlRegions)).has(region)) {
+      console.log(`Amazon Chime SDK does not support ${region} (control region). Specify one of the following regions: ${supportedControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html for more information.`);
+      process.exit(1);
+    }
+  }
+}
+
 parseArgs();
+ensureRegion();
 ensureTools();
 ensureApp(app);
 

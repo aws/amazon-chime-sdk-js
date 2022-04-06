@@ -51,7 +51,7 @@ describe('ReceiveAudioInputTask', () => {
     context.mediaStreamBroker = new MockMediaStreamBroker({
       acquireAudioInputDeviceSucceeds: true,
     });
-    context.realtimeController = new DefaultRealtimeController();
+    context.realtimeController = new DefaultRealtimeController(context.mediaStreamBroker);
     context.audioMixController = new DefaultAudioMixController(logger);
   });
 

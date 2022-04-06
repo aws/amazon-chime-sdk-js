@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import RealtimeController from '../../src/realtimecontroller/RealtimeController';
 import {
@@ -38,7 +39,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
 
   describe('construction', () => {
     it('can be constructed', () => {
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const vi: VolumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
         new NoOpLogger(),
         rt,
@@ -57,7 +58,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo.attendeeId = fooAttendee;
       streamInfo.externalUserId = fooExternal;
       streamInfoFrame.streams = [streamInfo];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let volumeUpdate = 0;
       rt.realtimeSubscribeToVolumeIndicator(
         streamInfo.attendeeId,
@@ -139,7 +140,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo2Join.externalUserId = fooExternal;
       streamInfo2Leave.audioStreamId = 1;
       streamInfo2Frame.streams = [streamInfo2Join, streamInfo2Leave];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let attendeeIdUpdate = 0;
       rt.realtimeSubscribeToAttendeeIdPresence(
         (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
@@ -189,7 +190,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo2Join.externalUserId = fooExternal;
       streamInfo2Leave.audioStreamId = 1;
       streamInfo2Frame.streams = [streamInfo2Join, streamInfo2Leave, streamInfo2Leave];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let attendeeIdUpdate = 0;
       rt.realtimeSubscribeToAttendeeIdPresence(
         (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
@@ -239,7 +240,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo2Join.externalUserId = barExternal;
       streamInfo2Leave.audioStreamId = 1;
       streamInfo2Frame.streams = [streamInfo2Join, streamInfo2Leave];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let attendeeIdUpdate = 0;
       rt.realtimeSubscribeToAttendeeIdPresence(
         (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
@@ -294,7 +295,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       let attendeeIdUpdate = 0;
       const presentAttendeeIds: Array<string> = [];
       const presentExternalUserIds: Array<string> = [];
-      const realtimeController = new DefaultRealtimeController();
+      const realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       realtimeController.realtimeSubscribeToAttendeeIdPresence(
         (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
           if (attendeeIdUpdate === 0) {
@@ -359,7 +360,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       let presentAttendeeIds: Array<string> = [];
       let presentExternalUserIds: Array<string> = [];
       let droppedAttendeeId: Array<string> = [];
-      const realtimeController = new DefaultRealtimeController();
+      const realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       realtimeController.realtimeSubscribeToAttendeeIdPresence(
         (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
           if (attendeeIdUpdate === 0) {
@@ -440,7 +441,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       let presentAttendeeIds: Array<string> = [];
       let presentExternalUserIds: Array<string> = [];
       let droppedAttendeeId: Array<string> = [];
-      const realtimeController = new DefaultRealtimeController();
+      const realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       realtimeController.realtimeSubscribeToAttendeeIdPresence(
         (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
           if (attendeeIdUpdate === 0) {
@@ -550,7 +551,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
 
       const logger = new NoOpLogger();
       const spy = sinon.spy(logger, 'warn');
-      const realtimeController = new DefaultRealtimeController();
+      const realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       const volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
         logger,
         realtimeController,
@@ -584,7 +585,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo.audioStreamId = 1;
       streamInfo.attendeeId = fooAttendee;
       streamInfoFrame.streams = [streamInfo];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let volumeUpdate = 0;
       rt.realtimeSubscribeToVolumeIndicator(
         streamInfo.attendeeId,
@@ -643,7 +644,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo.audioStreamId = 1;
       streamInfo.attendeeId = fooAttendee;
       streamInfoFrame.streams = [streamInfo];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let signalStrengthUpdate = 0;
       rt.realtimeSubscribeToVolumeIndicator(
         streamInfo.attendeeId,
@@ -702,7 +703,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo.audioStreamId = 1;
       streamInfo.attendeeId = fooAttendee;
       streamInfoFrame.streams = [streamInfo];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let volumeIndicatorUpdate = 0;
       rt.realtimeSubscribeToVolumeIndicator(
         streamInfo.attendeeId,
@@ -752,7 +753,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo.audioStreamId = 1;
       streamInfo.attendeeId = fooAttendee;
       streamInfoFrame.streams = [streamInfo];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let volumeIndicatorUpdate = 0;
       rt.realtimeSubscribeToVolumeIndicator(
         streamInfo.attendeeId,
@@ -796,7 +797,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo.audioStreamId = 1;
       streamInfo.attendeeId = fooAttendee;
       streamInfoFrame.streams = [streamInfo];
-      const rt: RealtimeController = new DefaultRealtimeController();
+      const rt: RealtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
       let volumeIndicatorUpdate = 0;
       rt.realtimeSubscribeToVolumeIndicator(
         streamInfo.attendeeId,

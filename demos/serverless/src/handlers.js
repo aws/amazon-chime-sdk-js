@@ -323,7 +323,7 @@ exports.logs = async (event, context) => {
       const timestamp = new Date(log.timestampMs).toISOString();
       const message = `${timestamp} [${log.sequenceNumber}] [${log.logLevel}] [meeting: ${meetingId}] [attendee: ${attendeeId}]: ${log.message}`;
       logEvents.push({
-        message: log.message,
+        message,
         timestamp: log.timestampMs
       });
     }

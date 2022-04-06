@@ -39,14 +39,16 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
    * Replaces the local video device without a WebRTC negotiation on the sender side and
    * avoids that all video subscribers to re-negotiate at the same time.
    * This is an optimized way of replacing video stream and requires `WebRTC Unified Plan`.
+   * @param videoStream - The video stream to be replaced with
    */
-  replaceLocalVideo?(): Promise<void>;
+  replaceLocalVideo(videoStream: MediaStream): Promise<void>;
 
   /**
    * Restarts the local audio. This function assumes the peer connection is established and an active
    * audio stream must be chosen in [[DeviceController]]
+   * @param audioStream - The audio stream to be replaced with
    */
-  restartLocalAudio(callback: () => void): Promise<void>;
+  replaceLocalAudio(audioStream: MediaStream): Promise<void>;
 
   /**
    * Restarts the peer connection and/or the session.
@@ -57,11 +59,6 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
    * Handles the meeting session status and returns true if it will restart the session.
    */
   handleMeetingSessionStatus(status: MeetingSessionStatus, error: Error | null): boolean;
-
-  /**
-   * Sets the max bandwidth for video publishing
-   */
-  setVideoMaxBandwidthKbps(maxBandwidthKbps: number): void;
 
   /**
    * Pauses receiving stream on peer connection by streamId

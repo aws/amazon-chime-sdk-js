@@ -77,9 +77,9 @@ audioVideo.setDeviceLabelTrigger(async () =>
 const audioInputDevices = await meetingSession.audioVideo.listAudioInputDevices();
 const audioOutputDevices = await meetingSession.audioVideo.listAudioOutputDevices();
 const videoInputDevices = await meetingSession.audioVideo.listVideoInputDevices();
-await meetingSession.audioVideo.chooseAudioInputDevice(audioInputDevice.deviceId);
-await meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDevice.deviceId);
-await meetingSession.audioVideo.chooseVideoInputDevice(videoInputDevices.deviceId);
+await meetingSession.audioVideo.startAudioInput(audioInputDevice.deviceId);
+await meetingSession.audioVideo.chooseAudioOutput(audioOutputDevice.deviceId);
+await meetingSession.audioVideo.startVideoInput(videoInputDevices.deviceId);
 ```
 
 #### Safari user are not able to join the meeting in view-only mode
@@ -113,7 +113,7 @@ To send audio to the remote attendees, list the available audio input devices an
 
 To retrieve a list of available audio input devices, call meetingSession.audioVideo.[listAudioInputDevices()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listaudioinputdevices).
 
-To use the chosen audio input device, call meetingSession.audioVideo.[chooseAudioInputDevice(device)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#chooseaudioinputdevice).
+To use the chosen audio input device, call meetingSession.audioVideo.[startAudioInput(device)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startaudioinput).
 
 ### 2d. Preview microphone volume levels (optional)
 
@@ -127,7 +127,7 @@ On browsers that [support setSinkId](https://caniuse.com/#search=setSinkId), you
 
 To retrieve a list of available audio output devices, call meetingSession.audioVideo.[listAudioOutputDevices()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listaudiooutputdevices).
 
-To use the chosen audio output device, call meetingSession.audioVideo.[chooseAudioOutputDevice(deviceId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#chooseaudiooutputdevice).
+To use the chosen audio output device, call meetingSession.audioVideo.[chooseAudioOutput(deviceId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#chooseaudiooutput).
 
 ### 2f. Bind the audio output to an audio element
 
@@ -143,15 +143,20 @@ To send video to remote attendees, list the available video input devices, optio
 
 To get a list of available video input devices, call meetingSession.audioVideo.[listVideoInputDevices()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listvideoinputdevices).
 
-You can configure the quality of the video that is sent to the remote attendees by calling meetingSession.audioVideo.[chooseVideoInputQuality(width, height, frameRate, maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality). The changes take effect the next time a video input device is chosen. The default quality is 960x540 @ 15 fps with a maximum uplink bandwidth of 1400 kbps. The maximum supported quality settings are 1280x720 @ 30 fps with a maximum uplink bandwidth of 2400 Kbps. Actual quality achieved may vary throughout the call depending on what the device, system, and network can provide.
+You can configure the quality of the video that is sent to the remote attendees by calling meetingSession.audioVideo.
+[chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality). 
+The changes take effect the next time a video input device is chosen. The default quality is 960x540 @ 15 fps. The maximum supported quality settings 
+are 1280x720 @ 30 fps. Actual quality achieved may vary throughout the call depending on what the device and system can provide.
 
-To use the chosen video input device, call meetingSession.audioVideo.[chooseVideoInputDevice(device)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputdevice).
+To start or switch a video input device, call meetingSession.audioVideo.[startVideoInput(device)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startvideoinput).
+
+To stop the current video input device, call meetingSession.audioVideo.[stopVideoInput](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopvideoinput).
 
 ### 2h. Preview local camera in a video element (optional)
 
 Before the session is started, you can start a preview of the video in an HTMLVideoElement in the DOM.
 
-To start video preview, call meetingSession.audioVideo.[startVideoPreviewForVideoInput(element)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputdevice).
+To start video preview, call meetingSession.audioVideo.[startVideoPreviewForVideoInput(element)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startvideopreviewforvideoinput).
 
 To stop video preview, call meetingSession.audioVideo.[stopVideoPreviewForVideoInput(element)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopvideopreviewforvideoinput).
 
@@ -165,25 +170,21 @@ To remove an AudioVideoObserver, call meetingSession.audioVideo.[removeObserver(
 
 You should implement the following key observer callbacks:
 
-* [audioVideoDidStart](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart): occurs when the audio-video session finishes connecting
-* [audioVideoDidStartConnecting](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting): occurs when the audio-video session is in the process of connecting or reconnecting
+* [audioVideoDidStart](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart): occurs when the audio-video session finishes connecting.
+* [audioVideoDidStartConnecting](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting): occurs when the audio-video session is in the process of connecting or reconnecting.
 * [audioVideoDidStop](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstop): occurs when the audio-video session has disconnected. Use the provided [MeetingSessionStatus](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html) to determine why the session disconnected.
 * [videoTileDidUpdate](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate): occurs when either a video stream is started or updated. Use the provided VideoTileState to determine the tile ID and the attendee ID of the video stream.
-* [videoTileWasRemoved](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved): occurs when a video stream stops and the reference to the tile (the tile ID) is deleted
+* [videoTileWasRemoved](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved): occurs when a video stream stops and the reference to the tile (the tile ID) is deleted.
 * [videoAvailabilityDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoavailabilitydidchange): occurs video availability state has changed such as whether the attendee can start local video or whether remote video is available. See [MeetingSessionVideoAvailability](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionvideoavailability.html) for more information.
-* [videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable): occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video
+* [videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable): occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video.
 
 You may optionally listen to the following callbacks to monitor aspects of connection health:
 
 * [connectionDidBecomePoor](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor): occurs when the connection has been poor for a while
 * [connectionDidSuggestStopVideo](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo): occurs when the connection has been poor while using video. You can use this to prompt the attendee to turn off video.
-* [connectionHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange): occurs when connection health has changed
-* [estimatedDownlinkBandwidthLessThanRequired](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired): occurs when the total downlink video bandwidth estimation is less than the required video bitrate
-* [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive): occurs periodically when WebRTC media stats are available
-* [videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata): occurs when one or more remote video streams do not meet the expected average bitrate
-* [videoReceiveBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange): occurs when the available video receive bandwidth changed
-* [videoSendBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange): occurs when available video send bandwidth changed
-* [videoSendHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange): occurs when the actual video send bitrate or packets-per-second changes
+* [connectionHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange): occurs when connection health has changed.
+* [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive): occurs periodically when WebRTC media stats are available.
+
 
 ## 4. Start and stop the session
 
@@ -194,6 +195,11 @@ To stop the meeting session, call meetingSession.audioVideo.[stop()](https://aws
 The `stop()` method does not clean up observers. You can start and stop a session multiple times using the same observers. In other words observers are not tied to the lifecycle of the session.
 
 You can specify a `signalingOnly` option when calling `start` to cause only the initial signaling connection to be established, then complete meeting join with a second call to `start` after choosing audio and video sources. This can improve meeting join latency. You can use this approach if you know that the user wants to join a meeting prior to wanting to share media or having selected input devices — for example, you can initialize the signaling connection early if you have a 'lobby' experience after choosing to join but before entering the interactive portion of the meeting.
+
+### 4a. Set ideal video max bandwidth kbps
+
+You can call meetingSession.audioVideo.[setVideoMaxBandwidthKbps](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) to set the ideal video max bandwidth kbps.
+The default value is 1400 kbps. Actual quality achieved may vary throughout the call depending on what system and network can provide.
 
 ## 5. Build a roster of participants using the real-time API
 

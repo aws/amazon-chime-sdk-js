@@ -73,14 +73,6 @@ export default interface RealtimeController {
     callback: RealtimeSubscribeToAttendeeIdPresenceCallback
   ): void;
 
-  // Audio Input
-
-  /**
-   * Sets the audio input and stores the current mute state. Any previous media
-   * stream is first muted before it is replaced.
-   */
-  realtimeSetLocalAudioInput(audioInput: MediaStream | null): void;
-
   // Muting
 
   /**

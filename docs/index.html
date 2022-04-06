@@ -385,21 +385,21 @@ audioInputDevices.forEach(<span class="hljs-function"><span class="hljs-params">
 				<p><strong>Use case 2.</strong> Choose audio input and audio output devices by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.
 				Note that you need to call <code>listAudioInputDevices</code> and <code>listAudioOutputDevices</code> first.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> audioInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioInputDevices */</span>;
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startAudioInput(audioInputDeviceInfo.deviceId);
 
 <span class="hljs-keyword">const</span> audioOutputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioOutputDevices */</span>;
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutput(audioOutputDeviceInfo.deviceId);
 </code></pre>
 				<p><strong>Use case 3.</strong> Choose a video input device by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.
 				Note that you need to call <code>listVideoInputDevices</code> first.</p>
 				<p>If there is an LED light next to the attendee&#39;s camera, it will be turned on indicating that it is now capturing from the camera.
 				You probably want to choose a video input device when you start sharing your video.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> videoInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listVideoInputDevices */</span>;
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 
-<span class="hljs-comment">// You can pass null to choose none. If the previously chosen camera has an LED light on,</span>
-<span class="hljs-comment">// it will turn off indicating the camera is no longer capturing.</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
+<span class="hljs-comment">// Stop video input. If the previously chosen camera has an LED light on,</span>
+<span class="hljs-comment">// it will turn off indicating the camera is no longer capturing. </span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
 </code></pre>
 				<p><strong>Use case 4.</strong> Add a device change observer to receive the updated device list.
 					For example, when you pair Bluetooth headsets with your computer, <code>audioInputsChanged</code> and <code>audioOutputsChanged</code> are called
@@ -609,7 +609,7 @@ meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
 
 <span class="hljs-comment">// The camera LED light will turn on indicating that it is now capturing.</span>
 <span class="hljs-comment">// See the &quot;Device&quot; section for details.</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(videoInputDevices[<span class="hljs-number">0</span>].deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDevices[<span class="hljs-number">0</span>].deviceId);
 
 <span class="hljs-keyword">const</span> observer = {
   <span class="hljs-comment">// videoTileDidUpdate is called whenever a new tile is created or tileState changes.</span>
@@ -655,6 +655,10 @@ meetingSession.audioVideo.startLocalVideoTile();
 meetingSession.audioVideo.addObserver(observer);
 
 meetingSession.audioVideo.stopLocalVideoTile();
+
+<span class="hljs-comment">// Stop video input. If the previously chosen camera has an LED light on,</span>
+<span class="hljs-comment">// it will turn off indicating the camera is no longer capturing. </span>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
 
 <span class="hljs-comment">// Optional: You can remove the local tile from the session.</span>
 meetingSession.audioVideo.removeLocalVideoTile();
@@ -963,18 +967,23 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
 				<a href="#monitoring-and-alerts" id="monitoring-and-alerts" style="color: inherit; text-decoration: none;">
 					<h3>Monitoring and alerts</h3>
 				</a>
-				<p><strong>Use case 25.</strong> Add an observer to receive video metrics. See <code>AudioVideoObserver</code> for more available metrics,
-				such as WebRTC statistics processed by Chime SDK.</p>
+				<p><strong>Use case 25.</strong> Add an observer to receive WebRTC metrics processed by Chime SDK such as bitrate, packet loss, and bandwidth. See <code>AudioVideoObserver</code> for more available metrics.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
-  <span class="hljs-attr">videoSendHealthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">bitrateKbps, packetsPerSecond</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending bitrate in kilobits per second: <span class="hljs-subst">${bitrateKbps}</span> and <span class="hljs-subst">${packetsPerSecond}</span>`</span>);
+  <span class="hljs-attr">metricsDidReceive</span>: <span class="hljs-function">(<span class="hljs-params">clientMetricReport</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> metricReport = clientMetricReport.getObservableMetrics();
+
+    <span class="hljs-keyword">const</span> {
+      videoPacketSentPerSecond,
+      videoUpstreamBitrate,
+      availableOutgoingBitrate,
+      availableIncomingBitrate,
+      audioSpeakerDelayMs,
+    } = metricReport;
+
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending video bitrate in kilobits per second: <span class="hljs-subst">${videoUpstreamBitrate / <span class="hljs-number">1000</span>}</span> and sending packets per second: <span class="hljs-subst">${videoPacketSentPerSecond}</span>`</span>);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending bandwidth is <span class="hljs-subst">${availableOutgoingBitrate <span class="hljs-regexp">/ 1000}, and receiving bandwidth is ${availableIncomingBitrate /</span> <span class="hljs-number">1000</span>}</span>`</span>);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Audio speaker delay is <span class="hljs-subst">${audioSpeakerDelayMs}</span>`</span>);
   },
-  <span class="hljs-attr">videoSendBandwidthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">newBandwidthKbps, oldBandwidthKbps</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Sending bandwidth changed from <span class="hljs-subst">${oldBandwidthKbps}</span> to <span class="hljs-subst">${newBandwidthKbps}</span>`</span>);
-  },
-  <span class="hljs-attr">videoReceiveBandwidthDidChange</span>: <span class="hljs-function">(<span class="hljs-params">newBandwidthKbps, oldBandwidthKbps</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Receiving bandwidth changed from <span class="hljs-subst">${oldBandwidthKbps}</span> to <span class="hljs-subst">${newBandwidthKbps}</span>`</span>);
-  }
 };
 
 meetingSession.audioVideo.addObserver(observer);
@@ -1507,9 +1516,6 @@ appVersion: string;
 						<a href="classes/defaultwebsocketadapter.html" class="tsd-kind-icon">Default<wbr>Web<wbr>Socket<wbr>Adapter</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/destroyablenoopdevicecontroller.html" class="tsd-kind-icon">Destroyable<wbr>NoOp<wbr>Device<wbr>Controller</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/devicepixelratiowindowsource.html" class="tsd-kind-icon">Device<wbr>Pixel<wbr>Ratio<wbr>Window<wbr>Source</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1574,9 +1580,6 @@ appVersion: string;
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/meetingsessioncredentials.html" class="tsd-kind-icon">Meeting<wbr>Session<wbr>Credentials</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/meetingsessionpostlogger.html" class="tsd-kind-icon">Meeting<wbr>SessionPOSTLogger</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/meetingsessionstatus.html" class="tsd-kind-icon">Meeting<wbr>Session<wbr>Status</a>
@@ -1669,10 +1672,16 @@ appVersion: string;
 						<a href="classes/overconstrainederror.html" class="tsd-kind-icon">Overconstrained<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/postlogger.html" class="tsd-kind-icon">POSTLogger</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/parallelgrouptask.html" class="tsd-kind-icon">Parallel<wbr>Group<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/permissiondeniederror.html" class="tsd-kind-icon">Permission<wbr>Denied<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/promisequeue.html" class="tsd-kind-icon">Promise<wbr>Queue</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/promotetoprimarymeetingtask.html" class="tsd-kind-icon">Promote<wbr>ToPrimary<wbr>Meeting<wbr>Task</a>
@@ -1700,9 +1709,6 @@ appVersion: string;
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/reconnectionhealthpolicy.html" class="tsd-kind-icon">Reconnection<wbr>Health<wbr>Policy</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/releasemediastreamstask.html" class="tsd-kind-icon">Release<wbr>Media<wbr>Streams<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/runnabletask.html" class="tsd-kind-icon">Runnable<wbr>Task</a>
@@ -1960,6 +1966,9 @@ appVersion: string;
 						<a href="interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-kind-icon">Device<wbr>Controller<wbr>Based<wbr>Media<wbr>Stream<wbr>Broker</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/devicecontrollerfacade.html" class="tsd-kind-icon">Device<wbr>Controller<wbr>Facade</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/deviceeventattributes.html" class="tsd-kind-icon">Device<wbr>Event<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -2029,6 +2038,9 @@ appVersion: string;
 						<a href="interfaces/mediastreambroker.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/mediastreambrokerobserver.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/meetingeventsclientconfigurationattributes.html" class="tsd-kind-icon">Meeting<wbr>Events<wbr>Client<wbr>Configuration<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -2051,6 +2063,9 @@ appVersion: string;
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/modelspec.html" class="tsd-kind-icon">Model<wbr>Spec</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/postloggeroptions.html" class="tsd-kind-icon">POSTLogger<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/partialord.html" class="tsd-kind-icon">Partial<wbr>Ord</a>
@@ -2230,9 +2245,6 @@ appVersion: string;
 						<a href="globals.html#pako" class="tsd-kind-icon">pako</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#fillsmptecolorbars" class="tsd-kind-icon">fillSMPTEColor<wbr>Bars</a>
-					</li>
-					<li class=" tsd-kind-function">
 						<a href="globals.html#flatteneventattributes" class="tsd-kind-icon">flatten<wbr>Event<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-function">
@@ -2252,9 +2264,6 @@ appVersion: string;
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#tolowercasepropertynames" class="tsd-kind-icon">to<wbr>Lower<wbr>Case<wbr>Property<wbr>Names</a>
@@ -2284,13 +2293,12 @@ appVersion: string;
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

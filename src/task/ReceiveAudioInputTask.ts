@@ -33,7 +33,6 @@ export default class ReceiveAudioInputTask extends BaseTask {
 
     if (audioInput) {
       this.context.activeAudioInput = audioInput;
-      this.context.realtimeController.realtimeSetLocalAudioInput(audioInput);
     } else {
       this.context.logger.warn('an audio input is not available');
     }

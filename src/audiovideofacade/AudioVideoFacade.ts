@@ -5,7 +5,7 @@ import ActiveSpeakerDetectorFacade from '../activespeakerdetector/ActiveSpeakerD
 import AudioMixControllerFacade from '../audiomixcontroller/AudioMixControllerFacade';
 import AudioVideoControllerFacade from '../audiovideocontroller/AudioVideoControllerFacade';
 import ContentShareControllerFacade from '../contentsharecontroller/ContentShareControllerFacade';
-import DeviceController from '../devicecontroller/DeviceController';
+import DeviceControllerFacade from '../devicecontroller/DeviceControllerFacade';
 import RealtimeControllerFacade from '../realtimecontroller/RealtimeControllerFacade';
 import VideoTileControllerFacade from '../videotilecontroller/VideoTileControllerFacade';
 
@@ -15,5 +15,5 @@ export default interface AudioVideoFacade
     AudioMixControllerFacade,
     RealtimeControllerFacade,
     ActiveSpeakerDetectorFacade,
-    DeviceController,
+    DeviceControllerFacade,
     ContentShareControllerFacade {}
