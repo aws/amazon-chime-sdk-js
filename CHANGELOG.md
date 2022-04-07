@@ -7,16 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2022-03-30
 
+Amazon Chime SDK for JavaScript v3 is here !! 🎉🎉🎉
+
+Amazon Chime SDK for JavaScript v3 includes major improvements for device management, WebRTC metrics, and the 
+messaging session.
+
+- **Device management:** Decouple audio and video device management from the meeting sessions. For example, a user can select their preferred devices on a video preview page and continue using the same devices to join the session. After joining the session, a user can instantly switch devices without interrupting the ongoing meeting session.
+- **WebRTC metrics:** Publish the standardized WebRTC metrics for all supported browsers.
+- **Messaging session:** Add support for AWS SDK for JavaScript v3 for messaging session.
+- **Dropping support:** Deprecate Safari 12 support and Plan B in Session Description Protocol (SDP) negotiations.
+
+Below is a list of all changes in the Chime SDK for JavaScript v3. Please refer to the [Migraton guide from v2 to v3](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_3_0.html) for 
+more information.
+
 ### Added
 
+- Add `rtcStatsReport` property to `ClientMetricReport` to store raw [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport) and expose it via `metricsDidReceive` event.
+
 ### Removed
+- Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13.
+- Remove [legacy (non-promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax) call in `DefaultStatsCollector`. This API was previously used to obtain WebRTC metrics only for Chromium-based browsers. Now SDK obtains WebRTC metrics for all browsers via [standardized (promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax).  
+- Remove all deprecated meeting status code.  
 - Remove `videoSendHealthDidChange`, `videoSendBandwidthDidChange`, `videoNotReceivingEnoughData`, and `videoReceiveBandwidthDidChange`. Use `metricsDidReceive` to obtain metrics instead.
 - Remove `estimatedDownlinkBandwidthLessThanRequired`.
+- Remove synthesize video APIs such as SMTP.
+- Removed SDP interface.
+- Remove `StatsCollector` interface.
+- Remove `ClientMetricReport` interface.
+
 
 ### Changed
-- Extend the `DeviceController` interface to include `Destroyable`.
-- Handle multiple start/stop audio/video input calls by calling them in order instead of throwing errors.
-- Update `getIntrinsicDeviceId` in `DefaultDeviceController` to be more explicit when handling `null` and `undefined`.
+- Rename `DefaultStatsCollector` to `StatsCollector`.
+- Rename `DefaultClientMetricReport` to `ClientMetricReport`.
+- Change `chooseAudioInputDevice` to explicit APIs `startAudioInput` and `stopAudioInput`. Application will need to
+  call `stopVideoInput` at the end of the call to explicitly stop active audio stream.
+- Change `chooseVideoInputDevice` to explicit APIs `startVideoInput` and `stopVideoInput`. Application will need to
+  call `stopVideoInput` now to explicitly stop active video stream.
+- Minor name change to `chooseAudioOutputDevice` to `chooseAudioOutput`.
+- `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream.
+  This allows applications to join meeting without reselecting video again.
+- Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can
+  set video max bandwidth kbps from `audioVideo.setVideoMaxBandwidthKbps`. 
+- Extend the `DeviceController` interface to include `Destroyable`  
+- Rename `MeetingSessionPOSTLogger` to `POSTLogger`.
+- Update `POSTLogger` to implement the `Logger` interface.
+- Remove `MeetingSessionConfiguration` dependency from `MeetingSessionPOSTLogger`.
+  Builders need to add `metadata` to `POSTLogger` if they want to include information such as `appName`, `meetingId` and so on with the HTTP POST request made by `POSTLogger` when sending logs to builder provided URL.
+  Please check 3.0 migration guide for more information.
+- Decoupled `EventController` from `AudioVideo` and `MeetingSession`.
 
 ### Fixed
 - Fix a bug where joining without selecting any audio device failed when Web Audio is enabled.
