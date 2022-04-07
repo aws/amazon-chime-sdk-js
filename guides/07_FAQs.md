@@ -298,7 +298,7 @@ Yes. You can [record to Amazon S3 using media capture pipelines](https://docs.aw
 
 ### How can I get Amazon Chime SDK logs for debugging?
 
-Applications can get logs from Chime SDK by passing instances of `Logger` when instantiating [the MeetingSession object](https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html). Amazon Chime SDK has some default implementations of logger that your application can use, such as [ConsoleLogger](https://aws.github.io/amazon-chime-sdk-js/classes/consolelogger.html) which logs into the browser console, [MeetingSessionPOSTLogger](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionpostlogger.html) which logs in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [MultiLogger](https://aws.github.io/amazon-chime-sdk-js/classes/multilogger.html) which logs in multiple destinations.
+Applications can get logs from Chime SDK by passing instances of `Logger` when instantiating [the MeetingSession object](https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html). Amazon Chime SDK has some default implementations of logger that your application can use, such as [ConsoleLogger](https://aws.github.io/amazon-chime-sdk-js/classes/consolelogger.html) which logs into the browser console, [POSTLogger](https://aws.github.io/amazon-chime-sdk-js/classes/postlogger.html) which logs in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [MultiLogger](https://aws.github.io/amazon-chime-sdk-js/classes/multilogger.html) which logs in multiple destinations.
 
 ### How do I file an issue for the Amazon Chime SDK for JavaScript?
 

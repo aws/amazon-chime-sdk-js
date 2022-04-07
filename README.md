@@ -99,7 +99,8 @@ The following developer guides cover specific topics for a technical audience.
 
 ## Migration Guides
 
-- [Migrating From V1.0 to V2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
+- [Migration from V1.0 to V2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
+- [Migration from V2.0 to V3.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_3_0.html)
 
 ## Developer Guides
 
