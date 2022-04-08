@@ -359,28 +359,28 @@ describe('StatsCollector', () => {
             statsCollector.isValidSsrc({
               type: 'inbound-rtp',
               id: 'id',
-              mediaType: 'video',
+              kind: 'video',
             })
           ).to.be.true;
           expect(
             statsCollector.isValidSsrc({
               type: 'outbound-rtp',
               id: 'id',
-              mediaType: 'video',
+              kind: 'video',
             })
           ).to.be.true;
           expect(
             statsCollector.isValidSsrc({
               type: 'inbound-rtp',
               id: 'id',
-              mediaType: 'audio',
+              kind: 'audio',
             })
           ).to.be.true;
           expect(
             statsCollector.isValidSsrc({
               type: 'outbound-rtp',
               id: 'outbound',
-              mediaType: 'video',
+              kind: 'video',
             })
           ).to.be.true;
           done();
@@ -401,7 +401,7 @@ describe('StatsCollector', () => {
             statsCollector.isValidSsrc({
               type: 'inbound-rtp',
               id: 'id',
-              mediaType: 'video',
+              kind: 'video',
             })
           ).to.be.false;
           done();

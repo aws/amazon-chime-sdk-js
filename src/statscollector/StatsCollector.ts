@@ -393,7 +393,7 @@ export default class StatsCollector {
    * Returns the MediaType for a RawMetricReport.
    */
   private getMediaType(rawMetricReport: RawMetricReport): MediaType {
-    return rawMetricReport.mediaType === 'audio' ? MediaType.AUDIO : MediaType.VIDEO;
+    return rawMetricReport.kind === 'audio' ? MediaType.AUDIO : MediaType.VIDEO;
   }
 
   /**
