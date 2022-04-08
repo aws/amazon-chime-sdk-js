@@ -62,13 +62,16 @@ await meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 ```
 
 In v3, you should call `stopVideoInput` to stop the video input stream. `null` is no longer a valid input for 
-`startVideoInput` (`null` is also removed from `Device` type).
+`startVideoInput` (`null` is also removed from `Device` type). Calling `stopLocalVideoTile` will stop sending the 
+video stream to media server and unbind the video element, but it will not stop the video stream.
 
 ```js
 // Before
 await meetingSession.audioVideo.chooseVideoInputDevice(null);
+await meetingSession.audioVideo.stopLocalVideoTile();
 
 // After
+// This will auto trigger stopLocalVideoTile during meeting
 await meetingSession.audioVideo.stopVideoInput();
 ```
 

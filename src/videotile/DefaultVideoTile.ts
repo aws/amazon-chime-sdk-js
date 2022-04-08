@@ -94,15 +94,6 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       DefaultVideoTile.setVideoElementFlag(videoElement, 'disablePictureInPicture', false);
       DefaultVideoTile.setVideoElementFlag(videoElement, 'disableRemotePlayback', false);
 
-      // We must remove all the tracks from the MediaStream before
-      // clearing the `srcObject` to prevent Safari from crashing.
-      const mediaStream = videoElement.srcObject as MediaStream;
-      const tracks = mediaStream.getTracks();
-      for (const track of tracks) {
-        track.stop();
-        mediaStream.removeTrack(track);
-      }
-
       videoElement.srcObject = null;
     }
   }

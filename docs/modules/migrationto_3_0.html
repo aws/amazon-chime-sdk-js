@@ -123,11 +123,14 @@ meetingSession.audioVideo.addObserver(observer);
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 </code></pre>
 					<p>In v3, you should call <code>stopVideoInput</code> to stop the video input stream. <code>null</code> is no longer a valid input for
-					<code>startVideoInput</code> (<code>null</code> is also removed from <code>Device</code> type).</p>
+						<code>startVideoInput</code> (<code>null</code> is also removed from <code>Device</code> type). Calling <code>stopLocalVideoTile</code> will stop sending the
+					video stream to media server and unbind the video element, but it will not stop the video stream.</p>
 					<pre><code class="language-js"><span class="hljs-comment">// Before</span>
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopLocalVideoTile();
 
 <span class="hljs-comment">// After</span>
+<span class="hljs-comment">// This will auto trigger stopLocalVideoTile during meeting</span>
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.stopVideoInput();
 </code></pre>
 					<a href="#updates-to-the-audio-output-api" id="updates-to-the-audio-output-api" style="color: inherit; text-decoration: none;">
