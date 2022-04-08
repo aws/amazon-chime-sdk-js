@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Removed
+- No longer stop video stream when calling `stopLocalVideoTile`. This was added as a workaround to prevent crash in old Safari versions but no longer needed.
 
 ### Changed
 
