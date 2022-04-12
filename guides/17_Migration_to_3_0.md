@@ -8,12 +8,6 @@ Installation involves adjusting your `package.json` to depend on version `3.0.0`
 npm install amazon-chime-sdk-js@3
 ```
 
-Note that, currently only pre-release NPM versions of `3.0.0` are available until we do the final major version release. Do the following step to install the latest beta version for `amazon-chime-sdk-js`:
-
-```shell
-npm install amazon-chime-sdk-js@beta
-```
-
 **Version 3 of the Amazon Chime SDK for JavaScript makes a number of interface changes.**
 
 ## Device controller

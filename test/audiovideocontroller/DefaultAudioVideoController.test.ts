@@ -986,6 +986,38 @@ describe('DefaultAudioVideoController', () => {
       spy.restore();
     });
 
+    it(
+      'can be started and stopped multiple times and subscribe and unsubscribe from media stream broker observer' +
+        ' correctly',
+      async function () {
+        this.timeout(5000); // Need to increase the default mocha timeout of 2000ms
+        const mediaStreamBroker = new NoOpMediaStreamBroker();
+        const spyAdd = sinon.spy(mediaStreamBroker, 'addMediaStreamBrokerObserver');
+        const spyRemove = sinon.spy(mediaStreamBroker, 'removeMediaStreamBrokerObserver');
+        audioVideoController = new DefaultAudioVideoController(
+          configuration,
+          new NoOpDebugLogger(),
+          webSocketAdapter,
+          mediaStreamBroker,
+          reconnectController
+        );
+        await start();
+        await delay(defaultDelay);
+        expect(spyAdd.callCount).to.be.equal(1);
+        await stop();
+        await delay(defaultDelay);
+        expect(spyRemove.callCount).to.be.equal(1);
+        await start();
+        await delay(defaultDelay);
+        expect(spyAdd.callCount).to.be.equal(2);
+        await stop();
+        await delay(defaultDelay);
+        expect(spyRemove.callCount).to.be.equal(2);
+        spyAdd.restore();
+        spyRemove.restore();
+      }
+    );
+
     it('can be started even when the stats collector has an issue starting due to an unsupported browser', async () => {
       setUserAgent(SAFARI_13_USER_AGENT);
       audioVideoController = new DefaultAudioVideoController(
