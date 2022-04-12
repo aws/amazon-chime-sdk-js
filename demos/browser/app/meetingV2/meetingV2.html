@@ -148,15 +148,22 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
           <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
           <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
             Policy</label>
-          <select id="priority-downlink-policy-preset" class="form-select" style="width:100%; display: none;">
-            <option value="default" selected>Default</option>
-            <option value="stable">Stable Network</option>
-            <option value="unstable">Unstable Network</option>
-          </select>
-          <div class="form-check" id="enable-pagination-checkbox" style="text-align: left; display: none;">
-            <input type="checkbox" id="enable-pagination" class="form-check-input">
-            <label for="enable-pagination" class="form-check-label">Paginate displayed video tiles</label>
-          </div>
+        </div>
+        <lable id="priority-downlink-policy-preset-title" for="priority-downlink-policy-preset" style="display: none; padding-top:5px">Policy Preset</lable>
+        <select id="priority-downlink-policy-preset" class="form-select" style="width:100%; display: none;">
+          <option value="default" selected>Default</option>
+          <option value="stable">Stable Network</option>
+          <option value="unstable">Unstable Network</option>
+        </select>
+        <lable id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</lable>
+        <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
+          <option value="default" selected>Default</option>
+          <option value="none">None</option>
+          <option value="enable-bandwidth-probing">Enable Bandwidth Probing</option>
+        </select>
+        <div class="form-check" id="enable-pagination-checkbox" style="text-align: left; display: none;">
+          <input type="checkbox" id="enable-pagination" class="form-check-input">
+          <label for="enable-pagination" class="form-check-label">Paginate displayed video tiles</label>
         </div>
         <div class="form-check" style="text-align: left;">
           <input type="checkbox" checked id="preconnect" class="form-check-input">

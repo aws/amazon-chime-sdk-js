@@ -368,6 +368,25 @@ describe('VideoPriorityBasedPolicy', () => {
     });
   });
 
+  describe('getVideoPreferences', () => {
+    it('Initially returns dummy preferences', () => {
+      const mutablePreferences = VideoPreferences.prepare();
+      const preferences = mutablePreferences.build();
+      expect(policy.getVideoPreferences().equals(preferences)).to.be.true;
+    });
+
+    it('Will have up to date preferences', () => {
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference('attendee-1', 5, TargetDisplaySize.High);
+      preferences.add(p1);
+      const p2 = new VideoPreference('attendee-2', 5, TargetDisplaySize.High);
+      preferences.add(p2);
+      policy.chooseRemoteVideoSources(preferences.build());
+
+      expect(policy.getVideoPreferences().equals(preferences.build())).to.be.true;
+    });
+  });
+
   describe('priority on off same', () => {
     it('no priority to priority', () => {
       updateIndexFrame(videoStreamIndex, 5, 0, 600);

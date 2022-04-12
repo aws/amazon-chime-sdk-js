@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VideoDownlinkObserver | amazon-chime-sdk-js</title>
+	<title>ServerSideNetworkAdaption | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,98 +55,95 @@
 					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
-					<a href="videodownlinkobserver.html">VideoDownlinkObserver</a>
+					<a href="serversidenetworkadaption.html">ServerSideNetworkAdaption</a>
 				</li>
 			</ul>
-			<h1>Interface VideoDownlinkObserver</h1>
+			<h1>Enumeration ServerSideNetworkAdaption</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">VideoDownlinkObserver</span>
-					</li>
-				</ul>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p><a href="serversidenetworkadaption.html">ServerSideNetworkAdaption</a> represents additional server side features that can be enabled for network adaption.</p>
+					</div>
+				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Methods</h3>
+							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkobserver.html#tilewillbepausedbydownlinkpolicy" class="tsd-kind-icon">tile<wbr>Will<wbr>BePaused<wbr>ByDownlink<wbr>Policy</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkobserver.html#tilewillbeunpausedbydownlinkpolicy" class="tsd-kind-icon">tile<wbr>Will<wbr>BeUnpaused<wbr>ByDownlink<wbr>Policy</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#bandwidthprobing" class="tsd-kind-icon">Bandwidth<wbr>Probing</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#default" class="tsd-kind-icon">Default</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#none" class="tsd-kind-icon">None</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="tilewillbepausedbydownlinkpolicy" class="tsd-anchor"></a>
-					<h3>tile<wbr>Will<wbr>BePaused<wbr>ByDownlink<wbr>Policy</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">tile<wbr>Will<wbr>BePaused<wbr>ByDownlink<wbr>Policy<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoDownlinkObserver.ts#L12">src/videodownlinkbandwidthpolicy/VideoDownlinkObserver.ts:12</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Called when the downlink policy wants to pause the remote video tile</p>
-								</div>
-								<p>Note that calling <code>VideoTileController.unpauseVideoTile</code> on tiles
-									indicated by this observer before <code>tileWillBeUnpausedByDownlinkPolicy</code>
-								is called may result in undefined behavior.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="bandwidthprobing" class="tsd-anchor"></a>
+					<h3>Bandwidth<wbr>Probing</h3>
+					<div class="tsd-signature tsd-kind-icon">Bandwidth<wbr>Probing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L36">src/signalingclient/ServerSideNetworkAdaption.ts:36</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Disable the existing client side bandwidth probing methods of waiting and unpausing,
+								or waiting and upgrading simulcast streams (which can be large increases of bitrates
+								and may lead to periodic oversubscription over network capacity
+								and resulting video freezes) and replace it with more gradual server
+								side probing of increasing amounts padding packets until the
+								bandwidth estimate safely reaches the value needed to resume the
+							next video source, or upgrade to the next higher simulcast stream.</p>
+						</div>
+						<p>When this is enabled, any policy &#39;probing&#39; for bandwidth headroom
+							should be disabled. This may also enable pacing of some media packets from the server
+						side, and may also enable packet burst probing.</p>
+						<p>End users should overall see reduced video freezes, reduced broken audio,
+						and reduced packet loss.</p>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="tilewillbeunpausedbydownlinkpolicy" class="tsd-anchor"></a>
-					<h3>tile<wbr>Will<wbr>BeUnpaused<wbr>ByDownlink<wbr>Policy</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">tile<wbr>Will<wbr>BeUnpaused<wbr>ByDownlink<wbr>Policy<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoDownlinkObserver.ts#L17">src/videodownlinkbandwidthpolicy/VideoDownlinkObserver.ts:17</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Called when the downlink policy wants to unpause the remote video tile</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="default" class="tsd-anchor"></a>
+					<h3>Default</h3>
+					<div class="tsd-signature tsd-kind-icon">Default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L13">src/signalingclient/ServerSideNetworkAdaption.ts:13</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>No features enabled, but can be overriden from server side values.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="none" class="tsd-anchor"></a>
+					<h3>None</h3>
+					<div class="tsd-signature tsd-kind-icon">None<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 1</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L18">src/signalingclient/ServerSideNetworkAdaption.ts:18</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>No features enabled. Will not be override from server side choice.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -162,14 +159,17 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="videodownlinkobserver.html" class="tsd-kind-icon">Video<wbr>Downlink<wbr>Observer</a>
+					<li class="current tsd-kind-enum">
+						<a href="serversidenetworkadaption.html" class="tsd-kind-icon">Server<wbr>Side<wbr>Network<wbr>Adaption</a>
 						<ul>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="videodownlinkobserver.html#tilewillbepausedbydownlinkpolicy" class="tsd-kind-icon">tile<wbr>Will<wbr>BePaused<wbr>ByDownlink<wbr>Policy</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serversidenetworkadaption.html#bandwidthprobing" class="tsd-kind-icon">Bandwidth<wbr>Probing</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="videodownlinkobserver.html#tilewillbeunpausedbydownlinkpolicy" class="tsd-kind-icon">tile<wbr>Will<wbr>BeUnpaused<wbr>ByDownlink<wbr>Policy</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serversidenetworkadaption.html#default" class="tsd-kind-icon">Default</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serversidenetworkadaption.html#none" class="tsd-kind-icon">None</a>
 							</li>
 						</ul>
 					</li>

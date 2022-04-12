@@ -28,13 +28,13 @@ Note that applications still need to handle `videoTileDidUpdate` just as done wi
 
 ## APIs and Usage
 
-**MeetingSessionConfiguration**
+### MeetingSessionConfiguration
 When initializing the meeting, builders can specify the usage of the `VideoPriorityBasedPolicy` by allocating the policy in the application and passing it in through the `MeetingSessionConfiguration` when the meeting session is started. 
 
-**Notification of current available remote sources**
+### Notification of current available remote sources
 Once you are connected to the meeting, builders will be notified of available remote video sources via the existing `remoteVideoSourcesDidChange` callback.
 
-**Priority and max size for each remote stream**
+### Priority and max size for each remote stream
 `VideoPreference` is used to contain the priority and size of remote video sources and content share to be received. There are three fields inside the `VideoPreference,` you could find more info for each field below.
 
 * _*attendeeId:*_  The attendee ID this video tile belongs to. Note that screen share video will have a suffix of #content
@@ -46,7 +46,7 @@ The default preference set the same priority 1 for all attendees. The target siz
 - Medium if there are 5-8 videos.
 - Low otherwise.
 
-**Configuring the receipt and priority of remote video sources** 
+### Configuring the receipt and priority of remote video sources
 
 The main API being used is:
 
@@ -68,10 +68,11 @@ Be aware of the following when calling this function:
 *(Note that the exact internal behavior of this policy may slightly change in future releases)*
 
 
-**Receiving notifications that a remote video was paused due to bandwidth constraint**
+### Receiving notifications that a remote video was paused due to bandwidth constraint
+
 If a remote video source is paused due to insufficient bandwidth, then the application will be notified through `tileWillBePausedByDownlinkPolicy` by  `VideoDownlinkObserver` and the `VideoTileState` will be set to `paused`.
 
-**Configure network event delays**<span id="configure-network-event-delays"><span>
+### Configure network event delays <span id="configure-network-event-delays"><span>
 
 The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser's internal estimation of bandwidth.  If you would like to modify these delays to better fit your application's use case, we have exposed control with a simple to use API. Builders can pass in `VideoPriorityBasedPolicyConfig` either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:
 
@@ -112,6 +113,31 @@ The following presets are provided:
 * *Default Preset*: `VideoPriorityBasedPolicyConfig.DefaultPreset` balances the tradeoffs mentioned above to attempt to fit most use cases. It is used when a `VideoPriorityBasedPolicyConfig` is not given during the initialization of `VideoPriorityBasedPolicy`.
 * *Unstable Network Preset*: `VideoPriorityBasedPolicyConfig.UnstableNetworkPreset` configures quick network issue response delay and slow recovery delay. If expecting a lot of mobile usage, builders can choose unstable network preset. It has less confidence in the network so it takes longer wait when network is recovered in case the network is inconsistent.
 * *Stable Network Preset*: `VideoPriorityBasedPolicyConfig.StableNetworkPreset` configures slow network issue response delay and quick recovery delay. Select stable network preset when the network is expected to stay stable, for example in unified communications client or Ethernet connections. It will try to 'wait-out' network downturns in case they are a temporary spike.
+
+### Enabling Server Side Network Adaption Features <span id="server-side-network-adaption"><span>
+
+`VideoPriorityBasedPolicy` has support for configuring additional features on the backend. These features are currently opt-in but may become defaults in the future. To enable pacing and probing on the existing receive side estimator, and disable the policy based stream probing which can often oversubscribe over network constraints and lead to video freezes, set the following on `VideoPriorityBasedPolicyConfig` before injecting:
+
+```ts
+const config = 
+  VideoPriorityBasedPolicyConfig.Default;
+config.serverSideNetworkAdaption = 
+    ServerSideNetworkAdaption.BandwidthProbing;
+let priorityBasedDownlinkPolicy = 
+    new VideoPriorityBasedPolicy(this.meetingLogger, config);
+```
+
+The server may override the value if left to default. If you do not want the server to update the value, set it explicitly to `ServerSideNetworkAdaption.None` 
+
+#### Impact of `ServerSideNetworkAdaption.BandwidthProbing`
+
+An occasional issue with the `VideoPriorityBasedPolicy` is that in recovery, it will periodically try to upgrade quality of its remote videos (or unpause), regardless of the size of the jump in bitrate. If the jump in bitrate hits the network constraint, it will immediately overuse the link, encountering packet loss, and possibly leading to a further dip in the bandwidth estimation.
+
+For example, say an end-user's policy is picking between a 300 and 1200 kbps stream and suddenly their network is restricted to 400 kbps. Eventually the policy as is, should switch to the 300 kbps stream. The client side policy cannot know whether the link has recovered to anywhere between 300 and 1200 kbps because its only option is eventually try to upgrade to the 1200 stream. If the constraint is still anywhere under 1200 this will overuse the network as mentioned above. 
+
+As an alternative, we can instead mirror a traditional WebRTC 1-1 call, and gradually increase the bitrate using padding or pre-emptive retransmissions from the backend which will allow us to gracefully discover network constraints. This is what occurs when `ServerSideNetworkAdaption.BandwidthProbing` is set. In addition, setting that value will *disable all client side probing* as it is no longer necessary. 
+
+In the example above, the bitrate would gradually increase to 400kbps, at which it would ‘discover’ the network constraint, and stabilize there. The rate at which the backend will send padding is dependent on the receive estimate, which it receives via REMB. The change also incorporates libwebrtc based pacing (https://chromium.googlesource.com/external/webrtc/+/master/modules/pacing/g3doc/index.md) for video to better stabilize the bandwidth estimation on the receive side, and the occasional sending of probe clusters for more rapid attempts of boosting bandwidth estimation.
 
 ## Builder Code Sample
 
