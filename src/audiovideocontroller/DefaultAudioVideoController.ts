@@ -614,7 +614,6 @@ export default class DefaultAudioVideoController
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(false));
       });
-      this._mediaStreamBroker.addMediaStreamBrokerObserver(this);
       this.eventController?.publishEvent('meetingStartRequested');
     }
 
@@ -646,6 +645,7 @@ export default class DefaultAudioVideoController
       await connect.run();
 
       this.connectionHealthData.setConnectionStartTime();
+      this._mediaStreamBroker.addMediaStreamBrokerObserver(this);
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
         if (this.eventController) {
@@ -785,7 +785,7 @@ export default class DefaultAudioVideoController
           this.configuration.connectionTimeoutMs
         ),
       ];
-
+      this.cleanUpMediaStreamsAfterStop();
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), subtasks).run();
     } catch (cleanError) {
       /* istanbul ignore next */
@@ -1143,8 +1143,6 @@ export default class DefaultAudioVideoController
         this.eventController.publishEvent('meetingEnded', attributes);
       }
     }
-
-    this.cleanUpMediaStreamsAfterStop();
   }
 
   private actionFinishUpdating(): void {
