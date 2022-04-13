@@ -600,7 +600,7 @@ meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
 						<li>Make sure you bind a tile to the same video element until the tile is removed.</li>
 						<li>A local video tile can be identified using <code>localTile</code> property.</li>
 						<li>A tile is created with a new tile ID when the same remote attendee restarts the video.</li>
-						<li>Media Capture Pipeline relies on the meeting session to get the attendee info. After calling <code>this.meetingSession.audioVideo.start();</code>, wait for <code>eventDidReceive</code> callback where the event name is <code>meetingStartSucceeded</code> before calling <code>startLocalVideoTile</code>.</li>
+						<li>Media Capture Pipeline relies on the meeting session to get the attendee info. After calling <code>this.meetingSession.audioVideo.start();</code>, wait for <code>audioVideoDidStart</code> event to be received before calling <code>startLocalVideoTile</code>.</li>
 					</ul>
 				</blockquote>
 				<p><strong>Use case 13.</strong> Start sharing your video. The local video element is flipped horizontally (mirrored mode).</p>

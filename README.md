@@ -566,7 +566,7 @@ a video stream, etc. To view a video in your application, you must bind a tile t
 > - Make sure you bind a tile to the same video element until the tile is removed.
 > - A local video tile can be identified using `localTile` property.
 > - A tile is created with a new tile ID when the same remote attendee restarts the video.
-> - Media Capture Pipeline relies on the meeting session to get the attendee info. After calling `this.meetingSession.audioVideo.start();`, wait for `eventDidReceive` callback where the event name is `meetingStartSucceeded` before calling `startLocalVideoTile`.
+> - Media Capture Pipeline relies on the meeting session to get the attendee info. After calling `this.meetingSession.audioVideo.start();`, wait for `audioVideoDidStart` event to be received before calling `startLocalVideoTile`.
 
 **Use case 13.** Start sharing your video. The local video element is flipped horizontally (mirrored mode).
 
