@@ -429,6 +429,11 @@ export default class ClientMetricReport {
       media: MediaType.AUDIO,
       dir: Direction.UPSTREAM,
     },
+    roundTripTime: {
+      source: 'roundTripTime',
+      media: MediaType.AUDIO,
+      dir: Direction.UPSTREAM,
+    },
     videoUpstreamBitrate: { source: 'bytesSent', media: MediaType.VIDEO, dir: Direction.UPSTREAM },
     videoPacketSentPerSecond: {
       source: 'packetsSent',
@@ -437,6 +442,16 @@ export default class ClientMetricReport {
     },
     audioSpeakerDelayMs: {
       source: 'jitterBufferMs',
+      media: MediaType.AUDIO,
+      dir: Direction.DOWNSTREAM,
+    },
+    audioUplinkJitter: {
+      source: 'jitter',
+      media: MediaType.AUDIO,
+      dir: Direction.UPSTREAM,
+    },
+    audioDownlinkJitter: {
+      source: 'jitter',
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
