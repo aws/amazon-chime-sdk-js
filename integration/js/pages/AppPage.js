@@ -71,7 +71,8 @@ function findAllElements() {
     echoReductionFeature: By.id('echo-reduction-capability'),
     echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]'),
     stereoMusicProfileCheckBox: By.id('fullband-music-stereo-quality'),
-    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]')
+    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]'),
+    chimeMeetingId: By.id('chime-meeting-id')
   };
 }
 
@@ -408,6 +409,9 @@ class AppPage {
   }
 
   async clickStartTranscriptionButton() {
+    const meetingObject = this.driver.findElement(elements.chimeMeetingId);
+    const meetingId = await meetingObject.getText();
+    this.logger(`Starting Live Transcription for ${meetingId}`);
     await this.driver.findElement(elements.startTranscriptionButton).click();
   }
 
