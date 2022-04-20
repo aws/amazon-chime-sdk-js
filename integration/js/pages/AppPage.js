@@ -409,8 +409,8 @@ class AppPage {
   }
 
   async clickStartTranscriptionButton() {
-    const meetingObject = this.driver.findElement(elements.chimeMeetingId);
-    const meetingId = await meetingObject.getText();
+    const meetingElement = this.driver.findElement(elements.chimeMeetingId);
+    const meetingId = await meetingElement.getText();
     this.logger(`Starting Live Transcription for ${meetingId}`);
     await this.driver.findElement(elements.startTranscriptionButton).click();
   }
