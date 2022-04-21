@@ -95,7 +95,6 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="messagingsessionconfiguration.html#awsclient" class="tsd-kind-icon">aws<wbr>Client</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="messagingsessionconfiguration.html#chimeclient" class="tsd-kind-icon">chime<wbr>Client</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="messagingsessionconfiguration.html#endpointurl" class="tsd-kind-icon">endpoint<wbr>Url</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="messagingsessionconfiguration.html#messagingsessionid" class="tsd-kind-icon">messaging<wbr>Session<wbr>Id</a></li>
@@ -115,7 +114,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Messaging<wbr>Session<wbr>Configuration<span class="tsd-signature-symbol">(</span>userArn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, messagingSessionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, endpointUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, chimeClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, awsClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="messagingsessionconfiguration.html" class="tsd-signature-type">MessagingSessionConfiguration</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Messaging<wbr>Session<wbr>Configuration<span class="tsd-signature-symbol">(</span>userArn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, messagingSessionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, endpointUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, chimeClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="messagingsessionconfiguration.html" class="tsd-signature-type">MessagingSessionConfiguration</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -127,7 +126,7 @@
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
-									endpoint URL, the chimeClient, and the AWSClient.</p>
+									endpoint URL, and the chimeClient.</p>
 								</div>
 								<p>endpointUrl is deprecated as internally it is set on connect via chimeClient if null, and re-resolved (whether null or not) from
 								the chimeClient on reconnect</p>
@@ -148,9 +147,6 @@
 								<li>
 									<h5>chimeClient: <span class="tsd-signature-type">any</span></h5>
 								</li>
-								<li>
-									<h5>awsClient: <span class="tsd-signature-type">any</span></h5>
-								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="messagingsessionconfiguration.html" class="tsd-signature-type">MessagingSessionConfiguration</a></h4>
 						</li>
@@ -159,16 +155,6 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="awsclient" class="tsd-anchor"></a>
-					<h3>aws<wbr>Client</h3>
-					<div class="tsd-signature tsd-kind-icon">aws<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L45">src/messagingsession/MessagingSessionConfiguration.ts:45</a></li>
-						</ul>
-					</aside>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="chimeclient" class="tsd-anchor"></a>
 					<h3>chime<wbr>Client</h3>
@@ -290,9 +276,6 @@
 								<a href="messagingsessionconfiguration.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="messagingsessionconfiguration.html#awsclient" class="tsd-kind-icon">aws<wbr>Client</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="messagingsessionconfiguration.html#chimeclient" class="tsd-kind-icon">chime<wbr>Client</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -336,13 +319,12 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

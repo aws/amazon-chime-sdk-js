@@ -91,7 +91,7 @@ describe('DefaultMessagingSession', () => {
     dommMockBehavior = new DOMMockBehavior();
     dommMockBehavior.webSocketSendEcho = true;
     domMockBuilder = new DOMMockBuilder(dommMockBehavior);
-    configuration = new MessagingSessionConfiguration('userArn', '123', ENDPOINT_URL, chimeClient, {});
+    configuration = new MessagingSessionConfiguration('userArn', '123', ENDPOINT_URL, chimeClient);
     configuration.reconnectTimeoutMs = 100;
     configuration.reconnectFixedWaitMs = 40;
     configuration.reconnectShortBackoffMs = 10;
@@ -220,8 +220,9 @@ describe('DefaultMessagingSession', () => {
           expect(logSpy.calledOnce).to.be.true;
           logSpy.restore();
           done();
-        }))
-    })
+        })
+      );
+    });
   });
 
   describe('stop', () => {

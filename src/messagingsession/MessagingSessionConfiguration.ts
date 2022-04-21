@@ -41,8 +41,7 @@ export default class MessagingSessionConfiguration {
     public userArn: string,
     public messagingSessionId: string | null,
     public endpointUrl: string | null,
-    public chimeClient: any,
-    public awsClient: any
+    public chimeClient: any
   ) {
     if (!this.messagingSessionId) {
       this.messagingSessionId = this.generateSessionId();
