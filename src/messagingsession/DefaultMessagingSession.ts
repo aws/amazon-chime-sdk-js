@@ -62,7 +62,7 @@ export default class DefaultMessagingSession implements MessagingSession {
 
   start(): void {
     if (this.isClosed()) {
-        this.startConnecting(false);
+      this.startConnecting(false);
     } else {
       this.logger.info('messaging session already started');
     }
@@ -113,7 +113,7 @@ export default class DefaultMessagingSession implements MessagingSession {
 
   private async startConnecting(reconnecting: boolean) {
     // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
-    var endpointUrl = reconnecting ? this.configuration.endpointUrl : null;
+    let endpointUrl = !reconnecting ? this.configuration.endpointUrl : null;
     if (endpointUrl == null) {
       const endpoint = await this.configuration.chimeClient.getMessagingSessionEndpoint().promise();
       endpointUrl = endpoint.Endpoint.Url;
