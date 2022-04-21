@@ -48,6 +48,18 @@ describe('DefaultMessagingSession', () => {
         sessionToken: 'sessionToken',
       },
     },
+    getMessagingSessionEndpoint: function () {
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        promise: async function (): Promise<any> {
+          return {
+            Endpoint: {
+              Url: ENDPOINT_URL,
+            },
+          };
+        },
+      };
+    },
   };
 
   class TestSigV4 implements SigV4 {
@@ -79,7 +91,7 @@ describe('DefaultMessagingSession', () => {
     dommMockBehavior = new DOMMockBehavior();
     dommMockBehavior.webSocketSendEcho = true;
     domMockBuilder = new DOMMockBuilder(dommMockBehavior);
-    configuration = new MessagingSessionConfiguration('userArn', '123', ENDPOINT_URL, chimeClient);
+    configuration = new MessagingSessionConfiguration('userArn', '123', ENDPOINT_URL, chimeClient, {});
     configuration.reconnectTimeoutMs = 100;
     configuration.reconnectFixedWaitMs = 40;
     configuration.reconnectShortBackoffMs = 10;
@@ -203,14 +215,13 @@ describe('DefaultMessagingSession', () => {
       dommMockBehavior.webSocketOpenSucceeds = false;
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
-      messagingSession.start().then(() => {
+      messagingSession.start().then(() =>
         new TimeoutScheduler(10).start(() => {
           expect(logSpy.calledOnce).to.be.true;
           logSpy.restore();
           done();
-        });
-      });
-    });
+        }))
+    })
   });
 
   describe('stop', () => {
