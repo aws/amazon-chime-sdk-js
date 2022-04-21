@@ -48,6 +48,17 @@ describe('DefaultMessagingSession', () => {
         sessionToken: 'sessionToken',
       },
     },
+    getMessagingSessionEndpoint: function () {
+      return {
+        promise : async function(): Promise<any> {
+          return {
+            Endpoint: {
+              Url: ENDPOINT_URL
+            }
+          }
+        }
+      }
+    }
   };
 
   class TestSigV4 implements SigV4 {
@@ -82,7 +93,7 @@ describe('DefaultMessagingSession', () => {
     configuration = new MessagingSessionConfiguration(
       'userArn',
       '123',
-      ENDPOINT_URL,
+      null,
       chimeClient,
       {}
     );
@@ -185,12 +196,13 @@ describe('DefaultMessagingSession', () => {
           count++;
         },
       });
-      messagingSession.start();
-      webSocket.addEventListener('close', (_event: CloseEvent) => {
-        expect(count).to.be.eq(0);
-        done();
+      messagingSession.startAsync().then(() => {
+        webSocket.addEventListener('close', (_event: CloseEvent) => {
+          expect(count).to.be.eq(0);
+          done();
+        });
+        webSocket.close(4401);
       });
-      webSocket.close(4401);
     });
 
     it('Do not start if there is an existing connection', () => {
@@ -205,12 +217,11 @@ describe('DefaultMessagingSession', () => {
       dommMockBehavior.webSocketOpenSucceeds = false;
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
-      messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
+      messagingSession.startAsync().then(() => new TimeoutScheduler(10).start(() => {
         expect(logSpy.calledOnce).to.be.true;
         logSpy.restore();
         done();
-      });
+      }));
     });
   });
 
@@ -329,11 +340,12 @@ describe('DefaultMessagingSession', () => {
         },
       };
       messagingSession.addObserver(observer);
-      messagingSession.start();
-      messagingSession.removeObserver(observer);
-      webSocket.addEventListener('open', () => {
-        expect(didStartConnecting).to.be.eq(0);
-        done();
+      messagingSession.startAsync().then(() => {
+        messagingSession.removeObserver(observer);
+        webSocket.addEventListener('open', () => {
+          expect(didStartConnecting).to.be.eq(0);
+          done();
+        });
       });
     });
 
