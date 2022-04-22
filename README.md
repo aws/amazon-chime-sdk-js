@@ -246,7 +246,7 @@ const chime = new ChimeSDKMessagingClient({ region: 'us-east-1'});
 
 const userArn = /* The userArn */;
 const sessionId = /* The sessionId */;
-const configuration = new MessagingSessionConfiguration(userArn, sessionId, null, chime);
+const configuration = new MessagingSessionConfiguration(userArn, sessionId, undefined, chime);
 const messagingSession = new DefaultMessagingSession(configuration, logger);
 ```
 

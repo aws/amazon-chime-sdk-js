@@ -56,7 +56,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         const chime = new ChimeSDKMessagingClient({ region: 'us-east-1', credentials: response });
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, null, chime);
+        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime);
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
         this.session.start();

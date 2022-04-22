@@ -107,8 +107,8 @@ export default class DefaultMessagingSession implements MessagingSession {
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
     // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
-    let endpointUrl = !reconnecting ? this.configuration.endpointUrl : null;
-    if (endpointUrl === null) {
+    let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
+    if (endpointUrl === undefined) {
       const endpoint = await this.configuration.chimeClient.send(
         new GetMessagingSessionEndpointCommand({})
       );
