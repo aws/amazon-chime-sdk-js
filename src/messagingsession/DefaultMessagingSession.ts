@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
+
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Logger from '../logger/Logger';
@@ -107,7 +109,9 @@ export default class DefaultMessagingSession implements MessagingSession {
     // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
     let endpointUrl = !reconnecting ? this.configuration.endpointUrl : null;
     if (endpointUrl === null) {
-      const endpoint = await this.configuration.chimeClient.getMessagingSessionEndpoint().promise();
+      const endpoint = await this.configuration.chimeClient.send(
+        new GetMessagingSessionEndpointCommand({})
+      );
       endpointUrl = endpoint.Endpoint.Url;
     }
 

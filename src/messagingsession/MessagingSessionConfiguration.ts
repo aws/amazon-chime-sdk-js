@@ -40,7 +40,7 @@ export default class MessagingSessionConfiguration {
   constructor(
     public userArn: string,
     public messagingSessionId: string | null,
-    public endpointUrl: string | null,
+    public endpointUrl: string | undefined,
     public chimeClient: any
   ) {
     if (!this.messagingSessionId) {

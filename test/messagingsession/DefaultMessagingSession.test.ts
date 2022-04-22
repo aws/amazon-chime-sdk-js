@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
@@ -48,15 +49,12 @@ describe('DefaultMessagingSession', () => {
         sessionToken: 'sessionToken',
       },
     },
-    getMessagingSessionEndpoint: function () {
+
+    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+    send: function (command: GetMessagingSessionEndpointCommand) {
       return {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        promise: async function (): Promise<any> {
-          return {
-            Endpoint: {
-              Url: ENDPOINT_URL,
-            },
-          };
+        Endpoint: {
+          Url: ENDPOINT_URL,
         },
       };
     },
