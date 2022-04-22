@@ -267,7 +267,7 @@ export class DemoMeetingApp
   audioVideo: AudioVideoFacade | null = null;
   deviceController: DefaultDeviceController | undefined = undefined;
   canStartLocalVideo: boolean = true;
-  defaultBrowserBehaviour: DefaultBrowserBehavior = new DefaultBrowserBehavior();
+  defaultBrowserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
   videoTileCollection: VideoTileCollection | undefined = undefined;
   videoPreferenceManager: VideoPreferenceManager | undefined = undefined;
 
@@ -319,11 +319,11 @@ export class DemoMeetingApp
   markdown = require('markdown-it')({ linkify: true });
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
-  lastReceivedPackets = 0;
+  lastPacketsSent = 0;
   meetingSessionPOSTLogger: POSTLogger;
   meetingEventPOSTLogger: POSTLogger;
 
-  hasChromiumWebRTC: boolean = this.defaultBrowserBehaviour.hasChromiumWebRTC();
+  hasChromiumWebRTC: boolean = this.defaultBrowserBehavior.hasChromiumWebRTC();
 
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
@@ -542,11 +542,11 @@ export class DemoMeetingApp
   }
 
   initEventListeners(): void {
-    if (!this.defaultBrowserBehaviour.hasChromiumWebRTC()) {
+    if (!this.defaultBrowserBehavior.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
     }
 
-    if (!this.defaultBrowserBehaviour.supportDownlinkBandwidthEstimation()) {
+    if (!this.defaultBrowserBehavior.supportDownlinkBandwidthEstimation()) {
       (document.getElementById('priority-downlink-policy') as HTMLInputElement).disabled = true;
     }
 
@@ -1388,15 +1388,17 @@ export class DemoMeetingApp
     });
   }
 
-  logPPS(clientMetricReport: ClientMetricReport) {
+  logAudioStreamPPS(clientMetricReport: ClientMetricReport) {
     const { currentTimestampMs, previousTimestampMs } = clientMetricReport;
+    const deltaTime = currentTimestampMs - previousTimestampMs;
     const rtcStatsReport = clientMetricReport.getRTCStatsReport();
+
     rtcStatsReport.forEach(report => {
-      if (report.type === 'outbound-rtp') {
+      if (report.type === 'outbound-rtp' && report.kind === 'audio') {
         // Skip initial metric.
         if (report.packetsSent === 0 && previousTimestampMs === 0) return;
-        const deltaTime = currentTimestampMs - previousTimestampMs;
-        const deltaPackets = report.packetsSent - this.lastReceivedPackets;
+
+        const deltaPackets = report.packetsSent - this.lastPacketsSent;
         const pps = (1000 * deltaPackets) / deltaTime;
 
         let overage = 0;
@@ -1406,8 +1408,7 @@ export class DemoMeetingApp
           overage = 0;
           console.debug('PPS:', pps);
         }
-        this.lastReceivedPackets = report.packetsSent;
-        return;
+        this.lastPacketsSent = report.packetsSent;
       }
     });
   }
@@ -1647,7 +1648,7 @@ export class DemoMeetingApp
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
-    this.logPPS(clientMetricReport);
+    this.logAudioStreamPPS(clientMetricReport);
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
     this.displayEstimatedUplinkBandwidth(metricReport.availableOutgoingBitrate);
@@ -1975,7 +1976,7 @@ export class DemoMeetingApp
       );
       const isSelfAttendee =
         new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId
-          || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
+        || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!present) {
         delete this.roster[attendeeId];
         this.updateRoster();
@@ -2418,7 +2419,7 @@ export class DemoMeetingApp
     // Also note that Firefox has its own device picker, which may be useful
     // for the first device selection. Subsequent device selections could use
     // a custom UX with a specific device id.
-    if (!this.defaultBrowserBehaviour.doesNotSupportMediaDeviceLabels()) {
+    if (!this.defaultBrowserBehavior.doesNotSupportMediaDeviceLabels()) {
       this.audioVideo.setDeviceLabelTrigger(
         async (): Promise<MediaStream> => {
           if (this.isRecorder() || this.isBroadcaster() || this.isViewOnly) {
@@ -2697,7 +2698,7 @@ export class DemoMeetingApp
   }
 
   private areVideoFiltersSupported(): boolean {
-    return this.defaultBrowserBehaviour.supportsCanvasCapturedStreamPlayback();
+    return this.defaultBrowserBehavior.supportsCanvasCapturedStreamPlayback();
   }
 
   private isVoiceFocusActive(): boolean {
@@ -2807,7 +2808,7 @@ export class DemoMeetingApp
   }
 
   async populateAudioOutputList(): Promise<void> {
-    const supportsChoosing = this.defaultBrowserBehaviour.supportsSetSinkId();
+    const supportsChoosing = this.defaultBrowserBehavior.supportsSetSinkId();
     const genericName = 'Speaker';
     const additionalDevices: string[] = [];
     const devices = supportsChoosing ? await this.audioVideo.listAudioOutputDevices() : [];
@@ -2835,7 +2836,7 @@ export class DemoMeetingApp
   private async chooseAudioOutput(device: string): Promise<void> {
     // Set it for the content share stream if we can.
     const videoElem = document.getElementById('content-share-video') as HTMLVideoElement;
-    if (this.defaultBrowserBehaviour.supportsSetSinkId()) {
+    if (this.defaultBrowserBehavior.supportsSetSinkId()) {
       // @ts-ignore
       videoElem.setSinkId(device);
     }
@@ -2954,7 +2955,7 @@ export class DemoMeetingApp
   }
 
   async openAudioOutputFromSelection(): Promise<void> {
-    if (this.defaultBrowserBehaviour.supportsSetSinkId()) {
+    if (this.defaultBrowserBehavior.supportsSetSinkId()) {
       try {
         const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
         await this.chooseAudioOutput(audioOutput.value);
@@ -3349,7 +3350,7 @@ export class DemoMeetingApp
   private async playToStream(videoFile: HTMLVideoElement): Promise<MediaStream> {
     await videoFile.play();
 
-    if (this.defaultBrowserBehaviour.hasFirefoxWebRTC()) {
+    if (this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
       // @ts-ignore
       return videoFile.mozCaptureStream();
     }
@@ -3611,7 +3612,7 @@ export class DemoMeetingApp
   }
 
   private enableLocalVideoButton(enabled: boolean, warningMessage: string = ''): void {
-    this.toggleButton('button-camera', enabled? 'off' : 'disabled');
+    this.toggleButton('button-camera', enabled ? 'off' : 'disabled');
 
     if (warningMessage) {
       const toastContainer = document.getElementById('toast-container');
@@ -3644,7 +3645,7 @@ export class DemoMeetingApp
 
   videoSendDidBecomeUnavailable(): void {
     this.log('sending video is not available');
-    this.enableLocalVideoButton(false,'Cannot enable local video due to call being at capacity');
+    this.enableLocalVideoButton(false, 'Cannot enable local video due to call being at capacity');
   }
 
   contentShareDidStart(): void {
