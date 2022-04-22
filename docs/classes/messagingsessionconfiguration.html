@@ -128,8 +128,8 @@
 									<p>Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
 									endpoint URL, and the chimeClient.</p>
 								</div>
-								<p>endpointUrl is deprecated as internally it is set on connect via chimeClient if null, and re-resolved (whether null or not) from
-								the chimeClient on reconnect</p>
+								<p>endpointUrl is deprecated as internally it resolved on connect via chimeClient if undefined, and always re-resolved
+								on reconnect</p>
 								<p>The messaging session id is to uniquely identify this messaging session for the userArn.
 								If messaging session id is passed in as null, it will be automatically generated.</p>
 							</div>
