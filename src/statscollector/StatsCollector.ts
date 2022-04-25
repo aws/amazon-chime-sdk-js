@@ -400,11 +400,10 @@ export default class StatsCollector {
    * Returns the Direction for a RawMetricReport.
    */
   private getDirectionType(rawMetricReport: RawMetricReport): Direction {
-    return rawMetricReport.id.toLowerCase().indexOf('send') !== -1 ||
-      rawMetricReport.id.toLowerCase().indexOf('outbound') !== -1 ||
-      rawMetricReport.type === 'outbound-rtp'
-      ? Direction.UPSTREAM
-      : Direction.DOWNSTREAM;
+    const { type } = rawMetricReport;
+    return type === 'inbound-rtp' || type === 'remote-outbound-rtp'
+      ? Direction.DOWNSTREAM
+      : Direction.UPSTREAM;
   }
 
   /**
