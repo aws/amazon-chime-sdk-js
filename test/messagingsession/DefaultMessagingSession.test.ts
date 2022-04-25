@@ -40,6 +40,8 @@ describe('DefaultMessagingSession', () => {
   let dommMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
 
+  let getMessSessionCnt = 0;
+
   const chimeClient = {
     config: {
       region: 'us-east-1',
@@ -52,6 +54,7 @@ describe('DefaultMessagingSession', () => {
 
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
     send: function (command: GetMessagingSessionEndpointCommand) {
+      getMessSessionCnt++;
       return {
         Endpoint: {
           Url: ENDPOINT_URL,
@@ -89,7 +92,8 @@ describe('DefaultMessagingSession', () => {
     dommMockBehavior = new DOMMockBehavior();
     dommMockBehavior.webSocketSendEcho = true;
     domMockBuilder = new DOMMockBuilder(dommMockBehavior);
-    configuration = new MessagingSessionConfiguration('userArn', '123', ENDPOINT_URL, chimeClient);
+    getMessSessionCnt = 0;
+    configuration = new MessagingSessionConfiguration('userArn', '123', undefined, chimeClient);
     configuration.reconnectTimeoutMs = 100;
     configuration.reconnectFixedWaitMs = 40;
     configuration.reconnectShortBackoffMs = 10;
@@ -130,6 +134,22 @@ describe('DefaultMessagingSession', () => {
     it('Can start', done => {
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(1)
+          done();
+        },
+      });
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
+      });
+    });
+
+    it('Can start with hardcoded config url', done => {
+      configuration.endpointUrl = ENDPOINT_URL
+      messagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(0)
           done();
         },
       });
@@ -276,6 +296,7 @@ describe('DefaultMessagingSession', () => {
         messagingSessionDidStop(_event: CloseEvent): void {
           expect(didStartConnecting).to.be.eq(2);
           expect(didStartCount).to.be.eq(1);
+          expect(getMessSessionCnt).to.be.eq(2)
           done();
         },
       });
