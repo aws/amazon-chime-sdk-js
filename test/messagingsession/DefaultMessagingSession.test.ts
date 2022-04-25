@@ -134,7 +134,7 @@ describe('DefaultMessagingSession', () => {
     it('Can start', done => {
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(getMessSessionCnt).to.be.eq(1)
+          expect(getMessSessionCnt).to.be.eq(1);
           done();
         },
       });
@@ -146,10 +146,10 @@ describe('DefaultMessagingSession', () => {
     });
 
     it('Can start with hardcoded config url', done => {
-      configuration.endpointUrl = ENDPOINT_URL
+      configuration.endpointUrl = ENDPOINT_URL;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(getMessSessionCnt).to.be.eq(0)
+          expect(getMessSessionCnt).to.be.eq(0);
           done();
         },
       });
@@ -296,7 +296,7 @@ describe('DefaultMessagingSession', () => {
         messagingSessionDidStop(_event: CloseEvent): void {
           expect(didStartConnecting).to.be.eq(2);
           expect(didStartCount).to.be.eq(1);
-          expect(getMessSessionCnt).to.be.eq(2)
+          expect(getMessSessionCnt).to.be.eq(2);
           done();
         },
       });
