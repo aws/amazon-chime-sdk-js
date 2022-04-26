@@ -37,7 +37,7 @@ export default class ClientMetricReport {
   };
 
   decoderLossPercent = (metricName?: string, ssrc?: number): number => {
-    const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
+    const metricReport = this.streamMetricReports[ssrc];
     const concealedSamples =
       metricReport.currentMetrics['concealedSamples'] -
       (metricReport.previousMetrics['concealedSamples'] || 0);
@@ -55,7 +55,7 @@ export default class ClientMetricReport {
   };
 
   packetLossPercent = (sourceMetricName?: string, ssrc?: number): number => {
-    const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
+    const metricReport = this.streamMetricReports[ssrc];
     const sentOrReceived =
       metricReport.currentMetrics[sourceMetricName] -
       (metricReport.previousMetrics[sourceMetricName] || 0);
@@ -162,7 +162,10 @@ export default class ClientMetricReport {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_AVAILABLE_SEND_BANDWIDTH,
     },
-    currentRoundTripTime: { transform: this.identityValue, type: SdkMetric.Type.STUN_RTT_MS },
+    currentRoundTripTime: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.STUN_RTT_MS,
+    },
   };
 
   readonly audioUpstreamMetricMap: {
@@ -175,7 +178,7 @@ export default class ClientMetricReport {
     jitter: { transform: this.secondsToMilliseconds, type: SdkMetric.Type.RTC_MIC_JITTER_MS },
     packetsSent: { transform: this.countPerSecond, type: SdkMetric.Type.RTC_MIC_PPS },
     bytesSent: { transform: this.bitsPerSecond, type: SdkMetric.Type.RTC_MIC_BITRATE },
-    roundTripTime: { transform: this.identityValue, type: SdkMetric.Type.RTC_MIC_RTT_MS },
+    roundTripTime: { transform: this.secondsToMilliseconds, type: SdkMetric.Type.RTC_MIC_RTT_MS },
     packetsLost: {
       transform: this.packetLossPercent,
       type: SdkMetric.Type.RTC_MIC_FRACTION_PACKET_LOST_PERCENT,
@@ -227,7 +230,10 @@ export default class ClientMetricReport {
       source?: string;
     };
   } = {
-    roundTripTime: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_SENT_RTT_MS },
+    roundTripTime: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.VIDEO_SENT_RTT_MS,
+    },
     nackCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_NACKS_RECEIVED },
     pliCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PLIS_RECEIVED },
     firCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FIRS_RECEIVED },
@@ -243,6 +249,9 @@ export default class ClientMetricReport {
     qpSum: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_SENT_QP_SUM },
     frameHeight: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_ENCODE_HEIGHT },
     frameWidth: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_ENCODE_WIDTH },
+    jitter: {
+      transform: this.secondsToMilliseconds,
+    },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -361,6 +370,16 @@ export default class ClientMetricReport {
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
+    videoUpstreamJitterMs: {
+      source: 'jitter',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
+    videoUpstreamRoundTripTimeMs: {
+      source: 'roundTripTime',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
     videoDownstreamBitrate: {
       source: 'bytesReceived',
       media: MediaType.VIDEO,
@@ -388,6 +407,16 @@ export default class ClientMetricReport {
     },
     videoDownstreamFrameWidth: {
       source: 'frameWidth',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoDownstreamJitterMs: {
+      source: 'jitter',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoDownstreamDelayMs: {
+      source: 'jitterBufferMs',
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },
@@ -429,7 +458,7 @@ export default class ClientMetricReport {
       media: MediaType.AUDIO,
       dir: Direction.UPSTREAM,
     },
-    roundTripTime: {
+    audioUpstreamRoundTripTimeMs: {
       source: 'roundTripTime',
       media: MediaType.AUDIO,
       dir: Direction.UPSTREAM,
@@ -445,23 +474,24 @@ export default class ClientMetricReport {
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
-    audioUplinkJitter: {
+    audioUpstreamJitterMs: {
       source: 'jitter',
       media: MediaType.AUDIO,
       dir: Direction.UPSTREAM,
     },
-    audioDownlinkJitter: {
+    audioDownstreamJitterMs: {
       source: 'jitter',
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
-    availableOutgoingBitrate: { source: 'availableOutgoingBitrate' },
-    availableIncomingBitrate: { source: 'availableIncomingBitrate' },
     nackCountReceivedPerSecond: {
       source: 'nackCount',
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
+    availableOutgoingBitrate: { source: 'availableOutgoingBitrate' },
+    availableIncomingBitrate: { source: 'availableIncomingBitrate' },
+    currentRoundTripTimeMs: { source: 'currentRoundTripTime' },
   };
 
   /**
@@ -471,13 +501,11 @@ export default class ClientMetricReport {
     const observableMetricSpec = this.observableMetricSpec[metricName];
     const metricMap = this.getMetricMap(observableMetricSpec.media, observableMetricSpec.dir);
     const metricSpec = metricMap[observableMetricSpec.source];
-    const transform = metricSpec.transform;
-    const source = metricSpec.source;
+    const { transform, source } = metricSpec;
     if (observableMetricSpec.hasOwnProperty('media')) {
       for (const ssrc in this.streamMetricReports) {
         const streamMetricReport = this.streamMetricReports[ssrc];
         if (
-          observableMetricSpec.source in streamMetricReport.currentMetrics &&
           streamMetricReport.direction === observableMetricSpec.dir &&
           streamMetricReport.mediaType === observableMetricSpec.media
         ) {
@@ -502,19 +530,11 @@ export default class ClientMetricReport {
       observableVideoMetricSpec.dir
     );
     const metricSpec = metricMap[observableVideoMetricSpec.source];
-    const transform = metricSpec.transform;
-    const source = metricSpec.source;
-    const streamMetricReport = this.streamMetricReports[ssrcNum];
-    if (
-      streamMetricReport &&
-      observableVideoMetricSpec.source in streamMetricReport.currentMetrics
-    ) {
-      return source
-        ? transform(source, ssrcNum)
-        : transform(observableVideoMetricSpec.source, ssrcNum);
-    } else {
-      return source ? transform(source) : transform(observableVideoMetricSpec.source);
-    }
+    const { transform, source } = metricSpec;
+
+    return source
+      ? transform(source, ssrcNum)
+      : transform(observableVideoMetricSpec.source, ssrcNum);
   }
 
   /**
