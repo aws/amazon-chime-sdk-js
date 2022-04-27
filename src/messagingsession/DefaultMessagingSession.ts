@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
-
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Logger from '../logger/Logger';
@@ -106,16 +104,7 @@ export default class DefaultMessagingSession implements MessagingSession {
   }
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
-    // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
-    let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
-    if (endpointUrl === undefined) {
-      const endpoint = await this.configuration.chimeClient.send(
-        new GetMessagingSessionEndpointCommand({})
-      );
-      endpointUrl = endpoint.Endpoint.Url;
-    }
-
-    const signedUrl = await this.prepareWebSocketUrl(endpointUrl);
+    const signedUrl = await this.prepareWebSocketUrl();
     this.logger.info(`opening connection to ${signedUrl}`);
     if (!reconnecting) {
       this.reconnectController.reset();
@@ -134,7 +123,7 @@ export default class DefaultMessagingSession implements MessagingSession {
     this.setUpEventListeners();
   }
 
-  private async prepareWebSocketUrl(endpointUrl: string): Promise<string> {
+  private async prepareWebSocketUrl(): Promise<string> {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);
@@ -142,7 +131,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       'GET',
       'wss',
       'chime',
-      endpointUrl,
+      this.configuration.endpointUrl,
       '/connect',
       '',
       queryParams
@@ -202,7 +191,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       !this.isClosing &&
       this.canReconnect(event.code) &&
       this.reconnectController.retryWithBackoff(async () => {
-        await this.startConnecting(true);
+        this.startConnecting(true);
       }, null)
     ) {
       return;
