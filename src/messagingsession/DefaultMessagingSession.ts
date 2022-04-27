@@ -30,7 +30,6 @@ export default class DefaultMessagingSession implements MessagingSession {
     private readonly reconnectController?: ReconnectController,
     private readonly sigV4?: SigV4
   ) {
-    this.isConnecting;
     if (!this.webSocket) {
       this.webSocket = new DefaultWebSocketAdapter(this.logger);
     }
