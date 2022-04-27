@@ -142,15 +142,7 @@ export default class DefaultMessagingSession implements MessagingSession {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);
-    return this.sigV4.signURL(
-      'GET',
-      'wss',
-      'chime',
-      endpointUrl == null ? this.configuration.endpointUrl : endpointUrl,
-      '/connect',
-      '',
-      queryParams
-    );
+    return this.sigV4.signURL('GET', 'wss', 'chime', endpointUrl, '/connect', '', queryParams);
   }
 
   private isClosed(): boolean {

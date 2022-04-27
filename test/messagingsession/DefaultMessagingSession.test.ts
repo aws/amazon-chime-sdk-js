@@ -52,16 +52,17 @@ describe('DefaultMessagingSession', () => {
     },
     getMessagingSessionEndpoint: function () {
       return {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         promise: async function (): Promise<any> {
           getMessSessionCnt++;
           return {
             Endpoint: {
-              Url: ENDPOINT_URL
-            }
-          }
-        }
-      }
-    }
+              Url: ENDPOINT_URL,
+            },
+          };
+        },
+      };
+    },
   };
 
   class TestSigV4 implements SigV4 {
@@ -230,11 +231,13 @@ describe('DefaultMessagingSession', () => {
       dommMockBehavior.webSocketOpenSucceeds = false;
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
-      messagingSession.startAsync().then(() => new TimeoutScheduler(10).start(() => {
-        expect(logSpy.calledOnce).to.be.true;
-        logSpy.restore();
-        done();
-      }));
+      messagingSession.startAsync().then(() =>
+        new TimeoutScheduler(10).start(() => {
+          expect(logSpy.calledOnce).to.be.true;
+          logSpy.restore();
+          done();
+        })
+      );
     });
   });
 
