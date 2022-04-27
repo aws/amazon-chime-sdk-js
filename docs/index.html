@@ -315,11 +315,10 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 
 <span class="hljs-comment">// You will need AWS credentials configured before calling AWS or Amazon Chime APIs.</span>
 <span class="hljs-keyword">const</span> chime = <span class="hljs-keyword">new</span> Chime({ <span class="hljs-attr">region</span>: <span class="hljs-string">&#x27;us-east-1&#x27;</span> });
-<span class="hljs-keyword">const</span> endpoint = <span class="hljs-keyword">await</span> chime.getMessagingSessionEndpoint().promise();
 
 <span class="hljs-keyword">const</span> userArn = <span class="hljs-comment">/* The userArn */</span>;
 <span class="hljs-keyword">const</span> sessionId = <span class="hljs-comment">/* The sessionId */</span>;
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(userArn, sessionId, endpoint.Endpoint.Url, chime, AWS);
+<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(userArn, sessionId, <span class="hljs-literal">undefined</span>, chime, AWS);
 <span class="hljs-keyword">const</span> messagingSession = <span class="hljs-keyword">new</span> DefaultMessagingSession(configuration, logger);
 </code></pre>
 				<a href="#building-and-testing" id="building-and-testing" style="color: inherit; text-decoration: none;">
