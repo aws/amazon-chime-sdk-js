@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
@@ -40,8 +39,6 @@ describe('DefaultMessagingSession', () => {
   let dommMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
 
-  let getMessSessionCnt = 0;
-
   const chimeClient = {
     config: {
       region: 'us-east-1',
@@ -50,16 +47,6 @@ describe('DefaultMessagingSession', () => {
         secretAccessKey: 'secretKey',
         sessionToken: 'sessionToken',
       },
-    },
-
-    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-    send: function (command: GetMessagingSessionEndpointCommand) {
-      getMessSessionCnt++;
-      return {
-        Endpoint: {
-          Url: ENDPOINT_URL,
-        },
-      };
     },
   };
 
@@ -92,8 +79,7 @@ describe('DefaultMessagingSession', () => {
     dommMockBehavior = new DOMMockBehavior();
     dommMockBehavior.webSocketSendEcho = true;
     domMockBuilder = new DOMMockBuilder(dommMockBehavior);
-    getMessSessionCnt = 0;
-    configuration = new MessagingSessionConfiguration('userArn', '123', undefined, chimeClient);
+    configuration = new MessagingSessionConfiguration('userArn', '123', ENDPOINT_URL, chimeClient);
     configuration.reconnectTimeoutMs = 100;
     configuration.reconnectFixedWaitMs = 40;
     configuration.reconnectShortBackoffMs = 10;
@@ -134,22 +120,6 @@ describe('DefaultMessagingSession', () => {
     it('Can start', done => {
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(getMessSessionCnt).to.be.eq(1);
-          done();
-        },
-      });
-      messagingSession.start().then(() => {
-        new TimeoutScheduler(10).start(() => {
-          webSocket.send(SESSION_SUBSCRIBED_MSG);
-        });
-      });
-    });
-
-    it('Can start with hardcoded config url', done => {
-      configuration.endpointUrl = ENDPOINT_URL;
-      messagingSession.addObserver({
-        messagingSessionDidStart(): void {
-          expect(getMessSessionCnt).to.be.eq(0);
           done();
         },
       });
@@ -233,13 +203,13 @@ describe('DefaultMessagingSession', () => {
       dommMockBehavior.webSocketOpenSucceeds = false;
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
-      messagingSession.start().then(() =>
+      messagingSession.start().then(() => {
         new TimeoutScheduler(10).start(() => {
           expect(logSpy.calledOnce).to.be.true;
           logSpy.restore();
           done();
-        })
-      );
+        });
+      });
     });
   });
 
@@ -296,7 +266,6 @@ describe('DefaultMessagingSession', () => {
         messagingSessionDidStop(_event: CloseEvent): void {
           expect(didStartConnecting).to.be.eq(2);
           expect(didStartCount).to.be.eq(1);
-          expect(getMessSessionCnt).to.be.eq(2);
           done();
         },
       });

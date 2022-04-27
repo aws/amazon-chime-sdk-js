@@ -18,7 +18,7 @@ import {
   Versioning,
 } from 'amazon-chime-sdk-js';
 
-import { ChimeSDKMessagingClient } from '@aws-sdk/client-chime-sdk-messaging';
+import { ChimeSDKMessagingClient, GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
 
 export class DemoMessagingSessionApp implements MessagingSessionObserver {
   static readonly BASE_URL: string = [
@@ -54,9 +54,10 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
       try {
         const response = await this.fetchCredentials();
         const chime = new ChimeSDKMessagingClient({ region: 'us-east-1', credentials: response });
+        const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime);
+        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
         this.session.start();
