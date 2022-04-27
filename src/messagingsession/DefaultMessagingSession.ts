@@ -60,17 +60,9 @@ export default class DefaultMessagingSession implements MessagingSession {
     this.observerQueue.delete(observer);
   }
 
-  start(): void {
+  async start(): Promise<void> {
     if (this.isClosed()) {
-      this.startConnecting(false);
-    } else {
-      this.logger.info('messaging session already started');
-    }
-  }
-
-  async startAsync(): Promise<void> {
-    if (this.isClosed()) {
-      this.startConnecting(false);
+      await this.startConnecting(false);
     } else {
       this.logger.info('messaging session already started');
     }
@@ -138,7 +130,7 @@ export default class DefaultMessagingSession implements MessagingSession {
     this.setUpEventListeners();
   }
 
-  private prepareWebSocketUrl(endpointUrl: string | null): string {
+  private prepareWebSocketUrl(endpointUrl: string): string {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);

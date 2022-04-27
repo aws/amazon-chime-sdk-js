@@ -7,12 +7,7 @@ export default interface MessagingSession {
   /**
    * Start a messaging session.
    */
-  start(): void;
-
-  /**
-   * Start a messaging session.
-   */
-  startAsync(): Promise<void>;
+  start(): Promise<void>;
 
   /**
    * Stop a messaging session.

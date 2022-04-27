@@ -210,7 +210,7 @@ describe('DefaultMessagingSession', () => {
           count++;
         },
       });
-      messagingSession.startAsync().then(() => {
+      messagingSession.start().then(() => {
         webSocket.addEventListener('close', (_event: CloseEvent) => {
           expect(count).to.be.eq(0);
           done();
@@ -231,7 +231,7 @@ describe('DefaultMessagingSession', () => {
       dommMockBehavior.webSocketOpenSucceeds = false;
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
-      messagingSession.startAsync().then(() =>
+      messagingSession.start().then(() =>
         new TimeoutScheduler(10).start(() => {
           expect(logSpy.calledOnce).to.be.true;
           logSpy.restore();
@@ -357,7 +357,7 @@ describe('DefaultMessagingSession', () => {
         },
       };
       messagingSession.addObserver(observer);
-      messagingSession.startAsync().then(() => {
+      messagingSession.start().then(() => {
         messagingSession.removeObserver(observer);
         webSocket.addEventListener('open', () => {
           expect(didStartConnecting).to.be.eq(0);
