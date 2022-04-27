@@ -21,6 +21,7 @@ export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
   private isClosing: boolean;
   private isSessionEstablished: boolean;
+  private isConnecting: boolean = false;
 
   constructor(
     private configuration: MessagingSessionConfiguration,
@@ -29,6 +30,7 @@ export default class DefaultMessagingSession implements MessagingSession {
     private readonly reconnectController?: ReconnectController,
     private readonly sigV4?: SigV4
   ) {
+    this.isConnecting;
     if (!this.webSocket) {
       this.webSocket = new DefaultWebSocketAdapter(this.logger);
     }
@@ -60,9 +62,9 @@ export default class DefaultMessagingSession implements MessagingSession {
     this.observerQueue.delete(observer);
   }
 
-  async start(): Promise<void> {
-    if (this.isClosed()) {
-      await this.startConnecting(false);
+  start(): void {
+    if (this.isClosed() && !this.isConnecting) {
+      this.startConnecting(false);
     } else {
       this.logger.info('messaging session already started');
     }
@@ -104,6 +106,7 @@ export default class DefaultMessagingSession implements MessagingSession {
   }
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
+    this.isConnecting = true;
     // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired.
     let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
     if (endpointUrl === undefined) {
@@ -128,6 +131,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       }
     });
     this.setUpEventListeners();
+    this.isConnecting = false;
   }
 
   private prepareWebSocketUrl(endpointUrl: string): string {

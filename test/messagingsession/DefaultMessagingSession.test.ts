@@ -210,13 +210,14 @@ describe('DefaultMessagingSession', () => {
           count++;
         },
       });
-      messagingSession.start().then(() => {
+      messagingSession.start();
+      setTimeout(function () {
         webSocket.addEventListener('close', (_event: CloseEvent) => {
           expect(count).to.be.eq(0);
           done();
         });
         webSocket.close(4401);
-      });
+      }, 1000);
     });
 
     it('Do not start if there is an existing connection', () => {
@@ -231,13 +232,12 @@ describe('DefaultMessagingSession', () => {
       dommMockBehavior.webSocketOpenSucceeds = false;
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
-      messagingSession.start().then(() =>
-        new TimeoutScheduler(10).start(() => {
-          expect(logSpy.calledOnce).to.be.true;
-          logSpy.restore();
-          done();
-        })
-      );
+      messagingSession.start();
+      new TimeoutScheduler(100).start(() => {
+        expect(logSpy.calledOnce).to.be.true;
+        logSpy.restore();
+        done();
+      });
     });
   });
 
@@ -357,13 +357,37 @@ describe('DefaultMessagingSession', () => {
         },
       };
       messagingSession.addObserver(observer);
-      messagingSession.start().then(() => {
-        messagingSession.removeObserver(observer);
-        webSocket.addEventListener('open', () => {
-          expect(didStartConnecting).to.be.eq(0);
-          done();
-        });
-      });
+
+      messagingSession.start();
+      messagingSession.removeObserver(observer);
+      setTimeout(function () {
+        expect(didStartConnecting).to.be.eq(0);
+        done();
+      }, 100);
+    });
+
+    it('will not receive event if remove observers from observer', done => {
+      let didStartConnecting = 0;
+
+      const observer1 = {
+        messagingSessionDidStartConnecting(_reconnecting: boolean): void {
+          messagingSession.removeObserver(observer2);
+          setTimeout(function () {
+            expect(didStartConnecting).to.be.eq(0);
+            done();
+          }, 100);
+        },
+      };
+
+      const observer2 = {
+        messagingSessionDidStartConnecting(_reconnecting: boolean): void {
+          didStartConnecting++;
+        },
+      };
+
+      messagingSession.addObserver(observer1);
+      messagingSession.addObserver(observer2);
+      messagingSession.start();
     });
 
     it('will not call observer method if it is not implemented', done => {
@@ -386,11 +410,13 @@ describe('DefaultMessagingSession', () => {
     it('Catch JSON parse error', done => {
       const logSpy = sinon.spy(logger, 'error');
       messagingSession.start();
-      webSocket.send(INVALID_MSG);
       new TimeoutScheduler(10).start(() => {
-        expect(logSpy.calledOnce).to.be.true;
-        logSpy.restore();
-        done();
+        webSocket.send(INVALID_MSG);
+        new TimeoutScheduler(10).start(() => {
+          expect(logSpy.calledOnce).to.be.true;
+          logSpy.restore();
+          done();
+        });
       });
     });
   });
