@@ -9,20 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add `audioUpstreamRoundTripTimeMs`, `audioUpstreamJitterMs`, and `audioDownstreamJitterMs` to `observableMetricSpec`.
+- Add `videoUpstreamRoundTripTimeMs`, `videoUpstreamJitterMs`, and `videoDownstreamJitterMs`, and `videoDownstreamDelayMs` to `observableVideoMetricSpec`.
+
 ### Removed
 
 - No longer stop video stream when calling `stopLocalVideoTile`. This was added as a workaround to prevent crash in old Safari versions but no longer needed.
 
 ### Changed
 
-- Subscribe and unsubscribe to `MediaStreamBrokerObserver` in `AudioVideoController` at the end of every connection and 
-  disconnection to avoid trying to replace local audio and video during connection.
+- Subscribe and unsubscribe to `MediaStreamBrokerObserver` in `AudioVideoController` at the end of every connection and disconnection to avoid trying to replace local audio and video during connection.
 - Update `getMediaType` method to check the property `kind` instead of `mediaType` of a `RawMetricReport`.
 
 ### Fixed
 
-- `MessagingSession` reconnects with refreshed endpoint and credentials if needed.  EndpointUrl on `MessagingSessionConfiguration` is deprecated as it is resolved by calling `getMessagingSessionEndpoint` internally. 
+- `MessagingSession` reconnects with refreshed endpoint and credentials if needed.  EndpointUrl on `MessagingSessionConfiguration` is deprecated as it is resolved by calling `getMessagingSessionEndpoint` internally.
 - Fix a bug that `remote-inbound-rtp` `RTCStatsReport` and `remote-outbound-rtp` `RTCStatsReport` of "video" `kind` are accidentally filtered.
+- Fix the incorrect calculation of aggregation WebRTC metric spec (`audioSpeakerDelayMs`, `decoderLoss`).
 
 ## [3.0.0] - 2022-03-30
 

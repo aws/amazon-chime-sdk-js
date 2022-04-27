@@ -54,30 +54,24 @@ describe('ClientMetricReport', () => {
     const metricName = 'this-name-is-ignored';
 
     it('returns 0 if received samples is 0', () => {
-      const report = new GlobalMetricReport();
+      const ssrc = 1;
+      const report = new StreamMetricReport();
       report.currentMetrics['concealedSamples'] = 0;
       report.currentMetrics['totalSamplesReceived'] = 0;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal(0);
     });
 
     it('returns 0 if decoder abnormal is 0', () => {
-      const report = new GlobalMetricReport();
+      const ssrc = 1;
+      const report = new StreamMetricReport();
       report.currentMetrics['concealedSamples'] = 1;
       report.currentMetrics['totalSamplesReceived'] = 1;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal(0);
     });
 
     it('returns the loss percent', () => {
-      const report = new GlobalMetricReport();
-      report.currentMetrics['concealedSamples'] = 1;
-      report.currentMetrics['totalSamplesReceived'] = 2;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.decoderLossPercent(metricName)).to.equal((1 * 100) / 2);
-    });
-
-    it('returns the loss percent from the stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.currentMetrics['concealedSamples'] = 1;
@@ -91,30 +85,24 @@ describe('ClientMetricReport', () => {
     const metricName = 'metric-name';
 
     it('returns 0 if the total number of sent/received and lost is 0', () => {
-      const report = new GlobalMetricReport();
+      const ssrc = 1;
+      const report = new StreamMetricReport();
       report.currentMetrics[metricName] = 0;
       report.currentMetrics['packetsLost'] = 0;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.packetLossPercent(metricName)).to.equal(0);
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.packetLossPercent(metricName, ssrc)).to.equal(0);
     });
 
     it('returns 0 if the lost count is 0', () => {
-      const report = new GlobalMetricReport();
+      const ssrc = 1;
+      const report = new StreamMetricReport();
       report.currentMetrics[metricName] = 10;
       report.currentMetrics['packetsLost'] = 0;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.packetLossPercent(metricName)).to.equal(0);
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.packetLossPercent(metricName, ssrc)).to.equal(0);
     });
 
     it('returns the loss percent', () => {
-      const report = new GlobalMetricReport();
-      report.currentMetrics[metricName] = 10;
-      report.currentMetrics['packetsLost'] = 5;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.packetLossPercent(metricName)).to.equal((5 * 100) / 15);
-    });
-
-    it('returns the loss percent from the stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.currentMetrics[metricName] = 10;
@@ -387,7 +375,7 @@ describe('ClientMetricReport', () => {
   describe('getObservableMetrics', () => {
     it('returns the observable metrics as a JS object', () => {
       const metrics = clientMetricReport.getObservableMetrics();
-      expect(Object.keys(metrics).length).to.equal(11);
+      expect(Object.keys(metrics).length).to.equal(15);
     });
   });
 
