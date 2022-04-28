@@ -153,13 +153,13 @@ describe('SDP', () => {
   describe('withVideoLayersAllocationRtpHeaderExtension', () => {
     it('does not add layers allocation line if no id is available', () => {
       const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
-      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
       expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
     });
 
     it('adds layers allocation line if available', () => {
       const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
-      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
       );
@@ -167,9 +167,44 @@ describe('SDP', () => {
 
     it('adds layers allocation line if available in gap', () => {
       const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS);
-      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('adds layers allocation line if there is ID available and extension not in previous SDP', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('adds layers allocation line if id available in gap and extension not in previous SDP', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS);
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('adds layers allocation line using extension id of previous SDP', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_ADDED_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID
+      );
+    });
+
+    it('does not add layers allocation line if it already exists', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID
       );
     });
   });
