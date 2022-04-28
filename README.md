@@ -242,11 +242,10 @@ const logger = new ConsoleLogger('SDK', LogLevel.INFO);
 
 // You will need AWS credentials configured before calling AWS or Amazon Chime APIs.
 const chime = new Chime({ region: 'us-east-1' });
-const endpoint = await chime.getMessagingSessionEndpoint().promise();
 
 const userArn = /* The userArn */;
 const sessionId = /* The sessionId */;
-const configuration = new MessagingSessionConfiguration(userArn, sessionId, endpoint.Endpoint.Url, chime, AWS);
+const configuration = new MessagingSessionConfiguration(userArn, sessionId, undefined, chime, AWS);
 const messagingSession = new DefaultMessagingSession(configuration, logger);
 ```
 

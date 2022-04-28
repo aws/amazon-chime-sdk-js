@@ -21,6 +21,7 @@ export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
   private isClosing: boolean;
   private isSessionEstablished: boolean;
+  private isConnecting: boolean = false;
 
   constructor(
     private configuration: MessagingSessionConfiguration,
@@ -61,7 +62,7 @@ export default class DefaultMessagingSession implements MessagingSession {
   }
 
   start(): void {
-    if (this.isClosed()) {
+    if (this.isClosed() && !this.isConnecting) {
       this.startConnecting(false);
     } else {
       this.logger.info('messaging session already started');
@@ -103,39 +104,45 @@ export default class DefaultMessagingSession implements MessagingSession {
     });
   }
 
-  private startConnecting(reconnecting: boolean): void {
-    const signedUrl = this.prepareWebSocketUrl();
-    this.logger.info(`opening connection to ${signedUrl}`);
-    if (!reconnecting) {
-      this.reconnectController.reset();
-    }
-    if (this.reconnectController.hasStartedConnectionAttempt()) {
-      this.reconnectController.startedConnectionAttempt(false);
-    } else {
-      this.reconnectController.startedConnectionAttempt(true);
-    }
-    this.webSocket.create(signedUrl, [], true);
-    this.forEachObserver(observer => {
-      if (observer.messagingSessionDidStartConnecting) {
-        observer.messagingSessionDidStartConnecting(reconnecting);
+  private async startConnecting(reconnecting: boolean): Promise<void> {
+    this.isConnecting = true;
+    try {
+      // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired.
+      let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
+      if (endpointUrl === undefined) {
+        const endpoint = await this.configuration.chimeClient
+          .getMessagingSessionEndpoint()
+          .promise();
+        endpointUrl = endpoint.Endpoint.Url;
       }
-    });
-    this.setUpEventListeners();
+
+      const signedUrl = this.prepareWebSocketUrl(endpointUrl);
+      this.logger.info(`opening connection to ${signedUrl}`);
+      if (!reconnecting) {
+        this.reconnectController.reset();
+      }
+      if (this.reconnectController.hasStartedConnectionAttempt()) {
+        this.reconnectController.startedConnectionAttempt(false);
+      } else {
+        this.reconnectController.startedConnectionAttempt(true);
+      }
+      this.webSocket.create(signedUrl, [], true);
+      this.forEachObserver(observer => {
+        if (observer.messagingSessionDidStartConnecting) {
+          observer.messagingSessionDidStartConnecting(reconnecting);
+        }
+      });
+      this.setUpEventListeners();
+    } finally {
+      this.isConnecting = false;
+    }
   }
 
-  private prepareWebSocketUrl(): string {
+  private prepareWebSocketUrl(endpointUrl: string): string {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);
-    return this.sigV4.signURL(
-      'GET',
-      'wss',
-      'chime',
-      this.configuration.endpointUrl,
-      '/connect',
-      '',
-      queryParams
-    );
+    return this.sigV4.signURL('GET', 'wss', 'chime', endpointUrl, '/connect', '', queryParams);
   }
 
   private isClosed(): boolean {
@@ -191,7 +198,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       !this.isClosing &&
       this.canReconnect(event.code) &&
       this.reconnectController.retryWithBackoff(async () => {
-        this.startConnecting(true);
+        await this.startConnecting(true);
       }, null)
     ) {
       return;

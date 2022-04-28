@@ -39,6 +39,8 @@ describe('DefaultMessagingSession', () => {
   let dommMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
 
+  let getMessSessionCnt = 0;
+
   const chimeClient = {
     config: {
       region: 'us-east-1',
@@ -47,6 +49,19 @@ describe('DefaultMessagingSession', () => {
         secretAccessKey: 'secretKey',
         sessionToken: 'sessionToken',
       },
+    },
+    getMessagingSessionEndpoint: function () {
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        promise: async function (): Promise<any> {
+          getMessSessionCnt++;
+          return {
+            Endpoint: {
+              Url: ENDPOINT_URL,
+            },
+          };
+        },
+      };
     },
   };
 
@@ -79,13 +94,8 @@ describe('DefaultMessagingSession', () => {
     dommMockBehavior = new DOMMockBehavior();
     dommMockBehavior.webSocketSendEcho = true;
     domMockBuilder = new DOMMockBuilder(dommMockBehavior);
-    configuration = new MessagingSessionConfiguration(
-      'userArn',
-      '123',
-      ENDPOINT_URL,
-      chimeClient,
-      {}
-    );
+    getMessSessionCnt = 0;
+    configuration = new MessagingSessionConfiguration('userArn', '123', undefined, chimeClient, {});
     configuration.reconnectTimeoutMs = 100;
     configuration.reconnectFixedWaitMs = 40;
     configuration.reconnectShortBackoffMs = 10;
@@ -126,6 +136,21 @@ describe('DefaultMessagingSession', () => {
     it('Can start', done => {
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(1);
+          done();
+        },
+      });
+      messagingSession.start();
+      new TimeoutScheduler(10).start(() => {
+        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      });
+    });
+
+    it('Can start with hardcoded config url', done => {
+      configuration.endpointUrl = ENDPOINT_URL;
+      messagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(0);
           done();
         },
       });
@@ -186,11 +211,13 @@ describe('DefaultMessagingSession', () => {
         },
       });
       messagingSession.start();
-      webSocket.addEventListener('close', (_event: CloseEvent) => {
-        expect(count).to.be.eq(0);
-        done();
-      });
-      webSocket.close(4401);
+      setTimeout(function () {
+        webSocket.addEventListener('close', (_event: CloseEvent) => {
+          expect(count).to.be.eq(0);
+          done();
+        });
+        webSocket.close(4401);
+      }, 1000);
     });
 
     it('Do not start if there is an existing connection', () => {
@@ -206,7 +233,7 @@ describe('DefaultMessagingSession', () => {
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
       messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
+      new TimeoutScheduler(100).start(() => {
         expect(logSpy.calledOnce).to.be.true;
         logSpy.restore();
         done();
@@ -266,6 +293,7 @@ describe('DefaultMessagingSession', () => {
         messagingSessionDidStop(_event: CloseEvent): void {
           expect(didStartConnecting).to.be.eq(2);
           expect(didStartCount).to.be.eq(1);
+          expect(getMessSessionCnt).to.be.eq(2);
           done();
         },
       });
@@ -329,12 +357,37 @@ describe('DefaultMessagingSession', () => {
         },
       };
       messagingSession.addObserver(observer);
+
       messagingSession.start();
       messagingSession.removeObserver(observer);
-      webSocket.addEventListener('open', () => {
+      setTimeout(function () {
         expect(didStartConnecting).to.be.eq(0);
         done();
-      });
+      }, 100);
+    });
+
+    it('will not receive event if remove observers from observer', done => {
+      let didStartConnecting = 0;
+
+      const observer1 = {
+        messagingSessionDidStartConnecting(_reconnecting: boolean): void {
+          messagingSession.removeObserver(observer2);
+          setTimeout(function () {
+            expect(didStartConnecting).to.be.eq(0);
+            done();
+          }, 100);
+        },
+      };
+
+      const observer2 = {
+        messagingSessionDidStartConnecting(_reconnecting: boolean): void {
+          didStartConnecting++;
+        },
+      };
+
+      messagingSession.addObserver(observer1);
+      messagingSession.addObserver(observer2);
+      messagingSession.start();
     });
 
     it('will not call observer method if it is not implemented', done => {
@@ -357,11 +410,13 @@ describe('DefaultMessagingSession', () => {
     it('Catch JSON parse error', done => {
       const logSpy = sinon.spy(logger, 'error');
       messagingSession.start();
-      webSocket.send(INVALID_MSG);
       new TimeoutScheduler(10).start(() => {
-        expect(logSpy.calledOnce).to.be.true;
-        logSpy.restore();
-        done();
+        webSocket.send(INVALID_MSG);
+        new TimeoutScheduler(10).start(() => {
+          expect(logSpy.calledOnce).to.be.true;
+          logSpy.restore();
+          done();
+        });
       });
     });
   });
