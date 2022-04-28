@@ -300,6 +300,47 @@ describe('DefaultMessagingSession', () => {
       messagingSession.start();
     });
 
+    it('can reconnect with failures on getMessagingSession', done => {
+      let didStartCount = 0;
+      let didStartConnecting = 0;
+      const savedClientBehavior = chimeClient.getMessagingSessionEndpoint;
+      messagingSession.addObserver({
+        messagingSessionDidStartConnecting(reconnecting: boolean): void {
+          didStartConnecting++;
+          if (!reconnecting) {
+            webSocket.addEventListener('open', () => {
+              webSocket.close(1006);
+              chimeClient.getMessagingSessionEndpoint = function () {
+                throw 'some error';
+              };
+              setTimeout(function () {
+                chimeClient.getMessagingSessionEndpoint = savedClientBehavior;
+              }, 100);
+            });
+          } else {
+            webSocket.addEventListener('open', () => {
+              webSocket.send(SESSION_SUBSCRIBED_MSG);
+            });
+            webSocket.addEventListener('message', (_event: MessageEvent) => {
+              new TimeoutScheduler(10).start(() => {
+                messagingSession.stop();
+              });
+            });
+          }
+        },
+        messagingSessionDidStart(): void {
+          didStartCount++;
+        },
+        messagingSessionDidStop(_event: CloseEvent): void {
+          expect(didStartConnecting).to.be.eq(2);
+          expect(didStartCount).to.be.eq(1);
+          expect(getMessSessionCnt).to.be.eq(2);
+          done();
+        },
+      });
+      messagingSession.start();
+    });
+
     it('will not reconnect', done => {
       let didStartConnecting = 0;
       messagingSession.addObserver({

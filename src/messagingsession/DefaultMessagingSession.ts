@@ -107,6 +107,15 @@ export default class DefaultMessagingSession implements MessagingSession {
   private async startConnecting(reconnecting: boolean): Promise<void> {
     this.isConnecting = true;
     try {
+      if (!reconnecting) {
+        this.reconnectController.reset();
+      }
+      if (this.reconnectController.hasStartedConnectionAttempt()) {
+        this.reconnectController.startedConnectionAttempt(false);
+      } else {
+        this.reconnectController.startedConnectionAttempt(true);
+      }
+
       // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired.
       let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
       if (endpointUrl === undefined) {
@@ -118,14 +127,7 @@ export default class DefaultMessagingSession implements MessagingSession {
 
       const signedUrl = this.prepareWebSocketUrl(endpointUrl);
       this.logger.info(`opening connection to ${signedUrl}`);
-      if (!reconnecting) {
-        this.reconnectController.reset();
-      }
-      if (this.reconnectController.hasStartedConnectionAttempt()) {
-        this.reconnectController.startedConnectionAttempt(false);
-      } else {
-        this.reconnectController.startedConnectionAttempt(true);
-      }
+
       this.webSocket.create(signedUrl, [], true);
       this.forEachObserver(observer => {
         if (observer.messagingSessionDidStartConnecting) {
@@ -191,16 +193,21 @@ export default class DefaultMessagingSession implements MessagingSession {
     }
   }
 
+  private retryConnection(): boolean {
+    return this.reconnectController.retryWithBackoff(async () => {
+      try {
+        await this.startConnecting(true);
+      } catch (e) {
+        // getMessagingSessionEndpoint can fail, so need to retry here
+        this.retryConnection();
+      }
+    }, null);
+  }
+
   private closeEventHandler(event: CloseEvent): void {
     this.logger.info(`WebSocket close: ${event.code} ${event.reason}`);
     this.webSocket.destroy();
-    if (
-      !this.isClosing &&
-      this.canReconnect(event.code) &&
-      this.reconnectController.retryWithBackoff(async () => {
-        await this.startConnecting(true);
-      }, null)
-    ) {
+    if (!this.isClosing && this.canReconnect(event.code) && this.retryConnection()) {
       return;
     }
     this.isClosing = false;
