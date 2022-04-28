@@ -106,31 +106,36 @@ export default class DefaultMessagingSession implements MessagingSession {
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
     this.isConnecting = true;
-    // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired.
-    let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
-    if (endpointUrl === undefined) {
-      const endpoint = await this.configuration.chimeClient.getMessagingSessionEndpoint().promise();
-      endpointUrl = endpoint.Endpoint.Url;
-    }
-
-    const signedUrl = this.prepareWebSocketUrl(endpointUrl);
-    this.logger.info(`opening connection to ${signedUrl}`);
-    if (!reconnecting) {
-      this.reconnectController.reset();
-    }
-    if (this.reconnectController.hasStartedConnectionAttempt()) {
-      this.reconnectController.startedConnectionAttempt(false);
-    } else {
-      this.reconnectController.startedConnectionAttempt(true);
-    }
-    this.webSocket.create(signedUrl, [], true);
-    this.forEachObserver(observer => {
-      if (observer.messagingSessionDidStartConnecting) {
-        observer.messagingSessionDidStartConnecting(reconnecting);
+    try {
+      // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired.
+      let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
+      if (endpointUrl === undefined) {
+        const endpoint = await this.configuration.chimeClient
+          .getMessagingSessionEndpoint()
+          .promise();
+        endpointUrl = endpoint.Endpoint.Url;
       }
-    });
-    this.setUpEventListeners();
-    this.isConnecting = false;
+
+      const signedUrl = this.prepareWebSocketUrl(endpointUrl);
+      this.logger.info(`opening connection to ${signedUrl}`);
+      if (!reconnecting) {
+        this.reconnectController.reset();
+      }
+      if (this.reconnectController.hasStartedConnectionAttempt()) {
+        this.reconnectController.startedConnectionAttempt(false);
+      } else {
+        this.reconnectController.startedConnectionAttempt(true);
+      }
+      this.webSocket.create(signedUrl, [], true);
+      this.forEachObserver(observer => {
+        if (observer.messagingSessionDidStartConnecting) {
+          observer.messagingSessionDidStartConnecting(reconnecting);
+        }
+      });
+      this.setUpEventListeners();
+    } finally {
+      this.isConnecting = false;
+    }
   }
 
   private prepareWebSocketUrl(endpointUrl: string): string {
