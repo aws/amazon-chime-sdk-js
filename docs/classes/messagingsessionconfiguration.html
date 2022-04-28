@@ -115,7 +115,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Messaging<wbr>Session<wbr>Configuration<span class="tsd-signature-symbol">(</span>userArn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, messagingSessionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, endpointUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chimeClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, awsClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="messagingsessionconfiguration.html" class="tsd-signature-type">MessagingSessionConfiguration</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Messaging<wbr>Session<wbr>Configuration<span class="tsd-signature-symbol">(</span>userArn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, messagingSessionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, endpointUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, chimeClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, awsClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="messagingsessionconfiguration.html" class="tsd-signature-type">MessagingSessionConfiguration</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -127,10 +127,12 @@
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
-										endpoint URL, the chimeClient, and the AWSClient.
-										The messaging session id is to uniquely identify this messaging session for the userArn.
-									If messaging session id is passed in as null, it will be automatically generated.</p>
+									endpoint URL, the chimeClient, and the AWSClient.</p>
 								</div>
+								<p>endpointUrl is deprecated and should not be used. Internally it is resolved on connect via chimeClient if undefined, and
+								always re-resolved on reconnect.</p>
+								<p>The messaging session id is to uniquely identify this messaging session for the userArn.
+								If messaging session id is passed in as null, it will be automatically generated.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -141,7 +143,7 @@
 									<h5>messagingSessionId: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								</li>
 								<li>
-									<h5>endpointUrl: <span class="tsd-signature-type">string</span></h5>
+									<h5>endpointUrl: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								</li>
 								<li>
 									<h5>chimeClient: <span class="tsd-signature-type">any</span></h5>
@@ -163,7 +165,7 @@
 					<div class="tsd-signature tsd-kind-icon">aws<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L41">src/messagingsession/MessagingSessionConfiguration.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L45">src/messagingsession/MessagingSessionConfiguration.ts:45</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -173,17 +175,17 @@
 					<div class="tsd-signature tsd-kind-icon">chime<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L40">src/messagingsession/MessagingSessionConfiguration.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L44">src/messagingsession/MessagingSessionConfiguration.ts:44</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="endpointurl" class="tsd-anchor"></a>
 					<h3>endpoint<wbr>Url</h3>
-					<div class="tsd-signature tsd-kind-icon">endpoint<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<div class="tsd-signature tsd-kind-icon">endpoint<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L39">src/messagingsession/MessagingSessionConfiguration.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L43">src/messagingsession/MessagingSessionConfiguration.ts:43</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +195,7 @@
 					<div class="tsd-signature tsd-kind-icon">messaging<wbr>Session<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L38">src/messagingsession/MessagingSessionConfiguration.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L42">src/messagingsession/MessagingSessionConfiguration.ts:42</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -263,7 +265,7 @@
 					<div class="tsd-signature tsd-kind-icon">user<wbr>Arn<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L37">src/messagingsession/MessagingSessionConfiguration.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L41">src/messagingsession/MessagingSessionConfiguration.ts:41</a></li>
 						</ul>
 					</aside>
 				</section>

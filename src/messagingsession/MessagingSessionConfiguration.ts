@@ -30,13 +30,17 @@ export default class MessagingSessionConfiguration {
   /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
    * endpoint URL, the chimeClient, and the AWSClient.
+   *
+   * endpointUrl is deprecated and should not be used. Internally it is resolved on connect via chimeClient if undefined, and
+   * always re-resolved on reconnect.
+   *
    * The messaging session id is to uniquely identify this messaging session for the userArn.
    * If messaging session id is passed in as null, it will be automatically generated.
    */
   constructor(
     public userArn: string,
     public messagingSessionId: string | null,
-    public endpointUrl: string,
+    public endpointUrl: string | undefined,
     public chimeClient: any,
     public awsClient: any
   ) {

@@ -59,8 +59,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
         try {
           const chime = new Chime({ region: 'us-east-1' });
-          const endpoint = await chime.getMessagingSessionEndpoint().promise();
-          this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime, AWS);
+          this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime, AWS);
           this.session = new DefaultMessagingSession(this.configuration, this.logger);
           this.session.addObserver(this);
           this.session.start();
