@@ -36,7 +36,8 @@ export default class SetLocalDescriptionTask extends BaseTask {
     if (this.context.browserBehavior.hasChromiumWebRTC()) {
       // This will be negotiatiated with backend, and we will only use it to skip resubscribes
       // if we confirm support/negotiation via `RTCRtpTranceiver.sender.getParams`
-      sdp = new SDP(sdp).withVideoLayersAllocationRtpHeaderExtension(this.context.previousSdpOffer).sdp;
+      sdp = new SDP(sdp).withVideoLayersAllocationRtpHeaderExtension(this.context.previousSdpOffer)
+        .sdp;
     }
     if (new DefaultBrowserBehavior().requiresDisablingH264Encoding()) {
       sdp = new SDP(sdp).removeH264SupportFromSendSection().sdp;

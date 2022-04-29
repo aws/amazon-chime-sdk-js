@@ -203,9 +203,7 @@ describe('SDP', () => {
     it('does not add layers allocation line if it already exists', () => {
       const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
       const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
-      expect(sdpB.sdp).to.equal(
-        SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID
-      );
+      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
     });
   });
 
