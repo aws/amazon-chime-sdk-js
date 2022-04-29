@@ -378,13 +378,14 @@ export default class SDP {
    * this will not add the packet overhead unless negotiated to avoid waste
    */
   withVideoLayersAllocationRtpHeaderExtension(previousSdp: SDP): SDP {
-    const url = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`
+    const url = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
 
     // According to https://webrtc.googlesource.com/src/+/b62ee8ce94e5f10e0a94d6f112e715cc4d0cd9dc,
     // RTP header extension ID change would result in a hard failure. Therefore if the extension exists
     // in the previous SDP, use the same extension ID to avoid the failure. Otherwise use a new ID
-    let previousId = previousSdp ? previousSdp.getRtpHeaderExtensionId(url) : -1;
-    const id = previousId === -1 ? this.getUniqueRtpHeaderExtensionId(SDP.splitLines(this.sdp)) : previousId;
+    const previousId = previousSdp ? previousSdp.getRtpHeaderExtensionId(url) : -1;
+    const id =
+      previousId === -1 ? this.getUniqueRtpHeaderExtensionId(SDP.splitLines(this.sdp)) : previousId;
 
     const sections = SDP.splitSections(this.sdp);
     const newSections = [];
@@ -402,10 +403,7 @@ export default class SDP {
         for (const line of srcLines) {
           dstLines.push(line);
           if (/^a=sendrecv/.test(line.trim())) {
-            const targetLine =
-              `a=extmap:` +
-              id +
-              ` ` + url;
+            const targetLine = `a=extmap:` + id + ` ` + url;
             dstLines.push(targetLine);
           }
         }
@@ -598,10 +596,10 @@ export default class SDP {
   /**
    * Return RTP header extension ID if the extension exists in SDP. Return -1 otherwise
    */
-   getRtpHeaderExtensionId(url: string): number {
+  getRtpHeaderExtensionId(url: string): number {
     const sections = SDP.splitSections(this.sdp);
 
-    for (let section of sections) {
+    for (const section of sections) {
       if (/^m=video/.test(section)) {
         const id = SDP.getRtpHeaderExtensionIdInSection(section, url);
         if (id !== -1) {
@@ -609,6 +607,6 @@ export default class SDP {
         }
       }
     }
-    return -1
+    return -1;
   }
 }
