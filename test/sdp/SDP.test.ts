@@ -205,6 +205,35 @@ describe('SDP', () => {
       const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
       expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
     });
+
+    it('remove layers allocation line if previous ID is used by another extension', () => {
+      const sdpA = new SDP(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_HEADER_EXTENSION);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_NO_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('override layers allocation extension id if differs from previous ID', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_HEADER_EXTENSION);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_OVERRIDE_ID);
+    });
+
+    it('do not add layers allocation extension if previous ID is used by another ID', () => {
+      const sdpA = new SDP(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_NO_LAYERS_ALLOCATION_EXTENSION
+      );
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_HEADER_EXTENSION);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_NO_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
   });
 
   describe('withoutSDPMock.SERVER_REFLEXIVE_CANDIDATES', () => {

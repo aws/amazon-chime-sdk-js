@@ -391,11 +391,11 @@ export default class SDP {
     const newSections = [];
     for (let section of sections) {
       if (/^m=video/.test(section) && SDP.getRtpHeaderExtensionIdInSection(section, url) === -1) {
-        // Add RTP header extension only when it does not already exist
+        // Add RTP header extension when it does not already exist
         const srcLines: string[] = SDP.splitLines(section);
         const dstLines: string[] = [];
-        if (id === -1) {
-          // if all ids are used, we won't add new line to it
+        if (id === -1 || this.hasRtpHeaderExtensionId(id)) {
+          // if all ids are used or the id is already used, we won't add new line to it
           newSections.push(section);
           continue;
         }
@@ -406,6 +406,29 @@ export default class SDP {
             const targetLine = `a=extmap:` + id + ` ` + url;
             dstLines.push(targetLine);
           }
+        }
+        section = dstLines.join(SDP.CRLF) + SDP.CRLF;
+      } else if (
+        previousId !== -1 &&
+        /^m=video/.test(section) &&
+        SDP.getRtpHeaderExtensionIdInSection(section, url) !== previousId
+      ) {
+        // Override extension ID if it does not match previous SDP
+        const srcLines: string[] = SDP.splitLines(section);
+        const dstLines: string[] = [];
+        for (const line of srcLines) {
+          if (/^a=extmap:/.test(line.trim())) {
+            const headerExtension = line.split('a=extmap:')[1].split(' ');
+            if (headerExtension[1] === url) {
+              if (!this.hasRtpHeaderExtensionId(previousId)) {
+                // If previous ID is used by another extension, remove it from this SDP
+                const targetLine = `a=extmap:` + previousId + ` ` + url;
+                dstLines.push(targetLine);
+              }
+              continue;
+            }
+          }
+          dstLines.push(line);
         }
         section = dstLines.join(SDP.CRLF) + SDP.CRLF;
       }
@@ -608,5 +631,23 @@ export default class SDP {
       }
     }
     return -1;
+  }
+
+  /**
+   * Return if extension ID exists in the SDP
+   */
+  hasRtpHeaderExtensionId(targetId: number): boolean {
+    const lines = SDP.splitLines(this.sdp);
+
+    for (const line of lines) {
+      if (/^a=extmap:/.test(line.trim())) {
+        const headerExtension = line.split('a=extmap:')[1].split(' ');
+        const id = +headerExtension[0];
+        if (id === targetId) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
