@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
-
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Logger from '../logger/Logger';
@@ -106,17 +104,6 @@ export default class DefaultMessagingSession implements MessagingSession {
   }
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
-    // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
-    let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
-    if (endpointUrl === undefined) {
-      const endpoint = await this.configuration.chimeClient.send(
-        new GetMessagingSessionEndpointCommand({})
-      );
-      endpointUrl = endpoint.Endpoint.Url;
-    }
-
-    const signedUrl = await this.prepareWebSocketUrl(endpointUrl);
-    this.logger.info(`opening connection to ${signedUrl}`);
     if (!reconnecting) {
       this.reconnectController.reset();
     }
@@ -125,6 +112,30 @@ export default class DefaultMessagingSession implements MessagingSession {
     } else {
       this.reconnectController.startedConnectionAttempt(true);
     }
+
+    // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
+    let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
+    if (endpointUrl === undefined) {
+      try {
+        const endpoint = await this.configuration.chimeClient
+          .getMessagingSessionEndpoint()
+          .promise();
+        endpointUrl = endpoint.Endpoint.Url;
+      } catch (e) {
+        const closeEvent = new CloseEvent('close', {
+          wasClean: false,
+          code: 4999,
+          reason: 'Failed to getMessagingSessionEndpoint',
+          bubbles: false,
+        });
+        this.closeEventHandler(closeEvent);
+        return;
+      }
+    }
+
+    const signedUrl = await this.prepareWebSocketUrl(endpointUrl);
+    this.logger.info(`opening connection to ${signedUrl}`);
+
     this.webSocket.create(signedUrl, [], true);
     this.forEachObserver(observer => {
       if (observer.messagingSessionDidStartConnecting) {

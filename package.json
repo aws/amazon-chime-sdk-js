@@ -99,7 +99,6 @@
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^2.0.1",
-    "@aws-sdk/client-chime-sdk-messaging": "^3.75.0",
     "@aws-sdk/util-hex-encoding": "^3.47.0",
     "@types/dom-mediacapture-record": "^1.0.7",
     "@types/ua-parser-js": "^0.7.35",
