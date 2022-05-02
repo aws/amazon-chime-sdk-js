@@ -119,10 +119,21 @@ export default class DefaultMessagingSession implements MessagingSession {
       // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired.
       let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
       if (endpointUrl === undefined) {
-        const endpoint = await this.configuration.chimeClient
-          .getMessagingSessionEndpoint()
-          .promise();
-        endpointUrl = endpoint.Endpoint.Url;
+        try {
+          const endpoint = await this.configuration.chimeClient
+            .getMessagingSessionEndpoint()
+            .promise();
+          endpointUrl = endpoint.Endpoint.Url;
+        } catch (e) {
+          const closeEvent = new CloseEvent('close', {
+            wasClean: false,
+            code: 4999,
+            reason: 'Failed to getMessagingSessionEndpoint',
+            bubbles: false,
+          });
+          this.closeEventHandler(closeEvent);
+          return;
+        }
       }
 
       const signedUrl = this.prepareWebSocketUrl(endpointUrl);
@@ -195,18 +206,15 @@ export default class DefaultMessagingSession implements MessagingSession {
 
   private retryConnection(): boolean {
     return this.reconnectController.retryWithBackoff(async () => {
-      try {
-        await this.startConnecting(true);
-      } catch (e) {
-        // getMessagingSessionEndpoint can fail, so need to retry here
-        this.retryConnection();
-      }
+      await this.startConnecting(true);
     }, null);
   }
 
   private closeEventHandler(event: CloseEvent): void {
     this.logger.info(`WebSocket close: ${event.code} ${event.reason}`);
-    this.webSocket.destroy();
+    if (event.code !== 4999) {
+      this.webSocket.destroy();
+    }
     if (!this.isClosing && this.canReconnect(event.code) && this.retryConnection()) {
       return;
     }
