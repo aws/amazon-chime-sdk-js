@@ -104,7 +104,7 @@ const getPrerunScript = (capabilities) =>{
   const name = capabilities.name;
   const blurName = "Background Blur Test";
   const repName = "Background Replacement Test";
-  return (name.includes(blurName) || name.includes(repName)) ?  'storage:f196801d-998f-4ef2-bc2b-059b8521f345' : "";
+  return (name.includes(blurName) || name.includes(repName)) ?  'storage:d733d11b-a2cb-41c5-9dba-15abbd52c919' : "";
 }
 const getChromeCapabilities = capabilities => {
   let cap = Capabilities.chrome();
