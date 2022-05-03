@@ -88,6 +88,8 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
       expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.false;
+      expect(new DefaultBrowserBehavior().supportsVideoLayersAllocationRtpHeaderExtension()).to.be
+        .false;
     });
 
     it('can detect Firefox on Android', () => {
@@ -109,6 +111,8 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
       expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.true;
+      expect(new DefaultBrowserBehavior().supportsVideoLayersAllocationRtpHeaderExtension()).to.be
+        .true;
     });
 
     it('can detect Edge Chromium', () => {
