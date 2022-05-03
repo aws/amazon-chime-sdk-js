@@ -107,17 +107,6 @@ export default class DefaultMessagingSession implements MessagingSession {
   private async startConnecting(reconnecting: boolean): Promise<void> {
     this.isConnecting = true;
     try {
-      // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired.
-      let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
-      if (endpointUrl === undefined) {
-        const endpoint = await this.configuration.chimeClient
-          .getMessagingSessionEndpoint()
-          .promise();
-        endpointUrl = endpoint.Endpoint.Url;
-      }
-
-      const signedUrl = this.prepareWebSocketUrl(endpointUrl);
-      this.logger.info(`opening connection to ${signedUrl}`);
       if (!reconnecting) {
         this.reconnectController.reset();
       }
@@ -126,6 +115,30 @@ export default class DefaultMessagingSession implements MessagingSession {
       } else {
         this.reconnectController.startedConnectionAttempt(true);
       }
+
+      // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired.
+      let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
+      if (endpointUrl === undefined) {
+        try {
+          const endpoint = await this.configuration.chimeClient
+            .getMessagingSessionEndpoint()
+            .promise();
+          endpointUrl = endpoint.Endpoint.Url;
+        } catch (e) {
+          const closeEvent = new CloseEvent('close', {
+            wasClean: false,
+            code: 4999,
+            reason: 'Failed to getMessagingSessionEndpoint',
+            bubbles: false,
+          });
+          this.closeEventHandler(closeEvent);
+          return;
+        }
+      }
+
+      const signedUrl = this.prepareWebSocketUrl(endpointUrl);
+      this.logger.info(`opening connection to ${signedUrl}`);
+
       this.webSocket.create(signedUrl, [], true);
       this.forEachObserver(observer => {
         if (observer.messagingSessionDidStartConnecting) {
@@ -191,16 +204,18 @@ export default class DefaultMessagingSession implements MessagingSession {
     }
   }
 
+  private retryConnection(): boolean {
+    return this.reconnectController.retryWithBackoff(async () => {
+      await this.startConnecting(true);
+    }, null);
+  }
+
   private closeEventHandler(event: CloseEvent): void {
     this.logger.info(`WebSocket close: ${event.code} ${event.reason}`);
-    this.webSocket.destroy();
-    if (
-      !this.isClosing &&
-      this.canReconnect(event.code) &&
-      this.reconnectController.retryWithBackoff(async () => {
-        await this.startConnecting(true);
-      }, null)
-    ) {
+    if (event.code !== 4999) {
+      this.webSocket.destroy();
+    }
+    if (!this.isClosing && this.canReconnect(event.code) && this.retryConnection()) {
       return;
     }
     this.isClosing = false;
