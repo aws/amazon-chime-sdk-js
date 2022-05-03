@@ -101,6 +101,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return true;
   }
 
+  supportsVideoLayersAllocationRtpHeaderExtension(): boolean {
+    return this.hasChromiumWebRTC();
+  }
+
   requiresResolutionAlignment(width: number, height: number): [number, number] {
     if (this.isAndroid() && this.isPixel3()) {
       return [Math.ceil(width / 64) * 64, Math.ceil(height / 64) * 64];

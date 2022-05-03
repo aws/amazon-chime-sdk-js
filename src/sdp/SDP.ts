@@ -353,7 +353,9 @@ export default class SDP {
       if (/^a=extmap:/.test(line.trim())) {
         const headerExtension = line.split('a=extmap:')[1].split(' ');
         const id = +headerExtension[0];
-        headerExtensionIds.push(id);
+        if (!headerExtensionIds.includes(id)) {
+          headerExtensionIds.push(id);
+        }
       }
     }
 
@@ -375,17 +377,25 @@ export default class SDP {
    * negotiate with the back end to determine whether to use layers allocation header extension
    * this will not add the packet overhead unless negotiated to avoid waste
    */
-  withVideoLayersAllocationRtpHeaderExtension(): SDP {
-    const sections = SDP.splitSections(this.sdp);
+  withVideoLayersAllocationRtpHeaderExtension(previousSdp: SDP): SDP {
+    const url = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
 
+    // According to https://webrtc.googlesource.com/src/+/b62ee8ce94e5f10e0a94d6f112e715cc4d0cd9dc,
+    // RTP header extension ID change would result in a hard failure. Therefore if the extension exists
+    // in the previous SDP, use the same extension ID to avoid the failure. Otherwise use a new ID
+    const previousId = previousSdp ? previousSdp.getRtpHeaderExtensionId(url) : -1;
+    const id =
+      previousId === -1 ? this.getUniqueRtpHeaderExtensionId(SDP.splitLines(this.sdp)) : previousId;
+
+    const sections = SDP.splitSections(this.sdp);
     const newSections = [];
     for (let section of sections) {
-      if (/^m=video/.test(section)) {
+      if (/^m=video/.test(section) && SDP.getRtpHeaderExtensionIdInSection(section, url) === -1) {
+        // Add RTP header extension when it does not already exist
         const srcLines: string[] = SDP.splitLines(section);
         const dstLines: string[] = [];
-        const id = this.getUniqueRtpHeaderExtensionId(srcLines);
-        if (id === -1) {
-          // if all ids are used, we won't add new line to it
+        if (id === -1 || this.hasRtpHeaderExtensionId(id)) {
+          // if all ids are used or the id is already used, we won't add new line to it
           newSections.push(section);
           continue;
         }
@@ -393,12 +403,32 @@ export default class SDP {
         for (const line of srcLines) {
           dstLines.push(line);
           if (/^a=sendrecv/.test(line.trim())) {
-            const targetLine =
-              `a=extmap:` +
-              id +
-              ` http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
+            const targetLine = `a=extmap:` + id + ` ` + url;
             dstLines.push(targetLine);
           }
+        }
+        section = dstLines.join(SDP.CRLF) + SDP.CRLF;
+      } else if (
+        previousId !== -1 &&
+        /^m=video/.test(section) &&
+        SDP.getRtpHeaderExtensionIdInSection(section, url) !== previousId
+      ) {
+        // Override extension ID if it does not match previous SDP
+        const srcLines: string[] = SDP.splitLines(section);
+        const dstLines: string[] = [];
+        for (const line of srcLines) {
+          if (/^a=extmap:/.test(line.trim())) {
+            const headerExtension = line.split('a=extmap:')[1].split(' ');
+            if (headerExtension[1] === url) {
+              if (!this.hasRtpHeaderExtensionId(previousId)) {
+                // If previous ID is used by another extension, remove it from this SDP
+                const targetLine = `a=extmap:` + previousId + ` ` + url;
+                dstLines.push(targetLine);
+              }
+              continue;
+            }
+          }
+          dstLines.push(line);
         }
         section = dstLines.join(SDP.CRLF) + SDP.CRLF;
       }
@@ -567,5 +597,57 @@ export default class SDP {
       parsedMediaSections.push(section);
     }
     return parsedMediaSections;
+  }
+
+  /**
+   * Return RTP header extension ID if the extension exists in section. Return -1 otherwise
+   */
+  static getRtpHeaderExtensionIdInSection(section: string, url: string): number {
+    const lines: string[] = SDP.splitLines(section);
+    for (const line of lines) {
+      if (/^a=extmap:/.test(line.trim())) {
+        const headerExtension = line.split('a=extmap:')[1].split(' ');
+        const id = +headerExtension[0];
+        if (headerExtension[1] === url) {
+          return id;
+        }
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Return RTP header extension ID if the extension exists in SDP. Return -1 otherwise
+   */
+  getRtpHeaderExtensionId(url: string): number {
+    const sections = SDP.splitSections(this.sdp);
+
+    for (const section of sections) {
+      if (/^m=video/.test(section)) {
+        const id = SDP.getRtpHeaderExtensionIdInSection(section, url);
+        if (id !== -1) {
+          return id;
+        }
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Return if extension ID exists in the SDP
+   */
+  hasRtpHeaderExtensionId(targetId: number): boolean {
+    const lines = SDP.splitLines(this.sdp);
+
+    for (const line of lines) {
+      if (/^a=extmap:/.test(line.trim())) {
+        const headerExtension = line.split('a=extmap:')[1].split(' ');
+        const id = +headerExtension[0];
+        if (id === targetId) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

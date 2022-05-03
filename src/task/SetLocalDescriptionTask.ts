@@ -33,6 +33,12 @@ export default class SetLocalDescriptionTask extends BaseTask {
     const sdpOfferInit = this.context.sdpOfferInit;
     let sdp = sdpOfferInit.sdp;
 
+    if (this.context.browserBehavior.supportsVideoLayersAllocationRtpHeaderExtension()) {
+      // This will be negotiatiated with backend, and we will only use it to skip resubscribes
+      // if we confirm support/negotiation via `RTCRtpTranceiver.sender.getParams`
+      sdp = new SDP(sdp).withVideoLayersAllocationRtpHeaderExtension(this.context.previousSdpOffer)
+        .sdp;
+    }
     if (new DefaultBrowserBehavior().requiresDisablingH264Encoding()) {
       sdp = new SDP(sdp).removeH264SupportFromSendSection().sdp;
     }
