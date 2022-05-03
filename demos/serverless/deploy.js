@@ -46,6 +46,18 @@ const supportedControlRegions = [
   'us-gov-west-1',
 ];
 
+let useChimeSDKMediaPipelines = true;
+let chimeSDKMediaPipelinesEndpoint = 'https://media-pipelines-chime.us-east-1.amazonaws.com';
+// Supported regions for the Amazon Chime SDK Media Pipelines namespace
+// https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html#sdk-media-pipelines
+let mediaPipelinesControlRegion = 'us-east-1';
+const supportedMediaPipelinesControlRegions = [
+  'ap-southeast-1',
+  'eu-central-1',
+  'us-east-1',
+  'us-west-2',
+];
+
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
   console.log(`  -r, --region                         Target region, default '${region}'`);
@@ -61,6 +73,9 @@ function usage() {
   console.log(`  -o, --capture-output-prefix          Prefix for S3 bucket name`);
   console.log(`  -i, --opt-in-regions                 Comma separated list of additional opt-in regions to enable for media capture`);
   console.log(`  -m, --chime-sdk-meetings-endpoint    AWS SDK Chime Meetings endpoint`);
+  console.log(`  --chime-sdk-media-pipelines-region   Media pipelines control region, default '${mediaPipelinesControlRegion}'`);
+  console.log(`  --chime-sdk-media-pipelines-endpoint AWS SDK Chime Media Pipelines endpoint, default is ${chimeSDKMediaPipelinesEndpoint}`)
+  console.log(`  --use-chime-sdk-media-pipelines      Flag to switch between chime and chimeSDKMediaPipelines client, default '${useChimeSDKMediaPipelines}'`);
   console.log(`  -h, --help                           Show help and exit`);
 }
 
@@ -134,6 +149,15 @@ function parseArgs() {
         break;
       case '-m': case '--chime-sdk-meetings-endpoint':
         chimeSDKMeetingsEndpoint = getArgOrExit(++i, args)
+        break;
+      case '--chime-sdk-media-pipelines-endpoint':
+        chimeSDKMediaPipelinesEndpoint = getArgOrExit(++i, args);
+        break;
+      case '--use-chime-sdk-media-pipelines':
+        useChimeSDKMediaPipelines = getArgOrExit(++i, args);
+        break;
+      case '--chime-sdk-media-pipelines-region':
+        mediaPipelinesControlRegion = getArgOrExit(++i, args);
         break;
       default:
         console.log(`Invalid argument ${args[i]}`);
@@ -258,8 +282,18 @@ function ensureRegion() {
   }
 }
 
+function ensureMediaPipelinesRegion() {
+  if (useChimeSDKMediaPipelines === 'true') {
+    if (!(new Set(supportedMediaPipelinesControlRegions)).has(region)) {
+      console.log(`Amazon Chime SDK Media Pipelines does not support ${region} (control region). Specify one of the following regions: ${supportedMediaPipelinesControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html#sdk-media-pipelines for more information.`);
+      process.exit(1);
+    }
+  }
+}
+
 parseArgs();
 ensureRegion();
+ensureMediaPipelinesRegion();
 ensureTools();
 ensureApp(app);
 
@@ -277,7 +311,7 @@ spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,
                     '--region',  `${region}`]);
 console.log('Deploying serverless application');
-let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal} ChimeSDKMeetingsEndpoint=${chimeSDKMeetingsEndpoint}`
+let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal} ChimeSDKMeetingsEndpoint=${chimeSDKMeetingsEndpoint} ChimeSDKMediaPipelinesEndpoint=${chimeSDKMediaPipelinesEndpoint} UseChimeSDKMediaPipelines=${useChimeSDKMediaPipelines} MediaPipelinesControlRegion=${mediaPipelinesControlRegion}`
 if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
     createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);
