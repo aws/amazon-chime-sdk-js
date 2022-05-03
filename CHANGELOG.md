@@ -9,13 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
 ### Added
 
-- `MessagingSession` reconnects with refreshed endpoint and credentials if needed.  EndpointUrl on `MessagingSessionConfiguration` is deprecated as it is resolved by calling `getMessagingSessionEndpoint` internally.
-    
 ### Removed
     
 ### Changed
     
 ### Fixed
+
+- `MessagingSession` reconnects with refreshed endpoint and credentials if needed.  EndpointUrl on `MessagingSessionConfiguration` is deprecated as it is resolved by calling `getMessagingSessionEndpoint` internally.
     
 ## [2.30.0] - 2022-03-08
     
