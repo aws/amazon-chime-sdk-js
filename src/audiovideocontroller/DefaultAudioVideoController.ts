@@ -793,6 +793,9 @@ export default class DefaultAudioVideoController
     }
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
+        // Do a hard reset of the signaling client in case this controller is reused;
+        // this will also can `this.meetingSessionContext` to be reset if reused.
+        this.meetingSessionContext.signalingClient = null;
         this.notifyStop(status, error);
       }
     });
