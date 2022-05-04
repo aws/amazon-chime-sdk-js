@@ -61,6 +61,18 @@ npm run deploy -- -r us-east-1 -b <deploy-bucekt> -o <capture-bucket-prefix> -i 
 
 Note that you need to enable these regions if you plan to use media capture. For more information, see [Managing AWS Regions](https://docs.aws.amazon.com/general/latest/gr/rande-manage.html).
 
+##### ChimeSDKMediaPipelines Namespace vs Chime Namespace
+The AWS.Chime and the AWS.ChimeSDKMediaPipelines are both Amazon Chime's AWS clients to help builders create Amazon Chime SDK media pipelines. AWS.ChimeSDKMediaPipelines is intended to replace the previous AWS.Chime client.
+
+The demo will default to using the new AWS.ChimeSDKMediaPipelines namespace. Use `--use-chime-sdk-media-pipelines false` to opt out and use the AWS.Chime client. This flag is primarily intended for internal testing of the legacy AWS.Chime client.
+
+Furthermore, the demo will default to using the us-east-1 media pipelines control plane region. To override this behavior and use one of our [other available control plane regions/endpoints](https://docs.aws.amazon.com/chime-sdk/latest/dg/migrate-pipelines.html), use the flags:
+```
+--chime-sdk-media-pipelines-region <control plane region> --chime-sdk-media-pipelines-endpoint <service endpoint>
+```
+
+Finally, follow [the Chime SDK Media Pipelines migration guide guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/create-pipeline-role.html) to create the necessary service-linked role so that the demo app can call Amazon Chime SDK meetings on your behalf.
+
 #### Live Transcription
 If you want to use live transcription, follow [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) to create necessary service-linked role so that the demo app can call Amazon Transcribe and Amazon Transcribe Medical on your behalf.
 
