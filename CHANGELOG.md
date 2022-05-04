@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `getMediaType` method to check the property `kind` instead of `mediaType` of a `RawMetricReport`.
 
 ### Fixed
+- Fixed state not being reset if an `AudioVideoController` is reused after `stop`.
 
 ## [3.0.0] - 2022-03-30
 
