@@ -5,9 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2022-04-27
+
+### Added
+- Add browser support information to content share guide.
+
+- Readd layers allocation negotiation in Chromium based browsers to avoid resubscribing to preemptively turn off simulcast streams or to switch layers. Avoid duplicate RTP header extension and changing extension id.
+
+### Removed
+
+### Changed
+
+### Fixed
+
 ## [3.1.0] - 2022-04-07
 
 ### Added
+
+- Add `audioUpstreamRoundTripTimeMs`, `audioUpstreamJitterMs`, and `audioDownstreamJitterMs` to `observableMetricSpec`.
+- Add `videoUpstreamRoundTripTimeMs`, `videoUpstreamJitterMs`, and `videoDownstreamJitterMs`, and `videoDownstreamDelayMs` to `observableVideoMetricSpec`.
 
 ### Removed
 
@@ -15,11 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Subscribe and unsubscribe to `MediaStreamBrokerObserver` in `AudioVideoController` at the end of every connection and 
-  disconnection to avoid trying to replace local audio and video during connection.
+- Subscribe and unsubscribe to `MediaStreamBrokerObserver` in `AudioVideoController` at the end of every connection and disconnection to avoid trying to replace local audio and video during connection.
 - Update `getMediaType` method to check the property `kind` instead of `mediaType` of a `RawMetricReport`.
 
 ### Fixed
+
+- Fix a bug that `remote-inbound-rtp` `RTCStatsReport` and `remote-outbound-rtp` `RTCStatsReport` of "video" `kind` are accidentally filtered.
+- Fix the incorrect calculation of aggregation WebRTC metric spec (`audioSpeakerDelayMs`, `decoderLoss`).
 
 ## [3.0.0] - 2022-03-30
 
