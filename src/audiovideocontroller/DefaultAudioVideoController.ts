@@ -733,6 +733,7 @@ export default class DefaultAudioVideoController
     if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
       // Unfortunately, this does not return a promise.
       this.meetingSessionContext.signalingClient?.closeConnection();
+      this.meetingSessionContext.signalingClient = null; // See comment in `actionDisconnect`
       this.cleanUpMediaStreamsAfterStop();
       return Promise.resolve();
     }
