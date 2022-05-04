@@ -31,14 +31,6 @@ if(chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChim
   chimeSDKMeetings.endpoint = new AWS.Endpoint(chimeSDKMeetingsEndpoint);
 }
 
-// Create an AWS SDK Media Pipelines object.
-// Use the MediaRegion property below in CreateMeeting to select the region
-// the meeting is hosted in.
-const chimeSdkMediaPipelines = new AWS.ChimeSDKMediaPipelines({ region: mediaPipelinesControlRegion });
-if (useChimeSDKMediaPipelines === 'true') {
-  chimeSdkMediaPipelines.endpoint = new AWS.Endpoint(chimeSDKMediaPipelinesEndpoint);
-}
-
 // return chime meetings SDK client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
   if (useChimeSDKMeetings === 'true') {
@@ -50,7 +42,12 @@ function getClientForMeeting(meeting) {
   return chime;
 }
 
-function getClientForMediaCapturePipelines(useChimeSDKMediaPipelines) {
+// Create an AWS SDK Media Pipelines object.
+const chimeSdkMediaPipelines = new AWS.ChimeSDKMediaPipelines({ region: mediaPipelinesControlRegion });
+if (useChimeSDKMediaPipelines === 'true') {
+  chimeSdkMediaPipelines.endpoint = new AWS.Endpoint(chimeSDKMediaPipelinesEndpoint);
+}
+function getClientForMediaCapturePipelines() {
   if (useChimeSDKMediaPipelines === 'true') {
     return chimeSdkMediaPipelines;
   }
@@ -298,7 +295,7 @@ exports.start_capture = async (event, context) => {
     SinkArn: captureS3Destination,
   };
   console.log("Creating new media capture pipeline: ", request)
-  pipelineInfo = await getClientForMediaCapturePipelines(useChimeSDKMediaPipelines).createMediaCapturePipeline(request).promise();
+  pipelineInfo = await getClientForMediaCapturePipelines().createMediaCapturePipeline(request).promise();
 
   await putCapturePipeline(event.queryStringParameters.title, pipelineInfo)
   console.log("Successfully created media capture pipeline: ", pipelineInfo);
@@ -310,7 +307,7 @@ exports.end_capture = async (event, context) => {
   // Fetch the capture info by title
   const pipelineInfo = await getCapturePipeline(event.queryStringParameters.title);
   if (pipelineInfo) {
-    await getClientForMediaCapturePipelines(useChimeSDKMediaPipelines).deleteMediaCapturePipeline({
+    await getClientForMediaCapturePipelines().deleteMediaCapturePipeline({
       MediaPipelineId: pipelineInfo.MediaCapturePipeline.MediaPipelineId
     }).promise();
     return response(200, 'application/json', JSON.stringify({}));

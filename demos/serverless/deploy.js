@@ -283,11 +283,9 @@ function ensureRegion() {
 }
 
 function ensureMediaPipelinesRegion() {
-  if (useChimeSDKMediaPipelines === 'true') {
-    if (!(new Set(supportedMediaPipelinesControlRegions)).has(region)) {
+  if (useChimeSDKMediaPipelines === 'true' && !(new Set(supportedMediaPipelinesControlRegions)).has(region)) {
       console.log(`Amazon Chime SDK Media Pipelines does not support ${region} (control region). Specify one of the following regions: ${supportedMediaPipelinesControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html#sdk-media-pipelines for more information.`);
       process.exit(1);
-    }
   }
 }
 

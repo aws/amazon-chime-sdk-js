@@ -71,7 +71,7 @@ Furthermore, the demo will default to using the us-east-1 media pipelines contro
 --chime-sdk-media-pipelines-region <control plane region> --chime-sdk-media-pipelines-endpoint <service endpoint>
 ```
 
-Finally, follow [the Chime SDK Media Pipelines migration guide guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/create-pipeline-role.html) to create the necessary service-linked role so that the demo app can call Amazon Chime SDK meetings on your behalf.
+Finally, [create the necessary service-linked role](https://docs.aws.amazon.com/chime-sdk/latest/dg/create-pipeline-role.html) so that the demo app can call Amazon Chime SDK meetings on your behalf.
 
 #### Live Transcription
 If you want to use live transcription, follow [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) to create necessary service-linked role so that the demo app can call Amazon Transcribe and Amazon Transcribe Medical on your behalf.
