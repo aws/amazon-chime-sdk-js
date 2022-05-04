@@ -21,20 +21,13 @@ jobs:
         run: npm install
       - name: NPM run build
         run: npm run build
-      - name: Get npm tag name if needed
+      - name: Get npm tag name
         id: npm_tag
         run: |
-          pre_release_name=$(.github/script/get-pre-release-name.js)
-          echo "Pre release name:" $pre_release_name
-          echo ::set-output name=npm_tag::$pre_release_name
-      - name: Publish to NPM latest
-        if:  steps.npm_tag.outputs.npm_tag == ''
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          tag=$(.github/script/get-npm-tag.js)
+          echo "Release will be tagged with:" $tag
       - name: Publish to NPM with tag
-        if: steps.npm_tag.outputs.npm_tag != ''
-        run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
+        run: npm publish --tag ${tag}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
   deploy_chime_prod_demo:
