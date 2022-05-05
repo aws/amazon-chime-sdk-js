@@ -276,7 +276,7 @@ function copyAssets() {
 function ensureRegion() {
   if (useChimeSDKMeetings === 'true') {
     if (!(new Set(supportedControlRegions)).has(region)) {
-      console.log(`Amazon Chime SDK does not support ${region} (control region). Specify one of the following regions: ${supportedControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html for more information.`);
+      console.error(`Amazon Chime SDK does not support ${region} (control region). Specify one of the following regions: ${supportedControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html for more information.`);
       process.exit(1);
     }
   }
@@ -284,7 +284,7 @@ function ensureRegion() {
 
 function ensureMediaPipelinesRegion() {
   if (useChimeSDKMediaPipelines === 'true' && !(new Set(supportedMediaPipelinesControlRegions)).has(region)) {
-      console.log(`Amazon Chime SDK Media Pipelines does not support ${region} (control region). Specify one of the following regions: ${supportedMediaPipelinesControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html#sdk-media-pipelines for more information.`);
+      console.error(`Amazon Chime SDK Media Pipelines does not support ${region} (control region). Specify one of the following regions: ${supportedMediaPipelinesControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html#sdk-media-pipelines for more information.`);
       process.exit(1);
   }
 }
