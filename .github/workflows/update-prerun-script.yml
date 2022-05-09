@@ -9,9 +9,9 @@ env:
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
 
-jobs:
-  download-pre-run-script:
-    name: Download pre run script from S3 bucket
+jobs: 
+  update-pre-run-script:
+    name: Update pre run script on Saucelabs
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
@@ -21,14 +21,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: aws s3 cp s3://saucelabs-prebuild-script/script.sh ./
-
-  update-pre-run-script:
-    needs: download-pre-run-script
-    name: Update pre run script on Saucelabs
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          ls
+      - name: Update pre run script and create PRs
+        run: |
           RESPONSE="$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" —location --request POST 'https://api.us-west-1.saucelabs.com/v1/storage/upload' --form 'payload=@"script.sh"' --form 'name="blur_replacement_script"')"
           SCRIPT_ID=$(jq -r '.item.id' <<< "$RESPONSE")
           echo "Updating integration tests pre-run script ID for origin branch"
