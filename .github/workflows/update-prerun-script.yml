@@ -23,10 +23,12 @@ jobs:
       - run: aws s3 cp s3://saucelabs-prebuild-script/script.sh ./
 
   update-pre-run-script:
+    needs: download-pre-run-script
     name: Update pre run script on Saucelabs
     runs-on: ubuntu-latest
     steps:
       - run: |
+          ls
           RESPONSE="$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" —location --request POST 'https://api.us-west-1.saucelabs.com/v1/storage/upload' --form 'payload=@"script.sh"' --form 'name="blur_replacement_script"')"
           SCRIPT_ID=$(jq -r '.item.id' <<< "$RESPONSE")
           echo "Updating integration tests pre-run script ID for origin branch"
