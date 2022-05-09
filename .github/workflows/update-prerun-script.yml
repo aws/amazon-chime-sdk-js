@@ -41,4 +41,5 @@ jobs:
           sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ./integration/js/utils/WebdriverSauceLabs.js
           git commit -m "Update integration tests pre-run script ID"
           gh pr create --title "Update integration tests pre-run script ID" -B release-2.x
-        env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
