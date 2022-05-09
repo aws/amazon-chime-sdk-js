@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          RESPONSE="$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" —location --request POST 'https://api.us-west-1.saucelabs.com/v1/storage/upload' --form 'payload=@"./script.sh"' --form 'name="blur_replacement_script"')"
+          RESPONSE="$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" —location --request POST 'https://api.us-west-1.saucelabs.com/v1/storage/upload' --form 'payload=@"script.sh"' --form 'name="blur_replacement_script"')"
           SCRIPT_ID=$(jq -r '.item.id' <<< "$RESPONSE")
           echo "Updating integration tests pre-run script ID for origin branch"
           git branch update-pre-run-script-id
