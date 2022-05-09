@@ -1,0 +1,44 @@
+name: Update pre build script on Saucelabs
+
+on:
+  schedule:
+    - cron: '0 0 1 */2 *'
+
+env:
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+
+jobs:
+  download-pre-run-script:
+    name: Download pre run script from S3 bucket
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - run: aws s3 cp s3://saucelabs-prebuild-script/script.sh ./
+
+  update-pre-run-script:
+    name: Update pre run script on Saucelabs
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          RESPONSE="$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" —location --request POST 'https://api.us-west-1.saucelabs.com/v1/storage/upload' --form 'payload=@"./script.sh"' --form 'name="blur_replacement_script"')"
+          SCRIPT_ID=$(jq -r '.item.id' <<< "$RESPONSE")
+          echo "Updating integration tests pre-run script ID for origin branch"
+          git branch update-pre-run-script-id
+          git checkout update-pre-run-script-id
+          sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ./integration/js/utils/WebdriverSauceLabs.js
+          git commit -m "Update integration tests pre-run script ID"
+          gh pr create --title "Update integration tests pre-run script ID" -B origin
+          echo "Updating integration tests pre-run script ID for release-2.x branch"
+          git checkout release-2.x
+          git branch update-pre-run-script-id-2.x
+          git checkout update-pre-run-script-id-2.x
+          sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ./integration/js/utils/WebdriverSauceLabs.js
+          git commit -m "Update integration tests pre-run script ID"
+          gh pr create --title "Update integration tests pre-run script ID" -B release-2.x
+        env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
