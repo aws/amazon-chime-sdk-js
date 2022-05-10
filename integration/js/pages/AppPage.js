@@ -71,7 +71,8 @@ function findAllElements() {
     echoReductionFeature: By.id('echo-reduction-capability'),
     echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]'),
     stereoMusicProfileCheckBox: By.id('fullband-music-stereo-quality'),
-    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]')
+    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]'),
+    chimeMeetingId: By.id('chime-meeting-id')
   };
 }
 
@@ -948,6 +949,12 @@ class AppPage {
       return true;
     }
     return false;
+  }
+
+  async logMeetingId() {
+    const meetingElement = this.driver.findElement(elements.chimeMeetingId);
+    const meetingId = await meetingElement.getText();
+    this.logger(`Meeting started for ${meetingId}`);
   }
 }
 
