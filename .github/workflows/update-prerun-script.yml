@@ -33,10 +33,11 @@ jobs:
           git branch update-pre-run-script-id
           git checkout update-pre-run-script-id
           sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
+          git add ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
+          git commit -m "Update integration tests pre-run script ID"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID
           branch: update-pre-run-script-id
           base: origin
@@ -48,6 +49,8 @@ jobs:
           git branch update-pre-run-script-id-2.x
           git checkout update-pre-run-script-id-2.x
           sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
+          git add ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
+          git commit -m "Update integration tests pre-run script ID"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
