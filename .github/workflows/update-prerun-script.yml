@@ -1,7 +1,8 @@
 name: Update pre build script on Saucelabs
 
 on:
-  push
+  schedule:
+    - cron: '* * * * *'
 #  schedule:
 #    - cron: '0 0 1 */2 *'
 
@@ -15,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Configure AWS Credentials
@@ -35,16 +36,16 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          token: ${{ secrets.PAT }}
           commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID
           branch: update-pre-run-script-id
-          base: origin
+          base: main
+          delete-branch: true
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          token: ${{ secrets.PAT }}
           commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID
           branch: update-pre-run-script-id-2.x
           base: release-2.x
+          delete-branch: true
