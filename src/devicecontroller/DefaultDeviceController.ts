@@ -356,17 +356,7 @@ export default class DefaultDeviceController
 
     // Update device and stream
     this.chosenVideoTransformDevice = device;
-    const newMediaStream = this.activeDevices['video'].stream;
     this.logger.info('video transform device uses previous stream');
-
-    // Input is not a MediaStream. Update constraints
-    if (!(inner as MediaStream).id) {
-      const constraint = inner as MediaTrackConstraints;
-      constraint.width = constraint.width || this.videoInputQualitySettings.videoWidth;
-      constraint.height = constraint.height || this.videoInputQualitySettings.videoHeight;
-      constraint.frameRate = constraint.frameRate || this.videoInputQualitySettings.videoFrameRate;
-      await newMediaStream.getVideoTracks()[0].applyConstraints(constraint);
-    }
 
     // `transformStream` will start processing.
     this.logger.info('apply processors to transform');

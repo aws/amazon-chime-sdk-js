@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Fix issue where video resolution and framerate changes when toggle video transform.
 
 ## [3.1.0] - 2022-04-07
 
