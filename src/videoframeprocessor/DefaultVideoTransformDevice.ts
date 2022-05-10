@@ -67,33 +67,7 @@ export default class DefaultVideoTransformDevice
   }
 
   async intrinsicDevice(): Promise<Device> {
-    const trackConstraints: MediaTrackConstraints = {};
-
-    // Empty string and null.
-    if (!this.device) {
-      return trackConstraints;
-    }
-
-    // Device ID.
-    if (typeof this.device === 'string') {
-      if (this.browserBehavior.requiresNoExactMediaStreamConstraints()) {
-        trackConstraints.deviceId = this.device;
-      } else {
-        trackConstraints.deviceId = { exact: this.device };
-      }
-      return trackConstraints;
-    }
-
-    if ((this.device as MediaStream).id) {
-      // Nothing we can do.
-      return this.device;
-    }
-
-    // It's constraints.
-    return {
-      ...this.device,
-      ...trackConstraints,
-    };
+    return this.device;
   }
 
   /**
