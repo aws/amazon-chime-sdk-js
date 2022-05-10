@@ -20,5 +20,6 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
   disableResolutionScaleDown(): boolean;
   requiresDisablingH264Encoding(): boolean;
   supportDownlinkBandwidthEstimation(): boolean;
+  supportsVideoLayersAllocationRtpHeaderExtension(): boolean;
   disable480pResolutionScaleDown(): boolean;
 }

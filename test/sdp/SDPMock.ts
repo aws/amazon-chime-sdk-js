@@ -1018,6 +1018,551 @@ a=ssrc:138036787 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2
 a=ssrc-group:FID 138036786 138036787\r
 `;
 
+  static readonly LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_NO_LAYERS_ALLOCATION_EXTENSION: string = `v=0\r
+o=- 8360888182273689563 3 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+a=group:BUNDLE audio video\r
+a=msid-semantic: WMS j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI\r
+m=audio 58349 UDP/TLS/RTP/SAVPF 111 103 104 9 0 8 106 105 13 110 112 113 126\r
+c=IN IP4 10.78.67.19\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=candidate:26124455 1 udp 2122260223 10.78.67.19 58349 typ host generation 0 network-id 1 network-cost 10\r
+a=candidate:1326275671 1 tcp 1518280447 10.78.67.19 9 typ host tcptype active generation 0 network-id 1 network-cost 10\r
+a=ice-ufrag:XWdt\r
+a=ice-pwd:fake\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 fake\r
+a=setup:actpass\r
+a=mid:audio\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=sendrecv\r
+a=rtcp-mux\r
+a=rtpmap:111 opus/48000/2\r
+a=rtcp-fb:111 transport-cc\r
+a=fmtp:111 minptime=10;useinbandfec=1\r
+a=rtpmap:103 ISAC/16000\r
+a=rtpmap:104 ISAC/32000\r
+a=rtpmap:9 G722/8000\r
+a=rtpmap:0 PCMU/8000\r
+a=rtpmap:8 PCMA/8000\r
+a=rtpmap:106 CN/32000\r
+a=rtpmap:105 CN/16000\r
+a=rtpmap:13 CN/8000\r
+a=rtpmap:110 telephone-event/48000\r
+a=rtpmap:112 telephone-event/32000\r
+a=rtpmap:113 telephone-event/16000\r
+a=rtpmap:126 telephone-event/8000\r
+a=ssrc:3647729951 cname:87eXz3QiQBBvJFID\r
+a=ssrc:3647729951 msid:vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI eb624d61-a40b-41ff-a6a3-520452a0e8e1\r
+a=ssrc:3647729951 mslabel:vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI\r
+a=ssrc:3647729951 label:eb624d61-a40b-41ff-a6a3-520452a0e8e1\r
+m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 100 101 102 122 127 121 125 107 108 109 124 120 123\r
+c=IN IP4 0.0.0.0\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=ice-ufrag:XWdt\r
+a=ice-pwd:fake\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 fake\r
+a=setup:actpass\r
+a=mid:video\r
+a=extmap:14 urn:ietf:params:rtp-hdrext:toffset\r
+a=extmap:13 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r
+a=extmap:3 urn:3gpp:video-orientation\r
+a=extmap:4 urn:3gpp:video-orientation\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=extmap:5 http://www.webrtc.org/experiments/rtp-hdrext/playout-delay\r
+a=extmap:7 http://www.webrtc.org/experiments/rtp-hdrext/video-timing\r
+a=extmap:8 http://tools.ietf.org/html/draft-ietf-avtext-framemarking-07\r
+a=extmap:9 http://www.webrtc.org/experiments/rtp-hdrext/color-space\r
+a=extmap:10 http://tools.ietf.org/html/draft-ietf-avtext-framemarking-07\r
+a=extmap:11 http://www.webrtc.org/experiments/rtp-hdrext/playout-delay\r
+a=extmap:12 urn:3gpp:video-orientation\r
+a=sendrecv\r
+a=rtcp-mux\r
+a=rtcp-rsize\r
+a=rtpmap:96 VP8/90000\r
+a=rtcp-fb:96 goog-remb\r
+a=rtcp-fb:96 transport-cc\r
+a=rtcp-fb:96 ccm fir\r
+a=rtcp-fb:96 nack\r
+a=rtcp-fb:96 nack pli\r
+a=rtpmap:97 rtx/90000\r
+a=fmtp:97 apt=96\r
+a=rtpmap:98 VP9/90000\r
+a=rtcp-fb:98 goog-remb\r
+a=rtcp-fb:98 transport-cc\r
+a=rtcp-fb:98 ccm fir\r
+a=rtcp-fb:98 nack\r
+a=rtcp-fb:98 nack pli\r
+a=fmtp:98 profile-id=0\r
+a=rtpmap:99 rtx/90000\r
+a=fmtp:99 apt=98\r
+a=rtpmap:100 VP9/90000\r
+a=rtcp-fb:100 goog-remb\r
+a=rtcp-fb:100 transport-cc\r
+a=rtcp-fb:100 ccm fir\r
+a=rtcp-fb:100 nack\r
+a=rtcp-fb:100 nack pli\r
+a=fmtp:100 profile-id=2\r
+a=rtpmap:101 rtx/90000\r
+a=fmtp:101 apt=100\r
+a=rtpmap:102 H264/90000\r
+a=rtcp-fb:102 goog-remb\r
+a=rtcp-fb:102 transport-cc\r
+a=rtcp-fb:102 ccm fir\r
+a=rtcp-fb:102 nack\r
+a=rtcp-fb:102 nack pli\r
+a=fmtp:102 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42001f\r
+a=rtpmap:122 rtx/90000\r
+a=fmtp:122 apt=102\r
+a=rtpmap:127 H264/90000\r
+a=rtcp-fb:127 goog-remb\r
+a=rtcp-fb:127 transport-cc\r
+a=rtcp-fb:127 ccm fir\r
+a=rtcp-fb:127 nack\r
+a=rtcp-fb:127 nack pli\r
+a=fmtp:127 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42001f\r
+a=rtpmap:121 rtx/90000\r
+a=fmtp:121 apt=127\r
+a=rtpmap:125 H264/90000\r
+a=rtcp-fb:125 goog-remb\r
+a=rtcp-fb:125 transport-cc\r
+a=rtcp-fb:125 ccm fir\r
+a=rtcp-fb:125 nack\r
+a=rtcp-fb:125 nack pli\r
+a=fmtp:125 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f\r
+a=rtpmap:107 rtx/90000\r
+a=fmtp:107 apt=125\r
+a=rtpmap:108 H264/90000\r
+a=rtcp-fb:108 goog-remb\r
+a=rtcp-fb:108 transport-cc\r
+a=rtcp-fb:108 ccm fir\r
+a=rtcp-fb:108 nack\r
+a=rtcp-fb:108 nack pli\r
+a=fmtp:108 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f\r
+a=rtpmap:109 rtx/90000\r
+a=fmtp:109 apt=108\r
+a=rtpmap:124 red/90000\r
+a=rtpmap:120 rtx/90000\r
+a=fmtp:120 apt=124\r
+a=rtpmap:123 ulpfec/90000\r
+a=ssrc:138036785 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036785 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc:1579984795 cname:87eXz3QiQBBvJFID\r
+a=ssrc:1579984795 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc-group:FID 138036785 1579984795\r
+a=ssrc:138036786 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036786 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc:138036787 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036787 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc-group:FID 138036786 138036787\r
+`;
+
+  static readonly LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID: string = `v=0\r
+o=- 8360888182273689563 3 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+a=group:BUNDLE audio video\r
+a=msid-semantic: WMS j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI\r
+m=audio 58349 UDP/TLS/RTP/SAVPF 111 103 104 9 0 8 106 105 13 110 112 113 126\r
+c=IN IP4 10.78.67.19\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=candidate:26124455 1 udp 2122260223 10.78.67.19 58349 typ host generation 0 network-id 1 network-cost 10\r
+a=candidate:1326275671 1 tcp 1518280447 10.78.67.19 9 typ host tcptype active generation 0 network-id 1 network-cost 10\r
+a=ice-ufrag:XWdt\r
+a=ice-pwd:fake\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 fake\r
+a=setup:actpass\r
+a=mid:audio\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=sendrecv\r
+a=rtcp-mux\r
+a=rtpmap:111 opus/48000/2\r
+a=rtcp-fb:111 transport-cc\r
+a=fmtp:111 minptime=10;useinbandfec=1\r
+a=rtpmap:103 ISAC/16000\r
+a=rtpmap:104 ISAC/32000\r
+a=rtpmap:9 G722/8000\r
+a=rtpmap:0 PCMU/8000\r
+a=rtpmap:8 PCMA/8000\r
+a=rtpmap:106 CN/32000\r
+a=rtpmap:105 CN/16000\r
+a=rtpmap:13 CN/8000\r
+a=rtpmap:110 telephone-event/48000\r
+a=rtpmap:112 telephone-event/32000\r
+a=rtpmap:113 telephone-event/16000\r
+a=rtpmap:126 telephone-event/8000\r
+a=ssrc:3647729951 cname:87eXz3QiQBBvJFID\r
+a=ssrc:3647729951 msid:vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI eb624d61-a40b-41ff-a6a3-520452a0e8e1\r
+a=ssrc:3647729951 mslabel:vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI\r
+a=ssrc:3647729951 label:eb624d61-a40b-41ff-a6a3-520452a0e8e1\r
+m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 100 101 102 122 127 121 125 107 108 109 124 120 123\r
+c=IN IP4 0.0.0.0\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=ice-ufrag:XWdt\r
+a=ice-pwd:fake\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 fake\r
+a=setup:actpass\r
+a=mid:video\r
+a=extmap:3 urn:3gpp:video-orientation\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=extmap:12 http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00\r
+a=sendrecv\r
+a=rtcp-mux\r
+a=rtcp-rsize\r
+a=rtpmap:96 VP8/90000\r
+a=rtcp-fb:96 goog-remb\r
+a=rtcp-fb:96 transport-cc\r
+a=rtcp-fb:96 ccm fir\r
+a=rtcp-fb:96 nack\r
+a=rtcp-fb:96 nack pli\r
+a=rtpmap:97 rtx/90000\r
+a=fmtp:97 apt=96\r
+a=rtpmap:98 VP9/90000\r
+a=rtcp-fb:98 goog-remb\r
+a=rtcp-fb:98 transport-cc\r
+a=rtcp-fb:98 ccm fir\r
+a=rtcp-fb:98 nack\r
+a=rtcp-fb:98 nack pli\r
+a=fmtp:98 profile-id=0\r
+a=rtpmap:99 rtx/90000\r
+a=fmtp:99 apt=98\r
+a=rtpmap:100 VP9/90000\r
+a=rtcp-fb:100 goog-remb\r
+a=rtcp-fb:100 transport-cc\r
+a=rtcp-fb:100 ccm fir\r
+a=rtcp-fb:100 nack\r
+a=rtcp-fb:100 nack pli\r
+a=fmtp:100 profile-id=2\r
+a=rtpmap:101 rtx/90000\r
+a=fmtp:101 apt=100\r
+a=rtpmap:102 H264/90000\r
+a=rtcp-fb:102 goog-remb\r
+a=rtcp-fb:102 transport-cc\r
+a=rtcp-fb:102 ccm fir\r
+a=rtcp-fb:102 nack\r
+a=rtcp-fb:102 nack pli\r
+a=fmtp:102 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42001f\r
+a=rtpmap:122 rtx/90000\r
+a=fmtp:122 apt=102\r
+a=rtpmap:127 H264/90000\r
+a=rtcp-fb:127 goog-remb\r
+a=rtcp-fb:127 transport-cc\r
+a=rtcp-fb:127 ccm fir\r
+a=rtcp-fb:127 nack\r
+a=rtcp-fb:127 nack pli\r
+a=fmtp:127 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42001f\r
+a=rtpmap:121 rtx/90000\r
+a=fmtp:121 apt=127\r
+a=rtpmap:125 H264/90000\r
+a=rtcp-fb:125 goog-remb\r
+a=rtcp-fb:125 transport-cc\r
+a=rtcp-fb:125 ccm fir\r
+a=rtcp-fb:125 nack\r
+a=rtcp-fb:125 nack pli\r
+a=fmtp:125 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f\r
+a=rtpmap:107 rtx/90000\r
+a=fmtp:107 apt=125\r
+a=rtpmap:108 H264/90000\r
+a=rtcp-fb:108 goog-remb\r
+a=rtcp-fb:108 transport-cc\r
+a=rtcp-fb:108 ccm fir\r
+a=rtcp-fb:108 nack\r
+a=rtcp-fb:108 nack pli\r
+a=fmtp:108 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f\r
+a=rtpmap:109 rtx/90000\r
+a=fmtp:109 apt=108\r
+a=rtpmap:124 red/90000\r
+a=rtpmap:120 rtx/90000\r
+a=fmtp:120 apt=124\r
+a=rtpmap:123 ulpfec/90000\r
+a=ssrc:138036785 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036785 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc:1579984795 cname:87eXz3QiQBBvJFID\r
+a=ssrc:1579984795 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc-group:FID 138036785 1579984795\r
+a=ssrc:138036786 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036786 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc:138036787 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036787 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc-group:FID 138036786 138036787\r
+`;
+
+  static readonly LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_OVERRIDE_ID: string = `v=0\r
+o=- 8360888182273689563 3 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+a=group:BUNDLE audio video\r
+a=msid-semantic: WMS j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI\r
+m=audio 58349 UDP/TLS/RTP/SAVPF 111 103 104 9 0 8 106 105 13 110 112 113 126\r
+c=IN IP4 10.78.67.19\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=candidate:26124455 1 udp 2122260223 10.78.67.19 58349 typ host generation 0 network-id 1 network-cost 10\r
+a=candidate:1326275671 1 tcp 1518280447 10.78.67.19 9 typ host tcptype active generation 0 network-id 1 network-cost 10\r
+a=ice-ufrag:XWdt\r
+a=ice-pwd:fake\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 fake\r
+a=setup:actpass\r
+a=mid:audio\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=sendrecv\r
+a=rtcp-mux\r
+a=rtpmap:111 opus/48000/2\r
+a=rtcp-fb:111 transport-cc\r
+a=fmtp:111 minptime=10;useinbandfec=1\r
+a=rtpmap:103 ISAC/16000\r
+a=rtpmap:104 ISAC/32000\r
+a=rtpmap:9 G722/8000\r
+a=rtpmap:0 PCMU/8000\r
+a=rtpmap:8 PCMA/8000\r
+a=rtpmap:106 CN/32000\r
+a=rtpmap:105 CN/16000\r
+a=rtpmap:13 CN/8000\r
+a=rtpmap:110 telephone-event/48000\r
+a=rtpmap:112 telephone-event/32000\r
+a=rtpmap:113 telephone-event/16000\r
+a=rtpmap:126 telephone-event/8000\r
+a=ssrc:3647729951 cname:87eXz3QiQBBvJFID\r
+a=ssrc:3647729951 msid:vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI eb624d61-a40b-41ff-a6a3-520452a0e8e1\r
+a=ssrc:3647729951 mslabel:vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI\r
+a=ssrc:3647729951 label:eb624d61-a40b-41ff-a6a3-520452a0e8e1\r
+m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 100 101 102 122 127 121 125 107 108 109 124 120 123\r
+c=IN IP4 0.0.0.0\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=ice-ufrag:XWdt\r
+a=ice-pwd:fake\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 fake\r
+a=setup:actpass\r
+a=mid:video\r
+a=extmap:3 urn:3gpp:video-orientation\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=extmap:4 http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00\r
+a=sendrecv\r
+a=rtcp-mux\r
+a=rtcp-rsize\r
+a=rtpmap:96 VP8/90000\r
+a=rtcp-fb:96 goog-remb\r
+a=rtcp-fb:96 transport-cc\r
+a=rtcp-fb:96 ccm fir\r
+a=rtcp-fb:96 nack\r
+a=rtcp-fb:96 nack pli\r
+a=rtpmap:97 rtx/90000\r
+a=fmtp:97 apt=96\r
+a=rtpmap:98 VP9/90000\r
+a=rtcp-fb:98 goog-remb\r
+a=rtcp-fb:98 transport-cc\r
+a=rtcp-fb:98 ccm fir\r
+a=rtcp-fb:98 nack\r
+a=rtcp-fb:98 nack pli\r
+a=fmtp:98 profile-id=0\r
+a=rtpmap:99 rtx/90000\r
+a=fmtp:99 apt=98\r
+a=rtpmap:100 VP9/90000\r
+a=rtcp-fb:100 goog-remb\r
+a=rtcp-fb:100 transport-cc\r
+a=rtcp-fb:100 ccm fir\r
+a=rtcp-fb:100 nack\r
+a=rtcp-fb:100 nack pli\r
+a=fmtp:100 profile-id=2\r
+a=rtpmap:101 rtx/90000\r
+a=fmtp:101 apt=100\r
+a=rtpmap:102 H264/90000\r
+a=rtcp-fb:102 goog-remb\r
+a=rtcp-fb:102 transport-cc\r
+a=rtcp-fb:102 ccm fir\r
+a=rtcp-fb:102 nack\r
+a=rtcp-fb:102 nack pli\r
+a=fmtp:102 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42001f\r
+a=rtpmap:122 rtx/90000\r
+a=fmtp:122 apt=102\r
+a=rtpmap:127 H264/90000\r
+a=rtcp-fb:127 goog-remb\r
+a=rtcp-fb:127 transport-cc\r
+a=rtcp-fb:127 ccm fir\r
+a=rtcp-fb:127 nack\r
+a=rtcp-fb:127 nack pli\r
+a=fmtp:127 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42001f\r
+a=rtpmap:121 rtx/90000\r
+a=fmtp:121 apt=127\r
+a=rtpmap:125 H264/90000\r
+a=rtcp-fb:125 goog-remb\r
+a=rtcp-fb:125 transport-cc\r
+a=rtcp-fb:125 ccm fir\r
+a=rtcp-fb:125 nack\r
+a=rtcp-fb:125 nack pli\r
+a=fmtp:125 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f\r
+a=rtpmap:107 rtx/90000\r
+a=fmtp:107 apt=125\r
+a=rtpmap:108 H264/90000\r
+a=rtcp-fb:108 goog-remb\r
+a=rtcp-fb:108 transport-cc\r
+a=rtcp-fb:108 ccm fir\r
+a=rtcp-fb:108 nack\r
+a=rtcp-fb:108 nack pli\r
+a=fmtp:108 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f\r
+a=rtpmap:109 rtx/90000\r
+a=fmtp:109 apt=108\r
+a=rtpmap:124 red/90000\r
+a=rtpmap:120 rtx/90000\r
+a=fmtp:120 apt=124\r
+a=rtpmap:123 ulpfec/90000\r
+a=ssrc:138036785 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036785 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc:1579984795 cname:87eXz3QiQBBvJFID\r
+a=ssrc:1579984795 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc-group:FID 138036785 1579984795\r
+a=ssrc:138036786 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036786 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc:138036787 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036787 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc-group:FID 138036786 138036787\r
+`;
+
+  static readonly LOCAL_OFFER_WITH_ADDED_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID: string = `v=0\r
+o=- 8360888182273689563 3 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+a=group:BUNDLE audio video\r
+a=msid-semantic: WMS j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI\r
+m=audio 58349 UDP/TLS/RTP/SAVPF 111 103 104 9 0 8 106 105 13 110 112 113 126\r
+c=IN IP4 10.78.67.19\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=candidate:26124455 1 udp 2122260223 10.78.67.19 58349 typ host generation 0 network-id 1 network-cost 10\r
+a=candidate:1326275671 1 tcp 1518280447 10.78.67.19 9 typ host tcptype active generation 0 network-id 1 network-cost 10\r
+a=ice-ufrag:XWdt\r
+a=ice-pwd:fake\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 fake\r
+a=setup:actpass\r
+a=mid:audio\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=sendrecv\r
+a=rtcp-mux\r
+a=rtpmap:111 opus/48000/2\r
+a=rtcp-fb:111 transport-cc\r
+a=fmtp:111 minptime=10;useinbandfec=1\r
+a=rtpmap:103 ISAC/16000\r
+a=rtpmap:104 ISAC/32000\r
+a=rtpmap:9 G722/8000\r
+a=rtpmap:0 PCMU/8000\r
+a=rtpmap:8 PCMA/8000\r
+a=rtpmap:106 CN/32000\r
+a=rtpmap:105 CN/16000\r
+a=rtpmap:13 CN/8000\r
+a=rtpmap:110 telephone-event/48000\r
+a=rtpmap:112 telephone-event/32000\r
+a=rtpmap:113 telephone-event/16000\r
+a=rtpmap:126 telephone-event/8000\r
+a=ssrc:3647729951 cname:87eXz3QiQBBvJFID\r
+a=ssrc:3647729951 msid:vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI eb624d61-a40b-41ff-a6a3-520452a0e8e1\r
+a=ssrc:3647729951 mslabel:vF4Jw4SEKVInbC6ELS82CbkoHH28gJF3YwCI\r
+a=ssrc:3647729951 label:eb624d61-a40b-41ff-a6a3-520452a0e8e1\r
+m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 100 101 102 122 127 121 125 107 108 109 124 120 123\r
+c=IN IP4 0.0.0.0\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=ice-ufrag:XWdt\r
+a=ice-pwd:fake\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 fake\r
+a=setup:actpass\r
+a=mid:video\r
+a=extmap:3 urn:3gpp:video-orientation\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=sendrecv\r
+a=extmap:12 http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00\r
+a=rtcp-mux\r
+a=rtcp-rsize\r
+a=rtpmap:96 VP8/90000\r
+a=rtcp-fb:96 goog-remb\r
+a=rtcp-fb:96 transport-cc\r
+a=rtcp-fb:96 ccm fir\r
+a=rtcp-fb:96 nack\r
+a=rtcp-fb:96 nack pli\r
+a=rtpmap:97 rtx/90000\r
+a=fmtp:97 apt=96\r
+a=rtpmap:98 VP9/90000\r
+a=rtcp-fb:98 goog-remb\r
+a=rtcp-fb:98 transport-cc\r
+a=rtcp-fb:98 ccm fir\r
+a=rtcp-fb:98 nack\r
+a=rtcp-fb:98 nack pli\r
+a=fmtp:98 profile-id=0\r
+a=rtpmap:99 rtx/90000\r
+a=fmtp:99 apt=98\r
+a=rtpmap:100 VP9/90000\r
+a=rtcp-fb:100 goog-remb\r
+a=rtcp-fb:100 transport-cc\r
+a=rtcp-fb:100 ccm fir\r
+a=rtcp-fb:100 nack\r
+a=rtcp-fb:100 nack pli\r
+a=fmtp:100 profile-id=2\r
+a=rtpmap:101 rtx/90000\r
+a=fmtp:101 apt=100\r
+a=rtpmap:102 H264/90000\r
+a=rtcp-fb:102 goog-remb\r
+a=rtcp-fb:102 transport-cc\r
+a=rtcp-fb:102 ccm fir\r
+a=rtcp-fb:102 nack\r
+a=rtcp-fb:102 nack pli\r
+a=fmtp:102 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42001f\r
+a=rtpmap:122 rtx/90000\r
+a=fmtp:122 apt=102\r
+a=rtpmap:127 H264/90000\r
+a=rtcp-fb:127 goog-remb\r
+a=rtcp-fb:127 transport-cc\r
+a=rtcp-fb:127 ccm fir\r
+a=rtcp-fb:127 nack\r
+a=rtcp-fb:127 nack pli\r
+a=fmtp:127 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42001f\r
+a=rtpmap:121 rtx/90000\r
+a=fmtp:121 apt=127\r
+a=rtpmap:125 H264/90000\r
+a=rtcp-fb:125 goog-remb\r
+a=rtcp-fb:125 transport-cc\r
+a=rtcp-fb:125 ccm fir\r
+a=rtcp-fb:125 nack\r
+a=rtcp-fb:125 nack pli\r
+a=fmtp:125 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f\r
+a=rtpmap:107 rtx/90000\r
+a=fmtp:107 apt=125\r
+a=rtpmap:108 H264/90000\r
+a=rtcp-fb:108 goog-remb\r
+a=rtcp-fb:108 transport-cc\r
+a=rtcp-fb:108 ccm fir\r
+a=rtcp-fb:108 nack\r
+a=rtcp-fb:108 nack pli\r
+a=fmtp:108 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f\r
+a=rtpmap:109 rtx/90000\r
+a=fmtp:109 apt=108\r
+a=rtpmap:124 red/90000\r
+a=rtpmap:120 rtx/90000\r
+a=fmtp:120 apt=124\r
+a=rtpmap:123 ulpfec/90000\r
+a=ssrc:138036785 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036785 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc:1579984795 cname:87eXz3QiQBBvJFID\r
+a=ssrc:1579984795 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc-group:FID 138036785 1579984795\r
+a=ssrc:138036786 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036786 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc:138036787 cname:87eXz3QiQBBvJFID\r
+a=ssrc:138036787 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
+a=ssrc-group:FID 138036786 138036787\r
+`;
+
   static readonly LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_NO_SSRC_ATTRIBUTE_VALUE: string = `v=0\r
 o=- 8360888182273689563 3 IN IP4 127.0.0.1\r
 s=-\r

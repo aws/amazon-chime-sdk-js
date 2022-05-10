@@ -103,9 +103,11 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#clone" class="tsd-kind-icon">clone</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#getrtpheaderextensionid" class="tsd-kind-icon">get<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#getuniquertpheaderextensionid" class="tsd-kind-icon">get<wbr>Unique<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#hascandidates" class="tsd-kind-icon">has<wbr>Candidates</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#hascandidatesforallmlines" class="tsd-kind-icon">has<wbr>Candidates<wbr>For<wbr>AllMLines</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#hasrtpheaderextensionid" class="tsd-kind-icon">has<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#hasvideo" class="tsd-kind-icon">has<wbr>Video</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#lines" class="tsd-kind-icon">lines</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#mediasections" class="tsd-kind-icon">media<wbr>Sections</a></li>
@@ -122,6 +124,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="sdp.html#candidatetypefromstring" class="tsd-kind-icon">candidate<wbr>Type<wbr>From<wbr>String</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="sdp.html#extractssrcsfromfidgroupline" class="tsd-kind-icon">extractSSRCs<wbr>FromFIDGroup<wbr>Line</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="sdp.html#findopusfmtpattributes" class="tsd-kind-icon">find<wbr>Opus<wbr>Fmtp<wbr>Attributes</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="sdp.html#getrtpheaderextensionidinsection" class="tsd-kind-icon">get<wbr>Rtp<wbr>Header<wbr>Extension<wbr>IdIn<wbr>Section</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="sdp.html#isrtpcandidate" class="tsd-kind-icon">isRTPCandidate</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="sdp.html#linestosdp" class="tsd-kind-icon">lines<wbr>ToSDP</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="sdp.html#matchprefix" class="tsd-kind-icon">match<wbr>Prefix</a></li>
@@ -222,6 +225,34 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getrtpheaderextensionid" class="tsd-anchor"></a>
+					<h3>get<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L622">src/sdp/SDP.ts:622</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Return RTP header extension ID if the extension exists in SDP. Return -1 otherwise</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="getuniquertpheaderextensionid" class="tsd-anchor"></a>
 					<h3>get<wbr>Unique<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -294,6 +325,34 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="hasrtpheaderextensionid" class="tsd-anchor"></a>
+					<h3>has<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id<span class="tsd-signature-symbol">(</span>targetId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L639">src/sdp/SDP.ts:639</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Return if extension ID exists in the SDP</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>targetId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="hasvideo" class="tsd-anchor"></a>
 					<h3>has<wbr>Video</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -347,7 +406,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L540">src/sdp/SDP.ts:540</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L570">src/sdp/SDP.ts:570</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -369,7 +428,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L458">src/sdp/SDP.ts:458</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L488">src/sdp/SDP.ts:488</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -391,7 +450,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L414">src/sdp/SDP.ts:414</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L444">src/sdp/SDP.ts:444</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -413,7 +472,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L441">src/sdp/SDP.ts:441</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L471">src/sdp/SDP.ts:471</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -508,13 +567,13 @@
 					<a name="withvideolayersallocationrtpheaderextension" class="tsd-anchor"></a>
 					<h3>with<wbr>Video<wbr>Layers<wbr>Allocation<wbr>Rtp<wbr>Header<wbr>Extension</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">with<wbr>Video<wbr>Layers<wbr>Allocation<wbr>Rtp<wbr>Header<wbr>Extension<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
+						<li class="tsd-signature tsd-kind-icon">with<wbr>Video<wbr>Layers<wbr>Allocation<wbr>Rtp<wbr>Header<wbr>Extension<span class="tsd-signature-symbol">(</span>previousSdp<span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L378">src/sdp/SDP.ts:378</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L380">src/sdp/SDP.ts:380</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -524,6 +583,12 @@
 									this will not add the packet overhead unless negotiated to avoid waste</p>
 								</div>
 							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>previousSdp: <a href="sdp.html" class="tsd-signature-type">SDP</a></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="sdp.html" class="tsd-signature-type">SDP</a></h4>
 						</li>
 					</ul>
@@ -694,6 +759,37 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="getrtpheaderextensionidinsection" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Rtp<wbr>Header<wbr>Extension<wbr>IdIn<wbr>Section</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Rtp<wbr>Header<wbr>Extension<wbr>IdIn<wbr>Section<span class="tsd-signature-symbol">(</span>section<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L605">src/sdp/SDP.ts:605</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Return RTP header extension ID if the extension exists in section. Return -1 otherwise</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>section: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -909,6 +1005,9 @@
 								<a href="sdp.html#clone" class="tsd-kind-icon">clone</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="sdp.html#getrtpheaderextensionid" class="tsd-kind-icon">get<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="sdp.html#getuniquertpheaderextensionid" class="tsd-kind-icon">get<wbr>Unique<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -916,6 +1015,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="sdp.html#hascandidatesforallmlines" class="tsd-kind-icon">has<wbr>Candidates<wbr>For<wbr>AllMLines</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="sdp.html#hasrtpheaderextensionid" class="tsd-kind-icon">has<wbr>Rtp<wbr>Header<wbr>Extension<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="sdp.html#hasvideo" class="tsd-kind-icon">has<wbr>Video</a>
@@ -964,6 +1066,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="sdp.html#findopusfmtpattributes" class="tsd-kind-icon">find<wbr>Opus<wbr>Fmtp<wbr>Attributes</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="sdp.html#getrtpheaderextensionidinsection" class="tsd-kind-icon">get<wbr>Rtp<wbr>Header<wbr>Extension<wbr>IdIn<wbr>Section</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="sdp.html#isrtpcandidate" class="tsd-kind-icon">isRTPCandidate</a>

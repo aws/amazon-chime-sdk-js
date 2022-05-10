@@ -157,6 +157,7 @@ export class DemoMeetingApp {
 
   async authenticate(): Promise<string> {
     const joinInfo = (await this.joinMeeting()).JoinInfo;
+    this.region = joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
     return configuration.meetingId;
