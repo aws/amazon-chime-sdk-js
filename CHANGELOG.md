@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+- Clear srcObject in unbindVideoElement API.
 
 ### Fixed
 - Fix issue where video resolution and framerate changes when toggle video transform.

@@ -1327,6 +1327,9 @@ export default class DOMMockBuilder {
       videoHeight: number;
       videoWidth: number;
       private listeners: { [type: string]: MockListener[] } = {};
+      style: { [key: string]: string } = {
+        transform: '',
+      };
 
       private clearAttribute(): void {
         this.videoHeight = 0;
