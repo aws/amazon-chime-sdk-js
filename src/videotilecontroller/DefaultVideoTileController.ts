@@ -57,15 +57,21 @@ export default class DefaultVideoTileController implements VideoTileController {
     tile.bindVideoElement(videoElement);
   }
 
-  unbindVideoElement(tileId: number): void {
+  unbindVideoElement(tileId: number, cleanUpVideoElement: boolean = true): void {
     const tile = this.getVideoTile(tileId);
     if (tile === null) {
       this.logger.warn(`Ignoring video element un-binding for unknown tile id ${tileId}`);
       return;
     }
-    const videoElement = tile.stateRef().boundVideoElement;
-    tile.bindVideoElement(null);
-    DefaultVideoTile.disconnectVideoStreamFromVideoElement(videoElement, false);
+    if (cleanUpVideoElement) {
+      this.logger.info(`Unbinding and cleaning up the video element`);
+      const videoElement = tile.stateRef().boundVideoElement;
+      tile.bindVideoElement(null);
+      DefaultVideoTile.disconnectVideoStreamFromVideoElement(videoElement, false);
+    } else {
+      this.logger.info(`Unbinding the video element`);
+      tile.bindVideoElement(null);
+    }
   }
 
   startLocalVideoTile(): number {

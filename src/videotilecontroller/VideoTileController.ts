@@ -22,11 +22,13 @@ export default interface VideoTileController {
 
   /**
    * Unbinds the video element from the tile if it exists for the provided tileId.
-   * The video tile's bounded video element, that element's srcObject, width and height are set to null.
+   * The video tile's bounded video element and that element's width and height are set to null.
+   * @param cleanUpVideoElement By default, the bounded video element's srcObject is also set to null using [[disconnectVideoStreamFromVideoElement]].
+   * Pass false for cleanUpVideoElement, if you do not intend to clear the bounded video element's srcObject.
    * This does not remove the provided tileId mapping from the tile map in the [[DefaultVideoTileController]].
    * To remove the mapping and destroy the tile for this tileId, you can use [[removeVideoTile]].
    */
-  unbindVideoElement(tileId: number): void;
+  unbindVideoElement(tileId: number, cleanUpVideoElement?: boolean): void;
 
   /**
    * Starts sharing the local video tile by creating a new video tile if one does not already exist.
