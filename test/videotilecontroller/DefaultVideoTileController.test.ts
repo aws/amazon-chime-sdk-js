@@ -145,7 +145,7 @@ describe('DefaultVideoTileController', () => {
     it('ignores if no tile bound to a tileId', () => {
       const loggerSpy = sinon.spy(audioVideoController.logger, 'warn');
       tileController.unbindVideoElement(0);
-      expect(loggerSpy.calledWith('Ignoring video element un-binding for unknown tile id 0')).to.be
+      expect(loggerSpy.calledWith('Ignoring video element unbinding for unknown tile id 0')).to.be
         .true;
     });
   });
