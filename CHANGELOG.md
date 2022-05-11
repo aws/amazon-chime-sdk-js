@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
-- Clear srcObject in unbindVideoElement API.
+
+- Clean up the HTML video element bound using `bindVideoElement` as part of `unbindVideoElement` API to fix Safari memory leak. Check [PR#2217](https://github.com/aws/amazon-chime-sdk-js/pull/2217) for detailed information.
 
 ### Fixed
 - Fix issue where video resolution and framerate changes when toggle video transform.
