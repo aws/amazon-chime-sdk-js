@@ -485,7 +485,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Disconnect a video stream from a video element by clearing the srcObject of the video element.</p>
+									<p>Disconnect a video stream from a video element by setting <code>HTMLVideoElement.srcObject</code> to <code>null</code>.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -500,14 +500,14 @@
 									<h5>dueToPause: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>A flag to indicate whether this function is called due to pausing video tile.
-										Based on keepLastFrameWhenPaused, it clears out the videoElement&#39;s srcObject.</p>
+										Based on <code>keepLastFrameWhenPaused</code>, it sets <code>HTMLVideoElement.srcObject</code> to <code>null</code>.</p>
 									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> keepLastFrameWhenPaused: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> = false</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>If true and dueToPause is also true, then we will not clear out the srcObject of the
-										video element when it is paused and therefore, the last frame of the stream will be shown.</p>
+										<p>If <code>true</code> and <code>dueToPause</code> is also <code>true</code>, then we will not set <code>HTMLVideoElement.srcObject</code> of the
+										video element to <code>null</code> when it is paused and therefore, the last frame of the stream will be shown.</p>
 									</div>
 								</li>
 							</ul>
