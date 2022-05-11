@@ -278,16 +278,16 @@ describe('POSTLogger', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const GlobalAny = global as any;
       let added = false;
-      let callbackToCall = (): void => {};
-      GlobalAny['window']['addEventListener'] = (type: string, callback: () => void) => {
+      let callbackToCall = (_e: Event): void => {};
+      GlobalAny['window']['addEventListener'] = (type: string, callback: (e: Event) => void) => {
         expect(type).to.equal('unload');
         added = true;
         callbackToCall = callback;
       };
-      await wait(60);
-      callbackToCall();
-      await wait(80);
       const logger = new POSTLogger({ url, batchSize, intervalMs });
+      await wait(60);
+      callbackToCall(new Event('unload'));
+      await wait(80);
       expect(added).to.be.true;
       delete GlobalAny['window']['addEventListener'];
       await logger.destroy();
