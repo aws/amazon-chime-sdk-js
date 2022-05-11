@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Assume SDP section is sendrecv if no direction is present. This should have no impact on media negotiation.
+- The serverless demo can now join meetings in the same AWS account by conference ID even if it was not created with the demo app.
 
 ### Fixed
 - Replace `startVideoInput(null)` and `startAudioInput(null)` with`stopVideoInput` and `stopAudioInput` for video, audio test in meeting readiness checker to stop video, audio input.
