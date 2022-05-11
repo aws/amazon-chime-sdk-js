@@ -693,6 +693,7 @@ export class DemoMeetingApp
             ) as HTMLSelectElement;
             videoInputQuality.value = '720p';
             this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
+            videoInputQuality.disabled = true;
           }
 
           // `this.primaryExternalMeetingId` may by the join request
