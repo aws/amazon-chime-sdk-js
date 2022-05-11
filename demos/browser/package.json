@@ -21,7 +21,7 @@
     "markdown-it": "^11.0.1",
     "open-iconic": "^1.1.1",
     "postcss-loader": "^6.1.1",
-    "react-dev-utils": "^11.0.4",
+    "react-dev-utils": "^12.0.1",
     "sass": "^1.26.11",
     "sass-loader": "^12.1.0",
     "style-loader": "^3.2.1",
