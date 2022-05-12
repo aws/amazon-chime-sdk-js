@@ -62,13 +62,12 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
   }
 
   /**
-   * Disconnect a video stream to a video element by clearing the srcObject of the video element.
-   * This will also stop all the tracks of the current stream in the srcObject.
+   * Disconnect a video stream from a video element by setting `HTMLVideoElement.srcObject` to `null`.
    * @param videoElement The video element input.
    * @param dueToPause A flag to indicate whether this function is called due to pausing video tile.
-   *  If true, then we will not stop the stream's tracks and just clearing out the srcObject.
-   * @param keepLastFrameWhenPaused If true and dueToPause is also true, then we will not clear out the srcObject of the
-   * video element when it is paused and therefore, the last frame of the stream will be shown.
+   * Based on `keepLastFrameWhenPaused`, it sets `HTMLVideoElement.srcObject` to `null`.
+   * @param keepLastFrameWhenPaused If `true` and `dueToPause` is also `true`, then we will not set `HTMLVideoElement.srcObject` of the
+   * video element to `null` when it is paused and therefore, the last frame of the stream will be shown.
    */
   static disconnectVideoStreamFromVideoElement(
     videoElement: HTMLVideoElement | null,
