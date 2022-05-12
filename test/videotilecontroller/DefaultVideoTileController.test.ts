@@ -117,6 +117,37 @@ describe('DefaultVideoTileController', () => {
       tileController.bindVideoElement(tileId, videoElement);
       tileController.unbindVideoElement(tileId);
     });
+
+    it('default - clears srcObject with unbindVideoElement', () => {
+      let videoElement = document.createElement('video');
+      const tileId = tileController.addVideoTile().id();
+      tileController.bindVideoElement(tileId, videoElement);
+      const tile = tileController.getVideoTile(tileId);
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1);
+      expect(videoElement.srcObject).to.eq(mockMediaStream);
+      tileController.unbindVideoElement(tileId);
+      expect(videoElement.srcObject).to.eq(null);
+      videoElement = null;
+    });
+
+    it('does not clear srcObject with unbindVideoElement when cleanUpVideoElement parameter is false', () => {
+      let videoElement = document.createElement('video');
+      const tileId = tileController.addVideoTile().id();
+      tileController.bindVideoElement(tileId, videoElement);
+      const tile = tileController.getVideoTile(tileId);
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1);
+      expect(videoElement.srcObject).to.eq(mockMediaStream);
+      tileController.unbindVideoElement(tileId, false);
+      expect(videoElement.srcObject).to.eq(mockMediaStream);
+      videoElement = null;
+    });
+
+    it('ignores if no tile bound to a tileId', () => {
+      const loggerSpy = sinon.spy(audioVideoController.logger, 'warn');
+      tileController.unbindVideoElement(0);
+      expect(loggerSpy.calledWith('Ignoring video element unbinding for unknown tile id 0')).to.be
+        .true;
+    });
   });
 
   describe('startLocalVideoTile', () => {

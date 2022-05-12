@@ -160,11 +160,18 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(arg1, arg2));
     });
 
-    it('will call unbindVideoElement', () => {
+    it('will call unbindVideoElement with cleanUpVideoElement defaulting to true', () => {
       const spy = sinon.spy(controller.videoTileController, 'unbindVideoElement');
       const arg1 = 0;
       facade.unbindVideoElement(arg1);
-      assert(spy.calledOnceWith(arg1));
+      assert(spy.calledOnceWith(arg1, true));
+    });
+
+    it('will call unbindVideoElement with cleanUpVideoElement as false', () => {
+      const spy = sinon.spy(controller.videoTileController, 'unbindVideoElement');
+      const arg1 = 0;
+      facade.unbindVideoElement(arg1, false);
+      assert(spy.calledOnceWith(arg1, false));
     });
 
     it('will call startLocalVideoTile', () => {
