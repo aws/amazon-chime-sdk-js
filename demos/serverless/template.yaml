@@ -32,8 +32,14 @@ Parameters:
     Description: Prefix of S3 bucket to write capture artifacts.  The bucket name will be suffixed with the region.
     Default: ""
     Type: String
+  UseFetchCredentialLambda:
+    Description: Set to true to deploy a lambda to return AWS credentials with limited privileges. This should be disabled in most demo.
+    Default: false
+    Type: String
+    AllowedValues: [ true, false ]
 Conditions:
   ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
+  ShouldDeployFetchCredentialLambda: !Equals [true, !Ref UseFetchCredentialLambda]
 Globals:
   Function:
     Runtime: nodejs14.x
@@ -91,6 +97,7 @@ Resources:
         - Ref: ChimeSdkEndCaptureLambdaRole
   ChimeMessagingAccessPolicy:
     Type: AWS::IAM::Policy
+    Condition: ShouldDeployFetchCredentialLambda
     Properties:
       PolicyName: ChimeMeetingsAccess
       PolicyDocument:
@@ -418,6 +425,7 @@ Resources:
             Method: POST
   ChimeSdkBrowserFetchCredentialsLambda:
     Type: AWS::Serverless::Function
+    Condition: ShouldDeployFetchCredentialLambda
     Properties:
       Handler: handlers.fetch_credentials
       CodeUri: src/
