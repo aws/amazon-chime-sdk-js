@@ -248,11 +248,11 @@ const vfDevice = await transformer.createTransformDevice(chosenAudioInput);
 
 If the transformer returned that Amazon Voice Focus/Echo Reduction is not supported, or it failed to initialize, this method returns `undefined`. In that case, fall back to the user's chosen audio input and indicate to the user that noise suppression is not enabled.
 
-The returned `VoiceFocusTransformDevice` can be supplied to a `chooseAudioInputDevice` call in the usual way:
+The returned `VoiceFocusTransformDevice` can be supplied to a `startAudioInput` call in the usual way:
 
 ```typescript
 const deviceToUse = vfDevice || chosenAudioInput;
-await deviceController.chooseAudioInputDevice(deviceToUse);
+await deviceController.startAudioInput(deviceToUse);
 if (vfDevice) {
   console.log('Amazon Voice Focus enabled');
 }
@@ -347,14 +347,14 @@ In some cases you might wish to temporarily or permanently disable  noise suppre
 You can do so by simply selecting the inner device without Amazon Voice Focus, which will fall back to the browser’s own simple noise suppressor:
 
 ```typescript
-await deviceController.chooseAudioInputDevice(chosenAudioInput);
+await deviceController.startAudioInput(chosenAudioInput);
 console.log('Amazon Voice Focus disabled');
 ```
 
 You can re-enable Amazon Voice Focus and Echo Reduction again by reselecting the transform device:
 
 ```typescript
-await deviceController.chooseAudioInputDevice(vfDevice);
+await deviceController.startAudioInput(vfDevice);
 console.log('Amazon Voice Focus re-enabled');
 ```
 
@@ -365,7 +365,7 @@ this.voiceFocusDevice = await transformer.createTransformDevice(chosenAudioInput
 …
 // New device selected. Swap it out.
 this.voiceFocusDevice = await this.voiceFocusDevice.chooseNewInnerDevice(newDevice);
-await deviceController.chooseAudioInputDevice(this.voiceFocusDevice);
+await deviceController.startAudioInput(this.voiceFocusDevice);
 console.log('Amazon Voice Focus switched to new device', newDevice);
 ```
 

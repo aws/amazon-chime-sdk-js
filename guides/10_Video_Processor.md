@@ -12,13 +12,12 @@ A typical workflow would be:
 
 1. Create an array of custom `VideoFrameProcessor`s.
 2. Create a `VideoTransformDevice` from a `Device` and the array of `VideoFrameProcessor`s.
-3. Call `meetingSession.audioVideo.chooseVideoInputDevice` with the `VideoTransformDevice`.
+3. Call `meetingSession.audioVideo.startVideoInput` with the `VideoTransformDevice`.
 
 
 ### Browser compatibility
 
-The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari/Chrome/Firefox on iOS devices due to [Webkit Bug 181663](https://bugs.webkit.org/show_bug.cgi?id=181663). 
-WebRTC Unified Plan is also required. Unified Plan is by default enabled in [MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers). If Unified Plan is disabled in the meeting, the call `meetingSession.audioVideo.chooseVideoInputDevice` with the `VideoTransformDevice` will throw an error.
+The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari/Chrome/Firefox on iOS devices due to [Webkit Bug 181663](https://bugs.webkit.org/show_bug.cgi?id=181663).
 
 
 |Browser                                                                |Minimum supported version  
@@ -34,14 +33,14 @@ WebRTC Unified Plan is also required. Unified Plan is by default enabled in [Mee
 ## Video Processing APIs
 
 ### VideoTransformDevice
-`VideoTransformDevice` allows `VideoFrameProcessor`s to be applied to to a `Device` and provide a new object which can be passed into `meetingSession.audioVideo.chooseVideoInputDevice`.
+`VideoTransformDevice` allows `VideoFrameProcessor`s to be applied to to a `Device` and provide a new object which can be passed into `meetingSession.audioVideo.startVideoInput`.
 
 `DefaultVideoTransformDevice` is the provided implementation of `VideoTransformDevice`. It requires four parameters: (1) `Logger` (2) `Device` (3) `Array<VideoFrameProcessor>`. 
 The `DefaultVideoTransformDevice` uses `VideoFrameProcessorPipeline` under the hood and hides its complexity.
 
 #### Construction and Starting Video Processing
 
-The construction of the `DefaultVideoTransformDevice` will not start the camera or start processing. The method `meetingSession.audioVideo.chooseVideoInputDevice` is needed to be called. The device controller will use the inner `Device` to acquire the source `MediaStream` and start the processing pipeline at the same frame rate.
+The construction of the `DefaultVideoTransformDevice` will not start the camera or start processing. The method `meetingSession.audioVideo.startVideoInput` is needed to be called. The device controller will use the inner `Device` to acquire the source `MediaStream` and start the processing pipeline at the same frame rate.
 "Inner device" in this context refers to the original video stream coming from the selected camera.
 The parameters to `chooseVideoInputQuality` are used as constraints on the source `MediaStream`. 
 After the video input is chosen, `meetingSession.audioVideo.startLocalVideoTile` can be called to start streaming video.
@@ -49,11 +48,12 @@ After the video input is chosen, `meetingSession.audioVideo.startLocalVideoTile`
 #### Switching the Inner Device on VideoTransformDevice
 
 To switch the inner `Device` on `DefaultVideoTransformDevice`, call `DefaultVideoTransformDevice.chooseNewInnerDevice` with a new `Device`.
-`DefaultVideoTransformDevice.chooseNewInnerDevice` returns a new `DefaultVideoTransformDevice` but preserves the state of `VideoFrameProcessor`s. Then call `meetingSession.audioVideo.chooseVideoInputDevice` with the new transform device. 
+`DefaultVideoTransformDevice.chooseNewInnerDevice` returns a new `DefaultVideoTransformDevice` but preserves the state of `VideoFrameProcessor`s. Then call `meetingSession.audioVideo.startVideoInput` with the new transform device. 
 
 #### Stopping VideoTransformDevice
 
-To stop video processing for the chosen `DefaultVideoTransformDevice`, call `meetingSession.audioVideo.chooseVideoInputDevice` with a different `DefaultVideoTransformDevice` or `null` to stop using previous `DefaultVideoTransformDevice`.  The method `meetingSession.audioVideo.stopLocalVideoTile` can also be used to stop the streaming.
+To stop video processing for the chosen `DefaultVideoTransformDevice`, call `meetingSession.audioVideo.startVideoInput` with a different `DefaultVideoTransformDevice` or call `meetingSession.audioVideo.stopVideoInput` to 
+stop using previous `DefaultVideoTransformDevice`.
 
 After stopping the video processing, the inner `Device` will be released by device controller unless the inner `Device` is a `MediaStream` provided by users where it is their responsibility of users to handle the lifecycle. 
 
@@ -72,7 +72,7 @@ The full list of the callbacks:
 
 2. `processingDidFailToStart`
 
-`processingDidFailToStart` will be called when video processing could not start due to runtime errors. In this case, developers are expected to call `chooseVideoInputDevice` again with a valid `VideoInputDevice` to continue video sending. 
+`processingDidFailToStart` will be called when video processing could not start due to runtime errors. In this case, developers are expected to call `startVideoInput` again with a valid `VideoInputDevice` to continue video sending. 
 
 3. `processingDidStop`
 
@@ -204,7 +204,7 @@ const transformDevice = new DefaultVideoTransformDevice(
   stages
 );
 
-await meetingSession.audioVideo.chooseVideoInputDevice(transformDevice);
+await meetingSession.audioVideo.startVideoInput(transformDevice);
 meetingSession.audioVideo.startLocalVideo();
 
 ```
@@ -224,6 +224,6 @@ const transformDevice = new DefaultVideoTransformDevice(
   processor
 );
 
-await meetingSession.audioVideo.chooseVideoInputDevice(transformDevice);
+await meetingSession.audioVideo.startVideoInput(transformDevice);
 meetingSession.audioVideo.startVideoPreviewForVideoInput(videoElement);
 ```
