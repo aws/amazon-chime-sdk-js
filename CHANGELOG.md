@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add support for hosting meetings in US GovCloud regions.
 - Add support for starting live transcription in US GovCloud regions.
+
 ### Removed
 
 ### Changed
