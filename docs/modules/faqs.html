@@ -440,7 +440,8 @@ videoDownstreamFrameWidth,
 					<a href="#my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefined-what-could-be-the-reason" id="my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefined-what-could-be-the-reason" style="color: inherit; text-decoration: none;">
 						<h3>My clients are unable to join the meeting and I see <code>navigator.mediaDevices is undefined</code>, what could be the reason?</h3>
 					</a>
-					<p>Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the chooseVideoInputDevice API which can operate in <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security">secure contexts inside a browser only</a> for privacy concerns so you will need to access your browsers using HTTPS://. The hostname <code>localhost</code> and the loopback address <code>127.0.0.1</code> are exceptions.</p>
+					<p>Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the <code>startAudioInput</code> or
+					<code>startVideoInput</code> APIs which can operate in <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security">secure contexts inside a browser only</a> for privacy concerns so you will need to access your browsers using HTTPS://. The hostname <code>localhost</code> and the loopback address <code>127.0.0.1</code> are exceptions.</p>
 					<a href="#how-can-i-create-a-video-tile-layout-for-my-application" id="how-can-i-create-a-video-tile-layout-for-my-application" style="color: inherit; text-decoration: none;">
 						<h3>How can I create a video tile layout for my application?</h3>
 					</a>
@@ -456,23 +457,17 @@ videoDownstreamFrameWidth,
 						<h3>After leaving a meeting, the camera LED is still on indicating that the camera has not been released. What could be wrong?</h3>
 					</a>
 					<p>When the camera LED remains on, it does not necessarily mean the device is broadcasting to the remote attendees. The LED will remain on until all media streams that use the device are released (its tracks are stopped). The following API methods release media streams.</p>
-					<pre><code><span class="hljs-comment">// Select no video device (releases any previously selected device)</span>
-meetingSession.audioVideo.choose<span class="hljs-constructor">VideoInputDevice(<span class="hljs-params">null</span>)</span>;
-
-<span class="hljs-comment">// Stop local video tile (stops sharing the video tile in the meeting)</span>
-meetingSession.audioVideo.stop<span class="hljs-constructor">LocalVideoTile()</span>;
-
-<span class="hljs-comment">// Stop a video preview that was previously started (before session starts)</span>
-meetingSession.audioVideo.stop<span class="hljs-constructor">VideoPreviewForVideoInput(<span class="hljs-params">previewVideoElement</span>)</span>;
-
-<span class="hljs-comment">// Stop the meeting session (audio and video)</span>
-meetingSession.audioVideo.stop<span class="hljs-literal">()</span>;
+					<pre><code>// <span class="hljs-keyword">Select</span> <span class="hljs-keyword">no</span> video device (releases <span class="hljs-keyword">any</span> previously selected device)
+meetingSession.audioVideo.stopVideoInput();
 </code></pre>
 					<a href="#my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" id="my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" style="color: inherit; text-decoration: none;">
 						<h3>My clients are unable to successfully join audio calls from Safari, they get a <code>failed to get audio device for constraints null: Type error</code>, what could be the issue?</h3>
 					</a>
-					<p>This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the <code>chooseVideoInputDevice</code> API. In this case you will see the following entry in the log where an empty string after <code>chooseVideoInputDevice</code>:</p>
-					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">&quot;&quot;</span> -&gt; <span class="hljs-string">&quot;PermissionDeniedByBrowser&quot;</span>
+					<p>This error message is an indication that the browser application did not successfully acquire the media stream for
+						audio or video from the device before the meeting starts. Application has not passed in the right device Id to the
+						<code>startVideoInput</code> API. In this case you will see the following entry in the log where an empty string after
+					<code>startVideoInput</code>:</p>
+					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/startVideoInput <span class="hljs-string">&quot;&quot;</span> -&gt; <span class="hljs-string">&quot;PermissionDeniedByBrowser&quot;</span>
 </code></pre>
 					<p>This applies for video input as well.</p>
 					<a href="#how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" id="how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" style="color: inherit; text-decoration: none;">
