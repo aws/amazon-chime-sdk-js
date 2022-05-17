@@ -1148,27 +1148,6 @@ describe('DefaultRealtimeController', () => {
         .and(sinon.match.has('message', message).or(sinon.match.has('message', altMessage)));
     }
 
-    it('handles broken attendeeIdChangesCallbacks', () => {
-      const fatal = sinon.stub();
-      rt.realtimeSubscribeToFatalError(fatal);
-
-      // Break it.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
-      state.attendeeIdChangesCallbacks = undefined;
-
-      rt.realtimeSubscribeToAttendeeIdPresence((_a, _p) => {});
-      expect(fatal.calledOnce).to.be.true;
-      const match = matchError(
-        "Cannot read property 'push' of undefined",
-        "Cannot read properties of undefined (reading 'push')"
-      );
-      expect(fatal.calledWith(match)).to.be.true;
-
-      rt.realtimeUnsubscribeToAttendeeIdPresence((_a, _p) => {});
-      expect(fatal.calledTwice).to.be.true;
-    });
-
     it('handles broken CanUnmute callbacks', () => {
       const fatal = sinon.stub();
       rt.realtimeSubscribeToFatalError(fatal);

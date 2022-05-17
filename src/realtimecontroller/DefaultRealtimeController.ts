@@ -262,13 +262,16 @@ export default class DefaultRealtimeController implements RealtimeController {
     callback?: VolumeIndicatorCallback
   ): void {
     try {
-      if (callback) {
-        const index = this.state.volumeIndicatorCallbacks[attendeeId].indexOf(callback);
-        if (index !== -1) {
-          this.state.volumeIndicatorCallbacks[attendeeId].splice(index, 1);
+      const callbacks = this.state.volumeIndicatorCallbacks[attendeeId];
+      if (callbacks) {
+        if (callback) {
+          const index = callbacks.indexOf(callback);
+          if (index !== -1) {
+            callbacks.splice(index, 1);
+          }
+        } else {
+          delete this.state.volumeIndicatorCallbacks[attendeeId];
         }
-      } else {
-        delete this.state.volumeIndicatorCallbacks[attendeeId];
       }
     } catch (e) {
       this.onError(e);
