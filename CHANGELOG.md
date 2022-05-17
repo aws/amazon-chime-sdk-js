@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+- Prevent `realtimeUnsubscribeFromVolumeIndicator` from causing a fatal error when there are no subscriptions for the `attendeeId`.
 
 ### Fixed
 
