@@ -508,7 +508,6 @@ class AppPage {
       const speaker = actualSpeakers[i];
       if (!compareFn(actualTranscriptContentBySpeaker[speaker], expectedTranscriptContentBySpeaker[speaker], isMedicalTranscribe)) {
         console.log(`Transcript comparison failed, speaker: ${speaker} isMedicalTranscribe: ${isMedicalTranscribe} actual content: "${actualTranscriptContentBySpeaker[speaker]}" does not match with expected: "${expectedTranscriptContentBySpeaker[speaker]}"`);
-        return false;
       }
     }
 

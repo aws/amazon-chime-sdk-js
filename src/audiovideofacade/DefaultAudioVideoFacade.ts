@@ -105,9 +105,9 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
     this.trace('bindVideoElement', { tileId: tileId, videoElementId: videoElement.id });
   }
 
-  unbindVideoElement(tileId: number): void {
-    this.videoTileController.unbindVideoElement(tileId);
-    this.trace('unbindVideoElement', tileId);
+  unbindVideoElement(tileId: number, cleanUpVideoElement: boolean = true): void {
+    this.videoTileController.unbindVideoElement(tileId, cleanUpVideoElement);
+    this.trace('unbindVideoElement', { tileId: tileId, cleanUpVideoElement: cleanUpVideoElement });
   }
 
   startLocalVideoTile(): number {
