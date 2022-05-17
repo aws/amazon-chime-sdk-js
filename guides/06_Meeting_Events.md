@@ -95,10 +95,10 @@ The Chime SDK for JavaScript sends these meeting events.
 |`meetingFailed`         |The meeting ended with one of the following failure [MeetingSessionStatusCode](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html): <br><ul><li>`AudioAttendeeRemoved`</li><li>`AudioJoinedFromAnotherDevice`</li><li>`RealtimeApiFailed`</li><li>`TaskFailed`</li></ul>For more information, see the ["Meeting error messages" section](#meeting-error-messages).
 |`attendeePresenceReceived`   |The attendee joined the meeting with the microphone.
 |`audioInputSelected`    |The microphone was selected.
-|`audioInputUnselected`  |The microphone was removed. You called `meetingSession.audioVideo.chooseAudioInputDevice` with `null`.
+|`audioInputUnselected`  |The microphone was removed. You called `meetingSession.audioVideo.stopAudioInput`.
 |`audioInputFailed`      |The microphone selection failed.
 |`videoInputSelected`    |The camera was selected.
-|`videoInputUnselected`  |The camera was removed. You called `meetingSession.audioVideo.chooseVideoInputDevice` with `null`.
+|`videoInputUnselected`  |The camera was removed. You called `meetingSession.audioVideo.stopVideoInput`.
 |`videoInputFailed`      |The camera selection failed.
 |`signalingDropped`      |The WebSocket failed or closed with an error.
 |`receivingAudioDropped` |A significant number of receive-audio packets dropped.
@@ -192,7 +192,7 @@ The following table lists available states.
 |--|--
 |`audioInputFailed`|The microphone selection failed.
 |`audioInputSelected`|The microphone was selected.
-|`audioInputUnselected`|The microphone was removed. You called `meetingSession.audioVideo.chooseAudioInputDevice` with `null`.
+|`audioInputUnselected`|The microphone was removed. You called `meetingSession.audioVideo.stopAudioInput`.
 |`meetingEnded`|The meeting ended.
 |`meetingFailed`|The meeting ended with the failure status.
 |`meetingReconnected`|The meeting reconnected.
@@ -203,7 +203,7 @@ The following table lists available states.
 |`signalingDropped`|WebSocket failed or closed with an error.
 |`videoInputFailed`|The camera selection failed.
 |`videoInputSelected`|The camera was selected.
-|`videoInputUnselected`|The camera was removed. You called `meetingSession.audioVideo.chooseVideoInputDevice` with `null`.
+|`videoInputUnselected`|The camera was removed. You called `meetingSession.audioVideo.stopVideoInput` with `null`.
 
 <br>
 
@@ -237,7 +237,9 @@ The following table lists common error messages from a stopped meeting.
 
 ### Device error messages
 
-The `audioInputErrorMessage` and `videoInputErrorMessage` may indicate the browser's [getUserMedia API exceptions](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions). When you call `meetingSession.audioVideo.chooseAudioInputDevice` or `meetingSession.audioVideo.chooseVideoInputDevice`, the Chime SDK for JavaScript uses the browser's [`getUserMedia` API](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia) to acquire access to your device. When the getUserMedia API throws an error, the Chime SDK for JavaScript catches an error and publishes the `audioInputFailed` or `videoInputFailed` event containing a browser's error message.
+The `audioInputErrorMessage` and `videoInputErrorMessage` may indicate the browser's [getUserMedia API exceptions](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions). When you call 
+`meetingSession.audioVideo.startAudioInput` or `meetingSession.audioVideo.startVideoInput`, the Chime SDK for 
+JavaScript uses the browser's [`getUserMedia` API](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia) to acquire access to your device. When the getUserMedia API throws an error, the Chime SDK for JavaScript catches an error and publishes the `audioInputFailed` or `videoInputFailed` event containing a browser's error message.
 
 |Messages|Suggested resolution
 |--|--

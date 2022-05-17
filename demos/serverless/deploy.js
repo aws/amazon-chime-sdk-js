@@ -281,6 +281,8 @@ let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeet
 if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
     createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);
+} else if (app === 'messagingSession') {
+    parameterOverrides += ` UseFetchCredentialLambda=true`
 }
 spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--stack-name', `${stack}`,
                     '--parameter-overrides', parameterOverrides,
