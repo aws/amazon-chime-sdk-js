@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Replace `startVideoInput(null)` and `startAudioInput(null)` with`stopVideoInput` and `stopAudioInput` for video, audio test in meeting readiness checker to stop video, audio input.
+- Replace the deprecated API `getRTCPeerConnectionStats` with `metricsDidReceive` in meeting readiness checker. 
 
 ## [3.2.0] - 2022-04-27
 
