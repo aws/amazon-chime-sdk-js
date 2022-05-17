@@ -1148,6 +1148,27 @@ describe('DefaultRealtimeController', () => {
         .and(sinon.match.has('message', message).or(sinon.match.has('message', altMessage)));
     }
 
+    it('handles broken attendeeIdChangesCallbacks', () => {
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.attendeeIdChangesCallbacks = undefined;
+
+      rt.realtimeSubscribeToAttendeeIdPresence((_a, _p) => {});
+      expect(fatal.calledOnce).to.be.true;
+      const match = matchError(
+        "Cannot read property 'push' of undefined",
+        "Cannot read properties of undefined (reading 'push')"
+      );
+      expect(fatal.calledWith(match)).to.be.true;
+
+      rt.realtimeUnsubscribeToAttendeeIdPresence((_a, _p) => {});
+      expect(fatal.calledTwice).to.be.true;
+    });
+
     it('handles broken CanUnmute callbacks', () => {
       const fatal = sinon.stub();
       rt.realtimeSubscribeToFatalError(fatal);
@@ -1172,6 +1193,25 @@ describe('DefaultRealtimeController', () => {
         "Cannot read properties of undefined (reading 'indexOf')"
       );
       expect(fatal.calledWith(matchUn)).to.be.true;
+    });
+
+    it('handles broken volume callbacks', () => {
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.volumeIndicatorCallbacks = undefined;
+
+      rt.realtimeSubscribeToVolumeIndicator('a', () => {});
+      expect(fatal.calledOnce).to.be.true;
+      const match = matchError(
+        "Cannot read property 'hasOwnProperty' of undefined",
+        "Cannot read properties of undefined (reading 'hasOwnProperty')"
+      );
+      expect(fatal.calledWith(match)).to.be.true;
+      fatal.reset();
     });
 
     it('handles broken signal strength callbacks', () => {
