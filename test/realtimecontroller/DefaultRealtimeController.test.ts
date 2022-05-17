@@ -1174,29 +1174,6 @@ describe('DefaultRealtimeController', () => {
       expect(fatal.calledWith(matchUn)).to.be.true;
     });
 
-    it('handles broken volume callbacks', () => {
-      const fatal = sinon.stub();
-      rt.realtimeSubscribeToFatalError(fatal);
-
-      // Break it.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
-      state.volumeIndicatorCallbacks = undefined;
-
-      rt.realtimeSubscribeToVolumeIndicator('a', (_a, _v, _m, _s) => {});
-      expect(fatal.calledOnce).to.be.true;
-      const match = matchError(
-        "Cannot read property 'hasOwnProperty' of undefined",
-        "Cannot read properties of undefined (reading 'hasOwnProperty')"
-      );
-      expect(fatal.calledWith(match)).to.be.true;
-      fatal.reset();
-
-      rt.realtimeUnsubscribeFromVolumeIndicator('a');
-      const matchUn = matchError('Cannot convert undefined or null to object');
-      expect(fatal.calledWith(matchUn)).to.be.true;
-    });
-
     it('handles broken signal strength callbacks', () => {
       const fatal = sinon.stub();
       rt.realtimeSubscribeToFatalError(fatal);
