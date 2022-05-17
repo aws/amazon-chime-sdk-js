@@ -33,25 +33,38 @@ jobs:
   update-pre-run-script:
     name: Update pre run script on Saucelabs
     runs-on: ubuntu-latest
+    outputs:
+      script-id: ${{ steps.upload-pre-run-script.outputs.script-id }}
     steps:
-      - name: Checkout Package
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - run: aws s3 cp s3://saucelabs-prebuild-script/script.sh ./
-      - name: Update pre run script and create PRs
+      - name: Copy script from S3 bucket
+        run: aws s3 cp s3://saucelabs-prebuild-script/script.sh ./
+      - name: Upload pre run script to Saucelabs
+        id: upload-pre-run-script
         run: |
           RESPONSE="$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" —location --request POST 'https://api.us-west-1.saucelabs.com/v1/storage/upload' --form 'payload=@"script.sh"' --form 'name="blur_replacement_script"')"
           SCRIPT_ID=$(jq -r '.item.id' <<< "$RESPONSE")
-          echo "Updating integration tests pre-run script ID for origin branch"
-          sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
           rm -rf script.sh
+          echo "::set-output name=script-id::$SCRIPT_ID"
+      
+  create-pr:
+    name: Create PR for origin branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Update pre run script ID
+        run: |
+          echo "Updating integration tests pre-run script ID for origin branch"
+          SCRIPT_ID=${{ needs.update-pre-run-script.outputs.script-id }}
+          sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
@@ -61,8 +74,8 @@ jobs:
           base: main
           delete-branch: true
   
-  update-pre-run-script-previous-version:
-    name: Update pre run script on Saucelabs for previous version
+  create-pr-previous-version:
+    name: Create PR for previous version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Package
@@ -70,20 +83,11 @@ jobs:
         with:
           ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - run: aws s3 cp s3://saucelabs-prebuild-script/script.sh ./
-      - name: Update pre run script and create PRs
+      - name: Update pre run script ID
         run: |
-          RESPONSE="$(curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" —location --request POST 'https://api.us-west-1.saucelabs.com/v1/storage/upload' --form 'payload=@"script.sh"' --form 'name="blur_replacement_script"')"
-          SCRIPT_ID=$(jq -r '.item.id' <<< "$RESPONSE")
-          echo "Updating integration tests pre-run script ID for origin branch"
+          echo "Updating integration tests pre-run script ID for previous major version branch"
+          SCRIPT_ID=${{ needs.update-pre-run-script.outputs.script-id }}
           sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
-          rm -rf script.sh
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
