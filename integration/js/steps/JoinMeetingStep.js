@@ -30,6 +30,7 @@ class JoinMeetingStep extends AppTestStep {
     if (joinState === 'failed') {
       throw new KiteTestError(Status.BROKEN, 'Timeout while joining the meeting');
     }
+    await this.page.logMeetingId();
   }
 }
 
