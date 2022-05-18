@@ -97,7 +97,7 @@ export default class DefaultAudioVideoController
   private _videoTileController: VideoTileController;
   private _mediaStreamBroker: MediaStreamBroker;
   private _reconnectController: ReconnectController;
-  private _audioMixController: AudioMixController;
+  private _audioMixController: DefaultAudioMixController;
   private _eventController: EventController;
   private _audioProfile: AudioProfile = new AudioProfile();
 
@@ -171,12 +171,14 @@ export default class DefaultAudioVideoController
       this._logger
     );
     this._audioMixController = new DefaultAudioMixController(this._logger);
+    this._mediaStreamBroker.addMediaStreamBrokerObserver(this._audioMixController);
     this.meetingSessionContext.logger = this._logger;
     this._eventController = eventController;
   }
 
   async destroy(): Promise<void> {
     this.observerQueue.clear();
+    this._mediaStreamBroker.removeMediaStreamBrokerObserver(this._audioMixController);
     this.destroyed = true;
   }
 
@@ -1504,10 +1506,5 @@ export default class DefaultAudioVideoController
       }
     }
     await this.replaceLocalAudio(audioStream);
-  }
-
-  async audioOutputDidChange(device: MediaDeviceInfo | null): Promise<void> {
-    this.logger.info('Receive an audio output change event');
-    return this.audioMixController.bindAudioDevice(device);
   }
 }
