@@ -7,6 +7,7 @@ import AudioVideoController from '../../src/audiovideocontroller/AudioVideoContr
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
 import DefaultAudioVideoFacade from '../../src/audiovideofacade/DefaultAudioVideoFacade';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ContentShareController from '../../src/contentsharecontroller/ContentShareController';
 import ContentShareMediaStreamBroker from '../../src/contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../../src/contentsharecontroller/DefaultContentShareController';
@@ -51,7 +52,7 @@ describe('DefaultMeetingReadinessChecker', () => {
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   let deviceController: DefaultDeviceController;
-  let meetingSession: MeetingSession;
+  let meetingSession: TestMeetingSession;
   let meetingReadinessCheckerController: DefaultMeetingReadinessChecker;
   let meetingReadinessCheckerConfiguration: MeetingReadinessCheckerConfiguration;
   let attendeeAudioVideoController: TestAudioVideoController;
@@ -92,7 +93,6 @@ describe('DefaultMeetingReadinessChecker', () => {
   class TestAudioVideoController extends NoOpAudioVideoController {
     skipStart = false;
     attendeePresenceId = 'attendeeId';
-    noRTCConnection = false;
 
     start(): void {
       this.configuration.urls.urlRewriter('fakeUDPURI?transport=udp');
@@ -117,6 +117,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         null,
         null
       );
+      this.sendClientMetricReport();
     }
 
     stop(): void {
@@ -148,8 +149,17 @@ describe('DefaultMeetingReadinessChecker', () => {
       }
     }
 
-    getRTCPeerConnectionStats(_selector?: MediaStreamTrack): Promise<RTCStatsReport> {
-      return !this.noRTCConnection ? new RTCPeerConnection().getStats() : null;
+    update(_options: { needsRenegotiation: boolean }): boolean {
+      this.sendClientMetricReport();
+      return false;
+    }
+
+    async sendClientMetricReport(): Promise<void> {
+      const clientMetricReport = new ClientMetricReport(logger);
+      clientMetricReport.rtcStatsReport = await new RTCPeerConnection().getStats();
+      this.forEachObserver(observer => {
+        Maybe.of(observer.metricsDidReceive).map(f => f.bind(observer)(clientMetricReport));
+      });
     }
   }
 
@@ -623,14 +633,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       expect(result).to.equal(CheckVideoConnectivityFeedback.ConnectionFailed);
     });
 
-    it('no rtc connection', async () => {
-      attendeeAudioVideoController.noRTCConnection = true;
-      const result = await meetingReadinessCheckerController.checkVideoConnectivity(
-        new MediaDeviceInfo()
-      );
-      expect(result).to.equal(CheckVideoConnectivityFeedback.VideoNotSent);
-    });
-
     it('no outbound-rtp info', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
       domMockBehavior.rtcPeerConnectionGetStatsReport = {
@@ -673,12 +675,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       expect(result).to.equal(CheckNetworkTCPConnectivityFeedback.ConnectionFailed);
     });
 
-    it('no rtc connection', async () => {
-      attendeeAudioVideoController.noRTCConnection = true;
-      const result = await meetingReadinessCheckerController.checkNetworkTCPConnectivity();
-      expect(result).to.equal(CheckNetworkTCPConnectivityFeedback.ICENegotiationFailed);
-    });
-
     it('no candidate-pair info', async () => {
       domMockBehavior.rtcPeerConnectionGetStatsReport = {
         kind: 'audio',
@@ -711,12 +707,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       attendeeAudioVideoController.skipStart = true;
       const result = await meetingReadinessCheckerController.checkNetworkUDPConnectivity();
       expect(result).to.equal(CheckNetworkUDPConnectivityFeedback.ConnectionFailed);
-    });
-
-    it('no rtc connection', async () => {
-      attendeeAudioVideoController.noRTCConnection = true;
-      const result = await meetingReadinessCheckerController.checkNetworkUDPConnectivity();
-      expect(result).to.equal(CheckNetworkUDPConnectivityFeedback.ICENegotiationFailed);
     });
 
     it('no candidate-pair info', async () => {
