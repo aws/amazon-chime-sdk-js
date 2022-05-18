@@ -1,0 +1,9 @@
+{
+  "clients": [
+    {
+      "browserName": "chrome",
+      "browserVersion": "latest",
+      "platform": "MAC"
+    }
+  ]
+}
