@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace `startVideoInput(null)` and `startAudioInput(null)` with`stopVideoInput` and `stopAudioInput` for video, audio test in meeting readiness checker to stop video, audio input.
 - Replace the deprecated API `getRTCPeerConnectionStats` with `metricsDidReceive` in meeting readiness checker. 
 - Prevent `realtimeUnsubscribeFromVolumeIndicator` from causing a fatal error when there are no subscriptions for the `attendeeId`.
+- Subscribe to `audioOutputDidChange` in audio mix controller to fix the issue where the audio output is not updated before meeting start.
 
 ## [3.2.0] - 2022-04-27
 

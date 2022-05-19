@@ -2,11 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import { DefaultBrowserBehavior } from '../../src';
 import DefaultAudioMixController from '../../src/audiomixcontroller/DefaultAudioMixController';
 import AudioMixObserver from '../../src/audiomixobserver/AudioMixObserver';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
+import MediaStreamBrokerObserver from '../../src/mediastreambrokerobserver/MediaStreamBrokerObserver';
 import { wait as delay } from '../../src/utils/Utils';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -397,5 +400,33 @@ describe('DefaultAudioMixController', () => {
     } catch (e) {
       expect(e.message).to.include('Failed to set sinkId');
     }
+  });
+
+  describe('audioOutputDidChange', () => {
+    it('Handle audio output change event', () => {
+      class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
+        private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
+          MediaStreamBrokerObserver
+        >();
+        addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+          this.mediaStreamBrokerObservers.add(observer);
+        }
+        removeMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+          this.mediaStreamBrokerObservers.delete(observer);
+        }
+        triggerAudioOutputChangeEvent(device: MediaDeviceInfo | null): void {
+          for (const observer of this.mediaStreamBrokerObservers) {
+            observer.audioOutputDidChange(device);
+          }
+        }
+      }
+      const mediaStreamBroker = new ObserverMediaStreamBroker();
+      mediaStreamBroker.addMediaStreamBrokerObserver(defaultAudioMixController);
+      const spy = sinon.spy(defaultAudioMixController, 'bindAudioDevice');
+      mediaStreamBroker.triggerAudioOutputChangeEvent(null);
+      expect(spy.calledOnceWith(null)).to.be.true;
+      mediaStreamBroker.removeMediaStreamBrokerObserver(defaultAudioMixController);
+      spy.restore();
+    });
   });
 });
