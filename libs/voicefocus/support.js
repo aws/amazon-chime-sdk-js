@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -9,7 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isOldChrome = exports.supportsWASMStreaming = exports.supportsSharedArrayBuffer = exports.supportsWASM = exports.supportsAudioWorklet = exports.supportsWorker = exports.supportsVoiceFocusWorker = exports.supportsWASMPostMessage = exports.isSafari = void 0;
+exports.getDateDiffInMilliseconds = exports.isOldChrome = exports.supportsWASMStreaming = exports.supportsSharedArrayBuffer = exports.supportsWASM = exports.supportsAudioWorklet = exports.supportsWorker = exports.supportsVoiceFocusWorker = exports.supportsWASMPostMessage = exports.isSafari = void 0;
 const loader_js_1 = require("./loader.js");
 const isChrome = (global = globalThis) => {
     const ua = global.navigator.userAgent;
@@ -132,3 +135,9 @@ const isOldChrome = (global = globalThis, logger) => {
     return false;
 };
 exports.isOldChrome = isOldChrome;
+const getDateDiffInMilliseconds = (a, b) => {
+    const aa = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate(), a.getHours(), a.getMinutes(), a.getSeconds(), a.getMilliseconds());
+    const bb = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate(), b.getHours(), b.getMinutes(), b.getSeconds(), b.getMilliseconds());
+    return Math.abs(bb - aa);
+};
+exports.getDateDiffInMilliseconds = getDateDiffInMilliseconds;

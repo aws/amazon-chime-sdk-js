@@ -3,6 +3,8 @@ declare class VoiceFocusInlineNode extends VoiceFocusAudioWorkletNode {
     private delegate?;
     private worker;
     private logger;
+    private cpuWarningLastTriggered;
+    private cpuWarningCount;
     constructor(context: AudioContext, options: VoiceFocusNodeOptions);
     onModuleBufferLoaded(buffer: ArrayBuffer, key: string): void;
     onModuleLoaded(module: WebAssembly.Module, key: string): void;
