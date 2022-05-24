@@ -350,6 +350,11 @@ describe('SDP', () => {
       expect(sdpPlanB.ssrcForVideoSendingSection()).to.deep.equal('');
     });
 
+    it('video without direction', () => {
+      const sdp = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_NO_DIRECTION);
+      expect(sdp.ssrcForVideoSendingSection()).to.deep.equal('138036785');
+    });
+
     it('video sendrecv', () => {
       const sdp = new SDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING);
       expect(sdp.ssrcForVideoSendingSection()).to.deep.equal('2209845614');
