@@ -45,7 +45,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     180,
   ];
 
-  private numParticipants: number = 0;
+  private numberOfPublishedVideoSources: number | undefined = 0;
   private optimalParameters: DefaultVideoAndEncodeParameter;
   private parametersInEffect: DefaultVideoAndEncodeParameter;
   private idealMaxBandwidthKbps = 1400;
@@ -59,6 +59,12 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     private logger: Logger | undefined = undefined,
     private browserBehavior: ExtendedBrowserBehavior | undefined = undefined
   ) {
+    this.reset();
+  }
+
+  reset(): void {
+    // Don't reset `idealMaxBandwidthKbps` or `hasBandwidthPriority` which are set via builder API paths
+    this.numberOfPublishedVideoSources = 0;
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, {
@@ -84,12 +90,16 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     if (this.transceiverController) {
       hasLocalVideo = this.transceiverController.hasVideoInput();
     }
-
     // the +1 for self is assuming that we intend to send video, since
     // the context here is VideoUplinkBandwidthPolicy
-    this.numParticipants =
+    const numberOfPublishedVideoSources =
       videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) +
       (hasLocalVideo ? 1 : 0);
+    if (this.numberOfPublishedVideoSources === numberOfPublishedVideoSources) {
+      this.logger?.debug('Skipping update index; Number of participants has not changed');
+      return;
+    }
+    this.numberOfPublishedVideoSources = numberOfPublishedVideoSources;
 
     if (this.transceiverController) {
       const settings = this.getStreamCaptureSetting();
@@ -119,7 +129,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
 
   private captureWidth(): number {
     let width = 640;
-    if (this.numParticipants > 4) {
+    if (this.getNumberOfPublishedVideoSources() > 4) {
       width = 320;
     }
     return width;
@@ -127,7 +137,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
 
   private captureHeight(): number {
     let height = 384;
-    if (this.numParticipants > 4) {
+    if (this.getNumberOfPublishedVideoSources() > 4) {
       height = 192;
     }
     return height;
@@ -142,12 +152,14 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       return Math.trunc(this.idealMaxBandwidthKbps);
     }
     let rate = 0;
-    if (this.numParticipants <= 2) {
+    if (this.getNumberOfPublishedVideoSources() <= 2) {
       rate = this.idealMaxBandwidthKbps;
-    } else if (this.numParticipants <= 4) {
+    } else if (this.getNumberOfPublishedVideoSources() <= 4) {
       rate = (this.idealMaxBandwidthKbps * 2) / 3;
     } else {
-      rate = ((544 / 11 + 14880 / (11 * this.numParticipants)) / 600) * this.idealMaxBandwidthKbps;
+      rate =
+        ((544 / 11 + 14880 / (11 * this.getNumberOfPublishedVideoSources())) / 600) *
+        this.idealMaxBandwidthKbps;
     }
     return Math.trunc(rate);
   }
@@ -196,12 +208,12 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       setting.width !== undefined &&
       this.scaleResolution &&
       !this.hasBandwidthPriority &&
-      this.numParticipants > 2
+      this.getNumberOfPublishedVideoSources() > 2
     ) {
       let targetHeight =
         NScaleVideoUplinkBandwidthPolicy.targetHeightArray[
           Math.min(
-            this.numParticipants,
+            this.getNumberOfPublishedVideoSources(),
             NScaleVideoUplinkBandwidthPolicy.targetHeightArray.length - 1
           )
         ];
@@ -224,5 +236,9 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
 
   private getStreamCaptureSetting(): MediaTrackSettings | undefined {
     return this.transceiverController?.localVideoTransceiver()?.sender?.track?.getSettings();
+  }
+
+  private getNumberOfPublishedVideoSources(): number {
+    return this.numberOfPublishedVideoSources ?? 0;
   }
 }

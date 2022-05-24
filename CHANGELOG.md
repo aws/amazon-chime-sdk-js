@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Assume SDP section is sendrecv if no direction is present. This should have no impact on media negotiation.
+- Add reset function to uplink policy interface, and ignore indexes in nscale policy if the number of published videos did not change.
 
 ### Fixed
 - Replace `startVideoInput(null)` and `startAudioInput(null)` with`stopVideoInput` and `stopAudioInput` for video, audio test in meeting readiness checker to stop video, audio input.
