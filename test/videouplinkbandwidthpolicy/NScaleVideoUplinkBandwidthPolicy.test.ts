@@ -151,6 +151,8 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
 
     it('returns the expected values when no index is provided yet', () => {
       const expectedParams = new DefaultVideoCaptureAndEncodeParameter(0, 0, 0, 0, false, 1);
+      transceiverController.setVideoInput(new MediaStreamTrack());
+      policy.setTransceiverController(transceiverController);
       const actualParams = policy.chooseCaptureAndEncodeParameters();
       assert(
         actualParams.equal(expectedParams),

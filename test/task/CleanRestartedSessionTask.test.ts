@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import { NScaleVideoUplinkBandwidthPolicy } from '../../src';
 
+import { NScaleVideoUplinkBandwidthPolicy } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';

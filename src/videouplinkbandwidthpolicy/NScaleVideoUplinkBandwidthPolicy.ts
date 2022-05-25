@@ -239,6 +239,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   }
 
   private getNumberOfPublishedVideoSources(): number {
+    /* istanbul ignore next: policy calculation is dependent on index so this is never undefined at time of use */
     return this.numberOfPublishedVideoSources ?? 0;
   }
 }
