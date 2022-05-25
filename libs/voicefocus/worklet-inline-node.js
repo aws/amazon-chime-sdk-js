@@ -14,7 +14,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const support_js_1 = require("./support.js");
 const types_js_1 = require("./types.js");
-const CPU_WARNING_MAX_INTERVAL_MILLISECONDS = 60 * 1000;
+const CPU_WARNING_MAX_INTERVAL_MS = 5 * 1000;
 class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
     constructor(context, options) {
         super(context, options.processor, options);
@@ -68,7 +68,7 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
                 const now = new Date();
                 const before = this.cpuWarningLastTriggered || new Date();
                 const diff = support_js_1.getDateDiffInMilliseconds(now, before);
-                if (!this.cpuWarningLastTriggered || diff > CPU_WARNING_MAX_INTERVAL_MILLISECONDS) {
+                if (!this.cpuWarningLastTriggered || diff > CPU_WARNING_MAX_INTERVAL_MS) {
                     (_a = this.logger) === null || _a === void 0 ? void 0 : _a.warn(`CPU warning (count: ${this.cpuWarningCount}):`, data.message);
                     this.cpuWarningCount = 0;
                     this.cpuWarningLastTriggered = now;
