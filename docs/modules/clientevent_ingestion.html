@@ -97,7 +97,7 @@
 					<a href="#opt-out-of-event-ingestion" id="opt-out-of-event-ingestion" style="color: inherit; text-decoration: none;">
 						<h2>Opt out of Event Ingestion</h2>
 					</a>
-					<p>To opt out of event ingestion, provide <code>NoOpEventReporter</code> to <code>DefaultMeetingSession</code> while creating the meeting session.</p>
+					<p>Event ingestion is enabled for clients using <a href="https://github.com/aws/aws-sdk-js/blob/master/CHANGELOG.md#29340">AWS SDK v2.934.0</a> and above. To opt out of event ingestion, provide <code>NoOpEventReporter</code> to <code>DefaultMeetingSession</code> while creating the meeting session.</p>
 					<pre><code class="language-js"><span class="hljs-keyword">import</span> {
   ConsoleLogger,
   DefaultDeviceController,
