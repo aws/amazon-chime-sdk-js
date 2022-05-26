@@ -13,7 +13,7 @@ The Amazon Chime SDK for JavaScript will not send below sensitive attributes to 
 
 ## Opt out of Event Ingestion
    
-To opt out of event ingestion, provide `NoOpEventReporter` to `DefaultMeetingSession` while creating the meeting session.
+Event ingestion is enabled for clients using [AWS SDK v2.934.0](https://github.com/aws/aws-sdk-js/blob/master/CHANGELOG.md#29340) and above. To opt out of event ingestion, provide `NoOpEventReporter` to `DefaultMeetingSession` while creating the meeting session.
 
 ```js
 import {
