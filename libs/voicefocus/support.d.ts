@@ -31,5 +31,4 @@ export declare const supportsWASMStreaming: (scope?: {
     WebAssembly?: typeof WebAssembly;
 }, logger?: Logger | undefined) => boolean;
 export declare const isOldChrome: (global?: LimitedWindow, logger?: Logger | undefined) => boolean;
-export declare const getDateDiffInMilliseconds: (a: Date, b: Date) => number;
 export {};

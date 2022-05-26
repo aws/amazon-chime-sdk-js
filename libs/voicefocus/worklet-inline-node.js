@@ -18,9 +18,9 @@ const CPU_WARNING_MAX_INTERVAL_MS = 5 * 1000;
 class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
     constructor(context, options) {
         super(context, options.processor, options);
+        this.cpuWarningCount = 0;
         this.channelCountMode = 'explicit';
         this.channelCount = 1;
-        this.cpuWarningCount = 0;
         const { modelURL, worker, fetchBehavior, logger, delegate, } = options;
         this.logger = logger;
         this.port.onmessage = this.onProcessorMessage.bind(this);
@@ -65,9 +65,9 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
         switch (data.message) {
             case 'cpu':
                 this.cpuWarningCount++;
-                const now = new Date();
-                const before = this.cpuWarningLastTriggered || new Date();
-                const diff = support_js_1.getDateDiffInMilliseconds(now, before);
+                const now = Date.now();
+                const before = this.cpuWarningLastTriggered || now;
+                const diff = Math.abs(now - before);
                 if (!this.cpuWarningLastTriggered || diff > CPU_WARNING_MAX_INTERVAL_MS) {
                     (_a = this.logger) === null || _a === void 0 ? void 0 : _a.warn(`CPU warning (count: ${this.cpuWarningCount}):`, data.message);
                     this.cpuWarningCount = 0;
