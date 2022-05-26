@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+- Add reset function to uplink policy interface, and ignore indexes in nscale policy if the number of published videos did not change.
 
 ### Fixed
 
