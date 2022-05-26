@@ -14,22 +14,6 @@ env:
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
 
 jobs:
-  get-previous-version:
-    name: Get Previous Major Version
-    runs-on: ubuntu-latest
-    outputs:
-      previous_version_number: ${{ steps.get-version.outputs.version-number }}
-    steps:
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Get Version
-        id: get-version
-        run: |
-          current_version=$(.github/script/get-current-version)
-          echo "::set-output name=version-number::$((${current_version%%.*} - 1))"
-
   update-pre-run-script:
     name: Update pre run script on Saucelabs
     runs-on: ubuntu-latest
@@ -81,17 +65,22 @@ jobs:
       - name: Checkout Package
         uses: actions/checkout@v3
         with:
-          ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
+      - name: Get Version
+        id: get-version
+        run: |
+          current_version=$(.github/script/get-current-version)
+          PREVIOUS_VERSION=${current_version%%.*} - 1
       - name: Update pre run script ID
         run: |
           echo "Updating integration tests pre-run script ID for previous major version branch"
+          git checkout release-$PREVIOUS_VERSION.x
           SCRIPT_ID=${{ needs.update-pre-run-script.outputs.script-id }}
           sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
           commit-message: Update integration tests pre-run script ID
-          title: Update integration tests pre-run script ID
+          title: Update integration tests pre-run script ID for previous release
           branch: update-pre-run-script-id-previous-release
           delete-branch: true
