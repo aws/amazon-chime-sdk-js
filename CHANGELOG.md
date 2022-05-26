@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.4.0] - 2022-05-24
 
 ### Added
+- Add the reserved status code AudioDisconnectAudio.
 
 ### Removed
 
@@ -15,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add reset function to uplink policy interface, and ignore indexes in nscale policy if the number of published videos did not change.
 
 ### Fixed
+- Rate limited CPU warnings to at most once a minute in Voice Focus library, so that builder logs are not flooded.
 
 ## [3.3.0] - 2022-05-12
 

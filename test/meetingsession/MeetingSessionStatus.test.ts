@@ -38,6 +38,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.NoAttendeePresent,
     MeetingSessionStatusCode.AudioAttendeeRemoved,
     MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting,
+    MeetingSessionStatusCode.AudioDisconnectAudio,
   ];
 
   describe('isFailure', () => {
@@ -138,6 +139,7 @@ describe('MeetingSessionStatus', () => {
       const audioStatusCodes: { [code: number]: MeetingSessionStatusCode } = {
         200: MeetingSessionStatusCode.OK,
         301: MeetingSessionStatusCode.AudioJoinedFromAnotherDevice,
+        302: MeetingSessionStatusCode.AudioDisconnectAudio,
         403: MeetingSessionStatusCode.AudioAuthenticationRejected,
         409: MeetingSessionStatusCode.AudioCallAtCapacity,
         410: MeetingSessionStatusCode.MeetingEnded,
