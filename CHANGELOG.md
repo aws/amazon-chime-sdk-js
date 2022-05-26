@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2022-05-24
+
+### Added
+
+### Removed
+
+### Changed
+- Add reset function to uplink policy interface, and ignore indexes in nscale policy if the number of published videos did not change.
+
+### Fixed
+
 ## [3.3.0] - 2022-05-12
 
 ### Added
@@ -12,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+- Assume SDP section is sendrecv if no direction is present. This should have no impact on media negotiation.
 
 ### Fixed
 - Replace `startVideoInput(null)` and `startAudioInput(null)` with`stopVideoInput` and `stopAudioInput` for video, audio test in meeting readiness checker to stop video, audio input.

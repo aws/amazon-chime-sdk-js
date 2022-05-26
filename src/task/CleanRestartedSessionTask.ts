@@ -18,6 +18,9 @@ export default class CleanRestartedSessionTask extends BaseTask {
     this.context.transceiverController.reset();
     this.context.peer = null;
     this.context.videoDownlinkBandwidthPolicy.reset();
+    if (this.context.videoUplinkBandwidthPolicy.reset) {
+      this.context.videoUplinkBandwidthPolicy.reset();
+    }
     this.context.iceCandidateHandler = null;
     this.context.iceCandidates = [];
     this.context.previousSdpOffer = null;

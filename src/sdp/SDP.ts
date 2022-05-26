@@ -134,7 +134,15 @@ export default class SDP {
     let hasCamera = false;
     for (const sec of sections) {
       if (/^m=video/.test(sec)) {
-        if (sec.indexOf('sendrecv') > -1) {
+        if (
+          sec.indexOf('sendrecv') > -1 ||
+          // RFC 4566: If none of the attributes "sendonly", "recvonly", "inactive",
+          // and "sendrecv" is present, "sendrecv" SHOULD be assumed as the
+          // default for sessions
+          (sec.indexOf('sendonly') === -1 &&
+            sec.indexOf('recvonly') === -1 &&
+            sec.indexOf('inactive') === -1)
+        ) {
           hasCamera = true;
           break;
         }
