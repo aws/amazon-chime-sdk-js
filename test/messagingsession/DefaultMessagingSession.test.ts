@@ -146,9 +146,9 @@ describe('DefaultMessagingSession', () => {
       });
     });
 
-    it.only('Can start with prefetch on', done => {
+    it('Can start with prefetch on', done => {
       const prefetchConfiguration = new MessagingSessionConfiguration('userArn', '123', undefined, chimeClient, {});
-      prefetchConfiguration.reconnectTimeoutMs = 100;
+      prefetchCognfiguration.reconnectTimeoutMs = 100;
       prefetchConfiguration.reconnectFixedWaitMs = 40;
       prefetchConfiguration.reconnectShortBackoffMs = 10;
       prefetchConfiguration.reconnectLongBackoffMs = 10;
