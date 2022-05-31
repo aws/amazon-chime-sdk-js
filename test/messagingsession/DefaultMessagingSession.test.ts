@@ -148,17 +148,17 @@ describe('DefaultMessagingSession', () => {
 
     it('Can start with prefetch on', done => {
       const prefetchConfiguration = new MessagingSessionConfiguration('userArn', '123', undefined, chimeClient, {});
-      prefetchCognfiguration.reconnectTimeoutMs = 100;
+      prefetchConfiguration.reconnectTimeoutMs = 100;
       prefetchConfiguration.reconnectFixedWaitMs = 40;
       prefetchConfiguration.reconnectShortBackoffMs = 10;
       prefetchConfiguration.reconnectLongBackoffMs = 10;
       prefetchConfiguration.prefetchOn = true;
       const prefetchMessagingSession = new DefaultMessagingSession(
-          prefetchConfiguration,
-          logger,
-          webSocket,
-          reconnectController,
-          new TestSigV4()
+        prefetchConfiguration,
+        logger,
+        webSocket,
+        reconnectController,
+        new TestSigV4()
       );
       prefetchMessagingSession.addObserver({
         messagingSessionDidStart(): void {
