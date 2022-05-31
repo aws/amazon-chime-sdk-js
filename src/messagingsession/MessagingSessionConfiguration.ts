@@ -28,6 +28,11 @@ export default class MessagingSessionConfiguration {
   reconnectLongBackoffMs: number = 5 * 1000;
 
   /**
+   * The boolean to indicate if the prefetch feature is turned on or not
+   */
+  prefetchOn: boolean = false;
+
+  /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
    * endpoint URL, the chimeClient, and the AWSClient.
    *

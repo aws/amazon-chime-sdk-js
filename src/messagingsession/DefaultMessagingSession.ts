@@ -155,6 +155,9 @@ export default class DefaultMessagingSession implements MessagingSession {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);
+    if (this.configuration.prefetchOn === true) {
+        queryParams.set('prefetch-on', ['connect']);
+    }
     return this.sigV4.signURL('GET', 'wss', 'chime', endpointUrl, '/connect', '', queryParams);
   }
 
