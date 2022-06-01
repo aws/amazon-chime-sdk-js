@@ -19,6 +19,7 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import ConnectParam from "../../src/messagingsession/connectParam";
 
 describe('DefaultMessagingSession', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -147,12 +148,18 @@ describe('DefaultMessagingSession', () => {
     });
 
     it('Can start with prefetch on', done => {
-      const prefetchConfiguration = new MessagingSessionConfiguration('userArn', '123', undefined, chimeClient, {});
+      const prefetchConfiguration = new MessagingSessionConfiguration(
+        'userArn',
+        '123',
+        undefined,
+        chimeClient,
+        {}
+      );
       prefetchConfiguration.reconnectTimeoutMs = 100;
       prefetchConfiguration.reconnectFixedWaitMs = 40;
       prefetchConfiguration.reconnectShortBackoffMs = 10;
       prefetchConfiguration.reconnectLongBackoffMs = 10;
-      prefetchConfiguration.prefetchOn = true;
+      prefetchConfiguration.connectParam = ConnectParam.PrefetchOn;
       const prefetchMessagingSession = new DefaultMessagingSession(
         prefetchConfiguration,
         logger,

@@ -6,6 +6,8 @@
  * a messaging session.
  */
 /* eslint  @typescript-eslint/no-explicit-any: 0, @typescript-eslint/explicit-module-boundary-types: 0 */
+import ConnectParam from "./connectParam";
+
 export default class MessagingSessionConfiguration {
   /**
    * Maximum amount of time in milliseconds to allow for reconnecting.
@@ -28,9 +30,9 @@ export default class MessagingSessionConfiguration {
   reconnectLongBackoffMs: number = 5 * 1000;
 
   /**
-   * The boolean to indicate if the prefetch feature is turned on or not
+   * The enum to indicate connect parameter
    */
-  prefetchOn: boolean = false;
+  connectParam: ConnectParam = null;
 
   /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
