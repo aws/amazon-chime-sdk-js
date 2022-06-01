@@ -76,57 +76,87 @@ function serve(host = '127.0.0.1:8080') {
         if (!requestUrl.query.title || !requestUrl.query.name) {
           respond(response, 400, 'application/json', JSON.stringify({ error: 'Need parameters: title and name' }));
         }
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+        const meetingIdFormat = /^[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/
+        let meeting = meetingTable[requestUrl.query.title];
 
-        // Look up the meeting by its title. If it does not exist, create the meeting.
-        if (!meetingTable[requestUrl.query.title]) {
+        let client = getClientForMeeting(meeting);
+
+        let primaryMeeting = undefined
+        if (requestUrl.query.primaryExternalMeetingId) {
+          primaryMeeting = meetingTable[requestUrl.query.primaryExternalMeetingId]
+          if (primaryMeeting) {
+            console.info(`Retrieved primary meeting ID ${primaryMeeting.Meeting.MeetingId} for external meeting ID ${requestUrl.query.primaryExternalMeetingId}`)
+          } else if (meetingIdFormat.test(requestUrl.query.primaryExternalMeetingId)) {
+            // Just in case, check if we were passed a regular meeting ID instead of an external ID
+            try {
+              primaryMeeting = await client.getMeeting({
+                MeetingId: requestUrl.query.primaryExternalMeetingId
+              }).promise();
+              if (primaryMeeting !== undefined) {
+                console.info(`Retrieved primary meeting id ${primaryMeeting.Meeting.MeetingId}`);
+                await putMeeting(requestUrl.query.primaryExternalMeetingId, primaryMeeting);
+              }
+            } catch (error) {
+              console.info("Meeting ID doesnt' exist as a conference ID: " + error);
+            }
+          }
+          if (!primaryMeeting) {
+            respond(response, 400, 'application/json', JSON.stringify({ error: 'Primary meeting has not been created' }));
+          }
+        }
+
+        if (!meeting) {
           if (!requestUrl.query.region) {
             respond(response, 400, 'application/json', JSON.stringify({ error: 'Need region parameter set if meeting has not yet been created' }));
           }
-          let request = {
-            // Use a UUID for the client request token to ensure that any request retries
-            // do not create multiple meetings.
-            ClientRequestToken: uuidv4(),
-            // Specify the media region (where the meeting is hosted).
-            // In this case, we use the region selected by the user.
-            MediaRegion: requestUrl.query.region,
-            // Any meeting ID you wish to associate with the meeting.
-            // For simplicity here, we use the meeting title.
-            ExternalMeetingId: requestUrl.query.title.substring(0, 64),
-          };
+          // If the meeting does not exist, check if we were passed in a meeting ID instead of an external meeting ID.  If so, use that one
+          try {
+            if (meetingIdFormat.test(requestUrl.query.title)) {
+              meeting = await client.getMeeting({
+                MeetingId: requestUrl.query.title
+              }).promise();
+            }
+          } catch (error) {
+            console.info("Meeting ID doesn't exist as a conference ID: " + error);
+          }
 
-          let primaryMeeting = undefined;
-          if (requestUrl.query.primaryExternalMeetingId) {
-            primaryMeeting = meetingTable[requestUrl.query.primaryExternalMeetingId]
+          // If still no meeting, create one
+          if (!meeting) {
+            let request = {
+              // Use a UUID for the client request token to ensure that any request retries
+              // do not create multiple meetings.
+              ClientRequestToken: uuidv4(),
+              // Specify the media region (where the meeting is hosted).
+              // In this case, we use the region selected by the user.
+              MediaRegion: requestUrl.query.region,
+              // Any meeting ID you wish to associate with the meeting.
+              // For simplicity here, we use the meeting title.
+              ExternalMeetingId: requestUrl.query.title.substring(0, 64),
+            };
             if (primaryMeeting !== undefined) {
-              log(`Retrieved primary meeting ID ${primaryMeeting.Meeting.MeetingId} for external meeting ID ${requestUrl.query.primaryExternalMeetingId}`)
               request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
-            } else {
-              respond(response, 400, 'application/json', JSON.stringify({ error: 'Primary meeting has not been created' }));
+            }
+            if (requestUrl.query.ns_es === 'true') {
+              client = chimeSDKMeetings;
+              request.MeetingFeatures = {
+                Audio: {
+                  // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+                  EchoReduction: 'AVAILABLE'
+                }
+              };
+            }
+            console.info('Creating new meeting: ' + JSON.stringify(request));
+            meeting = await client.createMeeting(request).promise();
+
+            // Extend meeting with primary external meeting ID if it exists
+            if (primaryMeeting !== undefined) {
+              meeting.Meeting.PrimaryExternalMeetingId = primaryMeeting.Meeting.ExternalMeetingId;
             }
           }
 
-          if (requestUrl.query.ns_es === 'true') {
-            client = chimeSDKMeetings;
-            request.MeetingFeatures = {
-              Audio: {
-                // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
-                EchoReduction: 'AVAILABLE'
-              }
-            };
-          }
-          let meeting = await client.createMeeting(request).promise();
-
-          // Extend meeting with primary external meeting ID if it exists
-          if (primaryMeeting !== undefined) {
-            meeting.Meeting.PrimaryExternalMeetingId = primaryMeeting.Meeting.ExternalMeetingId;
-          }
-
+          // Store the meeting in the table using the meeting title as the key.
           meetingTable[requestUrl.query.title] = meeting;
         }
-
-        // Fetch the meeting info
-        const meeting = meetingTable[requestUrl.query.title];
 
         // Create new attendee for the meeting
         const attendee = await client.createAttendee({
