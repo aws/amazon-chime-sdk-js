@@ -6,7 +6,7 @@
  * a messaging session.
  */
 /* eslint  @typescript-eslint/no-explicit-any: 0, @typescript-eslint/explicit-module-boundary-types: 0 */
-import ConnectParam from "./connectParam";
+import PrefetchOn from './prefetchOn';
 
 export default class MessagingSessionConfiguration {
   /**
@@ -30,9 +30,9 @@ export default class MessagingSessionConfiguration {
   reconnectLongBackoffMs: number = 5 * 1000;
 
   /**
-   * The enum to indicate connect parameter
+   * The enum to indicate if we want to turn on prefetch feature
    */
-  connectParam: ConnectParam = null;
+  prefetchOn: PrefetchOn = null;
 
   /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session

@@ -16,7 +16,7 @@ import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
 import MessagingSession from './MessagingSession';
 import MessagingSessionConfiguration from './MessagingSessionConfiguration';
-import ConnectParam from "./connectParam";
+import PrefetchOn from './prefetchOn';
 
 export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
@@ -156,7 +156,7 @@ export default class DefaultMessagingSession implements MessagingSession {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);
-    if (this.configuration.connectParam === ConnectParam.PrefetchOn) {
+    if (this.configuration.prefetchOn === PrefetchOn.Connect) {
       queryParams.set('prefetch-on', ['connect']);
     }
     return this.sigV4.signURL('GET', 'wss', 'chime', endpointUrl, '/connect', '', queryParams);

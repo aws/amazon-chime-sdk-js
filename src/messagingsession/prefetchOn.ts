@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-enum ConnectParam {
-    PrefetchOn = 'prefetchOn',
+enum PrefetchOn {
+  Connect = 'connect',
 }
 
-export default ConnectParam;
+export default PrefetchOn;

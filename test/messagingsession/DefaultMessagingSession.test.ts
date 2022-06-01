@@ -11,6 +11,7 @@ import Message from '../../src/message/Message';
 import DefaultMessagingSession from '../../src/messagingsession/DefaultMessagingSession';
 import MessagingSession from '../../src/messagingsession/MessagingSession';
 import MessagingSessionConfiguration from '../../src/messagingsession/MessagingSessionConfiguration';
+import PrefetchOn from '../../src/messagingsession/prefetchOn';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
 import ReconnectController from '../../src/reconnectcontroller/ReconnectController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -19,7 +20,6 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import ConnectParam from "../../src/messagingsession/connectParam";
 
 describe('DefaultMessagingSession', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -159,7 +159,7 @@ describe('DefaultMessagingSession', () => {
       prefetchConfiguration.reconnectFixedWaitMs = 40;
       prefetchConfiguration.reconnectShortBackoffMs = 10;
       prefetchConfiguration.reconnectLongBackoffMs = 10;
-      prefetchConfiguration.connectParam = ConnectParam.PrefetchOn;
+      prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
       const prefetchMessagingSession = new DefaultMessagingSession(
         prefetchConfiguration,
         logger,
