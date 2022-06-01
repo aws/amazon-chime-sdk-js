@@ -12,14 +12,15 @@ import {
   Logger,
   LogLevel,
   Message,
-  MessagingSessionObserver,
   MessagingSession,
   MessagingSessionConfiguration,
+  MessagingSessionObserver,
   Versioning,
 } from 'amazon-chime-sdk-js';
 
 import * as AWS from 'aws-sdk/global';
 import * as Chime from 'aws-sdk/clients/chime';
+import PrefetchOn from "../../../../build/messagingsession/prefetchOn";
 
 export class DemoMessagingSessionApp implements MessagingSessionObserver {
   static readonly BASE_URL: string = [
@@ -60,6 +61,24 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         try {
           const chime = new Chime({ region: 'us-east-1' });
           this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime, AWS);
+          this.session = new DefaultMessagingSession(this.configuration, this.logger);
+          this.session.addObserver(this);
+          this.session.start();
+        } catch (error) {
+          console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
+        }
+      });
+    });
+    document.getElementById('connectWithPrefetch').addEventListener('click', async () => {
+      const response = await this.fetchCredentials();
+      AWS.config.credentials = new AWS.Credentials(response.accessKeyId, response.secretAccessKey, response.sessionToken);
+      AWS.config.credentials.get(async () => {
+        this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
+        this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
+        try {
+          const chime = new Chime({ region: 'us-east-1' });
+          this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime, AWS);
+          this.configuration.prefetchOn = PrefetchOn.Connect;
           this.session = new DefaultMessagingSession(this.configuration, this.logger);
           this.session.addObserver(this);
           this.session.start();
