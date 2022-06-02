@@ -19,6 +19,7 @@ import {
 } from 'amazon-chime-sdk-js';
 
 import { ChimeSDKMessagingClient, GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
+import PrefetchOn from "../../../../src/messagingsession/PrefetchOn";
 
 export class DemoMessagingSessionApp implements MessagingSessionObserver {
   static readonly BASE_URL: string = [
@@ -58,6 +59,23 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
         this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
+        this.session = new DefaultMessagingSession(this.configuration, this.logger);
+        this.session.addObserver(this);
+        this.session.start();
+      } catch (error) {
+        console.error(error);
+        console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
+      }
+    });
+    document.getElementById('connectWithPrefetch').addEventListener('click', async () => {
+      try {
+        const response = await this.fetchCredentials();
+        const chime = new ChimeSDKMessagingClient({ region: 'us-east-1', credentials: response });
+        const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
+        this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
+        this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
+        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
+        this.configuration.prefetchOn = PrefetchOn.Connect;
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
         this.session.start();

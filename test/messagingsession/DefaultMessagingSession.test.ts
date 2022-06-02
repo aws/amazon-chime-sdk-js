@@ -19,6 +19,7 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import PrefetchOn from "../../src/messagingsession/PrefetchOn";
 
 describe('DefaultMessagingSession', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -124,6 +125,33 @@ describe('DefaultMessagingSession', () => {
         },
       });
       messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
+      });
+    });
+
+    it('Can start with prefetch on', done => {
+      const prefetchConfiguration = new MessagingSessionConfiguration(
+          'userArn',
+          '123',
+          undefined,
+          chimeClient
+      );
+      prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
+      const prefetchMessagingSession = messagingSession = new DefaultMessagingSession(
+          configuration,
+          logger,
+          webSocket,
+          reconnectController,
+          new TestSigV4()
+      );
+      prefetchMessagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          done();
+        },
+      });
+      prefetchMessagingSession.start().then(() => {
         new TimeoutScheduler(10).start(() => {
           webSocket.send(SESSION_SUBSCRIBED_MSG);
         });

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add the reserved status code AudioDisconnectAudio.
-
+- Add support in `MessagingSession` to allow websocket connection for messaging service to enable Prefetch feature.
 ### Removed
 
 ### Changed

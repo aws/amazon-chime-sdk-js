@@ -6,6 +6,8 @@
  * a messaging session.
  */
 /* eslint  @typescript-eslint/no-explicit-any: 0, @typescript-eslint/explicit-module-boundary-types: 0 */
+import PrefetchOn from "./PrefetchOn";
+
 export default class MessagingSessionConfiguration {
   /**
    * Maximum amount of time in milliseconds to allow for reconnecting.
@@ -26,6 +28,11 @@ export default class MessagingSessionConfiguration {
    * The long back off time in milliseconds between reconnecting attempts.
    */
   reconnectLongBackoffMs: number = 5 * 1000;
+
+  /**
+   * The enum to indicate if we want to turn on prefetch feature
+   */
+  prefetchOn: PrefetchOn = null;
 
   /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
