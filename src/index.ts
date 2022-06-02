@@ -199,6 +199,7 @@ import ParallelGroupTask from './task/ParallelGroupTask';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
+import PrefetchOn from './messagingsession/PrefetchOn';
 import PromoteToPrimaryMeetingTask from './task/PromoteToPrimaryMeetingTask';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from './realtimecontroller/RealtimeController';
@@ -313,7 +314,6 @@ import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
 import ZLIBTextCompressor from './sdp/ZLIBTextCompressor';
-import prefetchOn from './messagingsession/prefetchOn';
 import { MutableVideoPreferences } from './videodownlinkbandwidthpolicy/VideoPreferences';
 import { Some, None, Maybe, MaybeProvider, Eq, PartialOrd } from './utils/Types';
 import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
@@ -528,6 +528,7 @@ export {
   PermissionDeniedError,
   PingPong,
   PingPongObserver,
+  PrefetchOn,
   PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,
   RealtimeController,
@@ -646,5 +647,4 @@ export {
   isAudioTransformDevice,
   isDestroyable,
   isVideoTransformDevice,
-  prefetchOn,
 }

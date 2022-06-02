@@ -11,7 +11,7 @@ import Message from '../../src/message/Message';
 import DefaultMessagingSession from '../../src/messagingsession/DefaultMessagingSession';
 import MessagingSession from '../../src/messagingsession/MessagingSession';
 import MessagingSessionConfiguration from '../../src/messagingsession/MessagingSessionConfiguration';
-import PrefetchOn from '../../src/messagingsession/prefetchOn';
+import PrefetchOn from '../../src/messagingsession/PrefetchOn';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
 import ReconnectController from '../../src/reconnectcontroller/ReconnectController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';

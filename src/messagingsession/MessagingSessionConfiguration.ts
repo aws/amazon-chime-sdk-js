@@ -6,7 +6,7 @@
  * a messaging session.
  */
 /* eslint  @typescript-eslint/no-explicit-any: 0, @typescript-eslint/explicit-module-boundary-types: 0 */
-import PrefetchOn from './prefetchOn';
+import PrefetchOn from './PrefetchOn';
 
 export default class MessagingSessionConfiguration {
   /**

@@ -16,7 +16,7 @@ import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
 import MessagingSession from './MessagingSession';
 import MessagingSessionConfiguration from './MessagingSessionConfiguration';
-import PrefetchOn from './prefetchOn';
+import PrefetchOn from './PrefetchOn';
 
 export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
