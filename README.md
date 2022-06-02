@@ -257,8 +257,6 @@ channel messages, channel memberships etc.
 configuration.prefetchOn = PrefetchOn.Connect;
 ```
 
-
-
 ## Building and testing
 
 ```plaintext
