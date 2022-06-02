@@ -323,11 +323,11 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 <span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(userArn, sessionId, endpoint.Endpoint.Url, chime);
 <span class="hljs-keyword">const</span> messagingSession = <span class="hljs-keyword">new</span> DefaultMessagingSession(configuration, logger);
 </code></pre>
-				<p>If you would like to enable prefetch feature when connecting to a messaging session, you can do the following:</p>
+				<p>If you would like to enable prefetch feature when connecting to a messaging session, you can follow the code below.
+					Prefetch feature will send out CHANNEL_DETAILS event upon websocket connection, which includes inforamtion about channel,
+				channel messages, channel memberhsips etc.</p>
 				<pre><code class="language-js">configuration.prefetchOn = PrefetchOn.Connect;
 </code></pre>
-				<p>Prefetch feature will send out CHANNEL_DETAILS event upon websocket connection, which includes inforamtion about channel,
-				channel messages, channel memberhsips etc.</p>
 				<a href="#building-and-testing" id="building-and-testing" style="color: inherit; text-decoration: none;">
 					<h2>Building and testing</h2>
 				</a>
