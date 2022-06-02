@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 enum PrefetchOn {
-    Connect = 'connect',
+  Connect = 'connect',
 }
 
 export default PrefetchOn;

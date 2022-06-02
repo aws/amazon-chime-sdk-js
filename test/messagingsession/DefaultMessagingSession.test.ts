@@ -11,6 +11,7 @@ import Message from '../../src/message/Message';
 import DefaultMessagingSession from '../../src/messagingsession/DefaultMessagingSession';
 import MessagingSession from '../../src/messagingsession/MessagingSession';
 import MessagingSessionConfiguration from '../../src/messagingsession/MessagingSessionConfiguration';
+import PrefetchOn from '../../src/messagingsession/PrefetchOn';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
 import ReconnectController from '../../src/reconnectcontroller/ReconnectController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -19,7 +20,6 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import PrefetchOn from "../../src/messagingsession/PrefetchOn";
 
 describe('DefaultMessagingSession', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -133,18 +133,18 @@ describe('DefaultMessagingSession', () => {
 
     it('Can start with prefetch on', done => {
       const prefetchConfiguration = new MessagingSessionConfiguration(
-          'userArn',
-          '123',
-          undefined,
-          chimeClient
+        'userArn',
+        '123',
+        undefined,
+        chimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
-      const prefetchMessagingSession = messagingSession = new DefaultMessagingSession(
-          configuration,
-          logger,
-          webSocket,
-          reconnectController,
-          new TestSigV4()
+      const prefetchMessagingSession = new DefaultMessagingSession(
+        configuration,
+        logger,
+        webSocket,
+        reconnectController,
+        new TestSigV4()
       );
       prefetchMessagingSession.addObserver({
         messagingSessionDidStart(): void {
