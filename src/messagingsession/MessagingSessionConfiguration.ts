@@ -8,7 +8,6 @@ import PrefetchOn from './PrefetchOn';
  * a messaging session.
  */
 /* eslint  @typescript-eslint/no-explicit-any: 0, @typescript-eslint/explicit-module-boundary-types: 0 */
-
 export default class MessagingSessionConfiguration {
   /**
    * Maximum amount of time in milliseconds to allow for reconnecting.
