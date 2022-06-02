@@ -15,11 +15,11 @@ import {
   MessagingSessionObserver,
   MessagingSession,
   MessagingSessionConfiguration,
+  PrefetchOn,
   Versioning,
 } from 'amazon-chime-sdk-js';
 
 import { ChimeSDKMessagingClient, GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
-import PrefetchOn from "amazon-chime-sdk-js";
 
 export class DemoMessagingSessionApp implements MessagingSessionObserver {
   static readonly BASE_URL: string = [
