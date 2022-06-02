@@ -66,6 +66,14 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p><a href="messagingsessionconfiguration.html">MessagingSessionConfiguration</a> contains the information necessary to start
+						a messaging session.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -114,7 +122,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L35">src/messagingsession/MessagingSessionConfiguration.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L36">src/messagingsession/MessagingSessionConfiguration.ts:36</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -158,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">aws<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L52">src/messagingsession/MessagingSessionConfiguration.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L53">src/messagingsession/MessagingSessionConfiguration.ts:53</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -168,7 +176,7 @@
 					<div class="tsd-signature tsd-kind-icon">chime<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L51">src/messagingsession/MessagingSessionConfiguration.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L52">src/messagingsession/MessagingSessionConfiguration.ts:52</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -178,7 +186,7 @@
 					<div class="tsd-signature tsd-kind-icon">endpoint<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L50">src/messagingsession/MessagingSessionConfiguration.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L51">src/messagingsession/MessagingSessionConfiguration.ts:51</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -188,7 +196,7 @@
 					<div class="tsd-signature tsd-kind-icon">messaging<wbr>Session<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L49">src/messagingsession/MessagingSessionConfiguration.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L50">src/messagingsession/MessagingSessionConfiguration.ts:50</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -198,12 +206,13 @@
 					<div class="tsd-signature tsd-kind-icon">prefetch<wbr>On<span class="tsd-signature-symbol">:</span> <a href="../enums/prefetchon.html" class="tsd-signature-type">PrefetchOn</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> = undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L35">src/messagingsession/MessagingSessionConfiguration.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L36">src/messagingsession/MessagingSessionConfiguration.ts:36</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The enum to indicate if we want to turn on prefetch feature</p>
+							<p>The enum to indicate if we want to turn on prefetch feature. Prefetch feature will send out CHANNEL_DETAILS event
+							upon websocket connection, which includes information about channel, channel messages, channel memberships etc.</p>
 						</div>
 					</div>
 				</section>
@@ -273,7 +282,7 @@
 					<div class="tsd-signature tsd-kind-icon">user<wbr>Arn<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L48">src/messagingsession/MessagingSessionConfiguration.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/MessagingSessionConfiguration.ts#L49">src/messagingsession/MessagingSessionConfiguration.ts:49</a></li>
 						</ul>
 					</aside>
 				</section>

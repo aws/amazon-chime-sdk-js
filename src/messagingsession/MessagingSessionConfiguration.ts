@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import PrefetchOn from './PrefetchOn';
+
 /**
  * [[MessagingSessionConfiguration]] contains the information necessary to start
  * a messaging session.
  */
 /* eslint  @typescript-eslint/no-explicit-any: 0, @typescript-eslint/explicit-module-boundary-types: 0 */
-import PrefetchOn from './PrefetchOn';
-
 export default class MessagingSessionConfiguration {
   /**
    * Maximum amount of time in milliseconds to allow for reconnecting.
@@ -30,7 +30,8 @@ export default class MessagingSessionConfiguration {
   reconnectLongBackoffMs: number = 5 * 1000;
 
   /**
-   * The enum to indicate if we want to turn on prefetch feature
+   * The enum to indicate if we want to turn on prefetch feature. Prefetch feature will send out CHANNEL_DETAILS event
+   * upon websocket connection, which includes information about channel, channel messages, channel memberships etc.
    */
   prefetchOn: PrefetchOn | undefined = undefined;
 
