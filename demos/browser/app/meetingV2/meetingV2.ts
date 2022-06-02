@@ -222,6 +222,12 @@ interface TranscriptionStreamParams {
   preferredLanguage?: string;
 }
 
+function printAttendees(attendeeList) {
+  for (let attendee of attendeeList) {
+    this.log(`${attendee},`);
+  }
+};
+
 export class DemoMeetingApp
   implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver, VideoDownlinkObserver {
   static readonly DID: string = '+17035550122';
@@ -272,7 +278,8 @@ export class DemoMeetingApp
   videoPreferenceManager: VideoPreferenceManager | undefined = undefined;
 
   // eslint-disable-next-line
-  attendeeList: string = "";
+  attendeeIdList: new Set<string>();
+  externalUserIdList: new Set<string>();
   roster: any = {};
 
   cameraDeviceIds: string[] = [];
@@ -1983,12 +1990,25 @@ export class DemoMeetingApp
         delete this.roster[attendeeId];
         this.updateRoster();
         this.log(`${attendeeId} dropped = ${dropped} (${externalUserId})`);
-        this.attendeeList = this.attendeeList.replace(`${attendeeId},`.toString(),"");
-        this.log(`Attendee List: ${this.attendeeList}`);
+
+        // Print attendee lists on leave
+        this.attendeeIdList.delete(attendeeId);
+        this.log('AttendeeId List: ');
+        printAttendees(this.attendeeIdList);
+
+        this.externalUserIdList.delete(externalUserId);
+        this.log('ExternalUserId List: ');
+        printAttendees(this.externalUserIdList);
         return;
       } else {
-        this.attendeeList = this.attendeeList.concat(`${attendeeId},`.toString());
-        this.log(`Attendee List: ${this.attendeeList}`);
+        // Print attendee lists on join
+        this.attendeeIdList.add(attendeeId);
+        this.log('AttendeeId List: ');
+        printAttendees(this.attendeeIdList);
+
+        this.externalUserIdList.add(externalUserId);
+        this.log('ExternalUserId List: ');
+        printAttendees(this.externalUserIdList);
       }
 
       //If someone else share content, stop the current content share
