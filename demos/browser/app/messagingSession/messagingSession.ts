@@ -34,6 +34,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
   configuration: MessagingSessionConfiguration;
   session: MessagingSession;
   sessionId: string;
+  prefetchOn = false;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,24 +59,11 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
+        this.prefetchOn = (document.getElementById('prefetchOn') as HTMLInputElement).checked;
         this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
-        this.session = new DefaultMessagingSession(this.configuration, this.logger);
-        this.session.addObserver(this);
-        this.session.start();
-      } catch (error) {
-        console.error(error);
-        console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
-      }
-    });
-    document.getElementById('connectWithPrefetch').addEventListener('click', async () => {
-      try {
-        const response = await this.fetchCredentials();
-        const chime = new ChimeSDKMessagingClient({ region: 'us-east-1', credentials: response });
-        const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
-        this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
-        this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
-        this.configuration.prefetchOn = PrefetchOn.Connect;
+        if (this.prefetchOn) {
+          this.configuration.prefetchOn = PrefetchOn.Connect;
+        }
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
         this.session.start();
