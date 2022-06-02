@@ -272,6 +272,7 @@ export class DemoMeetingApp
   videoPreferenceManager: VideoPreferenceManager | undefined = undefined;
 
   // eslint-disable-next-line
+  attendeeList: string = "";
   roster: any = {};
 
   cameraDeviceIds: string[] = [];
@@ -1982,8 +1983,14 @@ export class DemoMeetingApp
         delete this.roster[attendeeId];
         this.updateRoster();
         this.log(`${attendeeId} dropped = ${dropped} (${externalUserId})`);
+        this.attendeeList = this.attendeeList.replace(`${attendeeId},`.toString(),"");
+        this.log(`Attendee List: ${this.attendeeList}`);
         return;
+      } else {
+        this.attendeeList = this.attendeeList.concat(`${attendeeId},`.toString());
+        this.log(`Attendee List: ${this.attendeeList}`);
       }
+
       //If someone else share content, stop the current content share
       if (
         !this.allowMaxContentShare() &&
