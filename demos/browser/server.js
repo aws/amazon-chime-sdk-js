@@ -5,6 +5,7 @@ const AWS = require('aws-sdk');
 const compression = require('compression');
 const fs = require('fs');
 const http = require('http');
+const { reject } = require('lodash');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 
@@ -192,9 +193,38 @@ function serve(host = '127.0.0.1:8080') {
         }).promise();
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/startCapture') {
+
+        const body = await handleStartCaptureRequest(request);
+        const requestBody = JSON.parse(body);
+
+        let attendeeIds = [];
+        if (requestBody.attendeeIds != undefined) {
+          attendeeIds = requestBody.attendeeIds
+        }
+
         if (captureS3Destination) {
           const callerInfo = await sts.getCallerIdentity().promise()
           pipelineInfo = await chime.createMediaCapturePipeline({
+            ChimeSdkMeetingConfiguration: {
+              ArtifactsConfiguration: {
+                Audio: {
+                  MuxType: "AudioWithActiveSpeakerVideo"
+                },
+                Video: {
+                  State: "Enabled",
+                  MuxType: "VideoOnly"
+                },
+                Content: {
+                  State: "Enabled",
+                  MuxType: "ContentOnly"
+                }
+              },
+              SourceConfiguration: { 
+                SelectedVideoStreams : {
+                  AttendeeIds: attendeeIds
+                }
+              }
+            },           
             SourceType: "ChimeSdkMeeting",
             SourceArn: `arn:aws:chime::${callerInfo.Account}:meeting:${meetingTable[requestUrl.query.title].Meeting.MeetingId}`,
             SinkType: "S3Bucket",
@@ -355,6 +385,20 @@ function serve(host = '127.0.0.1:8080') {
 
 function log(message) {
   console.log(`${new Date().toISOString()} ${message}`);
+}
+
+async function handleStartCaptureRequest(request) {
+
+  return new Promise((resolve, reject) => {
+    let body = '';
+    request.on('data', function(chunk) {
+      body += chunk;
+    });
+
+    request.on('end', function() {
+      resolve(body);
+    });
+  });
 }
 
 function respond(response, statusCode, contentType, body, skipLogging = false) {

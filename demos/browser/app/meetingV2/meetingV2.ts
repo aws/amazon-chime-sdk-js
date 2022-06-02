@@ -236,6 +236,8 @@ export class DemoMeetingApp
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
+  
+  static readonly MAX_ATTENDEES_TO_SELECT: number = 25;
 
   // Currently this is the same as the maximum number of clients that can enable video (25)
   // so we id the check box 'enable-pagination' rather then 'reduce-pagionation', but technically pagination is always enabled.
@@ -253,6 +255,7 @@ export class DemoMeetingApp
   replacementObserver: (undefined | BackgroundReplacementVideoFrameProcessorObserver) = undefined;
 
   showActiveSpeakerScores = false;
+
   meeting: string | null = null;
   name: string | null = null;
   voiceConnectorId: string | null = null;
@@ -274,9 +277,13 @@ export class DemoMeetingApp
   // eslint-disable-next-line
   roster: any = {};
 
+  
   cameraDeviceIds: string[] = [];
   microphoneDeviceIds: string[] = [];
   currentAudioInputDevice: AudioInputDevice | undefined;
+
+  // selected video streams to capture
+  selectedAttendees: Set<string> = new Set<string>();;
 
   buttonStates: { [key: string]: ButtonState } = {
     'button-microphone': 'on',
@@ -1927,16 +1934,27 @@ export class DemoMeetingApp
       li.className = 'list-group-item d-flex justify-content-between align-items-center';
       li.appendChild(document.createElement('span'));
       li.appendChild(document.createElement('span'));
+      li.appendChild(document.createElement('input'));
       roster.appendChild(li);
     }
     while (roster.getElementsByTagName('li').length > newRosterCount) {
       roster.removeChild(roster.getElementsByTagName('li')[0]);
     }
+
+    // Delete the selected attendees that are no longer part  of the roster
+    for (let attendeeId of this.selectedAttendees) {
+        if (this.roster[attendeeId] == undefined) {
+          this.selectedAttendees.delete(attendeeId);
+          this.meetingLogger.error(attendeeId);
+        }
+    }
+
     const entries = roster.getElementsByTagName('li');
     let i = 0;
     for (const attendeeId in this.roster) {
       const spanName = entries[i].getElementsByTagName('span')[0];
       const spanStatus = entries[i].getElementsByTagName('span')[1];
+      const inputSelectAttendee : HTMLInputElement = entries[i].getElementsByTagName('input')[0];
       let statusClass = 'badge badge-pill ';
       let statusText = '\xa0'; // &nbsp
       if (this.roster[attendeeId].signalStrength < 1) {
@@ -1953,7 +1971,47 @@ export class DemoMeetingApp
       this.updateProperty(spanName, 'innerText', this.roster[attendeeId].name);
       this.updateProperty(spanStatus, 'innerText', statusText);
       this.updateProperty(spanStatus, 'className', statusClass);
+      this.updateProperty(inputSelectAttendee, 'type', "checkbox");
+      this.updateProperty(inputSelectAttendee, 'value', attendeeId);
+      this.updateProperty(inputSelectAttendee, 'className', 'selected-attendees');
+      inputSelectAttendee.disabled = false;
+      inputSelectAttendee.checked = this.selectedAttendees.has(attendeeId);
+
+      if (this.selectedAttendees.size >= DemoMeetingApp.MAX_ATTENDEES_TO_SELECT) {
+        if (!this.selectedAttendees.has(attendeeId)) {
+          inputSelectAttendee.disabled = true;
+        }
+      }
+      inputSelectAttendee.addEventListener('change', () => {
+        this.toggleAttendeeSelection(inputSelectAttendee);
+      });
       i++;
+    }
+  }
+
+  toggleAttendeeSelection(inputElement : HTMLInputElement) {
+    // Update the seletected attendees set based on the status of the checkbox.
+    if (inputElement.checked) {
+      this.selectedAttendees.add(inputElement.value);
+    } else {
+      this.selectedAttendees.delete(inputElement.value);
+    }
+
+    // If we have reached the limits of attendee selection, disable selection of additional attendees.
+    if (this.selectedAttendees.size === DemoMeetingApp.MAX_ATTENDEES_TO_SELECT) {
+      const allSelectedAttendeeCheckboxes : HTMLCollectionOf<Element> = document.getElementsByClassName('selected-attendees');
+      for (let index = 0; index < allSelectedAttendeeCheckboxes.length; index++) {
+        const element = allSelectedAttendeeCheckboxes[index] as HTMLInputElement;
+        if (!this.selectedAttendees.has(element.value)) {
+          element.disabled = true;
+        }
+      }
+    } else if (this.selectedAttendees.size === DemoMeetingApp.MAX_ATTENDEES_TO_SELECT - 1) {
+      // If we are under the limits of attendee selection, enable selection of attendees.
+      const allSelectedAttendeeCheckboxes : HTMLCollectionOf<Element> = document.getElementsByClassName('selected-attendees');
+      for (let index = 0; index < allSelectedAttendeeCheckboxes.length; index++) {
+          (allSelectedAttendeeCheckboxes[index] as HTMLInputElement).disabled = false;
+      }
     }
   }
 
@@ -2370,16 +2428,30 @@ export class DemoMeetingApp
   }
 
   async startMediaCapture(): Promise<any> {
+    const attendeeIds = new Array();
+    for (const attendeeId of this.selectedAttendees) {
+      attendeeIds.push(attendeeId);
+    }
+
+    const requestBody = { 
+      attendeeIds: attendeeIds 
+    };
+
+    this.meetingLogger.info(`Starting meeting capture for the attendees: ${attendeeIds}`);
+
     await fetch(
       `${DemoMeetingApp.BASE_URL}startCapture?title=${encodeURIComponent(this.meeting)}`, {
       method: 'POST',
+      body: JSON.stringify(requestBody)
     });
   }
 
   async stopMediaCapture(): Promise<any> {
+
     await fetch(
       `${DemoMeetingApp.BASE_URL}endCapture?title=${encodeURIComponent(this.meeting)}`, {
       method: 'POST',
+      
     });
   }
 
