@@ -249,6 +249,15 @@ const configuration = new MessagingSessionConfiguration(userArn, sessionId, unde
 const messagingSession = new DefaultMessagingSession(configuration, logger);
 ```
 
+If you would like to enable prefetch feature when connecting to a messaging session, you can do the following:
+
+```js
+configuration.prefetchOn = PrefetchOn.Connect;
+```
+
+Prefetch feature will send out CHANNEL_DETAILS event upon websocket connection, which includes inforamtion about channel, 
+channel messages, channel memberhsips etc.
+
 ## Building and testing
 
 ```plaintext

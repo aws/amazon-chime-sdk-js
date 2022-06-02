@@ -32,7 +32,7 @@ export default class MessagingSessionConfiguration {
   /**
    * The enum to indicate if we want to turn on prefetch feature
    */
-  prefetchOn: PrefetchOn = null;
+  prefetchOn: PrefetchOn | undefined = undefined;
 
   /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session

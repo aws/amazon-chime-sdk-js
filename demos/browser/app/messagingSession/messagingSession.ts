@@ -35,6 +35,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
   configuration: MessagingSessionConfiguration;
   session: MessagingSession;
   sessionId: string;
+  prefetchOn = false;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,27 +59,13 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
       AWS.config.credentials.get(async () => {
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
+        this.prefetchOn = (document.getElementById('prefetchOn') as HTMLInputElement).checked;
         try {
           const chime = new Chime({ region: 'us-east-1' });
           this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime, AWS);
-          this.session = new DefaultMessagingSession(this.configuration, this.logger);
-          this.session.addObserver(this);
-          this.session.start();
-        } catch (error) {
-          console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
-        }
-      });
-    });
-    document.getElementById('connectWithPrefetch').addEventListener('click', async () => {
-      const response = await this.fetchCredentials();
-      AWS.config.credentials = new AWS.Credentials(response.accessKeyId, response.secretAccessKey, response.sessionToken);
-      AWS.config.credentials.get(async () => {
-        this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
-        this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-        try {
-          const chime = new Chime({ region: 'us-east-1' });
-          this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime, AWS);
-          this.configuration.prefetchOn = PrefetchOn.Connect;
+          if (this.prefetchOn) {
+            this.configuration.prefetchOn = PrefetchOn.Connect;
+          }
           this.session = new DefaultMessagingSession(this.configuration, this.logger);
           this.session.addObserver(this);
           this.session.start();
