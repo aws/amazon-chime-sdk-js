@@ -140,7 +140,7 @@ describe('DefaultMessagingSession', () => {
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
       const prefetchMessagingSession = new DefaultMessagingSession(
-        configuration,
+        prefetchConfiguration,
         logger,
         webSocket,
         reconnectController,
