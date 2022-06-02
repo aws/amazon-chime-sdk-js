@@ -30,7 +30,8 @@ export default class MessagingSessionConfiguration {
   reconnectLongBackoffMs: number = 5 * 1000;
 
   /**
-   * The enum to indicate if we want to turn on prefetch feature
+   * The enum to indicate if we want to turn on prefetch feature. Prefetch feature will send out CHANNEL_DETAILS event
+   * upon websocket connection, which includes information about channel, channel messages, channel memberships etc.
    */
   prefetchOn: PrefetchOn | undefined = undefined;
 
