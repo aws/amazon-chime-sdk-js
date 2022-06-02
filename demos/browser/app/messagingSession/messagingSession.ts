@@ -12,9 +12,10 @@ import {
   Logger,
   LogLevel,
   Message,
-  MessagingSessionObserver,
   MessagingSession,
   MessagingSessionConfiguration,
+  MessagingSessionObserver,
+  PrefetchOn,
   Versioning,
 } from 'amazon-chime-sdk-js';
 
@@ -34,6 +35,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
   configuration: MessagingSessionConfiguration;
   session: MessagingSession;
   sessionId: string;
+  prefetchOn = false;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,9 +59,13 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
       AWS.config.credentials.get(async () => {
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
+        this.prefetchOn = (document.getElementById('prefetchOn') as HTMLInputElement).checked;
         try {
           const chime = new Chime({ region: 'us-east-1' });
           this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime, AWS);
+          if (this.prefetchOn) {
+            this.configuration.prefetchOn = PrefetchOn.Connect;
+          }
           this.session = new DefaultMessagingSession(this.configuration, this.logger);
           this.session.addObserver(this);
           this.session.start();

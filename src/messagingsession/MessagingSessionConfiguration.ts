@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import PrefetchOn from './PrefetchOn';
+
 /**
  * [[MessagingSessionConfiguration]] contains the information necessary to start
  * a messaging session.
@@ -26,6 +28,12 @@ export default class MessagingSessionConfiguration {
    * The long back off time in milliseconds between reconnecting attempts.
    */
   reconnectLongBackoffMs: number = 5 * 1000;
+
+  /**
+   * The enum to indicate if we want to turn on prefetch feature. Prefetch feature will send out CHANNEL_DETAILS event
+   * upon websocket connection, which includes information about channel, channel messages, channel memberships etc.
+   */
+  prefetchOn: PrefetchOn | undefined = undefined;
 
   /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session

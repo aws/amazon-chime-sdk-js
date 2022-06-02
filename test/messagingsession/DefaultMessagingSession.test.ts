@@ -11,6 +11,7 @@ import Message from '../../src/message/Message';
 import DefaultMessagingSession from '../../src/messagingsession/DefaultMessagingSession';
 import MessagingSession from '../../src/messagingsession/MessagingSession';
 import MessagingSessionConfiguration from '../../src/messagingsession/MessagingSessionConfiguration';
+import PrefetchOn from '../../src/messagingsession/PrefetchOn';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
 import ReconnectController from '../../src/reconnectcontroller/ReconnectController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -141,6 +142,38 @@ describe('DefaultMessagingSession', () => {
         },
       });
       messagingSession.start();
+      new TimeoutScheduler(10).start(() => {
+        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      });
+    });
+
+    it('Can start with prefetch on', done => {
+      const prefetchConfiguration = new MessagingSessionConfiguration(
+        'userArn',
+        '123',
+        undefined,
+        chimeClient,
+        {}
+      );
+      prefetchConfiguration.reconnectTimeoutMs = 100;
+      prefetchConfiguration.reconnectFixedWaitMs = 40;
+      prefetchConfiguration.reconnectShortBackoffMs = 10;
+      prefetchConfiguration.reconnectLongBackoffMs = 10;
+      prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
+      const prefetchMessagingSession = new DefaultMessagingSession(
+        prefetchConfiguration,
+        logger,
+        webSocket,
+        reconnectController,
+        new TestSigV4()
+      );
+      prefetchMessagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(1);
+          done();
+        },
+      });
+      prefetchMessagingSession.start();
       new TimeoutScheduler(10).start(() => {
         webSocket.send(SESSION_SUBSCRIBED_MSG);
       });
