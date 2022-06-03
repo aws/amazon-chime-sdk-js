@@ -7344,7 +7344,7 @@
 "parent":"GetUserMediaError"},
 {"id":1882,"kind":1024,"name":"stack",
 "url":"classes/getusermediaerror.html#stack",
-"classes":"tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited",
+"classes":"tsd-kind-property tsd-parent-kind-class tsd-is-inherited",
 "parent":"GetUserMediaError"},
 {"id":1883,"kind":1024,"name":"Error",
 "url":"classes/getusermediaerror.html#error",

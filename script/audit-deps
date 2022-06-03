@@ -11,5 +11,5 @@ system('npm audit --only dev')
 puts '---'
 
 # Do not pull in package fixes automatically: it will cause the build to fail.
-# puts 'Auditing production dependencies. You must address these.'
-# verbose('npm audit --audit-level=moderate --production')
+puts 'Auditing production dependencies. You must address these.'
+verbose('npm audit --audit-level=moderate --production')
