@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed an issue for mute local when there is no audio input.
+
 ## [3.4.0] - 2022-05-24
 
 ### Added
