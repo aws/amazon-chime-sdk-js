@@ -103,7 +103,7 @@
     "@types/dom-mediacapture-record": "^1.0.7",
     "@types/ua-parser-js": "^0.7.35",
     "detect-browser": "^5.2.0",
-    "protobufjs": "~6.8.8",
+    "protobufjs": "~6.11.3",
     "resize-observer": "^1.0.0",
     "ua-parser-js": "^1.0.1",
     "pako": "^2.0.4"
