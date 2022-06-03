@@ -297,6 +297,7 @@ exports.stop_transcription = async (event, context) => {
 };
 
 exports.start_capture = async (event, context) => {
+
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
 
@@ -306,31 +307,36 @@ exports.start_capture = async (event, context) => {
   if (requestBody.attendeeIds != undefined) {
     attendeeIds = requestBody.attendeeIds;
   }
-  
+
   meetingRegion = meeting.Meeting.MediaRegion;
+
+  let chimeSDKConfig = {
+    ArtifactsConfiguration: {
+      Audio: {
+        MuxType: "AudioWithActiveSpeakerVideo"
+      },
+      Video: {
+        State: "Enabled",
+        MuxType: "VideoOnly"
+      },
+      Content: {
+        State: "Enabled",
+        MuxType: "ContentOnly"
+      }
+    }
+  }
+
+  if (attendeeIds.length > 0) {
+    chimeSDKConfig["SourceConfiguration"] = {
+      SelectedVideoStreams : {
+        AttendeeIds: attendeeIds
+      }
+    }
+  }
 
   let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION_PREFIX}-${meetingRegion}/${meeting.Meeting.MeetingId}/`
   pipelineInfo = await chime.createMediaCapturePipeline({
-    ChimeSdkMeetingConfiguration: {
-      ArtifactsConfiguration: {
-        Audio: {
-          MuxType: "AudioWithActiveSpeakerVideo"
-        },
-        Video: {
-          State: "Enabled",
-          MuxType: "VideoOnly"
-        },
-        Content: {
-          State: "Enabled",
-          MuxType: "ContentOnly"
-        }
-      },
-      SourceConfiguration: { 
-        SelectedVideoStreams : {
-          AttendeeIds: attendeeIds
-        }
-      }
-    },
+    ChimeSdkMeetingConfiguration: chimeSDKConfig,
     SourceType: "ChimeSdkMeeting",
     SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
     SinkType: "S3Bucket",
