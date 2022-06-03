@@ -5,7 +5,6 @@ const AWS = require('aws-sdk');
 const compression = require('compression');
 const fs = require('fs');
 const http = require('http');
-const { reject } = require('lodash');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 
@@ -394,7 +393,7 @@ function log(message) {
 
 async function handleStartCaptureRequest(request) {
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let body = '';
     request.on('data', function(chunk) {
       body += chunk;
