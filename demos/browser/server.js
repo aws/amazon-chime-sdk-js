@@ -202,29 +202,34 @@ function serve(host = '127.0.0.1:8080') {
           attendeeIds = requestBody.attendeeIds
         }
 
+        let chimeSDKConfig = {
+          ArtifactsConfiguration: {
+            Audio: {
+              MuxType: "AudioWithActiveSpeakerVideo"
+            },
+            Video: {
+              State: "Enabled",
+              MuxType: "VideoOnly"
+            },
+            Content: {
+              State: "Enabled",
+              MuxType: "ContentOnly"
+            }
+          }
+        }
+      
+        if (attendeeIds.length > 0) {
+          chimeSDKConfig["SourceConfiguration"] = {
+            SelectedVideoStreams : {
+              AttendeeIds: attendeeIds
+            }
+          }
+        }        
+
         if (captureS3Destination) {
           const callerInfo = await sts.getCallerIdentity().promise()
           pipelineInfo = await chime.createMediaCapturePipeline({
-            ChimeSdkMeetingConfiguration: {
-              ArtifactsConfiguration: {
-                Audio: {
-                  MuxType: "AudioWithActiveSpeakerVideo"
-                },
-                Video: {
-                  State: "Enabled",
-                  MuxType: "VideoOnly"
-                },
-                Content: {
-                  State: "Enabled",
-                  MuxType: "ContentOnly"
-                }
-              },
-              SourceConfiguration: { 
-                SelectedVideoStreams : {
-                  AttendeeIds: attendeeIds
-                }
-              }
-            },           
+            ChimeSdkMeetingConfiguration: chimeSDKConfig,           
             SourceType: "ChimeSdkMeeting",
             SourceArn: `arn:aws:chime::${callerInfo.Account}:meeting:${meetingTable[requestUrl.query.title].Meeting.MeetingId}`,
             SinkType: "S3Bucket",
