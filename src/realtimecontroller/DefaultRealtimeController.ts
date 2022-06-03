@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
+import DefaultDeviceController from '../devicecontroller/DefaultDeviceController';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import DefaultTranscriptionController from '../transcript/DefaultTranscriptionController';
 import TranscriptionController from '../transcript/TranscriptionController';
@@ -466,6 +467,11 @@ export default class DefaultRealtimeController implements RealtimeController {
     const mutedLocal = this.state.muted;
     if (attendeeIdRemote !== attendeeIdLocal) {
       return mutedRemote;
+    }
+    // This is a workaround for Chime App dial in feature
+    // @ts-ignore
+    if (!((this.mediaStreamBroker as DefaultDeviceController).activeDevices['audio'])) {
+      return mutedRemote
     }
     return mutedLocal;
   }
