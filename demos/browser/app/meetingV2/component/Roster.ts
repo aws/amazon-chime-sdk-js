@@ -1,14 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { bool } from "aws-sdk/clients/signer";
-
 class Attendee {
     name : string;
     id : string;
-    muted: bool;
+    muted: boolean;
     signalStrength: number;
-    speaking: bool;
+    speaking: boolean;
 
     constructor(name: string, id: string) {
         this.name = name;
@@ -103,7 +101,7 @@ export default class Roster {
      * @param attendeeId - the attendeeId for whom we intend to set the mute status.
      * @param status - boolean value indicating if the attendee is muted or not.
      */
-    setMuteStatus(attendeeId: string, status: bool): void {
+    setMuteStatus(attendeeId: string, status: boolean): void {
         if (!this.hasAttendee(attendeeId)) {
             return;
         }
@@ -131,7 +129,7 @@ export default class Roster {
      * @param attendeeId - the attendeeId for whom we intend to set the speaking status.
      * @param status - boolean value indicating if the attendee is speaking or not.
      */     
-    setAttendeeSpeakingStatus(attendeeId: string, status: bool): void {
+    setAttendeeSpeakingStatus(attendeeId: string, status: boolean): void {
         if (!this.hasAttendee(attendeeId)) {
             return;
         }
