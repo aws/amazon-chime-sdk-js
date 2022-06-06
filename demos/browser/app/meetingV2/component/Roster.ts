@@ -141,29 +141,6 @@ export default class Roster {
     }
 
     /**
-     * Update the attendee status.
-     * @param attendeeId the attendee for whom we intend to update the attendee status.
-     * @param status the status of the attendee
-     * @param text the status text
-     * @returns 
-     *   true - if we were able to update the attendee status successfully
-     *   false - if the attendeeId does not exist
-     */
-     updateAttendeeStatus(attendeeId: string, status : string, text: string): boolean {
-        if (!this.hasAttendee(attendeeId)) {
-            return false;
-        }
-
-        const attendeeElement : HTMLLIElement = document.getElementById(Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId) as HTMLLIElement;
-        const attendeeStatusElement: HTMLSpanElement = attendeeElement.getElementsByClassName('status')[0] as HTMLSpanElement;
-        
-        let statusClass = 'status badge badge-pill ' + status;
-        attendeeStatusElement.className = statusClass;
-        attendeeStatusElement.innerText = text;
-        return true;
-    }
-
-    /**
      * Clears the roster state.
      */
     clear() {
@@ -178,19 +155,24 @@ export default class Roster {
 
     private handleRosterStatusUpdate(attendeeId: string): void {
         let statusText = '\xa0'; // &nbsp
-        let statusClass = '';
+        let statusClass = 'status badge badge-pill ';
         const attendee: Attendee =  this.attendeeInfoMap.get(attendeeId);        
         if (attendee.signalStrength < 1) {
-            statusClass = 'badge-warning';
+            statusClass += 'badge-warning';
         } else if (attendee.signalStrength === 0) {
             statusClass = 'badge-danger';
         } else if (attendee.muted) {
             statusText = 'MUTED';
-            statusClass = 'badge-secondary';
+            statusClass += 'badge-secondary';
         } else if (attendee.speaking) {
             statusText = 'SPEAKING';
-            statusClass = 'badge-success';
+            statusClass += 'badge-success';
         }
-        this.updateAttendeeStatus(attendeeId, statusClass, statusText);
-    } 
+
+        const attendeeElement : HTMLLIElement = document.getElementById(Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId) as HTMLLIElement;
+        const attendeeStatusElement: HTMLSpanElement = attendeeElement.getElementsByClassName('status')[0] as HTMLSpanElement;
+        
+        attendeeStatusElement.className = statusClass;
+        attendeeStatusElement.innerText = statusText;
+    }
 }
