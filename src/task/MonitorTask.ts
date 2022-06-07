@@ -145,7 +145,18 @@ export default class MonitorTask
     const resubscribeForDownlink = this.context.videoDownlinkBandwidthPolicy.wantsResubscribe();
     needResubscribe = needResubscribe || resubscribeForDownlink;
     if (resubscribeForDownlink) {
-      this.context.videosToReceive = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+      const videoSubscriptionIdSet = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+      // Same logic as in `ReceiveVideoStreamIndexTask`, immediately truncating rather then truncating on subscribe
+      // avoids any issues with components (e.g. transceiver controller) along the way.
+      this.context.videosToReceive = videoSubscriptionIdSet.truncate(
+        this.context.videoSubscriptionLimit
+      );
+
+      if (videoSubscriptionIdSet.size() > this.context.videosToReceive.size()) {
+        this.logger.warn(
+          `Video receive limit exceeded. Limiting the videos to ${this.context.videosToReceive.size()}. Please consider using AllHighestVideoBandwidthPolicy or VideoPriorityBasedPolicy along with chooseRemoteVideoSources api to select the video sources to be displayed.`
+        );
+      }
       this.logger.info(
         `trigger resubscribe for down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}]`
       );

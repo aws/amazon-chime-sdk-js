@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed an issue for mute local when there is no audio input.
+- Fixed trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
 
 ## [3.4.0] - 2022-05-24
 

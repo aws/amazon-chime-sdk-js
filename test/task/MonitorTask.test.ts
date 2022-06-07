@@ -46,11 +46,13 @@ import MonitorTask from '../../src/task/MonitorTask';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
+import VideoStreamIdSet from '../../src/videostreamidset/VideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
+import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -751,6 +753,40 @@ describe('MonitorTask', () => {
       task.metricsDidReceive(clientMetricReport);
       task.resumeResubscribeCheck();
 
+      expect(spy.called).to.be.true;
+      done();
+    });
+  });
+
+  it('could trigger resubscription', done => {
+    // eslint-disable-next-line
+    class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
+      updateMetrics(_metricReport: ClientMetricReport): void {
+        return;
+      }
+
+      chooseSubscriptions(): VideoStreamIdSet {
+        return new DefaultVideoStreamIdSet([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      }
+
+      wantsResubscribe(): boolean {
+        return true;
+      }
+    }
+
+    context.videoSubscriptionLimit = 5;
+    context.videoTileController.startLocalVideoTile();
+    context.videoStreamIndex = new SimulcastVideoStreamIndex(logger);
+    context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
+    context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger);
+    const spy = sinon.spy(context.audioVideoController, 'update');
+
+    const clientMetricReport = new ClientMetricReport(logger);
+    task.metricsDidReceive(clientMetricReport);
+
+    new TimeoutScheduler(100).start(() => {
+      // @ts-ignore
+      expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet([1, 2, 3, 4, 5])));
       expect(spy.called).to.be.true;
       done();
     });
