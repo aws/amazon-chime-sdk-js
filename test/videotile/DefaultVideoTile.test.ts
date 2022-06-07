@@ -235,24 +235,40 @@ describe('DefaultVideoTile', () => {
       });
     });
 
-    it('does not set srcObject to null for safari12 if it already changes to a new stream', done => {
-      domMockBehavior.browserName = 'safari12';
+    it('plays the paused video element in Safari after setting srcObject to a new video stream', done => {
+      domMockBehavior.browserName = 'ios15.1';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       const videoElement = videoElementFactory.create();
+      videoElement.pause();
+      const videoElementSpy = sinon.spy(videoElement, 'play');
       tile.bindVideoElement(videoElement);
-      // @ts-ignore
-      const mockVideoStream2 = new MediaStream();
-      // @ts-ignore
-      mockVideoStream2.addTrack(new MediaStreamTrack('mockVideoStream2', 'video'));
-
       tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
-      tile.bindVideoStream(null, true, null, null, null, null);
-      tile.bindVideoStream('attendee', true, mockVideoStream2, 2, 2, 1);
 
       expect(tileControllerSpy.called).to.be.true;
       new TimeoutScheduler(10).start(() => {
-        expect(videoElement.srcObject).to.equal(mockVideoStream2);
+        expect(videoElementSpy.called).to.be.true;
+        expect(videoElement.srcObject).to.equal(mockVideoStream);
+        done();
+      });
+    });
+
+    it('does not play the non-paused video element in Safari after setting srcObject to a new video stream', done => {
+      domMockBehavior.browserName = 'ios15.1';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+      const videoElement = videoElementFactory.create();
+      videoElement.play();
+      const videoElementSpy = sinon.spy(videoElement, 'play');
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+
+      expect(tileControllerSpy.called).to.be.true;
+      new TimeoutScheduler(10).start(() => {
+        expect(videoElementSpy.called).to.be.false;
+        expect(videoElement.srcObject).to.equal(mockVideoStream);
         done();
       });
     });
