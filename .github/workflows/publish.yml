@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        name: [ ChimeProd, ChimeSDKMeetingsProdIAD, ChimeSDKMeetingsProdPDX, ChimeSDKMeetingsProdFRA, ChimeSDKMeetingsProdSIN, ChimeSDKMeetings_ChimeSDKMediaPipelinesProdIAD, Chime_ChimeSDKMediaPipelinesProdIAD ]
+        name: [ ChimeProd, ChimeSDKMeetingsProdIAD, ChimeSDKMeetingsProdPDX, ChimeSDKMeetingsProdFRA, ChimeSDKMeetingsProdSIN, ChimeSDKMeetingsIAD_ChimeSDKMediaPipelinesProdIAD, Chime_ChimeSDKMediaPipelinesProdIAD ]
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_DEFAULT_OUTPUT: text

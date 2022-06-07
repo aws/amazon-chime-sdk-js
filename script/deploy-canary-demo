@@ -5,7 +5,7 @@ canarySuffix=${1+$1}
 chimeSDKMediaPipelinesStackId="ChimeSDKMediaPipelines"
 
 cd $GITHUB_WORKSPACE/demos/serverless
-npm ci
+npm ci -f
 
 case $NAME in
 
@@ -105,7 +105,7 @@ ChimeSDKMeetingsProdIAD)
     npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-prod-canary-us-east-1$canarySuffix -o chime-sdk-meetings-iad-demo-prod-canary$canarySuffix -s chime-sdk-meetings-demo-prod-canary-us-east-1$canarySuffix -t -l --use-chime-sdk-media-pipelines false
     ;;
 
-ChimeSDKMeetings_ChimeSDKMediaPipelinesProdIAD)
+ChimeSDKMeetingsIAD_ChimeSDKMediaPipelinesProdIAD)
     echo "Deploying to prod stage for canary that talks to prod IAD ChimeSDKMeetings client for meetings and prod IAD ChimeSDKMediaPipelines client for media pipelines"
 
     # Uses ChimeSDKMeetings client

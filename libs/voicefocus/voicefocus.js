@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -23,12 +26,12 @@ const DEFAULT_AGC_DISABLED_SETTING = {
 };
 const DEFAULT_AGC_SETTING = DEFAULT_AGC_DISABLED_SETTING;
 const DEFAULT_ASSET_GROUP = 'stable-v1';
-const DEFAULT_CDN = 'https://static.sdkassets.chime.aws/';
+const DEFAULT_CDN = 'https://static.sdkassets.chime.aws';
 const DEFAULT_PATHS = {
-    processors: `${DEFAULT_CDN}processors/`,
-    workers: `${DEFAULT_CDN}workers/`,
-    wasm: `${DEFAULT_CDN}wasm/`,
-    models: `${DEFAULT_CDN}wasm/`,
+    processors: `${DEFAULT_CDN}/processors/`,
+    workers: `${DEFAULT_CDN}/workers/`,
+    wasm: `${DEFAULT_CDN}/wasm/`,
+    models: `${DEFAULT_CDN}/wasm/`,
 };
 const DEFAULT_CONTEXT_HINT = {
     latencyHint: 0,

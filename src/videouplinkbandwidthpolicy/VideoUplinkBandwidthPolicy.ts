@@ -12,6 +12,11 @@ import ConnectionMetrics from './ConnectionMetrics';
  */
 export default interface VideoUplinkBandwidthPolicy {
   /**
+   * Reset back to initial state
+   */
+  reset?(): void;
+
+  /**
    * Potentially update the optimal capture and encode parameters
    * based on the given VideoStreamIndex.
    */

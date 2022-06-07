@@ -74,12 +74,13 @@ exports.index = async (event, context, callback) => {
 };
 
 exports.join = async (event, context) => {
+  const meetingIdFormat = /^[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/
   const query = event.queryStringParameters;
   if (!query.title || !query.name) {
     return response(400, 'application/json', JSON.stringify({ error: 'Need parameters: title, name' }));
   }
 
-  // Look up the meeting by its title. If it does not exist, create the meeting.
+  // Look up the meeting by its title
   let meeting = await getMeeting(query.title);
 
   let client = getClientForMeeting(meeting);
@@ -87,9 +88,23 @@ exports.join = async (event, context) => {
   let primaryMeeting = undefined
   if (query.primaryExternalMeetingId) {
     primaryMeeting = await getMeeting(query.primaryExternalMeetingId)
-    if (primaryMeeting !== undefined) {
+    if (primaryMeeting) {
       console.info(`Retrieved primary meeting ID ${primaryMeeting.Meeting.MeetingId} for external meeting ID ${query.primaryExternalMeetingId}`)
-    } else {
+    } else if (meetingIdFormat.test(query.primaryExternalMeetingId)) {
+      // Just in case, check if we were passed a regular meeting ID instead of an external ID
+      try {
+        primaryMeeting = await client.getMeeting({
+          MeetingId: query.primaryExternalMeetingId
+        }).promise();
+        if (primaryMeeting !== undefined) {
+          console.info(`Retrieved primary meeting id ${primaryMeeting.Meeting.MeetingId}`);
+          await putMeeting(query.primaryExternalMeetingId, primaryMeeting);
+        }
+      } catch (error) {
+        console.info("Meeting ID doesnt' exist as a conference ID: " + error);
+      }
+    }
+    if (!primaryMeeting) {
       return response(400, 'application/json', JSON.stringify({ error: 'Primary meeting has not been created' }));
     }
   }
@@ -98,40 +113,54 @@ exports.join = async (event, context) => {
     if (!query.region) {
       return response(400, 'application/json', JSON.stringify({ error: 'Need region parameter set if meeting has not yet been created' }));
     }
-    let request = {
-      // Use a UUID for the client request token to ensure that any request retries
-      // do not create multiple meetings.
-      ClientRequestToken: uuidv4(),
-
-      // Specify the media region (where the meeting is hosted).
-      // In this case, we use the region selected by the user.
-      MediaRegion: query.region,
-
-      // Set up SQS notifications if being used
-      NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? { SqsQueueArn: SQS_QUEUE_ARN } : {},
-
-      // Any meeting ID you wish to associate with the meeting.
-      // For simplicity here, we use the meeting title.
-      ExternalMeetingId: query.title.substring(0, 64),
-    };
-    if (primaryMeeting !== undefined) {
-      request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
+    // If the meeting does not exist, check if we were passed in a meeting ID instead of an external meeting ID.  If so, use that one
+    try {
+      if (meetingIdFormat.test(query.title)) {
+        meeting = await client.getMeeting({
+          MeetingId: query.title
+        }).promise();
+      }
+    } catch (error) {
+      console.info("Meeting ID doesn't exist as a conference ID: " + error);
     }
-    if (query.ns_es === 'true') {
-      client = chimeSDKMeetings;
-      request.MeetingFeatures = {
-        Audio: {
-          // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
-          EchoReduction: 'AVAILABLE'
-        }
+
+    // If still no meeting, create one
+    if (!meeting) {
+      let request = {
+        // Use a UUID for the client request token to ensure that any request retries
+        // do not create multiple meetings.
+        ClientRequestToken: uuidv4(),
+
+        // Specify the media region (where the meeting is hosted).
+        // In this case, we use the region selected by the user.
+        MediaRegion: query.region,
+
+        // Set up SQS notifications if being used
+        NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? { SqsQueueArn: SQS_QUEUE_ARN } : {},
+
+        // Any meeting ID you wish to associate with the meeting.
+        // For simplicity here, we use the meeting title.
+        ExternalMeetingId: query.title.substring(0, 64),
       };
-    }
-    console.info('Creating new meeting: ' + JSON.stringify(request));
-    meeting = await client.createMeeting(request).promise();
+      if (primaryMeeting !== undefined) {
+        request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
+      }
+      if (query.ns_es === 'true') {
+        client = chimeSDKMeetings;
+        request.MeetingFeatures = {
+          Audio: {
+            // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+            EchoReduction: 'AVAILABLE'
+          }
+        };
+      }
+      console.info('Creating new meeting: ' + JSON.stringify(request));
+      meeting = await client.createMeeting(request).promise();
 
-    // Extend meeting with primary external meeting ID if it exists
-    if (primaryMeeting !== undefined) {
-      meeting.Meeting.PrimaryExternalMeetingId = primaryMeeting.Meeting.ExternalMeetingId;
+      // Extend meeting with primary external meeting ID if it exists
+      if (primaryMeeting !== undefined) {
+        meeting.Meeting.PrimaryExternalMeetingId = primaryMeeting.Meeting.ExternalMeetingId;
+      }
     }
 
     // Store the meeting in the table using the meeting title as the key.

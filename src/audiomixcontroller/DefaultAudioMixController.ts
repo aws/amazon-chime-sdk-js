@@ -5,6 +5,7 @@ import AudioMixObserver from '../audiomixobserver/AudioMixObserver';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
+import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import AudioMixController from './AudioMixController';
 
@@ -14,7 +15,8 @@ interface AudioElementWithSinkId extends HTMLAudioElement {
   setSinkId: (id: string) => void;
 }
 
-export default class DefaultAudioMixController implements AudioMixController {
+export default class DefaultAudioMixController
+  implements AudioMixController, MediaStreamBrokerObserver {
   private audioDevice: MediaDeviceInfo | null = null;
   private audioElement: HTMLAudioElement | null = null;
   private audioStream: MediaStream | null = null;
@@ -165,5 +167,10 @@ export default class DefaultAudioMixController implements AudioMixController {
 
   async removeAudioMixObserver(observer: AudioMixObserver): Promise<void> {
     this.observers.delete(observer);
+  }
+
+  async audioOutputDidChange(device: MediaDeviceInfo | null): Promise<void> {
+    this.logger.info('Receive an audio output change event');
+    return this.bindAudioDevice(device);
   }
 }

@@ -91,7 +91,7 @@ jobs:
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev
   deploy_ChimeSDKMeetings_ChimeSDKMediaPipelines_beta_demo:
-    name: Beta - ChimeSDKMeetings Client/ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
+    name: Beta - ChimeSDKMeetings Client ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
     env:
       AWS_DEFAULT_REGION: us-east-1
@@ -125,7 +125,7 @@ jobs:
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev
   deploy_Chime_ChimeSDKMediaPipelines_beta_demo:
-    name: Beta - Chime Client/ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
+    name: Beta - Chime Client ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
     env:
       AWS_DEFAULT_REGION: us-east-1
@@ -180,7 +180,7 @@ jobs:
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo 
+        run: script/deploy-canary-demo
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev
@@ -206,12 +206,12 @@ jobs:
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo 
+        run: script/deploy-canary-demo
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev
   deploy_ChimeSDKMeetings_ChimeSDKMediaPipelines_gamma_demo:
-    name: Gamma - ChimeSDKMeetings Client/ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
+    name: Gamma - ChimeSDKMeetings Client ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
     env:
       AWS_DEFAULT_REGION: us-east-1
@@ -237,7 +237,7 @@ jobs:
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev
   deploy_Chime_ChimeSDKMediaPipelines_gamma_demo:
-    name: Gamma - Chime Client/ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
+    name: Gamma - Chime Client ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
     env:
       AWS_DEFAULT_REGION: us-east-1

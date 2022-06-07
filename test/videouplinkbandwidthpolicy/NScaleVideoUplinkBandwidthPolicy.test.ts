@@ -149,6 +149,17 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       [26, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 600, false, 1)],
     ]);
 
+    it('returns the expected values when no index is provided yet', () => {
+      const expectedParams = new DefaultVideoCaptureAndEncodeParameter(0, 0, 0, 0, false, 1);
+      transceiverController.setVideoInput(new MediaStreamTrack());
+      policy.setTransceiverController(transceiverController);
+      const actualParams = policy.chooseCaptureAndEncodeParameters();
+      assert(
+        actualParams.equal(expectedParams),
+        `expected: ${JSON.stringify(expectedParams)} actual: ${JSON.stringify(actualParams)}`
+      );
+    });
+
     it('returns the correct values when the self is present in the SdkIndexFrame', () => {
       for (const entry of expectedNumParticipantsToParameters) {
         policy.setTransceiverController(transceiverController);

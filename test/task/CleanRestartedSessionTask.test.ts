@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import { NScaleVideoUplinkBandwidthPolicy } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -61,6 +62,7 @@ describe('CleanRestartedSessionTask', () => {
       new StatsCollector(context.audioVideoController, new NoOpDebugLogger())
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
+    context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('self');
 
     task = new CleanRestartedSessionTask(context);
   });
