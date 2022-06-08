@@ -4,7 +4,7 @@ set -euxo pipefail
 canarySuffix=${1+$1}
 
 cd $GITHUB_WORKSPACE/demos/serverless
-npm ci
+npm ci -f
 
 case $NAME in
 
