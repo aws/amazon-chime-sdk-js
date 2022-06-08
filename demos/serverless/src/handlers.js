@@ -296,13 +296,24 @@ exports.stop_transcription = async (event, context) => {
   return response(200, 'application/json', JSON.stringify({}));
 };
 
+// Chime regional meetings SDK client doesn't support Media Capture APIs, return the console endpoint
+function getMediaCaptureEndpoint(endpoint) {
+  if (endpoint.includes("gchime")) {
+    return "https://tapioca.us-east-1.amazonaws.com";
+  }
+  return "https://service.chime.aws.amazon.com";
+}
+
+const captureClient = new AWS.Chime({ region: 'us-east-1' });
+captureClient.endpoint = new AWS.Endpoint(getMediaCaptureEndpoint(endpoint));
+
 exports.start_capture = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
   meetingRegion = meeting.Meeting.MediaRegion;
 
   let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION_PREFIX}-${meetingRegion}/${meeting.Meeting.MeetingId}/`
-  pipelineInfo = await chime.createMediaCapturePipeline({
+  pipelineInfo = await captureClient.createMediaCapturePipeline({
     SourceType: "ChimeSdkMeeting",
     SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
     SinkType: "S3Bucket",
@@ -317,7 +328,7 @@ exports.end_capture = async (event, context) => {
   // Fetch the capture info by title
   const pipelineInfo = await getCapturePipeline(event.queryStringParameters.title);
   if (pipelineInfo) {
-    await chime.deleteMediaCapturePipeline({
+    await captureClient.deleteMediaCapturePipeline({
       MediaPipelineId: pipelineInfo.MediaCapturePipeline.MediaPipelineId
     }).promise();
     return response(200, 'application/json', JSON.stringify({}));

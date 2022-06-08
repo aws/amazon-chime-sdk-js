@@ -129,6 +129,8 @@ const VOICE_FOCUS_PATHS: VoiceFocusPaths | undefined = VOICE_FOCUS_CDN && {
   models: `${VOICE_FOCUS_CDN}wasm/`,
 };
 
+const MAX_ATTENDEES_TO_SELECT: number = 25;
+
 function voiceFocusName(name: string | undefined = VOICE_FOCUS_NAME): VoiceFocusModelName | undefined {
   if (name && ['default', 'ns_es'].includes(name)) {
     return name as VoiceFocusModelName;
@@ -2370,9 +2372,23 @@ export class DemoMeetingApp
   }
 
   async startMediaCapture(): Promise<any> {
+    const attendeeIds = new Array();
+    for (const attendeeId in this.roster) {
+      attendeeIds.push(attendeeId);
+      if (attendeeIds.length >= MAX_ATTENDEES_TO_SELECT)
+        break;
+    }
+
+    const requestBody = {
+      attendeeIds: attendeeIds
+    };
+
+    this.meetingLogger.info(`Starting meeting capture for the attendees: ${attendeeIds}`);
+
     await fetch(
       `${DemoMeetingApp.BASE_URL}startCapture?title=${encodeURIComponent(this.meeting)}`, {
       method: 'POST',
+      body: JSON.stringify(requestBody)
     });
   }
 
