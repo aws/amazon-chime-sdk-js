@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
@@ -58,6 +59,12 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
 
     if (videoElement.srcObject !== videoStream) {
       videoElement.srcObject = videoStream;
+
+      // In Safari, a hidden video element can show a black screen.
+      // See https://bugs.webkit.org/show_bug.cgi?id=241152 for more information.
+      if (new DefaultBrowserBehavior().requiresVideoPlayWorkaround() && videoElement.paused) {
+        videoElement.play();
+      }
     }
   }
 
