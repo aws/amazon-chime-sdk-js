@@ -310,10 +310,42 @@ captureClient.endpoint = new AWS.Endpoint(getMediaCaptureEndpoint(endpoint));
 exports.start_capture = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
+  // Fetch the attendeeIds for which we intend to capture the media streams
+  const requestBody = JSON.parse(event.body);
+  let attendeeIds = [];
+  if (requestBody.attendeeIds != undefined) {
+    attendeeIds = requestBody.attendeeIds;
+  }
+
   meetingRegion = meeting.Meeting.MediaRegion;
+
+  let chimeSDKConfig = {
+    ArtifactsConfiguration: {
+      Audio: {
+        MuxType: "AudioWithActiveSpeakerVideo"
+      },
+      Video: {
+        State: "Enabled",
+        MuxType: "VideoOnly"
+      },
+      Content: {
+        State: "Enabled",
+        MuxType: "ContentOnly"
+      }
+    }
+  }
+
+  if (attendeeIds.length > 0) {
+    chimeSDKConfig["SourceConfiguration"] = {
+      SelectedVideoStreams : {
+        AttendeeIds: attendeeIds
+      }
+    }
+  }
 
   let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION_PREFIX}-${meetingRegion}/${meeting.Meeting.MeetingId}/`
   pipelineInfo = await captureClient.createMediaCapturePipeline({
+    ChimeSdkMeetingConfiguration: chimeSDKConfig,
     SourceType: "ChimeSdkMeeting",
     SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
     SinkType: "S3Bucket",
