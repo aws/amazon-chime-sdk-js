@@ -29,12 +29,11 @@ $light: $gray-200;
 $dark: $gray-700;
 $yiq-contrasted-threshold: 175;
 $link-color: $success;
-$font-family-sans-serif: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+$font-family-base: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 $font-size-base: 0.9375rem;
 $h1-font-size: 3rem;
 $h2-font-size: 2.5rem;
 $h3-font-size: 2rem;
-$table-accent-bg: $gray-200;
 $dropdown-link-color: $gray-700;
 $dropdown-link-hover-color: $white;
 $dropdown-link-hover-bg: $primary;
@@ -94,6 +93,8 @@ $close-text-shadow: none;
 // Buttons =====================================================================
 
 .btn {
+  &-success,
+  &-success,
   &-secondary,
   &-secondary:hover,
   &-warning,
