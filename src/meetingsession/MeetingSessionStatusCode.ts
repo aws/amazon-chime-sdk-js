@@ -130,6 +130,11 @@ export enum MeetingSessionStatusCode {
    * The attendees Primary meeting credentials have been revoked or deleted.
    */
   AudioVideoWasRemovedFromPrimaryMeeting,
+
+  /**
+   * Reserved.
+   */
+  AudioDisconnectAudio,
 }
 
 export default MeetingSessionStatusCode;

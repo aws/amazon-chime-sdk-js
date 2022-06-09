@@ -20,8 +20,11 @@ export default class DOMBlobMock implements Blob {
     throw new Error('Unimplemented.');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  stream(): ReadableStream<any> {
+  stream(): NodeJS.ReadableStream;
+
+  stream(): ReadableStream;
+
+  stream(): NodeJS.ReadableStream | ReadableStream {
     throw new Error('Unimplemented.');
   }
 

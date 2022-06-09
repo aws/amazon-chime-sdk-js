@@ -261,17 +261,17 @@ export default class DefaultRealtimeController implements RealtimeController {
     attendeeId: string,
     callback?: VolumeIndicatorCallback
   ): void {
-    try {
-      if (callback) {
-        const index = this.state.volumeIndicatorCallbacks[attendeeId].indexOf(callback);
-        if (index !== -1) {
-          this.state.volumeIndicatorCallbacks[attendeeId].splice(index, 1);
-        }
-      } else {
-        delete this.state.volumeIndicatorCallbacks[attendeeId];
+    const callbacks = this.state.volumeIndicatorCallbacks[attendeeId];
+    if (!callbacks) {
+      return;
+    }
+    if (callback) {
+      const index = this.state.volumeIndicatorCallbacks[attendeeId].indexOf(callback);
+      if (index >= 0) {
+        this.state.volumeIndicatorCallbacks[attendeeId].splice(index, 1);
       }
-    } catch (e) {
-      this.onError(e);
+    } else {
+      delete this.state.volumeIndicatorCallbacks[attendeeId];
     }
   }
 
@@ -465,6 +465,13 @@ export default class DefaultRealtimeController implements RealtimeController {
     const attendeeIdLocal = this.state.localAttendeeId;
     const mutedLocal = this.state.muted;
     if (attendeeIdRemote !== attendeeIdLocal) {
+      return mutedRemote;
+    }
+    // This is a workaround to check if no audio input then just use the remote value
+    if (
+      // @ts-ignore
+      !('activeDevices' in this.mediaStreamBroker && this.mediaStreamBroker.activeDevices['audio'])
+    ) {
       return mutedRemote;
     }
     return mutedLocal;
