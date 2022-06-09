@@ -14,6 +14,9 @@ const endpoint = process.env.CHIME_ENDPOINT;
 const currentRegion = process.env.REGION;
 const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS;
 const chimeSDKMeetingsEndpoint = process.env.CHIME_SDK_MEETINGS_ENDPOINT;
+const mediaPipelinesControlRegion = process.env.MEDIA_PIPELINES_CONTROL_REGION;
+const useChimeSDKMediaPipelines = process.env.USE_CHIME_SDK_MEETINGS;
+const chimeSDKMediaPipelinesEndpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT;
 
 // Create an AWS SDK Chime object.
 // Use the MediaRegion property below in CreateMeeting to select the region
@@ -35,6 +38,18 @@ function getClientForMeeting(meeting) {
   }
   if (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE') {
     return chimeSDKMeetings;
+  }
+  return chime;
+}
+
+// Create an AWS SDK Media Pipelines object.
+const chimeSdkMediaPipelines = new AWS.ChimeSDKMediaPipelines({ region: mediaPipelinesControlRegion });
+if (useChimeSDKMediaPipelines === 'true') {
+  chimeSdkMediaPipelines.endpoint = new AWS.Endpoint(chimeSDKMediaPipelinesEndpoint);
+}
+function getClientForMediaCapturePipelines() {
+  if (useChimeSDKMediaPipelines === 'true') {
+    return chimeSdkMediaPipelines;
   }
   return chime;
 }
@@ -302,13 +317,17 @@ exports.start_capture = async (event, context) => {
   meetingRegion = meeting.Meeting.MediaRegion;
 
   let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION_PREFIX}-${meetingRegion}/${meeting.Meeting.MeetingId}/`
-  pipelineInfo = await chime.createMediaCapturePipeline({
+  const request = {
     SourceType: "ChimeSdkMeeting",
     SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
     SinkType: "S3Bucket",
     SinkArn: captureS3Destination,
-  }).promise();
+  };
+  console.log("Creating new media capture pipeline: ", request)
+  pipelineInfo = await getClientForMediaCapturePipelines().createMediaCapturePipeline(request).promise();
+
   await putCapturePipeline(event.queryStringParameters.title, pipelineInfo)
+  console.log("Successfully created media capture pipeline: ", pipelineInfo);
 
   return response(201, 'application/json', JSON.stringify(pipelineInfo));
 };
@@ -317,7 +336,7 @@ exports.end_capture = async (event, context) => {
   // Fetch the capture info by title
   const pipelineInfo = await getCapturePipeline(event.queryStringParameters.title);
   if (pipelineInfo) {
-    await chime.deleteMediaCapturePipeline({
+    await getClientForMediaCapturePipelines().deleteMediaCapturePipeline({
       MediaPipelineId: pipelineInfo.MediaCapturePipeline.MediaPipelineId
     }).promise();
     return response(200, 'application/json', JSON.stringify({}));
