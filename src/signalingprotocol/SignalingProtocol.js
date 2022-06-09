@@ -265,47 +265,47 @@ $root.SdkSignalFrame = (function() {
             writer = $Writer.create();
         writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.timestampMs);
         writer.uint32(/* id 2, wireType 0 =*/16).int32(message.type);
-        if (message.error != null && message.hasOwnProperty("error"))
+        if (message.error != null && Object.hasOwnProperty.call(message, "error"))
             $root.SdkErrorFrame.encode(message.error, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-        if (message.join != null && message.hasOwnProperty("join"))
+        if (message.join != null && Object.hasOwnProperty.call(message, "join"))
             $root.SdkJoinFrame.encode(message.join, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-        if (message.joinack != null && message.hasOwnProperty("joinack"))
+        if (message.joinack != null && Object.hasOwnProperty.call(message, "joinack"))
             $root.SdkJoinAckFrame.encode(message.joinack, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-        if (message.sub != null && message.hasOwnProperty("sub"))
+        if (message.sub != null && Object.hasOwnProperty.call(message, "sub"))
             $root.SdkSubscribeFrame.encode(message.sub, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-        if (message.suback != null && message.hasOwnProperty("suback"))
+        if (message.suback != null && Object.hasOwnProperty.call(message, "suback"))
             $root.SdkSubscribeAckFrame.encode(message.suback, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
-        if (message.index != null && message.hasOwnProperty("index"))
+        if (message.index != null && Object.hasOwnProperty.call(message, "index"))
             $root.SdkIndexFrame.encode(message.index, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
-        if (message.pause != null && message.hasOwnProperty("pause"))
+        if (message.pause != null && Object.hasOwnProperty.call(message, "pause"))
             $root.SdkPauseResumeFrame.encode(message.pause, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-        if (message.leave != null && message.hasOwnProperty("leave"))
+        if (message.leave != null && Object.hasOwnProperty.call(message, "leave"))
             $root.SdkLeaveFrame.encode(message.leave, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
-        if (message.leaveAck != null && message.hasOwnProperty("leaveAck"))
+        if (message.leaveAck != null && Object.hasOwnProperty.call(message, "leaveAck"))
             $root.SdkLeaveAckFrame.encode(message.leaveAck, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
-        if (message.bitrates != null && message.hasOwnProperty("bitrates"))
+        if (message.bitrates != null && Object.hasOwnProperty.call(message, "bitrates"))
             $root.SdkBitrateFrame.encode(message.bitrates, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
-        if (message.audioControl != null && message.hasOwnProperty("audioControl"))
+        if (message.audioControl != null && Object.hasOwnProperty.call(message, "audioControl"))
             $root.SdkAudioControlFrame.encode(message.audioControl, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
-        if (message.audioMetadata != null && message.hasOwnProperty("audioMetadata"))
+        if (message.audioMetadata != null && Object.hasOwnProperty.call(message, "audioMetadata"))
             $root.SdkAudioMetadataFrame.encode(message.audioMetadata, writer.uint32(/* id 18, wireType 2 =*/146).fork()).ldelim();
-        if (message.audioStreamIdInfo != null && message.hasOwnProperty("audioStreamIdInfo"))
+        if (message.audioStreamIdInfo != null && Object.hasOwnProperty.call(message, "audioStreamIdInfo"))
             $root.SdkAudioStreamIdInfoFrame.encode(message.audioStreamIdInfo, writer.uint32(/* id 19, wireType 2 =*/154).fork()).ldelim();
-        if (message.pingPong != null && message.hasOwnProperty("pingPong"))
+        if (message.pingPong != null && Object.hasOwnProperty.call(message, "pingPong"))
             $root.SdkPingPongFrame.encode(message.pingPong, writer.uint32(/* id 20, wireType 2 =*/162).fork()).ldelim();
-        if (message.audioStatus != null && message.hasOwnProperty("audioStatus"))
+        if (message.audioStatus != null && Object.hasOwnProperty.call(message, "audioStatus"))
             $root.SdkAudioStatusFrame.encode(message.audioStatus, writer.uint32(/* id 21, wireType 2 =*/170).fork()).ldelim();
-        if (message.clientMetric != null && message.hasOwnProperty("clientMetric"))
+        if (message.clientMetric != null && Object.hasOwnProperty.call(message, "clientMetric"))
             $root.SdkClientMetricFrame.encode(message.clientMetric, writer.uint32(/* id 22, wireType 2 =*/178).fork()).ldelim();
-        if (message.dataMessage != null && message.hasOwnProperty("dataMessage"))
+        if (message.dataMessage != null && Object.hasOwnProperty.call(message, "dataMessage"))
             $root.SdkDataMessageFrame.encode(message.dataMessage, writer.uint32(/* id 23, wireType 2 =*/186).fork()).ldelim();
-        if (message.remoteVideoUpdate != null && message.hasOwnProperty("remoteVideoUpdate"))
+        if (message.remoteVideoUpdate != null && Object.hasOwnProperty.call(message, "remoteVideoUpdate"))
             $root.SdkRemoteVideoUpdateFrame.encode(message.remoteVideoUpdate, writer.uint32(/* id 25, wireType 2 =*/202).fork()).ldelim();
-        if (message.primaryMeetingJoin != null && message.hasOwnProperty("primaryMeetingJoin"))
+        if (message.primaryMeetingJoin != null && Object.hasOwnProperty.call(message, "primaryMeetingJoin"))
             $root.SdkPrimaryMeetingJoinFrame.encode(message.primaryMeetingJoin, writer.uint32(/* id 26, wireType 2 =*/210).fork()).ldelim();
-        if (message.primaryMeetingJoinAck != null && message.hasOwnProperty("primaryMeetingJoinAck"))
+        if (message.primaryMeetingJoinAck != null && Object.hasOwnProperty.call(message, "primaryMeetingJoinAck"))
             $root.SdkPrimaryMeetingJoinAckFrame.encode(message.primaryMeetingJoinAck, writer.uint32(/* id 27, wireType 2 =*/218).fork()).ldelim();
-        if (message.primaryMeetingLeave != null && message.hasOwnProperty("primaryMeetingLeave"))
+        if (message.primaryMeetingLeave != null && Object.hasOwnProperty.call(message, "primaryMeetingLeave"))
             $root.SdkPrimaryMeetingLeaveFrame.encode(message.primaryMeetingLeave, writer.uint32(/* id 28, wireType 2 =*/226).fork()).ldelim();
         return writer;
     };
@@ -908,7 +908,7 @@ $root.SdkSignalFrame = (function() {
     /**
      * Type enum.
      * @name SdkSignalFrame.Type
-     * @enum {string}
+     * @enum {number}
      * @property {number} JOIN=1 JOIN value
      * @property {number} JOIN_ACK=2 JOIN_ACK value
      * @property {number} SUBSCRIBE=3 SUBSCRIBE value
@@ -1025,9 +1025,9 @@ $root.SdkErrorFrame = (function() {
     SdkErrorFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.status != null && message.hasOwnProperty("status"))
+        if (message.status != null && Object.hasOwnProperty.call(message, "status"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.status);
-        if (message.description != null && message.hasOwnProperty("description"))
+        if (message.description != null && Object.hasOwnProperty.call(message, "description"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.description);
         return writer;
     };
@@ -1173,7 +1173,7 @@ $root.SdkErrorFrame = (function() {
 /**
  * SdkJoinFlags enum.
  * @exports SdkJoinFlags
- * @enum {string}
+ * @enum {number}
  * @property {number} HAS_STREAM_UPDATE=2 HAS_STREAM_UPDATE value
  * @property {number} COMPLETE_VIDEO_SOURCES_LIST=16 COMPLETE_VIDEO_SOURCES_LIST value
  * @property {number} EXCLUDE_SELF_CONTENT_IN_INDEX=32 EXCLUDE_SELF_CONTENT_IN_INDEX value
@@ -1305,21 +1305,21 @@ $root.SdkClientDetails = (function() {
     SdkClientDetails.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.appName != null && message.hasOwnProperty("appName"))
+        if (message.appName != null && Object.hasOwnProperty.call(message, "appName"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.appName);
-        if (message.appVersion != null && message.hasOwnProperty("appVersion"))
+        if (message.appVersion != null && Object.hasOwnProperty.call(message, "appVersion"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.appVersion);
-        if (message.deviceModel != null && message.hasOwnProperty("deviceModel"))
+        if (message.deviceModel != null && Object.hasOwnProperty.call(message, "deviceModel"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.deviceModel);
-        if (message.deviceMake != null && message.hasOwnProperty("deviceMake"))
+        if (message.deviceMake != null && Object.hasOwnProperty.call(message, "deviceMake"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.deviceMake);
-        if (message.platformName != null && message.hasOwnProperty("platformName"))
+        if (message.platformName != null && Object.hasOwnProperty.call(message, "platformName"))
             writer.uint32(/* id 5, wireType 2 =*/42).string(message.platformName);
-        if (message.platformVersion != null && message.hasOwnProperty("platformVersion"))
+        if (message.platformVersion != null && Object.hasOwnProperty.call(message, "platformVersion"))
             writer.uint32(/* id 6, wireType 2 =*/50).string(message.platformVersion);
-        if (message.clientSource != null && message.hasOwnProperty("clientSource"))
+        if (message.clientSource != null && Object.hasOwnProperty.call(message, "clientSource"))
             writer.uint32(/* id 7, wireType 2 =*/58).string(message.clientSource);
-        if (message.chimeSdkVersion != null && message.hasOwnProperty("chimeSdkVersion"))
+        if (message.chimeSdkVersion != null && Object.hasOwnProperty.call(message, "chimeSdkVersion"))
             writer.uint32(/* id 8, wireType 2 =*/66).string(message.chimeSdkVersion);
         return writer;
     };
@@ -1629,17 +1629,17 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
+        if (message.protocolVersion != null && Object.hasOwnProperty.call(message, "protocolVersion"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.protocolVersion);
-        if (message.maxNumOfVideos != null && message.hasOwnProperty("maxNumOfVideos"))
+        if (message.maxNumOfVideos != null && Object.hasOwnProperty.call(message, "maxNumOfVideos"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.maxNumOfVideos);
-        if (message.flags != null && message.hasOwnProperty("flags"))
+        if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.flags);
-        if (message.clientDetails != null && message.hasOwnProperty("clientDetails"))
+        if (message.clientDetails != null && Object.hasOwnProperty.call(message, "clientDetails"))
             $root.SdkClientDetails.encode(message.clientDetails, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
+        if (message.audioSessionId != null && Object.hasOwnProperty.call(message, "audioSessionId"))
             writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.audioSessionId);
-        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+        if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.wantsCompressedSdp);
         return writer;
     };
@@ -1919,11 +1919,11 @@ $root.SdkJoinAckFrame = (function() {
     SdkJoinAckFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
+        if (message.turnCredentials != null && Object.hasOwnProperty.call(message, "turnCredentials"))
             $root.SdkTurnCredentials.encode(message.turnCredentials, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-        if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
+        if (message.videoSubscriptionLimit != null && Object.hasOwnProperty.call(message, "videoSubscriptionLimit"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.videoSubscriptionLimit);
-        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+        if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.wantsCompressedSdp);
         return writer;
     };
@@ -2405,7 +2405,7 @@ $root.SdkLeaveAckFrame = (function() {
 /**
  * SdkStreamServiceType enum.
  * @exports SdkStreamServiceType
- * @enum {string}
+ * @enum {number}
  * @property {number} RX=1 RX value
  * @property {number} TX=2 TX value
  * @property {number} DUPLEX=3 DUPLEX value
@@ -2421,7 +2421,7 @@ $root.SdkStreamServiceType = (function() {
 /**
  * SdkStreamMediaType enum.
  * @exports SdkStreamMediaType
- * @enum {string}
+ * @enum {number}
  * @property {number} AUDIO=1 AUDIO value
  * @property {number} VIDEO=2 VIDEO value
  */
@@ -2553,7 +2553,7 @@ $root.SdkSubscribeFrame = (function() {
     SdkSubscribeFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.duplex != null && message.hasOwnProperty("duplex"))
+        if (message.duplex != null && Object.hasOwnProperty.call(message, "duplex"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.duplex);
         if (message.sendStreams != null && message.sendStreams.length)
             for (var i = 0; i < message.sendStreams.length; ++i)
@@ -2561,15 +2561,15 @@ $root.SdkSubscribeFrame = (function() {
         if (message.receiveStreamIds != null && message.receiveStreamIds.length)
             for (var i = 0; i < message.receiveStreamIds.length; ++i)
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.receiveStreamIds[i]);
-        if (message.sdpOffer != null && message.hasOwnProperty("sdpOffer"))
+        if (message.sdpOffer != null && Object.hasOwnProperty.call(message, "sdpOffer"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.sdpOffer);
-        if (message.audioHost != null && message.hasOwnProperty("audioHost"))
+        if (message.audioHost != null && Object.hasOwnProperty.call(message, "audioHost"))
             writer.uint32(/* id 5, wireType 2 =*/42).string(message.audioHost);
-        if (message.audioCheckin != null && message.hasOwnProperty("audioCheckin"))
+        if (message.audioCheckin != null && Object.hasOwnProperty.call(message, "audioCheckin"))
             writer.uint32(/* id 6, wireType 0 =*/48).bool(message.audioCheckin);
-        if (message.audioMuted != null && message.hasOwnProperty("audioMuted"))
+        if (message.audioMuted != null && Object.hasOwnProperty.call(message, "audioMuted"))
             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.audioMuted);
-        if (message.compressedSdpOffer != null && message.hasOwnProperty("compressedSdpOffer"))
+        if (message.compressedSdpOffer != null && Object.hasOwnProperty.call(message, "compressedSdpOffer"))
             writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.compressedSdpOffer);
         return writer;
     };
@@ -2939,17 +2939,17 @@ $root.SdkSubscribeAckFrame = (function() {
     SdkSubscribeAckFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.duplex != null && message.hasOwnProperty("duplex"))
+        if (message.duplex != null && Object.hasOwnProperty.call(message, "duplex"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.duplex);
         if (message.allocations != null && message.allocations.length)
             for (var i = 0; i < message.allocations.length; ++i)
                 $root.SdkStreamAllocation.encode(message.allocations[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-        if (message.sdpAnswer != null && message.hasOwnProperty("sdpAnswer"))
+        if (message.sdpAnswer != null && Object.hasOwnProperty.call(message, "sdpAnswer"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.sdpAnswer);
         if (message.tracks != null && message.tracks.length)
             for (var i = 0; i < message.tracks.length; ++i)
                 $root.SdkTrackMapping.encode(message.tracks[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-        if (message.compressedSdpAnswer != null && message.hasOwnProperty("compressedSdpAnswer"))
+        if (message.compressedSdpAnswer != null && Object.hasOwnProperty.call(message, "compressedSdpAnswer"))
             writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.compressedSdpAnswer);
         return writer;
     };
@@ -3277,7 +3277,7 @@ $root.SdkIndexFrame = (function() {
     SdkIndexFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.atCapacity != null && message.hasOwnProperty("atCapacity"))
+        if (message.atCapacity != null && Object.hasOwnProperty.call(message, "atCapacity"))
             writer.uint32(/* id 1, wireType 0 =*/8).bool(message.atCapacity);
         if (message.sources != null && message.sources.length)
             for (var i = 0; i < message.sources.length; ++i)
@@ -3285,7 +3285,7 @@ $root.SdkIndexFrame = (function() {
         if (message.pausedAtSourceIds != null && message.pausedAtSourceIds.length)
             for (var i = 0; i < message.pausedAtSourceIds.length; ++i)
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.pausedAtSourceIds[i]);
-        if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
+        if (message.numParticipants != null && Object.hasOwnProperty.call(message, "numParticipants"))
             writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.numParticipants);
         return writer;
     };
@@ -4034,23 +4034,23 @@ $root.SdkStreamDescriptor = (function() {
     SdkStreamDescriptor.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.streamId);
-        if (message.framerate != null && message.hasOwnProperty("framerate"))
+        if (message.framerate != null && Object.hasOwnProperty.call(message, "framerate"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.framerate);
-        if (message.maxBitrateKbps != null && message.hasOwnProperty("maxBitrateKbps"))
+        if (message.maxBitrateKbps != null && Object.hasOwnProperty.call(message, "maxBitrateKbps"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.maxBitrateKbps);
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.trackLabel);
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.groupId);
-        if (message.avgBitrateBps != null && message.hasOwnProperty("avgBitrateBps"))
+        if (message.avgBitrateBps != null && Object.hasOwnProperty.call(message, "avgBitrateBps"))
             writer.uint32(/* id 7, wireType 0 =*/56).uint32(message.avgBitrateBps);
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             writer.uint32(/* id 8, wireType 2 =*/66).string(message.attendeeId);
-        if (message.mediaType != null && message.hasOwnProperty("mediaType"))
+        if (message.mediaType != null && Object.hasOwnProperty.call(message, "mediaType"))
             writer.uint32(/* id 9, wireType 0 =*/72).int32(message.mediaType);
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             writer.uint32(/* id 10, wireType 2 =*/82).string(message.externalUserId);
         return writer;
     };
@@ -4357,11 +4357,11 @@ $root.SdkStreamAllocation = (function() {
     SdkStreamAllocation.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.trackLabel);
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.streamId);
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.groupId);
         return writer;
     };
@@ -4589,11 +4589,11 @@ $root.SdkTrackMapping = (function() {
     SdkTrackMapping.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.streamId);
-        if (message.ssrc != null && message.hasOwnProperty("ssrc"))
+        if (message.ssrc != null && Object.hasOwnProperty.call(message, "ssrc"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.ssrc);
-        if (message.trackLabel != null && message.hasOwnProperty("trackLabel"))
+        if (message.trackLabel != null && Object.hasOwnProperty.call(message, "trackLabel"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.trackLabel);
         return writer;
     };
@@ -4812,9 +4812,9 @@ $root.SdkBitrate = (function() {
     SdkBitrate.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.sourceStreamId != null && message.hasOwnProperty("sourceStreamId"))
+        if (message.sourceStreamId != null && Object.hasOwnProperty.call(message, "sourceStreamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.sourceStreamId);
-        if (message.avgBitrateBps != null && message.hasOwnProperty("avgBitrateBps"))
+        if (message.avgBitrateBps != null && Object.hasOwnProperty.call(message, "avgBitrateBps"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.avgBitrateBps);
         return writer;
     };
@@ -5013,7 +5013,7 @@ $root.SdkAudioControlFrame = (function() {
     SdkAudioControlFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             writer.uint32(/* id 1, wireType 0 =*/8).bool(message.muted);
         return writer;
     };
@@ -5435,13 +5435,13 @@ $root.SdkAudioAttendeeState = (function() {
     SdkAudioAttendeeState.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
+        if (message.audioStreamId != null && Object.hasOwnProperty.call(message, "audioStreamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.audioStreamId);
-        if (message.volume != null && message.hasOwnProperty("volume"))
+        if (message.volume != null && Object.hasOwnProperty.call(message, "volume"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.volume);
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.muted);
-        if (message.signalStrength != null && message.hasOwnProperty("signalStrength"))
+        if (message.signalStrength != null && Object.hasOwnProperty.call(message, "signalStrength"))
             writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.signalStrength);
         return writer;
     };
@@ -5906,15 +5906,15 @@ $root.SdkAudioStreamIdInfo = (function() {
     SdkAudioStreamIdInfo.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
+        if (message.audioStreamId != null && Object.hasOwnProperty.call(message, "audioStreamId"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.audioStreamId);
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.attendeeId);
-        if (message.muted != null && message.hasOwnProperty("muted"))
+        if (message.muted != null && Object.hasOwnProperty.call(message, "muted"))
             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.muted);
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.externalUserId);
-        if (message.dropped != null && message.hasOwnProperty("dropped"))
+        if (message.dropped != null && Object.hasOwnProperty.call(message, "dropped"))
             writer.uint32(/* id 5, wireType 0 =*/40).bool(message.dropped);
         return writer;
     };
@@ -6093,7 +6093,7 @@ $root.SdkAudioStreamIdInfo = (function() {
 /**
  * SdkPingPongType enum.
  * @exports SdkPingPongType
- * @enum {string}
+ * @enum {number}
  * @property {number} PING=1 PING value
  * @property {number} PONG=2 PONG value
  */
@@ -6383,7 +6383,7 @@ $root.SdkAudioStatusFrame = (function() {
     SdkAudioStatusFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.audioStatus != null && message.hasOwnProperty("audioStatus"))
+        if (message.audioStatus != null && Object.hasOwnProperty.call(message, "audioStatus"))
             writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.audioStatus);
         return writer;
     };
@@ -6579,9 +6579,9 @@ $root.SdkMetric = (function() {
     SdkMetric.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
-        if (message.value != null && message.hasOwnProperty("value"))
+        if (message.value != null && Object.hasOwnProperty.call(message, "value"))
             writer.uint32(/* id 2, wireType 1 =*/17).double(message.value);
         return writer;
     };
@@ -7002,7 +7002,7 @@ $root.SdkMetric = (function() {
     /**
      * Type enum.
      * @name SdkMetric.Type
-     * @enum {string}
+     * @enum {number}
      * @property {number} VIDEO_ACTUAL_ENCODER_BITRATE=1 VIDEO_ACTUAL_ENCODER_BITRATE value
      * @property {number} VIDEO_AVAILABLE_SEND_BANDWIDTH=2 VIDEO_AVAILABLE_SEND_BANDWIDTH value
      * @property {number} VIDEO_RETRANSMIT_BITRATE=3 VIDEO_RETRANSMIT_BITRATE value
@@ -7197,9 +7197,9 @@ $root.SdkStreamMetricFrame = (function() {
     SdkStreamMetricFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.streamId);
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.groupId);
         if (message.metrics != null && message.metrics.length)
             for (var i = 0; i < message.metrics.length; ++i)
@@ -7937,17 +7937,17 @@ $root.SdkDataMessagePayload = (function() {
     SdkDataMessagePayload.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.topic != null && message.hasOwnProperty("topic"))
+        if (message.topic != null && Object.hasOwnProperty.call(message, "topic"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.topic);
-        if (message.data != null && message.hasOwnProperty("data"))
+        if (message.data != null && Object.hasOwnProperty.call(message, "data"))
             writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.data);
-        if (message.lifetimeMs != null && message.hasOwnProperty("lifetimeMs"))
+        if (message.lifetimeMs != null && Object.hasOwnProperty.call(message, "lifetimeMs"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.lifetimeMs);
-        if (message.senderAttendeeId != null && message.hasOwnProperty("senderAttendeeId"))
+        if (message.senderAttendeeId != null && Object.hasOwnProperty.call(message, "senderAttendeeId"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.senderAttendeeId);
-        if (message.ingestTimeNs != null && message.hasOwnProperty("ingestTimeNs"))
+        if (message.ingestTimeNs != null && Object.hasOwnProperty.call(message, "ingestTimeNs"))
             writer.uint32(/* id 5, wireType 0 =*/40).int64(message.ingestTimeNs);
-        if (message.senderExternalUserId != null && message.hasOwnProperty("senderExternalUserId"))
+        if (message.senderExternalUserId != null && Object.hasOwnProperty.call(message, "senderExternalUserId"))
             writer.uint32(/* id 6, wireType 2 =*/50).string(message.senderExternalUserId);
         return writer;
     };
@@ -8241,11 +8241,11 @@ $root.SdkTurnCredentials = (function() {
     SdkTurnCredentials.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.username != null && message.hasOwnProperty("username"))
+        if (message.username != null && Object.hasOwnProperty.call(message, "username"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.username);
-        if (message.password != null && message.hasOwnProperty("password"))
+        if (message.password != null && Object.hasOwnProperty.call(message, "password"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.password);
-        if (message.ttl != null && message.hasOwnProperty("ttl"))
+        if (message.ttl != null && Object.hasOwnProperty.call(message, "ttl"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.ttl);
         if (message.uris != null && message.uris.length)
             for (var i = 0; i < message.uris.length; ++i)
@@ -8556,23 +8556,23 @@ $root.SdkTranscriptItem = (function() {
     SdkTranscriptItem.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.content != null && message.hasOwnProperty("content"))
+        if (message.content != null && Object.hasOwnProperty.call(message, "content"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.content);
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
             writer.uint32(/* id 2, wireType 0 =*/16).int64(message.endTime);
-        if (message.speakerAttendeeId != null && message.hasOwnProperty("speakerAttendeeId"))
+        if (message.speakerAttendeeId != null && Object.hasOwnProperty.call(message, "speakerAttendeeId"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.speakerAttendeeId);
-        if (message.speakerExternalUserId != null && message.hasOwnProperty("speakerExternalUserId"))
+        if (message.speakerExternalUserId != null && Object.hasOwnProperty.call(message, "speakerExternalUserId"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.speakerExternalUserId);
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
             writer.uint32(/* id 5, wireType 0 =*/40).int64(message.startTime);
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             writer.uint32(/* id 6, wireType 0 =*/48).int32(message.type);
-        if (message.vocabularyFilterMatch != null && message.hasOwnProperty("vocabularyFilterMatch"))
+        if (message.vocabularyFilterMatch != null && Object.hasOwnProperty.call(message, "vocabularyFilterMatch"))
             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.vocabularyFilterMatch);
-        if (message.confidence != null && message.hasOwnProperty("confidence"))
+        if (message.confidence != null && Object.hasOwnProperty.call(message, "confidence"))
             writer.uint32(/* id 8, wireType 1 =*/65).double(message.confidence);
-        if (message.stable != null && message.hasOwnProperty("stable"))
+        if (message.stable != null && Object.hasOwnProperty.call(message, "stable"))
             writer.uint32(/* id 9, wireType 0 =*/72).bool(message.stable);
         return writer;
     };
@@ -8833,7 +8833,7 @@ $root.SdkTranscriptItem = (function() {
     /**
      * Type enum.
      * @name SdkTranscriptItem.Type
-     * @enum {string}
+     * @enum {number}
      * @property {number} PRONUNCIATION=1 PRONUNCIATION value
      * @property {number} PUNCTUATION=2 PUNCTUATION value
      */
@@ -8948,17 +8948,17 @@ $root.SdkTranscriptEntity = (function() {
     SdkTranscriptEntity.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.category != null && message.hasOwnProperty("category"))
+        if (message.category != null && Object.hasOwnProperty.call(message, "category"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.category);
-        if (message.confidence != null && message.hasOwnProperty("confidence"))
+        if (message.confidence != null && Object.hasOwnProperty.call(message, "confidence"))
             writer.uint32(/* id 2, wireType 1 =*/17).double(message.confidence);
-        if (message.content != null && message.hasOwnProperty("content"))
+        if (message.content != null && Object.hasOwnProperty.call(message, "content"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.content);
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
             writer.uint32(/* id 4, wireType 0 =*/32).int64(message.endTime);
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
             writer.uint32(/* id 5, wireType 0 =*/40).int64(message.startTime);
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             writer.uint32(/* id 6, wireType 2 =*/50).string(message.type);
         return writer;
     };
@@ -9252,7 +9252,7 @@ $root.SdkTranscriptAlternative = (function() {
         if (message.items != null && message.items.length)
             for (var i = 0; i < message.items.length; ++i)
                 $root.SdkTranscriptItem.encode(message.items[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-        if (message.transcript != null && message.hasOwnProperty("transcript"))
+        if (message.transcript != null && Object.hasOwnProperty.call(message, "transcript"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.transcript);
         if (message.entities != null && message.entities.length)
             for (var i = 0; i < message.entities.length; ++i)
@@ -9513,9 +9513,9 @@ $root.SdkTranscriptLanguageWithScore = (function() {
     SdkTranscriptLanguageWithScore.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+        if (message.languageCode != null && Object.hasOwnProperty.call(message, "languageCode"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.languageCode);
-        if (message.score != null && message.hasOwnProperty("score"))
+        if (message.score != null && Object.hasOwnProperty.call(message, "score"))
             writer.uint32(/* id 2, wireType 1 =*/17).double(message.score);
         return writer;
     };
@@ -9782,17 +9782,17 @@ $root.SdkTranscriptResult = (function() {
         if (message.alternatives != null && message.alternatives.length)
             for (var i = 0; i < message.alternatives.length; ++i)
                 $root.SdkTranscriptAlternative.encode(message.alternatives[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-        if (message.channelId != null && message.hasOwnProperty("channelId"))
+        if (message.channelId != null && Object.hasOwnProperty.call(message, "channelId"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.channelId);
-        if (message.endTime != null && message.hasOwnProperty("endTime"))
+        if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
             writer.uint32(/* id 3, wireType 0 =*/24).int64(message.endTime);
-        if (message.isPartial != null && message.hasOwnProperty("isPartial"))
+        if (message.isPartial != null && Object.hasOwnProperty.call(message, "isPartial"))
             writer.uint32(/* id 4, wireType 0 =*/32).bool(message.isPartial);
-        if (message.resultId != null && message.hasOwnProperty("resultId"))
+        if (message.resultId != null && Object.hasOwnProperty.call(message, "resultId"))
             writer.uint32(/* id 5, wireType 2 =*/42).string(message.resultId);
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
+        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
             writer.uint32(/* id 6, wireType 0 =*/48).int64(message.startTime);
-        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+        if (message.languageCode != null && Object.hasOwnProperty.call(message, "languageCode"))
             writer.uint32(/* id 7, wireType 2 =*/58).string(message.languageCode);
         if (message.languageIdentification != null && message.languageIdentification.length)
             for (var i = 0; i < message.languageIdentification.length; ++i)
@@ -10372,15 +10372,15 @@ $root.SdkTranscriptionStatus = (function() {
     SdkTranscriptionStatus.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.type != null && message.hasOwnProperty("type"))
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
-        if (message.eventTime != null && message.hasOwnProperty("eventTime"))
+        if (message.eventTime != null && Object.hasOwnProperty.call(message, "eventTime"))
             writer.uint32(/* id 2, wireType 0 =*/16).int64(message.eventTime);
-        if (message.transcriptionRegion != null && message.hasOwnProperty("transcriptionRegion"))
+        if (message.transcriptionRegion != null && Object.hasOwnProperty.call(message, "transcriptionRegion"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.transcriptionRegion);
-        if (message.transcriptionConfiguration != null && message.hasOwnProperty("transcriptionConfiguration"))
+        if (message.transcriptionConfiguration != null && Object.hasOwnProperty.call(message, "transcriptionConfiguration"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.transcriptionConfiguration);
-        if (message.message != null && message.hasOwnProperty("message"))
+        if (message.message != null && Object.hasOwnProperty.call(message, "message"))
             writer.uint32(/* id 5, wireType 2 =*/42).string(message.message);
         return writer;
     };
@@ -10598,7 +10598,7 @@ $root.SdkTranscriptionStatus = (function() {
     /**
      * Type enum.
      * @name SdkTranscriptionStatus.Type
-     * @enum {string}
+     * @enum {number}
      * @property {number} STARTED=1 STARTED value
      * @property {number} INTERRUPTED=2 INTERRUPTED value
      * @property {number} RESUMED=3 RESUMED value
@@ -10697,9 +10697,9 @@ $root.SdkTranscriptEvent = (function() {
     SdkTranscriptEvent.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.status != null && message.hasOwnProperty("status"))
+        if (message.status != null && Object.hasOwnProperty.call(message, "status"))
             $root.SdkTranscriptionStatus.encode(message.status, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-        if (message.transcript != null && message.hasOwnProperty("transcript"))
+        if (message.transcript != null && Object.hasOwnProperty.call(message, "transcript"))
             $root.SdkTranscript.encode(message.transcript, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
         return writer;
     };
@@ -11393,9 +11393,9 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
         if (!writer)
             writer = $Writer.create();
         writer.uint32(/* id 1, wireType 2 =*/10).string(message.mid);
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.attendeeId);
-        if (message.streamId != null && message.hasOwnProperty("streamId"))
+        if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.streamId);
         return writer;
     };
@@ -11606,7 +11606,7 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
     SdkPrimaryMeetingJoinFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.credentials != null && message.hasOwnProperty("credentials"))
+        if (message.credentials != null && Object.hasOwnProperty.call(message, "credentials"))
             $root.SdkMeetingSessionCredentials.encode(message.credentials, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
         return writer;
     };
@@ -12136,11 +12136,11 @@ $root.SdkMeetingSessionCredentials = (function() {
     SdkMeetingSessionCredentials.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+        if (message.attendeeId != null && Object.hasOwnProperty.call(message, "attendeeId"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.attendeeId);
-        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+        if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.externalUserId);
-        if (message.joinToken != null && message.hasOwnProperty("joinToken"))
+        if (message.joinToken != null && Object.hasOwnProperty.call(message, "joinToken"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.joinToken);
         return writer;
     };
