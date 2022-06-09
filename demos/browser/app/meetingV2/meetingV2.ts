@@ -91,6 +91,7 @@ import {
 } from './video/filters/SegmentationUtil';
 import SyntheticVideoDeviceFactory from './video/SyntheticVideoDeviceFactory';
 import { getPOSTLogger } from './util/MeetingLogger';
+import Roster from './component/Roster';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -272,7 +273,7 @@ export class DemoMeetingApp
   videoPreferenceManager: VideoPreferenceManager | undefined = undefined;
 
   // eslint-disable-next-line
-  roster: any = {};
+  roster: Roster = new Roster();
 
   cameraDeviceIds: string[] = [];
   microphoneDeviceIds: string[] = [];
@@ -1899,7 +1900,7 @@ export class DemoMeetingApp
 
     await this.chosenVideoTransformDevice?.stop();
     this.chosenVideoTransformDevice = undefined;
-    this.roster = {};
+    this.roster.clear();
   }
 
   setupMuteHandler(): void {
@@ -1917,44 +1918,6 @@ export class DemoMeetingApp
     };
     this.audioVideo.realtimeSubscribeToSetCanUnmuteLocalAudio(handler);
     handler(this.audioVideo.realtimeCanUnmuteLocalAudio());
-  }
-
-  updateRoster(): void {
-    const roster = document.getElementById('roster');
-    const newRosterCount = Object.keys(this.roster).length;
-    while (roster.getElementsByTagName('li').length < newRosterCount) {
-      const li = document.createElement('li');
-      li.className = 'list-group-item d-flex justify-content-between align-items-center';
-      li.appendChild(document.createElement('span'));
-      li.appendChild(document.createElement('span'));
-      roster.appendChild(li);
-    }
-    while (roster.getElementsByTagName('li').length > newRosterCount) {
-      roster.removeChild(roster.getElementsByTagName('li')[0]);
-    }
-    const entries = roster.getElementsByTagName('li');
-    let i = 0;
-    for (const attendeeId in this.roster) {
-      const spanName = entries[i].getElementsByTagName('span')[0];
-      const spanStatus = entries[i].getElementsByTagName('span')[1];
-      let statusClass = 'badge badge-pill ';
-      let statusText = '\xa0'; // &nbsp
-      if (this.roster[attendeeId].signalStrength < 1) {
-        statusClass += 'badge-warning';
-      } else if (this.roster[attendeeId].signalStrength === 0) {
-        statusClass += 'badge-danger';
-      } else if (this.roster[attendeeId].muted) {
-        statusText = 'MUTED';
-        statusClass += 'badge-secondary';
-      } else if (this.roster[attendeeId].active) {
-        statusText = 'SPEAKING';
-        statusClass += 'badge-success';
-      }
-      this.updateProperty(spanName, 'innerText', this.roster[attendeeId].name);
-      this.updateProperty(spanStatus, 'innerText', statusText);
-      this.updateProperty(spanStatus, 'className', statusClass);
-      i++;
-    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1979,8 +1942,7 @@ export class DemoMeetingApp
         new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId
         || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!present) {
-        delete this.roster[attendeeId];
-        this.updateRoster();
+        this.roster.removeAttendee(attendeeId);        
         this.log(`${attendeeId} dropped = ${dropped} (${externalUserId})`);
         return;
       }
@@ -1993,12 +1955,9 @@ export class DemoMeetingApp
       ) {
         this.contentShareStop();
       }
-      if (!this.roster[attendeeId] || !this.roster[attendeeId].name) {
-        this.roster[attendeeId] = {
-          ...this.roster[attendeeId],
-          ... { name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '') }
-        };
-      }
+      const attendeeName =  externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
+      this.roster.addAttendee(attendeeId, attendeeName);
+
       this.audioVideo.realtimeSubscribeToVolumeIndicator(
         attendeeId,
         async (
@@ -2007,19 +1966,12 @@ export class DemoMeetingApp
           muted: boolean | null,
           signalStrength: number | null
         ) => {
-          if (!this.roster[attendeeId]) {
-            return;
-          }
-          if (volume !== null) {
-            this.roster[attendeeId].volume = Math.round(volume * 100);
-          }
           if (muted !== null) {
-            this.roster[attendeeId].muted = muted;
+            this.roster.setMuteStatus(attendeeId, muted);
           }
           if (signalStrength !== null) {
-            this.roster[attendeeId].signalStrength = Math.round(signalStrength * 100);
+            this.roster.setSignalStrength(attendeeId, Math.round(signalStrength * 100));
           }
-          this.updateRoster();
         }
       );
     };
@@ -2030,8 +1982,8 @@ export class DemoMeetingApp
     // Hang on to this so we can unsubscribe later.
     this.activeSpeakerHandler = (attendeeIds: string[]): void => {
       // First reset all roster active speaker information
-      for (const attendeeId in this.roster) {
-        this.roster[attendeeId].active = false;
+      for (const id of this.roster.getAllAttendeeIds()) {
+        this.roster.setAttendeeSpeakingStatus(id, false);        
       }
 
       // Then re-update roster and tile collection with latest information
@@ -2039,22 +1991,15 @@ export class DemoMeetingApp
       // This will leave featured tiles up since this detector doesn't seem to clear
       // the list.
       for (const attendeeId of attendeeIds) {
-        if (this.roster[attendeeId]) {
-          this.roster[attendeeId].active = true;
+        if (this.roster.hasAttendee(attendeeId)) {
+          this.roster.setAttendeeSpeakingStatus(attendeeId, true);
           this.videoTileCollection.activeSpeakerAttendeeId = attendeeId
           break; // Only show the most active speaker
         }
       }
     };
 
-    const scoreHandler = (scores: { [attendeeId: string]: number }) => {
-      for (const attendeeId in scores) {
-        if (this.roster[attendeeId]) {
-          this.roster[attendeeId].score = scores[attendeeId];
-        }
-      }
-      this.updateRoster();
-    };
+    const scoreHandler = (scores: { [attendeeId: string]: number }) => {};
 
     this.audioVideo.subscribeToActiveSpeakerDetector(
       new DefaultActiveSpeakerPolicy(),
