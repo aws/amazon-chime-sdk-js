@@ -24,7 +24,7 @@ const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint(endpoint);
 
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
-if(chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true'){
+if (chimeSDKMeetingsEndpoint !== 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true') {
   chimeSDKMeetings.endpoint = new AWS.Endpoint(chimeSDKMeetingsEndpoint);
 }
 
@@ -54,8 +54,20 @@ const {
 // === Handlers ===
 
 exports.index = async (event, context, callback) => {
-  // Return the contents of the index page
-  return response(200, 'text/html', fs.readFileSync('./index.html', { encoding: 'utf8' }));
+  // Enable SharedArrayBuffer. See below for more details.
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
+  const headers = {
+    'Cross-Origin-Embedder-Policy': 'require-corp',
+    'Cross-Origin-Opener-Policy': 'same-origin',
+  };
+  // Return the contents of the index page.
+  return response(
+    200,
+    'text/html',
+    fs.readFileSync('./index.html', { encoding: 'utf8' }),
+    false,
+    headers,
+  );
 };
 
 exports.join = async (event, context) => {
@@ -545,10 +557,10 @@ function createLogStreamName(meetingId, attendeeId) {
   return `ChimeSDKMeeting_${meetingId}_${attendeeId}`;
 }
 
-function response(statusCode, contentType, body, isBase64Encoded = false) {
+function response(statusCode, contentType, body, isBase64Encoded = false, headers = {}) {
   return {
     statusCode: statusCode,
-    headers: { 'Content-Type': contentType },
+    headers: { ...headers, 'Content-Type': contentType },
     body: body,
     isBase64Encoded,
   };

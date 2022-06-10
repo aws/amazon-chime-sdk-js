@@ -98,7 +98,7 @@ export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProces
     this.logger.info(`background blur amount set to ${this.blurAmount}`);
   }
 
-  handleInitialize(msg: { payload: number }): void {
+  handleInitialize(msg: { payload: number, supportsSAB: boolean }): void {
     this.logger.info(`received initialize message: ${this.stringify(msg)}`);
     if (!msg.payload) {
       this.logger.error('failed to initialize module');
@@ -107,13 +107,16 @@ export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProces
     }
 
     const model = this.spec.model;
+    const inputChannels = 4;
+    this.initializeSharedMaskState(msg.supportsSAB, model, inputChannels);
+
     this.worker.postMessage({
       msg: 'loadModel',
       payload: {
         modelUrl: model.path,
         inputHeight: model.input.height,
         inputWidth: model.input.width,
-        inputChannels: 4,
+        inputChannels,
         modelRangeMin: model.input.range[0],
         modelRangeMax: model.input.range[1],
         blurPixels: this.blurAmount,
@@ -125,6 +128,11 @@ export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProces
   handlePredict(msg: { payload: { blurOutput: ImageData; output: ImageData } }): void {
     this.blurredImage = msg.payload.blurOutput;
     super.handlePredict(msg);
+  }
+
+  handlePredictSAB(msg: { payload: { blurOutput: ImageData } }): void {
+    this.blurredImage = msg.payload.blurOutput;
+    super.handlePredictSAB(msg);
   }
 
   async destroy(): Promise<void> {

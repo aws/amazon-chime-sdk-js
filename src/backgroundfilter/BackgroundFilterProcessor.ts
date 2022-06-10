@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadWorker } from '../../libs/voicefocus/loader';
+import { supportsSharedArrayBuffer } from "../../libs/voicefocus/support";
 import BackgroundFilterOptions from '../backgroundfilter/BackgroundFilterOptions';
 import BackgroundFilterVideoFrameProcessorObserver from '../backgroundfilter/BackgroundFilterVideoFrameProcessorObserver';
 import Logger from '../logger/Logger';
@@ -10,6 +11,8 @@ import VideoFrameBuffer from '../videoframeprocessor/VideoFrameBuffer';
 import BackgroundFilterFrameCounter from './BackgroundFilterFrameCounter';
 import BackgroundFilterSpec from './BackgroundFilterSpec';
 import BackgroundFilterVideoFrameProcessorDelegate from './BackgroundFilterVideoFrameProcessorDelegate';
+import ModelSpec from "../modelspec/ModelSpec";
+
 /** @internal */
 class DeferredObservable<T> {
   /** Access the last-resolved value of next()
@@ -59,6 +62,21 @@ export default abstract class BackgroundFilterProcessor {
   protected sourceHeight = 0;
   protected frameNumber = 0;
   protected videoFramesPerFilterUpdate = 1;
+
+  protected supportsSAB = false;
+  protected sharedMaskState: {
+    sharedArrayBuffer: SharedArrayBuffer | null,
+    sharedArrayBufferView: Uint8ClampedArray | null,
+    imageArrayBuffer: ArrayBuffer | null,
+    imageArray: Uint8ClampedArray | null,
+    imageData: ImageData | null,
+  } = {
+    sharedArrayBuffer: null,
+    sharedArrayBufferView: null,
+    imageArrayBuffer: null,
+    imageArray: null,
+    imageData: null,
+  };
 
   protected spec: BackgroundFilterSpec;
   protected cpuMonitor: BackgroundFilterMonitor;
@@ -178,24 +196,47 @@ export default abstract class BackgroundFilterProcessor {
     return JSON.stringify(value, null, 2);
   }
 
+  protected initializeSharedMaskState(workerSupportsSAB: boolean, model: ModelSpec, inputChannels: number) {
+    this.supportsSAB = workerSupportsSAB && supportsSharedArrayBuffer(globalThis, window, this.logger);
+    this.logger.info(`Supports SAB: ${this.supportsSAB}`);
+    if (this.supportsSAB) {
+      const sharedArrayBuffer = new SharedArrayBuffer(model.input.width * model.input.height * inputChannels);
+      const sharedArrayBufferView = new Uint8ClampedArray(sharedArrayBuffer);
+      const imageArrayBuffer = new ArrayBuffer(sharedArrayBuffer.byteLength);
+      const imageArray = new Uint8ClampedArray(imageArrayBuffer);
+      const imageData = new ImageData(imageArray, model.input.width, model.input.height);
+      this.sharedMaskState = {
+        sharedArrayBuffer,
+        sharedArrayBufferView,
+        imageArrayBuffer,
+        imageArray,
+        imageData,
+      };
+    }
+  }
+
   /**
    * Sends a message to worker and resolves promise in response to worker's initialize event
    */
-  handleInitialize(msg: { payload: number }): void {
+  handleInitialize(msg: { payload: number, supportsSAB: boolean }): void {
     this.logger.info(`received initialize message: ${this.stringify(msg)}`);
     if (!msg.payload) {
       this.logger.error('failed to initialize module');
       this.initWorkerPromise.reject(new Error('failed to initialize the module'));
       return;
     }
+
     const model = this.spec.model;
+    const inputChannels = 4;
+    this.initializeSharedMaskState(msg.supportsSAB, model, inputChannels);
+
     this.worker.postMessage({
       msg: 'loadModel',
       payload: {
         modelUrl: model.path,
         inputHeight: model.input.height,
         inputWidth: model.input.width,
-        inputChannels: 4,
+        inputChannels,
         modelRangeMin: model.input.range[0],
         modelRangeMax: model.input.range[1],
         blurPixels: 0,
@@ -220,10 +261,20 @@ export default abstract class BackgroundFilterProcessor {
     this.loadModelPromise.resolve({});
   }
 
-  /** Updates the payload output value in response to worker's predict event
+  /** Updates the payload output value in response to worker's predict event with postMessage.
    */
   handlePredict(msg: { payload: { output: ImageData } }): void {
     this.mask$.next(msg.payload.output as ImageData);
+  }
+
+  /**
+   * Updates the payload output value in response to worker's predictSAB event with SharedArrayBuffer.
+   * This is simply a notification that the worker has finished processing and the data in the buffer
+   * is ok to use.
+  */
+  handlePredictSAB(msg: { payload: {} }): void {
+    this.sharedMaskState.imageArray.set(this.sharedMaskState.sharedArrayBufferView, 0);
+    this.mask$.next(this.sharedMaskState.imageData);
   }
 
   /**
@@ -244,6 +295,9 @@ export default abstract class BackgroundFilterProcessor {
         break;
       case 'predict':
         this.handlePredict(msg);
+        break;
+      case 'predictSAB':
+        this.handlePredictSAB(msg);
         break;
       default:
         this.logger.info(`unexpected event msg: ${this.stringify(msg)}`);
@@ -363,12 +417,20 @@ export default abstract class BackgroundFilterProcessor {
         this.scaledCanvas.height
       );
 
-      // update the filter mask based on the filter update rate
+      // Update the filter mask based on the filter update rate.
       if (this.frameNumber % this.videoFramesPerFilterUpdate === 0) {
-        // process frame...
-        const maskPromise = this.mask$.whenNext();
-        this.worker.postMessage({ msg: 'predict', payload: imageData }, [imageData.data.buffer]);
-        mask = await maskPromise;
+        // Process frame. Prefer using SharedArrayBuffer approach if the browser
+        // supports it since it avoids memory allocations.
+        if (this.supportsSAB) {
+          const maskPromise = this.mask$.whenNext();
+          this.sharedMaskState.sharedArrayBufferView.set(imageData.data);
+          this.worker.postMessage({ msg: 'predictSAB', payload: this.sharedMaskState.sharedArrayBuffer });
+          mask = await maskPromise;
+        } else {
+          const maskPromise = this.mask$.whenNext();
+          this.worker.postMessage({ msg: 'predict', payload: imageData }, [imageData.data.buffer]);
+          mask = await maskPromise;
+        }
       }
       // It's possible that while waiting for the predict to complete the processor was destroyed.
       // adding a destroyed check here to ensure the implementation of drawImageWithMask does not throw
