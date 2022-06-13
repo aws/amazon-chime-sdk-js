@@ -15,6 +15,7 @@ import {
   MessagingSessionObserver,
   MessagingSession,
   MessagingSessionConfiguration,
+  PrefetchOn,
   Versioning,
 } from 'amazon-chime-sdk-js';
 
@@ -33,6 +34,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
   configuration: MessagingSessionConfiguration;
   session: MessagingSession;
   sessionId: string;
+  prefetchOn = false;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,7 +59,11 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
+        this.prefetchOn = (document.getElementById('prefetchOn') as HTMLInputElement).checked;
         this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
+        if (this.prefetchOn) {
+          this.configuration.prefetchOn = PrefetchOn.Connect;
+        }
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
         this.session.start();

@@ -311,9 +311,9 @@ Content-<span class="hljs-keyword">type</span>: application/json
 <span class="hljs-keyword">const</span> vfDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
 </code></pre>
 					<p>If the transformer returned that Amazon Voice Focus/Echo Reduction is not supported, or it failed to initialize, this method returns <code>undefined</code>. In that case, fall back to the user&#39;s chosen audio input and indicate to the user that noise suppression is not enabled.</p>
-					<p>The returned <code>VoiceFocusTransformDevice</code> can be supplied to a <code>chooseAudioInputDevice</code> call in the usual way:</p>
+					<p>The returned <code>VoiceFocusTransformDevice</code> can be supplied to a <code>startAudioInput</code> call in the usual way:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> deviceToUse = vfDevice || chosenAudioInput;
-<span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(deviceToUse);
+<span class="hljs-keyword">await</span> deviceController.startAudioInput(deviceToUse);
 <span class="hljs-keyword">if</span> (vfDevice) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus enabled&#x27;</span>);
 }
@@ -394,11 +394,11 @@ spec = { ...
 					</a>
 					<p>In some cases you might wish to temporarily or permanently disable  noise suppression and echo reduction during a call: perhaps to reduce CPU utilization or to allow background noise to be heard.</p>
 					<p>You can do so by simply selecting the inner device without Amazon Voice Focus, which will fall back to the browser’s own simple noise suppressor:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(chosenAudioInput);
+					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.startAudioInput(chosenAudioInput);
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus disabled&#x27;</span>);
 </code></pre>
 					<p>You can re-enable Amazon Voice Focus and Echo Reduction again by reselecting the transform device:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(vfDevice);
+					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.startAudioInput(vfDevice);
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus re-enabled&#x27;</span>);
 </code></pre>
 					<p>If a user switches microphone inputs, <em>e.g.</em>, after plugging in a headset, you can reuse the setup work involved in building the transform device by choosing a new inner device:</p>
@@ -406,7 +406,7 @@ spec = { ...
 …
 <span class="hljs-comment">// New device selected. Swap it out.</span>
 <span class="hljs-built_in">this</span>.voiceFocusDevice = <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.voiceFocusDevice.chooseNewInnerDevice(newDevice);
-<span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(<span class="hljs-built_in">this</span>.voiceFocusDevice);
+<span class="hljs-keyword">await</span> deviceController.startAudioInput(<span class="hljs-built_in">this</span>.voiceFocusDevice);
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus switched to new device&#x27;</span>, newDevice);
 </code></pre>
 					<a href="#disabling-echo-reduction-from-your-application" id="disabling-echo-reduction-from-your-application" style="color: inherit; text-decoration: none;">

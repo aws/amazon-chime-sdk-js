@@ -19,7 +19,7 @@ end
 
   # workaround for https://github.com/protobufjs/protobuf.js/issues/1217
   verbose "#{node} node_modules/.bin/pbjs -t static-module -w commonjs -o src/#{dir}/#{protocol}.js ./protocol/#{protocol}.proto"
-  File.write('node_modules/protobufjs/package.json', File.read('node_modules/protobufjs/package.json').gsub('"jsdoc": "^3.5.5",', '"jsdoc": "~3.5.5",'))
+  File.write('node_modules/protobufjs/package.json', File.read('node_modules/protobufjs/package.json').gsub('"jsdoc": "^3.6.3",', '"jsdoc": "~3.5.5",'))
 
   verbose "#{node} node_modules/.bin/pbjs -t static-module -w commonjs -o src/#{dir}/#{protocol}.js ./protocol/#{protocol}.proto"
   verbose "#{node} node_modules/.bin/pbts -o src/#{dir}/#{protocol}.d.ts src/#{dir}/#{protocol}.js"

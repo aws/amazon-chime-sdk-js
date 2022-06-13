@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2022-06-02
+
+### Added
+- Add a workaround for https://bugs.webkit.org/show_bug.cgi?id=241152 to play a paused video element in Safari.
+
+### Removed
+
+### Changed
+
+- Bump `protobufjs` from 6.8.8 to 6.11.3.
+- Update `DOMBlobMock` to accommodate `@types/node` changes.
+
+### Fixed
+
+- Fixed an issue for mute local when there is no audio input.
+- Fix protobuf generation script for upgrade.
+
+## [3.4.0] - 2022-05-24
+
+### Added
+
+- Add the reserved status code AudioDisconnectAudio.
+- Add support in `MessagingSession` to allow websocket connection for messaging service to enable Prefetch feature.
+
+### Removed
+
+### Changed
+
+- Add reset function to uplink policy interface, and ignore indexes in nscale policy if the number of published videos did not change.
+
+### Fixed
+
+- Rate limited CPU warnings to at most once a minute in Voice Focus library, so that builder logs are not flooded.
+
 ## [3.3.0] - 2022-05-12
 
 ### Added
@@ -15,11 +49,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Assume SDP section is sendrecv if no direction is present. This should have no impact on media negotiation.
+
 ### Fixed
+
+- Replace `startVideoInput(null)` and `startAudioInput(null)` with`stopVideoInput` and `stopAudioInput` for video, audio test in meeting readiness checker to stop video, audio input.
+- Replace the deprecated API `getRTCPeerConnectionStats` with `metricsDidReceive` in meeting readiness checker.
+- Prevent `realtimeUnsubscribeFromVolumeIndicator` from causing a fatal error when there are no subscriptions for the `attendeeId`.
+- Subscribe to `audioOutputDidChange` in audio mix controller to fix the issue where the audio output is not updated before meeting start.
 
 ## [3.2.0] - 2022-04-27
 
 ### Added
+
 - Add browser support information to content share guide.
 
 - Readd layers allocation negotiation in Chromium based browsers to avoid resubscribing to preemptively turn off simulcast streams or to switch layers. Avoid duplicate RTP header extension and changing extension id.
@@ -31,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean up the HTML video element bounded to `VideoTileState` using `unbindVideoElement` API to fix Safari memory leak. If you do not intend to clean the video element, call `unbindVideoElement` API with `cleanUpVideoElement` set to `false`. Check [PR#2217](https://github.com/aws/amazon-chime-sdk-js/pull/2217) for detailed information.
 
 ### Fixed
+
 - Fix issue where video resolution and framerate changes when toggle video transform.
 
 ## [3.1.0] - 2022-04-07
@@ -50,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `getMediaType` method to check the property `kind` instead of `mediaType` of a `RawMetricReport`.
 
 ### Fixed
+
 - Fixed state not being reset if an `AudioVideoController` is reused after `stop`.
 
 - Fix a bug that `remote-inbound-rtp` `RTCStatsReport` and `remote-outbound-rtp` `RTCStatsReport` of "video" `kind` are accidentally filtered.
@@ -59,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Amazon Chime SDK for JavaScript v3 is here !! 🎉🎉🎉
 
-Amazon Chime SDK for JavaScript v3 includes major improvements for device management, WebRTC metrics, and the 
+Amazon Chime SDK for JavaScript v3 includes major improvements for device management, WebRTC metrics, and the
 messaging session.
 
 - **Device management:** Decouple audio and video device management from the meeting sessions. For example, a user can select their preferred devices on a video preview page and continue using the same devices to join the session. After joining the session, a user can instantly switch devices without interrupting the ongoing meeting session.
@@ -67,7 +111,7 @@ messaging session.
 - **Messaging session:** Add support for AWS SDK for JavaScript v3 for messaging session.
 - **Dropping support:** Deprecate Safari 12 support and Plan B in Session Description Protocol (SDP) negotiations.
 
-Below is a list of all changes in the Chime SDK for JavaScript v3. Please refer to the [Migraton guide from v2 to v3](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_3_0.html) for 
+Below is a list of all changes in the Chime SDK for JavaScript v3. Please refer to the [Migraton guide from v2 to v3](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_3_0.html) for
 more information.
 
 ### Added
@@ -75,6 +119,7 @@ more information.
 - Add `rtcStatsReport` property to `ClientMetricReport` to store raw [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport) and expose it via `metricsDidReceive` event.
 
 ### Removed
+
 - Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13.
 - Remove [legacy (non-promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax) call in `DefaultStatsCollector`. This API was previously used to obtain WebRTC metrics only for Chromium-based browsers. Now SDK obtains WebRTC metrics for all browsers via [standardized (promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax).  
 - Remove all deprecated meeting status code.  
@@ -85,8 +130,8 @@ more information.
 - Remove `StatsCollector` interface.
 - Remove `ClientMetricReport` interface.
 
-
 ### Changed
+
 - Rename `DefaultStatsCollector` to `StatsCollector`.
 - Rename `DefaultClientMetricReport` to `ClientMetricReport`.
 - Change `chooseAudioInputDevice` to explicit APIs `startAudioInput` and `stopAudioInput`. Application will need to
@@ -97,7 +142,7 @@ more information.
 - `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream.
   This allows applications to join meeting without reselecting video again.
 - Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can
-  set video max bandwidth kbps from `audioVideo.setVideoMaxBandwidthKbps`. 
+  set video max bandwidth kbps from `audioVideo.setVideoMaxBandwidthKbps`.
 - Extend the `DeviceController` interface to include `Destroyable`  
 - Rename `MeetingSessionPOSTLogger` to `POSTLogger`.
 - Update `POSTLogger` to implement the `Logger` interface.
@@ -107,8 +152,9 @@ more information.
 - Decoupled `EventController` from `AudioVideo` and `MeetingSession`.
 
 ### Fixed
+
 - Fix a bug where joining without selecting any audio device failed when Web Audio is enabled.
-- Fix a minor log info for video input ended event where we say resetting to null device when we just stop the video 
+- Fix a minor log info for video input ended event where we say resetting to null device when we just stop the video
   input.
 
 ## [3.0.0-beta.2] - 2022-03-09
@@ -130,12 +176,12 @@ more information.
 - Rename `DefaultClientMetricReport` to `ClientMetricReport`.
 - Change `chooseAudioInputDevice` to explicit APIs `startAudioInput` and `stopAudioInput`. Application will need to
   call `stopVideoInput` at the end of the call to explicitly stop active audio stream.
-- Change `chooseVideoInputDevice` to explicit APIs `startVideoInput` and `stopVideoInput`. Application will need to 
+- Change `chooseVideoInputDevice` to explicit APIs `startVideoInput` and `stopVideoInput`. Application will need to
   call `stopVideoInput` now to explicitly stop active video stream.
 - Minor name change to `chooseAudioOutputDevice` to `chooseAudioOutput`.
-- `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream. 
+- `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream.
   This allows applications to join meeting without reselecting video again.
-- Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can 
+- Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can
   set video max bandwidth kbps from `audioVideo.setVideoMaxBandwidthKbps`.
 - Rename `MeetingSessionPOSTLogger` to `POSTLogger`.
 - Update `POSTLogger` to implement the `Logger` interface.

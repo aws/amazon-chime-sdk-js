@@ -6,23 +6,39 @@ import * as sinon from 'sinon';
 
 import { RealtimeState } from '../../src';
 import DataMessage from '../../src/datamessage/DataMessage';
+import DeviceSelection from '../../src/devicecontroller/DeviceSelection';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import RealtimeAttendeePositionInFrame from '../../src/realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from '../../src/realtimecontroller/RealtimeController';
+import DOMMockBehavior from '../dommock/DOMMockBehavior';
+import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultRealtimeController', () => {
   let expect: Chai.ExpectStatic;
   let rt: RealtimeController;
+  let streamBroker: TestMediaStreamBroker;
+  let domMockBuilder: DOMMockBuilder | null = null;
   let muteSpy: sinon.SinonSpy;
   let unmuteSpy: sinon.SinonSpy;
+
+  class TestMediaStreamBroker extends NoOpMediaStreamBroker {
+    activeDevices: { [kind: string]: DeviceSelection | null } = { audio: null, video: null };
+
+    setTestAudioInput(): void {
+      const audioDevice = new DeviceSelection();
+      audioDevice.stream = new MediaStream();
+      this.activeDevices['audio'] = audioDevice;
+    }
+  }
 
   before(() => {
     expect = chai.expect;
   });
 
   beforeEach(() => {
-    const streamBroker = new NoOpMediaStreamBroker();
+    domMockBuilder = new DOMMockBuilder(new DOMMockBehavior());
+    streamBroker = new TestMediaStreamBroker();
     rt = new DefaultRealtimeController(streamBroker);
     muteSpy = sinon.spy(streamBroker, 'muteLocalAudioInputStream');
     unmuteSpy = sinon.spy(streamBroker, 'unmuteLocalAudioInputStream');
@@ -31,6 +47,7 @@ describe('DefaultRealtimeController', () => {
   afterEach(() => {
     muteSpy.restore();
     unmuteSpy.restore();
+    domMockBuilder.cleanup();
   });
 
   describe('construction', () => {
@@ -548,6 +565,16 @@ describe('DefaultRealtimeController', () => {
       expect(state.volumeIndicatorCallbacks).to.equal(expectedResult);
     });
 
+    it('will not error if unsubscribed from a non-exist attendeeId', () => {
+      const callback = (
+        _attendeeId: string,
+        _volume: number | null,
+        _muted: boolean | null,
+        _signalStrength: number | null
+      ): void => {};
+      rt.realtimeUnsubscribeFromVolumeIndicator('bar-attendee', callback);
+    });
+
     it('will tolerate an exception thrown in a volume indicator callback', () => {
       const sentAttendeeId = 'foo-attendee';
       const sentVolume = 0.5;
@@ -724,6 +751,7 @@ describe('DefaultRealtimeController', () => {
     });
 
     it('will send a volume update when muted with audio input', () => {
+      streamBroker.setTestAudioInput();
       const sentAttendeeId = 'foo-attendee';
       let callbackFired = false;
       rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
@@ -747,6 +775,7 @@ describe('DefaultRealtimeController', () => {
     });
 
     it('will send a volume update when unmuted with audio input', () => {
+      streamBroker.setTestAudioInput();
       const sentAttendeeId = 'foo-attendee';
       let callbackFired = false;
       rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
@@ -769,6 +798,45 @@ describe('DefaultRealtimeController', () => {
       );
       rt.realtimeUnmuteLocalAudio();
       expect(callbackFired).to.equal(true);
+    });
+
+    it('will not send a volume update when muted without audio input', () => {
+      const sentAttendeeId = 'foo-attendee';
+      let callbackFired = false;
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          _attendeeId: string,
+          _volume: number | null,
+          _muted: boolean | null,
+          _signalStrength: number | null
+        ) => {
+          callbackFired = true;
+        }
+      );
+      rt.realtimeMuteLocalAudio();
+      expect(callbackFired).to.equal(false);
+    });
+
+    it('will not send a volume update when unmuted without audio input', () => {
+      const sentAttendeeId = 'foo-attendee';
+      let callbackFired = false;
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
+      rt.realtimeMuteLocalAudio();
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          _attendeeId: string,
+          _volume: number | null,
+          _muted: boolean | null,
+          _signalStrength: number | null
+        ) => {
+          callbackFired = true;
+        }
+      );
+      rt.realtimeUnmuteLocalAudio();
+      expect(callbackFired).to.equal(false);
     });
 
     it('will send a signal strength change when it changes', () => {
@@ -1192,29 +1260,6 @@ describe('DefaultRealtimeController', () => {
         "Cannot read property 'indexOf' of undefined",
         "Cannot read properties of undefined (reading 'indexOf')"
       );
-      expect(fatal.calledWith(matchUn)).to.be.true;
-    });
-
-    it('handles broken volume callbacks', () => {
-      const fatal = sinon.stub();
-      rt.realtimeSubscribeToFatalError(fatal);
-
-      // Break it.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
-      state.volumeIndicatorCallbacks = undefined;
-
-      rt.realtimeSubscribeToVolumeIndicator('a', (_a, _v, _m, _s) => {});
-      expect(fatal.calledOnce).to.be.true;
-      const match = matchError(
-        "Cannot read property 'hasOwnProperty' of undefined",
-        "Cannot read properties of undefined (reading 'hasOwnProperty')"
-      );
-      expect(fatal.calledWith(match)).to.be.true;
-      fatal.reset();
-
-      rt.realtimeUnsubscribeFromVolumeIndicator('a');
-      const matchUn = matchError('Cannot convert undefined or null to object');
       expect(fatal.calledWith(matchUn)).to.be.true;
     });
 

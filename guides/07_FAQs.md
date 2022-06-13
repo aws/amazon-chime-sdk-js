@@ -387,7 +387,8 @@ Yes, Amazon Voice Focus supports the Samsung Internet browser (Chromium 83 or lo
 
 ### My clients are unable to join the meeting and I see `navigator.mediaDevices is undefined`, what could be the reason?
 
-Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the chooseVideoInputDevice API which can operate in [secure contexts inside a browser only](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security) for privacy concerns so you will need to access your browsers using HTTPS://. The hostname `localhost` and the loopback address `127.0.0.1` are exceptions.
+Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the `startAudioInput` or
+`startVideoInput` APIs which can operate in [secure contexts inside a browser only](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security) for privacy concerns so you will need to access your browsers using HTTPS://. The hostname `localhost` and the loopback address `127.0.0.1` are exceptions.
 
 ### How can I create a video tile layout for my application?
 
@@ -405,24 +406,18 @@ When the camera LED remains on, it does not necessarily mean the device is broad
 
 ```
 // Select no video device (releases any previously selected device)
-meetingSession.audioVideo.chooseVideoInputDevice(null);
-
-// Stop local video tile (stops sharing the video tile in the meeting)
-meetingSession.audioVideo.stopLocalVideoTile();
-
-// Stop a video preview that was previously started (before session starts)
-meetingSession.audioVideo.stopVideoPreviewForVideoInput(previewVideoElement);
-
-// Stop the meeting session (audio and video)
-meetingSession.audioVideo.stop();
+meetingSession.audioVideo.stopVideoInput();
 ```
 
 ### My clients are unable to successfully join audio calls from Safari, they get a `failed to get audio device for constraints null: Type error`, what could be the issue?
 
-This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the `chooseVideoInputDevice` API. In this case you will see the following entry in the log where an empty string after `chooseVideoInputDevice`:
+This error message is an indication that the browser application did not successfully acquire the media stream for 
+audio or video from the device before the meeting starts. Application has not passed in the right device Id to the 
+`startVideoInput` API. In this case you will see the following entry in the log where an empty string after 
+`startVideoInput`:
 
 ```
-[Info] 2020-06-18T17:43:55.380Z [INFO] VLR - API/DefaultDeviceController/chooseVideoInputDevice "" -> "PermissionDeniedByBrowser"
+[Info] 2020-06-18T17:43:55.380Z [INFO] VLR - API/DefaultDeviceController/startVideoInput "" -> "PermissionDeniedByBrowser"
 ```
 
 This applies for video input as well.

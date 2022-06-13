@@ -83,13 +83,12 @@
 					<ol>
 						<li>Create an array of custom <code>VideoFrameProcessor</code>s.</li>
 						<li>Create a <code>VideoTransformDevice</code> from a <code>Device</code> and the array of <code>VideoFrameProcessor</code>s.</li>
-						<li>Call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the <code>VideoTransformDevice</code>.</li>
+						<li>Call <code>meetingSession.audioVideo.startVideoInput</code> with the <code>VideoTransformDevice</code>.</li>
 					</ol>
 					<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
 						<h3>Browser compatibility</h3>
 					</a>
-					<p>The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari/Chrome/Firefox on iOS devices due to <a href="https://bugs.webkit.org/show_bug.cgi?id=181663">Webkit Bug 181663</a>.
-					WebRTC Unified Plan is also required. Unified Plan is by default enabled in <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers">MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers</a>. If Unified Plan is disabled in the meeting, the call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the <code>VideoTransformDevice</code> will throw an error.</p>
+					<p>The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari/Chrome/Firefox on iOS devices due to <a href="https://bugs.webkit.org/show_bug.cgi?id=181663">Webkit Bug 181663</a>.</p>
 					<table>
 						<thead>
 							<tr>
@@ -132,13 +131,13 @@
 					<a href="#videotransformdevice" id="videotransformdevice" style="color: inherit; text-decoration: none;">
 						<h3>VideoTransformDevice</h3>
 					</a>
-					<p><code>VideoTransformDevice</code> allows <code>VideoFrameProcessor</code>s to be applied to to a <code>Device</code> and provide a new object which can be passed into <code>meetingSession.audioVideo.chooseVideoInputDevice</code>.</p>
+					<p><code>VideoTransformDevice</code> allows <code>VideoFrameProcessor</code>s to be applied to to a <code>Device</code> and provide a new object which can be passed into <code>meetingSession.audioVideo.startVideoInput</code>.</p>
 					<p><code>DefaultVideoTransformDevice</code> is the provided implementation of <code>VideoTransformDevice</code>. It requires four parameters: (1) <code>Logger</code> (2) <code>Device</code> (3) <code>Array&lt;VideoFrameProcessor&gt;</code>.
 					The <code>DefaultVideoTransformDevice</code> uses <code>VideoFrameProcessorPipeline</code> under the hood and hides its complexity.</p>
 					<a href="#construction-and-starting-video-processing" id="construction-and-starting-video-processing" style="color: inherit; text-decoration: none;">
 						<h4>Construction and Starting Video Processing</h4>
 					</a>
-					<p>The construction of the <code>DefaultVideoTransformDevice</code> will not start the camera or start processing. The method <code>meetingSession.audioVideo.chooseVideoInputDevice</code> is needed to be called. The device controller will use the inner <code>Device</code> to acquire the source <code>MediaStream</code> and start the processing pipeline at the same frame rate.
+					<p>The construction of the <code>DefaultVideoTransformDevice</code> will not start the camera or start processing. The method <code>meetingSession.audioVideo.startVideoInput</code> is needed to be called. The device controller will use the inner <code>Device</code> to acquire the source <code>MediaStream</code> and start the processing pipeline at the same frame rate.
 						&quot;Inner device&quot; in this context refers to the original video stream coming from the selected camera.
 						The parameters to <code>chooseVideoInputQuality</code> are used as constraints on the source <code>MediaStream</code>.
 					After the video input is chosen, <code>meetingSession.audioVideo.startLocalVideoTile</code> can be called to start streaming video.</p>
@@ -146,11 +145,12 @@
 						<h4>Switching the Inner Device on VideoTransformDevice</h4>
 					</a>
 					<p>To switch the inner <code>Device</code> on <code>DefaultVideoTransformDevice</code>, call <code>DefaultVideoTransformDevice.chooseNewInnerDevice</code> with a new <code>Device</code>.
-					<code>DefaultVideoTransformDevice.chooseNewInnerDevice</code> returns a new <code>DefaultVideoTransformDevice</code> but preserves the state of <code>VideoFrameProcessor</code>s. Then call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the new transform device.</p>
+					<code>DefaultVideoTransformDevice.chooseNewInnerDevice</code> returns a new <code>DefaultVideoTransformDevice</code> but preserves the state of <code>VideoFrameProcessor</code>s. Then call <code>meetingSession.audioVideo.startVideoInput</code> with the new transform device.</p>
 					<a href="#stopping-videotransformdevice" id="stopping-videotransformdevice" style="color: inherit; text-decoration: none;">
 						<h4>Stopping VideoTransformDevice</h4>
 					</a>
-					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with a different <code>DefaultVideoTransformDevice</code> or <code>null</code> to stop using previous <code>DefaultVideoTransformDevice</code>.  The method <code>meetingSession.audioVideo.stopLocalVideoTile</code> can also be used to stop the streaming.</p>
+					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.startVideoInput</code> with a different <code>DefaultVideoTransformDevice</code> or call <code>meetingSession.audioVideo.stopVideoInput</code> to
+					stop using previous <code>DefaultVideoTransformDevice</code>.</p>
 					<p>After stopping the video processing, the inner <code>Device</code> will be released by device controller unless the inner <code>Device</code> is a <code>MediaStream</code> provided by users where it is their responsibility of users to handle the lifecycle.</p>
 					<p>After <code>DefaultVideoTransformDevice</code> is no longer used by device controller, call <code>DefaultVideoTransformDevice.stop</code> to release the <code>VideoProcessor</code>s and underlying pipeline. After <code>stop</code> is called, users must discard the <code>DefaultVideoTransformDevice</code>.<code>DefaultVideoTransformDevice.stop</code> is necessary to release the internal resources.</p>
 					<p>Users would also need to call <code>DefaultVideoTransformDevice.stop</code> and construct a new <code>DefaultVideoTransformDevice</code> when they want to change video processors or change the video input quality.</p>
@@ -166,7 +166,7 @@
 					<ol start="2">
 						<li><code>processingDidFailToStart</code></li>
 					</ol>
-					<p><code>processingDidFailToStart</code> will be called when video processing could not start due to runtime errors. In this case, developers are expected to call <code>chooseVideoInputDevice</code> again with a valid <code>VideoInputDevice</code> to continue video sending.</p>
+					<p><code>processingDidFailToStart</code> will be called when video processing could not start due to runtime errors. In this case, developers are expected to call <code>startVideoInput</code> again with a valid <code>VideoInputDevice</code> to continue video sending.</p>
 					<ol start="3">
 						<li><code>processingDidStop</code></li>
 					</ol>
@@ -291,7 +291,7 @@
   stages
 );
 
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(transformDevice);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(transformDevice);
 meetingSession.audioVideo.startLocalVideo();
 </code></pre>
 					<a href="#custom-processor-usage-during-meeting-preview" id="custom-processor-usage-during-meeting-preview" style="color: inherit; text-decoration: none;">
@@ -309,7 +309,7 @@ meetingSession.audioVideo.startLocalVideo();
   processor
 );
 
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(transformDevice);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startVideoInput(transformDevice);
 meetingSession.audioVideo.startVideoPreviewForVideoInput(videoElement);
 </code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Video%20Processor%20feedback">Give feedback on this guide</a></p>

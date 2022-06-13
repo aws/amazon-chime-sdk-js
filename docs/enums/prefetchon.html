@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ClientEvent_Ingestion | amazon-chime-sdk-js</title>
+	<title>PrefetchOn | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,79 +56,41 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="clientevent_ingestion.html">ClientEvent_Ingestion</a>
+					<a href="prefetchon.html">PrefetchOn</a>
 				</li>
 			</ul>
-			<h1>Namespace ClientEvent_Ingestion</h1>
+			<h1>Enumeration PrefetchOn</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<a href="#event-ingestion" id="event-ingestion" style="color: inherit; text-decoration: none;">
-							<h1>Event Ingestion</h1>
-						</a>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Enumeration members</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="prefetchon.html#connect" class="tsd-kind-icon">Connect</a></li>
+							</ul>
+						</section>
 					</div>
-					<p>We send the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html#meeting-events-and-attributes">Amazon Chime SDK meeting events</a> to the Amazon Chime backend to analyze meeting health trends or identify common failures. This helps to improve your meeting experience.</p>
-					<a href="#sensitive-attributes" id="sensitive-attributes" style="color: inherit; text-decoration: none;">
-						<h2>Sensitive attributes</h2>
-					</a>
-					<p>The Amazon Chime SDK for JavaScript will not send below sensitive attributes to the Amazon Chime backend.</p>
-					<table>
-						<thead>
-							<tr>
-								<th>Attribute</th>
-								<th>Description</th>
-							</tr>
-						</thead>
-						<tbody><tr>
-								<td><code>externalMeetingId</code></td>
-								<td>The Amazon Chime SDK external meeting ID.</td>
-							</tr>
-							<tr>
-								<td><code>externalUserId</code></td>
-								<td>The Amazon Chime SDK external user ID that can indicate an identity managed by your application.</td>
-							</tr>
-					</tbody></table>
-					<a href="#opt-out-of-event-ingestion" id="opt-out-of-event-ingestion" style="color: inherit; text-decoration: none;">
-						<h2>Opt out of Event Ingestion</h2>
-					</a>
-					<p>Event ingestion is enabled for clients using <a href="https://github.com/aws/aws-sdk-js/blob/master/CHANGELOG.md#29340">AWS SDK v2.934.0</a> and above. To opt out of event ingestion, provide <code>NoOpEventReporter</code> to <code>DefaultMeetingSession</code> while creating the meeting session.</p>
-					<pre><code class="language-js"><span class="hljs-keyword">import</span> {
-  ConsoleLogger,
-  DefaultDeviceController,
-  DefaultMeetingSession,
-  LogLevel,
-  MeetingSessionConfiguration,
-  NoOpEventReporter,
-  EventReporter,
-  DefaultEventController
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
-
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;MyLogger&#x27;</span>, LogLevel.INFO);
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
-
-<span class="hljs-comment">// You need responses from server-side Chime API. See below for details.</span>
-<span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-comment">// The response from the CreateMeeting API action.</span>
-<span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee or BatchCreateAttendee API action.</span>
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
-
-<span class="hljs-comment">// Use NoOpEventReporter to opt-out of event ingestion.</span>
-<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> NoOpEventReporter();
-
-<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
-  configuration,
-  logger,
-  deviceController,
-  <span class="hljs-keyword">new</span> DefaultEventController(configuration, logger, eventReporter)
-);
-</code></pre>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Client%20Event_Ingestion%20feedback">Give feedback on this guide</a></p>
-				</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="connect" class="tsd-anchor"></a>
+					<h3>Connect</h3>
+					<div class="tsd-signature tsd-kind-icon">Connect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;connect&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/messagingsession/PrefetchOn.ts#L6">src/messagingsession/PrefetchOn.ts:6</a></li>
+						</ul>
+					</aside>
+				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -141,6 +103,18 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-enum">
+						<a href="prefetchon.html" class="tsd-kind-icon">Prefetch<wbr>On</a>
+						<ul>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="prefetchon.html#connect" class="tsd-kind-icon">Connect</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
 				</ul>
 			</nav>
 		</div>

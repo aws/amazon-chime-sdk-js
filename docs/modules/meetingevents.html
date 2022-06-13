@@ -183,7 +183,7 @@ meetingSession.eventController.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>audioInputUnselected</code></td>
-								<td>The microphone was removed. You called <code>meetingSession.audioVideo.chooseAudioInputDevice</code> with <code>null</code>.</td>
+								<td>The microphone was removed. You called <code>meetingSession.audioVideo.stopAudioInput</code>.</td>
 							</tr>
 							<tr>
 								<td><code>audioInputFailed</code></td>
@@ -195,7 +195,7 @@ meetingSession.eventController.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>videoInputUnselected</code></td>
-								<td>The camera was removed. You called <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with <code>null</code>.</td>
+								<td>The camera was removed. You called <code>meetingSession.audioVideo.stopVideoInput</code>.</td>
 							</tr>
 							<tr>
 								<td><code>videoInputFailed</code></td>
@@ -410,7 +410,7 @@ meetingSession.eventController.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>audioInputUnselected</code></td>
-								<td>The microphone was removed. You called <code>meetingSession.audioVideo.chooseAudioInputDevice</code> with <code>null</code>.</td>
+								<td>The microphone was removed. You called <code>meetingSession.audioVideo.stopAudioInput</code>.</td>
 							</tr>
 							<tr>
 								<td><code>meetingEnded</code></td>
@@ -454,7 +454,7 @@ meetingSession.eventController.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>videoInputUnselected</code></td>
-								<td>The camera was removed. You called <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with <code>null</code>.</td>
+								<td>The camera was removed. You called <code>meetingSession.audioVideo.stopVideoInput</code> with <code>null</code>.</td>
 							</tr>
 					</tbody></table>
 					<br>
@@ -534,7 +534,9 @@ meetingSession.eventController.addObserver(observer);
 					<a href="#device-error-messages" id="device-error-messages" style="color: inherit; text-decoration: none;">
 						<h3>Device error messages</h3>
 					</a>
-					<p>The <code>audioInputErrorMessage</code> and <code>videoInputErrorMessage</code> may indicate the browser&#39;s <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions">getUserMedia API exceptions</a>. When you call <code>meetingSession.audioVideo.chooseAudioInputDevice</code> or <code>meetingSession.audioVideo.chooseVideoInputDevice</code>, the Chime SDK for JavaScript uses the browser&#39;s <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia"><code>getUserMedia</code> API</a> to acquire access to your device. When the getUserMedia API throws an error, the Chime SDK for JavaScript catches an error and publishes the <code>audioInputFailed</code> or <code>videoInputFailed</code> event containing a browser&#39;s error message.</p>
+					<p>The <code>audioInputErrorMessage</code> and <code>videoInputErrorMessage</code> may indicate the browser&#39;s <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions">getUserMedia API exceptions</a>. When you call
+						<code>meetingSession.audioVideo.startAudioInput</code> or <code>meetingSession.audioVideo.startVideoInput</code>, the Chime SDK for
+					JavaScript uses the browser&#39;s <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia"><code>getUserMedia</code> API</a> to acquire access to your device. When the getUserMedia API throws an error, the Chime SDK for JavaScript catches an error and publishes the <code>audioInputFailed</code> or <code>videoInputFailed</code> event containing a browser&#39;s error message.</p>
 					<table>
 						<thead>
 							<tr>

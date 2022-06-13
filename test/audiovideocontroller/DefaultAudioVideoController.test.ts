@@ -992,8 +992,6 @@ describe('DefaultAudioVideoController', () => {
       async function () {
         this.timeout(5000); // Need to increase the default mocha timeout of 2000ms
         const mediaStreamBroker = new NoOpMediaStreamBroker();
-        const spyAdd = sinon.spy(mediaStreamBroker, 'addMediaStreamBrokerObserver');
-        const spyRemove = sinon.spy(mediaStreamBroker, 'removeMediaStreamBrokerObserver');
         audioVideoController = new DefaultAudioVideoController(
           configuration,
           new NoOpDebugLogger(),
@@ -1001,6 +999,8 @@ describe('DefaultAudioVideoController', () => {
           mediaStreamBroker,
           reconnectController
         );
+        const spyAdd = sinon.spy(mediaStreamBroker, 'addMediaStreamBrokerObserver');
+        const spyRemove = sinon.spy(mediaStreamBroker, 'removeMediaStreamBrokerObserver');
         await start();
         await delay(defaultDelay);
         expect(spyAdd.callCount).to.be.equal(1);
@@ -3661,7 +3661,9 @@ describe('DefaultAudioVideoController', () => {
       }
       triggerAudioInputChangeEvent(audioStream: MediaStream | undefined): void {
         for (const observer of this.mediaStreamBrokerObservers) {
-          observer.audioInputDidChange(audioStream);
+          if (observer.audioInputDidChange) {
+            observer.audioInputDidChange(audioStream);
+          }
         }
       }
       async acquireAudioInputStream(): Promise<MediaStream> {
@@ -3768,7 +3770,9 @@ describe('DefaultAudioVideoController', () => {
       }
       triggerVideoInputChangeEvent(videoStream: MediaStream | undefined): void {
         for (const observer of this.mediaStreamBrokerObservers) {
-          observer.videoInputDidChange(videoStream);
+          if (observer.videoInputDidChange) {
+            observer.videoInputDidChange(videoStream);
+          }
         }
       }
       async acquireVideoInputStream(): Promise<MediaStream> {
@@ -3854,41 +3858,6 @@ describe('DefaultAudioVideoController', () => {
 
     afterEach(() => {
       mediaStreamBroker = undefined;
-    });
-  });
-
-  describe('audioOutputDidChange', () => {
-    it('Handle audio output change event', () => {
-      class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
-        private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
-          MediaStreamBrokerObserver
-        >();
-        addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
-          this.mediaStreamBrokerObservers.add(observer);
-        }
-        removeMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
-          this.mediaStreamBrokerObservers.delete(observer);
-        }
-        triggerAudioOutputChangeEvent(device: MediaDeviceInfo | null): void {
-          for (const observer of this.mediaStreamBrokerObservers) {
-            observer.audioOutputDidChange(device);
-          }
-        }
-      }
-      const mediaStreamBroker = new ObserverMediaStreamBroker();
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        mediaStreamBroker,
-        reconnectController
-      );
-      const spy = sinon.spy(audioVideoController.audioMixController, 'bindAudioDevice');
-      mediaStreamBroker.addMediaStreamBrokerObserver(audioVideoController);
-      mediaStreamBroker.triggerAudioOutputChangeEvent(null);
-      expect(spy.calledOnceWith(null)).to.be.true;
-      mediaStreamBroker.removeMediaStreamBrokerObserver(audioVideoController);
-      spy.restore();
     });
   });
 });
