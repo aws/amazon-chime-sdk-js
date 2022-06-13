@@ -22,7 +22,7 @@ const elements = {
   readinessCheckerFlow: By.id('flow-readinesstest'),
 };
 
-const badgeSuccessLabel = 'bg-success';
+const badgeSuccessLabel = 'badge-success';
 
 class MeetingReadinessCheckerPage {
   constructor(driver, logger) {

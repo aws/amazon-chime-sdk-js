@@ -55,11 +55,6 @@ class AuthenticateUserStep extends AppTestStep {
   async run() {
     this.logger("attendee id: " + this.attendee_id);
     await this.page.enterAttendeeName(this.attendee_id);
-    if (this.region !== '') {
-      this.logger(`selecting region ${this.region}`);
-      await this.page.selectRegion(this.region);
-    }
-    await this.page.openAdditionalOptions();
     if (this.useSimulcastFlag) {
       this.logger("choose to use simulcast");
       await this.page.chooseUseSimulcast();
@@ -72,12 +67,14 @@ class AuthenticateUserStep extends AppTestStep {
       this.logger("Event reporting enabled");
       await this.page.chooseEnableEventReporting();
     }
+    if (this.region !== '') {
+      this.logger(`selecting region ${this.region}`);
+      await this.page.selectRegion(this.region);
+    }
     if (this.useStereoMusicAudioProfile) {
       this.logger("Using stereo music audio profile");
       await this.page.chooseStereoMusicAudioProfile();
     }
-    await this.page.closeAdditionalOptions();
-
     await this.page.authenticate();
     this.logger("waiting to authenticate");
     let authenticationState = await this.page.waitForDeviceFlow();

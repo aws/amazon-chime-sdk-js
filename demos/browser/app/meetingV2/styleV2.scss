@@ -29,10 +29,9 @@ $light: $gray-200;
 $dark: $gray-700;
 $yiq-contrasted-threshold: 175;
 $link-color: $success;
-$font-family-base: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+$font-family-sans-serif: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
   'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 $font-size-base: 0.9375rem;
-$form-select-color: $gray-700;
 $h1-font-size: 3rem;
 $h2-font-size: 2.5rem;
 $h3-font-size: 2rem;
@@ -96,29 +95,10 @@ $overlay-z-index: 10;
 // Buttons =====================================================================
 
 .btn {
-  &-success,
-  &-success:hover,
-  &-success:focus,
   &-secondary,
   &-secondary:hover,
-  &-secondary:focus,
   &-warning,
-  &-warning:hover,
-  &-warning:focus {
-    color: #fff;
-  }
-}
-
-.btn-check:checked + .btn {
-  &-success,
-  &-success:hover,
-  &-success:checked,
-  &-secondary,
-  &-secondary:hover,
-  &-secondary:checked,
-  &-warning,
-  &-warning:hover,
-  &-warning:checked {
+  &-warning:hover {
     color: #fff;
   }
 }
@@ -364,7 +344,6 @@ $overlay-z-index: 10;
 // Progress bars ===============================================================
 
 // Containers ==================================================================
-
 .modal .close {
   color: $black;
 
@@ -372,10 +351,6 @@ $overlay-z-index: 10;
   &:not(:disabled):not(.disabled):focus {
     color: $black;
   }
-}
-
-.modal-backdrop {
-  z-index: -1;
 }
 
 // Custom
@@ -403,10 +378,6 @@ svg {
   width: 20px;
   height: 20px;
   fill: lighten($secondary, 15%);
-}
-
-#form-authenticate svg {
-  fill: $white !important;
 }
 
 .svg-active {

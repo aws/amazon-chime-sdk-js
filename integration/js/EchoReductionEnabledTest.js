@@ -46,9 +46,7 @@ class EchoReductionEnabledTest extends SdkBaseTest {
 
   async addUserToMeeting(attendee_id, sessionInfo, useWebAudioFlag) {
     await OpenAppStep.executeStep(this, sessionInfo);
-    await sessionInfo.page.openAdditionalOptions();
     await sessionInfo.page.chooseEchoReduction();
-    await sessionInfo.page.closeAdditionalOptions();
     await AuthenticateUserStep.executeStep(this, sessionInfo, attendee_id, false, useWebAudioFlag);
     await UserAuthenticationCheck.executeStep(this, sessionInfo);
     await JoinMeetingStep.executeStep(this, sessionInfo);

@@ -153,18 +153,18 @@ export default class Roster {
 
     private handleRosterStatusUpdate(attendeeId: string): void {
         let statusText = '\xa0'; // &nbsp
-        let statusClass = 'status badge rounded-pill ';
+        let statusClass = 'status badge badge-pill ';
         const attendee: Attendee =  this.attendeeInfoMap.get(attendeeId);        
         if (attendee.signalStrength < 1) {
-            statusClass += 'bg-warning';
+            statusClass += 'badge-warning';
         } else if (attendee.signalStrength === 0) {
-            statusClass = 'bg-danger';
+            statusClass = 'badge-danger';
         } else if (attendee.muted) {
             statusText = 'MUTED';
-            statusClass += 'bg-secondary';
+            statusClass += 'badge-secondary';
         } else if (attendee.speaking) {
             statusText = 'SPEAKING';
-            statusClass += 'bg-success';
+            statusClass += 'badge-success';
         }
 
         const attendeeElement : HTMLLIElement = document.getElementById(Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId) as HTMLLIElement;

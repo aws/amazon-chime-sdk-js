@@ -170,11 +170,11 @@ export default class VideoTileCollection implements AudioVideoObserver {
     if (this.videoPreferenceManager !== undefined && !tileState.localTile) { // No current config possible on local tile
       this.logger.info('adding config listeners for tileIndex ' + tileIndex);
       demoVideoTile.targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
-      this.tileIndexToTargetResolutionEventListener[tileIndex] = this.createTargetResolutionListener(tileState);
+      this.tileIndexToTargetResolutionEventListener[tileIndex] = this.createTargetResolutionListener(tileState, demoVideoTile.targetResolutionRadioElement);
       demoVideoTile.targetResolutionRadioElement.addEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
 
       demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
-      this.tileIndexToPriorityEventListener[tileIndex] = this.createVideoPriorityListener(tileState);
+      this.tileIndexToPriorityEventListener[tileIndex] = this.createVideoPriorityListener(tileState, demoVideoTile.videoPriorityRadioElement);
       demoVideoTile.videoPriorityRadioElement.addEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
     }
 
@@ -388,28 +388,28 @@ export default class VideoTileCollection implements AudioVideoObserver {
     document.getElementById('video-paginate-right').style.display = display(this.pagination.hasNextPage());
   }
 
-  private createTargetResolutionListener(tileState: VideoTileState): (event: Event) => void {
+  private createTargetResolutionListener(tileState: VideoTileState, form: HTMLFormElement): (event: Event) => void {
     return (event: Event): void => {
       if (!(event.target instanceof HTMLInputElement)) {
         // Ignore the Label event which will have a stale value
         return;
       }
       const attendeeId = tileState.boundAttendeeId;
-      const value = (event.target as HTMLInputElement).value;
+      const value = (form.elements.namedItem('level') as RadioNodeList).value;
       this.logger.info(`target resolution changed for: ${attendeeId} to ${value}`);
       const targetDisplaySize = ConfigLevelToTargetDisplaySize[value as ConfigLevel];
       this.videoPreferenceManager.setAttendeeTargetDisplaySize(attendeeId, targetDisplaySize);
     }
   }
 
-  private createVideoPriorityListener(tileState: VideoTileState): (event: Event) => void {
+  private createVideoPriorityListener(tileState: VideoTileState, form: HTMLFormElement): (event: Event) => void {
     return (event: Event): void => {
       if (!(event.target instanceof HTMLInputElement)) {
         // Ignore the Label event which will have a stale value
         return;
       }
       const attendeeId = tileState.boundAttendeeId;
-      const value = (event.target as HTMLInputElement).value;
+      const value = (form.elements.namedItem('level') as RadioNodeList).value;
       this.logger.info(`priority changed for: ${attendeeId} to ${value}`);
       const priority = ConfigLevelToVideoPriority[value as ConfigLevel];
       this.videoPreferenceManager.setAttendeePriority(attendeeId, priority);

@@ -89,10 +89,6 @@ class TestAppPage {
     await joinMeetingButton.click();
   }
 
-  async openAdditionalOptions() {}
-
-  async closeAdditionalOptions() {}
-
   async waitForDeviceFlow() {
     await TestUtils.waitAround(5000);
   }
