@@ -705,7 +705,15 @@ export class DemoMeetingApp
             this.setButtonVisibility('button-record-cloud', false);
             this.updateUXForReplicaMeetingPromotionState('demoted');
           }
-
+          /* @ts-ignore */
+          if ((e as SubmitEvent).submitter.id == 'quick-join') {
+            await this.openAudioOutputFromSelection();
+            await this.join();
+            this.displayButtonStates();
+            this.switchToFlow('flow-meeting');
+            this.hideProgress('progress-authenticate');
+            return;
+          }
           this.switchToFlow('flow-devices');
           await this.openAudioInputFromSelectionAndPreview();
           try {
