@@ -39,6 +39,8 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.50 (KHTML, like Gecko) CriOS/95.0.4638.50 Mobile/14E5239e Safari/604.1';
   const FIREFOX_IOS_USER_AGENT =
     'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/29.1.0 Mobile/16B91 Safari/605.1.15';
+  const EDGE_IOS_USER_AGENT =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 15_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/102.0.124.30 Version/15.0 Mobile/15E148 Safari/604.1';
   const ELECTRON_WINDOWS_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0.18362; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.9.0 Chrome/85.0.4183.93 Electron/10.1.1 Safari/537.36 Sonic Slack_SSB/4.9.0';
   const WKWEBVIEW_IOS_USER_AGENT =
@@ -217,6 +219,16 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
       expect(new DefaultBrowserBehavior().doesNotSupportMediaDeviceLabels()).to.be.true;
+    });
+
+    it('can detect iOS Edge', () => {
+      setUserAgent(EDGE_IOS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('edge-ios');
+      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(102);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
     });
 
     it('can test Safari version 12', () => {

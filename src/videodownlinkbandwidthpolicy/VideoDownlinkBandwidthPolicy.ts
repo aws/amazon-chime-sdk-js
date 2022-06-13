@@ -36,7 +36,8 @@ export default interface VideoDownlinkBandwidthPolicy {
 
   /**
    * Updates the internal state with the set of streams we expect to be
-   * subscribed to, and return the set.
+   * subscribed to, and return the set. This value will be truncated
+   * to the maximum subscription limit of the call.
    *
    * When a policy is passed into a meeting session, this will be called
    * once every two seconds to check if the subscriptions have changed.

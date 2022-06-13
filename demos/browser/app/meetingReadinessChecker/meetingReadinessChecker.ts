@@ -350,9 +350,9 @@ export class DemoMeetingApp {
       readinessElement.className = 'spinner-border';
     } else if (textToDisplay.includes('Succeeded')) {
       readinessElement.className = '';
-      readinessElement.className = 'badge badge-success';
+      readinessElement.className = 'badge bg-success';
     } else {
-      readinessElement.className = 'badge badge-warning';
+      readinessElement.className = 'badge bg-warning';
     }
   }
 
