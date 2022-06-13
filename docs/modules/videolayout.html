@@ -1,646 +1,213 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VideoLayout | amazon-chime-sdk-js</title>
-	<meta name="description" content="Documentation for amazon-chime-sdk-js">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="../assets/css/main.css">
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="../globals.html">Globals</a>
-				</li>
-				<li>
-					<a href="videolayout.html">VideoLayout</a>
-				</li>
-			</ul>
-			<h1>Namespace VideoLayout</h1>
-		</div>
-	</div>
-</header>
-<div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<a href="#managing-video-quality-for-different-video-layouts" id="managing-video-quality-for-different-video-layouts" style="color: inherit; text-decoration: none;">
-							<h1>Managing Video Quality for Different Video Layouts</h1>
-						</a>
-					</div>
-					<a href="#overview" id="overview" style="color: inherit; text-decoration: none;">
-						<h2>Overview</h2>
-					</a>
-					<p>The Amazon Chime SDK for JavaScript enables builders to create applications with custom and dynamic video layouts. Depending on the number of video tiles displayed on the screen, their relative display size and priority, different video upstream strategies and tile management methods are applied to provide the optimal video experience for end users.</p>
-					<p>The first section introduces basic concepts, such as video lifecycle management APIs and the uplink/downlink policies. The second section discusses several common use cases and how to implement them using the <a href="https://github.com/aws/amazon-chime-sdk-js">Amazon Chime SDK for JavaScript</a> (“JavaScript SDK”) and the <a href="https://github.com/aws/amazon-chime-sdk-component-library-react">Amazon Chime SDK React Components Library</a> (“React Components Library”).</p>
-					<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
-						<h2>Introduction</h2>
-					</a>
-					<a href="#video-lifecycle-management-apis" id="video-lifecycle-management-apis" style="color: inherit; text-decoration: none;">
-						<h3>Video Lifecycle Management APIs</h3>
-					</a>
-					<p>Consider the following scenario: A meeting includes three attendees: attendee 0, attendee 1, and attendee 2. They are all sharing their local camera stream in a meeting, and attendee 2 is also sharing the screen via content share. The diagram below illustrates how all the video streams are received and managed from the perspective of attendee 0.</p>
-					<p><img src="../media/video_lifecycle.png" alt="video lifecycle diagram"></p>
-					<p>Typically, there are four steps involved in the lifecycle of a remote video with respect to a single receiving attendee:</p>
-					<ol>
-						<li><p>As remote attendees change their video stream, an up-to-date list of remote video sources is provided via the <code>remoteVideoSourcesDidChange</code> callback.</p>
-						</li>
-						<li><p>The receiving attendee will select the remote video sources (and possibly which simulcast layer) that they wish to receive, which will initiate a negotiation (or “subscription”) with the backend servers to start forwarding the selected remote video sources, depending on the attendee’s downlink policy (explained in a later section).</p>
-							<ul>
-								<li>Note: Some downlink policies may expose APIs to allow dynamic control over this decision, e.g., <a href="#videoprioritybasedpolicy"><code>VideoPriorityBasedPolicy</code></a>.</li>
-							</ul>
-						</li>
-						<li><p>For each subscribed/unsubscribed video, the receiving attendee will receive the <code>tileId</code> of the updated <code>VideoTile</code> from <code>videoTileDidUpdate</code>/<code>videoTileWasRemoved</code> callback.</p>
-						</li>
-						<li><p>To display/remove the video, the receiving attendee can bind/unbind the updated <code>VideoTile</code> to/from a <code>HTMLVideoElement</code> in their application using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#bindvideoelement"><code>bindVideoElement(tileId)</code></a>/<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unbindvideoelement"><code>unbindVideoElement(tileId)</code></a> API.</p>
-						</li>
-					</ol>
-					<a href="#video-uplink-and-downlink-policies" id="video-uplink-and-downlink-policies" style="color: inherit; text-decoration: none;">
-						<h3>Video Uplink and Downlink Policies</h3>
-					</a>
-					<p>Uplink and downlink policies help builders configure the video strategies for sending and receiving video streams in a meeting. The Amazon Chime SDK for JavaScript provides different policies, each with its own configuration and dynamic controls. Builders can choose between the provided policies or extend and create their own, depending on the requirements.</p>
-					<a href="#uplink-policy" id="uplink-policy" style="color: inherit; text-decoration: none;">
-						<h4>Uplink Policy</h4>
-					</a>
-					<p>The video encoding parameters are determined by the uplink policy, which takes into consideration the number of video publishers on the call. If necessary, it may suggest encoding multiple “simulcast” layers (with different bitrates and resolutions). The JavaScript SDK currently provides two uplink policies:</p>
-					<a href="#nscalevideouplinkbandwidthpolicy-default" id="nscalevideouplinkbandwidthpolicy-default" style="color: inherit; text-decoration: none;">
-						<h5>NScaleVideoUplinkBandwidthPolicy (Default)</h5>
-					</a>
-					<p>In this policy, an attendee encodes and sends one video layer upstream and scales the resolution and bitrate based on the number of video publishers. This is to ensure the receiving attendees who are subscribed to these videos do not experience excessive network or compute load, which may degrade the meeting quality.</p>
-					<a href="#simulcastuplinkpolicy" id="simulcastuplinkpolicy" style="color: inherit; text-decoration: none;">
-						<h5>SimulcastUplinkPolicy</h5>
-					</a>
-					<p>Each attendee may encode and send up to two layers of video with different bitrates and resolutions under this policy. It enables the recipient to switch between the two video layers to adapt to changing network conditions or different layouts (e.g., a featured video may desire a higher resolution than a gallery view video).</p>
-					<ul>
-						<li>Note: The <code>SimulcastUplinkPolicy</code> is currently only supported in Chrome 76 and above versions.</li>
-					</ul>
-					<a href="#downlink-policy" id="downlink-policy" style="color: inherit; text-decoration: none;">
-						<h4>Downlink Policy</h4>
-					</a>
-					<p>The downlink policy controls which remote video sources are received downstream based on the network condition, local resources (e.g., CPU), and other factors such as layout changes in the application. The JavaScript SDK currently provides two downlink policies:</p>
-					<a href="#allhighestvideobandwidthpolicy-default" id="allhighestvideobandwidthpolicy-default" style="color: inherit; text-decoration: none;">
-						<h5>AllHighestVideoBandwidthPolicy (Default)</h5>
-					</a>
-					<p>This policy subscribes to the highest quality video layer of all publishers. This policy allows builders to choose which remote video sources to subscribe to through the use of <code>chooseRemoteVideoSources</code> API.  Under constrained network, some or all videos may freeze as packets are lost on the network, and they will recover automatically once network congestion is reduced.</p>
-					<a href="#videoprioritybasedpolicy" id="videoprioritybasedpolicy" style="color: inherit; text-decoration: none;">
-						<h5>VideoPriorityBasedPolicy</h5>
-					</a>
-					<p>This policy allows builders to choose and configure which remote video sources to subscribe to, their relative priorities and preferences such as, <code>targetDisplaySize</code> . Under constrained network, the policy will automatically pause video tiles based on the priorities you set to these remote video sources until recovery. If used with the <code>SimulcastUplinkPolicy</code>, the policy may temporarily degrade to lower resolutions. For videos of the same priority, the policy first tries to allocate bandwidth to ensure as many videos can be displayed as possible before upgrading to higher quality if the bandwidth allows.</p>
-					<ul>
-						<li>Note: The <code>VideoPriorityBasedPolicy</code> uses webRTC&#39;s available downlink bandwidth estimate, which has not been
-						supported in Firefox yet, the policy should be only used in Chrome and Safari.</li>
-					</ul>
-					<a href="#recommendations-for-common-layouts" id="recommendations-for-common-layouts" style="color: inherit; text-decoration: none;">
-						<h2>Recommendations for Common Layouts</h2>
-					</a>
-					<a href="#case-1-small-grid-layout-up-to-4-videos-with-fixed-tile-size" id="case-1-small-grid-layout-up-to-4-videos-with-fixed-tile-size" style="color: inherit; text-decoration: none;">
-						<h3>Case 1: Small Grid Layout (up to 4 Videos) with Fixed Tile Size</h3>
-					</a>
-					<p>We recommend the default configuration of the <code>NScaleVideoUplinkBandwidthPolicy</code>  and  <code>AllHighestVideoBandwidthPolicy</code> when displaying a small number of video tiles of a fixed size, so the recipient is less likely to get overwhelmed. Video freezes can occur due to network congestion and recover automatically.</p>
-					<a href="#javascript-sdk-implementation" id="javascript-sdk-implementation" style="color: inherit; text-decoration: none;">
-						<h4>JavaScript SDK Implementation</h4>
-					</a>
-					<p>Refer to code sample in <a href="https://github.com/aws/amazon-chime-sdk-js#video">Use case 16</a>.</p>
-					<a href="#react-components-library-implementation" id="react-components-library-implementation" style="color: inherit; text-decoration: none;">
-						<h4>React Components Library Implementation</h4>
-					</a>
-					<p>The <code>videoTileDidUpdate</code> and <code>videoTileWasRemoved</code> callbacks are already handled by the React Components Library. If you don’t have the content sharing functionality in your application, you can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component with the <code>standard</code> layout from the React Components Library.</p>
-					<pre><code class="language-jsx"><span class="hljs-keyword">import</span> {
-  MeetingProvider,
-  VideoTileGrid
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-component-library-react&#x27;</span>;
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>VideoLayout | amazon-chime-sdk-js</title><meta name="description" content="Documentation for amazon-chime-sdk-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">amazon-chime-sdk-js</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><ul class="tsd-breadcrumb"><li><a href="../modules.html">amazon-chime-sdk-js</a></li><li><a href="VideoLayout.html">VideoLayout</a></li></ul><h1>Namespace VideoLayout </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography"><div class="lead">
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> (
-  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MeetingProvider</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">VideoTileGrid</span> <span class="hljs-attr">layout</span>=<span class="hljs-string">&quot;standard&quot;</span>/&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-name">MeetingProvider</span>&gt;</span></span>
-);
+<a href="#managing-video-quality-for-different-video-layouts" id="managing-video-quality-for-different-video-layouts" style="color: inherit; text-decoration: none;">
+  <h1>Managing Video Quality for Different Video Layouts</h1>
+</a>
+</div><div>
+<a href="#overview" id="overview" style="color: inherit; text-decoration: none;">
+  <h2>Overview</h2>
+</a>
+<p>The Amazon Chime SDK for JavaScript enables builders to create applications with custom and dynamic video layouts. Depending on the number of video tiles displayed on the screen, their relative display size and priority, different video upstream strategies and tile management methods are applied to provide the optimal video experience for end users.</p>
+<p>The first section introduces basic concepts, such as video lifecycle management APIs and the uplink/downlink policies. The second section discusses several common use cases and how to implement them using the <a href="https://github.com/aws/amazon-chime-sdk-js">Amazon Chime SDK for JavaScript</a> (“JavaScript SDK”) and the <a href="https://github.com/aws/amazon-chime-sdk-component-library-react">Amazon Chime SDK React Components Library</a> (“React Components Library”).</p>
+
+<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+  <h2>Introduction</h2>
+</a>
+
+<a href="#video-lifecycle-management-apis" id="video-lifecycle-management-apis" style="color: inherit; text-decoration: none;">
+  <h3>Video Lifecycle Management APIs</h3>
+</a>
+<p>Consider the following scenario: A meeting includes three attendees: attendee 0, attendee 1, and attendee 2. They are all sharing their local camera stream in a meeting, and attendee 2 is also sharing the screen via content share. The diagram below illustrates how all the video streams are received and managed from the perspective of attendee 0.</p>
+<p><img src="../media/video_lifecycle.png" alt="video lifecycle diagram"></p>
+<p>Typically, there are four steps involved in the lifecycle of a remote video with respect to a single receiving attendee:</p>
+<ol>
+<li><p>As remote attendees change their video stream, an up-to-date list of remote video sources is provided via the <code>remoteVideoSourcesDidChange</code> callback.</p>
+</li>
+<li><p>The receiving attendee will select the remote video sources (and possibly which simulcast layer) that they wish to receive, which will initiate a negotiation (or “subscription”) with the backend servers to start forwarding the selected remote video sources, depending on the attendee’s downlink policy (explained in a later section).</p>
+<ul>
+<li>Note: Some downlink policies may expose APIs to allow dynamic control over this decision, e.g., <a href="#videoprioritybasedpolicy"><code>VideoPriorityBasedPolicy</code></a>.</li>
+</ul>
+</li>
+<li><p>For each subscribed/unsubscribed video, the receiving attendee will receive the <code>tileId</code> of the updated <code>VideoTile</code> from <code>videoTileDidUpdate</code>/<code>videoTileWasRemoved</code> callback.</p>
+</li>
+<li><p>To display/remove the video, the receiving attendee can bind/unbind the updated <code>VideoTile</code> to/from a <code>HTMLVideoElement</code> in their application using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#bindvideoelement"><code>bindVideoElement(tileId)</code></a>/<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unbindvideoelement"><code>unbindVideoElement(tileId)</code></a> API.</p>
+</li>
+</ol>
+
+<a href="#video-uplink-and-downlink-policies" id="video-uplink-and-downlink-policies" style="color: inherit; text-decoration: none;">
+  <h3>Video Uplink and Downlink Policies</h3>
+</a>
+<p>Uplink and downlink policies help builders configure the video strategies for sending and receiving video streams in a meeting. The Amazon Chime SDK for JavaScript provides different policies, each with its own configuration and dynamic controls. Builders can choose between the provided policies or extend and create their own, depending on the requirements.</p>
+
+<a href="#uplink-policy" id="uplink-policy" style="color: inherit; text-decoration: none;">
+  <h4>Uplink Policy</h4>
+</a>
+<p>The video encoding parameters are determined by the uplink policy, which takes into consideration the number of video publishers on the call. If necessary, it may suggest encoding multiple “simulcast” layers (with different bitrates and resolutions). The JavaScript SDK currently provides two uplink policies:</p>
+
+<a href="#nscalevideouplinkbandwidthpolicy-default" id="nscalevideouplinkbandwidthpolicy-default" style="color: inherit; text-decoration: none;">
+  <h5>NScaleVideoUplinkBandwidthPolicy (Default)</h5>
+</a>
+<p>In this policy, an attendee encodes and sends one video layer upstream and scales the resolution and bitrate based on the number of video publishers. This is to ensure the receiving attendees who are subscribed to these videos do not experience excessive network or compute load, which may degrade the meeting quality.</p>
+
+<a href="#simulcastuplinkpolicy" id="simulcastuplinkpolicy" style="color: inherit; text-decoration: none;">
+  <h5>SimulcastUplinkPolicy</h5>
+</a>
+<p>Each attendee may encode and send up to two layers of video with different bitrates and resolutions under this policy. It enables the recipient to switch between the two video layers to adapt to changing network conditions or different layouts (e.g., a featured video may desire a higher resolution than a gallery view video).</p>
+<ul>
+<li>Note: The <code>SimulcastUplinkPolicy</code> is currently only supported in Chrome 76 and above versions.</li>
+</ul>
+
+<a href="#downlink-policy" id="downlink-policy" style="color: inherit; text-decoration: none;">
+  <h4>Downlink Policy</h4>
+</a>
+<p>The downlink policy controls which remote video sources are received downstream based on the network condition, local resources (e.g., CPU), and other factors such as layout changes in the application. The JavaScript SDK currently provides two downlink policies:</p>
+
+<a href="#allhighestvideobandwidthpolicy-default" id="allhighestvideobandwidthpolicy-default" style="color: inherit; text-decoration: none;">
+  <h5>AllHighestVideoBandwidthPolicy (Default)</h5>
+</a>
+<p>This policy subscribes to the highest quality video layer of all publishers. This policy allows builders to choose which remote video sources to subscribe to through the use of <code>chooseRemoteVideoSources</code> API.  Under constrained network, some or all videos may freeze as packets are lost on the network, and they will recover automatically once network congestion is reduced.</p>
+
+<a href="#videoprioritybasedpolicy" id="videoprioritybasedpolicy" style="color: inherit; text-decoration: none;">
+  <h5>VideoPriorityBasedPolicy</h5>
+</a>
+<p>This policy allows builders to choose and configure which remote video sources to subscribe to, their relative priorities and preferences such as, <code>targetDisplaySize</code> . Under constrained network, the policy will automatically pause video tiles based on the priorities you set to these remote video sources until recovery. If used with the <code>SimulcastUplinkPolicy</code>, the policy may temporarily degrade to lower resolutions. For videos of the same priority, the policy first tries to allocate bandwidth to ensure as many videos can be displayed as possible before upgrading to higher quality if the bandwidth allows.</p>
+<ul>
+<li>Note: The <code>VideoPriorityBasedPolicy</code> uses webRTC&#39;s available downlink bandwidth estimate, which has not been
+supported in Firefox yet, the policy should be only used in Chrome and Safari.</li>
+</ul>
+
+<a href="#recommendations-for-common-layouts" id="recommendations-for-common-layouts" style="color: inherit; text-decoration: none;">
+  <h2>Recommendations for Common Layouts</h2>
+</a>
+
+<a href="#case-1-small-grid-layout-up-to-4-videos-with-fixed-tile-size" id="case-1-small-grid-layout-up-to-4-videos-with-fixed-tile-size" style="color: inherit; text-decoration: none;">
+  <h3>Case 1: Small Grid Layout (up to 4 Videos) with Fixed Tile Size</h3>
+</a>
+<p>We recommend the default configuration of the <code>NScaleVideoUplinkBandwidthPolicy</code>  and  <code>AllHighestVideoBandwidthPolicy</code> when displaying a small number of video tiles of a fixed size, so the recipient is less likely to get overwhelmed. Video freezes can occur due to network congestion and recover automatically.</p>
+
+<a href="#javascript-sdk-implementation" id="javascript-sdk-implementation" style="color: inherit; text-decoration: none;">
+  <h4>JavaScript SDK Implementation</h4>
+</a>
+<p>Refer to code sample in <a href="https://github.com/aws/amazon-chime-sdk-js#video">Use case 16</a>.</p>
+
+<a href="#react-components-library-implementation" id="react-components-library-implementation" style="color: inherit; text-decoration: none;">
+  <h4>React Components Library Implementation</h4>
+</a>
+<p>The <code>videoTileDidUpdate</code> and <code>videoTileWasRemoved</code> callbacks are already handled by the React Components Library. If you don’t have the content sharing functionality in your application, you can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component with the <code>standard</code> layout from the React Components Library.</p>
+<pre><code class="language-jsx"><span class="hl-2">import</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">MeetingProvider</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">VideoTileGrid</span><br/><span class="hl-1">} </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-component-library-react&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">App</span><span class="hl-1"> = () </span><span class="hl-4">=&gt;</span><span class="hl-1"> (</span><br/><span class="hl-1">  </span><span class="hl-13">&lt;</span><span class="hl-11">MeetingProvider</span><span class="hl-13">&gt;</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;</span><span class="hl-11">VideoTileGrid</span><span class="hl-1"> </span><span class="hl-15">layout</span><span class="hl-1">=</span><span class="hl-3">&quot;standard&quot;</span><span class="hl-13">/&gt;</span><br/><span class="hl-1">  </span><span class="hl-13">&lt;/</span><span class="hl-11">MeetingProvider</span><span class="hl-13">&gt;</span><br/><span class="hl-1">);</span>
 </code></pre>
-					<p>Otherwise, you need to build a custom video grid using the components and hooks from the React Components Library.</p>
-					<pre><code class="language-jsx"><span class="hljs-keyword">import</span> {
-  LocalVideo,
-  RemoteVideos,
-  useLocalVideo,
-  useRemoteVideoTileState,
-  VideoGrid,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-component-library-react&#x27;</span>;
-
-<span class="hljs-keyword">const</span> fluidStyles = <span class="hljs-string">`
-  height: 100%;
-  width: 100%;
-`</span>;
-
-<span class="hljs-keyword">const</span> staticStyles = <span class="hljs-string">`
-  display: flex;
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  width: 20vw;
-  max-height: 30vh;
-  height: auto;
-
-  video {
-    position: static;
-  }
-`</span>;
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> GalleryVideoTileGrid: React.FC = <span class="hljs-function">() =&gt;</span> {
-  <span class="hljs-keyword">const</span> { tiles } = useRemoteVideoTileState();
-  <span class="hljs-keyword">const</span> { isVideoEnabled } = useLocalVideo();
-  <span class="hljs-keyword">const</span> gridSize = isVideoEnabled ? tiles.length + <span class="hljs-number">1</span> : tiles.length;
-
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">VideoGrid</span> <span class="hljs-attr">size</span>=<span class="hljs-string">{gridSize}</span> <span class="hljs-attr">layout</span>=<span class="hljs-string">&#x27;standard&#x27;</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">RemoteVideos</span> /&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">LocalVideo</span>
-        <span class="hljs-attr">nameplate</span>=<span class="hljs-string">&quot;Me&quot;</span>
-        <span class="hljs-attr">css</span>=<span class="hljs-string">{gridSize</span> &gt;</span> 1 ? fluidStyles : staticStyles}
-      /&gt;
-    <span class="hljs-tag">&lt;/<span class="hljs-name">VideoGrid</span>&gt;</span></span>
-  );
-};
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> GalleryVideoTileGrid;
+<p>Otherwise, you need to build a custom video grid using the components and hooks from the React Components Library.</p>
+<pre><code class="language-jsx"><span class="hl-2">import</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">LocalVideo</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">RemoteVideos</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">useLocalVideo</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">useRemoteVideoTileState</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">VideoGrid</span><span class="hl-1">,</span><br/><span class="hl-1">} </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-component-library-react&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">fluidStyles</span><span class="hl-1"> = </span><span class="hl-3">`</span><br/><span class="hl-3">  height: 100%;</span><br/><span class="hl-3">  width: 100%;</span><br/><span class="hl-3">`</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">staticStyles</span><span class="hl-1"> = </span><span class="hl-3">`</span><br/><span class="hl-3">  display: flex;</span><br/><span class="hl-3">  position: absolute;</span><br/><span class="hl-3">  bottom: 1rem;</span><br/><span class="hl-3">  right: 1rem;</span><br/><span class="hl-3">  width: 20vw;</span><br/><span class="hl-3">  max-height: 30vh;</span><br/><span class="hl-3">  height: auto;</span><br/><br/><span class="hl-3">  video {</span><br/><span class="hl-3">    position: static;</span><br/><span class="hl-3">  }</span><br/><span class="hl-3">`</span><span class="hl-1">;</span><br/><br/><span class="hl-2">export</span><span class="hl-1"> </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">GalleryVideoTileGrid</span><span class="hl-1">: </span><span class="hl-11">React</span><span class="hl-1">.</span><span class="hl-11">FC</span><span class="hl-1"> = () </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> { </span><span class="hl-5">tiles</span><span class="hl-1"> } = </span><span class="hl-6">useRemoteVideoTileState</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> { </span><span class="hl-5">isVideoEnabled</span><span class="hl-1"> } = </span><span class="hl-6">useLocalVideo</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">gridSize</span><span class="hl-1"> = </span><span class="hl-0">isVideoEnabled</span><span class="hl-1"> ? </span><span class="hl-0">tiles</span><span class="hl-1">.</span><span class="hl-0">length</span><span class="hl-1"> + </span><span class="hl-10">1</span><span class="hl-1"> : </span><span class="hl-0">tiles</span><span class="hl-1">.</span><span class="hl-0">length</span><span class="hl-1">;</span><br/><br/><span class="hl-1">  </span><span class="hl-2">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;</span><span class="hl-11">VideoGrid</span><span class="hl-1"> </span><span class="hl-15">size</span><span class="hl-1">=</span><span class="hl-4">{</span><span class="hl-0">gridSize</span><span class="hl-4">}</span><span class="hl-1"> </span><span class="hl-15">layout</span><span class="hl-1">=</span><span class="hl-3">&#39;standard&#39;</span><span class="hl-13">&gt;</span><br/><span class="hl-1">      </span><span class="hl-13">&lt;</span><span class="hl-11">RemoteVideos</span><span class="hl-1"> </span><span class="hl-13">/&gt;</span><br/><span class="hl-1">      </span><span class="hl-13">&lt;</span><span class="hl-11">LocalVideo</span><br/><span class="hl-1">        </span><span class="hl-15">nameplate</span><span class="hl-1">=</span><span class="hl-3">&quot;Me&quot;</span><br/><span class="hl-1">        </span><span class="hl-15">css</span><span class="hl-1">=</span><span class="hl-4">{</span><span class="hl-0">gridSize</span><span class="hl-9"> </span><span class="hl-1">&gt;</span><span class="hl-9"> </span><span class="hl-10">1</span><span class="hl-9"> </span><span class="hl-1">?</span><span class="hl-9"> </span><span class="hl-0">fluidStyles</span><span class="hl-9"> </span><span class="hl-1">:</span><span class="hl-9"> </span><span class="hl-0">staticStyles</span><span class="hl-4">}</span><br/><span class="hl-1">      </span><span class="hl-13">/&gt;</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;/</span><span class="hl-11">VideoGrid</span><span class="hl-13">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-2">export</span><span class="hl-1"> </span><span class="hl-2">default</span><span class="hl-1"> </span><span class="hl-0">GalleryVideoTileGrid</span><span class="hl-1">;</span>
 </code></pre>
-					<a href="#case-2-gallery-layout-up-to-25-videos-with-fixed-tile-size" id="case-2-gallery-layout-up-to-25-videos-with-fixed-tile-size" style="color: inherit; text-decoration: none;">
-						<h3>Case 2: Gallery Layout (up to 25 Videos) with Fixed Tile Size</h3>
-					</a>
-					<p>While the JavaScript SDK supports viewing up to <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">25 video tiles</a> at this time, as the number of video publishers increases, the bandwidth and CPU consumption of receiving attendees may not be sufficient to display all videos.</p>
-					<p><img src="../media/gallery_layout_example.png" alt="gallery layout example"></p>
-					<p>The default setting of <code>NScaleVideoUplinkBandwidthPolicy</code> and <code>AllHighestVideoBandwidthPolicy</code> can result in video freezes as the number of videos goes up and more videos have to be decoded. Video packet loss and network delays are a result of high CPU consumption and can impact all streams equally. This may not be acceptable if the application wishes to preserve certain videos over others, and it can be mitigated by the application directly calling the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideocontroller.html#pausereceivingstream"><code>pauseReceivingStream(streamId)</code></a> API to pause certain videos. You can get the <code>streamId</code> via <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/videotile.html#stateref"><code>VideoTile.stateRef().streamId</code></a>.</p>
-					<p>The <code>VideoPriorityBasedPolicy</code> is recommended as the downlink policy if you wish to proactively pause (video will not be displayed) some videos to save the bandwidth in order to preserve others. This gives the application builder more control and makes the impact on the video experience resulting from network constraints more predictable. The <code>VideoPriorityBasedPolicy</code> triggers <code>tileWillBePausedByDownlinkPolicy</code> and <code>tileWillBeUnpausedByDownlinkPolicy</code> callbacks if video tiles are automatically paused or unpaused so that you can properly notify the users and potentially replace the empty video tile with something like avatars to reduce the visual impact.</p>
-					<a href="#javascript-sdk-implementation-1" id="javascript-sdk-implementation-1" style="color: inherit; text-decoration: none;">
-						<h4>JavaScript SDK Implementation</h4>
-					</a>
-					<p>Refer to code sample in <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#builder-code-sample">User Guide for PriorityBased Downlink Policy</a> and <a href="https://github.com/aws/amazon-chime-sdk-js#attendees">use case 24</a>.</p>
-					<a href="#react-components-library-implementation-1" id="react-components-library-implementation-1" style="color: inherit; text-decoration: none;">
-						<h4>React Components Library Implementation</h4>
-					</a>
-					<p>If you don’t have content sharing functionality in your application, you can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component with the <code>standard</code> layout from React Components Library. Otherwise, you need to build a custom video grid using the components and hooks from the React Components Library. Refer to the <a href="#react-components-library-implementation">implementation part under case 1</a> for details.</p>
-					<p>Create a <code>meetingConfig</code> object to store the configuration of <code>MeetingProvider</code>. This configuration is passed down to the <code>MeetingManager</code> and is used to initialize the <code>MeetingSession</code> when joining a meeting.</p>
-					<pre><code class="language-jsx"><span class="hljs-comment">// Create a file named &#x27;meetingConfig.ts&#x27;.</span>
 
-<span class="hljs-keyword">import</span> {
-  ConsoleLogger,
-  LogLevel,
-  VideoPriorityBasedPolicy,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+<a href="#case-2-gallery-layout-up-to-25-videos-with-fixed-tile-size" id="case-2-gallery-layout-up-to-25-videos-with-fixed-tile-size" style="color: inherit; text-decoration: none;">
+  <h3>Case 2: Gallery Layout (up to 25 Videos) with Fixed Tile Size</h3>
+</a>
+<p>While the JavaScript SDK supports viewing up to <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">25 video tiles</a> at this time, as the number of video publishers increases, the bandwidth and CPU consumption of receiving attendees may not be sufficient to display all videos.</p>
+<p><img src="../media/gallery_layout_example.png" alt="gallery layout example"></p>
+<p>The default setting of <code>NScaleVideoUplinkBandwidthPolicy</code> and <code>AllHighestVideoBandwidthPolicy</code> can result in video freezes as the number of videos goes up and more videos have to be decoded. Video packet loss and network delays are a result of high CPU consumption and can impact all streams equally. This may not be acceptable if the application wishes to preserve certain videos over others, and it can be mitigated by the application directly calling the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideocontroller.html#pausereceivingstream"><code>pauseReceivingStream(streamId)</code></a> API to pause certain videos. You can get the <code>streamId</code> via <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/videotile.html#stateref"><code>VideoTile.stateRef().streamId</code></a>.</p>
+<p>The <code>VideoPriorityBasedPolicy</code> is recommended as the downlink policy if you wish to proactively pause (video will not be displayed) some videos to save the bandwidth in order to preserve others. This gives the application builder more control and makes the impact on the video experience resulting from network constraints more predictable. The <code>VideoPriorityBasedPolicy</code> triggers <code>tileWillBePausedByDownlinkPolicy</code> and <code>tileWillBeUnpausedByDownlinkPolicy</code> callbacks if video tiles are automatically paused or unpaused so that you can properly notify the users and potentially replace the empty video tile with something like avatars to reduce the visual impact.</p>
 
-<span class="hljs-comment">// Initialize `VideoPriorityBasedPolicy` and export it to use elsewhere.</span>
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;SDK&#x27;</span>, LogLevel.INFO);
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> priorityBasedPolicy = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicy(logger);
+<a href="#javascript-sdk-implementation-1" id="javascript-sdk-implementation-1" style="color: inherit; text-decoration: none;">
+  <h4>JavaScript SDK Implementation</h4>
+</a>
+<p>Refer to code sample in <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#builder-code-sample">User Guide for PriorityBased Downlink Policy</a> and <a href="https://github.com/aws/amazon-chime-sdk-js#attendees">use case 24</a>.</p>
 
-<span class="hljs-keyword">const</span> meetingConfig = {
-  logger,
-  <span class="hljs-attr">videoDownlinkBandwidthPolicy</span>: priorityBasedPolicy,
-};
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> meetingConfig;
+<a href="#react-components-library-implementation-1" id="react-components-library-implementation-1" style="color: inherit; text-decoration: none;">
+  <h4>React Components Library Implementation</h4>
+</a>
+<p>If you don’t have content sharing functionality in your application, you can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component with the <code>standard</code> layout from React Components Library. Otherwise, you need to build a custom video grid using the components and hooks from the React Components Library. Refer to the <a href="#react-components-library-implementation">implementation part under case 1</a> for details.</p>
+<p>Create a <code>meetingConfig</code> object to store the configuration of <code>MeetingProvider</code>. This configuration is passed down to the <code>MeetingManager</code> and is used to initialize the <code>MeetingSession</code> when joining a meeting.</p>
+<pre><code class="language-jsx"><span class="hl-7">// Create a file named &#39;meetingConfig.ts&#39;.</span><br/><br/><span class="hl-2">import</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">ConsoleLogger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">LogLevel</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">VideoPriorityBasedPolicy</span><span class="hl-1">,</span><br/><span class="hl-1">} </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">// Initialize `VideoPriorityBasedPolicy` and export it to use elsewhere.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">logger</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">ConsoleLogger</span><span class="hl-1">(</span><span class="hl-3">&#39;SDK&#39;</span><span class="hl-1">, </span><span class="hl-0">LogLevel</span><span class="hl-1">.</span><span class="hl-5">INFO</span><span class="hl-1">);</span><br/><span class="hl-2">export</span><span class="hl-1"> </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">priorityBasedPolicy</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPriorityBasedPolicy</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">);</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">meetingConfig</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-0">logger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">videoDownlinkBandwidthPolicy:</span><span class="hl-1"> </span><span class="hl-0">priorityBasedPolicy</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-2">export</span><span class="hl-1"> </span><span class="hl-2">default</span><span class="hl-1"> </span><span class="hl-0">meetingConfig</span><span class="hl-1">;</span>
 </code></pre>
-					<p>Setup the <code>MeetingProvider</code> using the <code>meetingConfig</code>.</p>
-					<pre><code class="language-jsx"><span class="hljs-keyword">import</span> { MeetingProvider } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-component-library-react&#x27;</span>;
-<span class="hljs-keyword">import</span> meetingConfig <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./meetingConfig&#x27;</span>;
-
-<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> (
-  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MeetingProvider</span> {<span class="hljs-attr">...meetingConfig</span>}&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">MyApp</span> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-name">MeetingProvider</span>&gt;</span></span>
-);
+<p>Setup the <code>MeetingProvider</code> using the <code>meetingConfig</code>.</p>
+<pre><code class="language-jsx"><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">MeetingProvider</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-component-library-react&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">import</span><span class="hl-1"> </span><span class="hl-0">meetingConfig</span><span class="hl-1"> </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;./meetingConfig&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">App</span><span class="hl-1"> = () </span><span class="hl-4">=&gt;</span><span class="hl-1"> (</span><br/><span class="hl-1">  </span><span class="hl-13">&lt;</span><span class="hl-11">MeetingProvider</span><span class="hl-1"> </span><span class="hl-4">{</span><span class="hl-1">...</span><span class="hl-0">meetingConfig</span><span class="hl-4">}</span><span class="hl-13">&gt;</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;</span><span class="hl-11">MyApp</span><span class="hl-1"> </span><span class="hl-13">/&gt;</span><br/><span class="hl-1">  </span><span class="hl-13">&lt;/</span><span class="hl-11">MeetingProvider</span><span class="hl-13">&gt;</span><br/><span class="hl-1">);</span>
 </code></pre>
-					<p>Create a <a href="https://reactjs.org/docs/context.html#contextprovider"><code>Context Provider</code></a> to use <code>priorityBasedDownlinkPolicy</code>.</p>
-					<ol>
-						<li><p>Import the previous <code>VideoPriorityBasedPolicy</code> instance in your provider.</p>
-						</li>
-						<li><p>Create an observer and subscribe to the <code>tileWillBePausedByDownlinkPolicy</code> and <code>tileWillBeUnpausedByDownlinkPolicy</code> callbacks, so you can update the UI to notify the user that the related video tile has been paused or unpaused.</p>
-						</li>
-						<li><p>Create an observer and subscribe to the <code>remoteVideoSourcesDidChange</code> callback, so you can track the states of remote video sources for future subscriptions. You need a variable like <code>roster: any = {}</code> to keep track of which attendees in the meeting are publishing videos. Check <a href="https://github.com/aws/amazon-chime-sdk-js#attendees">use case 24</a> for more details.</p>
-							<ul>
-								<li>Note: You may want to keep the content sharing in your <code>roster</code>, depending on your needs.</li>
-							</ul>
-						</li>
-					</ol>
-					<pre><code class="language-jsx"><span class="hljs-keyword">import</span> { useAudioVideo } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-component-library-react&#x27;</span>;
-<span class="hljs-keyword">import</span> { priorityBasedPolicy } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./meetingConfig&#x27;</span>;
-
-<span class="hljs-keyword">const</span> GridStateProvider: React.FC = <span class="hljs-function">(<span class="hljs-params">{ children }</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> audioVideo = useAudioVideo();
-
-  <span class="hljs-comment">// Subscribe to `tileWillBePausedByDownlinkPolicy` and</span>
-  <span class="hljs-comment">// `tileWillBeUnpausedByDownlinkPolicy` callbacks.</span>
-  useEffect(<span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-keyword">if</span> (!priorityBasedPolicy || !audioVideo) {
-      <span class="hljs-keyword">return</span>;
-    }
-
-    <span class="hljs-keyword">const</span> observer: VideoDownlinkObserver = {
-      <span class="hljs-attr">tileWillBePausedByDownlinkPolicy</span>: (tileId: number): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
-        <span class="hljs-keyword">const</span> attendeeId = audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
-        <span class="hljs-keyword">if</span> (attendeeId) {
-          <span class="hljs-comment">// Update the UI to notify user the pause of</span>
-          <span class="hljs-comment">// video tile according to below property.</span>
-          roster[attendeeId].paused = <span class="hljs-literal">true</span>;
-        }
-      },
-      <span class="hljs-attr">tileWillBeUnpausedByDownlinkPolicy</span>: (tileId: number): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
-        <span class="hljs-keyword">const</span> attendeeId = audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
-        <span class="hljs-keyword">if</span> (attendeeId) {
-          <span class="hljs-comment">// Update the UI to notify user the unpause</span>
-          <span class="hljs-comment">// of video tile according to below property.</span>
-          roster[attendeeId].paused = <span class="hljs-literal">false</span>;
-        }
-      },
-    };
-
-    priorityBasedPolicy.addObserver(observer);
-
-    <span class="hljs-keyword">return</span> (): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> priorityBasedPolicy.removeObserver(observer);
-  }, [audioVideo]);
-
-  <span class="hljs-comment">// Subscribe to `remoteVideoSourcesDidChange` callback.</span>
-  useEffect(<span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-keyword">if</span> (!audioVideo) {
-      <span class="hljs-keyword">return</span>;
-    }
-
-    <span class="hljs-keyword">const</span> observer: AudioVideoObserver = {
-      <span class="hljs-attr">remoteVideoSourcesDidChange</span>: (videoSources: VideoSource[]): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
-        <span class="hljs-comment">// Update your `roster` object to track the remote video sources state.</span>
-        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> roster) {
-          roster[attendeeId].hasVideo = <span class="hljs-literal">false</span>;
-        }
-        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> source <span class="hljs-keyword">of</span> videoSources) {
-          <span class="hljs-keyword">const</span> attendeeId = source.attendee.attendeeId;
-          roster[attendeeId].hasVideo = <span class="hljs-literal">true</span>;
-        }
-      },
-    };
-
-    audioVideo.addObserver(observer);
-
-    <span class="hljs-keyword">return</span> (): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> audioVideo.removeObserver(observer);
-  }, [audioVideo]);
-
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">GridStateContext.Provider</span> <span class="hljs-attr">value</span>=<span class="hljs-string">{value}</span> &gt;</span>
-      { children }
-    <span class="hljs-tag">&lt;/<span class="hljs-name">GridStateContext.Provider</span>&gt;</span></span>
-  );
-};
+<p>Create a <a href="https://reactjs.org/docs/context.html#contextprovider"><code>Context Provider</code></a> to use <code>priorityBasedDownlinkPolicy</code>.</p>
+<ol>
+<li><p>Import the previous <code>VideoPriorityBasedPolicy</code> instance in your provider.</p>
+</li>
+<li><p>Create an observer and subscribe to the <code>tileWillBePausedByDownlinkPolicy</code> and <code>tileWillBeUnpausedByDownlinkPolicy</code> callbacks, so you can update the UI to notify the user that the related video tile has been paused or unpaused.</p>
+</li>
+<li><p>Create an observer and subscribe to the <code>remoteVideoSourcesDidChange</code> callback, so you can track the states of remote video sources for future subscriptions. You need a variable like <code>roster: any = {}</code> to keep track of which attendees in the meeting are publishing videos. Check <a href="https://github.com/aws/amazon-chime-sdk-js#attendees">use case 24</a> for more details.</p>
+<ul>
+<li>Note: You may want to keep the content sharing in your <code>roster</code>, depending on your needs.</li>
+</ul>
+</li>
+</ol>
+<pre><code class="language-jsx"><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">useAudioVideo</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-component-library-react&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">priorityBasedPolicy</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;./meetingConfig&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">GridStateProvider</span><span class="hl-1">: </span><span class="hl-11">React</span><span class="hl-1">.</span><span class="hl-11">FC</span><span class="hl-1"> = ({ </span><span class="hl-0">children</span><span class="hl-1"> }) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">audioVideo</span><span class="hl-1"> = </span><span class="hl-6">useAudioVideo</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-7">// Subscribe to `tileWillBePausedByDownlinkPolicy` and</span><br/><span class="hl-1">  </span><span class="hl-7">// `tileWillBeUnpausedByDownlinkPolicy` callbacks.</span><br/><span class="hl-1">  </span><span class="hl-6">useEffect</span><span class="hl-1">(() </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">if</span><span class="hl-1"> (!</span><span class="hl-0">priorityBasedPolicy</span><span class="hl-1"> || !</span><span class="hl-0">audioVideo</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-2">return</span><span class="hl-1">;</span><br/><span class="hl-1">    }</span><br/><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">observer</span><span class="hl-1">: </span><span class="hl-11">VideoDownlinkObserver</span><span class="hl-1"> = {</span><br/><span class="hl-1">      </span><span class="hl-6">tileWillBePausedByDownlinkPolicy</span><span class="hl-0">:</span><span class="hl-1"> (</span><span class="hl-0">tileId</span><span class="hl-1">: </span><span class="hl-11">number</span><span class="hl-1">): </span><span class="hl-11">void</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> = </span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">getVideoTile</span><span class="hl-1">(</span><span class="hl-0">tileId</span><span class="hl-1">)?.</span><span class="hl-6">state</span><span class="hl-1">().</span><span class="hl-0">boundAttendeeId</span><span class="hl-1">;</span><br/><span class="hl-1">        </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">attendeeId</span><span class="hl-1">) {</span><br/><span class="hl-1">          </span><span class="hl-7">// Update the UI to notify user the pause of</span><br/><span class="hl-1">          </span><span class="hl-7">// video tile according to below property.</span><br/><span class="hl-1">          </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">paused</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><span class="hl-1">        }</span><br/><span class="hl-1">      },</span><br/><span class="hl-1">      </span><span class="hl-6">tileWillBeUnpausedByDownlinkPolicy</span><span class="hl-0">:</span><span class="hl-1"> (</span><span class="hl-0">tileId</span><span class="hl-1">: </span><span class="hl-11">number</span><span class="hl-1">): </span><span class="hl-11">void</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> = </span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">getVideoTile</span><span class="hl-1">(</span><span class="hl-0">tileId</span><span class="hl-1">)?.</span><span class="hl-6">state</span><span class="hl-1">().</span><span class="hl-0">boundAttendeeId</span><span class="hl-1">;</span><br/><span class="hl-1">        </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">attendeeId</span><span class="hl-1">) {</span><br/><span class="hl-1">          </span><span class="hl-7">// Update the UI to notify user the unpause </span><br/><span class="hl-1">          </span><span class="hl-7">// of video tile according to below property.</span><br/><span class="hl-1">          </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">paused</span><span class="hl-1"> = </span><span class="hl-4">false</span><span class="hl-1">;</span><br/><span class="hl-1">        }</span><br/><span class="hl-1">      },</span><br/><span class="hl-1">    };</span><br/><br/><span class="hl-1">    </span><span class="hl-0">priorityBasedPolicy</span><span class="hl-1">.</span><span class="hl-6">addObserver</span><span class="hl-1">(</span><span class="hl-0">observer</span><span class="hl-1">);</span><br/><br/><span class="hl-1">    </span><span class="hl-2">return</span><span class="hl-1"> (): </span><span class="hl-11">void</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">priorityBasedPolicy</span><span class="hl-1">.</span><span class="hl-6">removeObserver</span><span class="hl-1">(</span><span class="hl-0">observer</span><span class="hl-1">);</span><br/><span class="hl-1">  }, [</span><span class="hl-0">audioVideo</span><span class="hl-1">]);</span><br/><br/><span class="hl-1">  </span><span class="hl-7">// Subscribe to `remoteVideoSourcesDidChange` callback.</span><br/><span class="hl-1">  </span><span class="hl-6">useEffect</span><span class="hl-1">(() </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">if</span><span class="hl-1"> (!</span><span class="hl-0">audioVideo</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-2">return</span><span class="hl-1">;</span><br/><span class="hl-1">    }</span><br/><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">observer</span><span class="hl-1">: </span><span class="hl-11">AudioVideoObserver</span><span class="hl-1"> = {</span><br/><span class="hl-1">      </span><span class="hl-6">remoteVideoSourcesDidChange</span><span class="hl-0">:</span><span class="hl-1"> (</span><span class="hl-0">videoSources</span><span class="hl-1">: </span><span class="hl-11">VideoSource</span><span class="hl-1">[]): </span><span class="hl-11">void</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">// Update your `roster` object to track the remote video sources state.</span><br/><span class="hl-1">        </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> </span><span class="hl-4">in</span><span class="hl-1"> </span><span class="hl-0">roster</span><span class="hl-1">) {</span><br/><span class="hl-1">          </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">hasVideo</span><span class="hl-1"> = </span><span class="hl-4">false</span><span class="hl-1">;</span><br/><span class="hl-1">        }</span><br/><span class="hl-1">        </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">source</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-0">videoSources</span><span class="hl-1">) {</span><br/><span class="hl-1">          </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> = </span><span class="hl-0">source</span><span class="hl-1">.</span><span class="hl-0">attendee</span><span class="hl-1">.</span><span class="hl-0">attendeeId</span><span class="hl-1">;</span><br/><span class="hl-1">          </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">hasVideo</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><span class="hl-1">        }</span><br/><span class="hl-1">      },</span><br/><span class="hl-1">    };</span><br/><br/><span class="hl-1">    </span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">addObserver</span><span class="hl-1">(</span><span class="hl-0">observer</span><span class="hl-1">);</span><br/><br/><span class="hl-1">    </span><span class="hl-2">return</span><span class="hl-1"> (): </span><span class="hl-11">void</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">removeObserver</span><span class="hl-1">(</span><span class="hl-0">observer</span><span class="hl-1">);</span><br/><span class="hl-1">  }, [</span><span class="hl-0">audioVideo</span><span class="hl-1">]);</span><br/><br/><span class="hl-1">  </span><span class="hl-2">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;</span><span class="hl-11">GridStateContext.Provider</span><span class="hl-1"> </span><span class="hl-15">value</span><span class="hl-1">=</span><span class="hl-4">{</span><span class="hl-0">value</span><span class="hl-4">}</span><span class="hl-1"> </span><span class="hl-13">&gt;</span><br/><span class="hl-1">      </span><span class="hl-4">{</span><span class="hl-9"> </span><span class="hl-0">children</span><span class="hl-9"> </span><span class="hl-4">}</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;/</span><span class="hl-11">GridStateContext.Provider</span><span class="hl-13">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span>
 </code></pre>
-					<p>Call the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#apis-and-usage"><code>chooseRemoteVideoSources(sources: VideoPreference[])</code></a> API to set which remote video sources to receive and their related preferences (<a href="https://aws.github.io/amazon-chime-sdk-js/classes/videopreference.html"><code>VideoPreference</code></a>).</p>
-					<pre><code class="language-js">VideoPreference(attendeeId, priority, targetSize?)
-<span class="hljs-comment">// `attendeeId: string`: Attendee ID of the video source.</span>
-<span class="hljs-comment">// `priority: number`: The relative priority of this video source against others.</span>
-<span class="hljs-comment">// `targetSize?: TargetDisplaySize`: The desired maximum simulcast layers to receive.</span>
+<p>Call the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#apis-and-usage"><code>chooseRemoteVideoSources(sources: VideoPreference[])</code></a> API to set which remote video sources to receive and their related preferences (<a href="https://aws.github.io/amazon-chime-sdk-js/classes/videopreference.html"><code>VideoPreference</code></a>).</p>
+<pre><code class="language-js"><span class="hl-6">VideoPreference</span><span class="hl-1">(</span><span class="hl-0">attendeeId</span><span class="hl-1">, </span><span class="hl-0">priority</span><span class="hl-1">, </span><span class="hl-0">targetSize</span><span class="hl-1">?)</span><br/><span class="hl-7">// `attendeeId: string`: Attendee ID of the video source.</span><br/><span class="hl-7">// `priority: number`: The relative priority of this video source against others.</span><br/><span class="hl-7">// `targetSize?: TargetDisplaySize`: The desired maximum simulcast layers to receive.</span>
 </code></pre>
-					<ul>
-						<li>Note: The <code>targetSize</code> doesn&#39;t work in this example, since <code>NScaleVideoUplinkBandwidthPolicy</code> only publishes one layer.</li>
-					</ul>
-					<pre><code class="language-jsx"><span class="hljs-comment">// In this example, only render up to ten remote video sources.</span>
-
-<span class="hljs-keyword">const</span> updateVideoPreferences = <span class="hljs-function">() =&gt;</span> {
-  <span class="hljs-comment">// Initialize `VideoPreferences`.</span>
-  <span class="hljs-keyword">const</span> videoPreferences = VideoPreferences.prepare();
-
-  <span class="hljs-keyword">let</span> numVideos = <span class="hljs-number">0</span>;
-
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> roster) {
-    <span class="hljs-keyword">if</span> (roster[attendeeId].hasVideo &amp;&amp; numVideos &lt; <span class="hljs-number">10</span>) {
-      <span class="hljs-comment">// Subscribe to the first ten remote video sources</span>
-      <span class="hljs-comment">// and set highest priority for them.</span>
-      videoPreferences.add(
-        <span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">1</span>, TargetDisplaySize.High)
-      );
-      numVideos += <span class="hljs-number">1</span>;
-    }
-    <span class="hljs-comment">// The remaining remote video sources are not subscribed,</span>
-    <span class="hljs-comment">// so they do not cost bandwidth.</span>
-  }
-
-  priorityBasedDownlinkPolicy.chooseRemoteVideoSources(
-    videoPreferences.build()
-  );
-};
+<ul>
+<li>Note: The <code>targetSize</code> doesn&#39;t work in this example, since <code>NScaleVideoUplinkBandwidthPolicy</code> only publishes one layer.</li>
+</ul>
+<pre><code class="language-jsx"><span class="hl-7">// In this example, only render up to ten remote video sources.</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">updateVideoPreferences</span><span class="hl-1"> = () </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">// Initialize `VideoPreferences`.</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">videoPreferences</span><span class="hl-1"> = </span><span class="hl-0">VideoPreferences</span><span class="hl-1">.</span><span class="hl-6">prepare</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-4">let</span><span class="hl-1"> </span><span class="hl-0">numVideos</span><span class="hl-1"> = </span><span class="hl-10">0</span><span class="hl-1">;</span><br/><br/><span class="hl-1">  </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> </span><span class="hl-4">in</span><span class="hl-1"> </span><span class="hl-0">roster</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">hasVideo</span><span class="hl-1"> &amp;&amp; </span><span class="hl-0">numVideos</span><span class="hl-1"> &lt; </span><span class="hl-10">10</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-7">// Subscribe to the first ten remote video sources</span><br/><span class="hl-1">      </span><span class="hl-7">// and set highest priority for them.</span><br/><span class="hl-1">      </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">add</span><span class="hl-1">(</span><br/><span class="hl-1">        </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPreference</span><span class="hl-1">(</span><span class="hl-0">attendeeId</span><span class="hl-1">, </span><span class="hl-10">1</span><span class="hl-1">, </span><span class="hl-0">TargetDisplaySize</span><span class="hl-1">.</span><span class="hl-0">High</span><span class="hl-1">)</span><br/><span class="hl-1">      );</span><br/><span class="hl-1">      </span><span class="hl-0">numVideos</span><span class="hl-1"> += </span><span class="hl-10">1</span><span class="hl-1">;</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">    </span><span class="hl-7">// The remaining remote video sources are not subscribed,</span><br/><span class="hl-1">    </span><span class="hl-7">// so they do not cost bandwidth.</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  </span><span class="hl-0">priorityBasedDownlinkPolicy</span><span class="hl-1">.</span><span class="hl-6">chooseRemoteVideoSources</span><span class="hl-1">(</span><br/><span class="hl-1">    </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">build</span><span class="hl-1">()</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span>
 </code></pre>
-					<a href="#case-3-featured-layout" id="case-3-featured-layout" style="color: inherit; text-decoration: none;">
-						<h3>Case 3: Featured Layout</h3>
-					</a>
-					<p>The featured layout is designed to focus on important video sources such as an active speaker or content share. The featured tile displays a video source in a large area while other video sources (up to <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">25 video tiles</a>) are displayed as smaller tiles.</p>
-					<p><img src="../media/featured_layout_example.png" alt="featured layout example"></p>
-					<p>For layouts where all users feature the same content source or active speaker, the <code>NScaleVideoUplinkBandwidthPolicy</code> and <code>VideoPriorityBasedPolicy</code> are recommended.  The <code>NScaleVideoUplinkBandwidthPolicy</code> automatically prioritizes the content share and boosts the resolution of the active speaker video. The <code>VideoPriorityBasedPolicy</code> ensures the bandwidth is efficiently used to display only the video in the featured tile.</p>
-					<ul>
-						<li>Note: Ensure that you’re listening to changes in active speakers and passing them to the <code>VideoPriorityBasedPolicy</code>.</li>
-					</ul>
-					<a href="#javascript-sdk-implementation-2" id="javascript-sdk-implementation-2" style="color: inherit; text-decoration: none;">
-						<h4>JavaScript SDK Implementation</h4>
-					</a>
-					<p>Setup the <code>VideoPriorityBasedPolicy</code>, as described in <a href="#javascript-sdk-implementation-1">case 2</a>.</p>
-					<p>Listen to the changes in active speakers and track their states.</p>
-					<pre><code class="language-js"><span class="hljs-keyword">import</span> { DefaultActiveSpeakerPolicy } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
-<span class="hljs-keyword">const</span> activeSpeakerCallback = (attendeeIds: string[]): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
-  <span class="hljs-comment">// Reset `active` property</span>
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> roster) {
-    roster[attendeeId].active = <span class="hljs-literal">false</span>;
-  }
+<a href="#case-3-featured-layout" id="case-3-featured-layout" style="color: inherit; text-decoration: none;">
+  <h3>Case 3: Featured Layout</h3>
+</a>
+<p>The featured layout is designed to focus on important video sources such as an active speaker or content share. The featured tile displays a video source in a large area while other video sources (up to <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">25 video tiles</a>) are displayed as smaller tiles.</p>
+<p><img src="../media/featured_layout_example.png" alt="featured layout example"></p>
+<p>For layouts where all users feature the same content source or active speaker, the <code>NScaleVideoUplinkBandwidthPolicy</code> and <code>VideoPriorityBasedPolicy</code> are recommended.  The <code>NScaleVideoUplinkBandwidthPolicy</code> automatically prioritizes the content share and boosts the resolution of the active speaker video. The <code>VideoPriorityBasedPolicy</code> ensures the bandwidth is efficiently used to display only the video in the featured tile.</p>
+<ul>
+<li>Note: Ensure that you’re listening to changes in active speakers and passing them to the <code>VideoPriorityBasedPolicy</code>.</li>
+</ul>
 
-  <span class="hljs-comment">// Set `active` to true for the most active speaker.</span>
-  <span class="hljs-comment">// The `attendeeIds` returned by the `activeSpeakerCallback`</span>
-  <span class="hljs-comment">// are sorted by the most active</span>
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">of</span> attendeeIds) {
-    <span class="hljs-keyword">if</span> (roster[attendeeId]) {
-      roster[attendeeId].active = <span class="hljs-literal">true</span>;
-      <span class="hljs-keyword">break</span>;
-    }
-  }
-
-  <span class="hljs-comment">// Update video preferences whenever there are changes of active speakers.</span>
-  updateVideoPreferences();
-};
-
-meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
-  <span class="hljs-keyword">new</span> DefaultActiveSpeakerPolicy(),
-  activeSpeakerCallback
-);
+<a href="#javascript-sdk-implementation-2" id="javascript-sdk-implementation-2" style="color: inherit; text-decoration: none;">
+  <h4>JavaScript SDK Implementation</h4>
+</a>
+<p>Setup the <code>VideoPriorityBasedPolicy</code>, as described in <a href="#javascript-sdk-implementation-1">case 2</a>.</p>
+<p>Listen to the changes in active speakers and track their states.</p>
+<pre><code class="language-js"><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">DefaultActiveSpeakerPolicy</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">activeSpeakerCallback</span><span class="hl-1"> = (</span><span class="hl-0">attendeeIds</span><span class="hl-1">: </span><span class="hl-11">string</span><span class="hl-1">[]): </span><span class="hl-11">void</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">// Reset `active` property</span><br/><span class="hl-1">  </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> </span><span class="hl-4">in</span><span class="hl-1"> </span><span class="hl-0">roster</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">active</span><span class="hl-1"> = </span><span class="hl-4">false</span><span class="hl-1">;</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  </span><span class="hl-7">// Set `active` to true for the most active speaker.</span><br/><span class="hl-1">  </span><span class="hl-7">// The `attendeeIds` returned by the `activeSpeakerCallback` </span><br/><span class="hl-1">  </span><span class="hl-7">// are sorted by the most active</span><br/><span class="hl-1">  </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-0">attendeeIds</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">]) {</span><br/><span class="hl-1">      </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">active</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><span class="hl-1">      </span><span class="hl-2">break</span><span class="hl-1">;</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  </span><span class="hl-7">// Update video preferences whenever there are changes of active speakers.</span><br/><span class="hl-1">  </span><span class="hl-6">updateVideoPreferences</span><span class="hl-1">();</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">subscribeToActiveSpeakerDetector</span><span class="hl-1">(</span><br/><span class="hl-1">  </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultActiveSpeakerPolicy</span><span class="hl-1">(),</span><br/><span class="hl-1">  </span><span class="hl-0">activeSpeakerCallback</span><br/><span class="hl-1">);</span>
 </code></pre>
-					<p>Update video preferences whenever there are changes to active speakers.</p>
-					<pre><code class="language-js"><span class="hljs-comment">// Video source priority in this example:</span>
-<span class="hljs-comment">// Content share &gt; active speakers &gt; others</span>
-
-<span class="hljs-keyword">const</span> updateVideoPreferences = <span class="hljs-function">() =&gt;</span> {
-  <span class="hljs-comment">// Initialize `VideoPreferences`.</span>
-  <span class="hljs-keyword">const</span> videoPreferences = VideoPreferences.prepare();
-
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> roster) {
-    <span class="hljs-keyword">if</span> (roster[attendeeId].hasVideo) {
-      <span class="hljs-keyword">if</span> (
-        <span class="hljs-keyword">new</span> DefaultModality(attendeeId).hasModality(
-          DefaultModality.MODALITY_CONTENT
-        )
-      ) {
-        <span class="hljs-comment">// Prioritize content share.</span>
-        videoPreferences.add(
-          <span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">1</span>, TargetDisplaySize.High)
-        );
-      } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (roster[attendeeId].active) {
-        <span class="hljs-comment">// Prioritize active speakers.</span>
-        videoPreferences.add(
-          <span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">2</span>, TargetDisplaySize.High)
-        );
-      } <span class="hljs-keyword">else</span> {
-        <span class="hljs-comment">// Handle the rest of video sources.</span>
-        videoPreferences.add(
-          <span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">3</span>, TargetDisplaySize.Low)
-        );
-      }
-    }
-  }
-
-  priorityBasedDownlinkPolicy.chooseRemoteVideoSources(
-    videoPreferences.build()
-  );
-};
+<p>Update video preferences whenever there are changes to active speakers.</p>
+<pre><code class="language-js"><span class="hl-7">// Video source priority in this example:</span><br/><span class="hl-7">// Content share &gt; active speakers &gt; others</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">updateVideoPreferences</span><span class="hl-1"> = () </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">// Initialize `VideoPreferences`.</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">videoPreferences</span><span class="hl-1"> = </span><span class="hl-0">VideoPreferences</span><span class="hl-1">.</span><span class="hl-6">prepare</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> </span><span class="hl-4">in</span><span class="hl-1"> </span><span class="hl-0">roster</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">hasVideo</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-2">if</span><span class="hl-1"> (</span><br/><span class="hl-1">        </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultModality</span><span class="hl-1">(</span><span class="hl-0">attendeeId</span><span class="hl-1">).</span><span class="hl-6">hasModality</span><span class="hl-1">(</span><br/><span class="hl-1">          </span><span class="hl-0">DefaultModality</span><span class="hl-1">.</span><span class="hl-5">MODALITY_CONTENT</span><br/><span class="hl-1">        )</span><br/><span class="hl-1">      ) {</span><br/><span class="hl-1">        </span><span class="hl-7">// Prioritize content share.</span><br/><span class="hl-1">        </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">add</span><span class="hl-1">(</span><br/><span class="hl-1">          </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPreference</span><span class="hl-1">(</span><span class="hl-0">attendeeId</span><span class="hl-1">, </span><span class="hl-10">1</span><span class="hl-1">, </span><span class="hl-0">TargetDisplaySize</span><span class="hl-1">.</span><span class="hl-0">High</span><span class="hl-1">)</span><br/><span class="hl-1">        );</span><br/><span class="hl-1">      } </span><span class="hl-2">else</span><span class="hl-1"> </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">active</span><span class="hl-1">) {</span><br/><span class="hl-1">        </span><span class="hl-7">// Prioritize active speakers.</span><br/><span class="hl-1">        </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">add</span><span class="hl-1">(</span><br/><span class="hl-1">          </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPreference</span><span class="hl-1">(</span><span class="hl-0">attendeeId</span><span class="hl-1">, </span><span class="hl-10">2</span><span class="hl-1">, </span><span class="hl-0">TargetDisplaySize</span><span class="hl-1">.</span><span class="hl-0">High</span><span class="hl-1">)</span><br/><span class="hl-1">        );</span><br/><span class="hl-1">      } </span><span class="hl-2">else</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">// Handle the rest of video sources.</span><br/><span class="hl-1">        </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">add</span><span class="hl-1">(</span><br/><span class="hl-1">          </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPreference</span><span class="hl-1">(</span><span class="hl-0">attendeeId</span><span class="hl-1">, </span><span class="hl-10">3</span><span class="hl-1">, </span><span class="hl-0">TargetDisplaySize</span><span class="hl-1">.</span><span class="hl-0">Low</span><span class="hl-1">)</span><br/><span class="hl-1">        );</span><br/><span class="hl-1">      }</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  </span><span class="hl-0">priorityBasedDownlinkPolicy</span><span class="hl-1">.</span><span class="hl-6">chooseRemoteVideoSources</span><span class="hl-1">(</span><br/><span class="hl-1">    </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">build</span><span class="hl-1">()</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span>
 </code></pre>
-					<a href="#react-components-library-implementation-2" id="react-components-library-implementation-2" style="color: inherit; text-decoration: none;">
-						<h4>React Components Library Implementation</h4>
-					</a>
-					<p>You can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component from the React Components Library. The <code>featured</code> layout is used by default.</p>
-					<ul>
-						<li>Note: The <code>featured</code> layout <code>VideoTileGrid</code> component displays either the content sharing video or the active speaker video in the featured tile. If both are present, the content sharing video is displayed. If neither is present, there is no featured tile and all video tiles are of fixed and equal size, like in the gallery layout.</li>
-					</ul>
-					<pre><code class="language-jsx"><span class="hljs-keyword">import</span> {
-  MeetingProvider,
-  VideoTileGrid
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-component-library-react&#x27;</span>;
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> (
-  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MeetingProvider</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">VideoTileGrid</span> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-name">MeetingProvider</span>&gt;</span></span>
-);
+<a href="#react-components-library-implementation-2" id="react-components-library-implementation-2" style="color: inherit; text-decoration: none;">
+  <h4>React Components Library Implementation</h4>
+</a>
+<p>You can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component from the React Components Library. The <code>featured</code> layout is used by default.</p>
+<ul>
+<li>Note: The <code>featured</code> layout <code>VideoTileGrid</code> component displays either the content sharing video or the active speaker video in the featured tile. If both are present, the content sharing video is displayed. If neither is present, there is no featured tile and all video tiles are of fixed and equal size, like in the gallery layout.</li>
+</ul>
+<pre><code class="language-jsx"><span class="hl-2">import</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">MeetingProvider</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">VideoTileGrid</span><br/><span class="hl-1">} </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-component-library-react&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">App</span><span class="hl-1"> = () </span><span class="hl-4">=&gt;</span><span class="hl-1"> (</span><br/><span class="hl-1">  </span><span class="hl-13">&lt;</span><span class="hl-11">MeetingProvider</span><span class="hl-13">&gt;</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;</span><span class="hl-11">VideoTileGrid</span><span class="hl-1"> </span><span class="hl-13">/&gt;</span><br/><span class="hl-1">  </span><span class="hl-13">&lt;/</span><span class="hl-11">MeetingProvider</span><span class="hl-13">&gt;</span><br/><span class="hl-1">);</span>
 </code></pre>
-					<p>Then create a provider to handle the <code>VideoPriorityBasedPolicy</code> and video preferences update logic.</p>
-					<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in the <a href="#react-components-library-implementation-1">case 2</a>.</p>
-					<p>Listen to the changes in active speakers and track their states.</p>
-					<ul>
-						<li>The React Components Library provides the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-hooks-useactivespeakersstate--page"><code>useActiveSpeakersState</code></a> hook that returns a list of attendee IDs of the active speaker. Use this hook directly.</li>
-					</ul>
-					<pre><code class="language-jsx"><span class="hljs-keyword">import</span> { useAudioVideo, useActiveSpeakersState } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-component-library-react&#x27;</span>;
-<span class="hljs-keyword">import</span> { priorityBasedPolicy } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./meetingConfig&#x27;</span>;
-
-<span class="hljs-keyword">const</span> GridStateProvider: React.FC = <span class="hljs-function">(<span class="hljs-params">{ children }</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> audioVideo = useAudioVideo();
-  <span class="hljs-keyword">const</span> activeSpeakers = useActiveSpeakersState();
-
-  <span class="hljs-comment">// Set up observers and subscribe to callbacks.</span>
-  <span class="hljs-comment">// ...</span>
-
-  useEffect(<span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-comment">// Reset `active` property</span>
-    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> roster) {
-      roster[attendeeId].active = <span class="hljs-literal">false</span>;
-    }
-
-    <span class="hljs-comment">// Set `active` to true for the most active speaker.</span>
-    <span class="hljs-comment">// The `activeSpeakers` returned by the `useActiveSpeakersState`</span>
-    <span class="hljs-comment">// hook are sorted by the most active.</span>
-    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">of</span> activeSpeakers) {
-      <span class="hljs-keyword">if</span> (roster[attendeeId]) {
-        roster[attendeeId].active = <span class="hljs-literal">true</span>;
-        <span class="hljs-keyword">break</span>;
-      }
-    }
-
-    <span class="hljs-comment">// Update video preferences whenever there are changes of active speakers.</span>
-    updateVideoPreferences();
-  }, [activeSpeakers]);
-
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">GridStateContext.Provider</span> <span class="hljs-attr">value</span>= <span class="hljs-string">{</span> <span class="hljs-attr">value</span> } &gt;</span>
-      { children }
-    <span class="hljs-tag">&lt;/<span class="hljs-name">GridStateContext.Provider</span>&gt;</span></span>
-  );
-};
+<p>Then create a provider to handle the <code>VideoPriorityBasedPolicy</code> and video preferences update logic.</p>
+<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in the <a href="#react-components-library-implementation-1">case 2</a>.</p>
+<p>Listen to the changes in active speakers and track their states.</p>
+<ul>
+<li>The React Components Library provides the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-hooks-useactivespeakersstate--page"><code>useActiveSpeakersState</code></a> hook that returns a list of attendee IDs of the active speaker. Use this hook directly.</li>
+</ul>
+<pre><code class="language-jsx"><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">useAudioVideo</span><span class="hl-1">, </span><span class="hl-0">useActiveSpeakersState</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-component-library-react&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">priorityBasedPolicy</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;./meetingConfig&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">GridStateProvider</span><span class="hl-1">: </span><span class="hl-11">React</span><span class="hl-1">.</span><span class="hl-11">FC</span><span class="hl-1"> = ({ </span><span class="hl-0">children</span><span class="hl-1"> }) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">audioVideo</span><span class="hl-1"> = </span><span class="hl-6">useAudioVideo</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">activeSpeakers</span><span class="hl-1"> = </span><span class="hl-6">useActiveSpeakersState</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-7">// Set up observers and subscribe to callbacks.</span><br/><span class="hl-1">  </span><span class="hl-7">// ...</span><br/><span class="hl-1">  </span><br/><span class="hl-1">  </span><span class="hl-6">useEffect</span><span class="hl-1">(() </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-7">// Reset `active` property</span><br/><span class="hl-1">    </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> </span><span class="hl-4">in</span><span class="hl-1"> </span><span class="hl-0">roster</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">active</span><span class="hl-1"> = </span><span class="hl-4">false</span><span class="hl-1">;</span><br/><span class="hl-1">    }</span><br/><br/><span class="hl-1">    </span><span class="hl-7">// Set `active` to true for the most active speaker.</span><br/><span class="hl-1">    </span><span class="hl-7">// The `activeSpeakers` returned by the `useActiveSpeakersState`</span><br/><span class="hl-1">    </span><span class="hl-7">// hook are sorted by the most active.</span><br/><span class="hl-1">    </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-0">activeSpeakers</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">]) {</span><br/><span class="hl-1">        </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">active</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><span class="hl-1">        </span><span class="hl-2">break</span><span class="hl-1">;</span><br/><span class="hl-1">      }</span><br/><span class="hl-1">    }</span><br/><br/><span class="hl-1">    </span><span class="hl-7">// Update video preferences whenever there are changes of active speakers.</span><br/><span class="hl-1">    </span><span class="hl-6">updateVideoPreferences</span><span class="hl-1">();</span><br/><span class="hl-1">  }, [</span><span class="hl-0">activeSpeakers</span><span class="hl-1">]);</span><br/><br/><span class="hl-1">  </span><span class="hl-2">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;</span><span class="hl-11">GridStateContext.Provider</span><span class="hl-1"> </span><span class="hl-15">value</span><span class="hl-1">= </span><span class="hl-4">{</span><span class="hl-9"> </span><span class="hl-0">value</span><span class="hl-9"> </span><span class="hl-4">}</span><span class="hl-1"> </span><span class="hl-13">&gt;</span><br/><span class="hl-1">      </span><span class="hl-4">{</span><span class="hl-9"> </span><span class="hl-0">children</span><span class="hl-9"> </span><span class="hl-4">}</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;/</span><span class="hl-11">GridStateContext.Provider</span><span class="hl-13">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span>
 </code></pre>
-					<p>Update video preferences whenever there are changes to active speakers, as described in the above <a href="#javascript-sdk-implementation-3">JavaScript SDK Implementation</a>.</p>
-					<p>For layouts where different users feature different videos, the <code>SimulcastUplinkPolicy</code> and <code>VideoPriorityBasedPolicy</code> are recommended. The <code>SimulcastUplinkPolicy</code> sends multiple resolutions of the same video to the Chime servers. The <code>TargetDisplaySize</code> property can be specified according to the layout for each user in the <code>VideoPriorityBasedPolicy</code>, which allows for featured video to be rendered in high quality and the other videos are efficiently rendered according to display size.</p>
-					<a href="#javascript-sdk-implementation-3" id="javascript-sdk-implementation-3" style="color: inherit; text-decoration: none;">
-						<h4>JavaScript SDK Implementation</h4>
-					</a>
-					<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in <a href="#javascript-sdk-implementation-1">case 2</a>.</p>
-					<p>Enable the below feature flags in the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html"><code>MeetingSessionConfiguration</code></a> to use <code>SimulcastUplinkPolicy</code>. Refer to the code sample in the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#creating-a-simulcast-enabled-meeting">User Guide for Simulcast</a> for details.</p>
-					<pre><code class="language-js">configuration.enableUnifiedPlanForChromiumBasedBrowsers = <span class="hljs-literal">true</span>;
-configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowser = <span class="hljs-literal">true</span>;
+<p>Update video preferences whenever there are changes to active speakers, as described in the above <a href="#javascript-sdk-implementation-3">JavaScript SDK Implementation</a>.</p>
+<p>For layouts where different users feature different videos, the <code>SimulcastUplinkPolicy</code> and <code>VideoPriorityBasedPolicy</code> are recommended. The <code>SimulcastUplinkPolicy</code> sends multiple resolutions of the same video to the Chime servers. The <code>TargetDisplaySize</code> property can be specified according to the layout for each user in the <code>VideoPriorityBasedPolicy</code>, which allows for featured video to be rendered in high quality and the other videos are efficiently rendered according to display size.</p>
+
+<a href="#javascript-sdk-implementation-3" id="javascript-sdk-implementation-3" style="color: inherit; text-decoration: none;">
+  <h4>JavaScript SDK Implementation</h4>
+</a>
+<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in <a href="#javascript-sdk-implementation-1">case 2</a>.</p>
+<p>Enable the below feature flags in the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html"><code>MeetingSessionConfiguration</code></a> to use <code>SimulcastUplinkPolicy</code>. Refer to the code sample in the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#creating-a-simulcast-enabled-meeting">User Guide for Simulcast</a> for details.</p>
+<pre><code class="language-js"><span class="hl-0">configuration</span><span class="hl-1">.</span><span class="hl-0">enableUnifiedPlanForChromiumBasedBrowsers</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><span class="hl-0">configuration</span><span class="hl-1">.</span><span class="hl-0">enableSimulcastForUnifiedPlanChromiumBasedBrowser</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span>
 </code></pre>
-					<p>Update the video preferences whenever users feature or unfeature a video.</p>
-					<pre><code class="language-js"><span class="hljs-keyword">const</span> featureVideo = <span class="hljs-function">(<span class="hljs-params">attendeeId: string</span>) =&gt;</span> {
-  roster[attendeeId].featured = <span class="hljs-literal">true</span>;
-  updateVideoPreferences();
-};
-
-<span class="hljs-keyword">const</span> unfeatureVideo = <span class="hljs-function">(<span class="hljs-params">attendeeId: string</span>) =&gt;</span> {
-  roster[attendeeId].featured = <span class="hljs-literal">false</span>;
-  updateVideoPreferences();
-};
-
-<span class="hljs-keyword">const</span> updateVideoPreferences = <span class="hljs-function">() =&gt;</span> {
-  <span class="hljs-comment">// Initialize `VideoPreferences`.</span>
-  <span class="hljs-keyword">const</span> videoPreferences = VideoPreferences.prepare();
-
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> roster) {
-    <span class="hljs-keyword">if</span> (roster[attendeeId].hasVideo) {
-      <span class="hljs-keyword">if</span> (roster[attendeeId].featured) {
-        <span class="hljs-comment">// Prioritize featured video sources.</span>
-        videoPreferences.add(
-          <span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">1</span>, TargetDisplaySize.High)
-        );
-      } <span class="hljs-keyword">else</span> {
-        <span class="hljs-comment">// Handle the rest of video sources.</span>
-        videoPreferences.add(
-          <span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">2</span>, TargetDisplaySize.Low)
-        );
-      }
-    }
-  }
-
-  priorityBasedDownlinkPolicy.chooseRemoteVideoSources(
-    videoPreferences.build()
-  );
-};
+<p>Update the video preferences whenever users feature or unfeature a video.</p>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">featureVideo</span><span class="hl-1"> = (</span><span class="hl-0">attendeeId</span><span class="hl-1">: </span><span class="hl-11">string</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">featured</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-6">updateVideoPreferences</span><span class="hl-1">();</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">unfeatureVideo</span><span class="hl-1"> = (</span><span class="hl-0">attendeeId</span><span class="hl-1">: </span><span class="hl-11">string</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">featured</span><span class="hl-1"> = </span><span class="hl-4">false</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-6">updateVideoPreferences</span><span class="hl-1">();</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">updateVideoPreferences</span><span class="hl-1"> = () </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">// Initialize `VideoPreferences`.</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">videoPreferences</span><span class="hl-1"> = </span><span class="hl-0">VideoPreferences</span><span class="hl-1">.</span><span class="hl-6">prepare</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-2">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeId</span><span class="hl-1"> </span><span class="hl-4">in</span><span class="hl-1"> </span><span class="hl-0">roster</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">hasVideo</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">roster</span><span class="hl-1">[</span><span class="hl-0">attendeeId</span><span class="hl-1">].</span><span class="hl-0">featured</span><span class="hl-1">) {</span><br/><span class="hl-1">        </span><span class="hl-7">// Prioritize featured video sources.</span><br/><span class="hl-1">        </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">add</span><span class="hl-1">(</span><br/><span class="hl-1">          </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPreference</span><span class="hl-1">(</span><span class="hl-0">attendeeId</span><span class="hl-1">, </span><span class="hl-10">1</span><span class="hl-1">, </span><span class="hl-0">TargetDisplaySize</span><span class="hl-1">.</span><span class="hl-0">High</span><span class="hl-1">)</span><br/><span class="hl-1">        );</span><br/><span class="hl-1">      } </span><span class="hl-2">else</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">// Handle the rest of video sources.</span><br/><span class="hl-1">        </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">add</span><span class="hl-1">(</span><br/><span class="hl-1">          </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPreference</span><span class="hl-1">(</span><span class="hl-0">attendeeId</span><span class="hl-1">, </span><span class="hl-10">2</span><span class="hl-1">, </span><span class="hl-0">TargetDisplaySize</span><span class="hl-1">.</span><span class="hl-0">Low</span><span class="hl-1">)</span><br/><span class="hl-1">        );</span><br/><span class="hl-1">      }</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  </span><span class="hl-0">priorityBasedDownlinkPolicy</span><span class="hl-1">.</span><span class="hl-6">chooseRemoteVideoSources</span><span class="hl-1">(</span><br/><span class="hl-1">    </span><span class="hl-0">videoPreferences</span><span class="hl-1">.</span><span class="hl-6">build</span><span class="hl-1">()</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span>
 </code></pre>
-					<a href="#react-components-library-implementation-3" id="react-components-library-implementation-3" style="color: inherit; text-decoration: none;">
-						<h4>React Components Library Implementation</h4>
-					</a>
-					<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in <a href="#react-components-library-implementation-1">case 2</a>.</p>
-					<p>Update the <code>meetingConfig</code> object to use <code>SimulcastUplinkPolicy</code>.</p>
-					<pre><code class="language-jsx"><span class="hljs-comment">// In &#x27;meetingConfig.ts&#x27; file.</span>
 
-<span class="hljs-keyword">import</span> {
-  ConsoleLogger,
-  LogLevel,
-  VideoPriorityBasedPolicy,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
-
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;SDK&#x27;</span>, LogLevel.INFO);
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> priorityBasedPolicy = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicy(logger);
-
-<span class="hljs-keyword">const</span> meetingConfig = {
-  <span class="hljs-comment">// Add this line to use `SimulcastUplinkPolicy`.</span>
-  <span class="hljs-attr">simulcastEnabled</span>: <span class="hljs-literal">true</span>,
-  logger,
-  <span class="hljs-attr">videoDownlinkBandwidthPolicy</span>: priorityBasedPolicy,
-};
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> meetingConfig;
+<a href="#react-components-library-implementation-3" id="react-components-library-implementation-3" style="color: inherit; text-decoration: none;">
+  <h4>React Components Library Implementation</h4>
+</a>
+<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in <a href="#react-components-library-implementation-1">case 2</a>.</p>
+<p>Update the <code>meetingConfig</code> object to use <code>SimulcastUplinkPolicy</code>.</p>
+<pre><code class="language-jsx"><span class="hl-7">// In &#39;meetingConfig.ts&#39; file.</span><br/><br/><span class="hl-2">import</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">ConsoleLogger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">LogLevel</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">VideoPriorityBasedPolicy</span><span class="hl-1">,</span><br/><span class="hl-1">} </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">logger</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">ConsoleLogger</span><span class="hl-1">(</span><span class="hl-3">&#39;SDK&#39;</span><span class="hl-1">, </span><span class="hl-0">LogLevel</span><span class="hl-1">.</span><span class="hl-5">INFO</span><span class="hl-1">);</span><br/><span class="hl-2">export</span><span class="hl-1"> </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">priorityBasedPolicy</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPriorityBasedPolicy</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">);</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">meetingConfig</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-7">// Add this line to use `SimulcastUplinkPolicy`.</span><br/><span class="hl-1">  </span><span class="hl-0">simulcastEnabled:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">logger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">videoDownlinkBandwidthPolicy:</span><span class="hl-1"> </span><span class="hl-0">priorityBasedPolicy</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-2">export</span><span class="hl-1"> </span><span class="hl-2">default</span><span class="hl-1"> </span><span class="hl-0">meetingConfig</span><span class="hl-1">;</span>
 </code></pre>
-					<p>Setup the <code>MeetingProvider</code> using the <code>meetingConfig</code>.</p>
-					<pre><code class="language-jsx"><span class="hljs-keyword">import</span> { MeetingProvider } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-component-library-react&#x27;</span>;
-<span class="hljs-keyword">import</span> meetingConfig <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./meetingConfig&#x27;</span>;
-
-<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> (
-  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MeetingProvider</span> {<span class="hljs-attr">...meetingConfig</span>}&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">MyApp</span> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-name">MeetingProvider</span>&gt;</span></span>
-);
+<p>Setup the <code>MeetingProvider</code> using the <code>meetingConfig</code>.</p>
+<pre><code class="language-jsx"><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">MeetingProvider</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-component-library-react&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">import</span><span class="hl-1"> </span><span class="hl-0">meetingConfig</span><span class="hl-1"> </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;./meetingConfig&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-6">App</span><span class="hl-1"> = () </span><span class="hl-4">=&gt;</span><span class="hl-1"> (</span><br/><span class="hl-1">  </span><span class="hl-13">&lt;</span><span class="hl-11">MeetingProvider</span><span class="hl-1"> </span><span class="hl-4">{</span><span class="hl-1">...</span><span class="hl-0">meetingConfig</span><span class="hl-4">}</span><span class="hl-13">&gt;</span><br/><span class="hl-1">    </span><span class="hl-13">&lt;</span><span class="hl-11">MyApp</span><span class="hl-1"> </span><span class="hl-13">/&gt;</span><br/><span class="hl-1">  </span><span class="hl-13">&lt;/</span><span class="hl-11">MeetingProvider</span><span class="hl-13">&gt;</span><br/><span class="hl-1">);</span>
 </code></pre>
-					<p>Update the video preferences whenever users feature a video, as described in the above <a href="#javascript-sdk-implementation-3">JavaScript SDK Implementation</a>.</p>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Video%20Layout%20feedback">Give feedback on this guide</a></p>
-				</div>
-			</section>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="../assets/js/main.js"></script>
-</body>
-</html>
+<p>Update the video preferences whenever users feature a video, as described in the above <a href="#javascript-sdk-implementation-3">JavaScript SDK Implementation</a>.</p>
+<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Video%20Layout%20feedback">Give feedback on this guide</a></p>
+</div></div></section></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class=""><a href="../modules.html">Exports</a></li><li class=" tsd-kind-namespace"><a href="APIOverview.html">APIOverview</a></li><li class=" tsd-kind-namespace"><a href="AmazonVoice_Focus.html">Amazon<wbr/>Voice_<wbr/>Focus</a></li><li class=" tsd-kind-namespace"><a href="BackgroundFilter_Video_Processor.html">Background<wbr/>Filter_<wbr/>Video_<wbr/>Processor</a></li><li class=" tsd-kind-namespace"><a href="ClientEvent_Ingestion.html">Client<wbr/>Event_<wbr/>Ingestion</a></li><li class=" tsd-kind-namespace"><a href="ContentSecurity_Policy.html">Content<wbr/>Security_<wbr/>Policy</a></li><li class=" tsd-kind-namespace"><a href="ContentShare.html">Content<wbr/>Share</a></li><li class=" tsd-kind-namespace"><a href="FAQs.html">FAQs</a></li><li class=" tsd-kind-namespace"><a href="GettingStarted.html">Getting<wbr/>Started</a></li><li class=" tsd-kind-namespace"><a href="MeetingEvents.html">Meeting<wbr/>Events</a></li><li class=" tsd-kind-namespace"><a href="Migrationto_2_0.html">Migrationto_<wbr/>2_<wbr/>0</a></li><li class=" tsd-kind-namespace"><a href="Migrationto_3_0.html">Migrationto_<wbr/>3_<wbr/>0</a></li><li class=" tsd-kind-namespace"><a href="PriorityBased_Downlink_Policy.html">Priority<wbr/>Based_<wbr/>Downlink_<wbr/>Policy</a></li><li class=" tsd-kind-namespace"><a href="ProjectBoard.html">Project<wbr/>Board</a></li><li class=" tsd-kind-namespace"><a href="QualityBandwidth_Connectivity.html">Quality<wbr/>Bandwidth_<wbr/>Connectivity</a></li><li class=" tsd-kind-namespace"><a href="ReplicatedMeetings.html">Replicated<wbr/>Meetings</a></li><li class=" tsd-kind-namespace"><a href="Simulcast.html">Simulcast</a></li><li class="current tsd-kind-namespace"><a href="VideoLayout.html">Video<wbr/>Layout</a></li><li class=" tsd-kind-namespace"><a href="VideoProcessor.html">Video<wbr/>Processor</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li><li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="../assets/main.js"></script></body></html>

@@ -1,330 +1,144 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BackgroundFilter_Video_Processor | amazon-chime-sdk-js</title>
-	<meta name="description" content="Documentation for amazon-chime-sdk-js">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="../assets/css/main.css">
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="../globals.html">Globals</a>
-				</li>
-				<li>
-					<a href="backgroundfilter_video_processor.html">BackgroundFilter_Video_Processor</a>
-				</li>
-			</ul>
-			<h1>Namespace BackgroundFilter_Video_Processor</h1>
-		</div>
-	</div>
-</header>
-<div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<a href="#integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application" id="integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application" style="color: inherit; text-decoration: none;">
-							<h1>Integrating background filters into your Amazon Chime SDK for JavaScript application</h1>
-						</a>
-					</div>
-					<a href="#what-is-a-background-filter" id="what-is-a-background-filter" style="color: inherit; text-decoration: none;">
-						<h2>What is a background filter?</h2>
-					</a>
-					<p>The background filter API allows builders to enable background filter on a video stream. You can select from background blur filter or replacement filter processors. To add a background filter to a video stream the builder needs to create a <code>VideoFrameProcessor</code> using <code>BackgroundBlurVideoFrameProcessor</code> or <code>BackgroundReplacementVideoFrameProcessor</code> and then insert that processor into a <code>VideoTransformDevice</code>. The background filter processor uses a TensorFlow Lite (TFLite) machine learning (ML) model along with JavaScript Web Workers and WebAssembly (WASM) to apply the filter to the background of each frame in the video stream. These assets are downloaded at runtime when the background filter processor is created and not provided in the source directly.</p>
-					<p>Background blur and replacement are integrated into the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser">browser demo</a> application. To try it out, launch the demo with <code>npm run start</code>, join the meeting, click on the camera icon to enable video, then select the video filter drop down and select <code>Background Blur</code> or <code>Background Replacement</code>.</p>
-					<a href="#background-filter-on-the-web" id="background-filter-on-the-web" style="color: inherit; text-decoration: none;">
-						<h2>Background filter on the web</h2>
-					</a>
-					<p>A background filter runs in the end user’s web browser, leveraging modern web platform features including WebAssembly and SIMD. See the section “<a href="#can-i-use-a-background-filter-in-my-application">Can I use a background filter in my application?</a>” for browser version requirements.</p>
-					<p>Background blur is available as part of the Amazon Chime SDK for JavaScript from version 2.20 onward.
-					Background replacement is available as part of the Amazon Chime SDK for JavaScript from version 2.24 onward.</p>
-					<a href="#can-i-use-a-background-filter-in-my-application" id="can-i-use-a-background-filter-in-my-application" style="color: inherit; text-decoration: none;">
-						<h2>Can I use a background filter in my application?</h2>
-					</a>
-					<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
-						<h3>Browser compatibility</h3>
-					</a>
-					<p>A background filter in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and Safari 14.1 and later on macOS.</p>
-					<p>There is a known issue with <code>VideoFrameProcessor</code> in Safari 15: see <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059">github issue 1059</a></p>
-					<p>A background filter can be CPU-intensive and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use a background filter while also supporting multiple video streams and rich application functionality.</p>
-					<p>See the sections “<a href="#checking-for-support-before-offering-a-background-filter">Checking for support before offering a background filter</a>” for more details about checking for support.</p>
-					<a href="#simd-support" id="simd-support" style="color: inherit; text-decoration: none;">
-						<h3>SIMD support</h3>
-					</a>
-					<p>Background filters are more efficient in environments that support Single Instruction, Multiple Data (SIMD), and will use less CPU for a given complexity level when it is enabled. Low-powered devices running browsers without SIMD support might be unable to use a background filter.</p>
-					<a href="#content-delivery-caching-and-bandwidth" id="content-delivery-caching-and-bandwidth" style="color: inherit; text-decoration: none;">
-						<h3>Content delivery, caching and bandwidth</h3>
-					</a>
-					<p>Background filter model files are loaded from an Amazon Content Delivery Network (CDN) at runtime. This provides low-latency global distribution without the need to serve a full suite of files as part of your application.</p>
-					<p>Model files will be cached indefinitely by end users’ browsers, so that subsequent uses of a background filter on the same device will take less time to initialize.</p>
-					<p>In addition to having network connectivity to <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-components.html">Amazon Chime’s media services, as described in the documentation</a>, the use of a background filter requires access to Amazon CloudFront via HTTPS (port 443). All requests will be to subdomains of <code>sdkassets.chime.aws</code>. End users whose network configurations prevent access to this CDN, or applications that do not include the correct domain in Content Security Policy (see below), will fail support checks and be unable to use a background filter.</p>
-					<p>CloudFront’s IP address ranges are documented in the <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html">Amazon CloudFront Developer Guide</a>.</p>
-					<p>The overhead of loading model files can add latency to parts of your application. The browser cache will make subsequent loads significantly faster. Check for support and create a background filter&#39;s resources at the appropriate times to minimize the impact of this latency: for example, during a lobby or device picker interaction.</p>
-					<a href="#preparing-your-application" id="preparing-your-application" style="color: inherit; text-decoration: none;">
-						<h2>Preparing your application</h2>
-					</a>
-					<a href="#content-security-policy" id="content-security-policy" style="color: inherit; text-decoration: none;">
-						<h3>Content Security Policy</h3>
-					</a>
-					<p>Modern web applications use <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">Content Security Policy</a> to protect users from certain classes of attacks. You will need to include the following in your policy to allow the Amazon Chime SDK access to resources it needs at runtime:</p>
-					<ul>
-						<li><code>script-src</code> and <code>script-src-elem</code>: add <code>https://*.sdkassets.chime.aws</code> to load video processing code.</li>
-						<li><code>connect-src</code>: add <code>https://*.sdkassets.chime.aws</code> to load model files via <code>fetch</code>.</li>
-						<li><code>worker-src</code>: add <code>blob:</code> to load worker JavaScript across origins.</li>
-						<li><code>child-src</code>: add <code>blob:</code> to load worker JavaScript across origins (only in Safari).</li>
-					</ul>
-					<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then a background filter will not be able to initialize, and will either appear to be unsupported or will create a no-op video frame processor. You will see errors in your browser console like:</p>
-					<pre><code>Refused <span class="hljs-built_in">to</span> connect <span class="hljs-built_in">to</span>
-<span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/bgblur/workers/worker.js…&#x27;</span>
-because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> document<span class="hljs-string">&#x27;s Content Security Policy.</span>
-</code></pre>
-					<p>If you need guidance with correct CSP configuration to use a background filter, contact AWS Support.</p>
-					<a href="#cross-origin-opener-policy" id="cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
-						<h3>Cross-Origin Opener Policy</h3>
-					</a>
-					<p>Some execution modes require careful configuration of web security, including less common headers like <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy"><code>Cross-Origin-Opener-Policy</code></a>. To opt in to these execution modes, send</p>
-					<pre><code><span class="hljs-keyword">Cross</span>-Origin-Opener-<span class="hljs-keyword">Policy</span>: same-origin
-<span class="hljs-keyword">Cross</span>-Origin-Embedder-<span class="hljs-keyword">Policy</span>: require-corp
-</code></pre>
-					<p>when serving your application HTML. These headers are optional but advised: they improve web security, as well as allowing the browser to support technologies like <code>SharedArrayBuffer</code>.</p>
-					<a href="#checking-for-support-before-offering-a-background-filter" id="checking-for-support-before-offering-a-background-filter" style="color: inherit; text-decoration: none;">
-						<h2>Checking for support before offering a background filter</h2>
-					</a>
-					<p>Some browsers support the Amazon Chime SDK but do not support a background filter. Additionally, some devices are not fast enough to keep up with real-time video while filtering the background.</p>
-					<p>The SDK provides an async static method to allow you to cheaply check for the required browser features:</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
-<span class="hljs-keyword">import</span> { BackgroundBlurVideoFrameProcessor } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
-<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported();
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>BackgroundFilter_Video_Processor | amazon-chime-sdk-js</title><meta name="description" content="Documentation for amazon-chime-sdk-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">amazon-chime-sdk-js</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><ul class="tsd-breadcrumb"><li><a href="../modules.html">amazon-chime-sdk-js</a></li><li><a href="BackgroundFilter_Video_Processor.html">BackgroundFilter_Video_Processor</a></li></ul><h1>Namespace BackgroundFilter_Video_Processor </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography"><div class="lead">
 
-<span class="hljs-comment">// Background Replacement</span>
-<span class="hljs-keyword">import</span> { BackgroundReplacementVideoFrameProcessor } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
-<span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.isSupported();
-</code></pre>
-					<p>If <code>isSupported</code> resolves to <code>true</code>, instantiate the background filter video frame processor.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
-<span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported()) {
-    <span class="hljs-keyword">const</span> blurProcessor = <span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.create();
-    processors.push(blurProcessor);
-}
-</code></pre>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Replacement</span>
-<span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.isSupported()) {
-    <span class="hljs-keyword">const</span> replacementProcessor = <span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.create();
-    processors.push(replacementProcessor);
-}
-</code></pre>
-					<p>The create method will pre-load the model file and prepare a background filter for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. In the event that the builder creates the processor and it is not supported a no-op video frame processor will be returned and a background filter will not be applied. In order to reduce the time to start a meeting, it is recommended that the background filter is created prior to starting the meeting.</p>
-					<a href="#adding-a-background-filter-to-your-application" id="adding-a-background-filter-to-your-application" style="color: inherit; text-decoration: none;">
-						<h2>Adding a background filter to your application</h2>
-					</a>
-					<p>A background filter integrates with the SDK by providing a new implementation of the <code>VideoFrameProcessor</code></p>
-					<p>Once you have checked for support and created a background processor, you add the processor to the transform device.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
-<span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported()) {
-    <span class="hljs-keyword">const</span> blurProcessor = <span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.create();
-    processors.push(blurProcessor);
-}
-<span class="hljs-keyword">let</span> transformDevice = <span class="hljs-keyword">new</span> DefaultVideoTransformDevice(logger, device, processors);
-</code></pre>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Replacement</span>
-<span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.isSupported()) {
-    <span class="hljs-keyword">const</span> image = <span class="hljs-keyword">await</span> fetch(<span class="hljs-string">&#x27;https://pathtoimage.jpeg&#x27;</span>);
-    <span class="hljs-keyword">const</span> imageBlob = <span class="hljs-keyword">await</span> image.blob();
-    <span class="hljs-keyword">const</span> options = { imageBlob };
-    <span class="hljs-keyword">const</span> replacementProcessor = <span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.create(<span class="hljs-literal">null</span>, options);
-    processors.push(replacementProcessor);
-}
-<span class="hljs-keyword">let</span> transformDevice = <span class="hljs-keyword">new</span> DefaultVideoTransformDevice(logger, device, processors);
-</code></pre>
-					<a href="#replacing-the-background-image-for-a-backgroundreplacementprocessor-mid-stream" id="replacing-the-background-image-for-a-backgroundreplacementprocessor-mid-stream" style="color: inherit; text-decoration: none;">
-						<h3>Replacing the background image for a BackgroundReplacementProcessor mid stream</h3>
-					</a>
-					<p>Store a reference to the background replacement processor object. Use BackgroundReplacementProcessor&#39;s <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundreplacementprocessor/BackgroundReplacementProcessor.ts#L28"><code>setImageBlob</code></a> to update the existing background image within the BackgroundReplacementProcessor anytime after initialization.</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">changeBackgroundImage</span>(<span class="hljs-params">backgroundReplacementProcessor: BackgroundReplacementProcessor</span>) </span>{
-    <span class="hljs-keyword">const</span> newImage = <span class="hljs-keyword">await</span> fetch(<span class="hljs-string">&#x27;https://pathtoimage.jpeg&#x27;</span>);
-    <span class="hljs-keyword">const</span> newImageBlob = <span class="hljs-keyword">await</span> newImage.blob();
-    <span class="hljs-keyword">await</span> backgroundReplacementProcessor.setImageBlob(newImageBlob);
-}
-</code></pre>
-					<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
-						<h2>Configuration</h2>
-					</a>
-					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>BackgroundFilterSpec</code> and <code>BackgroundBlurOptions</code> or <code>BackgroundReplacementOptions</code> structures — as input. The <code>BackgroundFilterSpec</code> allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code> allow you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.</p>
-					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints.</p>
-					<p><strong>BackgroundBlurOptions</strong></p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> BackgroundBlurOptions {
-  logger?: Logger;
-  reportingPeriodMillis?: <span class="hljs-built_in">number</span>;
-  filterCPUUtilization?: <span class="hljs-built_in">number</span>;
-  blurStrength?: <span class="hljs-built_in">number</span>;
-}
-</code></pre>
-					<ul>
-						<li>logger: A logger to which log output will be written.</li>
-						<li>reportingPeriodMillis: How often the video frame processor will report observed events.</li>
-						<li>blurStrength: The amount of blur that will be applied to a video stream.</li>
-						<li>filterCPUUtilization: The threshold CPU utilization to trigger skipping background filter updates which will reduce the amount of CPU used by a background filter. For example, If the reporting period is set to 1000 ms and 500 ms was dedicated to processing the background filter, then the CPU utilization for that reporting period is 50%. If <code>filterCPUUtilization</code> is set to 50 it will cause a <code>filterCPUUtilizationHigh</code> event to be fired from the <code>BackgroundBlurVideoFrameProcessorObserver</code>.</li>
-					</ul>
-					<p><strong>BackgroundReplacementOptions</strong></p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> BackgroundReplacementOptions {
-  logger?: Logger;
-  reportingPeriodMillis?: <span class="hljs-built_in">number</span>;
-  filterCPUUtilization?: <span class="hljs-built_in">number</span>;
-  imageBlob?: Blob;
-}
-</code></pre>
-					<p>The logger, reportingPeriodMillis, and filterCPUUtilization work in the exact same way as with <code>BackgroundBlurOptions</code>.</p>
-					<ul>
-						<li>imageBlob: This is a blob that contains an image that will be used in the background. If an image blob is not provided a default solid blue will be displayed. The Blob can be created in many different ways (e.g. https fetch, file upload, etc.). If you are using fetch to load the image blob we recommend using HTTPS for security reasons.</li>
-					</ul>
-					<a href="#cpu-utilization-mitigation" id="cpu-utilization-mitigation" style="color: inherit; text-decoration: none;">
-						<h3>CPU Utilization mitigation</h3>
-					</a>
-					<p>The <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code> interfaces have a <code>filterCPUUtilization</code> field that allows you to configure the amount of CPU utilized by the background filter processor. The JS SDK uses this field to determine when the <code>filterCPUUtilizationHigh</code> event will fire on the <code>BackgroundBlurVideoFrameProcessorObserver</code> and <code>BackgroundReplacementVideoFrameProcessorObserver</code>. The JS SDK also uses the event internally to determine if the <code>filterCPUUtilization</code> is being exceeded. To mitigate excessive CPU usage, the SDK will begin to skip background segmentation until the CPU utilization is at or below the configured percentage set in the <code>filterCPUUtilization</code> field. A lower CPU utilization will increase amount of skipped background segmenting while maintaining the desired CPU levels. A higher CPU utilization will reduce skipped background segmenting, but increase CPU usage.</p>
-					<a href="#observer-notifications" id="observer-notifications" style="color: inherit; text-decoration: none;">
-						<h2>Observer notifications</h2>
-					</a>
-					<p>You can optionally implement the <code>BackgroundBlurVideoFrameProcessorObserver</code> and <code>BackgroundReplacementVideoFrameProcessorObserver</code> interfaces and use <code>addObserver</code> to receive callbacks when an event occurs:</p>
-					<ul>
-						<li><code>filterFrameDurationHigh</code>:  This event occurs when the amount of time it takes to apply the background filter is longer than expected. The measurement is taken from the time the process method starts to when it returns. For example, if the video is running at 15 frames per seconds and we are averaging more than 67 ms (1000 ms reporting period / 15 fps) to apply a background filter, then a very large portion of each frame&#39;s maximum processing time is taken up by processing a background filter.</li>
-						<li><code>filterCPUUtilizationHigh</code>: This event occurs when the CPU utilization of a background filter exceeds the <code>filterCPUUtilization</code> defined in the <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code>. This can be used as a trigger to disable a background filter if CPU utilization is too high.</li>
-					</ul>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
-<span class="hljs-comment">// create a reference to the blur observer</span>
-<span class="hljs-keyword">const</span> blurObserver: BackgroundBlurVideoFrameProcessorObserver = {
-  <span class="hljs-attr">filterFrameDurationHigh</span>: <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter duration high: framed dropped - <span class="hljs-subst">${event.framesDropped}</span>, avg - <span class="hljs-subst">${event.avgFilterDurationMillis}</span> ms, frame rate - <span class="hljs-subst">${event.framerate}</span>, period - <span class="hljs-subst">${event.periodMillis}</span> ms`</span>);
-  },
-  <span class="hljs-attr">filterCPUUtilizationHigh</span>:<span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter CPU high: CPU utilization is high <span class="hljs-subst">${event.cpuUtilization}</span>`</span>);
-  },
-}
+<a href="#integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application" id="integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application" style="color: inherit; text-decoration: none;">
+  <h1>Integrating background filters into your Amazon Chime SDK for JavaScript application</h1>
+</a>
+</div><div>
+<a href="#what-is-a-background-filter" id="what-is-a-background-filter" style="color: inherit; text-decoration: none;">
+  <h2>What is a background filter?</h2>
+</a>
+<p>The background filter API allows builders to enable background filter on a video stream. You can select from background blur filter or replacement filter processors. To add a background filter to a video stream the builder needs to create a <code>VideoFrameProcessor</code> using <code>BackgroundBlurVideoFrameProcessor</code> or <code>BackgroundReplacementVideoFrameProcessor</code> and then insert that processor into a <code>VideoTransformDevice</code>. The background filter processor uses a TensorFlow Lite (TFLite) machine learning (ML) model along with JavaScript Web Workers and WebAssembly (WASM) to apply the filter to the background of each frame in the video stream. These assets are downloaded at runtime when the background filter processor is created and not provided in the source directly.</p>
+<p>Background blur and replacement are integrated into the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser">browser demo</a> application. To try it out, launch the demo with <code>npm run start</code>, join the meeting, click on the camera icon to enable video, then select the video filter drop down and select <code>Background Blur</code> or <code>Background Replacement</code>.</p>
 
-<span class="hljs-comment">// add the observer to the processor</span>
-processor.addObserver(blurObserver);
+<a href="#background-filter-on-the-web" id="background-filter-on-the-web" style="color: inherit; text-decoration: none;">
+  <h2>Background filter on the web</h2>
+</a>
+<p>A background filter runs in the end user’s web browser, leveraging modern web platform features including WebAssembly and SIMD. See the section “<a href="#can-i-use-a-background-filter-in-my-application">Can I use a background filter in my application?</a>” for browser version requirements.</p>
+<p>Background blur is available as part of the Amazon Chime SDK for JavaScript from version 2.20 onward.
+Background replacement is available as part of the Amazon Chime SDK for JavaScript from version 2.24 onward.</p>
 
-<span class="hljs-comment">// remove the observer using the reference. for e.g, on meeting leave or turning the bgblur feature/filter off.</span>
-processor.removeObserver(blurObserver);
+<a href="#can-i-use-a-background-filter-in-my-application" id="can-i-use-a-background-filter-in-my-application" style="color: inherit; text-decoration: none;">
+  <h2>Can I use a background filter in my application?</h2>
+</a>
+
+<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
+  <h3>Browser compatibility</h3>
+</a>
+<p>A background filter in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and Safari 14.1 and later on macOS.</p>
+<p>There is a known issue with <code>VideoFrameProcessor</code> in Safari 15: see <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059">github issue 1059</a></p>
+<p>A background filter can be CPU-intensive and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use a background filter while also supporting multiple video streams and rich application functionality.</p>
+<p>See the sections “<a href="#checking-for-support-before-offering-a-background-filter">Checking for support before offering a background filter</a>” for more details about checking for support.</p>
+
+<a href="#simd-support" id="simd-support" style="color: inherit; text-decoration: none;">
+  <h3>SIMD support</h3>
+</a>
+<p>Background filters are more efficient in environments that support Single Instruction, Multiple Data (SIMD), and will use less CPU for a given complexity level when it is enabled. Low-powered devices running browsers without SIMD support might be unable to use a background filter.</p>
+
+<a href="#content-delivery-caching-and-bandwidth" id="content-delivery-caching-and-bandwidth" style="color: inherit; text-decoration: none;">
+  <h3>Content delivery, caching and bandwidth</h3>
+</a>
+<p>Background filter model files are loaded from an Amazon Content Delivery Network (CDN) at runtime. This provides low-latency global distribution without the need to serve a full suite of files as part of your application.</p>
+<p>Model files will be cached indefinitely by end users’ browsers, so that subsequent uses of a background filter on the same device will take less time to initialize.</p>
+<p>In addition to having network connectivity to <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-components.html">Amazon Chime’s media services, as described in the documentation</a>, the use of a background filter requires access to Amazon CloudFront via HTTPS (port 443). All requests will be to subdomains of <code>sdkassets.chime.aws</code>. End users whose network configurations prevent access to this CDN, or applications that do not include the correct domain in Content Security Policy (see below), will fail support checks and be unable to use a background filter.</p>
+<p>CloudFront’s IP address ranges are documented in the <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html">Amazon CloudFront Developer Guide</a>.</p>
+<p>The overhead of loading model files can add latency to parts of your application. The browser cache will make subsequent loads significantly faster. Check for support and create a background filter&#39;s resources at the appropriate times to minimize the impact of this latency: for example, during a lobby or device picker interaction.</p>
+
+<a href="#preparing-your-application" id="preparing-your-application" style="color: inherit; text-decoration: none;">
+  <h2>Preparing your application</h2>
+</a>
+
+<a href="#content-security-policy" id="content-security-policy" style="color: inherit; text-decoration: none;">
+  <h3>Content Security Policy</h3>
+</a>
+<p>Modern web applications use <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">Content Security Policy</a> to protect users from certain classes of attacks. You will need to include the following in your policy to allow the Amazon Chime SDK access to resources it needs at runtime:</p>
+<ul>
+<li><code>script-src</code> and <code>script-src-elem</code>: add <code>https://*.sdkassets.chime.aws</code> to load video processing code.</li>
+<li><code>connect-src</code>: add <code>https://*.sdkassets.chime.aws</code> to load model files via <code>fetch</code>.</li>
+<li><code>worker-src</code>: add <code>blob:</code> to load worker JavaScript across origins.</li>
+<li><code>child-src</code>: add <code>blob:</code> to load worker JavaScript across origins (only in Safari).</li>
+</ul>
+<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then a background filter will not be able to initialize, and will either appear to be unsupported or will create a no-op video frame processor. You will see errors in your browser console like:</p>
+<pre><code><span class="hl-0">Refused</span><span class="hl-1"> </span><span class="hl-0">to</span><span class="hl-1"> </span><span class="hl-0">connect</span><span class="hl-1"> </span><span class="hl-0">to</span><br/><span class="hl-3">&#39;https://static.sdkassets.chime.aws/bgblur/workers/worker.js…&#39;</span><br/><span class="hl-0">because</span><span class="hl-1"> </span><span class="hl-0">it</span><span class="hl-1"> </span><span class="hl-0">violates</span><span class="hl-1"> </span><span class="hl-0">the</span><span class="hl-1"> </span><span class="hl-0">document</span><span class="hl-3">&#39;s Content Security Policy</span><span class="hl-12">.</span>
 </code></pre>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Replacement</span>
-<span class="hljs-comment">// create a reference to the replacement observer</span>
-<span class="hljs-keyword">const</span> replacementObserver: BackgroundReplacementVideoFrameProcessorObserver = {
-  <span class="hljs-attr">filterFrameDurationHigh</span>: <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter duration high: framed dropped - <span class="hljs-subst">${event.framesDropped}</span>, avg - <span class="hljs-subst">${event.avgFilterDurationMillis}</span> ms, frame rate - <span class="hljs-subst">${event.framerate}</span>, period - <span class="hljs-subst">${event.periodMillis}</span> ms`</span>);
-  },
-  <span class="hljs-attr">filterCPUUtilizationHigh</span>:<span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter CPU high: CPU utilization is high <span class="hljs-subst">${event.cpuUtilization}</span>`</span>);
-  },
-}
+<p>If you need guidance with correct CSP configuration to use a background filter, contact AWS Support.</p>
 
-<span class="hljs-comment">// add the observer to the processor</span>
-processor.addObserver(replacementObserver);
-
-<span class="hljs-comment">// remove the observer using the reference. for e.g, on meeting leave or turning the bg replacement feature/filter off.</span>
-processor.removeObserver(replacementObserver);
+<a href="#cross-origin-opener-policy" id="cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
+  <h3>Cross-Origin Opener Policy</h3>
+</a>
+<p>Some execution modes require careful configuration of web security, including less common headers like <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy"><code>Cross-Origin-Opener-Policy</code></a>. To opt in to these execution modes, send</p>
+<pre><code><span class="hl-0">Cross</span><span class="hl-1">-</span><span class="hl-0">Origin</span><span class="hl-1">-</span><span class="hl-0">Opener</span><span class="hl-1">-</span><span class="hl-8">Policy</span><span class="hl-1">: </span><span class="hl-0">same</span><span class="hl-1">-</span><span class="hl-0">origin</span><br/><span class="hl-0">Cross</span><span class="hl-1">-</span><span class="hl-0">Origin</span><span class="hl-1">-</span><span class="hl-0">Embedder</span><span class="hl-1">-</span><span class="hl-8">Policy</span><span class="hl-1">: </span><span class="hl-0">require</span><span class="hl-1">-</span><span class="hl-0">corp</span>
 </code></pre>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Background%20Filter_Video_Processor%20feedback">Give feedback on this guide</a></p>
-				</div>
-			</section>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="../assets/js/main.js"></script>
-</body>
-</html>
+<p>when serving your application HTML. These headers are optional but advised: they improve web security, as well as allowing the browser to support technologies like <code>SharedArrayBuffer</code>.</p>
+
+<a href="#checking-for-support-before-offering-a-background-filter" id="checking-for-support-before-offering-a-background-filter" style="color: inherit; text-decoration: none;">
+  <h2>Checking for support before offering a background filter</h2>
+</a>
+<p>Some browsers support the Amazon Chime SDK but do not support a background filter. Additionally, some devices are not fast enough to keep up with real-time video while filtering the background.</p>
+<p>The SDK provides an async static method to allow you to cheaply check for the required browser features:</p>
+<pre><code class="language-typescript"><span class="hl-7">// Background Blur</span><br/><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">BackgroundBlurVideoFrameProcessor</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundBlurVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">isSupported</span><span class="hl-1">();</span><br/><br/><span class="hl-7">// Background Replacement</span><br/><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">BackgroundReplacementVideoFrameProcessor</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundReplacementVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">isSupported</span><span class="hl-1">();</span>
+</code></pre>
+<p>If <code>isSupported</code> resolves to <code>true</code>, instantiate the background filter video frame processor.</p>
+<pre><code class="language-typescript"><span class="hl-7">// Background Blur</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">processors</span><span class="hl-1"> = [];</span><br/><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundBlurVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">isSupported</span><span class="hl-1">()) {</span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">blurProcessor</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundBlurVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">create</span><span class="hl-1">();</span><br/><span class="hl-1">    </span><span class="hl-0">processors</span><span class="hl-1">.</span><span class="hl-6">push</span><span class="hl-1">(</span><span class="hl-0">blurProcessor</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+</code></pre>
+<pre><code class="language-typescript"><span class="hl-7">// Background Replacement</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">processors</span><span class="hl-1"> = [];</span><br/><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundReplacementVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">isSupported</span><span class="hl-1">()) {</span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">replacementProcessor</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundReplacementVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">create</span><span class="hl-1">();</span><br/><span class="hl-1">    </span><span class="hl-0">processors</span><span class="hl-1">.</span><span class="hl-6">push</span><span class="hl-1">(</span><span class="hl-0">replacementProcessor</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+</code></pre>
+<p>The create method will pre-load the model file and prepare a background filter for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. In the event that the builder creates the processor and it is not supported a no-op video frame processor will be returned and a background filter will not be applied. In order to reduce the time to start a meeting, it is recommended that the background filter is created prior to starting the meeting.</p>
+
+<a href="#adding-a-background-filter-to-your-application" id="adding-a-background-filter-to-your-application" style="color: inherit; text-decoration: none;">
+  <h2>Adding a background filter to your application</h2>
+</a>
+<p>A background filter integrates with the SDK by providing a new implementation of the <code>VideoFrameProcessor</code></p>
+<p>Once you have checked for support and created a background processor, you add the processor to the transform device.</p>
+<pre><code class="language-typescript"><span class="hl-7">// Background Blur</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">processors</span><span class="hl-1"> = [];</span><br/><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundBlurVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">isSupported</span><span class="hl-1">()) {</span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">blurProcessor</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundBlurVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">create</span><span class="hl-1">();</span><br/><span class="hl-1">    </span><span class="hl-0">processors</span><span class="hl-1">.</span><span class="hl-6">push</span><span class="hl-1">(</span><span class="hl-0">blurProcessor</span><span class="hl-1">);</span><br/><span class="hl-1">}</span><br/><span class="hl-4">let</span><span class="hl-1"> </span><span class="hl-0">transformDevice</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultVideoTransformDevice</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">, </span><span class="hl-0">device</span><span class="hl-1">, </span><span class="hl-0">processors</span><span class="hl-1">);</span>
+</code></pre>
+<pre><code class="language-typescript"><span class="hl-7">// Background Replacement</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">processors</span><span class="hl-1"> = [];</span><br/><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundReplacementVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">isSupported</span><span class="hl-1">()) {</span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">image</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-6">fetch</span><span class="hl-1">(</span><span class="hl-3">&#39;https://pathtoimage.jpeg&#39;</span><span class="hl-1">); </span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">imageBlob</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">image</span><span class="hl-1">.</span><span class="hl-6">blob</span><span class="hl-1">();</span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">options</span><span class="hl-1"> = { </span><span class="hl-0">imageBlob</span><span class="hl-1"> };</span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">replacementProcessor</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">BackgroundReplacementVideoFrameProcessor</span><span class="hl-1">.</span><span class="hl-6">create</span><span class="hl-1">(</span><span class="hl-4">null</span><span class="hl-1">, </span><span class="hl-0">options</span><span class="hl-1">); </span><br/><span class="hl-1">    </span><span class="hl-0">processors</span><span class="hl-1">.</span><span class="hl-6">push</span><span class="hl-1">(</span><span class="hl-0">replacementProcessor</span><span class="hl-1">);</span><br/><span class="hl-1">}</span><br/><span class="hl-4">let</span><span class="hl-1"> </span><span class="hl-0">transformDevice</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultVideoTransformDevice</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">, </span><span class="hl-0">device</span><span class="hl-1">, </span><span class="hl-0">processors</span><span class="hl-1">);</span>
+</code></pre>
+
+<a href="#replacing-the-background-image-for-a-backgroundreplacementprocessor-mid-stream" id="replacing-the-background-image-for-a-backgroundreplacementprocessor-mid-stream" style="color: inherit; text-decoration: none;">
+  <h3>Replacing the background image for a BackgroundReplacementProcessor mid stream</h3>
+</a>
+<p>Store a reference to the background replacement processor object. Use BackgroundReplacementProcessor&#39;s <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundreplacementprocessor/BackgroundReplacementProcessor.ts#L28"><code>setImageBlob</code></a> to update the existing background image within the BackgroundReplacementProcessor anytime after initialization.</p>
+<pre><code class="language-typescript"><span class="hl-4">async</span><span class="hl-1"> </span><span class="hl-4">function</span><span class="hl-1"> </span><span class="hl-6">changeBackgroundImage</span><span class="hl-1">(</span><span class="hl-0">backgroundReplacementProcessor</span><span class="hl-1">: </span><span class="hl-11">BackgroundReplacementProcessor</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">newImage</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-6">fetch</span><span class="hl-1">(</span><span class="hl-3">&#39;https://pathtoimage.jpeg&#39;</span><span class="hl-1">); </span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">newImageBlob</span><span class="hl-1"> = </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">newImage</span><span class="hl-1">.</span><span class="hl-6">blob</span><span class="hl-1">();</span><br/><span class="hl-1">    </span><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">backgroundReplacementProcessor</span><span class="hl-1">.</span><span class="hl-6">setImageBlob</span><span class="hl-1">(</span><span class="hl-0">newImageBlob</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+</code></pre>
+
+<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+  <h2>Configuration</h2>
+</a>
+<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>BackgroundFilterSpec</code> and <code>BackgroundBlurOptions</code> or <code>BackgroundReplacementOptions</code> structures — as input. The <code>BackgroundFilterSpec</code> allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code> allow you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.</p>
+<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints.</p>
+<p><strong>BackgroundBlurOptions</strong></p>
+<pre><code class="language-typescript"><span class="hl-4">interface</span><span class="hl-1"> </span><span class="hl-11">BackgroundBlurOptions</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">logger</span><span class="hl-1">?: </span><span class="hl-11">Logger</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-0">reportingPeriodMillis</span><span class="hl-1">?: </span><span class="hl-11">number</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-0">filterCPUUtilization</span><span class="hl-1">?: </span><span class="hl-11">number</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-0">blurStrength</span><span class="hl-1">?: </span><span class="hl-11">number</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
+</code></pre>
+<ul>
+<li>logger: A logger to which log output will be written.</li>
+<li>reportingPeriodMillis: How often the video frame processor will report observed events.</li>
+<li>blurStrength: The amount of blur that will be applied to a video stream.</li>
+<li>filterCPUUtilization: The threshold CPU utilization to trigger skipping background filter updates which will reduce the amount of CPU used by a background filter. For example, If the reporting period is set to 1000 ms and 500 ms was dedicated to processing the background filter, then the CPU utilization for that reporting period is 50%. If <code>filterCPUUtilization</code> is set to 50 it will cause a <code>filterCPUUtilizationHigh</code> event to be fired from the <code>BackgroundBlurVideoFrameProcessorObserver</code>.</li>
+</ul>
+<p><strong>BackgroundReplacementOptions</strong></p>
+<pre><code class="language-typescript"><span class="hl-4">interface</span><span class="hl-1"> </span><span class="hl-11">BackgroundReplacementOptions</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">logger</span><span class="hl-1">?: </span><span class="hl-11">Logger</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-0">reportingPeriodMillis</span><span class="hl-1">?: </span><span class="hl-11">number</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-0">filterCPUUtilization</span><span class="hl-1">?: </span><span class="hl-11">number</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-0">imageBlob</span><span class="hl-1">?: </span><span class="hl-11">Blob</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
+</code></pre>
+<p>The logger, reportingPeriodMillis, and filterCPUUtilization work in the exact same way as with <code>BackgroundBlurOptions</code>.</p>
+<ul>
+<li>imageBlob: This is a blob that contains an image that will be used in the background. If an image blob is not provided a default solid blue will be displayed. The Blob can be created in many different ways (e.g. https fetch, file upload, etc.). If you are using fetch to load the image blob we recommend using HTTPS for security reasons.</li>
+</ul>
+
+<a href="#cpu-utilization-mitigation" id="cpu-utilization-mitigation" style="color: inherit; text-decoration: none;">
+  <h3>CPU Utilization mitigation</h3>
+</a>
+<p>The <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code> interfaces have a <code>filterCPUUtilization</code> field that allows you to configure the amount of CPU utilized by the background filter processor. The JS SDK uses this field to determine when the <code>filterCPUUtilizationHigh</code> event will fire on the <code>BackgroundBlurVideoFrameProcessorObserver</code> and <code>BackgroundReplacementVideoFrameProcessorObserver</code>. The JS SDK also uses the event internally to determine if the <code>filterCPUUtilization</code> is being exceeded. To mitigate excessive CPU usage, the SDK will begin to skip background segmentation until the CPU utilization is at or below the configured percentage set in the <code>filterCPUUtilization</code> field. A lower CPU utilization will increase amount of skipped background segmenting while maintaining the desired CPU levels. A higher CPU utilization will reduce skipped background segmenting, but increase CPU usage.</p>
+
+<a href="#observer-notifications" id="observer-notifications" style="color: inherit; text-decoration: none;">
+  <h2>Observer notifications</h2>
+</a>
+<p>You can optionally implement the <code>BackgroundBlurVideoFrameProcessorObserver</code> and <code>BackgroundReplacementVideoFrameProcessorObserver</code> interfaces and use <code>addObserver</code> to receive callbacks when an event occurs:</p>
+<ul>
+<li><code>filterFrameDurationHigh</code>:  This event occurs when the amount of time it takes to apply the background filter is longer than expected. The measurement is taken from the time the process method starts to when it returns. For example, if the video is running at 15 frames per seconds and we are averaging more than 67 ms (1000 ms reporting period / 15 fps) to apply a background filter, then a very large portion of each frame&#39;s maximum processing time is taken up by processing a background filter.</li>
+<li><code>filterCPUUtilizationHigh</code>: This event occurs when the CPU utilization of a background filter exceeds the <code>filterCPUUtilization</code> defined in the <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code>. This can be used as a trigger to disable a background filter if CPU utilization is too high.</li>
+</ul>
+<pre><code class="language-typescript"><span class="hl-7">// Background Blur</span><br/><span class="hl-7">// create a reference to the blur observer</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">blurObserver</span><span class="hl-1">: </span><span class="hl-11">BackgroundBlurVideoFrameProcessorObserver</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-6">filterFrameDurationHigh</span><span class="hl-0">:</span><span class="hl-1"> (</span><span class="hl-0">event</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`background filter duration high: framed dropped - </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">framesDropped</span><span class="hl-4">}</span><span class="hl-3">, avg - </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">avgFilterDurationMillis</span><span class="hl-4">}</span><span class="hl-3"> ms, frame rate - </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">framerate</span><span class="hl-4">}</span><span class="hl-3">, period - </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">periodMillis</span><span class="hl-4">}</span><span class="hl-3"> ms`</span><span class="hl-1">);</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  </span><span class="hl-6">filterCPUUtilizationHigh</span><span class="hl-0">:</span><span class="hl-1">(</span><span class="hl-0">event</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`background filter CPU high: CPU utilization is high </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">cpuUtilization</span><span class="hl-4">}</span><span class="hl-3">`</span><span class="hl-1">);</span><br/><span class="hl-1">  }, </span><br/><span class="hl-1">}</span><br/><br/><span class="hl-7">// add the observer to the processor</span><br/><span class="hl-0">processor</span><span class="hl-1">.</span><span class="hl-6">addObserver</span><span class="hl-1">(</span><span class="hl-0">blurObserver</span><span class="hl-1">);</span><br/><br/><span class="hl-7">// remove the observer using the reference. for e.g, on meeting leave or turning the bgblur feature/filter off.</span><br/><span class="hl-0">processor</span><span class="hl-1">.</span><span class="hl-6">removeObserver</span><span class="hl-1">(</span><span class="hl-0">blurObserver</span><span class="hl-1">);</span>
+</code></pre>
+<pre><code class="language-typescript"><span class="hl-7">// Background Replacement</span><br/><span class="hl-7">// create a reference to the replacement observer</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">replacementObserver</span><span class="hl-1">: </span><span class="hl-11">BackgroundReplacementVideoFrameProcessorObserver</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-6">filterFrameDurationHigh</span><span class="hl-0">:</span><span class="hl-1"> (</span><span class="hl-0">event</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`background filter duration high: framed dropped - </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">framesDropped</span><span class="hl-4">}</span><span class="hl-3">, avg - </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">avgFilterDurationMillis</span><span class="hl-4">}</span><span class="hl-3"> ms, frame rate - </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">framerate</span><span class="hl-4">}</span><span class="hl-3">, period - </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">periodMillis</span><span class="hl-4">}</span><span class="hl-3"> ms`</span><span class="hl-1">);</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  </span><span class="hl-6">filterCPUUtilizationHigh</span><span class="hl-0">:</span><span class="hl-1">(</span><span class="hl-0">event</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`background filter CPU high: CPU utilization is high </span><span class="hl-4">${</span><span class="hl-0">event</span><span class="hl-9">.</span><span class="hl-0">cpuUtilization</span><span class="hl-4">}</span><span class="hl-3">`</span><span class="hl-1">);</span><br/><span class="hl-1">  }, </span><br/><span class="hl-1">}</span><br/><br/><span class="hl-7">// add the observer to the processor</span><br/><span class="hl-0">processor</span><span class="hl-1">.</span><span class="hl-6">addObserver</span><span class="hl-1">(</span><span class="hl-0">replacementObserver</span><span class="hl-1">);</span><br/><br/><span class="hl-7">// remove the observer using the reference. for e.g, on meeting leave or turning the bg replacement feature/filter off.</span><br/><span class="hl-0">processor</span><span class="hl-1">.</span><span class="hl-6">removeObserver</span><span class="hl-1">(</span><span class="hl-0">replacementObserver</span><span class="hl-1">);</span>
+</code></pre>
+<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Background%20Filter_Video_Processor%20feedback">Give feedback on this guide</a></p>
+</div></div></section></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class=""><a href="../modules.html">Exports</a></li><li class=" tsd-kind-namespace"><a href="APIOverview.html">APIOverview</a></li><li class=" tsd-kind-namespace"><a href="AmazonVoice_Focus.html">Amazon<wbr/>Voice_<wbr/>Focus</a></li><li class="current tsd-kind-namespace"><a href="BackgroundFilter_Video_Processor.html">Background<wbr/>Filter_<wbr/>Video_<wbr/>Processor</a></li><li class=" tsd-kind-namespace"><a href="ClientEvent_Ingestion.html">Client<wbr/>Event_<wbr/>Ingestion</a></li><li class=" tsd-kind-namespace"><a href="ContentSecurity_Policy.html">Content<wbr/>Security_<wbr/>Policy</a></li><li class=" tsd-kind-namespace"><a href="ContentShare.html">Content<wbr/>Share</a></li><li class=" tsd-kind-namespace"><a href="FAQs.html">FAQs</a></li><li class=" tsd-kind-namespace"><a href="GettingStarted.html">Getting<wbr/>Started</a></li><li class=" tsd-kind-namespace"><a href="MeetingEvents.html">Meeting<wbr/>Events</a></li><li class=" tsd-kind-namespace"><a href="Migrationto_2_0.html">Migrationto_<wbr/>2_<wbr/>0</a></li><li class=" tsd-kind-namespace"><a href="Migrationto_3_0.html">Migrationto_<wbr/>3_<wbr/>0</a></li><li class=" tsd-kind-namespace"><a href="PriorityBased_Downlink_Policy.html">Priority<wbr/>Based_<wbr/>Downlink_<wbr/>Policy</a></li><li class=" tsd-kind-namespace"><a href="ProjectBoard.html">Project<wbr/>Board</a></li><li class=" tsd-kind-namespace"><a href="QualityBandwidth_Connectivity.html">Quality<wbr/>Bandwidth_<wbr/>Connectivity</a></li><li class=" tsd-kind-namespace"><a href="ReplicatedMeetings.html">Replicated<wbr/>Meetings</a></li><li class=" tsd-kind-namespace"><a href="Simulcast.html">Simulcast</a></li><li class=" tsd-kind-namespace"><a href="VideoLayout.html">Video<wbr/>Layout</a></li><li class=" tsd-kind-namespace"><a href="VideoProcessor.html">Video<wbr/>Processor</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li><li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="../assets/main.js"></script></body></html>

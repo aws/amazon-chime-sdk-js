@@ -1,305 +1,140 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Simulcast | amazon-chime-sdk-js</title>
-	<meta name="description" content="Documentation for amazon-chime-sdk-js">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="../assets/css/main.css">
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="../globals.html">Globals</a>
-				</li>
-				<li>
-					<a href="simulcast.html">Simulcast</a>
-				</li>
-			</ul>
-			<h1>Namespace Simulcast</h1>
-		</div>
-	</div>
-</header>
-<div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<a href="#video-simulcast" id="video-simulcast" style="color: inherit; text-decoration: none;">
-							<h1>Video Simulcast</h1>
-						</a>
-					</div>
-					<p>In multi-party video calls, attendees can enable the simulcast feature to enhance the overall video quality. Simulcast is a standardized technique where the video publishers create multiple renditions, or layers, of the same video source and video subscribers have the flexibility to choose the rendition that best fits their needs based on such factors as available bandwidth, compute and screen size.
-					The uplink policy controls the configuration of the renditions through camera capture and encoding parameters. The simulcast-enabled uplink policy is <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>.</p>
-					<p>Simulcast is currently disabled by default. To enable it <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers">MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers</a> must be set. Currently, only Chrome 76 and above is supported.</p>
-					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a> downlink policy adaptively subscribes to the best simulcast layer and is automatically selected if [<a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers">MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers</a> is set to true.</p>
-					<p>If you want more fine-grained control of which simulcast layer to subscribe, please use <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy">VideoPriorityBasedPolicy</a>. More details about priority-based downlink policy can be
-					found <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html">here</a>.</p>
-					<a href="#details" id="details" style="color: inherit; text-decoration: none;">
-						<h2>Details</h2>
-					</a>
-					<a href="#simulcast-overview" id="simulcast-overview" style="color: inherit; text-decoration: none;">
-						<h3>Simulcast overview</h3>
-					</a>
-					<p>Simulcast support is built into the WebRTC library in the majority of browsers.  The video input resolution is used to initially configure the attributes and maximum number of allowed simulcast streams.  In WebRTC, if the RTCRtpSender is configured to have three layers of encoding, then the top layer is specified by the video input resolution. The resolution of the middle layer is scaled down by two vertically and horizontally by WebRTC. The lower layer is scaled down by four.  The WebRTC library supports a maximum of three simulcast layers, and only when the input resolution is 960x540 or higher will all three be available.</p>
-					<p>The recommended resolution in JS SDK is 1280x720. This resolution will provide the most flexibility and allow subscribers to maintain smoother video quality transitions.  In certain circumstances, like mobile browsers, the input resolution may not be high enough to support all desired simulcast streams, so the logic will adapt appropriately to send as many as possible.</p>
-					<p>The SimulcastUplinkPolicy configures RTCRtpSender to have three encoding layers, but only ever enables two of them.  Which two are enabled is based on a variety of factors.   Experiments show that configuring RTCRtpSender with three encoding layers up front and dynamically enabling and disabling layers provides a better experience and reduces the burden of having to dynamically  manage capture resolution and encoding parameters.</p>
-					<a href="#simulcast-resolutions-and-behavior" id="simulcast-resolutions-and-behavior" style="color: inherit; text-decoration: none;">
-						<h3>Simulcast resolutions and behavior</h3>
-					</a>
-					<p>WebRTC ultimately controls how much data is being sent to the network based on its bandwidth estimation algorithm. It&#39;s very hard to circumvent the estimated bandwidth or trick WebRTC into sending more than it estimates. Most browsers expose WebRTC peer connection statistics which developers can access to retrieve the estimated available bandwidths for uplink or downlink.</p>
-					<p>The estimated available bandwidth reveals some information of the health of the E2E network and can trigger various WebRTC behaviors when facing network adversity or in recovering from a network glitch. SimulcastUplinkPolicy does its best to anticipate and react to the underlying WebRTC behavior and work with it to avoid further impact on the video quality of services.</p>
-					<p>The SimulcastUplinkPolicy implements the following logic:</p>
-					<table>
-						<thead>
-							<tr>
-								<th align="right">Publishers/Attendees</th>
-								<th align="center">Estimated Uplink Bandwidth</th>
-								<th align="center">Simulcast stream 1</th>
-								<th align="center">Simulcast stream 2</th>
-							</tr>
-						</thead>
-						<tbody><tr>
-								<td align="right">Attendees &lt;= 2</td>
-								<td align="center">Any</td>
-								<td align="center">1280x720@15fps 1200 kbps</td>
-								<td align="center">Not used</td>
-							</tr>
-							<tr>
-								<td align="right">Publishers &lt;= 4 and</td>
-								<td align="center">&gt;= 1000 kbps</td>
-								<td align="center">1280x720@15fps 1200 kbps</td>
-								<td align="center">320x180@15fps 300 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">Publishers  &lt;= 6 and</td>
-								<td align="center">&gt;= 350 kbps</td>
-								<td align="center">640x360@15fps 600 kbps</td>
-								<td align="center">320x180@15fps 200 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">Publishers  &lt;= 6 and</td>
-								<td align="center">&gt; 300 kbps</td>
-								<td align="center">640x360@15fps 600 kbps</td>
-								<td align="center">320x180@15fps 150 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">Publishers &gt; 6  and</td>
-								<td align="center">&gt;= 350 kbps</td>
-								<td align="center">640x360@15fps 350 kbps</td>
-								<td align="center">320x180@15fps 200 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">Publishers &gt; 6  and</td>
-								<td align="center">&gt;= 300 kbps</td>
-								<td align="center">640x360@15fps 350 kbps</td>
-								<td align="center">320x180@15fps 150 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">Any number publishers</td>
-								<td align="center">&lt; 300 kbps</td>
-								<td align="center">Not used</td>
-								<td align="center">320x180@15fps 300 kbps</td>
-							</tr>
-					</tbody></table>
-					<p>The table entries represent the maximum configuration.  When CPU and bandwidth consumption is overused, WebRTC will dynamically adjust bitrate, disable a layer or scale down resolution. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.</p>
-					<p>Note that simulcast is disabled when there are only 2 or fewer attendees.  This is because WebRTC has additional functionality to request lower bitrates from the remote end, and we will forward these requests if there are no competing receivers (i.e. if the receiving estimates it has 200kbps downlink bandwidth available, this will be sent and relayed in a message to the sending client).  Therefore there is no need for simulcast based adaption.</p>
-					<a href="#downlink--bandwidth-policy" id="downlink--bandwidth-policy" style="color: inherit; text-decoration: none;">
-						<h3>Downlink  Bandwidth Policy</h3>
-					</a>
-					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a> adds functionality to take advantage of video simulcast.  The goal of this policy is to leave the complexity of managing the downlink bandwidth and decision of which streams to request inside the SDK and remove that burden from the application.  The policy monitors numerous pieces of information and uses that to determine which streams to subscribe to.  The data considered are:</p>
-					<ol>
-						<li>Message from infrastructure enumerating video streams from each remote client</li>
-						<li>Estimated downlink bandwidth from WebRTC library</li>
-						<li>Media metrics such as packet loss and used bandwidth</li>
-						<li>Stream type - Screen share or camera device</li>
-					</ol>
-					<p>The policy works by listening to any changes in the information listed above.  Anytime there is a change it re-evaluates the best mix of remote videos to fit within the target downlink bandwidth.  The policy is currently configured to try to request as many remote clients as possible, then increase resolution where possible.  It prioritizes screen share video above people video.  If there is insufficient bandwidth to request all far participants then only a certain number will be seen.</p>
-					<p>Applications will receive notifications of remote video being added or removed through the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a> callbacks. You can use <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingSimulcastLayersDidChange">encodingSimulcastLayersDidChange</a> to know when the selected upstream simulcast resolutions change.</p>
-					<p>If the application pauses a remote video by calling <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile">pauseVideoTile</a>, then this policy will not include that remote video in the list of available streams and therefore will not automatically subscribe or unsubscribe from it while it is in the paused state.</p>
-					<p>When using the policy it is recommended that applications do not take action on the downlink monitoring metrics from <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a> since it may conflict with decisions being made within the policy.</p>
-					<p>The VideoAdaptiveProbePolicy can be used with or without simulcast.  To enable it without simulcast set the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy">MeetingSessionConfiguration.videoDownlinkBandwidthPolicy</a> to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>.  If simulcast is not active, then the policy will only be able to add or remove remote videos.</p>
-					<a href="#creating-a-simulcast-enabled-meeting" id="creating-a-simulcast-enabled-meeting" style="color: inherit; text-decoration: none;">
-						<h3>Creating a simulcast enabled meeting</h3>
-					</a>
-					<p>First, create a meeting session configuration.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> {
-  ConsoleLogger,
-  DefaultDeviceController,
-  DefaultMeetingSession,
-  LogLevel,
-  MeetingSessionConfiguration
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Simulcast | amazon-chime-sdk-js</title><meta name="description" content="Documentation for amazon-chime-sdk-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">amazon-chime-sdk-js</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><ul class="tsd-breadcrumb"><li><a href="../modules.html">amazon-chime-sdk-js</a></li><li><a href="Simulcast.html">Simulcast</a></li></ul><h1>Namespace Simulcast </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography"><div class="lead">
 
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;MyLogger&#x27;</span>, LogLevel.INFO);
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+<a href="#video-simulcast" id="video-simulcast" style="color: inherit; text-decoration: none;">
+  <h1>Video Simulcast</h1>
+</a>
+</div><div><p>In multi-party video calls, attendees can enable the simulcast feature to enhance the overall video quality. Simulcast is a standardized technique where the video publishers create multiple renditions, or layers, of the same video source and video subscribers have the flexibility to choose the rendition that best fits their needs based on such factors as available bandwidth, compute and screen size.
+The uplink policy controls the configuration of the renditions through camera capture and encoding parameters. The simulcast-enabled uplink policy is <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>.</p>
+<p>Simulcast is currently disabled by default. To enable it <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers">MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers</a> must be set. Currently, only Chrome 76 and above is supported.</p>
+<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a> downlink policy adaptively subscribes to the best simulcast layer and is automatically selected if [<a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers">MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers</a> is set to true.</p>
+<p>If you want more fine-grained control of which simulcast layer to subscribe, please use <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy">VideoPriorityBasedPolicy</a>. More details about priority-based downlink policy can be
+found <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html">here</a>.</p>
 
-<span class="hljs-comment">// You need responses from server-side Chime API. See &#x27;Getting responses from your server application&#x27; in the README.</span>
-<span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-comment">// The response from the CreateMeeting API action.</span>
-<span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee or BatchCreateAttendee API action.</span>
+<a href="#details" id="details" style="color: inherit; text-decoration: none;">
+  <h2>Details</h2>
+</a>
 
-<span class="hljs-comment">// This meeting session configuration will be used to enable simulcast in the next step.</span>
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+<a href="#simulcast-overview" id="simulcast-overview" style="color: inherit; text-decoration: none;">
+  <h3>Simulcast overview</h3>
+</a>
+<p>Simulcast support is built into the WebRTC library in the majority of browsers.  The video input resolution is used to initially configure the attributes and maximum number of allowed simulcast streams.  In WebRTC, if the RTCRtpSender is configured to have three layers of encoding, then the top layer is specified by the video input resolution. The resolution of the middle layer is scaled down by two vertically and horizontally by WebRTC. The lower layer is scaled down by four.  The WebRTC library supports a maximum of three simulcast layers, and only when the input resolution is 960x540 or higher will all three be available.</p>
+<p>The recommended resolution in JS SDK is 1280x720. This resolution will provide the most flexibility and allow subscribers to maintain smoother video quality transitions.  In certain circumstances, like mobile browsers, the input resolution may not be high enough to support all desired simulcast streams, so the logic will adapt appropriately to send as many as possible.</p>
+<p>The SimulcastUplinkPolicy configures RTCRtpSender to have three encoding layers, but only ever enables two of them.  Which two are enabled is based on a variety of factors.   Experiments show that configuring RTCRtpSender with three encoding layers up front and dynamically enabling and disabling layers provides a better experience and reduces the burden of having to dynamically  manage capture resolution and encoding parameters.</p>
+
+<a href="#simulcast-resolutions-and-behavior" id="simulcast-resolutions-and-behavior" style="color: inherit; text-decoration: none;">
+  <h3>Simulcast resolutions and behavior</h3>
+</a>
+<p>WebRTC ultimately controls how much data is being sent to the network based on its bandwidth estimation algorithm. It&#39;s very hard to circumvent the estimated bandwidth or trick WebRTC into sending more than it estimates. Most browsers expose WebRTC peer connection statistics which developers can access to retrieve the estimated available bandwidths for uplink or downlink.</p>
+<p>The estimated available bandwidth reveals some information of the health of the E2E network and can trigger various WebRTC behaviors when facing network adversity or in recovering from a network glitch. SimulcastUplinkPolicy does its best to anticipate and react to the underlying WebRTC behavior and work with it to avoid further impact on the video quality of services.</p>
+<p>The SimulcastUplinkPolicy implements the following logic:</p>
+<table>
+<thead>
+<tr>
+<th align="right">Publishers/Attendees</th>
+<th align="center">Estimated Uplink Bandwidth</th>
+<th align="center">Simulcast stream 1</th>
+<th align="center">Simulcast stream 2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">Attendees &lt;= 2</td>
+<td align="center">Any</td>
+<td align="center">1280x720@15fps 1200 kbps</td>
+<td align="center">Not used</td>
+</tr>
+<tr>
+<td align="right">Publishers &lt;= 4 and</td>
+<td align="center">&gt;= 1000 kbps</td>
+<td align="center">1280x720@15fps 1200 kbps</td>
+<td align="center">320x180@15fps 300 kbps</td>
+</tr>
+<tr>
+<td align="right">Publishers  &lt;= 6 and</td>
+<td align="center">&gt;= 350 kbps</td>
+<td align="center">640x360@15fps 600 kbps</td>
+<td align="center">320x180@15fps 200 kbps</td>
+</tr>
+<tr>
+<td align="right">Publishers  &lt;= 6 and</td>
+<td align="center">&gt; 300 kbps</td>
+<td align="center">640x360@15fps 600 kbps</td>
+<td align="center">320x180@15fps 150 kbps</td>
+</tr>
+<tr>
+<td align="right">Publishers &gt; 6  and</td>
+<td align="center">&gt;= 350 kbps</td>
+<td align="center">640x360@15fps 350 kbps</td>
+<td align="center">320x180@15fps 200 kbps</td>
+</tr>
+<tr>
+<td align="right">Publishers &gt; 6  and</td>
+<td align="center">&gt;= 300 kbps</td>
+<td align="center">640x360@15fps 350 kbps</td>
+<td align="center">320x180@15fps 150 kbps</td>
+</tr>
+<tr>
+<td align="right">Any number publishers</td>
+<td align="center">&lt; 300 kbps</td>
+<td align="center">Not used</td>
+<td align="center">320x180@15fps 300 kbps</td>
+</tr>
+</tbody></table>
+<p>The table entries represent the maximum configuration.  When CPU and bandwidth consumption is overused, WebRTC will dynamically adjust bitrate, disable a layer or scale down resolution. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.</p>
+<p>Note that simulcast is disabled when there are only 2 or fewer attendees.  This is because WebRTC has additional functionality to request lower bitrates from the remote end, and we will forward these requests if there are no competing receivers (i.e. if the receiving estimates it has 200kbps downlink bandwidth available, this will be sent and relayed in a message to the sending client).  Therefore there is no need for simulcast based adaption.</p>
+
+<a href="#downlink--bandwidth-policy" id="downlink--bandwidth-policy" style="color: inherit; text-decoration: none;">
+  <h3>Downlink  Bandwidth Policy</h3>
+</a>
+<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a> adds functionality to take advantage of video simulcast.  The goal of this policy is to leave the complexity of managing the downlink bandwidth and decision of which streams to request inside the SDK and remove that burden from the application.  The policy monitors numerous pieces of information and uses that to determine which streams to subscribe to.  The data considered are:</p>
+<ol>
+<li>Message from infrastructure enumerating video streams from each remote client</li>
+<li>Estimated downlink bandwidth from WebRTC library</li>
+<li>Media metrics such as packet loss and used bandwidth</li>
+<li>Stream type - Screen share or camera device</li>
+</ol>
+<p>The policy works by listening to any changes in the information listed above.  Anytime there is a change it re-evaluates the best mix of remote videos to fit within the target downlink bandwidth.  The policy is currently configured to try to request as many remote clients as possible, then increase resolution where possible.  It prioritizes screen share video above people video.  If there is insufficient bandwidth to request all far participants then only a certain number will be seen.</p>
+<p>Applications will receive notifications of remote video being added or removed through the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a> callbacks. You can use <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingSimulcastLayersDidChange">encodingSimulcastLayersDidChange</a> to know when the selected upstream simulcast resolutions change.</p>
+<p>If the application pauses a remote video by calling <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile">pauseVideoTile</a>, then this policy will not include that remote video in the list of available streams and therefore will not automatically subscribe or unsubscribe from it while it is in the paused state.</p>
+<p>When using the policy it is recommended that applications do not take action on the downlink monitoring metrics from <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a> since it may conflict with decisions being made within the policy.</p>
+<p>The VideoAdaptiveProbePolicy can be used with or without simulcast.  To enable it without simulcast set the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy">MeetingSessionConfiguration.videoDownlinkBandwidthPolicy</a> to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>.  If simulcast is not active, then the policy will only be able to add or remove remote videos.</p>
+
+<a href="#creating-a-simulcast-enabled-meeting" id="creating-a-simulcast-enabled-meeting" style="color: inherit; text-decoration: none;">
+  <h3>Creating a simulcast enabled meeting</h3>
+</a>
+<p>First, create a meeting session configuration.</p>
+<pre><code class="language-javascript"><span class="hl-2">import</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">ConsoleLogger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">DefaultDeviceController</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">DefaultMeetingSession</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">LogLevel</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">MeetingSessionConfiguration</span><br/><span class="hl-1">} </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">logger</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">ConsoleLogger</span><span class="hl-1">(</span><span class="hl-3">&#39;MyLogger&#39;</span><span class="hl-1">, </span><span class="hl-0">LogLevel</span><span class="hl-1">.</span><span class="hl-5">INFO</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">deviceController</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultDeviceController</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">);</span><br/><br/><span class="hl-7">// You need responses from server-side Chime API. See &#39;Getting responses from your server application&#39; in the README.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">meetingResponse</span><span class="hl-1"> = </span><span class="hl-7">// The response from the CreateMeeting API action.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeResponse</span><span class="hl-1"> = </span><span class="hl-7">// The response from the CreateAttendee or BatchCreateAttendee API action.</span><br/><br/><span class="hl-7">// This meeting session configuration will be used to enable simulcast in the next step.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">configuration</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">MeetingSessionConfiguration</span><span class="hl-1">(</span><span class="hl-0">meetingResponse</span><span class="hl-1">, </span><span class="hl-0">attendeeResponse</span><span class="hl-1">);</span>
 </code></pre>
-					<p>Now enable <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> feature flag
-					in the created <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html">MeetingSessionConfiguration</a>.</p>
-					<pre><code class="language-javascript">configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = <span class="hljs-literal">true</span>;
-
-<span class="hljs-comment">//Specify the apdative probe downlink policy</span>
-configuration.videoDownlinkBandwidthPolicy = <span class="hljs-keyword">new</span> VideoAdaptiveProbePolicy(logger);
+<p>Now enable <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> feature flag
+in the created <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html">MeetingSessionConfiguration</a>.</p>
+<pre><code class="language-javascript"><span class="hl-0">configuration</span><span class="hl-1">.</span><span class="hl-0">enableSimulcastForUnifiedPlanChromiumBasedBrowsers</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><br/><span class="hl-7">//Specify the apdative probe downlink policy</span><br/><span class="hl-0">configuration</span><span class="hl-1">.</span><span class="hl-0">videoDownlinkBandwidthPolicy</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoAdaptiveProbePolicy</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">);</span>
 </code></pre>
-					<p>Now create a meeting session with the simulcast enabled meeting session configuration.</p>
-					<pre><code class="language-javascript"><span class="hljs-comment">// In the examples below, you will use this meetingSession object.</span>
-<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
-  configuration,
-  logger,
-  deviceController
-);
+<p>Now create a meeting session with the simulcast enabled meeting session configuration.</p>
+<pre><code class="language-javascript"><span class="hl-7">// In the examples below, you will use this meetingSession object.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">meetingSession</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultMeetingSession</span><span class="hl-1">(</span><br/><span class="hl-1">  </span><span class="hl-0">configuration</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">logger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">deviceController</span><br/><span class="hl-1">);</span>
 </code></pre>
-					<p>This <code>meetingSession</code> is now simulcast enabled and will have the <code>videoUplinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultsimulcastuplinkPolicy.html">DefaultSimulcastUplinkPolicy</a> and <code>videoDownlinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>. Due to these policies, the local and remote video resolutions may change. The video resolution depends on the available simulcast streams. The available simlucast streams are dependent on the number of attendees and the current bandwidth estimations. Check &quot;Simulcast resolutions and behavior&quot; section in this guide for more information.</p>
-					<a href="#receive-upstream-simulcast-layer-change-notification" id="receive-upstream-simulcast-layer-change-notification" style="color: inherit; text-decoration: none;">
-						<h3>Receive upstream simulcast layer change notification</h3>
-					</a>
-					<p>The active simulcast streams are represented by the <a href="https://aws.github.io/amazon-chime-sdk-js/enums/simulcastlayers.html">SimulcastLayers</a> enum. Currently, the active upstream simulcast layers will only be either &quot;Low and High&quot;, or &quot;Low and Medium&quot; or &quot;Low&quot;. To receive upstream simulcast layer change notification do the following steps:</p>
-					<ul>
-						<li><p>Implement the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingsimulcastlayersdidchange">encodingSimulcastLayersDidChange</a> method from the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a> interface.</p>
-						</li>
-						<li><p>Then, add an instance of the <code>AudioVideoObserver</code> using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addobserver">addObserver</a> method so you can receive the changed simulcast layer notification.</p>
-						</li>
-						<li><p>Now when you are in a simulcast enabled meeting and your upstream simulcast layer is changed, you will be notified in the <code>encodingSimulcastLayersDidChange</code> callback with the updated simulcast layer.</p>
-						</li>
-					</ul>
-					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { SimulcastLayers } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+<p>This <code>meetingSession</code> is now simulcast enabled and will have the <code>videoUplinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultsimulcastuplinkPolicy.html">DefaultSimulcastUplinkPolicy</a> and <code>videoDownlinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>. Due to these policies, the local and remote video resolutions may change. The video resolution depends on the available simulcast streams. The available simlucast streams are dependent on the number of attendees and the current bandwidth estimations. Check &quot;Simulcast resolutions and behavior&quot; section in this guide for more information.</p>
 
-<span class="hljs-keyword">const</span> SimulcastLayersMapping = {
-  [SimulcastLayers.Low]: <span class="hljs-string">&#x27;Low&#x27;</span>,
-  [SimulcastLayers.LowAndMedium]: <span class="hljs-string">&#x27;Low and Medium&#x27;</span>,
-  [SimulcastLayers.LowAndHigh]: <span class="hljs-string">&#x27;Low and High&#x27;</span>,
-  [SimulcastLayers.Medium]: <span class="hljs-string">&#x27;Medium&#x27;</span>,
-  [SimulcastLayers.MediumAndHigh]: <span class="hljs-string">&#x27;Medium and High&#x27;</span>,
-  [SimulcastLayers.High]: <span class="hljs-string">&#x27;High&#x27;</span>
-};
-
-<span class="hljs-keyword">const</span> observer = {
-  <span class="hljs-attr">encodingSimulcastLayersDidChange</span>: <span class="hljs-function"><span class="hljs-params">simulcastLayers</span> =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`current active simulcast layers changed to: <span class="hljs-subst">${SimulcastLayersMapping[simulcastLayers]}</span>`</span>);
-  }
-}
-
-meetingSession.audioVideo.addObserver(observer);
+<a href="#receive-upstream-simulcast-layer-change-notification" id="receive-upstream-simulcast-layer-change-notification" style="color: inherit; text-decoration: none;">
+  <h3>Receive upstream simulcast layer change notification</h3>
+</a>
+<p>The active simulcast streams are represented by the <a href="https://aws.github.io/amazon-chime-sdk-js/enums/simulcastlayers.html">SimulcastLayers</a> enum. Currently, the active upstream simulcast layers will only be either &quot;Low and High&quot;, or &quot;Low and Medium&quot; or &quot;Low&quot;. To receive upstream simulcast layer change notification do the following steps:</p>
+<ul>
+<li><p>Implement the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingsimulcastlayersdidchange">encodingSimulcastLayersDidChange</a> method from the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a> interface.</p>
+</li>
+<li><p>Then, add an instance of the <code>AudioVideoObserver</code> using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addobserver">addObserver</a> method so you can receive the changed simulcast layer notification.</p>
+</li>
+<li><p>Now when you are in a simulcast enabled meeting and your upstream simulcast layer is changed, you will be notified in the <code>encodingSimulcastLayersDidChange</code> callback with the updated simulcast layer.</p>
+</li>
+</ul>
+<pre><code class="language-javascript"><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">SimulcastLayers</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">SimulcastLayersMapping</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.Low]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Low&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.LowAndMedium]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Low and Medium&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.LowAndHigh]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Low and High&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.Medium]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Medium&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.MediumAndHigh]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Medium and High&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.High]:</span><span class="hl-1"> </span><span class="hl-3">&#39;High&#39;</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">observer</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-6">encodingSimulcastLayersDidChange</span><span class="hl-0">:</span><span class="hl-1"> </span><span class="hl-0">simulcastLayers</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`current active simulcast layers changed to: </span><span class="hl-4">${</span><span class="hl-0">SimulcastLayersMapping</span><span class="hl-9">[</span><span class="hl-0">simulcastLayers</span><span class="hl-9">]</span><span class="hl-4">}</span><span class="hl-3">`</span><span class="hl-1">);</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">addObserver</span><span class="hl-1">(</span><span class="hl-0">observer</span><span class="hl-1">);</span>
 </code></pre>
-					<a href="#custom-simulcast-policy" id="custom-simulcast-policy" style="color: inherit; text-decoration: none;">
-						<h3>Custom Simulcast Policy</h3>
-					</a>
-					<p>If the default simulcast uplink policy does not work for you, you can create your own simulcast video uplink policy
-						by implementing <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>
-					and set the video uplink policy via <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy">MeetingSessionConfiguration.videoUplinkBandwidthPolicy</a>.</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySimulcastUplinkPolicy</span> <span class="hljs-title">implements</span> <span class="hljs-title">SimulcastUplinkPolicy</span> </span>{
-}
 
-<span class="hljs-keyword">const</span> browserBehavior = <span class="hljs-keyword">new</span> DefaultBrowserBehavior();
-
-<span class="hljs-keyword">if</span> (browserBehavior.isSimulcastSupported()) {
-  meetingConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = <span class="hljs-literal">true</span>;
-  meetingConfiguration.videoUplinkBandwidthPolicy = <span class="hljs-keyword">new</span> MySimulcastUplinkPolicy();
-}
+<a href="#custom-simulcast-policy" id="custom-simulcast-policy" style="color: inherit; text-decoration: none;">
+  <h3>Custom Simulcast Policy</h3>
+</a>
+<p>If the default simulcast uplink policy does not work for you, you can create your own simulcast video uplink policy
+by implementing <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>
+and set the video uplink policy via <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy">MeetingSessionConfiguration.videoUplinkBandwidthPolicy</a>.</p>
+<pre><code class="language-typescript"><span class="hl-2">export</span><span class="hl-1"> </span><span class="hl-2">default</span><span class="hl-1"> </span><span class="hl-4">class</span><span class="hl-1"> </span><span class="hl-11">MySimulcastUplinkPolicy</span><span class="hl-1"> </span><span class="hl-4">implements</span><span class="hl-1"> </span><span class="hl-11">SimulcastUplinkPolicy</span><span class="hl-1"> {</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">browserBehavior</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultBrowserBehavior</span><span class="hl-1">();</span><br/><br/><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">browserBehavior</span><span class="hl-1">.</span><span class="hl-6">isSimulcastSupported</span><span class="hl-1">()) {</span><br/><span class="hl-1">  </span><span class="hl-0">meetingConfiguration</span><span class="hl-1">.</span><span class="hl-0">enableSimulcastForUnifiedPlanChromiumBasedBrowsers</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-0">meetingConfiguration</span><span class="hl-1">.</span><span class="hl-0">videoUplinkBandwidthPolicy</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">MySimulcastUplinkPolicy</span><span class="hl-1">();</span><br/><span class="hl-1">}</span>
 </code></pre>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Simulcast%20feedback">Give feedback on this guide</a></p>
-				</div>
-			</section>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="../assets/js/main.js"></script>
-</body>
-</html>
+<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Simulcast%20feedback">Give feedback on this guide</a></p>
+</div></div></section></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class=""><a href="../modules.html">Exports</a></li><li class=" tsd-kind-namespace"><a href="APIOverview.html">APIOverview</a></li><li class=" tsd-kind-namespace"><a href="AmazonVoice_Focus.html">Amazon<wbr/>Voice_<wbr/>Focus</a></li><li class=" tsd-kind-namespace"><a href="BackgroundFilter_Video_Processor.html">Background<wbr/>Filter_<wbr/>Video_<wbr/>Processor</a></li><li class=" tsd-kind-namespace"><a href="ClientEvent_Ingestion.html">Client<wbr/>Event_<wbr/>Ingestion</a></li><li class=" tsd-kind-namespace"><a href="ContentSecurity_Policy.html">Content<wbr/>Security_<wbr/>Policy</a></li><li class=" tsd-kind-namespace"><a href="ContentShare.html">Content<wbr/>Share</a></li><li class=" tsd-kind-namespace"><a href="FAQs.html">FAQs</a></li><li class=" tsd-kind-namespace"><a href="GettingStarted.html">Getting<wbr/>Started</a></li><li class=" tsd-kind-namespace"><a href="MeetingEvents.html">Meeting<wbr/>Events</a></li><li class=" tsd-kind-namespace"><a href="Migrationto_2_0.html">Migrationto_<wbr/>2_<wbr/>0</a></li><li class=" tsd-kind-namespace"><a href="Migrationto_3_0.html">Migrationto_<wbr/>3_<wbr/>0</a></li><li class=" tsd-kind-namespace"><a href="PriorityBased_Downlink_Policy.html">Priority<wbr/>Based_<wbr/>Downlink_<wbr/>Policy</a></li><li class=" tsd-kind-namespace"><a href="ProjectBoard.html">Project<wbr/>Board</a></li><li class=" tsd-kind-namespace"><a href="QualityBandwidth_Connectivity.html">Quality<wbr/>Bandwidth_<wbr/>Connectivity</a></li><li class=" tsd-kind-namespace"><a href="ReplicatedMeetings.html">Replicated<wbr/>Meetings</a></li><li class="current tsd-kind-namespace"><a href="Simulcast.html">Simulcast</a></li><li class=" tsd-kind-namespace"><a href="VideoLayout.html">Video<wbr/>Layout</a></li><li class=" tsd-kind-namespace"><a href="VideoProcessor.html">Video<wbr/>Processor</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li><li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="../assets/main.js"></script></body></html>

@@ -1,184 +1,36 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ClientEvent_Ingestion | amazon-chime-sdk-js</title>
-	<meta name="description" content="Documentation for amazon-chime-sdk-js">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="../assets/css/main.css">
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="../globals.html">Globals</a>
-				</li>
-				<li>
-					<a href="clientevent_ingestion.html">ClientEvent_Ingestion</a>
-				</li>
-			</ul>
-			<h1>Namespace ClientEvent_Ingestion</h1>
-		</div>
-	</div>
-</header>
-<div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<a href="#event-ingestion" id="event-ingestion" style="color: inherit; text-decoration: none;">
-							<h1>Event Ingestion</h1>
-						</a>
-					</div>
-					<p>We send the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html#meeting-events-and-attributes">Amazon Chime SDK meeting events</a> to the Amazon Chime backend to analyze meeting health trends or identify common failures. This helps to improve your meeting experience.</p>
-					<a href="#sensitive-attributes" id="sensitive-attributes" style="color: inherit; text-decoration: none;">
-						<h2>Sensitive attributes</h2>
-					</a>
-					<p>The Amazon Chime SDK for JavaScript will not send below sensitive attributes to the Amazon Chime backend.</p>
-					<table>
-						<thead>
-							<tr>
-								<th>Attribute</th>
-								<th>Description</th>
-							</tr>
-						</thead>
-						<tbody><tr>
-								<td><code>externalMeetingId</code></td>
-								<td>The Amazon Chime SDK external meeting ID.</td>
-							</tr>
-							<tr>
-								<td><code>externalUserId</code></td>
-								<td>The Amazon Chime SDK external user ID that can indicate an identity managed by your application.</td>
-							</tr>
-					</tbody></table>
-					<a href="#opt-out-of-event-ingestion" id="opt-out-of-event-ingestion" style="color: inherit; text-decoration: none;">
-						<h2>Opt out of Event Ingestion</h2>
-					</a>
-					<p>Event ingestion is enabled for clients using <a href="https://github.com/aws/aws-sdk-js/blob/master/CHANGELOG.md#29340">AWS SDK v2.934.0</a> and above. To opt out of event ingestion, provide <code>NoOpEventReporter</code> to <code>DefaultMeetingSession</code> while creating the meeting session.</p>
-					<pre><code class="language-js"><span class="hljs-keyword">import</span> {
-  ConsoleLogger,
-  DefaultDeviceController,
-  DefaultMeetingSession,
-  LogLevel,
-  MeetingSessionConfiguration,
-  NoOpEventReporter,
-  EventReporter,
-  DefaultEventController
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>ClientEvent_Ingestion | amazon-chime-sdk-js</title><meta name="description" content="Documentation for amazon-chime-sdk-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">amazon-chime-sdk-js</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><ul class="tsd-breadcrumb"><li><a href="../modules.html">amazon-chime-sdk-js</a></li><li><a href="ClientEvent_Ingestion.html">ClientEvent_Ingestion</a></li></ul><h1>Namespace ClientEvent_Ingestion </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography"><div class="lead">
 
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;MyLogger&#x27;</span>, LogLevel.INFO);
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+<a href="#event-ingestion" id="event-ingestion" style="color: inherit; text-decoration: none;">
+  <h1>Event Ingestion</h1>
+</a>
+</div><div><p>We send the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html#meeting-events-and-attributes">Amazon Chime SDK meeting events</a> to the Amazon Chime backend to analyze meeting health trends or identify common failures. This helps to improve your meeting experience.</p>
 
-<span class="hljs-comment">// You need responses from server-side Chime API. See below for details.</span>
-<span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-comment">// The response from the CreateMeeting API action.</span>
-<span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee or BatchCreateAttendee API action.</span>
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+<a href="#sensitive-attributes" id="sensitive-attributes" style="color: inherit; text-decoration: none;">
+  <h2>Sensitive attributes</h2>
+</a>
+<p>The Amazon Chime SDK for JavaScript will not send below sensitive attributes to the Amazon Chime backend.</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>externalMeetingId</code></td>
+<td>The Amazon Chime SDK external meeting ID.</td>
+</tr>
+<tr>
+<td><code>externalUserId</code></td>
+<td>The Amazon Chime SDK external user ID that can indicate an identity managed by your application.</td>
+</tr>
+</tbody></table>
 
-<span class="hljs-comment">// Use NoOpEventReporter to opt-out of event ingestion.</span>
-<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> NoOpEventReporter();
-
-<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
-  configuration,
-  logger,
-  deviceController,
-  <span class="hljs-keyword">new</span> DefaultEventController(configuration, logger, eventReporter)
-);
+<a href="#opt-out-of-event-ingestion" id="opt-out-of-event-ingestion" style="color: inherit; text-decoration: none;">
+  <h2>Opt out of Event Ingestion</h2>
+</a>
+<p>Event ingestion is enabled for clients using <a href="https://github.com/aws/aws-sdk-js/blob/master/CHANGELOG.md#29340">AWS SDK v2.934.0</a> and above. To opt out of event ingestion, provide <code>NoOpEventReporter</code> to <code>DefaultMeetingSession</code> while creating the meeting session.</p>
+<pre><code class="language-js"><span class="hl-2">import</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">ConsoleLogger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">DefaultDeviceController</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">DefaultMeetingSession</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">LogLevel</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">MeetingSessionConfiguration</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">NoOpEventReporter</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">EventReporter</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">DefaultEventController</span><br/><span class="hl-1">} </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">logger</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">ConsoleLogger</span><span class="hl-1">(</span><span class="hl-3">&#39;MyLogger&#39;</span><span class="hl-1">, </span><span class="hl-0">LogLevel</span><span class="hl-1">.</span><span class="hl-5">INFO</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">deviceController</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultDeviceController</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">);</span><br/><br/><span class="hl-7">// You need responses from server-side Chime API. See below for details.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">meetingResponse</span><span class="hl-1"> = </span><span class="hl-7">// The response from the CreateMeeting API action.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeResponse</span><span class="hl-1"> = </span><span class="hl-7">// The response from the CreateAttendee or BatchCreateAttendee API action.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">configuration</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">MeetingSessionConfiguration</span><span class="hl-1">(</span><span class="hl-0">meetingResponse</span><span class="hl-1">, </span><span class="hl-0">attendeeResponse</span><span class="hl-1">);</span><br/><br/><span class="hl-7">// Use NoOpEventReporter to opt-out of event ingestion.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">eventReporter</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">NoOpEventReporter</span><span class="hl-1">();</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">meetingSession</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultMeetingSession</span><span class="hl-1">(</span><br/><span class="hl-1">  </span><span class="hl-0">configuration</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">logger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">deviceController</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultEventController</span><span class="hl-1">(</span><span class="hl-0">configuration</span><span class="hl-1">, </span><span class="hl-0">logger</span><span class="hl-1">, </span><span class="hl-0">eventReporter</span><span class="hl-1">)</span><br/><span class="hl-1">);</span>
 </code></pre>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Client%20Event_Ingestion%20feedback">Give feedback on this guide</a></p>
-				</div>
-			</section>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="../assets/js/main.js"></script>
-</body>
-</html>
+<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Client%20Event_Ingestion%20feedback">Give feedback on this guide</a></p>
+</div></div></section></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class=""><a href="../modules.html">Exports</a></li><li class=" tsd-kind-namespace"><a href="APIOverview.html">APIOverview</a></li><li class=" tsd-kind-namespace"><a href="AmazonVoice_Focus.html">Amazon<wbr/>Voice_<wbr/>Focus</a></li><li class=" tsd-kind-namespace"><a href="BackgroundFilter_Video_Processor.html">Background<wbr/>Filter_<wbr/>Video_<wbr/>Processor</a></li><li class="current tsd-kind-namespace"><a href="ClientEvent_Ingestion.html">Client<wbr/>Event_<wbr/>Ingestion</a></li><li class=" tsd-kind-namespace"><a href="ContentSecurity_Policy.html">Content<wbr/>Security_<wbr/>Policy</a></li><li class=" tsd-kind-namespace"><a href="ContentShare.html">Content<wbr/>Share</a></li><li class=" tsd-kind-namespace"><a href="FAQs.html">FAQs</a></li><li class=" tsd-kind-namespace"><a href="GettingStarted.html">Getting<wbr/>Started</a></li><li class=" tsd-kind-namespace"><a href="MeetingEvents.html">Meeting<wbr/>Events</a></li><li class=" tsd-kind-namespace"><a href="Migrationto_2_0.html">Migrationto_<wbr/>2_<wbr/>0</a></li><li class=" tsd-kind-namespace"><a href="Migrationto_3_0.html">Migrationto_<wbr/>3_<wbr/>0</a></li><li class=" tsd-kind-namespace"><a href="PriorityBased_Downlink_Policy.html">Priority<wbr/>Based_<wbr/>Downlink_<wbr/>Policy</a></li><li class=" tsd-kind-namespace"><a href="ProjectBoard.html">Project<wbr/>Board</a></li><li class=" tsd-kind-namespace"><a href="QualityBandwidth_Connectivity.html">Quality<wbr/>Bandwidth_<wbr/>Connectivity</a></li><li class=" tsd-kind-namespace"><a href="ReplicatedMeetings.html">Replicated<wbr/>Meetings</a></li><li class=" tsd-kind-namespace"><a href="Simulcast.html">Simulcast</a></li><li class=" tsd-kind-namespace"><a href="VideoLayout.html">Video<wbr/>Layout</a></li><li class=" tsd-kind-namespace"><a href="VideoProcessor.html">Video<wbr/>Processor</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li><li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="../assets/main.js"></script></body></html>
