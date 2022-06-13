@@ -24,6 +24,7 @@ class JoinVideoTestMeetingStep extends AppTestStep {
 
   async run() {
     await this.page.enterAttendeeName();
+    await this.page.openAdditionalOptions();
     if (this.useSimulcastFlag) {
       this.logger("choose to use simulcast");
       await this.page.chooseUseSimulcast();
@@ -32,6 +33,7 @@ class JoinVideoTestMeetingStep extends AppTestStep {
       this.logger("choose to use Web Audio");
       await this.page.chooseUseWebAudio();
     }
+    await this.page.closeAdditionalOptions();
     this.logger("meeting title: " + this.meeting_title);
     await this.page.enterMeetingTitle(this.meeting_title);
     this.logger("waiting to authenticate");
