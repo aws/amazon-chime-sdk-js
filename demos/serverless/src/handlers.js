@@ -15,7 +15,7 @@ const currentRegion = process.env.REGION;
 const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS;
 const chimeSDKMeetingsEndpoint = process.env.CHIME_SDK_MEETINGS_ENDPOINT;
 const mediaPipelinesControlRegion = process.env.MEDIA_PIPELINES_CONTROL_REGION;
-const useChimeSDKMediaPipelines = process.env.USE_CHIME_SDK_MEETINGS;
+const useChimeSDKMediaPipelines = process.env.USE_CHIME_SDK_MEDIA_PIPELINES;
 const chimeSDKMediaPipelinesEndpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT;
 
 // Create an AWS SDK Chime object.
