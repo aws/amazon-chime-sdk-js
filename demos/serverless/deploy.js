@@ -14,7 +14,7 @@ let enableTerminationProtection = false;
 let disablePrintingLogs = false;
 let chimeEndpoint = 'https://service.chime.aws.amazon.com';
 let chimeSDKMeetingsEndpoint = 'https://service.chime.aws.amazon.com';
-let chimeServicePrincipal = 'chime.amazonaws.com'
+let chimeServicePrincipal = 'media-pipelines.chime.amazonaws.com'
 let captureOutputPrefix = ''
 let mediaCaptureRegions = [
     "ap-northeast-1",
@@ -67,7 +67,7 @@ function usage() {
   console.log(`  -a, --application                    Browser application to deploy, default '${app}'`);
   console.log(`  -e, --event-bridge                   Enable EventBridge integration, default is no integration`);
   console.log(`  -c, --chime-endpoint                 AWS SDK Chime endpoint, default is '${chimeEndpoint}'`);
-  console.log(`  -p, --service-principal              Service principal for meeting related resources, default is '${chimeServicePrincipal}'`)
+  console.log(`  -p, --service-principal              Service principal for media pipelines related resources, default is '${chimeServicePrincipal}'`)
   console.log(`  -t, --enable-termination-protection  Enable termination protection for the Cloudformation stack, default is false`);
   console.log(`  -l, --disable-printing-logs          Disable printing logs`);
   console.log(`  -o, --capture-output-prefix          Prefix for S3 bucket name`);
