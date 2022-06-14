@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for iOS edge.
 
 ### Removed
-
+- Removed deprecated WebRTC constraints which were being removed or were already no-ops
 ### Changed
 
 - Bump `protobufjs` from 6.8.8 to 6.11.3.
