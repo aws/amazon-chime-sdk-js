@@ -30,7 +30,7 @@ jobs:
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo 
+        run: script/deploy-canary-demo
   deploy_chime_beta_demo:
     name: Beta - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo 
+        run: script/deploy-canary-demo
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev
@@ -86,7 +86,7 @@ jobs:
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo 
+        run: script/deploy-canary-demo
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev

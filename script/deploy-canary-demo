@@ -68,7 +68,7 @@ ChimeSDKMeetingsGamma)
     npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-gamma-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-demo-gamma-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-gamma-canary$canarySuffix -t -l --use-chime-sdk-media-pipelines false -p chime.amazonaws.com
     ;;
 
-ChimeSDKMeetings_ChimeSDKMediaPipelinesGamma)
+ChimeSDKMeetings_ChimeSDKMediaPipelines_gamma)
     echo "Deploying to gamma stage for canary that talks to prod ChimeSDKMeetings client for meetings and prod ChimeSDKMediaPipelines client for media pipelines"
 
     # Uses ChimeSDKMeetings client
@@ -78,11 +78,11 @@ ChimeSDKMeetings_ChimeSDKMediaPipelinesGamma)
     npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-gamma-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-gamma-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-sin-demo-gamma-canary$canarySuffix -t -l --chime-sdk-media-pipelines-region ap-southeast-1 --chime-sdk-media-pipelines-endpoint https://media-pipelines-chime.ap-southeast-1.amazonaws.com
     ;;
 
-Chime_ChimeSDKMediaPipelinesGamma)
+Chime_ChimeSDKMediaPipelines_gamma)
     echo "Deploying to gamma stage for canary that talks to prod Chime client for meetings and prod ChimeSDKMediaPipelines client for media pipelines"
 
     # Uses ChimeSDKMeetings client
-    npm run deploy -- -r us-east-1 -b chime-sdk-$chimeSDKMediaPipelinesStackId-demo-gamma-canary-us-east-1$canarySuffix -s chime-sdk-$chimeSDKMediaPipelinesStackId-demo-gamma-canary-us-east-1$canarySuffix -u false -o chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-iad-demo-gamma-canary$canarySuffix -t -l
+    npm run deploy -- -r us-east-1 -b chime-sdk-$chimeSDKMediaPipelinesStackId-demo-gamma-canary-us-east-1$canarySuffix -s chime-sdk-$chimeSDKMediaPipelinesStackId-demo-gamma-canary-us-east-1$canarySuffix -u false -o chime-sdk-$chimeSDKMediaPipelinesStackId-iad-demo-gamma-canary$canarySuffix -t -l
     ;;
 
 ChimeProd)
@@ -104,7 +104,7 @@ ChimeSDKMeetingsIAD_ChimeSDKMediaPipelinesProdIAD)
     echo "Deploying to prod stage for canary that talks to prod IAD ChimeSDKMeetings client for meetings and prod IAD ChimeSDKMediaPipelines client for media pipelines"
 
     # Uses ChimeSDKMeetings client
-    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-us-east-1$canarySuffix -o chime-sdk-$chimeSDKMediaPipelinesStackId-iad-demo-prod-canary$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-us-east-1$canarySuffix -t -l
+    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-us-east-1$canarySuffix -o chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-iad-demo-prod-canary$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-us-east-1$canarySuffix -t -l
     ;;
 
 Chime_ChimeSDKMediaPipelinesProdIAD)
@@ -118,21 +118,21 @@ ChimeSDKMeetingsProdPDX)
     echo "Deploying to prod stage for canary that talks to prod PDX ChimeSDKMeetings client and prod PDX ChimeSDKMediaPipelines client"
 
     # Uses ChimeSDKMeetings client
-    npm run deploy -- -r us-west-2 -b chime-sdk-meetings-demo-prod-canary-us-west-2$canarySuffix -o chime-sdk-$chimeSDKMediaPipelinesStackId-pdx-demo-prod-canary$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-us-west-2$canarySuffix -t -l  --chime-sdk-media-pipelines-region us-west-2 --chime-sdk-media-pipelines-endpoint https://media-pipelines-chime.us-west-2.amazonaws.com
+    npm run deploy -- -r us-west-2 -b chime-sdk-meetings-demo-prod-canary-us-west-2$canarySuffix -o chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-pdx-demo-prod-canary$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-us-west-2$canarySuffix -t -l  --chime-sdk-media-pipelines-region us-west-2 --chime-sdk-media-pipelines-endpoint https://media-pipelines-chime.us-west-2.amazonaws.com
     ;;
 
 ChimeSDKMeetingsProdFRA)
     echo "Deploying to prod stage for canary that talks to prod FRA ChimeSDKMeetings client and prod FRA ChimeSDKMediaPipelines client"
 
     # Uses ChimeSDKMeetings client
-    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-prod-canary-eu-central-1$canarySuffix -o chime-sdk-$chimeSDKMediaPipelinesStackId-fra-demo-prod-canary$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-eu-central-1$canarySuffix -t -l  --chime-sdk-media-pipelines-region eu-central-1 --chime-sdk-media-pipelines-endpoint https://media-pipelines-chime.eu-central-1.amazonaws.com
+    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-prod-canary-eu-central-1$canarySuffix -o chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-fra-demo-prod-canary$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-eu-central-1$canarySuffix -t -l  --chime-sdk-media-pipelines-region eu-central-1 --chime-sdk-media-pipelines-endpoint https://media-pipelines-chime.eu-central-1.amazonaws.com
     ;;
 
 ChimeSDKMeetingsProdSIN)
     echo "Deploying to prod stage for canary that talks to prod SIN ChimeSDKMeetings client and prod SIN ChimeSDKMediaPipelines client"
 
     # Uses ChimeSDKMeetings client
-    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-prod-canary-ap-southeast-1$canarySuffix -o chime-sdk-$chimeSDKMediaPipelinesStackId-sin-demo-prod-canary$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-ap-southeast-1$canarySuffix -t -l  --chime-sdk-media-pipelines-region ap-southeast-1 --chime-sdk-media-pipelines-endpoint https://media-pipelines-chime.ap-southeast-1.amazonaws.com
+    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-prod-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-sin-demo-prod-canary$canarySuffix -s chime-sdk-meetings-$chimeSDKMediaPipelinesStackId-demo-prod-canary-ap-southeast-1$canarySuffix -t -l  --chime-sdk-media-pipelines-region ap-southeast-1 --chime-sdk-media-pipelines-endpoint https://media-pipelines-chime.ap-southeast-1.amazonaws.com
     ;;
 
 esac
