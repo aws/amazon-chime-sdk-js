@@ -1217,6 +1217,19 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.stop();
     });
 
+    it('can be stopped before stop and then stopped again', () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      audioVideoController.stop();
+      audioVideoController.start();
+      audioVideoController.stop();
+    });
+
     it('disables reconnecting once stop is called', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
