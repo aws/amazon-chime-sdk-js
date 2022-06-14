@@ -96,7 +96,7 @@ jobs:
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_DEFAULT_OUTPUT: text
-      NAME: ChimeSDKMeetings_ChimeSDKMediaPipelines_beta
+      NAME: ChimeSDKMeetings_ChimeSDKMediaPipelinesBeta
       GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
       GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
       GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1}}
@@ -130,7 +130,7 @@ jobs:
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_DEFAULT_OUTPUT: text
-      NAME: Chime_ChimeSDKMediaPipelines_beta
+      NAME: Chime_ChimeSDKMediaPipelinesBeta
       GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
       GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
       GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1}}
