@@ -5,9 +5,7 @@ on:
     - cron: '*/10 * * * *'
 #  schedule:
 #    - cron: '0 0 1 */2 *'
-permissions:
-  contents: read
-  pull-requests: write
+permissions: read-all|write-all
 
 env:
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
@@ -53,6 +51,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@f094b77505fb89581e68a1163fbd2fffece39da1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID
           branch: update-pre-run-script-id
@@ -82,6 +81,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@f094b77505fb89581e68a1163fbd2fffece39da1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID for previous release
           branch: update-pre-run-script-id-previous-release
