@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="defaultmeetingeventreporter.html">DefaultMeetingEventReporter</a>
@@ -77,8 +76,8 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a></li>
-					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type">Destroyable</a></li>
+					<li><a href="../interfaces/eventreporter.html" class="tsd-signature-type" data-tsd-kind="Interface">EventReporter</a></li>
+					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type" data-tsd-kind="Interface">Destroyable</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -115,7 +114,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Meeting<wbr>Event<wbr>Reporter<span class="tsd-signature-symbol">(</span>eventIngestionConfiguration<span class="tsd-signature-symbol">: </span><a href="eventingestionconfiguration.html" class="tsd-signature-type">EventIngestionConfiguration</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultmeetingeventreporter.html" class="tsd-signature-type">DefaultMeetingEventReporter</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Meeting<wbr>Event<wbr>Reporter<span class="tsd-signature-symbol">(</span>eventIngestionConfiguration<span class="tsd-signature-symbol">: </span><a href="eventingestionconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">EventIngestionConfiguration</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultmeetingeventreporter.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultMeetingEventReporter</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -127,13 +126,13 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>eventIngestionConfiguration: <a href="eventingestionconfiguration.html" class="tsd-signature-type">EventIngestionConfiguration</a></h5>
+									<h5>eventIngestionConfiguration: <a href="eventingestionconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">EventIngestionConfiguration</a></h5>
 								</li>
 								<li>
-									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
+									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="defaultmeetingeventreporter.html" class="tsd-signature-type">DefaultMeetingEventReporter</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="defaultmeetingeventreporter.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultMeetingEventReporter</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -167,6 +166,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventreporter/DefaultMeetingEventReporter.ts#L101">src/eventreporter/DefaultMeetingEventReporter.ts:101</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Dispose of this instance. The instance cannot be used after this method has been called.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -175,22 +179,28 @@
 					<a name="reportevent" class="tsd-anchor"></a>
 					<h3>report<wbr>Event</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">report<wbr>Event<span class="tsd-signature-symbol">(</span>ts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, name<span class="tsd-signature-symbol">: </span><a href="../globals.html#meetinghistorystate" class="tsd-signature-type">MeetingHistoryState</a>, attributes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">report<wbr>Event<span class="tsd-signature-symbol">(</span>ts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, name<span class="tsd-signature-symbol">: </span><a href="../modules.html#eventname" class="tsd-signature-type" data-tsd-kind="Type alias">EventName</a>, attributes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/eventreporter.html">EventReporter</a>.<a href="../interfaces/eventreporter.html#reportevent">reportEvent</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventreporter/DefaultMeetingEventReporter.ts#L75">src/eventreporter/DefaultMeetingEventReporter.ts:75</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Reports an event with a name, timestamp and any optional attributes.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>ts: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>name: <a href="../globals.html#meetinghistorystate" class="tsd-signature-type">MeetingHistoryState</a></h5>
+									<h5>name: <a href="../modules.html#eventname" class="tsd-signature-type" data-tsd-kind="Type alias">EventName</a></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> attributes: <span class="tsd-signature-symbol">{}</span></h5>
@@ -219,6 +229,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventreporter/DefaultMeetingEventReporter.ts#L47">src/eventreporter/DefaultMeetingEventReporter.ts:47</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Enables reporting events to the ingestion service, if disabled while creating the EventIngestionConfiguration.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -237,6 +252,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventreporter/DefaultMeetingEventReporter.ts#L61">src/eventreporter/DefaultMeetingEventReporter.ts:61</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Disables event reporting to the ingestion service.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -246,8 +266,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="realtimecontroller.html">RealtimeController</a>
@@ -108,7 +107,7 @@
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/defaultrealtimecontroller.html" class="tsd-signature-type">DefaultRealtimeController</a></li>
+					<li><a href="../classes/defaultrealtimecontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultRealtimeController</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -158,7 +157,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="transcriptioncontroller" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> transcription<wbr>Controller</h3>
-					<div class="tsd-signature tsd-kind-icon">transcription<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="transcriptioncontroller.html" class="tsd-signature-type">TranscriptionController</a></div>
+					<div class="tsd-signature tsd-kind-icon">transcription<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="transcriptioncontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">TranscriptionController</a></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/RealtimeController.ts#L246">src/realtimecontroller/RealtimeController.ts:246</a></li>
@@ -247,7 +246,7 @@
 					<a name="realtimereceivedatamessage" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Receive<wbr>Data<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Receive<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="../classes/datamessage.html" class="tsd-signature-type">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Receive<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="../classes/datamessage.html" class="tsd-signature-type" data-tsd-kind="Class">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -264,7 +263,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>dataMessage: <a href="../classes/datamessage.html" class="tsd-signature-type">DataMessage</a></h5>
+									<h5>dataMessage: <a href="../classes/datamessage.html" class="tsd-signature-type" data-tsd-kind="Class">DataMessage</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -275,7 +274,7 @@
 					<a name="realtimesenddatamessage" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Send<wbr>Data<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Send<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Send<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -295,7 +294,7 @@
 									<h5>topic: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>data: <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></h5>
+									<h5>data: <span class="tsd-signature-type">any</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> lifetimeMs: <span class="tsd-signature-type">number</span></h5>
@@ -338,7 +337,7 @@
 					<a name="realtimesetlocalaudioinput" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Set<wbr>Local<wbr>Audio<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Set<wbr>Local<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span>audioInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Set<wbr>Local<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span>audioInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -356,7 +355,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>audioInput: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>audioInput: <span class="tsd-signature-type">MediaStream</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -367,7 +366,7 @@
 					<a name="realtimesubscribetoattendeeidpresence" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><a href="../globals.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-signature-type">RealtimeSubscribeToAttendeeIdPresenceCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><a href="../modules.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-signature-type" data-tsd-kind="Type alias">RealtimeSubscribeToAttendeeIdPresenceCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -385,7 +384,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callback: <a href="../globals.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-signature-type">RealtimeSubscribeToAttendeeIdPresenceCallback</a></h5>
+									<h5>callback: <a href="../modules.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-signature-type" data-tsd-kind="Type alias">RealtimeSubscribeToAttendeeIdPresenceCallback</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -396,7 +395,7 @@
 					<a name="realtimesubscribetofatalerror" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Subscribe<wbr>ToFatal<wbr>Error</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToFatal<wbr>Error<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToFatal<wbr>Error<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -416,18 +415,18 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callback: <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>callback: <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5>error: <a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a></h5>
+															<h5>error: <span class="tsd-signature-type">Error</span></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -537,7 +536,7 @@
 					<a name="realtimesubscribetoreceivedatamessage" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Subscribe<wbr>ToReceive<wbr>Data<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToReceive<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="../classes/datamessage.html" class="tsd-signature-type">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToReceive<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="../classes/datamessage.html" class="tsd-signature-type" data-tsd-kind="Class">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -557,18 +556,18 @@
 									<h5>topic: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>callback: <span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="../classes/datamessage.html" class="tsd-signature-type">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>callback: <span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="../classes/datamessage.html" class="tsd-signature-type" data-tsd-kind="Class">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="../classes/datamessage.html" class="tsd-signature-type">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="../classes/datamessage.html" class="tsd-signature-type" data-tsd-kind="Class">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5>dataMessage: <a href="../classes/datamessage.html" class="tsd-signature-type">DataMessage</a></h5>
+															<h5>dataMessage: <a href="../classes/datamessage.html" class="tsd-signature-type" data-tsd-kind="Class">DataMessage</a></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -586,7 +585,7 @@
 					<a name="realtimesubscribetosenddatamessage" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Subscribe<wbr>ToSend<wbr>Data<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToSend<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToSend<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -603,11 +602,11 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callback: <span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>callback: <span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
@@ -617,7 +616,7 @@
 															<h5>topic: <span class="tsd-signature-type">string</span></h5>
 														</li>
 														<li>
-															<h5>data: <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></h5>
+															<h5>data: <span class="tsd-signature-type">any</span></h5>
 														</li>
 														<li>
 															<h5><span class="tsd-flag ts-flagOptional">Optional</span> lifetimeMs: <span class="tsd-signature-type">number</span></h5>
@@ -684,7 +683,7 @@
 					<a name="realtimesubscribetovolumeindicator" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Subscribe<wbr>ToVolume<wbr>Indicator</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToVolume<wbr>Indicator<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, callback<span class="tsd-signature-symbol">: </span><a href="../globals.html#volumeindicatorcallback" class="tsd-signature-type">VolumeIndicatorCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Subscribe<wbr>ToVolume<wbr>Indicator<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, callback<span class="tsd-signature-symbol">: </span><a href="../modules.html#volumeindicatorcallback" class="tsd-signature-type" data-tsd-kind="Type alias">VolumeIndicatorCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -707,7 +706,7 @@
 									<h5>attendeeId: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>callback: <a href="../globals.html#volumeindicatorcallback" class="tsd-signature-type">VolumeIndicatorCallback</a></h5>
+									<h5>callback: <a href="../modules.html#volumeindicatorcallback" class="tsd-signature-type" data-tsd-kind="Type alias">VolumeIndicatorCallback</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -772,7 +771,7 @@
 					<a name="realtimeunsubscribefromsenddatamessage" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Unsubscribe<wbr>From<wbr>Send<wbr>Data<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>From<wbr>Send<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>From<wbr>Send<wbr>Data<wbr>Message<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -789,11 +788,11 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callback: <span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>callback: <span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, lifetimeMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
@@ -803,7 +802,7 @@
 															<h5>topic: <span class="tsd-signature-type">string</span></h5>
 														</li>
 														<li>
-															<h5>data: <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></h5>
+															<h5>data: <span class="tsd-signature-type">any</span></h5>
 														</li>
 														<li>
 															<h5><span class="tsd-flag ts-flagOptional">Optional</span> lifetimeMs: <span class="tsd-signature-type">number</span></h5>
@@ -824,7 +823,7 @@
 					<a name="realtimeunsubscribefromvolumeindicator" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Unsubscribe<wbr>From<wbr>Volume<wbr>Indicator</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>From<wbr>Volume<wbr>Indicator<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, callback<span class="tsd-signature-symbol">?: </span><a href="../globals.html#volumeindicatorcallback" class="tsd-signature-type">VolumeIndicatorCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>From<wbr>Volume<wbr>Indicator<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, callback<span class="tsd-signature-symbol">?: </span><a href="../modules.html#volumeindicatorcallback" class="tsd-signature-type" data-tsd-kind="Type alias">VolumeIndicatorCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -846,7 +845,7 @@
 									<h5>attendeeId: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <a href="../globals.html#volumeindicatorcallback" class="tsd-signature-type">VolumeIndicatorCallback</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <a href="../modules.html#volumeindicatorcallback" class="tsd-signature-type" data-tsd-kind="Type alias">VolumeIndicatorCallback</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -857,7 +856,7 @@
 					<a name="realtimeunsubscribetoattendeeidpresence" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Unsubscribe<wbr>ToAttendee<wbr>IdPresence</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>ToAttendee<wbr>IdPresence<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><a href="../globals.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-signature-type">RealtimeSubscribeToAttendeeIdPresenceCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>ToAttendee<wbr>IdPresence<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><a href="../modules.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-signature-type" data-tsd-kind="Type alias">RealtimeSubscribeToAttendeeIdPresenceCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -874,7 +873,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callback: <a href="../globals.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-signature-type">RealtimeSubscribeToAttendeeIdPresenceCallback</a></h5>
+									<h5>callback: <a href="../modules.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-signature-type" data-tsd-kind="Type alias">RealtimeSubscribeToAttendeeIdPresenceCallback</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -885,7 +884,7 @@
 					<a name="realtimeunsubscribetofatalerror" class="tsd-anchor"></a>
 					<h3>realtime<wbr>Unsubscribe<wbr>ToFatal<wbr>Error</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>ToFatal<wbr>Error<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>ToFatal<wbr>Error<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -902,18 +901,18 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callback: <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>callback: <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5>error: <a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a></h5>
+															<h5>error: <span class="tsd-signature-type">Error</span></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1070,8 +1069,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

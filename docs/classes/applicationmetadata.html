@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="applicationmetadata.html">ApplicationMetadata</a>
@@ -75,19 +74,20 @@
 						analyze meeting health trends or identify common failures to improve your meeting experience.</p>
 					</div>
 					<p>Do not pass any Personal Identifiable Information (PII).</p>
-					<pre><code class="language-js"><span class="hljs-keyword">import</span> { MeetingSessionConfiguration, ApplicationMetadata } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MeetingSessionConfiguration</span><span style="color: #000000">, </span><span style="color: #001080">ApplicationMetadata</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
-<span class="hljs-keyword">const</span> createMeetingResponse = <span class="hljs-comment">// CreateMeeting API response.</span>
-<span class="hljs-keyword">const</span> createAttendeeResponse = <span class="hljs-comment">// CreateAttendee API response.</span>
-<span class="hljs-keyword">const</span> meetingSessionConfiguration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(
- createMeetingResponse,
- createAttendeeResponse
-);
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">createMeetingResponse</span><span style="color: #000000"> = </span><span style="color: #008000">// CreateMeeting API response.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">createAttendeeResponse</span><span style="color: #000000"> = </span><span style="color: #008000">// CreateAttendee API response.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSessionConfiguration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(</span>
+<span style="color: #000000"> </span><span style="color: #001080">createMeetingResponse</span><span style="color: #000000">,</span>
+<span style="color: #000000"> </span><span style="color: #001080">createAttendeeResponse</span>
+<span style="color: #000000">);</span>
 
-meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
- <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;AppName&#x27;</span>,
- <span class="hljs-attr">appVersion</span>: <span class="hljs-string">&#x27;1.0.0&#x27;</span>
-});
+<span style="color: #001080">meetingSessionConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">applicationMetadata</span><span style="color: #000000"> = </span><span style="color: #001080">ApplicationMetadata</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({</span>
+<span style="color: #000000"> </span><span style="color: #001080">appName:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;AppName&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000"> </span><span style="color: #001080">appVersion:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1.0.0&#039;</span>
+<span style="color: #000000">});</span>
+
 </code></pre>
 				</div>
 			</section>
@@ -126,9 +126,6 @@ meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> app<wbr>Name</h3>
 					<div class="tsd-signature tsd-kind-icon">app<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/applicationmetadata/ApplicationMetadata.ts#L31">src/applicationmetadata/ApplicationMetadata.ts:31</a></li>
-						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
@@ -136,9 +133,6 @@ meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> app<wbr>Version</h3>
 					<div class="tsd-signature tsd-kind-icon">app<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/applicationmetadata/ApplicationMetadata.ts#L31">src/applicationmetadata/ApplicationMetadata.ts:31</a></li>
-						</ul>
 					</aside>
 				</section>
 			</section>
@@ -148,7 +142,7 @@ meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
 					<a name="create" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>appName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, appVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="applicationmetadata.html" class="tsd-signature-type">ApplicationMetadata</a></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>appName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, appVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="applicationmetadata.html" class="tsd-signature-type" data-tsd-kind="Class">ApplicationMetadata</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -157,8 +151,6 @@ meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/applicationmetadata/ApplicationMetadata.ts#L43">src/applicationmetadata/ApplicationMetadata.ts:43</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -177,7 +169,7 @@ meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="applicationmetadata.html" class="tsd-signature-type">ApplicationMetadata</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="applicationmetadata.html" class="tsd-signature-type" data-tsd-kind="Class">ApplicationMetadata</a></h4>
 							<p><a href="applicationmetadata.html">ApplicationMetadata</a></p>
 						</li>
 					</ul>
@@ -187,8 +179,8 @@ meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

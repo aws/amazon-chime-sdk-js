@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="defaultsignalingclient.html">DefaultSignalingClient</a>
@@ -84,7 +83,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/signalingclient.html" class="tsd-signature-type">SignalingClient</a></li>
+					<li><a href="../interfaces/signalingclient.html" class="tsd-signature-type" data-tsd-kind="Interface">SignalingClient</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -128,7 +127,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Signaling<wbr>Client<span class="tsd-signature-symbol">(</span>webSocket<span class="tsd-signature-symbol">: </span><a href="../interfaces/websocketadapter.html" class="tsd-signature-type">WebSocketAdapter</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultsignalingclient.html" class="tsd-signature-type">DefaultSignalingClient</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Signaling<wbr>Client<span class="tsd-signature-symbol">(</span>webSocket<span class="tsd-signature-symbol">: </span><a href="../interfaces/websocketadapter.html" class="tsd-signature-type" data-tsd-kind="Interface">WebSocketAdapter</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultsignalingclient.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultSignalingClient</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -140,13 +139,13 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>webSocket: <a href="../interfaces/websocketadapter.html" class="tsd-signature-type">WebSocketAdapter</a></h5>
+									<h5>webSocket: <a href="../interfaces/websocketadapter.html" class="tsd-signature-type" data-tsd-kind="Interface">WebSocketAdapter</a></h5>
 								</li>
 								<li>
-									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
+									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="defaultsignalingclient.html" class="tsd-signature-type">DefaultSignalingClient</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="defaultsignalingclient.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultSignalingClient</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -167,6 +166,14 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L215">src/signalingclient/DefaultSignalingClient.ts:215</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Closes any existing connection.</p>
+								</div>
+								<p>Prior to closing, it delivers a WebSocketClosing event. Upon receipt of the final
+									WebSocket close event, the connection request queue is serviced. If there is no connection
+								to close, this function just services the connection request queue and returns.</p>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -185,6 +192,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L479">src/signalingclient/DefaultSignalingClient.ts:479</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Leave the primary meeting and stop sharing audio, video (if started), and data messages.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -193,7 +205,7 @@
 					<a name="join" class="tsd-anchor"></a>
 					<h3>join</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">join<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><a href="signalingclientjoin.html" class="tsd-signature-type">SignalingClientJoin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">join<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><a href="signalingclientjoin.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientJoin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -203,10 +215,15 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L90">src/signalingclient/DefaultSignalingClient.ts:90</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a join frame with the given settings.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>settings: <a href="signalingclientjoin.html" class="tsd-signature-type">SignalingClientJoin</a></h5>
+									<h5>settings: <a href="signalingclientjoin.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientJoin</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -227,6 +244,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L191">src/signalingclient/DefaultSignalingClient.ts:191</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a leave frame.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -245,6 +267,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L261">src/signalingclient/DefaultSignalingClient.ts:261</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Mute or unmute the client</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -259,7 +286,7 @@
 					<a name="openconnection" class="tsd-anchor"></a>
 					<h3>open<wbr>Connection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">open<wbr>Connection<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="signalingclientconnectionrequest.html" class="tsd-signature-type">SignalingClientConnectionRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">open<wbr>Connection<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="signalingclientconnectionrequest.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientConnectionRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -269,10 +296,20 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L75">src/signalingclient/DefaultSignalingClient.ts:75</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Enqueues an attempt to open a signaling connection over WebSocket.</p>
+								</div>
+								<p>Once initiated, a WebSocketConnecting event is sent to observers. If successful, a
+									WebSocketOpen event is sent out. If the connection could not be established for any reason,
+									a WebSocketFailed event is sent followed by WebSocketClosed event. If any existing connection
+									is open, then that is first closed (and the WebSocketClosed event is sent out) before the
+								open is tried.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>request: <a href="signalingclientconnectionrequest.html" class="tsd-signature-type">SignalingClientConnectionRequest</a></h5>
+									<h5>request: <a href="signalingclientconnectionrequest.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientConnectionRequest</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -293,6 +330,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L270">src/signalingclient/DefaultSignalingClient.ts:270</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a pause frame with the given stream ids.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -317,6 +359,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L81">src/signalingclient/DefaultSignalingClient.ts:81</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a ping or pong with an id.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -331,7 +378,7 @@
 					<a name="promotetoprimarymeeting" class="tsd-anchor"></a>
 					<h3>promote<wbr>ToPrimary<wbr>Meeting</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting<span class="tsd-signature-symbol">(</span>credentials<span class="tsd-signature-symbol">: </span><a href="meetingsessioncredentials.html" class="tsd-signature-type">MeetingSessionCredentials</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">promote<wbr>ToPrimary<wbr>Meeting<span class="tsd-signature-symbol">(</span>credentials<span class="tsd-signature-symbol">: </span><a href="meetingsessioncredentials.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingSessionCredentials</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -341,10 +388,20 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L464">src/signalingclient/DefaultSignalingClient.ts:464</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Allows an attendee in a replica meeting to join the primary meeting as if
+										they were a normal attendee. Once successfully joined they will receive a callback on
+									<code>SignalingClientObserver.handleSignalingClientEvent</code>.  See documentation of observer for more information.</p>
+								</div>
+								<p>They may also receive another callback on <code>SignalingClientObserver.handleSignalingClientEvent</code> to indicate they
+								can begin to share video.</p>
+								<p>Failure will also be indicated through the <code>SignalingClientObserver.handleSignalingClientEvent</code> callback.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>credentials: <a href="meetingsessioncredentials.html" class="tsd-signature-type">MeetingSessionCredentials</a></h5>
+									<h5>credentials: <a href="meetingsessioncredentials.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingSessionCredentials</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -365,6 +422,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L255">src/signalingclient/DefaultSignalingClient.ts:255</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether the client has a connection open in the ready state</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -373,7 +435,7 @@
 					<a name="registerobserver" class="tsd-anchor"></a>
 					<h3>register<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">register<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/signalingclientobserver.html" class="tsd-signature-type">SignalingClientObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">register<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/signalingclientobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">SignalingClientObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -383,10 +445,15 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L65">src/signalingclient/DefaultSignalingClient.ts:65</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds an observer to the observer queue with immediate effect.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observer: <a href="../interfaces/signalingclientobserver.html" class="tsd-signature-type">SignalingClientObserver</a></h5>
+									<h5>observer: <a href="../interfaces/signalingclientobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">SignalingClientObserver</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -397,7 +464,7 @@
 					<a name="remotevideoupdate" class="tsd-anchor"></a>
 					<h3>remote<wbr>Video<wbr>Update</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">remote<wbr>Video<wbr>Update<span class="tsd-signature-symbol">(</span>addedOrUpdated<span class="tsd-signature-symbol">: </span><a href="signalingclientvideosubscriptionconfiguration.html" class="tsd-signature-type">SignalingClientVideoSubscriptionConfiguration</a><span class="tsd-signature-symbol">[]</span>, removed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">remote<wbr>Video<wbr>Update<span class="tsd-signature-symbol">(</span>addedOrUpdated<span class="tsd-signature-symbol">: </span><a href="signalingclientvideosubscriptionconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientVideoSubscriptionConfiguration</a><span class="tsd-signature-symbol">[]</span>, removed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -407,10 +474,19 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L165">src/signalingclient/DefaultSignalingClient.ts:165</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a remote video update frame with the given configurations and removed streams.  These can be
+										sent in parallel to <code>subscribe</code> without issue, but note that <code>subscribe</code> will overwrite any configuration
+									set here.</p>
+								</div>
+								<p>Note that the <code>addedOrUpdated</code> is basically a flattened map with <code>SignalingClientVideoSubscriptionConfiguration.mid</code>
+								being the key, which is why we only need to pass the mid when removing.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>addedOrUpdated: <a href="signalingclientvideosubscriptionconfiguration.html" class="tsd-signature-type">SignalingClientVideoSubscriptionConfiguration</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>addedOrUpdated: <a href="signalingclientvideosubscriptionconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientVideoSubscriptionConfiguration</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 								<li>
 									<h5>removed: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
@@ -424,7 +500,7 @@
 					<a name="removeobserver" class="tsd-anchor"></a>
 					<h3>remove<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/signalingclientobserver.html" class="tsd-signature-type">SignalingClientObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/signalingclientobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">SignalingClientObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -434,10 +510,15 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L70">src/signalingclient/DefaultSignalingClient.ts:70</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Removes an observer from the observer queue with immediate effect.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observer: <a href="../interfaces/signalingclientobserver.html" class="tsd-signature-type">SignalingClientObserver</a></h5>
+									<h5>observer: <a href="../interfaces/signalingclientobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">SignalingClientObserver</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -458,6 +539,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L278">src/signalingclient/DefaultSignalingClient.ts:278</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a resume frame with the given stream ids.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -482,6 +568,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L201">src/signalingclient/DefaultSignalingClient.ts:201</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a client stats frame.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -506,6 +597,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L208">src/signalingclient/DefaultSignalingClient.ts:208</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Send a message frame to data channel</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -520,7 +616,7 @@
 					<a name="subscribe" class="tsd-anchor"></a>
 					<h3>subscribe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">subscribe<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><a href="signalingclientsubscribe.html" class="tsd-signature-type">SignalingClientSubscribe</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">subscribe<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><a href="signalingclientsubscribe.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientSubscribe</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -530,10 +626,15 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/DefaultSignalingClient.ts#L121">src/signalingclient/DefaultSignalingClient.ts:121</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a subscribe frame with the given settings.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>settings: <a href="signalingclientsubscribe.html" class="tsd-signature-type">SignalingClientSubscribe</a></h5>
+									<h5>settings: <a href="signalingclientsubscribe.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientSubscribe</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -545,8 +646,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

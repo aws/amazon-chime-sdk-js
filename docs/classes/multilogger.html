@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="multilogger.html">MultiLogger</a>
@@ -84,7 +83,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></li>
+					<li><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -117,7 +116,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Multi<wbr>Logger<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>loggers<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="multilogger.html" class="tsd-signature-type">MultiLogger</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Multi<wbr>Logger<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>loggers<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="multilogger.html" class="tsd-signature-type" data-tsd-kind="Class">MultiLogger</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -129,10 +128,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>loggers: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>loggers: <a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="multilogger.html" class="tsd-signature-type">MultiLogger</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="multilogger.html" class="tsd-signature-type" data-tsd-kind="Class">MultiLogger</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -148,10 +147,18 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/logger.html">Logger</a>.<a href="../interfaces/logger.html#debug">debug</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/logger/MultiLogger.ts#L35">src/logger/MultiLogger.ts:35</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calls [[debugFunction]] only if the log level is debug and emits the
+										resulting string. Use the debug level to dump large or verbose messages
+									that could slow down performance.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -176,6 +183,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/logger/MultiLogger.ts#L29">src/logger/MultiLogger.ts:29</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Emits an error message if the log level is equal to or lower than error level.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -190,7 +202,7 @@
 					<a name="getloglevel" class="tsd-anchor"></a>
 					<h3>get<wbr>Log<wbr>Level</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -200,7 +212,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/logger/MultiLogger.ts#L62">src/logger/MultiLogger.ts:62</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the current log level.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -218,6 +235,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/logger/MultiLogger.ts#L17">src/logger/MultiLogger.ts:17</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Emits an info message if the log level is equal to or lower than info level.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -232,7 +254,7 @@
 					<a name="setloglevel" class="tsd-anchor"></a>
 					<h3>set<wbr>Log<wbr>Level</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span>level<span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span>level<span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -242,10 +264,15 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/logger/MultiLogger.ts#L56">src/logger/MultiLogger.ts:56</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the log level.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>level: <a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a></h5>
+									<h5>level: <a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -266,6 +293,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/logger/MultiLogger.ts#L23">src/logger/MultiLogger.ts:23</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Emits a warning message if the log level is equal to or lower than warn level.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -281,8 +313,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

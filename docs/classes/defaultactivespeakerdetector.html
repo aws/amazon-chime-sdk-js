@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="defaultactivespeakerdetector.html">DefaultActiveSpeakerDetector</a>
@@ -77,8 +76,8 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/activespeakerdetector.html" class="tsd-signature-type">ActiveSpeakerDetector</a></li>
-					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type">Destroyable</a></li>
+					<li><a href="../interfaces/activespeakerdetector.html" class="tsd-signature-type" data-tsd-kind="Interface">ActiveSpeakerDetector</a></li>
+					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type" data-tsd-kind="Interface">Destroyable</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -108,7 +107,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Active<wbr>Speaker<wbr>Detector<span class="tsd-signature-symbol">(</span>realtimeController<span class="tsd-signature-symbol">: </span><a href="../interfaces/realtimecontroller.html" class="tsd-signature-type">RealtimeController</a>, selfAttendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, hasBandwidthPriorityCallback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>hasBandwidthPriority<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, waitIntervalMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, updateIntervalMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultactivespeakerdetector.html" class="tsd-signature-type">DefaultActiveSpeakerDetector</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Active<wbr>Speaker<wbr>Detector<span class="tsd-signature-symbol">(</span>realtimeController<span class="tsd-signature-symbol">: </span><a href="../interfaces/realtimecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">RealtimeController</a>, selfAttendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, hasBandwidthPriorityCallback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>hasBandwidthPriority<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, waitIntervalMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, updateIntervalMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultactivespeakerdetector.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultActiveSpeakerDetector</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -120,7 +119,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>realtimeController: <a href="../interfaces/realtimecontroller.html" class="tsd-signature-type">RealtimeController</a></h5>
+									<h5>realtimeController: <a href="../interfaces/realtimecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">RealtimeController</a></h5>
 								</li>
 								<li>
 									<h5>selfAttendeeId: <span class="tsd-signature-type">string</span></h5>
@@ -147,13 +146,13 @@
 									</ul>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> waitIntervalMs: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1000</span></h5>
+									<h5>waitIntervalMs: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1000</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> updateIntervalMs: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 200</span></h5>
+									<h5>updateIntervalMs: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 200</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="defaultactivespeakerdetector.html" class="tsd-signature-type">DefaultActiveSpeakerDetector</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="defaultactivespeakerdetector.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultActiveSpeakerDetector</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -174,6 +173,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/activespeakerdetector/DefaultActiveSpeakerDetector.ts#L179">src/activespeakerdetector/DefaultActiveSpeakerDetector.ts:179</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Dispose of this instance. The instance cannot be used after this method has been called.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -182,11 +186,12 @@
 					<a name="subscribe" class="tsd-anchor"></a>
 					<h3>subscribe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">subscribe<span class="tsd-signature-symbol">(</span>policy<span class="tsd-signature-symbol">: </span><a href="../interfaces/activespeakerpolicy.html" class="tsd-signature-type">ActiveSpeakerPolicy</a>, callback<span class="tsd-signature-symbol">: </span><a href="../globals.html#detectorcallback" class="tsd-signature-type">DetectorCallback</a>, scoresCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>scores<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, scoresCallbackIntervalMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">subscribe<span class="tsd-signature-symbol">(</span>policy<span class="tsd-signature-symbol">: </span><a href="../interfaces/activespeakerpolicy.html" class="tsd-signature-type" data-tsd-kind="Interface">ActiveSpeakerPolicy</a>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DetectorCallback</span>, scoresCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>scores<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, scoresCallbackIntervalMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/activespeakerdetector.html">ActiveSpeakerDetector</a>.<a href="../interfaces/activespeakerdetector.html#subscribe">subscribe</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/activespeakerdetector/DefaultActiveSpeakerDetector.ts#L108">src/activespeakerdetector/DefaultActiveSpeakerDetector.ts:108</a></li>
 								</ul>
@@ -194,10 +199,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>policy: <a href="../interfaces/activespeakerpolicy.html" class="tsd-signature-type">ActiveSpeakerPolicy</a></h5>
+									<h5>policy: <a href="../interfaces/activespeakerpolicy.html" class="tsd-signature-type" data-tsd-kind="Interface">ActiveSpeakerPolicy</a></h5>
 								</li>
 								<li>
-									<h5>callback: <a href="../globals.html#detectorcallback" class="tsd-signature-type">DetectorCallback</a></h5>
+									<h5>callback: <span class="tsd-signature-type">DetectorCallback</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> scoresCallback: <span class="tsd-signature-symbol">(</span>scores<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
@@ -237,11 +242,12 @@
 					<a name="unsubscribe" class="tsd-anchor"></a>
 					<h3>unsubscribe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">unsubscribe<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><a href="../globals.html#detectorcallback" class="tsd-signature-type">DetectorCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">unsubscribe<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DetectorCallback</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/activespeakerdetector.html">ActiveSpeakerDetector</a>.<a href="../interfaces/activespeakerdetector.html#unsubscribe">unsubscribe</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/activespeakerdetector/DefaultActiveSpeakerDetector.ts#L159">src/activespeakerdetector/DefaultActiveSpeakerDetector.ts:159</a></li>
 								</ul>
@@ -249,7 +255,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>callback: <a href="../globals.html#detectorcallback" class="tsd-signature-type">DetectorCallback</a></h5>
+									<h5>callback: <span class="tsd-signature-type">DetectorCallback</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -261,8 +267,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

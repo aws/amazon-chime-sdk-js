@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="meetingsessionpostlogger.html">MeetingSessionPOSTLogger</a>
@@ -87,7 +86,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type">Destroyable</a></li>
+					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type" data-tsd-kind="Interface">Destroyable</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -126,7 +125,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Meeting<wbr>SessionPOSTLogger<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, configuration<span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a>, batchSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, intervalMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, level<span class="tsd-signature-symbol">?: </span><a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a>, headers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="meetingsessionpostlogger.html" class="tsd-signature-type">MeetingSessionPOSTLogger</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Meeting<wbr>SessionPOSTLogger<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, configuration<span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingSessionConfiguration</a>, batchSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, intervalMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, level<span class="tsd-signature-symbol">?: </span><a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a>, headers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="meetingsessionpostlogger.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingSessionPOSTLogger</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -141,7 +140,7 @@
 									<h5>name: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>configuration: <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></h5>
+									<h5>configuration: <a href="meetingsessionconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingSessionConfiguration</a></h5>
 								</li>
 								<li>
 									<h5>batchSize: <span class="tsd-signature-type">number</span></h5>
@@ -153,13 +152,13 @@
 									<h5>url: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> level: <a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a><span class="tsd-signature-symbol"> = LogLevel.WARN</span></h5>
+									<h5>level: <a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a><span class="tsd-signature-symbol"> = ...</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> headers: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="meetingsessionpostlogger.html" class="tsd-signature-type">MeetingSessionPOSTLogger</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="meetingsessionpostlogger.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingSessionPOSTLogger</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -274,7 +273,7 @@
 					<a name="getloglevel" class="tsd-anchor"></a>
 					<h3>get<wbr>Log<wbr>Level</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -283,7 +282,7 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/logger/MeetingSessionPOSTLogger.ts#L86">src/logger/MeetingSessionPOSTLogger.ts:86</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -331,7 +330,7 @@
 					<a name="setloglevel" class="tsd-anchor"></a>
 					<h3>set<wbr>Log<wbr>Level</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span>level<span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span>level<span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -343,7 +342,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>level: <a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a></h5>
+									<h5>level: <a href="../enums/loglevel.html" class="tsd-signature-type" data-tsd-kind="Enumeration">LogLevel</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -418,8 +417,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

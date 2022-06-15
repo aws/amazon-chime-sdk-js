@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="videotilecontroller.html">VideoTileController</a>
@@ -87,7 +86,7 @@
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/defaultvideotilecontroller.html" class="tsd-signature-type">DefaultVideoTileController</a></li>
+					<li><a href="../classes/defaultvideotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultVideoTileController</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -135,7 +134,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="keeplastframewhenpaused" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> keep<wbr>Last<wbr>Frame<wbr>When<wbr>Paused</h3>
-					<div class="tsd-signature tsd-kind-icon">keep<wbr>Last<wbr>Frame<wbr>When<wbr>Paused<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
+					<div class="tsd-signature tsd-kind-icon">keep<wbr>Last<wbr>Frame<wbr>When<wbr>Paused<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotilecontroller/VideoTileController.ts#L14">src/videotilecontroller/VideoTileController.ts:14</a></li>
@@ -149,7 +148,7 @@
 					<a name="addvideotile" class="tsd-anchor"></a>
 					<h3>add<wbr>Video<wbr>Tile</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type">VideoTile</a></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -163,7 +162,7 @@
 									<p>Returns a new tile. The tile id is assigned automatically.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -204,7 +203,7 @@
 					<a name="capturevideotile" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> capture<wbr>Video<wbr>Tile</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">capture<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">capture<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -224,7 +223,7 @@
 									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -232,7 +231,7 @@
 					<a name="getallremotevideotiles" class="tsd-anchor"></a>
 					<h3>get<wbr>All<wbr>Remote<wbr>Video<wbr>Tiles</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>All<wbr>Remote<wbr>Video<wbr>Tiles<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>All<wbr>Remote<wbr>Video<wbr>Tiles<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -246,7 +245,7 @@
 									<p>Returns the remote video tile</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -254,7 +253,7 @@
 					<a name="getallvideotiles" class="tsd-anchor"></a>
 					<h3>get<wbr>All<wbr>Video<wbr>Tiles</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>All<wbr>Video<wbr>Tiles<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>All<wbr>Video<wbr>Tiles<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -268,7 +267,7 @@
 									<p>Get all video tiles.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -276,7 +275,7 @@
 					<a name="getlocalvideotile" class="tsd-anchor"></a>
 					<h3>get<wbr>Local<wbr>Video<wbr>Tile</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Local<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Local<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -290,7 +289,7 @@
 									<p>Returns the current local video tile if it exists</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -298,7 +297,7 @@
 					<a name="getvideotile" class="tsd-anchor"></a>
 					<h3>get<wbr>Video<wbr>Tile</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -318,7 +317,7 @@
 									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -326,7 +325,7 @@
 					<a name="getvideotilearea" class="tsd-anchor"></a>
 					<h3>get<wbr>Video<wbr>Tile<wbr>Area</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Video<wbr>Tile<wbr>Area<span class="tsd-signature-symbol">(</span>tile<span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Video<wbr>Tile<wbr>Area<span class="tsd-signature-symbol">(</span>tile<span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -343,7 +342,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>tile: <a href="videotile.html" class="tsd-signature-type">VideoTile</a></h5>
+									<h5>tile: <a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -354,7 +353,7 @@
 					<a name="getvideotileforattendeeid" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> get<wbr>Video<wbr>Tile<wbr>For<wbr>Attendee<wbr>Id</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Video<wbr>Tile<wbr>For<wbr>Attendee<wbr>Id<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Video<wbr>Tile<wbr>For<wbr>Attendee<wbr>Id<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -377,7 +376,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -593,7 +592,7 @@
 					<a name="sendtilestateupdate" class="tsd-anchor"></a>
 					<h3>send<wbr>Tile<wbr>State<wbr>Update</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">send<wbr>Tile<wbr>State<wbr>Update<span class="tsd-signature-symbol">(</span>tileState<span class="tsd-signature-symbol">: </span><a href="../classes/videotilestate.html" class="tsd-signature-type">VideoTileState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">send<wbr>Tile<wbr>State<wbr>Update<span class="tsd-signature-symbol">(</span>tileState<span class="tsd-signature-symbol">: </span><a href="../classes/videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -610,7 +609,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>tileState: <a href="../classes/videotilestate.html" class="tsd-signature-type">VideoTileState</a></h5>
+									<h5>tileState: <a href="../classes/videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -730,8 +729,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

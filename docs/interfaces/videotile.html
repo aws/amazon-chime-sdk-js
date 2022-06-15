@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="videotile.html">VideoTile</a>
@@ -85,7 +84,7 @@
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/defaultvideotile.html" class="tsd-signature-type">DefaultVideoTile</a></li>
+					<li><a href="../classes/defaultvideotile.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultVideoTile</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -118,7 +117,7 @@
 					<a name="bindvideoelement" class="tsd-anchor"></a>
 					<h3>bind<wbr>Video<wbr>Element</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Element<span class="tsd-signature-symbol">(</span>videoElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Element<span class="tsd-signature-symbol">(</span>videoElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -138,7 +137,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>videoElement: <span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>videoElement: <span class="tsd-signature-type">HTMLVideoElement</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -149,7 +148,7 @@
 					<a name="bindvideostream" class="tsd-anchor"></a>
 					<h3>bind<wbr>Video<wbr>Stream</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Stream<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, localTile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, mediaStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, contentWidth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, contentHeight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, streamId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Stream<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, localTile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, mediaStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span>, contentWidth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, contentHeight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, streamId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -174,16 +173,16 @@
 									<h5>localTile: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 								<li>
-									<h5>mediaStream: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>mediaStream: <span class="tsd-signature-type">MediaStream</span></h5>
 								</li>
 								<li>
-									<h5>contentWidth: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>contentWidth: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>contentHeight: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>contentHeight: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>streamId: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>streamId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> externalUserId: <span class="tsd-signature-type">string</span></h5>
@@ -197,7 +196,7 @@
 					<a name="capture" class="tsd-anchor"></a>
 					<h3>capture</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">capture<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">capture<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -212,7 +211,7 @@
 									active right now.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -344,7 +343,7 @@
 					<a name="state" class="tsd-anchor"></a>
 					<h3>state</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/videotilestate.html" class="tsd-signature-type">VideoTileState</a></li>
+						<li class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -358,7 +357,7 @@
 									<p>Returns a <a href="../classes/videotilestate.html">VideoTileState</a> representing a copy of the state of the tile.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="../classes/videotilestate.html" class="tsd-signature-type">VideoTileState</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../classes/videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -366,7 +365,7 @@
 					<a name="stateref" class="tsd-anchor"></a>
 					<h3>state<wbr>Ref</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">state<wbr>Ref<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/videotilestate.html" class="tsd-signature-type">VideoTileState</a></li>
+						<li class="tsd-signature tsd-kind-icon">state<wbr>Ref<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -380,7 +379,7 @@
 									<p>Returns a <a href="../classes/videotilestate.html">VideoTileState</a>] representing a mutable reference to the state of the tile.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="../classes/videotilestate.html" class="tsd-signature-type">VideoTileState</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../classes/videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -439,8 +438,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
