@@ -5,7 +5,7 @@ canarySuffix=${1+$1}
 chimeSDKMediaPipelinesStackId="mp"
 
 cd $GITHUB_WORKSPACE/demos/serverless
-npm ci -f
+npm ci
 
 case $NAME in
 
