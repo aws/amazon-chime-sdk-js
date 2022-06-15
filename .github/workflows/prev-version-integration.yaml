@@ -65,7 +65,7 @@ jobs:
           npm uninstall amazon-chime-sdk-js
           npm install ../../amazon-chime-sdk-js-${{ steps.prev.outputs.prev_version }}.tgz
       - name: Clean Install
-        run: npm ci -f
+        run: npm ci
       - name: Run Audio Integration Test
         run: npm run test:integration-audio
       - name: Run Video Integ Test
