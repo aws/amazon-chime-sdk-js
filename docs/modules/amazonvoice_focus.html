@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="amazonvoice_focus.html">AmazonVoice_Focus</a>
@@ -205,22 +204,22 @@
 					</ul>
 					<p>This might be an unintentional regression in Chrome; an <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1259726">issue has been filed</a>.</p>
 					<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then Amazon Voice Focus will not be able to initialize, and will either appear to be unsupported or will fail to create a suppressed audio device. You will see errors in your browser console like:</p>
-					<pre><code>Refused <span class="hljs-built_in">to</span> connect <span class="hljs-built_in">to</span>
-<span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/workers/worker-v1.js…&#x27;</span>
-because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> document<span class="hljs-string">&#x27;s Content Security Policy.</span>
+					<pre><code><span style="color: #001080">Refused</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">connect</span><span style="color: #000000"> </span><span style="color: #001080">to</span>
+<span style="color: #A31515">&#039;https://static.sdkassets.chime.aws/workers/worker-v1.js…&#039;</span>
+<span style="color: #001080">because</span><span style="color: #000000"> </span><span style="color: #001080">it</span><span style="color: #000000"> </span><span style="color: #001080">violates</span><span style="color: #000000"> </span><span style="color: #001080">the</span><span style="color: #000000"> </span><span style="color: #001080">document</span><span style="color: #A31515">&#039;s Content Security Policy</span><span style="color: #CD3131">.</span>
 </code></pre>
 					<p>or</p>
-					<pre><code>Refused <span class="hljs-built_in">to</span> <span class="hljs-built_in">load</span> <span class="hljs-keyword">the</span> script
-<span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/processors/worklet-inline-processor…&#x27;</span>
-because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> following Content Security Policy directive…
+					<pre><code><span style="color: #001080">Refused</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">load</span><span style="color: #000000"> </span><span style="color: #001080">the</span><span style="color: #000000"> </span><span style="color: #001080">script</span>
+<span style="color: #A31515">&#039;https://static.sdkassets.chime.aws/processors/worklet-inline-processor…&#039;</span>
+<span style="color: #001080">because</span><span style="color: #000000"> </span><span style="color: #001080">it</span><span style="color: #000000"> </span><span style="color: #001080">violates</span><span style="color: #000000"> </span><span style="color: #001080">the</span><span style="color: #000000"> </span><span style="color: #001080">following</span><span style="color: #000000"> </span><span style="color: #001080">Content</span><span style="color: #000000"> </span><span style="color: #001080">Security</span><span style="color: #000000"> </span><span style="color: #001080">Policy</span><span style="color: #000000"> </span><span style="color: #001080">directive</span><span style="color: #000000">…</span>
 </code></pre>
 					<p>If you need guidance with correct CSP configuration to use Amazon Voice Focus and Echo Reduction, contact AWS Support.</p>
 					<a href="#cross-origin-opener-policy" id="cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
 						<h3>Cross-Origin Opener Policy</h3>
 					</a>
 					<p>Some execution modes require careful configuration of web security, including less common headers like <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy"><code>Cross-Origin-Opener-Policy</code></a>. To opt in to these execution modes, send</p>
-					<pre><code><span class="hljs-keyword">Cross</span>-Origin-Opener-<span class="hljs-keyword">Policy</span>: same-origin
-<span class="hljs-keyword">Cross</span>-Origin-Embedder-<span class="hljs-keyword">Policy</span>: require-corp
+					<pre><code><span style="color: #001080">Cross</span><span style="color: #000000">-</span><span style="color: #001080">Origin</span><span style="color: #000000">-</span><span style="color: #001080">Opener</span><span style="color: #000000">-Policy: </span><span style="color: #001080">same</span><span style="color: #000000">-</span><span style="color: #001080">origin</span>
+<span style="color: #001080">Cross</span><span style="color: #000000">-</span><span style="color: #001080">Origin</span><span style="color: #000000">-</span><span style="color: #001080">Embedder</span><span style="color: #000000">-Policy: </span><span style="color: #001080">require</span><span style="color: #000000">-</span><span style="color: #001080">corp</span>
 </code></pre>
 					<p>when serving your application HTML. These headers are optional but advised: they improve web security, as well as allowing the browser to support technologies like <code>SharedArrayBuffer</code>.</p>
 					<a href="#frames" id="frames" style="color: inherit; text-decoration: none;">
@@ -243,34 +242,34 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					</a>
 					<p>Some browsers support the Amazon Chime SDK but do not support Amazon Voice Focus and Echo Reduction. Additionally, some devices are not fast enough to keep up with real-time audio while suppressing noise.</p>
 					<p>The SDK provides a static method to allow you to cheaply check for the required browser features:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { VoiceFocusDeviceTransformer } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
-…
-<span class="hljs-keyword">const</span> isVoiceFocusSupported = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer.isSupported();
+					<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+<span style="color: #000000">…</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">isVoiceFocusSupported</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">();</span>
 </code></pre>
 					<p>If <code>isSupported</code> returns <code>true</code>, you can instantiate a transformer. This will measure the runtime environment and perform some initialization, and so its <code>isSupported</code> method is more accurate.</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">let</span> transformer: VoiceFocusDeviceTransformer;
-<span class="hljs-keyword">try</span> {
-  transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer.create();
-  isVoiceFocusSupported = transformer.isSupported();
-} <span class="hljs-keyword">catch</span> (e) {
-  <span class="hljs-comment">// Will only occur due to invalid input or transient errors (e.g., network).</span>
-  isVoiceFocusSupported = <span class="hljs-literal">false</span>;
-}
+					<pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">transformer</span><span style="color: #000000">: </span><span style="color: #267F99">VoiceFocusDeviceTransformer</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">transformer</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">();</span>
+<span style="color: #000000">  </span><span style="color: #001080">isVoiceFocusSupported</span><span style="color: #000000"> = </span><span style="color: #001080">transformer</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">();</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">e</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Will only occur due to invalid input or transient errors (e.g., network).</span>
+<span style="color: #000000">  </span><span style="color: #001080">isVoiceFocusSupported</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<p>By default this will also pre-load the model file and prepare Amazon Voice Focus and Echo Reduction for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. If you do not want to pre-load resources — <em>e.g.</em>, if you would rather the download occur later, or you are not sure if the user will use noise suppression — pass the optional <code>preload</code> argument:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec = {};
-<span class="hljs-keyword">const</span> options = {
-  <span class="hljs-attr">preload</span>: <span class="hljs-literal">false</span>,
-  logger,
-};
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">spec</span><span style="color: #000000"> = {};</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">options</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">preload:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">};</span>
 
-transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer(spec, options);
+<span style="color: #001080">transformer</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">VoiceFocusDeviceTransformer</span><span style="color: #000000">(</span><span style="color: #001080">spec</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>Check for both of these kinds of support prior to offering noise suppression and echo reduction to users. The ideal time to do so is during pre-meeting setup.</p>
 					<p>Your device controller must support Web Audio to use Amazon Voice Focus and Echo Reduction. If you do not wish to enable Web Audio universally, you can use your support check as a condition:</p>
-					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController({
-  <span class="hljs-attr">enableWebAudio</span>: isVoiceFocusSupported
-});
+					<pre><code class="language-typescript"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">enableWebAudio:</span><span style="color: #000000"> </span><span style="color: #001080">isVoiceFocusSupported</span>
+<span style="color: #000000">});</span>
 </code></pre>
 					<a href="#adding-amazon-voice-focus-to-your-application" id="adding-amazon-voice-focus-to-your-application" style="color: inherit; text-decoration: none;">
 						<h2>Adding Amazon Voice Focus to your application</h2>
@@ -284,39 +283,39 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 					<a href="#request" id="request" style="color: inherit; text-decoration: none;">
 						<h3>Request</h3>
 					</a>
-					<pre><code class="language-typescript">POST /meetings HTTP/<span class="hljs-number">1.1</span>
-Content-<span class="hljs-keyword">type</span>: application/json
-{
-   <span class="hljs-attr">ClientRequestToken</span>: <span class="hljs-string">&quot;string&quot;</span>,
-   <span class="hljs-attr">ExternalMeetingId</span>: <span class="hljs-string">&quot;string&quot;</span>,
-   <span class="hljs-attr">MediaRegion</span>: <span class="hljs-string">&quot;string&quot;</span>,
-   <span class="hljs-attr">MeetingHostId</span>: <span class="hljs-string">&quot;string&quot;</span>,
-   <span class="hljs-attr">NotificationsConfiguration</span>: {
-      <span class="hljs-attr">SnsTopicArn</span>: <span class="hljs-string">&quot;string&quot;</span>,
-      <span class="hljs-attr">SqsQueueArn</span>: <span class="hljs-string">&quot;string&quot;</span>
-   },
-   <span class="hljs-attr">MeetingFeatures</span>: {
-     <span class="hljs-attr">Audio</span>: {
-       <span class="hljs-attr">EchoReduction</span>: <span class="hljs-string">&quot;AVAILABLE&quot;</span>
-     }
-   }
-}
+					<pre><code class="language-typescript"><span style="color: #0070C1">POST</span><span style="color: #000000"> /</span><span style="color: #001080">meetings</span><span style="color: #000000"> </span><span style="color: #0070C1">HTTP</span><span style="color: #000000">/</span><span style="color: #098658">1.1</span>
+<span style="color: #001080">Content</span><span style="color: #000000">-type: </span><span style="color: #001080">application</span><span style="color: #000000">/</span><span style="color: #001080">json</span>
+<span style="color: #000000">{</span>
+<span style="color: #000000">   ClientRequestToken: </span><span style="color: #A31515">&quot;string&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">   ExternalMeetingId: </span><span style="color: #A31515">&quot;string&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">   MediaRegion: </span><span style="color: #A31515">&quot;string&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">   MeetingHostId: </span><span style="color: #A31515">&quot;string&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">   NotificationsConfiguration: { </span>
+<span style="color: #000000">      SnsTopicArn: </span><span style="color: #A31515">&quot;string&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">      SqsQueueArn: </span><span style="color: #A31515">&quot;string&quot;</span>
+<span style="color: #000000">   },</span>
+<span style="color: #000000">   MeetingFeatures: {</span>
+<span style="color: #000000">     Audio: {</span>
+<span style="color: #000000">       EchoReduction: </span><span style="color: #A31515">&quot;AVAILABLE&quot;</span>
+<span style="color: #000000">     }</span>
+<span style="color: #000000">   }</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<p>Where <code>MeetingFeatures</code> is an optional parameter which contains a list of audio and video features that are enabled at the meeting level. The <code>Audio</code> sub-element is an optional category of meeting features which contains audio-specific configurations, such as operating parameters for Voice Focus. The <code>EchoReduction</code> configuration makes Echo Reduction available to clients who wish to connect to the meeting. It is an optional parameter which accepts the string <code>&#39;AVAILABLE&#39;</code>.</p>
 					<a href="#check-for-support" id="check-for-support" style="color: inherit; text-decoration: none;">
 						<h1>Check for support</h1>
 					</a>
 					<p>Once you have checked for support and created a transformer, you create a <code>VoiceFocusTransformDevice</code> from a user’s selected audio input as follows:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> chosenAudioInput = <span class="hljs-string">&#x27;abcdef&#x27;</span>;    <span class="hljs-comment">// Device ID, stream, or constraints</span>
-<span class="hljs-keyword">const</span> vfDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">chosenAudioInput</span><span style="color: #000000"> = </span><span style="color: #A31515">&#039;abcdef&#039;</span><span style="color: #000000">;    </span><span style="color: #008000">// Device ID, stream, or constraints</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">vfDevice</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">transformer</span><span style="color: #000000">.</span><span style="color: #795E26">createTransformDevice</span><span style="color: #000000">(</span><span style="color: #001080">chosenAudioInput</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>If the transformer returned that Amazon Voice Focus/Echo Reduction is not supported, or it failed to initialize, this method returns <code>undefined</code>. In that case, fall back to the user&#39;s chosen audio input and indicate to the user that noise suppression is not enabled.</p>
 					<p>The returned <code>VoiceFocusTransformDevice</code> can be supplied to a <code>startAudioInput</code> call in the usual way:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> deviceToUse = vfDevice || chosenAudioInput;
-<span class="hljs-keyword">await</span> deviceController.startAudioInput(deviceToUse);
-<span class="hljs-keyword">if</span> (vfDevice) {
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus enabled&#x27;</span>);
-}
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">deviceToUse</span><span style="color: #000000"> = </span><span style="color: #001080">vfDevice</span><span style="color: #000000"> || </span><span style="color: #001080">chosenAudioInput</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">deviceController</span><span style="color: #000000">.</span><span style="color: #795E26">startAudioInput</span><span style="color: #000000">(</span><span style="color: #001080">deviceToUse</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">vfDevice</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Amazon Voice Focus enabled&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<p>As noted above, the device controller must support Web Audio.</p>
 					<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
@@ -324,14 +323,14 @@ Content-<span class="hljs-keyword">type</span>: application/json
 					</a>
 					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>VoiceFocusSpec</code> structures — as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.</p>
 					<p>To use Amazon Voice Focus, the name section of the specification should be set to <code>&#39;default&#39;</code> whereas to use Echo Reduction, the name section of the specification should be set to <code>&#39;ns_es&#39;</code>. Echo Reduction can only be enabled while creating the meeting.</p>
-					<pre><code class="language-typescript">spec = { ...
-   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;default&#x27;</span> <span class="hljs-comment">// for Amazon Voice Focus</span>
-   ...
-}
-spec = { ...
-   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;ns_es&#x27;</span> <span class="hljs-comment">// for Echo Reduction</span>
-   ...
-}
+					<pre><code class="language-typescript"><span style="color: #001080">spec</span><span style="color: #000000"> = { ...</span>
+<span style="color: #000000">   </span><span style="color: #001080">name</span><span style="color: #000000">: </span><span style="color: #A31515">&#039;default&#039;</span><span style="color: #000000"> </span><span style="color: #008000">// for Amazon Voice Focus</span>
+<span style="color: #000000">   ...</span>
+<span style="color: #000000">}</span>
+<span style="color: #001080">spec</span><span style="color: #000000"> = { ...</span>
+<span style="color: #000000">   </span><span style="color: #001080">name</span><span style="color: #000000">: </span><span style="color: #A31515">&#039;ns_es&#039;</span><span style="color: #000000"> </span><span style="color: #008000">// for Echo Reduction </span>
+<span style="color: #000000">   ...</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. Some options are described in the section “<a href="#adapting-to-performance-constraints">Adapting to performance constraints</a>”.</p>
 					<p>A specification is used to derive a runtime <em>configuration</em> when a transformer is created. A configuration is an opaque blob derived within a particular runtime context. The configuration drives exactly how noise suppression will be applied to an input stream. Applications can access these configurations in order to support unusual interaction patterns; see “<a href="#accessing-and-using-configurations">Accessing and using configurations</a>”.</p>
@@ -348,72 +347,72 @@ spec = { ...
 					<p>The Amazon Chime SDK Meetings namespace uses a new service principal: meetings.chime.amazonaws.com. If you have SQS, SNS, or other IAM access policies that grant access to the service, you need to update those polices to grant access to the new service principal.</p>
 					<p>More information regarding this change can be found <a href="https://docs.aws.amazon.com/chime/latest/dg/meeting-namespace-migration.html">here</a>.</p>
 					<p>Create your meeting by calling the CreateMeeting API and specifying the Echo Reduction flag as <code>&#39;AVAILABLE&#39;</code>.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// You must migrate to the Amazon Chime SDK Meetings namespace.</span>
-<span class="hljs-keyword">const</span> chime = AWS.ChimeSDKMeetings({ <span class="hljs-attr">region</span>: <span class="hljs-string">&quot;eu-central-1&quot;</span> });
+					<pre><code class="language-typescript"><span style="color: #008000">// You must migrate to the Amazon Chime SDK Meetings namespace.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">chime</span><span style="color: #000000"> = </span><span style="color: #0070C1">AWS</span><span style="color: #000000">.</span><span style="color: #795E26">ChimeSDKMeetings</span><span style="color: #000000">({ </span><span style="color: #001080">region:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;eu-central-1&quot;</span><span style="color: #000000"> });</span>
 
-<span class="hljs-comment">// Create meeting</span>
-<span class="hljs-keyword">const</span> meetingInfo = <span class="hljs-keyword">await</span> chime.createMeeting({
-  ...
-  <span class="hljs-attr">MeetingFeatures</span>: {
-    <span class="hljs-attr">Audio</span>: {
-      <span class="hljs-attr">EchoReduction</span>: <span class="hljs-string">&#x27;AVAILABLE&#x27;</span>
-    }
-  }
-}).promise();
+<span style="color: #008000">// Create meeting </span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingInfo</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #795E26">createMeeting</span><span style="color: #000000">({</span>
+<span style="color: #000000">  ...</span>
+<span style="color: #000000">  </span><span style="color: #001080">MeetingFeatures</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #001080">Audio:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #001080">EchoReduction:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;AVAILABLE&#039;</span><span style="color: #000000"> </span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  } </span>
+<span style="color: #000000">}).</span><span style="color: #795E26">promise</span><span style="color: #000000">();</span>
 
-<span class="hljs-comment">// Add attendee</span>
-<span class="hljs-keyword">const</span> attendeeInfo = <span class="hljs-keyword">await</span> chime.createAttendee({...});
-<span class="hljs-keyword">const</span> joinInfo = {
-  <span class="hljs-attr">JoinInfo</span>: {
-    <span class="hljs-attr">Meeting</span>: meetingInfo,
-    <span class="hljs-attr">Attendee</span>: attendeeInfo,
-  }
-}
+<span style="color: #008000">// Add attendee </span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeInfo</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #795E26">createAttendee</span><span style="color: #000000">({...});</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">joinInfo</span><span style="color: #000000"> = { </span>
+<span style="color: #000000">  </span><span style="color: #001080">JoinInfo:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">Meeting:</span><span style="color: #000000"> </span><span style="color: #001080">meetingInfo</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">Attendee:</span><span style="color: #000000"> </span><span style="color: #001080">attendeeInfo</span><span style="color: #000000">,</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<a href="#2-enabling-echo-reduction-at-the-client-level" id="2-enabling-echo-reduction-at-the-client-level" style="color: inherit; text-decoration: none;">
 						<h3>2. Enabling Echo Reduction at the client level</h3>
 					</a>
 					<p>Once you have created the meeting with the correct flags, you can pass in the <code>joinInfo</code> when creating the Voice Focus device. Please note the usage of the <code>ns_es</code> as the spec name for Echo Reduction. Use <code>default</code> if you would like to use Voice Focus without Echo Reduction.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Select the Echo Reduction model</span>
-<span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
-  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;ns_es&#x27;</span>,
-  ...
-};
+					<pre><code class="language-typescript"><span style="color: #008000">// Select the Echo Reduction model</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">spec</span><span style="color: #000000">: </span><span style="color: #267F99">VoiceFocusSpec</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ns_es&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  ...</span>
+<span style="color: #000000">};</span>
 
-<span class="hljs-comment">// Create the Voice Focus device</span>
-<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, joinInfo);
+<span style="color: #008000">// Create the Voice Focus device</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">transformer</span><span style="color: #000000"> = </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">spec</span><span style="color: #000000">, { </span><span style="color: #001080">logger</span><span style="color: #000000"> }, </span><span style="color: #001080">joinInfo</span><span style="color: #000000">);</span>
 
-<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
-<span class="hljs-keyword">const</span> vfDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">vfDevice</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">transformer</span><span style="color: #000000">.</span><span style="color: #795E26">createTransformDevice</span><span style="color: #000000">(</span><span style="color: #001080">chosenAudioInput</span><span style="color: #000000">);</span>
 
-<span class="hljs-comment">// Enable Echo Reduction on this client</span>
-<span class="hljs-keyword">await</span> vfDevice.observeMeetingAudio(<span class="hljs-built_in">this</span>.audioVideo);
+<span style="color: #008000">// Enable Echo Reduction on this client</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">vfDevice</span><span style="color: #000000">.</span><span style="color: #795E26">observeMeetingAudio</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">);</span>
 </code></pre>
 					<a href="#disabling-amazon-voice-focus-and-echo-reduction-and-switching-devices" id="disabling-amazon-voice-focus-and-echo-reduction-and-switching-devices" style="color: inherit; text-decoration: none;">
 						<h2>Disabling Amazon Voice Focus and Echo Reduction and switching devices</h2>
 					</a>
 					<p>In some cases you might wish to temporarily or permanently disable  noise suppression and echo reduction during a call: perhaps to reduce CPU utilization or to allow background noise to be heard.</p>
 					<p>You can do so by simply selecting the inner device without Amazon Voice Focus, which will fall back to the browser’s own simple noise suppressor:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.startAudioInput(chosenAudioInput);
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus disabled&#x27;</span>);
+					<pre><code class="language-typescript"><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">deviceController</span><span style="color: #000000">.</span><span style="color: #795E26">startAudioInput</span><span style="color: #000000">(</span><span style="color: #001080">chosenAudioInput</span><span style="color: #000000">);</span>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Amazon Voice Focus disabled&#039;</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>You can re-enable Amazon Voice Focus and Echo Reduction again by reselecting the transform device:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.startAudioInput(vfDevice);
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus re-enabled&#x27;</span>);
+					<pre><code class="language-typescript"><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">deviceController</span><span style="color: #000000">.</span><span style="color: #795E26">startAudioInput</span><span style="color: #000000">(</span><span style="color: #001080">vfDevice</span><span style="color: #000000">);</span>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Amazon Voice Focus re-enabled&#039;</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>If a user switches microphone inputs, <em>e.g.</em>, after plugging in a headset, you can reuse the setup work involved in building the transform device by choosing a new inner device:</p>
-					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.voiceFocusDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
-…
-<span class="hljs-comment">// New device selected. Swap it out.</span>
-<span class="hljs-built_in">this</span>.voiceFocusDevice = <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.voiceFocusDevice.chooseNewInnerDevice(newDevice);
-<span class="hljs-keyword">await</span> deviceController.startAudioInput(<span class="hljs-built_in">this</span>.voiceFocusDevice);
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus switched to new device&#x27;</span>, newDevice);
+					<pre><code class="language-typescript"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">voiceFocusDevice</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">transformer</span><span style="color: #000000">.</span><span style="color: #795E26">createTransformDevice</span><span style="color: #000000">(</span><span style="color: #001080">chosenAudioInput</span><span style="color: #000000">);</span>
+<span style="color: #000000">…</span>
+<span style="color: #008000">// New device selected. Swap it out.</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">voiceFocusDevice</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">voiceFocusDevice</span><span style="color: #000000">.</span><span style="color: #795E26">chooseNewInnerDevice</span><span style="color: #000000">(</span><span style="color: #001080">newDevice</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">deviceController</span><span style="color: #000000">.</span><span style="color: #795E26">startAudioInput</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">voiceFocusDevice</span><span style="color: #000000">);</span>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Amazon Voice Focus switched to new device&#039;</span><span style="color: #000000">, </span><span style="color: #001080">newDevice</span><span style="color: #000000">);</span>
 </code></pre>
 					<a href="#disabling-echo-reduction-from-your-application" id="disabling-echo-reduction-from-your-application" style="color: inherit; text-decoration: none;">
 						<h2>Disabling Echo Reduction from your application</h2>
 					</a>
 					<p>During the meeting, you can disable Echo Reduction using the following code. This will just disable the Echo Reduction part of Voice Focus, while maintaining the Noise Reduction:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> vfDevice.unObserveMeetingAudio(<span class="hljs-built_in">this</span>.audioVideo);
+					<pre><code class="language-typescript"><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">vfDevice</span><span style="color: #000000">.</span><span style="color: #795E26">unObserveMeetingAudio</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">);</span>
 </code></pre>
 					<a href="#adapting-to-performance-constraints" id="adapting-to-performance-constraints" style="color: inherit; text-decoration: none;">
 						<h2>Adapting to performance constraints</h2>
@@ -451,22 +450,22 @@ spec = { ...
 					</a>
 					<p>If you specify a non-<code>auto</code> <code>executionPreference</code> and a <code>variant</code>, no estimation work will be done: the SDK will use the values you provide. If you additionally specify <code>simd</code>, the execution approach chosen is predictable and fixed, and no capability testing or estimation is required.</p>
 					<p>For example, to force the use of a high-quality model in an Electron application built with SIMD enabled:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
-  <span class="hljs-attr">variant</span>: <span class="hljs-string">&#x27;c50&#x27;</span>,
-  <span class="hljs-attr">executionPreference</span>: <span class="hljs-string">&#x27;inline&#x27;</span>,
-  <span class="hljs-attr">simd</span>: <span class="hljs-string">&#x27;force&#x27;</span>,
-};
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">spec</span><span style="color: #000000">: </span><span style="color: #267F99">VoiceFocusSpec</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">variant:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;c50&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">executionPreference:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;inline&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">simd:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;force&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">};</span>
 
-<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">transformer</span><span style="color: #000000"> = </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">spec</span><span style="color: #000000">, { </span><span style="color: #001080">logger</span><span style="color: #000000"> });</span>
 </code></pre>
 					<p>or to force the use of the highest quality model, which typically requires offload to a Web Worker:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
-  <span class="hljs-attr">variant</span>: <span class="hljs-string">&#x27;c100&#x27;</span>,
-  <span class="hljs-attr">executionPreference</span>: <span class="hljs-string">&#x27;worker&#x27;</span>,
-  <span class="hljs-attr">simd</span>: <span class="hljs-string">&#x27;force&#x27;</span>,
-};
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">spec</span><span style="color: #000000">: </span><span style="color: #267F99">VoiceFocusSpec</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">variant:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;c100&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">executionPreference:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;worker&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">simd:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;force&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">};</span>
 
-<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">transformer</span><span style="color: #000000"> = </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">spec</span><span style="color: #000000">, { </span><span style="color: #001080">logger</span><span style="color: #000000"> });</span>
 </code></pre>
 					<p>We recommend that you allow estimation to adapt to the runtime environment: it is difficult to predict in advance the correct execution preference and model complexity, and choosing a too-complex model or the wrong execution approach can result in audio glitches or high CPU utilization that affects the rest of the application.</p>
 					<a href="#observer-notifications" id="observer-notifications" style="color: inherit; text-decoration: none;">
@@ -492,27 +491,27 @@ spec = { ...
 					<p>These functions allow the work of creating a transformer to be split or reused across execution contexts. For example, you might compute a configuration from a spec each time your app launches, making subsequent initialization faster, or you might reuse a configuration in a second window by sending an existing transformer&#39;s configuration via <code>postMessage</code>.</p>
 					<p>Creating a configuration via <code>VoiceFocusDeviceTransformer.configure</code> also supports pre-resolving model URLs, which can be useful when a new browser execution context needs to be rapidly built in order to join a meeting, and saving even a single HTTP request is worthwhile.</p>
 					<p>The send side might look like this:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> spec = {};
-<span class="hljs-keyword">const</span> options = { logger };
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">spec</span><span style="color: #000000"> = {};</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">options</span><span style="color: #000000"> = { </span><span style="color: #001080">logger</span><span style="color: #000000"> };</span>
 
-<span class="hljs-keyword">const</span> config = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer.configure(spec, options);
-<span class="hljs-keyword">const</span> newWindow = <span class="hljs-built_in">window</span>.open(<span class="hljs-string">&#x27;/other&#x27;</span>);
-newWindow.postMessage({
-  <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;vf&#x27;</span>,
-  config,
-});
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">config</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">configure</span><span style="color: #000000">(</span><span style="color: #001080">spec</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">newWindow</span><span style="color: #000000"> = </span><span style="color: #001080">window</span><span style="color: #000000">.</span><span style="color: #795E26">open</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;/other&#039;</span><span style="color: #000000">);</span>
+<span style="color: #001080">newWindow</span><span style="color: #000000">.</span><span style="color: #795E26">postMessage</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">message:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;vf&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">config</span><span style="color: #000000">,</span>
+<span style="color: #000000">});</span>
 </code></pre>
 					<p>and the receiver like this:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> spec = {};
-<span class="hljs-keyword">const</span> options = { logger };
-<span class="hljs-keyword">let</span> transformerPromise;
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">spec</span><span style="color: #000000"> = {};</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">options</span><span style="color: #000000"> = { </span><span style="color: #001080">logger</span><span style="color: #000000"> };</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">transformerPromise</span><span style="color: #000000">;</span>
 
-<span class="hljs-built_in">window</span>.onmessage = <span class="hljs-function">(<span class="hljs-params">m</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> { message, config } = m;
-  <span class="hljs-keyword">if</span> (message === <span class="hljs-string">&#x27;vf&#x27;</span>) {
-    transformerPromise = VoiceFocusDeviceTransformer.create(spec, options, config);
-  }
-};
+<span style="color: #001080">window</span><span style="color: #000000">.</span><span style="color: #795E26">onmessage</span><span style="color: #000000"> = (</span><span style="color: #001080">m</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">message</span><span style="color: #000000">, </span><span style="color: #0070C1">config</span><span style="color: #000000"> } = </span><span style="color: #001080">m</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">message</span><span style="color: #000000"> === </span><span style="color: #A31515">&#039;vf&#039;</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">transformerPromise</span><span style="color: #000000"> = </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">spec</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">, </span><span style="color: #001080">config</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">};</span>
 </code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Amazon%20Voice_Focus%20feedback">Give feedback on this guide</a></p>
 				</div>
@@ -521,8 +520,62 @@ newWindow.postMessage({
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>
@@ -544,12 +597,13 @@ newWindow.postMessage({
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
