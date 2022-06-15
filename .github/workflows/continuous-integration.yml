@@ -27,7 +27,7 @@
           with:
             node-version: 16.x
         - name: Clean Install
-          run: npm ci -f
+          run: npm ci
         - name: Build
           run: npm run build:release
 

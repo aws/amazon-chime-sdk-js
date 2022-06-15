@@ -12,7 +12,7 @@ expected = File.read(hashfile) if File.exists?(hashfile)
 
 if expected != current
   puts 'Running npm ci to regenerate node_modules.'
-  verbose('npm ci -f')
+  verbose('npm ci')
   File.write(hashfile, current)
 else
   puts 'node_modules is up to date.'

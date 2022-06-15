@@ -65,5 +65,5 @@ runs:
       run: integration/js/script/install-kite
       shell: bash
     - name: Clean Install
-      run: npm ci -f
+      run: npm ci
       shell: bash
