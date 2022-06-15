@@ -88,7 +88,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     } else {
       this.context.logger.info('creating new peer connection');
       // @ts-ignore
-      this.context.peer = new RTCPeerConnection(configuration, connectionConstraints);
+      this.context.peer = new RTCPeerConnection(configuration);
       this.addPeerConnectionEventLogger();
     }
 
