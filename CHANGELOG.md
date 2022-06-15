@@ -8,11 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.5.0] - 2022-06-02
 
 ### Added
+
 - Add a workaround for https://bugs.webkit.org/show_bug.cgi?id=241152 to play a paused video element in Safari.
 - Added support for iOS edge.
 
 ### Removed
-- Removed deprecated WebRTC constraints which were being removed or were already no-ops
+
+- Removed deprecated WebRTC constraints `googCpuOveruseDetection` and `googCombinedAudioVideoBwe` which were [being removed or were already no-ops](https://groups.google.com/g/discuss-webrtc/c/85e-f_siCws)
+
 ### Changed
 
 - Bump `protobufjs` from 6.8.8 to 6.11.3.
@@ -24,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
 - Fix protobuf generation script for upgrade.
 - Optional chain signaling client observer removal to fix [issue](https://github.com/aws/amazon-chime-sdk-js/issues/2265) if  `audioVideo.stop()` is called before `audioVideo.start()`.
-
 
 ## [3.4.0] - 2022-05-24
 
