@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="prioritybased_downlink_policy.html">PriorityBased_Downlink_Policy</a>
@@ -114,7 +113,7 @@
 					</ul>
 					<p><strong>Configuring the receipt and priority of remote video sources</strong></p>
 					<p>The main API being used is:</p>
-					<pre><code><span class="hljs-function"><span class="hljs-title">chooseRemoteVideoSources</span><span class="hljs-params">(sources: VideoPreference[])</span></span>: void
+					<pre><code><span style="color: #795E26">chooseRemoteVideoSources</span><span style="color: #000000">(</span><span style="color: #001080">sources</span><span style="color: #000000">: </span><span style="color: #001080">VideoPreference</span><span style="color: #000000">[]): </span><span style="color: #0000FF">void</span>
 </code></pre>
 					<p>An array of <code>VideoPreference</code> is passed in to specify preference for each remote video.
 					Be aware of the following when calling this function:</p>
@@ -132,17 +131,17 @@
 					If a remote video source is paused due to insufficient bandwidth, then the application will be notified through <code>tileWillBePausedByDownlinkPolicy</code> by  <code>VideoDownlinkObserver</code> and the <code>VideoTileState</code> will be set to <code>paused</code>.</p>
 					<p><strong>Configure network event delays</strong><span id="configure-network-event-delays"><span></p>
 					<p>The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser&#39;s internal estimation of bandwidth.  If you would like to modify these delays to better fit your application&#39;s use case, we have exposed control with a simple to use API. Builders can pass in <code>VideoPriorityBasedPolicyConfig</code> either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:</p>
-					<pre><code class="language-ts"><span class="hljs-comment">// Method 1: Initialize with a preset</span>
-<span class="hljs-keyword">const</span> config =
-  VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
-<span class="hljs-comment">// Method 2: Initialize with networkIssueResponseDelayFactor and networkIssueRecoveryDelayFactor</span>
-config = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicyConfig(
-  <span class="hljs-number">0.5</span>, <span class="hljs-comment">// networkIssueResponseDelayFactor</span>
-  <span class="hljs-number">0.5</span> <span class="hljs-comment">// networkIssueRecoveryDelayFactor</span>
-);
-<span class="hljs-comment">// Use the config and policy in the meeting</span>
-<span class="hljs-built_in">this</span>.meetingSessionConfiguration.videoDownlinkBandwidthPolicy
-    = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicy(logger, config);
+					<pre><code class="language-ts"><span style="color: #008000">// Method 1: Initialize with a preset</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">config</span><span style="color: #000000"> = </span>
+<span style="color: #000000">  </span><span style="color: #001080">VideoPriorityBasedPolicyConfig</span><span style="color: #000000">.</span><span style="color: #001080">UnstableNetworkPreset</span><span style="color: #000000">;</span>
+<span style="color: #008000">// Method 2: Initialize with networkIssueResponseDelayFactor and networkIssueRecoveryDelayFactor</span>
+<span style="color: #001080">config</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPriorityBasedPolicyConfig</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #098658">0.5</span><span style="color: #000000">, </span><span style="color: #008000">// networkIssueResponseDelayFactor</span>
+<span style="color: #000000">  </span><span style="color: #098658">0.5</span><span style="color: #000000"> </span><span style="color: #008000">// networkIssueRecoveryDelayFactor</span>
+<span style="color: #000000">);</span>
+<span style="color: #008000">// Use the config and policy in the meeting</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSessionConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">videoDownlinkBandwidthPolicy</span><span style="color: #000000"> </span>
+<span style="color: #000000">    = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPriorityBasedPolicy</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">config</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>When constructing explicitly, the parameters should be a floating numbers  between <strong><em>0 to 1</em></strong>. The closer to 0 the value is, the smaller the delay is, and vice versa. Modifying these values effects the tradeoff between the amount of pauses and the ability to quickly respond to network downturns or recoveries.</p>
 					<p>The first parameter <code>networkIssueResponseDelayFactor</code> will be used to control:</p>
@@ -157,7 +156,7 @@ config = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicyConfig(
 						</li>
 					</ul>
 					<p>Builders can also use the following setter to change the config dynamically. A possible usage is to listen and count <code>videoTileDidUpdate</code>, and then change to a slower speed if video tile pauses are frequent (implying poor network conditions):</p>
-					<pre><code class="language-ts">setVideoPriorityBasedPolicyConfigs(config: VideoPriorityBasedPolicyConfig): <span class="hljs-built_in">void</span>
+					<pre><code class="language-ts"><span style="color: #795E26">setVideoPriorityBasedPolicyConfigs</span><span style="color: #000000">(</span><span style="color: #001080">config</span><span style="color: #000000">: </span><span style="color: #001080">VideoPriorityBasedPolicyConfig</span><span style="color: #000000">): </span><span style="color: #0000FF">void</span>
 </code></pre>
 					<p>The following presets are provided:</p>
 					<ul>
@@ -171,57 +170,57 @@ config = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicyConfig(
 					<p>Below, we are going to show one potential use case, “featured video”, that can be built on top of this policy.
 					A video tile can be featured by clicking a “Pin” button on it and its priority will be set to 1 whereas the rest unpinned tiles are set to 2 by default. The pinned tile will be displayed in a larger size and will not be paused/downgraded (if simulcast uplink policy being enabled on the remote side) until all of the rest are when encountering network constraint.</p>
 					<p>First create an instance of <code>VideoPriorityBasedPolicy</code> that you will share with the meeting session. Then create a meeting session configuration and set <code>videoDownlinkBandwidthPolicy</code> to that created policy.</p>
-					<pre><code><span class="hljs-comment">// `meetingLogger: Logger` created elsewhere</span>
-const priorityBasedDownlinkPolicy = <span class="hljs-keyword">new</span> <span class="hljs-constructor">VideoPriorityBasedPolicy(<span class="hljs-params">meetingLogger</span>)</span>;
-<span class="hljs-comment">// `configuration: MeetingSessionConfiguration` created elsewhere</span>
-configuration.videoDownlinkBandwidthPolicy = priorityBasedDownlinkPolicy;
+					<pre><code><span style="color: #008000">// `meetingLogger: Logger` created elsewhere</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">priorityBasedDownlinkPolicy</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPriorityBasedPolicy</span><span style="color: #000000">(</span><span style="color: #001080">meetingLogger</span><span style="color: #000000">);</span>
+<span style="color: #008000">// `configuration: MeetingSessionConfiguration` created elsewhere</span>
+<span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">videoDownlinkBandwidthPolicy</span><span style="color: #000000"> = </span><span style="color: #001080">priorityBasedDownlinkPolicy</span><span style="color: #000000">;</span>
 </code></pre>
 					<p>Once connected to the meeting, we can an observer on <code>remoteVideoSourcesDidChange</code> and keep track of if which clients in the roster list are publishing video.</p>
-					<pre><code>  <span class="hljs-comment">// Assumes we are storing roster in a member variable like `roster: any = {};`</span>
-  remoteVideoSourcesDidChange(videoSources: VideoSource[]) {
-    <span class="hljs-comment">// Reset current hasVideo flag in roster list</span>
-    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.roster) {
-      <span class="hljs-keyword">this</span>.roster[attendeeId].hasVideo = <span class="hljs-literal">false</span>;
-    }
-    <span class="hljs-comment">// Update hasVideo flag based on latest data</span>
-    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">const</span> source of videoSources) {
-      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.roster.hasOwnProperty(source.attendee.attendeeId)) {
-        <span class="hljs-keyword">this</span>.roster[source.attendee.attendeeId].hasVideo = <span class="hljs-literal">true</span>;
-      }
-    }
-    <span class="hljs-comment">// Update downlink policy preferences accordingly</span>
-    <span class="hljs-comment">// We will create this function below</span>
-    <span class="hljs-keyword">this</span>.updateDownlinkPreference();
-  }
+					<pre><code><span style="color: #000000">  </span><span style="color: #008000">// Assumes we are storing roster in a member variable like `roster: any = {};`</span>
+<span style="color: #000000">  </span><span style="color: #795E26">remoteVideoSourcesDidChange</span><span style="color: #000000">(</span><span style="color: #001080">videoSources</span><span style="color: #000000">: </span><span style="color: #001080">VideoSource</span><span style="color: #000000">[]) {</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Reset current hasVideo flag in roster list</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">hasVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Update hasVideo flag based on latest data</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">for</span><span style="color: #000000">(</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">source</span><span style="color: #000000"> </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #001080">videoSources</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">.</span><span style="color: #795E26">hasOwnProperty</span><span style="color: #000000">(</span><span style="color: #001080">source</span><span style="color: #000000">.</span><span style="color: #001080">attendee</span><span style="color: #000000">.</span><span style="color: #001080">attendeeId</span><span style="color: #000000">)) {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">source</span><span style="color: #000000">.</span><span style="color: #001080">attendee</span><span style="color: #000000">.</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">hasVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">      }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Update downlink policy preferences accordingly</span>
+<span style="color: #000000">    </span><span style="color: #008000">// We will create this function below</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">updateDownlinkPreference</span><span style="color: #000000">();</span>
+<span style="color: #000000">  }</span>
 </code></pre>
 					<p>We can then add a pin button to our application, and wire it up to change the priority of the respective video.  Update the tile button <code>click</code> callback to set or unset the pin status.</p>
-					<pre><code>    pinButtonElement.addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>, () =&gt; {
-      <span class="hljs-comment">// Get the attendeeID associated with this tile</span>
-      <span class="hljs-keyword">const</span> attendeeId = tileState.boundAttendeeId;
-      <span class="hljs-comment">// Change pin state</span>
-      <span class="hljs-keyword">this</span>.roster[attendeeId].pinned = !<span class="hljs-keyword">this</span>.roster[attendeeId].pinned;
-      <span class="hljs-comment">// Update label</span>
-      pauseButtonElement.innerText =
-        (<span class="hljs-keyword">this</span>.roster[attendeeId].pinned) ? <span class="hljs-string">&#x27;Unpin&#x27;</span> : <span class="hljs-string">&#x27;Pin&#x27;</span>;
-      <span class="hljs-comment">// Update downlink policy to reflect pin/unpin change</span>
-      <span class="hljs-keyword">this</span>.updateDownlinkPreference();
-    });
+					<pre><code><span style="color: #000000">    </span><span style="color: #001080">pinButtonElement</span><span style="color: #000000">.</span><span style="color: #795E26">addEventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;click&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #008000">// Get the attendeeID associated with this tile</span>
+<span style="color: #000000">      </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> = </span><span style="color: #001080">tileState</span><span style="color: #000000">.</span><span style="color: #001080">boundAttendeeId</span><span style="color: #000000">;</span>
+<span style="color: #000000">      </span><span style="color: #008000">// Change pin state</span>
+<span style="color: #000000">      </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">pinned</span><span style="color: #000000"> = !</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">pinned</span><span style="color: #000000">;</span>
+<span style="color: #000000">      </span><span style="color: #008000">// Update label</span>
+<span style="color: #000000">      </span><span style="color: #001080">pauseButtonElement</span><span style="color: #000000">.</span><span style="color: #001080">innerText</span><span style="color: #000000"> =</span>
+<span style="color: #000000">        (</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">pinned</span><span style="color: #000000">) ? </span><span style="color: #A31515">&#039;Unpin&#039;</span><span style="color: #000000"> : </span><span style="color: #A31515">&#039;Pin&#039;</span><span style="color: #000000">;</span>
+<span style="color: #000000">      </span><span style="color: #008000">// Update downlink policy to reflect pin/unpin change</span>
+<span style="color: #000000">      </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">updateDownlinkPreference</span><span style="color: #000000">();</span>
+<span style="color: #000000">    });</span>
 </code></pre>
 					<p>We can then write <code>updateDownlinkPreference</code> which is shared by the above two snippets. This logic simply sets featured tiles to priority <code>1</code> and all others to priority <code>2</code>. This will ensure featured tiles are requested first at the highest resolution allowed by bandwidth and other participants are requested as bandwidth allows. To store the <code>VideoPreference</code> objects we use <code>VideoPreferences</code>, a set like data structure that allows efficient modification of an existing list while only copying when necessary.</p>
-					<pre><code>  update<span class="hljs-constructor">DownlinkPreference()</span>: void {
-    const videoPreferences: MutableVideoPreferences = <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">VideoPreferences</span>.</span></span>prepare<span class="hljs-literal">()</span>;
-    <span class="hljs-keyword">for</span> (const attendeeId <span class="hljs-keyword">in</span> this.roster) {
-      <span class="hljs-keyword">if</span> (this.roster<span class="hljs-literal">[<span class="hljs-identifier">attendeeId</span>]</span>.hasVideo) {
-        <span class="hljs-comment">// Make pinned videos of equal high importance and the rest as secondary</span>
-        <span class="hljs-keyword">if</span> (this.roster<span class="hljs-literal">[<span class="hljs-identifier">attendeeId</span>]</span>.pinned) {
-          videoPreferences.add(<span class="hljs-keyword">new</span> <span class="hljs-constructor">VideoPreference(<span class="hljs-params">attendeeId</span>, 1, TargetDisplaySize.High)</span>);
-        } <span class="hljs-keyword">else</span> {
-          videoPreferences.add(<span class="hljs-keyword">new</span> <span class="hljs-constructor">VideoPreference(<span class="hljs-params">attendeeId</span>, 2, TargetDisplaySize.Low)</span>);
-        }
-      }
-    }
-    this.priorityBasedDownlinkPolicy.choose<span class="hljs-constructor">RemoteVideoSources(<span class="hljs-params">videoPreferences</span>.<span class="hljs-params">build</span>()</span>);
-  }
+					<pre><code><span style="color: #000000">  </span><span style="color: #795E26">updateDownlinkPreference</span><span style="color: #000000">(): </span><span style="color: #0000FF">void</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoPreferences</span><span style="color: #000000">: </span><span style="color: #267F99">MutableVideoPreferences</span><span style="color: #000000"> = </span><span style="color: #001080">VideoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">prepare</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">hasVideo</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Make pinned videos of equal high importance and the rest as secondary</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">pinned</span><span style="color: #000000">) {</span>
+<span style="color: #000000">          </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">High</span><span style="color: #000000">));</span>
+<span style="color: #000000">        } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
+<span style="color: #000000">          </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">Low</span><span style="color: #000000">));</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">      }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">priorityBasedDownlinkPolicy</span><span style="color: #000000">.</span><span style="color: #795E26">chooseRemoteVideoSources</span><span style="color: #000000">(</span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">());</span>
+<span style="color: #000000">  } </span>
 </code></pre>
 					<p><code>chooseRemoteVideoSources</code> will trigger the remote selection logic based on the priority settings of each video tile then update the tile management accordingly. These steps are taken care of by the Amazon Chime SDK for JavaScript code.</p>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Priority%20Based_Downlink_Policy%20feedback">Give feedback on this guide</a></p>
@@ -231,8 +230,62 @@ configuration.videoDownlinkBandwidthPolicy = priorityBasedDownlinkPolicy;
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>
@@ -254,12 +307,13 @@ configuration.videoDownlinkBandwidthPolicy = priorityBasedDownlinkPolicy;
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
