@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="videopreference.html">VideoPreference</a>
@@ -77,8 +76,8 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/eq.html" class="tsd-signature-type">Eq</a></li>
-					<li><a href="../interfaces/partialord.html" class="tsd-signature-type">PartialOrd</a></li>
+					<li><a href="../interfaces/eq.html" class="tsd-signature-type" data-tsd-kind="Interface">Eq</a></li>
+					<li><a href="../interfaces/partialord.html" class="tsd-signature-type" data-tsd-kind="Interface">PartialOrd</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -117,7 +116,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Video<wbr>Preference<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, priority<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, targetSize<span class="tsd-signature-symbol">?: </span><a href="../enums/targetdisplaysize.html" class="tsd-signature-type">TargetDisplaySize</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videopreference.html" class="tsd-signature-type">VideoPreference</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Video<wbr>Preference<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, priority<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, targetSize<span class="tsd-signature-symbol">?: </span><a href="../enums/targetdisplaysize.html" class="tsd-signature-type" data-tsd-kind="Enumeration">TargetDisplaySize</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videopreference.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreference</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -136,29 +135,23 @@
 								<li>
 									<h5>attendeeId: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Attendee ID of the client</p>
-										</div>
+										<p>Attendee ID of the client</p>
 									</div>
 								</li>
 								<li>
 									<h5>priority: <span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>The relative priority of this attendee against others.</p>
-										</div>
+										<p>The relative priority of this attendee against others.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> targetSize: <a href="../enums/targetdisplaysize.html" class="tsd-signature-type">TargetDisplaySize</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> targetSize: <a href="../enums/targetdisplaysize.html" class="tsd-signature-type" data-tsd-kind="Enumeration">TargetDisplaySize</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>The desired maximum simulcast layers to receive.</p>
-										</div>
+										<p>The desired maximum simulcast layers to receive.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="videopreference.html" class="tsd-signature-type">VideoPreference</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videopreference.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreference</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -170,35 +163,19 @@
 					<h3>attendee<wbr>Id</h3>
 					<div class="tsd-signature tsd-kind-icon">attendee<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPreference.ts#L19">src/videodownlinkbandwidthpolicy/VideoPreference.ts:19</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Attendee ID of the client</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="priority" class="tsd-anchor"></a>
 					<h3>priority</h3>
 					<div class="tsd-signature tsd-kind-icon">priority<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPreference.ts#L19">src/videodownlinkbandwidthpolicy/VideoPreference.ts:19</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The relative priority of this attendee against others.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="targetsize" class="tsd-anchor"></a>
 					<h3>target<wbr>Size</h3>
-					<div class="tsd-signature tsd-kind-icon">target<wbr>Size<span class="tsd-signature-symbol">:</span> <a href="../enums/targetdisplaysize.html" class="tsd-signature-type">TargetDisplaySize</a></div>
+					<div class="tsd-signature tsd-kind-icon">target<wbr>Size<span class="tsd-signature-symbol">:</span> <a href="../enums/targetdisplaysize.html" class="tsd-signature-type" data-tsd-kind="Enumeration">TargetDisplaySize</a></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPreference.ts#L11">src/videodownlinkbandwidthpolicy/VideoPreference.ts:11</a></li>
@@ -217,7 +194,7 @@
 					<a name="clone" class="tsd-anchor"></a>
 					<h3>clone</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">clone<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videopreference.html" class="tsd-signature-type">VideoPreference</a></li>
+						<li class="tsd-signature tsd-kind-icon">clone<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videopreference.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreference</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -226,7 +203,7 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPreference.ts#L35">src/videodownlinkbandwidthpolicy/VideoPreference.ts:35</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="videopreference.html" class="tsd-signature-type">VideoPreference</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videopreference.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreference</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -234,7 +211,7 @@
 					<a name="equals" class="tsd-anchor"></a>
 					<h3>equals</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">equals<span class="tsd-signature-symbol">(</span>other<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">equals<span class="tsd-signature-symbol">(</span>other<span class="tsd-signature-symbol">: </span><a href="videopreference.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreference</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -244,10 +221,15 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPreference.ts#L27">src/videodownlinkbandwidthpolicy/VideoPreference.ts:27</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Return true if the other value is exactly equal to this value.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>other: <span class="tsd-signature-type">this</span></h5>
+									<h5>other: <a href="videopreference.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreference</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -258,7 +240,7 @@
 					<a name="partialcompare" class="tsd-anchor"></a>
 					<h3>partial<wbr>Compare</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">partial<wbr>Compare<span class="tsd-signature-symbol">(</span>other<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon">partial<wbr>Compare<span class="tsd-signature-symbol">(</span>other<span class="tsd-signature-symbol">: </span><a href="videopreference.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreference</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -268,10 +250,16 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPreference.ts#L23">src/videodownlinkbandwidthpolicy/VideoPreference.ts:23</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Compare this value to another, returning a relative value as documented by
+									<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#description"><code>Array.sort</code></a></p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>other: <span class="tsd-signature-type">this</span></h5>
+									<h5>other: <a href="videopreference.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreference</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -282,7 +270,7 @@
 					<a name="targetsizetobitratekbps" class="tsd-anchor"></a>
 					<h3>target<wbr>Size<wbr>ToBitrate<wbr>Kbps</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">target<wbr>Size<wbr>ToBitrate<wbr>Kbps<span class="tsd-signature-symbol">(</span>targetSize<span class="tsd-signature-symbol">: </span><a href="../enums/targetdisplaysize.html" class="tsd-signature-type">TargetDisplaySize</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon">target<wbr>Size<wbr>ToBitrate<wbr>Kbps<span class="tsd-signature-symbol">(</span>targetSize<span class="tsd-signature-symbol">: </span><a href="../enums/targetdisplaysize.html" class="tsd-signature-type" data-tsd-kind="Enumeration">TargetDisplaySize</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -294,7 +282,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>targetSize: <a href="../enums/targetdisplaysize.html" class="tsd-signature-type">TargetDisplaySize</a></h5>
+									<h5>targetSize: <a href="../enums/targetdisplaysize.html" class="tsd-signature-type" data-tsd-kind="Enumeration">TargetDisplaySize</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -306,8 +294,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

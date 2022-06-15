@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="contentshare.html">ContentShare</a>
@@ -88,23 +87,23 @@
 						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare">startContentShare</a>
 						and provide a
 					<a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a>:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> meetingSession = <span class="hljs-comment">// reference to MeetingSession</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShare(mediaStream);
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShare</span><span style="color: #000000">(</span><span style="color: #001080">mediaStream</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>To start a screen capture, call the convenience method
 					<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentsharefromscreencapture">startContentShareFromScreenCapture</a>.</p>
 					<p>When calling from a browser, leave <code>sourceId</code> empty. This will launch the
 					browser&#39;s native screen capture picker.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> meetingSession = <span class="hljs-comment">// reference to MeetingSession</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture();
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">();</span>
 </code></pre>
 					<p>When calling from Electron, build a screen capture picker into your application and
 						pass the <code>sourceId</code> of the chosen screen capture to the method. See the
 						<a href="https://github.com/hokein/electron-sample-apps/tree/master/desktop-capture">desktop-capture</a>
 					sample application for more information.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> meetingSession = <span class="hljs-comment">// reference to MeetingSession</span>
-<span class="hljs-keyword">const</span> sourceId = <span class="hljs-comment">// get this from your custom Electron screen capture picker</span>
-<span class="hljs-keyword">await</span> meetingSession. audioVideo.startContentShareFromScreenCapture(sourceId);
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">sourceId</span><span style="color: #000000"> = </span><span style="color: #008000">// get this from your custom Electron screen capture picker</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">. </span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">(</span><span style="color: #001080">sourceId</span><span style="color: #000000">);</span>
 </code></pre>
 					<a href="#view-the-content-share" id="view-the-content-share" style="color: inherit; text-decoration: none;">
 						<h4>View the content share</h4>
@@ -120,10 +119,10 @@
 						<li>Add the observer with <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addobserver">addObserver</a> method to receive events.</li>
 						<li>In <code>videoTileDidUpdate</code>, bind the video tile to a video element in your app:</li>
 					</ul>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> meetingSession = <span class="hljs-comment">// reference to MeetingSession</span>
-<span class="hljs-keyword">const</span> tileState = <span class="hljs-comment">// reference to tileState parameter in videoTileDidUpdate</span>
-<span class="hljs-keyword">const</span> videoElement = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;video-element-id&#x27;</span>);
-meetingSession.audioVideo.bindVideoElement(tileState.tileId , videoElement);
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">tileState</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to tileState parameter in videoTileDidUpdate</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoElement</span><span style="color: #000000"> = </span><span style="color: #001080">document</span><span style="color: #000000">.</span><span style="color: #795E26">getElementById</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;video-element-id&#039;</span><span style="color: #000000">);</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">bindVideoElement</span><span style="color: #000000">(</span><span style="color: #001080">tileState</span><span style="color: #000000">.</span><span style="color: #001080">tileId</span><span style="color: #000000"> , </span><span style="color: #001080">videoElement</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>Use the
 						<a href="https://aws.github.io/amazon-chime-sdk-js/classes/videotilestate.html#iscontent">isContent</a>
@@ -133,9 +132,9 @@ meetingSession.audioVideo.bindVideoElement(tileState.tileId , videoElement);
 					to handle the content share.</p>
 					<p>You can also use the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/modality.html">Modality</a>
 					class to determine that an attendee ID is a content share:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">if</span> (<span class="hljs-keyword">new</span> DefaultModality(attendeeId).hasModality(DefaultModality.MODALITY_CONTENT)) {
-  <span class="hljs-comment">// ...special handling for content share...</span>
-}
+					<pre><code class="language-javascript"><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultModality</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">).</span><span style="color: #795E26">hasModality</span><span style="color: #000000">(</span><span style="color: #001080">DefaultModality</span><span style="color: #000000">.</span><span style="color: #0070C1">MODALITY_CONTENT</span><span style="color: #000000">)) {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// ...special handling for content share...</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<a href="#pause-and-unpause-the-content-share" id="pause-and-unpause-the-content-share" style="color: inherit; text-decoration: none;">
 						<h4>Pause and unpause the content share</h4>
@@ -143,19 +142,19 @@ meetingSession.audioVideo.bindVideoElement(tileState.tileId , videoElement);
 					<p>To pause and unpause the content share, call
 						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausecontentshare">pauseContentShare</a> and
 					<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unpausecontentshare">unpauseContentShare</a>.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> meetingSession = <span class="hljs-comment">// reference to MeetingSession</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.pauseContentShare();
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">pauseContentShare</span><span style="color: #000000">();</span>
 </code></pre>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> meetingSession = <span class="hljs-comment">// reference to MeetingSession</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.unpauseContentShare();
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">unpauseContentShare</span><span style="color: #000000">();</span>
 </code></pre>
 					<a href="#stop-the-content-share" id="stop-the-content-share" style="color: inherit; text-decoration: none;">
 						<h4>Stop the content share</h4>
 					</a>
 					<p>To stop the content share, call
 					<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopcontentshare">stopContentShare</a>.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> meetingSession = <span class="hljs-comment">// reference to MeetingSession</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopContentShare();
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">stopContentShare</span><span style="color: #000000">();</span>
 </code></pre>
 					<a href="#receive-content-share-events" id="receive-content-share-events" style="color: inherit; text-decoration: none;">
 						<h4>Receive content share events</h4>
@@ -171,8 +170,59 @@ meetingSession.audioVideo.bindVideoElement(tileState.tileId , videoElement);
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>

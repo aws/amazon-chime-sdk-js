@@ -3,10 +3,11 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>FilterFrameDurationHighEvent | amazon-chime-sdk-js</title>
+	<title>AssetSpec | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,13 +52,13 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
-					<a href="filterframedurationhighevent.html">FilterFrameDurationHighEvent</a>
+					<a href="assetspec.html">AssetSpec</a>
 				</li>
 			</ul>
-			<h1>Interface FilterFrameDurationHighEvent</h1>
+			<h1>Interface AssetSpec</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +69,18 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">FilterFrameDurationHighEvent</span>
+						<span class="target">AssetSpec</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="backgroundfilterspec.html" class="tsd-signature-type" data-tsd-kind="Interface">BackgroundFilterSpec</a>
+							</li>
+							<li>
+								<a href="voicefocusdeviceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceFocusDeviceOptions</a>
+							</li>
+							<li>
+								<a href="voicefocusspec.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceFocusSpec</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -81,10 +91,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filterframedurationhighevent.html#avgfilterdurationmillis" class="tsd-kind-icon">avg<wbr>Filter<wbr>Duration<wbr>Millis</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filterframedurationhighevent.html#framerate" class="tsd-kind-icon">framerate</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filterframedurationhighevent.html#framesdropped" class="tsd-kind-icon">frames<wbr>Dropped</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filterframedurationhighevent.html#periodmillis" class="tsd-kind-icon">period<wbr>Millis</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assetspec.html#assetgroup" class="tsd-kind-icon">asset<wbr>Group</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assetspec.html#revisionid" class="tsd-kind-icon">revisionID</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,42 +101,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="avgfilterdurationmillis" class="tsd-anchor"></a>
-					<h3>avg<wbr>Filter<wbr>Duration<wbr>Millis</h3>
-					<div class="tsd-signature tsd-kind-icon">avg<wbr>Filter<wbr>Duration<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="assetgroup" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> asset<wbr>Group</h3>
+					<div class="tsd-signature tsd-kind-icon">asset<wbr>Group<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L12">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/libs/voicefocus/voicefocus.d.ts#L4">libs/voicefocus/voicefocus.d.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="framerate" class="tsd-anchor"></a>
-					<h3>framerate</h3>
-					<div class="tsd-signature tsd-kind-icon">framerate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="revisionid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> revisionID</h3>
+					<div class="tsd-signature tsd-kind-icon">revisionID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L13">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:13</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="framesdropped" class="tsd-anchor"></a>
-					<h3>frames<wbr>Dropped</h3>
-					<div class="tsd-signature tsd-kind-icon">frames<wbr>Dropped<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L11">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:11</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="periodmillis" class="tsd-anchor"></a>
-					<h3>period<wbr>Millis</h3>
-					<div class="tsd-signature tsd-kind-icon">period<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L14">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/libs/voicefocus/voicefocus.d.ts#L5">libs/voicefocus/voicefocus.d.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -137,8 +125,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -147,19 +135,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="filterframedurationhighevent.html" class="tsd-kind-icon">Filter<wbr>Frame<wbr>Duration<wbr>High<wbr>Event</a>
+						<a href="assetspec.html" class="tsd-kind-icon">Asset<wbr>Spec</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="filterframedurationhighevent.html#avgfilterdurationmillis" class="tsd-kind-icon">avg<wbr>Filter<wbr>Duration<wbr>Millis</a>
+								<a href="assetspec.html#assetgroup" class="tsd-kind-icon">asset<wbr>Group</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="filterframedurationhighevent.html#framerate" class="tsd-kind-icon">framerate</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="filterframedurationhighevent.html#framesdropped" class="tsd-kind-icon">frames<wbr>Dropped</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="filterframedurationhighevent.html#periodmillis" class="tsd-kind-icon">period<wbr>Millis</a>
+								<a href="assetspec.html#revisionid" class="tsd-kind-icon">revisionID</a>
 							</li>
 						</ul>
 					</li>

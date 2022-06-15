@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="defaultreconnectcontroller.html">DefaultReconnectController</a>
@@ -77,7 +76,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/reconnectcontroller.html" class="tsd-signature-type">ReconnectController</a></li>
+					<li><a href="../interfaces/reconnectcontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">ReconnectController</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -115,7 +114,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Reconnect<wbr>Controller<span class="tsd-signature-symbol">(</span>reconnectTimeoutMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, backoffPolicy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BackoffPolicy</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultreconnectcontroller.html" class="tsd-signature-type">DefaultReconnectController</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Reconnect<wbr>Controller<span class="tsd-signature-symbol">(</span>reconnectTimeoutMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, backoffPolicy<span class="tsd-signature-symbol">: </span><a href="../interfaces/backoff.html" class="tsd-signature-type" data-tsd-kind="Interface">Backoff</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultreconnectcontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultReconnectController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -130,10 +129,10 @@
 									<h5>reconnectTimeoutMs: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>backoffPolicy: <span class="tsd-signature-type">BackoffPolicy</span></h5>
+									<h5>backoffPolicy: <a href="../interfaces/backoff.html" class="tsd-signature-type" data-tsd-kind="Interface">Backoff</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="defaultreconnectcontroller.html" class="tsd-signature-type">DefaultReconnectController</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="defaultreconnectcontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultReconnectController</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -154,6 +153,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L71">src/reconnectcontroller/DefaultReconnectController.ts:71</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Cancels any pending retry and disables reconnect. The cancel function supplied to the
+									retryWithBackoff will be called if there was a pending retry.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -162,7 +167,7 @@
 					<a name="clone" class="tsd-anchor"></a>
 					<h3>clone</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">clone<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultreconnectcontroller.html" class="tsd-signature-type">DefaultReconnectController</a></li>
+						<li class="tsd-signature tsd-kind-icon">clone<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultreconnectcontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultReconnectController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -172,7 +177,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L99">src/reconnectcontroller/DefaultReconnectController.ts:99</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="defaultreconnectcontroller.html" class="tsd-signature-type">DefaultReconnectController</a></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Clones the controller.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="defaultreconnectcontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultReconnectController</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -190,6 +200,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L63">src/reconnectcontroller/DefaultReconnectController.ts:63</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Disables reconnect until the controller is next reset.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -208,6 +223,13 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L67">src/reconnectcontroller/DefaultReconnectController.ts:67</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Switches the reconnect controller into a mode where it will only restart the
+										peer connection instead of restarting the session starting with the
+									signaling connection.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -226,6 +248,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L55">src/reconnectcontroller/DefaultReconnectController.ts:55</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Indicates whether a connection attempt is already in progress.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -244,6 +271,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L59">src/reconnectcontroller/DefaultReconnectController.ts:59</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Indicates whether the current connection attempt was the first.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -262,6 +294,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L37">src/reconnectcontroller/DefaultReconnectController.ts:37</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Resets the ReconnectController to its default state.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -275,10 +312,17 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/reconnectcontroller.html">ReconnectController</a>.<a href="../interfaces/reconnectcontroller.html#retrywithbackoff">retryWithBackoff</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L82">src/reconnectcontroller/DefaultReconnectController.ts:82</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decides whether to retry the retryFunc after some amount of backoff depending
+									on the controller.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -330,6 +374,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L103">src/reconnectcontroller/DefaultReconnectController.ts:103</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the last active external timestamp in milliseconds.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -354,6 +403,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L95">src/reconnectcontroller/DefaultReconnectController.ts:95</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether only the peer connection should be restarted at this time.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -372,6 +426,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/reconnectcontroller/DefaultReconnectController.ts#L47">src/reconnectcontroller/DefaultReconnectController.ts:47</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Indicates that a connection attempt has started so that the reconnect deadline
+									can be set.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -387,8 +447,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

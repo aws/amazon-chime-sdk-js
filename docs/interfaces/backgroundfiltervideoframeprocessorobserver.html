@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="backgroundfiltervideoframeprocessorobserver.html">BackgroundFilterVideoFrameProcessorObserver</a>
@@ -82,10 +81,10 @@
 						<span class="target">BackgroundFilterVideoFrameProcessorObserver</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<a href="backgroundblurvideoframeprocessorobserver.html" class="tsd-signature-type">BackgroundBlurVideoFrameProcessorObserver</a>
+								<a href="backgroundblurvideoframeprocessorobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">BackgroundBlurVideoFrameProcessorObserver</a>
 							</li>
 							<li>
-								<a href="backgroundreplacementvideoframeprocessorobserver.html" class="tsd-signature-type">BackgroundReplacementVideoFrameProcessorObserver</a>
+								<a href="backgroundreplacementvideoframeprocessorobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">BackgroundReplacementVideoFrameProcessorObserver</a>
 							</li>
 						</ul>
 					</li>
@@ -110,38 +109,38 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="filtercpuutilizationhigh" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filterCPUUtilization<wbr>High</h3>
-					<div class="tsd-signature tsd-kind-icon">filterCPUUtilization<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filtercpuutilizationhighevent.html" class="tsd-signature-type">FilterCPUUtilizationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<div class="tsd-signature tsd-kind-icon">filterCPUUtilization<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FilterCPUUtilizationHighEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L51">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:51</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>This event occurs when the CPU utilization of background filtering exceeds the <code>filterCPUUtilization</code> defined
-							in the <code>BackgroundBlurOptions</code>.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>cpuUtilization: The percentage of time that was spent processing background filter divided by the total reporting period time;
-									filterMillis: Total time spent processing the background filter in milliseconds;
-								periodMillis: Total time in the reporting period in milliseconds;</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filtercpuutilizationhighevent.html" class="tsd-signature-type">FilterCPUUtilizationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FilterCPUUtilizationHighEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>This event occurs when the CPU utilization of background filtering exceeds the <code>filterCPUUtilization</code> defined
+												in the <code>BackgroundBlurOptions</code>.</p>
+											</div>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>event: <a href="filtercpuutilizationhighevent.html" class="tsd-signature-type">FilterCPUUtilizationHighEvent</a></h5>
+												<h5>event: <span class="tsd-signature-type">FilterCPUUtilizationHighEvent</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>cpuUtilization: The percentage of time that was spent processing background filter divided by the total reporting period time;
+															filterMillis: Total time spent processing the background filter in milliseconds;
+														periodMillis: Total time in the reporting period in milliseconds;</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -154,44 +153,44 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="filterframedurationhigh" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filter<wbr>Frame<wbr>Duration<wbr>High</h3>
-					<div class="tsd-signature tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filterframedurationhighevent.html" class="tsd-signature-type">FilterFrameDurationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<div class="tsd-signature tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FilterFrameDurationHighEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L40">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:40</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>This event occurs when the amount of time it takes to apply the background filter is longer than expected. The
-								measurement is taken from the time the process method starts to when it returns. For example, if the video
-								is running at 15 frames per second and we are averaging more than 67 ms (1000 ms reporting period / 15 fps)
-								to apply background filter, then a very large portion of each frame&#39;s maximum processing time is taken up by
-							processing background filter.</p>
-						</div>
-						<p>The observer will be called a maximum of once per <a href="filtercpuutilizationhighevent.html#periodmillis">periodMillis</a>. In the event that the <a href="filterframedurationhighevent.html#avgfilterdurationmillis">avgFilterDurationMillis</a>
-						is larger than expected the builder can use this event as a trigger to disable the background filter.</p>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>framesDropped: The expected amount of frames based on frame rate minus the actual number of frames.
-									avgFilterDurationMillis: The average amount of time that the processor took per frame in the reporting period.
-									framerate: The video frame rate set by the SDK.
-								periodMillis: The duration of the reporting period in milliseconds.</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filterframedurationhighevent.html" class="tsd-signature-type">FilterFrameDurationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FilterFrameDurationHighEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>This event occurs when the amount of time it takes to apply the background filter is longer than expected. The
+													measurement is taken from the time the process method starts to when it returns. For example, if the video
+													is running at 15 frames per second and we are averaging more than 67 ms (1000 ms reporting period / 15 fps)
+													to apply background filter, then a very large portion of each frame&#39;s maximum processing time is taken up by
+												processing background filter.</p>
+											</div>
+											<p>The observer will be called a maximum of once per {@link periodMillis}. In the event that the {@link avgFilterDurationMillis}
+											is larger than expected the builder can use this event as a trigger to disable the background filter.</p>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>event: <a href="filterframedurationhighevent.html" class="tsd-signature-type">FilterFrameDurationHighEvent</a></h5>
+												<h5>event: <span class="tsd-signature-type">FilterFrameDurationHighEvent</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>framesDropped: The expected amount of frames based on frame rate minus the actual number of frames.
+															avgFilterDurationMillis: The average amount of time that the processor took per frame in the reporting period.
+															framerate: The video frame rate set by the SDK.
+														periodMillis: The duration of the reporting period in milliseconds.</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -206,8 +205,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

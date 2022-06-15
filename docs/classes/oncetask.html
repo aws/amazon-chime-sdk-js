@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="oncetask.html">OnceTask</a>
@@ -86,7 +85,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/task.html" class="tsd-signature-type">Task</a></li>
+					<li><a href="../interfaces/task.html" class="tsd-signature-type" data-tsd-kind="Interface">Task</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -118,7 +117,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Once<wbr>Task<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, task<span class="tsd-signature-symbol">: </span><a href="../interfaces/task.html" class="tsd-signature-type">Task</a>, dependencies<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><a href="../interfaces/task.html" class="tsd-signature-type">Task</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="oncetask.html" class="tsd-signature-type">OnceTask</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Once<wbr>Task<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a>, task<span class="tsd-signature-symbol">: </span><a href="../interfaces/task.html" class="tsd-signature-type" data-tsd-kind="Interface">Task</a>, dependencies<span class="tsd-signature-symbol">?: </span><a href="../interfaces/task.html" class="tsd-signature-type" data-tsd-kind="Interface">Task</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="oncetask.html" class="tsd-signature-type" data-tsd-kind="Class">OnceTask</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -130,16 +129,16 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
+									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a></h5>
 								</li>
 								<li>
-									<h5>task: <a href="../interfaces/task.html" class="tsd-signature-type">Task</a></h5>
+									<h5>task: <a href="../interfaces/task.html" class="tsd-signature-type" data-tsd-kind="Interface">Task</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> dependencies: <span class="tsd-signature-symbol">(</span><a href="../interfaces/task.html" class="tsd-signature-type">Task</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> dependencies: <a href="../interfaces/task.html" class="tsd-signature-type" data-tsd-kind="Interface">Task</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="oncetask.html" class="tsd-signature-type">OnceTask</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="oncetask.html" class="tsd-signature-type" data-tsd-kind="Class">OnceTask</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -160,6 +159,15 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/OnceTask.ts#L37">src/task/OnceTask.ts:37</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Attempts to cancel the task. The task may still succeed if it is unable to
+										be canceled. If the task is canceled, then its <a href="oncetask.html#run">run</a> function will reject
+										the promise. If <a href="oncetask.html#cancel">cancel</a> is called before <a href="oncetask.html#run">run</a>, then <a href="oncetask.html#run">run</a>
+										must immediately reject the returned promise. If <a href="oncetask.html#cancel">cancel</a> is called
+									after <a href="oncetask.html#run">run</a>, then nothing happens.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -195,6 +203,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/OnceTask.ts#L33">src/task/OnceTask.ts:33</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Describes the task for the purpose of logging.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
@@ -213,6 +226,14 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/OnceTask.ts#L84">src/task/OnceTask.ts:84</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Runs the unit of work until it either succeeds and fulfills the promise or
+										fails and rejects the promise. Where possible it should listen for the
+										cancellation signal, stop working, and reject the promise. If run is called
+									more than once, it should immediately reject the promise.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -221,7 +242,7 @@
 					<a name="setparent" class="tsd-anchor"></a>
 					<h3>set<wbr>Parent</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Parent<span class="tsd-signature-symbol">(</span>parentTask<span class="tsd-signature-symbol">: </span><a href="../interfaces/task.html" class="tsd-signature-type">Task</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Parent<span class="tsd-signature-symbol">(</span>parentTask<span class="tsd-signature-symbol">: </span><a href="../interfaces/task.html" class="tsd-signature-type" data-tsd-kind="Interface">Task</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -231,10 +252,15 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/OnceTask.ts#L103">src/task/OnceTask.ts:103</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the parent of this task for the purpose of logging.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>parentTask: <a href="../interfaces/task.html" class="tsd-signature-type">Task</a></h5>
+									<h5>parentTask: <a href="../interfaces/task.html" class="tsd-signature-type" data-tsd-kind="Interface">Task</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -246,8 +272,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

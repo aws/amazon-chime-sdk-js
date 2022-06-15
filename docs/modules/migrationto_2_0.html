@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="migrationto_2_0.html">Migrationto_2_0</a>
@@ -77,7 +76,7 @@
 						<h2>Installation</h2>
 					</a>
 					<p>Installation involves adjusting your <code>package.json</code> to depend on version <code>2.0.0</code>.</p>
-					<pre><code class="language-shell">npm install --save amazon-chime-sdk-js@2
+					<pre><code class="language-shell"><span style="color: #000000">npm install --save amazon-chime-sdk-js@2</span>
 </code></pre>
 					<a href="#interface-changes" id="interface-changes" style="color: inherit; text-decoration: none;">
 						<h2>Interface changes</h2>
@@ -107,38 +106,38 @@
 					<p>Applications should instead use the constructor argument added to
 					<code>DefaultDeviceConfiguration</code> to enable Web Audio at point of construction.</p>
 					<p>If your code looked like this:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-configuration.enableWebAudio = <span class="hljs-literal">true</span>;
-…
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
-<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
-<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(…);</span>
+<span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">enableWebAudio</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">…</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMeetingSession</span><span style="color: #000000">(</span><span style="color: #001080">configuration</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">deviceController</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">;</span>
 </code></pre>
 					<p>change it to</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-…
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger, { <span class="hljs-attr">enableWebAudio</span>: <span class="hljs-literal">true</span> });
-<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
-<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(…);</span>
+<span style="color: #000000">…</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, { </span><span style="color: #001080">enableWebAudio:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000"> });</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMeetingSession</span><span style="color: #000000">(</span><span style="color: #001080">configuration</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">deviceController</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">;</span>
 </code></pre>
 					<p>If your code looked like this:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-…
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
-<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
-<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
-…
-<span class="hljs-keyword">const</span> enableWebAudio = <span class="hljs-keyword">await</span> checkWhetherWebAudioNeeded();
-deviceController.enableWebAudio(enableWebAudio);
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(…);</span>
+<span style="color: #000000">…</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMeetingSession</span><span style="color: #000000">(</span><span style="color: #001080">configuration</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">deviceController</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">;</span>
+<span style="color: #000000">…</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">enableWebAudio</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">checkWhetherWebAudioNeeded</span><span style="color: #000000">();</span>
+<span style="color: #001080">deviceController</span><span style="color: #000000">.</span><span style="color: #795E26">enableWebAudio</span><span style="color: #000000">(</span><span style="color: #001080">enableWebAudio</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>change it to</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
-<span class="hljs-comment">// …</span>
-<span class="hljs-keyword">const</span> enableWebAudio = <span class="hljs-keyword">await</span> checkWhetherWebAudioNeeded();
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger, { enableWebAudio });
-<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
-<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
-…
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(…);</span>
+<span style="color: #008000">// …</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">enableWebAudio</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">checkWhetherWebAudioNeeded</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, { </span><span style="color: #001080">enableWebAudio</span><span style="color: #000000"> });</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMeetingSession</span><span style="color: #000000">(</span><span style="color: #001080">configuration</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">deviceController</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">;</span>
+<span style="color: #000000">…</span>
 </code></pre>
 					<hr>
 					<a href="#update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promiseltvoidgt-instead-of-boolean" id="update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promiseltvoidgt-instead-of-boolean" style="color: inherit; text-decoration: none;">
@@ -148,37 +147,37 @@ deviceController.enableWebAudio(enableWebAudio);
 						Under the hood, it used to call <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a>
 					which is an asynchronous function.</p>
 					<p>As part of this change, three APIs in <code>AudioMixController</code> were changed to return <code>Promise&lt;void&gt;</code>. These APIs are listed below.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Old Syntax</span>
-bindAudioElement(element: HTMLAudioElement): <span class="hljs-built_in">boolean</span>;
-bindAudioStream(stream: MediaStream): <span class="hljs-built_in">boolean</span>;
-bindAudioDevice(device: MediaDeviceInfo | <span class="hljs-literal">null</span>): <span class="hljs-built_in">boolean</span>;
+					<pre><code class="language-typescript"><span style="color: #008000">// Old Syntax</span>
+<span style="color: #795E26">bindAudioElement</span><span style="color: #000000">(</span><span style="color: #001080">element</span><span style="color: #000000">: </span><span style="color: #001080">HTMLAudioElement</span><span style="color: #000000">): </span><span style="color: #001080">boolean</span><span style="color: #000000">;</span>
+<span style="color: #795E26">bindAudioStream</span><span style="color: #000000">(</span><span style="color: #001080">stream</span><span style="color: #000000">: </span><span style="color: #001080">MediaStream</span><span style="color: #000000">): </span><span style="color: #001080">boolean</span><span style="color: #000000">;</span>
+<span style="color: #795E26">bindAudioDevice</span><span style="color: #000000">(</span><span style="color: #001080">device</span><span style="color: #000000">: </span><span style="color: #001080">MediaDeviceInfo</span><span style="color: #000000"> | </span><span style="color: #0000FF">null</span><span style="color: #000000">): </span><span style="color: #001080">boolean</span><span style="color: #000000">;</span>
 
-<span class="hljs-comment">// New Syntax</span>
-bindAudioElement(element: HTMLAudioElement): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
-bindAudioStream(stream: MediaStream): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
-bindAudioDevice(device: MediaDeviceInfo | <span class="hljs-literal">null</span>): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
+<span style="color: #008000">// New Syntax</span>
+<span style="color: #795E26">bindAudioElement</span><span style="color: #000000">(</span><span style="color: #001080">element</span><span style="color: #000000">: </span><span style="color: #001080">HTMLAudioElement</span><span style="color: #000000">): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #0000FF">void</span><span style="color: #000000">&gt;;</span>
+<span style="color: #795E26">bindAudioStream</span><span style="color: #000000">(</span><span style="color: #001080">stream</span><span style="color: #000000">: </span><span style="color: #001080">MediaStream</span><span style="color: #000000">): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #0000FF">void</span><span style="color: #000000">&gt;;</span>
+<span style="color: #795E26">bindAudioDevice</span><span style="color: #000000">(</span><span style="color: #001080">device</span><span style="color: #000000">: </span><span style="color: #001080">MediaDeviceInfo</span><span style="color: #000000"> | </span><span style="color: #0000FF">null</span><span style="color: #000000">): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #0000FF">void</span><span style="color: #000000">&gt;;</span>
 </code></pre>
 					<p>Additionally, <code>AudioMixController</code>&#39;s constructor now takes an additional optional <code>logger</code> parameter.
 					If the <code>logger</code> is passed, it will log the errors for any of the operations in <code>AudioMixController</code>.</p>
-					<pre><code class="language-typescript"><span class="hljs-function"><span class="hljs-title">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> logger?: Logger</span>)</span> {}
+					<pre><code class="language-typescript"><span style="color: #795E26">constructor</span><span style="color: #000000">(</span><span style="color: #001080">private</span><span style="color: #000000"> </span><span style="color: #001080">logger</span><span style="color: #000000">?: </span><span style="color: #001080">Logger</span><span style="color: #000000">) {}</span>
 </code></pre>
 					<p>If your code looked like this</p>
-					<pre><code class="language-typescript">audioMixController.bindAudioDevice({ <span class="hljs-attr">deviceId</span>: sinkId });
-audioMixController.bindAudioElement(<span class="hljs-keyword">new</span> Audio());
-audioMixController.bindAudioStream(destinationStream.stream);
+					<pre><code class="language-typescript"><span style="color: #001080">audioMixController</span><span style="color: #000000">.</span><span style="color: #795E26">bindAudioDevice</span><span style="color: #000000">({ </span><span style="color: #001080">deviceId:</span><span style="color: #000000"> </span><span style="color: #001080">sinkId</span><span style="color: #000000"> });</span>
+<span style="color: #001080">audioMixController</span><span style="color: #000000">.</span><span style="color: #795E26">bindAudioElement</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Audio</span><span style="color: #000000">());</span>
+<span style="color: #001080">audioMixController</span><span style="color: #000000">.</span><span style="color: #795E26">bindAudioStream</span><span style="color: #000000">(</span><span style="color: #001080">destinationStream</span><span style="color: #000000">.</span><span style="color: #001080">stream</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>change it to</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">try</span> {
-  <span class="hljs-keyword">await</span> audioMixController.bindAudioDevice({ <span class="hljs-attr">deviceId</span>: <span class="hljs-built_in">this</span>.sinkId });
-} <span class="hljs-keyword">catch</span> (e) {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Failed to bind audio device&#x27;</span>, e);
-}
-<span class="hljs-keyword">try</span> {
-  <span class="hljs-keyword">await</span> audioMixController.bindAudioElement(<span class="hljs-keyword">new</span> Audio());
-} <span class="hljs-keyword">catch</span> (e) {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Failed to bind audio element&#x27;</span>, e);
-}
-<span class="hljs-keyword">await</span> audioMixController.bindAudioStream(destinationStream.stream);
+					<pre><code class="language-typescript"><span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">audioMixController</span><span style="color: #000000">.</span><span style="color: #795E26">bindAudioDevice</span><span style="color: #000000">({ </span><span style="color: #001080">deviceId:</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">sinkId</span><span style="color: #000000"> });</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">e</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Failed to bind audio device&#039;</span><span style="color: #000000">, </span><span style="color: #001080">e</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">audioMixController</span><span style="color: #000000">.</span><span style="color: #795E26">bindAudioElement</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Audio</span><span style="color: #000000">());</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">e</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Failed to bind audio element&#039;</span><span style="color: #000000">, </span><span style="color: #001080">e</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">audioMixController</span><span style="color: #000000">.</span><span style="color: #795E26">bindAudioStream</span><span style="color: #000000">(</span><span style="color: #001080">destinationStream</span><span style="color: #000000">.</span><span style="color: #001080">stream</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>Additionally, if the browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a> API, the <code>bindAudioDevice()</code> will throw an
 						error with a message &#39;Cannot select audio output device. This browser does not support setSinkId.&#39;
@@ -197,30 +196,30 @@ audioMixController.bindAudioStream(destinationStream.stream);
 					<p>Because <code>chooseAudioInputDevice</code> and <code>chooseVideoInputDevice</code> now have new type signatures, if
 					you implement the related interfaces (<code>AudioVideoFacade</code> or <code>DeviceController</code>) yourself, you will need to adjust your code.</p>
 					<p>If you have an implementation like:</p>
-					<pre><code class="language-typescript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyDeviceController</span> <span class="hljs-title">implements</span> <span class="hljs-title">DeviceController</span> </span>{
-  <span class="hljs-keyword">async</span> chooseAudioInputDevice(device: Device): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; {
-    <span class="hljs-comment">// device must be a string, stream, constraints, or null.</span>
-    <span class="hljs-comment">// …</span>
-    <span class="hljs-keyword">return</span> permission;
-  }
-}
+					<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyDeviceController</span><span style="color: #000000"> </span><span style="color: #0000FF">implements</span><span style="color: #000000"> </span><span style="color: #267F99">DeviceController</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">chooseAudioInputDevice</span><span style="color: #000000">(</span><span style="color: #001080">device</span><span style="color: #000000">: </span><span style="color: #267F99">Device</span><span style="color: #000000">): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #267F99">void</span><span style="color: #000000">&gt; {</span>
+<span style="color: #000000">    </span><span style="color: #008000">// device must be a string, stream, constraints, or null.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// …</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">permission</span><span style="color: #000000">;</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<p>you must change your code to be:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {
-  <span class="hljs-comment">// …</span>
-  isAudioTransformDevice,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+					<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// …</span>
+<span style="color: #000000">  </span><span style="color: #001080">isAudioTransformDevice</span><span style="color: #000000">,</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyDeviceController</span> <span class="hljs-title">implements</span> <span class="hljs-title">DeviceController</span> </span>{
-  <span class="hljs-keyword">async</span> chooseAudioInputDevice(device: AudioInputDevice): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; {
-    <span class="hljs-keyword">if</span> (isAudioTransformDevice(device)) {
-      <span class="hljs-comment">// Handle transform devices, should you need to.</span>
-      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&#x27;My app does not use transform devices.&#x27;</span>);
-    }
-    <span class="hljs-comment">// Previous code can remain unchanged.</span>
-    <span class="hljs-comment">// …</span>
-  }
-}
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyDeviceController</span><span style="color: #000000"> </span><span style="color: #0000FF">implements</span><span style="color: #000000"> </span><span style="color: #267F99">DeviceController</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">chooseAudioInputDevice</span><span style="color: #000000">(</span><span style="color: #001080">device</span><span style="color: #000000">: </span><span style="color: #267F99">AudioInputDevice</span><span style="color: #000000">): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #267F99">void</span><span style="color: #000000">&gt; {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #795E26">isAudioTransformDevice</span><span style="color: #000000">(</span><span style="color: #001080">device</span><span style="color: #000000">)) {</span>
+<span style="color: #000000">      </span><span style="color: #008000">// Handle transform devices, should you need to.</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">throw</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;My app does not use transform devices.&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Previous code can remain unchanged.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// …</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<p>A similar adjustment is needed for <code>VideoInputDevice</code>. v2.0 does not include any
 					<code>VideoTransformDevice</code>s.</p>
@@ -243,13 +242,13 @@ audioMixController.bindAudioStream(destinationStream.stream);
 						</li>
 					</ul>
 					<p>Here is an example of handling <code>PermissionDeniedError</code>:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">try</span> {
-  <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.audiovideo.chooseAudioInputDevice(device);
-} <span class="hljs-keyword">catch</span> (e) {
-  <span class="hljs-keyword">if</span> (e <span class="hljs-keyword">instanceof</span> PermissionDeniedError) {
-    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Permission denied&#x27;</span>, e);
-  }
-}
+					<pre><code class="language-typescript"><span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">audiovideo</span><span style="color: #000000">.</span><span style="color: #795E26">chooseAudioInputDevice</span><span style="color: #000000">(</span><span style="color: #001080">device</span><span style="color: #000000">);</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">e</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #0000FF">instanceof</span><span style="color: #000000"> </span><span style="color: #267F99">PermissionDeniedError</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Permission denied&#039;</span><span style="color: #000000">, </span><span style="color: #001080">e</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<hr>
 					<a href="#introducing-supportssetsinkid-in-defaultbrowserbehavior" id="introducing-supportssetsinkid-in-defaultbrowserbehavior" style="color: inherit; text-decoration: none;">
@@ -257,13 +256,13 @@ audioMixController.bindAudioStream(destinationStream.stream);
 					</a>
 					<p>This new helper API returns a boolean <code>true</code> if the browser supports <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a>, otherwise returning <code>false</code>.</p>
 					<p>Here is how the code would look like:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">if</span> (!<span class="hljs-built_in">this</span>.browserBehavior.supportsSetSinkId()) {
-  <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(
-    <span class="hljs-string">&#x27;Cannot select audio output device. This browser does not support setSinkId.&#x27;</span>
-  );
-} <span class="hljs-keyword">else</span> {
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;The browser supports setSinkId() API&#x27;</span>);
-}
+					<pre><code class="language-typescript"><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">browserBehavior</span><span style="color: #000000">.</span><span style="color: #795E26">supportsSetSinkId</span><span style="color: #000000">()) {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">throw</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&#039;Cannot select audio output device. This browser does not support setSinkId.&#039;</span>
+<span style="color: #000000">  );</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;The browser supports setSinkId() API&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<hr>
 					<a href="#deprecating-legacy-screen-share" id="deprecating-legacy-screen-share" style="color: inherit; text-decoration: none;">
@@ -278,8 +277,59 @@ audioMixController.bindAudioStream(destinationStream.stream);
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>
