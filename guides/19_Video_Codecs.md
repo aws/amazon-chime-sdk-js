@@ -53,7 +53,7 @@ Not all browsers support all codecs. In particular H.264 support is often depend
 If your application encounters significant end-user issues with not being able to receive H.264 (which will currently be replaced by a static VP8 video stream with an error message), you may want to consider calling [`setVideoCodecSendPreferences`](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideocontrollerfacade.html#setvideocodecsendpreferences) with either VP8 only or VP8 as a fallback.
 
 #### Avoiding Browser/Device Specific Bugs
-Occasionally, Browser or OS updates (particularily on mobile) may bring along bugs and issues related to specific codecs (particularily when hardware is in use). In this case, you may not want to wait on JS SDK versions to manually change the default send codec. For example, if you detect that iOS clients are sending significantly lower bitrates then expected, it may be due to a recent release impacting hardware encoders. You can for clients to fallback to VP8, e.g.:
+Occasionally, Browser or OS updates (particularily on mobile) may bring along bugs and issues related to specific codecs (particularily when hardware is in use). In this case, you may not want to wait on JS SDK versions to manually change the default send codec. For example, if you detect that iOS clients are sending significantly lower bitrates then expected, it may be due to a recent release impacting hardware encoders. For example, builders can temporarily use only VP8 for iOS Safari clients:
 
 ```
 if (new DefaultBrowserBehavior().isIOSSafari()) {

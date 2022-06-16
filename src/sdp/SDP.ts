@@ -753,6 +753,7 @@ export default class SDP {
         return priority1 - priority2;
       }
     );
+    // Start from 3 to skip `m=video 9 UDP/+++`
     mline.splice(3, 0, ...orderedPreferedPayloadTypes.values());
     lines[0] = mline.join(' ');
 
@@ -761,7 +762,13 @@ export default class SDP {
     return lines.join(SDP.CRLF) + SDP.CRLF;
   }
 
-  // Returns undefined if there is no video send section or no codecs in the send section
+  /**
+   * Returns the `VideoCodecCapability` which corresponds to the first payload type in the
+   * m-line (e.g. `m=video 9 UDP/+++ <highest priority payload type> <payload type> <payload type> ...`),
+   * parsing the rest of the SDP for relevant information to construct it.
+   *
+   * Returns undefined if there is no video send section or no codecs in the send section
+   */
   highestPriorityVideoSendCodec(): VideoCodecCapability | undefined {
     const srcSDP: string = this.sdp;
     const sections = SDP.splitSections(srcSDP);
@@ -779,14 +786,12 @@ export default class SDP {
     if (mlineTokens.length < 4) {
       return undefined;
     }
+    // Start from 3 to skip `m=video 9 UDP/+++`
     const highestPriorityPayloadType = mlineTokens[3];
     let highestPriorityCodecName: string = undefined;
     let highestPriorityClockRate: string = undefined;
     let highestPriorityFmtpLine: string = undefined;
     for (const line of lines) {
-      if (highestPriorityCodecName !== undefined) {
-        continue; // Already found it
-      }
       // E.g. 'a=rtpmap:125 H264/90000'
       const payloadMatch = /^a=rtpmap:([0-9]+)\s/.exec(line); // Get the payload type
       if (
@@ -796,7 +801,7 @@ export default class SDP {
       ) {
         continue;
       }
-      const lineTokens = line.split(' '); // Previous check gurantees this to be valid
+      const lineTokens = line.split(' '); // Previous check guarantees this to be valid
       const nameAndClockRate = lineTokens[1].split('/');
       if (nameAndClockRate === undefined || nameAndClockRate.length < 2) {
         continue;
@@ -814,6 +819,7 @@ export default class SDP {
           continue;
         }
       }
+      break;
     }
     if (highestPriorityCodecName !== undefined) {
       return new VideoCodecCapability(highestPriorityCodecName, {

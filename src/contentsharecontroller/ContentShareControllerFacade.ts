@@ -3,8 +3,8 @@
 
 import AudioProfile from '../audioprofile/AudioProfile';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
-import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 import VideoCodecCapability from '../sdp/VideoCodecCapability';
+import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 
 export default interface ContentShareControllerFacade {
   /**

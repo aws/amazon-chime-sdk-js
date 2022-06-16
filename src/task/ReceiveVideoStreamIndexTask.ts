@@ -114,10 +114,7 @@ export default class ReceiveVideoStreamIndexTask
     this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy);
     this.updateVideoAvailability(indexFrame);
     this.handleIndexVideosPausedAtSource();
-    if (
-      indexFrame.supportedReceiveCodecIntersection !== undefined &&
-      indexFrame.supportedReceiveCodecIntersection.length > 0
-    ) {
+    if (indexFrame.supportedReceiveCodecIntersection.length > 0) {
       this.handleSupportedVideoReceiveCodecIntersection(indexFrame);
     }
     // `forEachObserver`is asynchronous anyways so it doesn't matter (for better or worse) whether we
@@ -229,21 +226,17 @@ export default class ReceiveVideoStreamIndexTask
           break;
         }
       }
-      // We don't need to renegotiate if we aren't sending a codec that is no longer supported in the call.
-      if (
-        this.context.currentVideoSendCodec &&
-        capability.equals(this.context.currentVideoSendCodec)
-      ) {
+      // We need to renegotiate if we are currently sending a codec that is no longer supported in the call.
+      if (capability.equals(this.context.currentVideoSendCodec)) {
         willNeedUpdate = true;
       }
     }
 
-    if (newMeetingSupportedVideoSendCodecPreferences.length > 0) {
-      this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
-    } else {
-      // Intersection results in no codecs, this will cause client to fall back to `this.context.videoSendCodecPreferences`
-      this.context.meetingSupportedVideoSendCodecPreferences = undefined;
-    }
+    // If the intersection results in no codecs, `undefined` will cause client to fall back to `this.context.videoSendCodecPreferences`
+    this.context.meetingSupportedVideoSendCodecPreferences =
+      newMeetingSupportedVideoSendCodecPreferences.length > 0
+        ? newMeetingSupportedVideoSendCodecPreferences
+        : undefined;
 
     if (willNeedUpdate) {
       this.context.audioVideoController.update({ needsRenegotiation: true });

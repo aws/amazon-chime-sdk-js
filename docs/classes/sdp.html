@@ -175,12 +175,6 @@
 					<h3>sdp</h3>
 					<div class="tsd-signature tsd-kind-icon">sdp<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-<<<<<<< HEAD
-=======
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L20">src/sdp/SDP.ts:20</a></li>
-						</ul>
->>>>>>> 459dbb49 (Add support for configuring video send codec)
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
@@ -382,16 +376,24 @@
 					<a name="highestpriorityvideosendcodec" class="tsd-anchor"></a>
 					<h3>highest<wbr>Priority<wbr>Video<wbr>Send<wbr>Codec</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">highest<wbr>Priority<wbr>Video<wbr>Send<wbr>Codec<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type">VideoCodecCapability</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+						<li class="tsd-signature tsd-kind-icon">highest<wbr>Priority<wbr>Video<wbr>Send<wbr>Codec<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L765">src/sdp/SDP.ts:765</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L772">src/sdp/SDP.ts:772</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type">VideoCodecCapability</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the <code>VideoCodecCapability</code> which corresponds to the first payload type in the
+										m-line (e.g. <code>m=video 9 UDP/+++ &lt;highest priority payload type&gt; &lt;payload type&gt; &lt;payload type&gt; ...</code>),
+									parsing the rest of the SDP for relevant information to construct it.</p>
+								</div>
+								<p>Returns undefined if there is no video send section or no codecs in the send section</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -618,7 +620,7 @@
 					<a name="withvideosendcodecpreferences" class="tsd-anchor"></a>
 					<h3>with<wbr>Video<wbr>Send<wbr>Codec<wbr>Preferences</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">with<wbr>Video<wbr>Send<wbr>Codec<wbr>Preferences<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
+						<li class="tsd-signature tsd-kind-icon">with<wbr>Video<wbr>Send<wbr>Codec<wbr>Preferences<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type" data-tsd-kind="Class">SDP</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -638,10 +640,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>preferences: <a href="videocodeccapability.html" class="tsd-signature-type">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>preferences: <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="sdp.html" class="tsd-signature-type">SDP</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="sdp.html" class="tsd-signature-type" data-tsd-kind="Class">SDP</a></h4>
 						</li>
 					</ul>
 				</section>
