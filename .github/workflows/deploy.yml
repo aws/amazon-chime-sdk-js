@@ -30,7 +30,7 @@ jobs:
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo 
+        run: script/deploy-canary-demo
   deploy_chime_beta_demo:
     name: Beta - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo 
+        run: script/deploy-canary-demo
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev
@@ -86,7 +86,7 @@ jobs:
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo 
+        run: script/deploy-canary-demo
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
         run: script/deploy-canary-demo -prev
@@ -96,12 +96,12 @@ jobs:
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_DEFAULT_OUTPUT: text
-      NAME: ChimeSDKMeetings_ChimeSDKMediaPipelines_beta
+      NAME: ChimeSDKMeetings_ChimeSDKMediaPipelinesBeta
       GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
       GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
       GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1}}
       GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1}}
-      GAMMA_CHIME_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_SERVICE_PRINCIPAL}}
+      GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL}}
       GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1}}
       GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_EU_CENTRAL_1}}
       GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_AP_SOUTHEAST_1}}
@@ -130,12 +130,12 @@ jobs:
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_DEFAULT_OUTPUT: text
-      NAME: Chime_ChimeSDKMediaPipelines_beta
+      NAME: Chime_ChimeSDKMediaPipelinesBeta
       GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
       GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
       GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1}}
       GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1}}
-      GAMMA_CHIME_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_SERVICE_PRINCIPAL}}
+      GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL}}
       GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1}}
       GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_EU_CENTRAL_1}}
       GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_AP_SOUTHEAST_1}}

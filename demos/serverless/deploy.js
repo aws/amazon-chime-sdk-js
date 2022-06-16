@@ -14,7 +14,7 @@ let enableTerminationProtection = false;
 let disablePrintingLogs = false;
 let chimeEndpoint = 'https://service.chime.aws.amazon.com';
 let chimeSDKMeetingsEndpoint = 'https://service.chime.aws.amazon.com';
-let chimeServicePrincipal = 'chime.amazonaws.com'
+let chimeMediaPipelinesServicePrincipal = 'mediapipelines.chime.amazonaws.com'
 let captureOutputPrefix = ''
 let mediaCaptureRegions = [
     "ap-northeast-1",
@@ -67,7 +67,7 @@ function usage() {
   console.log(`  -a, --application                    Browser application to deploy, default '${app}'`);
   console.log(`  -e, --event-bridge                   Enable EventBridge integration, default is no integration`);
   console.log(`  -c, --chime-endpoint                 AWS SDK Chime endpoint, default is '${chimeEndpoint}'`);
-  console.log(`  -p, --service-principal              Service principal for meeting related resources, default is '${chimeServicePrincipal}'`)
+  console.log(`  -p, --service-principal              Service principal for media pipelines related resources, default is '${chimeMediaPipelinesServicePrincipal}'`)
   console.log(`  -t, --enable-termination-protection  Enable termination protection for the Cloudformation stack, default is false`);
   console.log(`  -l, --disable-printing-logs          Disable printing logs`);
   console.log(`  -o, --capture-output-prefix          Prefix for S3 bucket name`);
@@ -132,7 +132,7 @@ function parseArgs() {
         chimeEndpoint = getArgOrExit(++i, args)
         break;
       case '-p': case '--service-principal':
-        chimeServicePrincipal = getArgOrExit(++i, args)
+        chimeMediaPipelinesServicePrincipal = getArgOrExit(++i, args)
         break;
       case '-t': case '--enable-termination-protection':
         enableTerminationProtection = true;
@@ -247,7 +247,7 @@ function createCaptureS3Buckets(bucketPrefix, regions) {
         "Resource": `arn:aws:s3:::${bucketName}/*`,
         "Principal": {
           "Service": [
-            chimeServicePrincipal
+            chimeMediaPipelinesServicePrincipal
           ]
         }
       }]
@@ -299,7 +299,7 @@ if (!fs.existsSync('build')) {
   fs.mkdirSync('build');
 }
 
-console.log(`Using region ${region}, useChimeSDKMeetings ${useChimeSDKMeetings}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}, disable-printing-logs ${disablePrintingLogs}`);
+console.log(`Using region ${region}, useChimeSDKMeetings ${useChimeSDKMeetings}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}, disable-printing-logs ${disablePrintingLogs} service-principal ${chimeMediaPipelinesServicePrincipal}`);
 ensureBucket();
 
 copyAssets();
@@ -309,7 +309,7 @@ spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,
                     '--region',  `${region}`]);
 console.log('Deploying serverless application');
-let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal} ChimeSDKMeetingsEndpoint=${chimeSDKMeetingsEndpoint} ChimeSDKMediaPipelinesEndpoint=${chimeSDKMediaPipelinesEndpoint} UseChimeSDKMediaPipelines=${useChimeSDKMediaPipelines} MediaPipelinesControlRegion=${mediaPipelinesControlRegion}`
+let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeMediaPipelinesServicePrincipal} ChimeSDKMeetingsEndpoint=${chimeSDKMeetingsEndpoint} ChimeSDKMediaPipelinesEndpoint=${chimeSDKMediaPipelinesEndpoint} UseChimeSDKMediaPipelines=${useChimeSDKMediaPipelines} MediaPipelinesControlRegion=${mediaPipelinesControlRegion}`
 if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
     createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);

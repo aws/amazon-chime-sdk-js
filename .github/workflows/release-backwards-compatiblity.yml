@@ -74,7 +74,7 @@ jobs:
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Clean Install
-        run: npm ci -f
+        run: npm ci
       - name: Run Audio Integration Test
         run: npm run test:integration-audio
       - name: Run Video Integ Test
