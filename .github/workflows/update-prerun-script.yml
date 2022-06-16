@@ -2,9 +2,7 @@ name: Update pre build script on Saucelabs
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
-#  schedule:
-#    - cron: '0 0 1 */2 *'
+    - cron: '0 0 1 */2 *'
 
 env:
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
