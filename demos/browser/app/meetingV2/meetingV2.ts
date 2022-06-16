@@ -707,6 +707,7 @@ export class DemoMeetingApp
           }
           /* @ts-ignore */
           if ((e as SubmitEvent).submitter.id == 'quick-join') {
+            await this.openAudioInputFromSelectionAndPreview();
             await this.openAudioOutputFromSelection();
             await this.join();
             this.displayButtonStates();
