@@ -23,8 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed an issue for mute local when there is no audio input.
-- Fixed trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
+- Fix issue where Amazon Voice Focus stops working after changing device while muted.
+- Fix an issue for mute local when there is no audio input.
+- Fix trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
 - Fix protobuf generation script for upgrade.
 - Optional chain signaling client observer removal to fix [issue](https://github.com/aws/amazon-chime-sdk-js/issues/2265) if  `audioVideo.stop()` is called before `audioVideo.start()`.
 
