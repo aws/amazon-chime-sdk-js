@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add a workaround for https://bugs.webkit.org/show_bug.cgi?id=241152 to play a paused video element in Safari.
+- Added support for iOS edge.
+
 ### Removed
+
+- Removed deprecated WebRTC constraints `googCpuOveruseDetection` and `googCombinedAudioVideoBwe` which were [being removed or were already no-ops](https://groups.google.com/g/discuss-webrtc/c/85e-f_siCws)
 
 ### Changed
 
@@ -18,7 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed an issue for mute local when there is no audio input.
+- Fix issue where Amazon Voice Focus stops working after changing device while muted.
+- Fix an issue for mute local when there is no audio input.
+- Fix trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
+- Fix protobuf generation script for upgrade.
+- Optional chain signaling client observer removal to fix [issue](https://github.com/aws/amazon-chime-sdk-js/issues/2265) if  `audioVideo.stop()` is called before `audioVideo.start()`.
 
 ## [3.4.0] - 2022-05-24
 
@@ -40,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.3.0] - 2022-05-12
 
 ### Added
+- Add support for hosting meetings in US GovCloud regions.
+- Add support for starting live transcription in US GovCloud regions.
 
 ### Removed
 

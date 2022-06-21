@@ -13,6 +13,8 @@ function findAllElements() {
     voiceConnectorIdInput: By.id('voiceConnectorId'),
     attendeeNameInput: By.id('inputName'),
     authenticateButton: By.id('authenticate'),
+    additionalOptionsButton: By.id('additional-options-button'),
+    additionalOptionsSaveButton: By.id('additional-options-save-button'),
     localVideoButton: By.id('button-camera'),
     mediaCaptureButton: By.id('button-record-cloud'),
     addVoiceFocusInput: By.id('add-voice-focus'),        // Checkbox.
@@ -122,6 +124,18 @@ class AppPage {
   async authenticate() {
     let authenticateButton = await this.driver.findElement(elements.authenticateButton);
     await clickElement(this.driver, authenticateButton);
+  }
+
+  async openAdditionalOptions() {
+    let additionalOptionsButton = await this.driver.findElement(elements.additionalOptionsButton);
+    await clickElement(this.driver, additionalOptionsButton);
+    await TestUtils.waitAround(200);
+  }
+
+  async closeAdditionalOptions() {
+    let additionalOptionsSaveButton = await this.driver.findElement(elements.additionalOptionsSaveButton);
+    await clickElement(this.driver, additionalOptionsSaveButton);
+    await TestUtils.waitAround(200);
   }
 
   async chooseUseWebAudio() {

@@ -683,11 +683,17 @@ export default class DefaultDeviceController
   }
 
   private toggleLocalAudioInputStream(enabled: boolean): void {
-    if (!this.activeDevices['audio']) {
+    let audioDevice: MediaStreamAudioDestinationNode | DeviceSelection = this.activeDevices[
+      'audio'
+    ];
+    if (this.useWebAudio) {
+      audioDevice = this.getMediaStreamDestinationNode();
+    }
+    if (!audioDevice) {
       return;
     }
     let isChanged = false;
-    for (const track of this.activeDevices['audio'].stream.getTracks()) {
+    for (const track of audioDevice.stream.getTracks()) {
       if (track.enabled === enabled) {
         continue;
       }

@@ -292,7 +292,7 @@ export default class DefaultAudioVideoController
   }
 
   private uninstallPreStartObserver(): void {
-    this.meetingSessionContext.signalingClient.removeObserver(this.preStartObserver);
+    this.meetingSessionContext.signalingClient?.removeObserver(this.preStartObserver);
     this.preStartObserver = undefined;
   }
 

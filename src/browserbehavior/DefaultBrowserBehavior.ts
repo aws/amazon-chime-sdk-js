@@ -22,6 +22,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     fxios: 23,
     'ios-webview': 605,
     'chromium-webview': 92,
+    'edge-ios': 100,
   };
 
   private browserName: { [id: string]: string } = {
@@ -37,6 +38,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     fxios: 'Firefox iOS',
     'ios-webview': 'WKWebView iOS',
     'chromium-webview': 'Chrome WebView',
+    'edge-ios': 'Edge iOS',
   };
 
   private chromeLike: string[] = [
@@ -47,7 +49,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     'samsung',
   ];
 
-  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
+  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview', 'edge-ios'];
 
   version(): string {
     return this.browser.version;
@@ -212,6 +214,12 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     );
   }
 
+  // In Safari, a hidden video element can show a black screen.
+  // See https://bugs.webkit.org/show_bug.cgi?id=241152 for more information.
+  requiresVideoPlayWorkaround(): boolean {
+    return this.isSafari();
+  }
+
   // These helpers should be kept private to encourage
   // feature detection instead of browser detection.
   private isIOSSafari(): boolean {
@@ -222,6 +230,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
         /( Mac )/i.test(navigator.userAgent) &&
         navigator.maxTouchPoints > 1) //Ipad
     );
+  }
+
+  private isSafari(): boolean {
+    return this.browser.name === 'safari' || this.isIOSSafari();
   }
 
   private isFirefox(): boolean {
