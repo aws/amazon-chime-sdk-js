@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix issue where Amazon Voice Focus stops working after changing device while muted.
+- Fix issue where Amazon Voice Focus could stop working after changing the mute state of a null device or changing the device shortly after.
 - Fix an issue for mute local when there is no audio input.
 - Fix trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
 - Fix protobuf generation script for upgrade.
