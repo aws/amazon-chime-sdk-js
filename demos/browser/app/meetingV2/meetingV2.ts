@@ -352,7 +352,9 @@ export class DemoMeetingApp
   // and fix some state (e.g., video buttons).
   // Holding Shift while hitting the Leave button is handled by setting
   // this to `halt`, which allows us to stop and measure memory leaks.
-  behaviorAfterLeave: 'spa' | 'reload' | 'halt' = 'reload';
+  // The `nothing` option can be used to stop cleanup from happening allowing
+  // `audioVideo` to be reused without stopping the meeting.
+  behaviorAfterLeave: 'spa' | 'reload' | 'halt' | 'nothing' = 'reload';
 
   videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
 
@@ -3430,6 +3432,9 @@ export class DemoMeetingApp
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
+    if(this.behaviorAfterLeave === 'nothing') {
+      return;
+    }
     this.log(`resetting stats`);
     this.resetStats();
 

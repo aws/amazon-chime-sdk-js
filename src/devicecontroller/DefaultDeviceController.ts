@@ -75,6 +75,8 @@ export default class DefaultDeviceController
   private audioInputTaskQueue: PromiseQueue = new PromiseQueue();
   private videoInputTaskQueue: PromiseQueue = new PromiseQueue();
 
+  private muted: boolean = false;
+
   // This handles the dispatch of `mute` and `unmute` events from audio tracks.
   // There's a bit of a semantic mismatch here if input streams allow individual component tracks to be muted,
   // but addressing that gap is not feasible in our stream-oriented world.
@@ -243,6 +245,7 @@ export default class DefaultDeviceController
       if (this.useWebAudio) {
         this.attachAudioInputStreamToAudioContext(this.activeDevices['audio'].stream);
         this.pushAudioMeetingStateForPermissions(this.getMediaStreamDestinationNode().stream);
+        await this.transform?.device.mute(this.muted);
         return this.getMediaStreamDestinationNode().stream;
       } else {
         this.publishAudioInputDidChangeEvent(this.activeDevices['audio'].stream);
@@ -692,6 +695,7 @@ export default class DefaultDeviceController
     if (!audioDevice) {
       return;
     }
+    this.muted = !enabled;
     let isChanged = false;
     for (const track of audioDevice.stream.getTracks()) {
       if (track.enabled === enabled) {
@@ -701,7 +705,7 @@ export default class DefaultDeviceController
       isChanged = true;
     }
     if (isChanged) {
-      this.transform?.device.mute(!enabled);
+      this.transform?.device.mute(this.muted);
     }
   }
 
