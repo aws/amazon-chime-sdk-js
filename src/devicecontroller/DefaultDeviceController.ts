@@ -230,7 +230,7 @@ export default class DefaultDeviceController
 
     try {
       if (isAudioTransformDevice(device)) {
-        // N.B., do not JSON.stringify here — for some kinds of devices this
+        // N.B., do not JSON.stringify here — for some kinds of devices this
         // will cause a cyclic object reference error.
         this.logger.info(`Choosing transform input device ${device}`);
 
@@ -695,16 +695,14 @@ export default class DefaultDeviceController
     if (!audioDevice) {
       return;
     }
-    this.muted = !enabled;
-    let isChanged = false;
     for (const track of audioDevice.stream.getTracks()) {
       if (track.enabled === enabled) {
         continue;
       }
       track.enabled = enabled;
-      isChanged = true;
     }
-    if (isChanged) {
+    if (this.muted !== !enabled) {
+      this.muted = !enabled;
       this.transform?.device.mute(this.muted);
     }
   }
