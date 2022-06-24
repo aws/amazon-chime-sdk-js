@@ -22,7 +22,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     fxios: 23,
     'ios-webview': 605,
     'chromium-webview': 92,
-    'edge-ios': 100,
   };
 
   private browserName: { [id: string]: string } = {
@@ -38,7 +37,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     fxios: 'Firefox iOS',
     'ios-webview': 'WKWebView iOS',
     'chromium-webview': 'Chrome WebView',
-    'edge-ios': 'Edge iOS',
   };
 
   private chromeLike: string[] = [
@@ -49,7 +47,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     'samsung',
   ];
 
-  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview', 'edge-ios'];
+  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
 
   version(): string {
     return this.browser.version;
