@@ -130,8 +130,7 @@ const getSauceLabsConfig = (capabilities) => {
     seleniumVersion: '3.141.59',
     screenResolution: '1280x960',
     tunnelIdentifier: process.env.JOB_ID,
-    ...((capabilities.platform.toUpperCase() !== 'LINUX' &&
-      !((capabilities.name).includes('ContentShare'))) && {
+    ...(capabilities.platform.toUpperCase() !== 'LINUX' && {
         extendedDebugging: true
       }),
       prerun : prerunScript
