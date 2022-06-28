@@ -546,6 +546,72 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
       </button>
     </div>
   </div>
+  <div id="content-simulcast-modal" class="modal" style="display: none">
+    <div id="content-simulcast-modal-content" class="modal-content">
+      <div class="modal-content-header">
+        <span></span>
+        <span class="modal-title text-muted">Content Share Configurations</span>
+        <span id="button-content-share-modal-close" class="close">&times;</span>
+      </div>
+      <form>
+        <div class="form-row">
+          <h5>Screen Capture Configurations</h5>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-4">
+            <input type="number" id="content-capture-frame-rate" class="form-control" placeholder="Frame rate">
+          </div>
+        </div>
+        <div id="content-simulcast-config">
+          <div class="form-row">
+            <h5>Simulcast Encoding Parameters</h5>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="content-enable-simulcast">
+                <label class="form-check-label" for="content-enable-simulcast">Enable Simulcast</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <input type="number" id="content-simulcast-low-max-bitratekbps" class="form-control"
+                     placeholder="Low max bitrate (kbps)">
+            </div>
+            <div class="form-group col-6">
+              <input type="number" id="content-simulcast-high-max-bitratekbps" class="form-control"
+                     placeholder="High max bitrate (kbps)">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <input type="number" id="content-simulcast-low-scale-factor" class="form-control"
+                     placeholder="Low scale factor">
+            </div>
+            <div class="form-group col-6">
+              <input type="number" id="content-simulcast-high-scale-factor" class="form-control"
+                     placeholder="High scale factor">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <input type="number" id="content-simulcast-low-max-framerate" class="form-control"
+                     placeholder="Low max frame rate">
+            </div>
+            <div class="form-group col-6">
+              <input type="number" id="content-simulcast-high-max-framerate" class="form-control"
+                     placeholder="High max frame rate">
+            </div>
+          </div>
+        </div>
+      </form>
+      <button id="button-save-content-share-configs" type="button" class="btn btn-lg btn-primary btn-block"
+              title="Save" data-toggle="button" aria-pressed="false" autocomplete="off">
+        Save
+      </button>
+    </div>
+  </div>
   <div class="p-2 d-none d-sm-block align-items-end" style="position:fixed;right:0;bottom:0;left:0;">
     <div class="row align-items-end">
       <div class="col">
@@ -626,6 +692,7 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
             <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
               aria-labelledby="button-content-share-drop" x-placement="bottom-start"
               style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+              <a id="dropdown-item-content-share-configuration" class="dropdown-item" href="#">Configurations</a>
               <a id="dropdown-item-content-share-screen-capture" class="dropdown-item" href="#">Screen Capture...</a>
               <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item" href="#">Test Video</a>
               <a id="dropdown-item-content-share-test-mono-audio-speech" class="dropdown-item" href="#">Test Mono
