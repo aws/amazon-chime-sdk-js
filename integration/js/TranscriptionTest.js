@@ -65,7 +65,9 @@ class TranscriptionTest extends SdkBaseTest {
     await this.runTranscriptionTest(session, testWindow1, testWindow2, false, testWindow1, testWindow2, testWindow1, attendeeId1, compareFn);
 
     // Transcribe Medical
-    await this.runTranscriptionTest(session, testWindow1, testWindow2, true, testWindow2, testWindow1, testWindow2, attendeeId2, compareFn);
+    if(process.env.REGION !== 'us-gov-east-1' && process.env.REGION !== 'us-gov-west-1') {
+      await this.runTranscriptionTest(session, testWindow1, testWindow2, true, testWindow2, testWindow1, testWindow2, attendeeId2, compareFn);
+    }
 
     await this.waitAllSteps();
   }

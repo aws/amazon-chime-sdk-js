@@ -29,10 +29,7 @@ class StartMeetingTranscriptionStep extends AppTestStep {
     if (!this.useMedical) {
       await this.page.clickTranscribeEngineOption();
     } else {
-      // Skip medical transcription test in govCloud regions.
-      if(process.env.REGION !== 'us-gov-east-1' && process.env.REGION !== 'us-gov-west-1') {
-        await this.page.clickTranscribeMedicalEngineOption();
-      }
+      await this.page.clickTranscribeMedicalEngineOption();
     }
     await this.page.clickStartTranscriptionButton();
 
