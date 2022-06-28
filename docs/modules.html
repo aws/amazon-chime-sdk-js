@@ -172,6 +172,7 @@
 								<li class="tsd-kind-class"><a href="classes/defaultsigv4.html" class="tsd-kind-icon">Default<wbr>Sig<wbr>V4</a></li>
 								<li class="tsd-kind-class"><a href="classes/defaultsignalingclient.html" class="tsd-kind-icon">Default<wbr>Signaling<wbr>Client</a></li>
 								<li class="tsd-kind-class"><a href="classes/defaultsimulcastuplinkpolicy.html" class="tsd-kind-icon">Default<wbr>Simulcast<wbr>Uplink<wbr>Policy</a></li>
+								<li class="tsd-kind-class"><a href="classes/defaultsimulcastuplinkpolicyforcontentshare.html" class="tsd-kind-icon">Default<wbr>Simulcast<wbr>Uplink<wbr>Policy<wbr>For<wbr>Content<wbr>Share</a></li>
 								<li class="tsd-kind-class"><a href="classes/defaulttransceivercontroller.html" class="tsd-kind-icon">Default<wbr>Transceiver<wbr>Controller</a></li>
 								<li class="tsd-kind-class"><a href="classes/defaulttranscriptioncontroller.html" class="tsd-kind-icon">Default<wbr>Transcription<wbr>Controller</a></li>
 								<li class="tsd-kind-class"><a href="classes/defaultuseragentparser.html" class="tsd-kind-icon">Default<wbr>User<wbr>Agent<wbr>Parser</a></li>
@@ -261,6 +262,7 @@
 								<li class="tsd-kind-class"><a href="classes/signalingclientjoin.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Join</a></li>
 								<li class="tsd-kind-class"><a href="classes/signalingclientsubscribe.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Subscribe</a></li>
 								<li class="tsd-kind-class"><a href="classes/signalingclientvideosubscriptionconfiguration.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Video<wbr>Subscription<wbr>Configuration</a></li>
+								<li class="tsd-kind-class"><a href="classes/simulcastcontentsharetransceivercontroller.html" class="tsd-kind-icon">Simulcast<wbr>Content<wbr>Share<wbr>Transceiver<wbr>Controller</a></li>
 								<li class="tsd-kind-class"><a href="classes/simulcasttransceivercontroller.html" class="tsd-kind-icon">Simulcast<wbr>Transceiver<wbr>Controller</a></li>
 								<li class="tsd-kind-class"><a href="classes/simulcastvideostreamindex.html" class="tsd-kind-icon">Simulcast<wbr>Video<wbr>Stream<wbr>Index</a></li>
 								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/singlenodeaudiotransformdevice.html" class="tsd-kind-icon">Single<wbr>Node<wbr>Audio<wbr>Transform<wbr>Device</a></li>
@@ -414,11 +416,13 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias"><a href="modules.html#agcoptions" class="tsd-kind-icon">AGCOptions</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#audioinputdevice" class="tsd-kind-icon">Audio<wbr>Input<wbr>Device</a></li>
+								<li class="tsd-kind-type-alias"><a href="modules.html#contentsharesimulcastencodingparameters" class="tsd-kind-icon">Content<wbr>Share<wbr>Simulcast<wbr>Encoding<wbr>Parameters</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#device" class="tsd-kind-icon">Device</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#eventname" class="tsd-kind-icon">Event<wbr>Name</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#meetinghistorystate" class="tsd-kind-icon">Meeting<wbr>History<wbr>State</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-kind-icon">Realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence<wbr>Callback</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#transcriptevent" class="tsd-kind-icon">Transcript<wbr>Event</a></li>
+								<li class="tsd-kind-type-alias"><a href="modules.html#videoencodingparameters" class="tsd-kind-icon">Video<wbr>Encoding<wbr>Parameters</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#videoinputdevice" class="tsd-kind-icon">Video<wbr>Input<wbr>Device</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#voicefocusconfig" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Config</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#voicefocusmodelcomplexity" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Model<wbr>Complexity</a></li>
@@ -464,6 +468,27 @@
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/AudioInputDevice.ts#L7">src/devicecontroller/AudioInputDevice.ts:7</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="contentsharesimulcastencodingparameters" class="tsd-anchor"></a>
+					<h3>Content<wbr>Share<wbr>Simulcast<wbr>Encoding<wbr>Parameters</h3>
+					<div class="tsd-signature tsd-kind-icon">Content<wbr>Share<wbr>Simulcast<wbr>Encoding<wbr>Parameters<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>high<span class="tsd-signature-symbol">?: </span><a href="modules.html#videoencodingparameters" class="tsd-signature-type" data-tsd-kind="Type alias">VideoEncodingParameters</a><span class="tsd-signature-symbol">; </span>low<span class="tsd-signature-symbol">?: </span><a href="modules.html#videoencodingparameters" class="tsd-signature-type" data-tsd-kind="Type alias">VideoEncodingParameters</a><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters.ts#L6">src/videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters.ts:6</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> high<span class="tsd-signature-symbol">?: </span><a href="modules.html#videoencodingparameters" class="tsd-signature-type" data-tsd-kind="Type alias">VideoEncodingParameters</a></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> low<span class="tsd-signature-symbol">?: </span><a href="modules.html#videoencodingparameters" class="tsd-signature-type" data-tsd-kind="Type alias">VideoEncodingParameters</a></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="device" class="tsd-anchor"></a>
@@ -591,6 +616,30 @@
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/TranscriptEvent.ts#L28">src/transcript/TranscriptEvent.ts:28</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="videoencodingparameters" class="tsd-anchor"></a>
+					<h3>Video<wbr>Encoding<wbr>Parameters</h3>
+					<div class="tsd-signature tsd-kind-icon">Video<wbr>Encoding<wbr>Parameters<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>maxBitrateKbps<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>maxFramerate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>scaleResolutionDownBy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videouplinkbandwidthpolicy/VideoEncodingParameters.ts#L4">src/videouplinkbandwidthpolicy/VideoEncodingParameters.ts:4</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Bitrate<wbr>Kbps<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Framerate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> scale<wbr>Resolution<wbr>Down<wbr>By<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="videoinputdevice" class="tsd-anchor"></a>
@@ -1117,6 +1166,9 @@
 						<a href="classes/defaultsimulcastuplinkpolicy.html" class="tsd-kind-icon">Default<wbr>Simulcast<wbr>Uplink<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/defaultsimulcastuplinkpolicyforcontentshare.html" class="tsd-kind-icon">Default<wbr>Simulcast<wbr>Uplink<wbr>Policy<wbr>For<wbr>Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/defaulttransceivercontroller.html" class="tsd-kind-icon">Default<wbr>Transceiver<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1382,6 +1434,9 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/signalingclientvideosubscriptionconfiguration.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Video<wbr>Subscription<wbr>Configuration</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/simulcastcontentsharetransceivercontroller.html" class="tsd-kind-icon">Simulcast<wbr>Content<wbr>Share<wbr>Transceiver<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/simulcasttransceivercontroller.html" class="tsd-kind-icon">Simulcast<wbr>Transceiver<wbr>Controller</a>
@@ -1813,6 +1868,9 @@
 						<a href="modules.html#audioinputdevice" class="tsd-kind-icon">Audio<wbr>Input<wbr>Device</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#contentsharesimulcastencodingparameters" class="tsd-kind-icon">Content<wbr>Share<wbr>Simulcast<wbr>Encoding<wbr>Parameters</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#device" class="tsd-kind-icon">Device</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
@@ -1826,6 +1884,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#transcriptevent" class="tsd-kind-icon">Transcript<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#videoencodingparameters" class="tsd-kind-icon">Video<wbr>Encoding<wbr>Parameters</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#videoinputdevice" class="tsd-kind-icon">Video<wbr>Input<wbr>Device</a>

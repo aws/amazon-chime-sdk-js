@@ -13,6 +13,8 @@ import DefaultModality from '../modality/DefaultModality';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import { Maybe } from '../utils/Types';
 import VideoTile from '../videotile/VideoTile';
+import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
+import DefaultSimulcastUplinkPolicyForContentShare from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import ContentShareConstants from './ContentShareConstants';
 import ContentShareController from './ContentShareController';
 import ContentShareMediaStreamBroker from './ContentShareMediaStreamBroker';
@@ -52,6 +54,22 @@ export default class DefaultContentShareController
     this.contentAudioVideo.setAudioProfile(audioProfile);
   }
 
+  enableSimulcastForContentShare(
+    enable: boolean,
+    encodingParams?: ContentShareSimulcastEncodingParameters
+  ): void {
+    if (enable) {
+      this.contentAudioVideo.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      this.contentAudioVideo.configuration.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicyForContentShare(
+        this.contentAudioVideo.logger,
+        encodingParams
+      );
+    } else {
+      this.contentAudioVideo.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
+      this.contentAudioVideo.configuration.videoUplinkBandwidthPolicy = undefined;
+    }
+  }
+
   async startContentShare(stream: MediaStream): Promise<void> {
     if (!stream) {
       return;
@@ -63,9 +81,6 @@ export default class DefaultContentShareController
       });
     }
     this.contentAudioVideo.start();
-    if (this.mediaStreamBroker.mediaStream.getVideoTracks().length > 0) {
-      this.contentAudioVideo.videoTileController.startLocalVideoTile();
-    }
   }
 
   async startContentShareFromScreenCapture(
@@ -131,6 +146,12 @@ export default class DefaultContentShareController
           observerFunc(observer);
         }
       });
+    }
+  }
+
+  audioVideoDidStart(): void {
+    if (this.mediaStreamBroker.mediaStream.getVideoTracks().length > 0) {
+      this.contentAudioVideo.videoTileController.startLocalVideoTile();
     }
   }
 

@@ -247,6 +247,58 @@
 <span style="color: #000000">  </span><span style="color: #001080">meetingConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">videoUplinkBandwidthPolicy</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MySimulcastUplinkPolicy</span><span style="color: #000000">();</span>
 <span style="color: #000000">}</span>
 </code></pre>
+					<a href="#enable-simulcast-for-content-share" id="enable-simulcast-for-content-share" style="color: inherit; text-decoration: none;">
+						<h3>Enable Simulcast For Content Share</h3>
+					</a>
+					<p>You can use <code>enableSimulcastForContentShare</code> to toggle simulcast on/off for content share. Note that you don&#39;t have
+						to set <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> yourself as this configuration will be set automatically
+					for content share attendee as part of <code>enableSimulcastForContentShare</code>.</p>
+					<pre><code class="language-js"><span style="color: #008000">// Enable simulcast</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">enableSimulcastForContentShare</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">();</span>
+
+<span style="color: #008000">// Disable simulcast</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">enableSimulcastForContentShare</span><span style="color: #000000">(</span><span style="color: #0000FF">false</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">();</span>
+</code></pre>
+					<p>Below is the default simulcast encoding parameters:</p>
+					<table>
+						<thead>
+							<tr>
+								<th align="center">Encoding Parameters</th>
+								<th align="center">Simulcast stream 1</th>
+								<th align="center">Simulcast stream 2</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td align="center">Max bitrate</td>
+								<td align="center">1200 kbps</td>
+								<td align="center">300 kbps</td>
+							</tr>
+							<tr>
+								<td align="center">Scale resolution down by</td>
+								<td align="center">1</td>
+								<td align="center">2</td>
+							</tr>
+							<tr>
+								<td align="center">Max framerate</td>
+								<td align="center">Same as capture framerate (default is 15fps)</td>
+								<td align="center">5</td>
+							</tr>
+					</tbody></table>
+					<p>You can override the encoding parameters to tailor to the type of content.
+						For example, for motion content, you may want to scale resolution down more but keep a high framerate for the low
+					quality layer but for static content, you may want to only reduce the framerate and keep a high resolution.</p>
+					<pre><code class="language-js"><span style="color: #008000">// Enable simulcast and override the low layer encoding parameters</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">enableSimulcastForContentShare</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">, {</span>
+<span style="color: #000000">  </span><span style="color: #001080">low:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">maxBitrateKbps:</span><span style="color: #000000"> </span><span style="color: #098658">350</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">scaleResolutionDownBy:</span><span style="color: #000000"> </span><span style="color: #098658">4</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">maxFramerate:</span><span style="color: #000000"> </span><span style="color: #098658">10</span><span style="color: #000000">,</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">});</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">();</span>
+</code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Simulcast%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>

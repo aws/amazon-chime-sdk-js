@@ -25,6 +25,7 @@ import TranscriptionController from '../transcript/TranscriptionController';
 import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
+import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 
 export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioVideoObserver {
   constructor(
@@ -446,6 +447,14 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
   setContentAudioProfile(audioProfile: AudioProfile): void {
     this.trace('setContentAudioProfile', audioProfile);
     this.contentShareController.setContentAudioProfile(audioProfile);
+  }
+
+  enableSimulcastForContentShare(
+    enable: boolean,
+    encodingParams?: ContentShareSimulcastEncodingParameters
+  ): void {
+    this.trace('enableSimulcastForContentShare');
+    this.contentShareController.enableSimulcastForContentShare(enable, encodingParams);
   }
 
   startContentShare(stream: MediaStream): Promise<void> {

@@ -643,7 +643,7 @@ describe('SimulcastTransceiverController', () => {
       expect(tc.localVideoTransceiver().direction).to.equal('inactive');
     });
 
-    it('is no-op if the input map has no parameter', done => {
+    it('is no-op if the input map has no parameter', async () => {
       const encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
       const peer: RTCPeerConnection = new RTCPeerConnection();
 
@@ -651,20 +651,14 @@ describe('SimulcastTransceiverController', () => {
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
-      tc.setVideoInput(newVideoTrack);
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-        const videoTransceiver = peer.getTransceivers()[1];
-        expect(videoTransceiver.direction).to.equal('sendrecv');
-        expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
-        tc.setEncodingParameters(encodingParamMap);
-      });
-
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 30).start(() => {
-        done();
-      });
+      await tc.setVideoInput(newVideoTrack);
+      const videoTransceiver = peer.getTransceivers()[1];
+      expect(videoTransceiver.direction).to.equal('sendrecv');
+      expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
+      tc.setEncodingParameters(encodingParamMap);
     });
 
-    it('can update the sender parameter', done => {
+    it('can update the sender parameter with no previous encodings', async () => {
       const encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
       const peer: RTCPeerConnection = new RTCPeerConnection();
       const encoding: RTCRtpEncodingParameters = {
@@ -686,32 +680,27 @@ describe('SimulcastTransceiverController', () => {
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
-      tc.setVideoInput(newVideoTrack);
+      await tc.setVideoInput(newVideoTrack);
 
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-        const videoTransceiver = peer.getTransceivers()[1];
-        expect(videoTransceiver.direction).to.equal('sendrecv');
-        expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
-        // @typescript-eslint/no-object-literal-type-assertion
-        videoTransceiver.sender.setParameters({
-          transactionId: undefined,
-          codecs: [],
-          rtcp: undefined,
-          encodings: null,
-          headerExtensions: undefined,
-        });
-        tc.setEncodingParameters(encodingParamMap);
+      const videoTransceiver = peer.getTransceivers()[1];
+      expect(videoTransceiver.direction).to.equal('sendrecv');
+      expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
+      // Set encoding to null
+      // @typescript-eslint/no-object-literal-type-assertion
+      videoTransceiver.sender.setParameters({
+        transactionId: undefined,
+        codecs: [],
+        rtcp: undefined,
+        encodings: null,
+        headerExtensions: undefined,
       });
-
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 30).start(() => {
-        expect(tc.localVideoTransceiver().sender.getParameters().encodings[1].maxBitrate).to.equal(
-          888
-        );
-        done();
-      });
+      tc.setEncodingParameters(encodingParamMap);
+      expect(tc.localVideoTransceiver().sender.getParameters().encodings[1].maxBitrate).to.equal(
+        888
+      );
     });
 
-    it('can update the sender parameter', done => {
+    it('can update the sender parameter', async () => {
       const encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
       const peer: RTCPeerConnection = new RTCPeerConnection();
       const encoding: RTCRtpEncodingParameters = {
@@ -733,21 +722,16 @@ describe('SimulcastTransceiverController', () => {
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
-      tc.setVideoInput(newVideoTrack);
+      await tc.setVideoInput(newVideoTrack);
 
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-        const videoTransceiver = peer.getTransceivers()[1];
-        expect(videoTransceiver.direction).to.equal('sendrecv');
-        expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
-        tc.setEncodingParameters(encodingParamMap);
-      });
+      const videoTransceiver = peer.getTransceivers()[1];
+      expect(videoTransceiver.direction).to.equal('sendrecv');
+      expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
+      tc.setEncodingParameters(encodingParamMap);
 
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 30).start(() => {
-        expect(tc.localVideoTransceiver().sender.getParameters().encodings[1].maxBitrate).to.equal(
-          888
-        );
-        done();
-      });
+      expect(tc.localVideoTransceiver().sender.getParameters().encodings[1].maxBitrate).to.equal(
+        888
+      );
     });
   });
 
