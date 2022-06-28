@@ -22,6 +22,7 @@ import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfigu
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
+import DefaultModality from '../modality/DefaultModality';
 import DefaultPingPong from '../pingpong/DefaultPingPong';
 import DefaultRealtimeController from '../realtimecontroller/DefaultRealtimeController';
 import RealtimeController from '../realtimecontroller/RealtimeController';
@@ -66,6 +67,7 @@ import Task from '../task/Task';
 import TimeoutTask from '../task/TimeoutTask';
 import WaitForAttendeePresenceTask from '../task/WaitForAttendeePresenceTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
+import SimulcastContentShareTransceiverController from '../transceivercontroller/SimulcastContentShareTransceiverController';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
 import VideoOnlyTransceiverController from '../transceivercontroller/VideoOnlyTransceiverController';
 import { Maybe } from '../utils/Types';
@@ -152,9 +154,6 @@ export default class DefaultAudioVideoController
     this._logger = logger;
     this.sessionStateController = new DefaultSessionStateController(this._logger);
     this._configuration = configuration;
-    this.enableSimulcast =
-      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
-      new DefaultBrowserBehavior().hasChromiumWebRTC();
 
     this._webSocketAdapter = webSocketAdapter;
     this._realtimeController = new DefaultRealtimeController(mediaStreamBroker);
@@ -488,6 +487,10 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.audioMixController = this._audioMixController;
     this.meetingSessionContext.audioVideoController = this;
 
+    this.enableSimulcast =
+      this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
+      new DefaultBrowserBehavior().hasChromiumWebRTC();
+
     const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
 
     if (!useAudioConnection) {
@@ -498,10 +501,21 @@ export default class DefaultAudioVideoController
       );
     } else if (this.enableSimulcast) {
       this.logger.info(`Using transceiver controller with simulcast support`);
-      this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
-        this.logger,
-        this.meetingSessionContext.browserBehavior
-      );
+      if (
+        new DefaultModality(this.configuration.credentials.attendeeId).hasModality(
+          DefaultModality.MODALITY_CONTENT
+        )
+      ) {
+        this.meetingSessionContext.transceiverController = new SimulcastContentShareTransceiverController(
+          this.logger,
+          this.meetingSessionContext.browserBehavior
+        );
+      } else {
+        this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
+          this.logger,
+          this.meetingSessionContext.browserBehavior
+        );
+      }
     } else {
       this.logger.info(`Using default transceiver controller`);
       this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
