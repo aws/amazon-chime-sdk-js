@@ -232,11 +232,14 @@ export default class ReceiveVideoStreamIndexTask
       }
     }
 
-    // If the intersection results in no codecs, `undefined` will cause client to fall back to `this.context.videoSendCodecPreferences`
-    this.context.meetingSupportedVideoSendCodecPreferences =
-      newMeetingSupportedVideoSendCodecPreferences.length > 0
-        ? newMeetingSupportedVideoSendCodecPreferences
-        : undefined;
+    if (newMeetingSupportedVideoSendCodecPreferences.length > 0) {
+      this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
+    } else {
+      this.logger.warn(
+        'Interesection of meeting receive codec support and send codec preferences has no overlap, falling back to just values provided in `setVideoCodecSendPreferences`'
+      );
+      this.context.meetingSupportedVideoSendCodecPreferences = undefined;
+    }
 
     if (willNeedUpdate) {
       this.context.audioVideoController.update({ needsRenegotiation: true });
