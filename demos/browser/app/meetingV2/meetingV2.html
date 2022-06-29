@@ -553,63 +553,63 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
         <span class="modal-title text-muted">Content Share Configurations</span>
         <span id="button-content-share-modal-close" class="close">&times;</span>
       </div>
-      <form>
-        <div class="form-row">
+      <form class="container">
+        <div class="row my-3">
           <h5>Screen Capture Configurations</h5>
         </div>
-        <div class="form-row">
-          <div class="form-group col-4">
+        <div class="row my-3">
+          <div class="col-6">
             <input type="number" id="content-capture-frame-rate" class="form-control" placeholder="Frame rate">
           </div>
         </div>
         <div id="content-simulcast-config">
-          <div class="form-row">
+          <div class="row my-3">
             <h5>Simulcast Encoding Parameters</h5>
           </div>
-          <div class="form-row">
-            <div class="form-group col-6">
+          <div class="row row-cols-2 my-3">
+            <div class="col-6">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="content-enable-simulcast">
                 <label class="form-check-label" for="content-enable-simulcast">Enable Simulcast</label>
               </div>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group col-6">
+          <div class="row row-cols-2 my-3">
+            <div class="col-6">
               <input type="number" id="content-simulcast-low-max-bitratekbps" class="form-control"
                      placeholder="Low max bitrate (kbps)">
             </div>
-            <div class="form-group col-6">
+            <div class="col-6">
               <input type="number" id="content-simulcast-high-max-bitratekbps" class="form-control"
                      placeholder="High max bitrate (kbps)">
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group col-6">
+          <div class="row row-cols-2 my-3">
+            <div class="col-6">
               <input type="number" id="content-simulcast-low-scale-factor" class="form-control"
                      placeholder="Low scale factor">
             </div>
-            <div class="form-group col-6">
+            <div class="col-6">
               <input type="number" id="content-simulcast-high-scale-factor" class="form-control"
                      placeholder="High scale factor">
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group col-6">
+          <div class="row row-cols-2 my-3">
+            <div class="col-6">
               <input type="number" id="content-simulcast-low-max-framerate" class="form-control"
                      placeholder="Low max frame rate">
             </div>
-            <div class="form-group col-6">
+            <div class="col-6">
               <input type="number" id="content-simulcast-high-max-framerate" class="form-control"
                      placeholder="High max frame rate">
             </div>
           </div>
         </div>
+        <button id="button-save-content-share-configs" type="button" class="btn btn-lg btn-primary btn-block w-100"
+                title="Save" data-toggle="button" aria-pressed="false" autocomplete="off">
+          Save
+        </button>
       </form>
-      <button id="button-save-content-share-configs" type="button" class="btn btn-lg btn-primary btn-block"
-              title="Save" data-toggle="button" aria-pressed="false" autocomplete="off">
-        Save
-      </button>
     </div>
   </div>
   <div class="p-2 d-none d-sm-block align-items-end" style="position:fixed;right:0;bottom:0;left:0;">
