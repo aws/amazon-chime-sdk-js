@@ -232,6 +232,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
 
   realtimeUnsubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void {
     this.realtimeController.realtimeUnsubscribeToSetCanUnmuteLocalAudio(callback);
+    this.trace('realtimeUnsubscribeToSetCanUnmuteLocalAudio');
   }
 
   realtimeCanUnmuteLocalAudio(): boolean {
@@ -258,6 +259,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
 
   realtimeUnsubscribeToMuteAndUnmuteLocalAudio(callback: (muted: boolean) => void): void {
     this.realtimeController.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(callback);
+    this.trace('realtimeUnsubscribeToMuteAndUnmuteLocalAudio');
   }
 
   realtimeIsLocalAudioMuted(): boolean {
@@ -313,10 +315,12 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
 
   realtimeSubscribeToFatalError(callback: (error: Error) => void): void {
     this.realtimeController.realtimeSubscribeToFatalError(callback);
+    this.trace('realtimeSubscribeToFatalError');
   }
 
   realtimeUnsubscribeToFatalError(callback: (error: Error) => void): void {
     this.realtimeController.realtimeUnsubscribeToFatalError(callback);
+    this.trace('realtimeUnsubscribeToFatalError');
   }
 
   subscribeToActiveSpeakerDetector(
