@@ -5,12 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.0] - 2022-06-23
+
+### Added
+
+- Add a new API `enableSimulcastForContentShare` to enable simulcast for content share so that content share could be shown in network constrained clients. The lower quality layer has 300 kbps max bitrate, resolution scale factor of 2, and 5 max framerate.
+
+### Removed
+
+### Changed
+
+### Fixed
+
 ## [3.5.0] - 2022-06-02
 
 ### Added
 
 - Add a workaround for https://bugs.webkit.org/show_bug.cgi?id=241152 to play a paused video element in Safari.
-- Added support for iOS edge.
 
 ### Removed
 
@@ -24,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix issue where Amazon Voice Focus stops working after changing device while muted.
+- Remove the `isChanged` flag as it breaks some old muting funtionality causing Amazon Voice Focus to stop working.
+- Fix issue where Amazon Voice Focus could stop working after changing the mute state of a null device or changing the device shortly after.
 - Fix an issue for mute local when there is no audio input.
 - Fix trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
 - Fix protobuf generation script for upgrade.
@@ -70,7 +83,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add browser support information to content share guide.
-
 - Readd layers allocation negotiation in Chromium based browsers to avoid resubscribing to preemptively turn off simulcast streams or to switch layers. Avoid duplicate RTP header extension and changing extension id.
 
 ### Removed

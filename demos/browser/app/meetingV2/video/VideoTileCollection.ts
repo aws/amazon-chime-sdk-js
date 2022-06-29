@@ -137,7 +137,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
     if (this.videoPreferenceManager === undefined) {
       return;
     }
-    
+
     // Add these sources to the pagination list
     for (const source of videoSources) {
         this.pagination.add(source.attendee.attendeeId);
@@ -230,7 +230,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
     for (const videoTile of videoTiles) {
       const tileState = videoTile.state();
-      if (tileState.paused || tileState.isContent) {
+      if (tileState.paused) {
         continue;
       }
       const tileId = videoTile.id();

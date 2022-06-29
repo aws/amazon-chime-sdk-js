@@ -150,3 +150,44 @@ if (browserBehavior.isSimulcastSupported()) {
   meetingConfiguration.videoUplinkBandwidthPolicy = new MySimulcastUplinkPolicy();
 }
 ```
+
+### Enable Simulcast For Content Share
+You can use `enableSimulcastForContentShare` to toggle simulcast on/off for content share. Note that you don't have 
+to set `enableSimulcastForUnifiedPlanChromiumBasedBrowsers` yourself as this configuration will be set automatically 
+for content share attendee as part of `enableSimulcastForContentShare`.
+
+```js
+// Enable simulcast
+await meetingSession.audioVideo.enableSimulcastForContentShare(true);
+await meetingSession.audioVideo.startContentShareFromScreenCapture();
+
+// Disable simulcast
+await meetingSession.audioVideo.enableSimulcastForContentShare(false);
+await meetingSession.audioVideo.startContentShareFromScreenCapture();
+```
+Below is the default simulcast encoding parameters:
+
+| Encoding Parameters      | Simulcast stream 1 | Simulcast stream 2 |
+|:------------------------:|:------------------:|:------------------:|
+| Max bitrate              |      1200 kbps     |      300 kbps      |
+| Scale resolution down by |         1          |         2          |
+| Max framerate            |  Same as capture framerate (default is 15fps) |   5   |
+
+You can override the encoding parameters to tailor to the type of content. 
+For example, for motion content, you may want to scale resolution down more but keep a high framerate for the low 
+quality layer but for static content, you may want to only reduce the framerate and keep a high resolution.
+
+```js
+// Enable simulcast and override the low layer encoding parameters
+await meetingSession.audioVideo.enableSimulcastForContentShare(true, {
+  low: {
+    maxBitrateKbps: 350,
+    scaleResolutionDownBy: 4,
+    maxFramerate: 10,
+  }
+});
+await meetingSession.audioVideo.startContentShareFromScreenCapture();
+```
+
+
+

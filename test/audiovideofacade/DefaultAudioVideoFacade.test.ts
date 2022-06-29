@@ -21,6 +21,7 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import type VolumeIndicatorCallback from '../../src/realtimecontroller/VolumeIndicatorCallback';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
+import ContentShareSimulcastEncodingParameters from '../../src/videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultAudioVideoFacade', () => {
@@ -37,6 +38,11 @@ describe('DefaultAudioVideoFacade', () => {
   }
 
   class NoOpContentShareController implements ContentShareController {
+    enableSimulcastForContentShare(
+      _enable: boolean,
+      _encodingParams?: ContentShareSimulcastEncodingParameters
+    ): void {}
+
     async startContentShare(_stream: MediaStream): Promise<void> {}
 
     async startContentShareFromScreenCapture(_sourceId?: string): Promise<MediaStream> {
@@ -644,6 +650,12 @@ describe('DefaultAudioVideoFacade', () => {
       const profile = new AudioProfile();
       facade.setContentAudioProfile(profile);
       assert(spy.calledOnceWith(profile));
+    });
+
+    it('will call enableSimulcastForContentShare', () => {
+      const spy = sinon.spy(contentShareController, 'enableSimulcastForContentShare');
+      facade.enableSimulcastForContentShare(true);
+      spy.calledOnceWith(true);
     });
 
     it('will call startContentShare', async () => {
