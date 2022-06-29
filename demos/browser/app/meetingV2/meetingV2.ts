@@ -251,6 +251,9 @@ export class DemoMeetingApp
 
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
+  volumeIndicatorHandler:  (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
+  canUnmuteLocalAudioHandler: (undefined | ((canUnmute: boolean) => void)) = undefined;
+  muteAndUnmuteLocalAudioHandler: (undefined | ((muted: boolean) => void)) = undefined;
   blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver) = undefined;
   replacementObserver: (undefined | BackgroundReplacementVideoFrameProcessorObserver) = undefined;
 
@@ -1936,20 +1939,20 @@ export class DemoMeetingApp
   }
 
   setupMuteHandler(): void {
-    const handler = (isMuted: boolean): void => {
+    this.muteAndUnmuteLocalAudioHandler = (isMuted: boolean): void => {
       this.log(`muted = ${isMuted}`);
     };
-    this.audioVideo.realtimeSubscribeToMuteAndUnmuteLocalAudio(handler);
+    this.audioVideo.realtimeSubscribeToMuteAndUnmuteLocalAudio(this.muteAndUnmuteLocalAudioHandler);
     const isMuted = this.audioVideo.realtimeIsLocalAudioMuted();
-    handler(isMuted);
+    this.muteAndUnmuteLocalAudioHandler(isMuted);
   }
 
   setupCanUnmuteHandler(): void {
-    const handler = (canUnmute: boolean): void => {
+    this.canUnmuteLocalAudioHandler = (canUnmute: boolean): void => {
       this.log(`canUnmute = ${canUnmute}`);
     };
-    this.audioVideo.realtimeSubscribeToSetCanUnmuteLocalAudio(handler);
-    handler(this.audioVideo.realtimeCanUnmuteLocalAudio());
+    this.audioVideo.realtimeSubscribeToSetCanUnmuteLocalAudio(this.canUnmuteLocalAudioHandler);
+    this.canUnmuteLocalAudioHandler(this.audioVideo.realtimeCanUnmuteLocalAudio());
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1960,7 +1963,7 @@ export class DemoMeetingApp
   }
 
   setupSubscribeToAttendeeIdPresenceHandler(): void {
-    const handler = (
+    this.attendeeIdPresenceHandler = (
       attendeeId: string,
       present: boolean,
       externalUserId: string,
@@ -1974,7 +1977,8 @@ export class DemoMeetingApp
         new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId
         || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!present) {
-        this.roster.removeAttendee(attendeeId);        
+        this.roster.removeAttendee(attendeeId);      
+        this.audioVideo.realtimeUnsubscribeFromVolumeIndicator(attendeeId, this.volumeIndicatorHandler);  
         this.log(`${attendeeId} dropped = ${dropped} (${externalUserId})`);
         return;
       }
@@ -1990,26 +1994,24 @@ export class DemoMeetingApp
       const attendeeName =  externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
       this.roster.addAttendee(attendeeId, attendeeName);
 
-      this.audioVideo.realtimeSubscribeToVolumeIndicator(
-        attendeeId,
-        async (
-          attendeeId: string,
-          volume: number | null,
-          muted: boolean | null,
-          signalStrength: number | null
-        ) => {
-          if (muted !== null) {
-            this.roster.setMuteStatus(attendeeId, muted);
-          }
-          if (signalStrength !== null) {
-            this.roster.setSignalStrength(attendeeId, Math.round(signalStrength * 100));
-          }
+      this.volumeIndicatorHandler = async (  
+        attendeeId: string,
+        volume: number | null,
+        muted: boolean | null,
+        signalStrength: number | null
+      ) => {
+        if (muted !== null) {
+          this.roster.setMuteStatus(attendeeId, muted);
         }
-      );
+        if (signalStrength !== null) {
+          this.roster.setSignalStrength(attendeeId, Math.round(signalStrength * 100));
+        }
+      };
+
+      this.audioVideo.realtimeSubscribeToVolumeIndicator(attendeeId, this.volumeIndicatorHandler);
     };
 
-    this.attendeeIdPresenceHandler = handler;
-    this.audioVideo.realtimeSubscribeToAttendeeIdPresence(handler);
+    this.audioVideo.realtimeSubscribeToAttendeeIdPresence(this.attendeeIdPresenceHandler);
 
     // Hang on to this so we can unsubscribe later.
     this.activeSpeakerHandler = (attendeeIds: string[]): void => {
@@ -3538,6 +3540,10 @@ export class DemoMeetingApp
 
       // Stop listening to transcript events.
       this.audioVideo.transcriptionController?.unsubscribeFromTranscriptEvent(this.transcriptEventHandler);
+
+      this.audioVideo.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(this.muteAndUnmuteLocalAudioHandler);
+      this.audioVideo.realtimeUnsubscribeToSetCanUnmuteLocalAudio(this.canUnmuteLocalAudioHandler);
+      this.audioVideo.realtimeUnsubscribeFromReceiveDataMessage(DemoMeetingApp.DATA_MESSAGE_TOPIC);
 
       // Stop watching device changes in the UI.
       this.audioVideo.removeDeviceChangeObserver(this);
