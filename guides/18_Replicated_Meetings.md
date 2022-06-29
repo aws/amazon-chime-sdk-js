@@ -7,7 +7,7 @@ In short, an attendee in a Replica meeting will receive remote media and metadat
 This document will cover specifics of the behavior and features available to Replica meeting attendees with relation to the Amazon Chime SDK for Javascript. It assumes that:
 
 * You have an understanding of the core media features of the Amazon Chime SDK for Javascript.
-* You have an understanding of the high level ideas around Replica meetings as covered in the [Chime Developer Guide](Link Pending).
+* You have an understanding of the high level ideas around Replica meetings as covered in the [Chime Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html).
 
 *Note:* This guide will refer to the meeting which is replicated as a Primary meeting, however there is no difference between a Primary meeting and a normal meeting. There is additionally no difference in the behavior and features of an attendee of a Primary meeting, so builders should not need to use the SDK any differently from the way they would for non-replicated meetings for those Primary meeting attendees.
 

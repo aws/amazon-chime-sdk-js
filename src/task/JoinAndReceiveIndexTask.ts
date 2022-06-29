@@ -75,7 +75,6 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
             }
 
             context.serverSupportsCompression = joinAckFrame?.wantsCompressedSdp;
-
             if (joinAckFrame && joinAckFrame.turnCredentials) {
               context.turnCredentials = new MeetingSessionTURNCredentials();
               context.turnCredentials.username = joinAckFrame.turnCredentials.username;

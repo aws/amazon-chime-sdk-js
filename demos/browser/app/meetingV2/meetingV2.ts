@@ -75,6 +75,7 @@ import {
   DefaultEventController,
   MeetingSessionCredentials,
   POSTLogger,
+  VideoCodecCapability
 } from 'amazon-chime-sdk-js';
 
 import TestSound from './audio/TestSound';
@@ -300,6 +301,7 @@ export class DemoMeetingApp
   // feature flags
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
+  videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
@@ -638,6 +640,20 @@ export class DemoMeetingApp
           break;
         default:
           this.logLevel = LogLevel.OFF;
+          break;
+      }
+
+      const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
+      switch (chosenVideoSendCodec) {
+        case 'vp8':
+          this.videoCodecPreferences = [VideoCodecCapability.vp8()];
+          break;
+        case 'h264ConstrainedBaselineProfile':
+          this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+          break;
+        default:
+          // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
+          // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
           break;
       }
 
@@ -1805,6 +1821,7 @@ export class DemoMeetingApp
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
+
     configuration.applicationMetadata = ApplicationMetadata.create('amazon-chime-sdk-js-demo', '2.0.0');
 
     if ((document.getElementById('pause-last-frame') as HTMLInputElement).checked) {
@@ -1846,7 +1863,10 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this);
     this.meetingSession.eventController.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
-
+    if (this.videoCodecPreferences !== undefined && this.videoCodecPreferences.length > 0) {
+        this.audioVideo.setVideoCodecSendPreferences(this.videoCodecPreferences);
+        this.audioVideo.setContentShareVideoCodecPreferences(this.videoCodecPreferences);
+    }
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
       this.meetingLogger,
       this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,

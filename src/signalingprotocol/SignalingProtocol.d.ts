@@ -1148,6 +1148,9 @@ export interface ISdkIndexFrame {
 
     /** SdkIndexFrame numParticipants */
     numParticipants?: (number|null);
+
+    /** SdkIndexFrame supportedReceiveCodecIntersection */
+    supportedReceiveCodecIntersection?: (SdkVideoCodecCapability[]|null);
 }
 
 /** Represents a SdkIndexFrame. */
@@ -1170,6 +1173,9 @@ export class SdkIndexFrame implements ISdkIndexFrame {
 
     /** SdkIndexFrame numParticipants. */
     public numParticipants: number;
+
+    /** SdkIndexFrame supportedReceiveCodecIntersection. */
+    public supportedReceiveCodecIntersection: SdkVideoCodecCapability[];
 
     /**
      * Creates a new SdkIndexFrame instance using the specified properties.
@@ -4776,4 +4782,10 @@ export class SdkMeetingSessionCredentials implements ISdkMeetingSessionCredentia
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+}
+
+/** SdkVideoCodecCapability enum. */
+export enum SdkVideoCodecCapability {
+    VP8 = 1,
+    H264_CONSTRAINED_BASELINE_PROFILE = 3
 }

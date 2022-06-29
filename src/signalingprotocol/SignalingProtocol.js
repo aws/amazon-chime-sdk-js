@@ -3202,6 +3202,7 @@ $root.SdkIndexFrame = (function() {
      * @property {Array.<ISdkStreamDescriptor>|null} [sources] SdkIndexFrame sources
      * @property {Array.<number>|null} [pausedAtSourceIds] SdkIndexFrame pausedAtSourceIds
      * @property {number|null} [numParticipants] SdkIndexFrame numParticipants
+     * @property {Array.<SdkVideoCodecCapability>|null} [supportedReceiveCodecIntersection] SdkIndexFrame supportedReceiveCodecIntersection
      */
 
     /**
@@ -3215,6 +3216,7 @@ $root.SdkIndexFrame = (function() {
     function SdkIndexFrame(properties) {
         this.sources = [];
         this.pausedAtSourceIds = [];
+        this.supportedReceiveCodecIntersection = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -3254,6 +3256,14 @@ $root.SdkIndexFrame = (function() {
     SdkIndexFrame.prototype.numParticipants = 0;
 
     /**
+     * SdkIndexFrame supportedReceiveCodecIntersection.
+     * @member {Array.<SdkVideoCodecCapability>} supportedReceiveCodecIntersection
+     * @memberof SdkIndexFrame
+     * @instance
+     */
+    SdkIndexFrame.prototype.supportedReceiveCodecIntersection = $util.emptyArray;
+
+    /**
      * Creates a new SdkIndexFrame instance using the specified properties.
      * @function create
      * @memberof SdkIndexFrame
@@ -3287,6 +3297,9 @@ $root.SdkIndexFrame = (function() {
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.pausedAtSourceIds[i]);
         if (message.numParticipants != null && Object.hasOwnProperty.call(message, "numParticipants"))
             writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.numParticipants);
+        if (message.supportedReceiveCodecIntersection != null && message.supportedReceiveCodecIntersection.length)
+            for (var i = 0; i < message.supportedReceiveCodecIntersection.length; ++i)
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.supportedReceiveCodecIntersection[i]);
         return writer;
     };
 
@@ -3341,6 +3354,16 @@ $root.SdkIndexFrame = (function() {
                 break;
             case 4:
                 message.numParticipants = reader.uint32();
+                break;
+            case 5:
+                if (!(message.supportedReceiveCodecIntersection && message.supportedReceiveCodecIntersection.length))
+                    message.supportedReceiveCodecIntersection = [];
+                if ((tag & 7) === 2) {
+                    var end2 = reader.uint32() + reader.pos;
+                    while (reader.pos < end2)
+                        message.supportedReceiveCodecIntersection.push(reader.int32());
+                } else
+                    message.supportedReceiveCodecIntersection.push(reader.int32());
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -3399,6 +3422,18 @@ $root.SdkIndexFrame = (function() {
         if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
             if (!$util.isInteger(message.numParticipants))
                 return "numParticipants: integer expected";
+        if (message.supportedReceiveCodecIntersection != null && message.hasOwnProperty("supportedReceiveCodecIntersection")) {
+            if (!Array.isArray(message.supportedReceiveCodecIntersection))
+                return "supportedReceiveCodecIntersection: array expected";
+            for (var i = 0; i < message.supportedReceiveCodecIntersection.length; ++i)
+                switch (message.supportedReceiveCodecIntersection[i]) {
+                default:
+                    return "supportedReceiveCodecIntersection: enum value[] expected";
+                case 1:
+                case 3:
+                    break;
+                }
+        }
         return null;
     };
 
@@ -3435,6 +3470,23 @@ $root.SdkIndexFrame = (function() {
         }
         if (object.numParticipants != null)
             message.numParticipants = object.numParticipants >>> 0;
+        if (object.supportedReceiveCodecIntersection) {
+            if (!Array.isArray(object.supportedReceiveCodecIntersection))
+                throw TypeError(".SdkIndexFrame.supportedReceiveCodecIntersection: array expected");
+            message.supportedReceiveCodecIntersection = [];
+            for (var i = 0; i < object.supportedReceiveCodecIntersection.length; ++i)
+                switch (object.supportedReceiveCodecIntersection[i]) {
+                default:
+                case "VP8":
+                case 1:
+                    message.supportedReceiveCodecIntersection[i] = 1;
+                    break;
+                case "H264_CONSTRAINED_BASELINE_PROFILE":
+                case 3:
+                    message.supportedReceiveCodecIntersection[i] = 3;
+                    break;
+                }
+        }
         return message;
     };
 
@@ -3454,6 +3506,7 @@ $root.SdkIndexFrame = (function() {
         if (options.arrays || options.defaults) {
             object.sources = [];
             object.pausedAtSourceIds = [];
+            object.supportedReceiveCodecIntersection = [];
         }
         if (options.defaults) {
             object.atCapacity = false;
@@ -3473,6 +3526,11 @@ $root.SdkIndexFrame = (function() {
         }
         if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
             object.numParticipants = message.numParticipants;
+        if (message.supportedReceiveCodecIntersection && message.supportedReceiveCodecIntersection.length) {
+            object.supportedReceiveCodecIntersection = [];
+            for (var j = 0; j < message.supportedReceiveCodecIntersection.length; ++j)
+                object.supportedReceiveCodecIntersection[j] = options.enums === String ? $root.SdkVideoCodecCapability[message.supportedReceiveCodecIntersection[j]] : message.supportedReceiveCodecIntersection[j];
+        }
         return object;
     };
 
@@ -12292,6 +12350,20 @@ $root.SdkMeetingSessionCredentials = (function() {
     };
 
     return SdkMeetingSessionCredentials;
+})();
+
+/**
+ * SdkVideoCodecCapability enum.
+ * @exports SdkVideoCodecCapability
+ * @enum {number}
+ * @property {number} VP8=1 VP8 value
+ * @property {number} H264_CONSTRAINED_BASELINE_PROFILE=3 H264_CONSTRAINED_BASELINE_PROFILE value
+ */
+$root.SdkVideoCodecCapability = (function() {
+    var valuesById = {}, values = Object.create(valuesById);
+    values[valuesById[1] = "VP8"] = 1;
+    values[valuesById[3] = "H264_CONSTRAINED_BASELINE_PROFILE"] = 3;
+    return values;
 })();
 
 module.exports = $root;
