@@ -12,6 +12,7 @@ import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetr
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
+import ContentShareConstants from '../../src/contentsharecontroller/ContentShareConstants';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import {
   SdkBitrate,
@@ -72,11 +73,12 @@ describe('VideoPriorityBasedPolicy', () => {
     index: SimulcastVideoStreamIndex,
     remoteClientCnt: number,
     lowSimulRate: number,
-    highSimulRate: number
+    highSimulRate: number,
+    contentIndex?: number
   ): void {
     const sources: SdkStreamDescriptor[] = [];
     for (let i = 1; i < remoteClientCnt + 1; i++) {
-      const attendee = `attendee-${i}`;
+      const attendee = `attendee-${i}` + (contentIndex === i ? ContentShareConstants.Modality : '');
       if (lowSimulRate > 0) {
         sources.push(
           new SdkStreamDescriptor({
@@ -1445,6 +1447,66 @@ describe('VideoPriorityBasedPolicy', () => {
       expect(resub).to.equal(true);
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2, 4]);
+    });
+  });
+
+  describe('content share', () => {
+    it('upgrades to high layer even if higher than than high target bitrate', () => {
+      updateIndexFrame(videoStreamIndex, 1, 300, 2000, 1);
+      policy.updateIndex(videoStreamIndex);
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference(
+        `attendee-1${ContentShareConstants.Modality}`,
+        1,
+        TargetDisplaySize.High
+      );
+      preferences.add(p1);
+      policy.chooseRemoteVideoSources(preferences.build());
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      const received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+    });
+
+    it('skip upgrades to high layer if target resolution is low', () => {
+      updateIndexFrame(videoStreamIndex, 1, 5, 10, 1);
+      policy.updateIndex(videoStreamIndex);
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference(
+        `attendee-1${ContentShareConstants.Modality}`,
+        1,
+        TargetDisplaySize.Low
+      );
+      preferences.add(p1);
+      policy.chooseRemoteVideoSources(preferences.build());
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      const received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1]);
+    });
+
+    it('consider target bitrate if target resolution is medium', () => {
+      updateIndexFrame(videoStreamIndex, 1, 5, 10, 1);
+      policy.updateIndex(videoStreamIndex);
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference(
+        `attendee-1${ContentShareConstants.Modality}`,
+        1,
+        TargetDisplaySize.Medium
+      );
+      preferences.add(p1);
+      policy.chooseRemoteVideoSources(preferences.build());
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+
+      updateIndexFrame(videoStreamIndex, 1, 300, 800, 1);
+      policy.updateIndex(videoStreamIndex);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1]);
     });
   });
 });

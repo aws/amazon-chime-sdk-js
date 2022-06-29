@@ -404,7 +404,7 @@ describe('DefaultDeviceController', () => {
       deviceController.muteLocalAudioInputStream();
       deviceController.muteLocalAudioInputStream();
 
-      expect(device.muted).to.deep.equal([true, false, true]);
+      expect(device.muted).to.deep.equal([false, true, false, true]);
     });
   });
 

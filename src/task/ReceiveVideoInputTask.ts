@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import DefaultModality from '../modality/DefaultModality';
 import { SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import BaseTask from './BaseTask';
 
@@ -69,8 +70,12 @@ export default class ReceiveVideoInputTask extends BaseTask {
         return;
       }
       const attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
+      const isContentAttendee = new DefaultModality(attendeeId).hasModality(
+        DefaultModality.MODALITY_CONTENT
+      );
       const trackSettings = videoTracks[0].getSettings();
-      if (this.context.enableSimulcast) {
+      // For video, we currently enforce 720p for simulcast. This logic should be removed in the future.
+      if (this.context.enableSimulcast && !isContentAttendee) {
         const constraint = this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
         this.context.logger.info(`simulcast: choose constraint ${JSON.stringify(constraint)}`);
         try {

@@ -352,7 +352,9 @@ export class DemoMeetingApp
   // and fix some state (e.g., video buttons).
   // Holding Shift while hitting the Leave button is handled by setting
   // this to `halt`, which allows us to stop and measure memory leaks.
-  behaviorAfterLeave: 'spa' | 'reload' | 'halt' = 'reload';
+  // The `nothing` option can be used to stop cleanup from happening allowing
+  // `audioVideo` to be reused without stopping the meeting.
+  behaviorAfterLeave: 'spa' | 'reload' | 'halt' | 'nothing' = 'reload';
 
   videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
 
@@ -545,6 +547,7 @@ export class DemoMeetingApp
   initEventListeners(): void {
     if (!this.defaultBrowserBehavior.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
+      (document.getElementById('content-simulcast-config')).style.display = 'none';
     }
 
     if (!this.defaultBrowserBehavior.supportDownlinkBandwidthEstimation()) {
@@ -3249,7 +3252,12 @@ export class DemoMeetingApp
   }
 
   private initContentShareDropDownItems(): void {
-    let item = document.getElementById('dropdown-item-content-share-screen-capture');
+    let item = document.getElementById('dropdown-item-content-share-configuration');
+    item.addEventListener('click', () => {
+      document.getElementById(`content-simulcast-modal`).style.display = 'block';
+    });
+
+    item = document.getElementById('dropdown-item-content-share-screen-capture');
     item.addEventListener('click', () => {
       this.contentShareType = ContentShareType.ScreenCapture;
       this.contentShareStart();
@@ -3300,6 +3308,37 @@ export class DemoMeetingApp
     document.getElementById('dropdown-item-content-share-stop').addEventListener('click', () => {
       this.contentShareStop();
     });
+
+    document.getElementById('button-content-share-modal-close').addEventListener('click', () => {
+      document.getElementById('content-simulcast-modal').style.display = 'none';
+    });
+
+    document.getElementById('button-save-content-share-configs').addEventListener('click', () => {
+      document.getElementById('content-simulcast-modal').style.display = 'none';
+      const enableSimulcastForContentShare = (document.getElementById('content-enable-simulcast') as HTMLInputElement).checked;
+      if (enableSimulcastForContentShare) {
+        const lowMaxBitratesKbps = parseInt((document.getElementById('content-simulcast-low-max-bitratekbps') as HTMLInputElement).value) || undefined;
+        const lowScaleFactor = parseInt((document.getElementById('content-simulcast-low-scale-factor') as HTMLInputElement).value) || undefined;
+        const lowMaxFramerate = parseInt((document.getElementById('content-simulcast-low-max-framerate') as HTMLInputElement).value) || undefined;
+        const highMaxBitratesKbps = parseInt((document.getElementById('content-simulcast-high-max-bitratekbps') as HTMLInputElement).value) || undefined;
+        const highScaleFactor = parseInt((document.getElementById('content-simulcast-high-scale-factor') as HTMLInputElement).value) || undefined;
+        const highMaxFramerate = parseInt((document.getElementById('content-simulcast-high-max-framerate') as HTMLInputElement).value) || undefined;
+        this.audioVideo.enableSimulcastForContentShare(true, {
+          low: {
+            maxBitrateKbps: lowMaxBitratesKbps,
+            scaleResolutionDownBy: lowScaleFactor,
+            maxFramerate: lowMaxFramerate
+          },
+          high: {
+            maxBitrateKbps: highMaxBitratesKbps,
+            scaleResolutionDownBy: highScaleFactor,
+            maxFramerate: highMaxFramerate
+          }
+        })
+      } else {
+        this.audioVideo.enableSimulcastForContentShare(false);
+      }
+    });
   }
 
   private async playToStream(videoFile: HTMLVideoElement): Promise<MediaStream> {
@@ -3318,7 +3357,8 @@ export class DemoMeetingApp
     switch (this.contentShareType) {
       case ContentShareType.ScreenCapture: {
         try {
-          await this.audioVideo.startContentShareFromScreenCapture();
+          const framerate = (document.getElementById('content-capture-frame-rate') as HTMLInputElement).value;
+          await this.audioVideo.startContentShareFromScreenCapture(undefined, parseInt(framerate, 10) || undefined);
         } catch (e) {
           this.meetingLogger?.error(`Could not start content share: ${e}`);
           return;
@@ -3430,6 +3470,9 @@ export class DemoMeetingApp
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
+    if(this.behaviorAfterLeave === 'nothing') {
+      return;
+    }
     this.log(`resetting stats`);
     this.resetStats();
 

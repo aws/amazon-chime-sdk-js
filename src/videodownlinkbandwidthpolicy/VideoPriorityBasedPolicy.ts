@@ -870,7 +870,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
                   this.hasSimulcastStreams(remoteInfos, info.attendeeId, info.groupId) &&
                   this.canUpgrade(
                     info.avgBitrateKbps,
-                    preference.targetSizeToBitrateKbps(preference.targetSize)
+                    preference.targetSize,
+                    preference.targetSizeToBitrateKbps(preference.targetSize),
+                    info.attendeeId.endsWith(ContentShareConstants.Modality)
                   )
                 ) {
                   this.logger.info(
@@ -923,8 +925,32 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     return null;
   }
 
-  private canUpgrade(bitrateKbp: number, targetBitrateKbp: number): boolean {
-    if (bitrateKbp <= targetBitrateKbp) {
+  private canUpgrade(
+    bitrateKbp: number,
+    targetResolution: TargetDisplaySize,
+    targetBitrateKbp: number,
+    isContent: boolean
+  ): boolean {
+    // For content share, even if the higher quality stream has a high max bitrate of 1200 kbps for example
+    // the avg bitrate can be way lower so have to make sure that we do not update to a higher bitrate than the
+    // target value.
+    // This does not apply to video as video uplink bandwidth could change the max bitrate value without resubscribing
+    // so the max bitrate value might not be up-to-date on the downlink side. Also in the case of video, the avg
+    // bitrate is close to the actual max bitrate.
+    let canUpgrade = false;
+    if (isContent) {
+      // Content simulcast only have 2 layers right now so we always upgrade if the target resolution is high and
+      // skip if the target resolution is low. If the target resolution is medium then fall back to use avg bitrate
+      // as video.
+      if (targetResolution === TargetDisplaySize.High) {
+        canUpgrade = true;
+      } else if (targetResolution === TargetDisplaySize.Medium && bitrateKbp <= targetBitrateKbp) {
+        canUpgrade = true;
+      }
+    } else if (bitrateKbp <= targetBitrateKbp) {
+      canUpgrade = true;
+    }
+    if (canUpgrade) {
       this.logger.info(
         `bwe: canUpgrade: bitrateKbp: ${bitrateKbp} targetBitrateKbp: ${targetBitrateKbp}`
       );
