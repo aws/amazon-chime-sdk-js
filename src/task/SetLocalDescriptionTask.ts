@@ -42,6 +42,18 @@ export default class SetLocalDescriptionTask extends BaseTask {
     if (new DefaultBrowserBehavior().requiresDisablingH264Encoding()) {
       sdp = new SDP(sdp).removeH264SupportFromSendSection().sdp;
     }
+
+    if (
+      this.context.videoSendCodecPreferences !== undefined &&
+      this.context.videoSendCodecPreferences.length > 0
+    ) {
+      sdp = new SDP(sdp).withVideoSendCodecPreferences(
+        this.context.meetingSupportedVideoSendCodecPreferences !== undefined
+          ? this.context.meetingSupportedVideoSendCodecPreferences
+          : this.context.videoSendCodecPreferences
+      ).sdp;
+    }
+
     if (this.context.audioProfile) {
       sdp = new SDP(sdp).withAudioMaxAverageBitrate(this.context.audioProfile.audioBitrateBps).sdp;
       if (this.context.audioProfile.isStereo()) {

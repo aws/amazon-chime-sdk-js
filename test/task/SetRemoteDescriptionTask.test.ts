@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import { VideoCodecCapability } from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -120,6 +121,34 @@ describe('SetRemoteDescriptionTask', () => {
       task.run().then(() => {
         const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
         expect(peerSDPAnswer).to.be.equal(SDPMock.VIDEO_HOST_AUDIO_ANSWER_WITH_STEREO);
+        done();
+      });
+    });
+
+    it('will update sdp with send codec preferences', done => {
+      context.sdpAnswer = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO;
+      context.videoSendCodecPreferences = [VideoCodecCapability.h264(), VideoCodecCapability.vp8()];
+      task.run().then(() => {
+        const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
+        expect(peerSDPAnswer).to.be.equal(
+          SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_H264_CBP_THEN_VP8
+        );
+        done();
+      });
+    });
+
+    it('will update sdp with meeting intersection codec preferences if they exist', done => {
+      context.sdpAnswer = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO;
+      context.videoSendCodecPreferences = [VideoCodecCapability.vp8(), VideoCodecCapability.h264()];
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.h264(),
+        VideoCodecCapability.vp8(),
+      ];
+      task.run().then(() => {
+        const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
+        expect(peerSDPAnswer).to.be.equal(
+          SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_H264_CBP_THEN_VP8
+        );
         done();
       });
     });

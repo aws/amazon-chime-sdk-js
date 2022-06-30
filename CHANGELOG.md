@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add a new API `enableSimulcastForContentShare` to enable simulcast for content share so that content share could be shown in network constrained clients. The lower quality layer has 300 kbps max bitrate, resolution scale factor of 2, and 5 max framerate.
+- Add APIs `setVideoCodecSendPreferences` and `setContentShareVideoCodecPreferences` to allow configuration of codec being used to send. See the [JS SDK guide](https://aws.github.io/amazon-chime-sdk-js/modules/videocodecs.html) for more details.
+- Added tracer logs to missing subscribe and unsubscribe methods.
 
 ### Removed
 

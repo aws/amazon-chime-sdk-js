@@ -10,6 +10,7 @@ import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver'
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionVideoAvailability from '../../src/meetingsession/MeetingSessionVideoAvailability';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import VideoCodecCapability from '../../src/sdp/VideoCodecCapability';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
 import {
@@ -18,6 +19,7 @@ import {
   SdkStreamDescriptor,
   SdkStreamMediaType,
   SdkStreamServiceType,
+  SdkVideoCodecCapability,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import ReceiveVideoStreamIndexTask from '../../src/task/ReceiveVideoStreamIndexTask';
 import { wait as delay } from '../../src/utils/Utils';
@@ -54,12 +56,14 @@ describe('ReceiveVideoStreamIndexTask', () => {
   const createIndexSignalBuffer = (
     atCapacity: boolean = false,
     pausedAtSourceIds: number[] | null = null,
-    sources: SdkStreamDescriptor[] | null = null
+    sources: SdkStreamDescriptor[] | null = null,
+    supportedReceiveCodecIntersection: SdkVideoCodecCapability[] | null = null
   ): Uint8Array => {
     const indexFrame = SdkIndexFrame.create();
     indexFrame.atCapacity = atCapacity;
     indexFrame.pausedAtSourceIds = pausedAtSourceIds;
     indexFrame.sources = sources;
+    indexFrame.supportedReceiveCodecIntersection = supportedReceiveCodecIntersection;
     const indexSignal = SdkSignalFrame.create();
     indexSignal.type = SdkSignalFrame.Type.INDEX;
     indexSignal.index = indexFrame;
@@ -704,6 +708,79 @@ describe('ReceiveVideoStreamIndexTask', () => {
         });
         task.run();
       });
+    });
+  });
+
+  describe('handling supportedReceiveCodecIntersection', () => {
+    it('calculates intersection', done => {
+      context.videoSendCodecPreferences = [VideoCodecCapability.vp8(), VideoCodecCapability.h264()];
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(
+          createIndexSignalBuffer(false, null, null, [SdkVideoCodecCapability.VP8])
+        );
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
+          VideoCodecCapability.vp8(),
+        ]);
+        done();
+      });
+
+      task.run();
+    });
+
+    it('does not set intersection state if there is no overlap', done => {
+      context.videoSendCodecPreferences = [VideoCodecCapability.vp8()];
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(
+          createIndexSignalBuffer(false, null, null, [
+            SdkVideoCodecCapability.H264_CONSTRAINED_BASELINE_PROFILE,
+            3239 as SdkVideoCodecCapability, // Add garbage signaling
+          ])
+        );
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.meetingSupportedVideoSendCodecPreferences).to.equal(undefined);
+        done();
+      });
+
+      task.run();
+    });
+
+    it('does not set intersection state if there is no send codec preferences', done => {
+      context.videoSendCodecPreferences = undefined;
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(
+          createIndexSignalBuffer(false, null, null, [
+            SdkVideoCodecCapability.H264_CONSTRAINED_BASELINE_PROFILE,
+          ])
+        );
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.meetingSupportedVideoSendCodecPreferences).to.equal(undefined);
+        done();
+      });
+
+      task.run();
+    });
+
+    it('requests update if currently sending codec changed', done => {
+      const audioVideoControllerSpy: sinon.SinonSpy = sinon.spy(
+        context.audioVideoController,
+        'update'
+      );
+      context.videoSendCodecPreferences = [VideoCodecCapability.h264(), VideoCodecCapability.vp8()];
+      context.currentVideoSendCodec = VideoCodecCapability.h264();
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(
+          createIndexSignalBuffer(false, null, null, [SdkVideoCodecCapability.VP8])
+        );
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
+          VideoCodecCapability.vp8(),
+        ]);
+        expect(audioVideoControllerSpy.calledWith({ needsRenegotiation: true })).to.be.true;
+        done();
+      });
+
+      task.run();
     });
   });
 });
