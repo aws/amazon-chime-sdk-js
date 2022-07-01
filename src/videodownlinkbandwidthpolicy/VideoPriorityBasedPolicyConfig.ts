@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import ServerSideNetworkAdaption from '../signalingclient/ServerSideNetworkAdaption';
+
 /** @internal */
 const enum NetworkEvent {
   Stable,
@@ -23,6 +25,12 @@ export default class VideoPriorityBasedPolicyConfig {
   private currentNetworkEvent: NetworkEvent = NetworkEvent.Stable;
   private bandwidthDecreaseTimestamp: number = 0; // the last time bandwidth decreases
   private referenceBitrate: number = 0;
+
+  /**
+   * Additional server side features to be enabled for network adaption. This
+   * may be overridden by the server.
+   */
+  serverSideNetworkAdaption = ServerSideNetworkAdaption.Default;
 
   /** Initializes a [[VideoPriorityBasedPolicyConfig]] with the network event delays.
    *

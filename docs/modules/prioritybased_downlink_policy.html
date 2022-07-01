@@ -94,12 +94,18 @@
 					<a href="#apis-and-usage" id="apis-and-usage" style="color: inherit; text-decoration: none;">
 						<h2>APIs and Usage</h2>
 					</a>
-					<p><strong>MeetingSessionConfiguration</strong>
-					When initializing the meeting, builders can specify the usage of the <code>VideoPriorityBasedPolicy</code> by allocating the policy in the application and passing it in through the <code>MeetingSessionConfiguration</code> when the meeting session is started.</p>
-					<p><strong>Notification of current available remote sources</strong>
-					Once you are connected to the meeting, builders will be notified of available remote video sources via the existing <code>remoteVideoSourcesDidChange</code> callback.</p>
-					<p><strong>Priority and max size for each remote stream</strong>
-					<code>VideoPreference</code> is used to contain the priority and size of remote video sources and content share to be received. There are three fields inside the <code>VideoPreference,</code> you could find more info for each field below.</p>
+					<a href="#meetingsessionconfiguration" id="meetingsessionconfiguration" style="color: inherit; text-decoration: none;">
+						<h3>MeetingSessionConfiguration</h3>
+					</a>
+					<p>When initializing the meeting, builders can specify the usage of the <code>VideoPriorityBasedPolicy</code> by allocating the policy in the application and passing it in through the <code>MeetingSessionConfiguration</code> when the meeting session is started.</p>
+					<a href="#notification-of-current-available-remote-sources" id="notification-of-current-available-remote-sources" style="color: inherit; text-decoration: none;">
+						<h3>Notification of current available remote sources</h3>
+					</a>
+					<p>Once you are connected to the meeting, builders will be notified of available remote video sources via the existing <code>remoteVideoSourcesDidChange</code> callback.</p>
+					<a href="#priority-and-max-size-for-each-remote-stream" id="priority-and-max-size-for-each-remote-stream" style="color: inherit; text-decoration: none;">
+						<h3>Priority and max size for each remote stream</h3>
+					</a>
+					<p><code>VideoPreference</code> is used to contain the priority and size of remote video sources and content share to be received. There are three fields inside the <code>VideoPreference,</code> you could find more info for each field below.</p>
 					<ul>
 						<li><em><em>attendeeId:</em></em>  The attendee ID this video tile belongs to. Note that screen share video will have a suffix of #content</li>
 						<li><em><em>priority:</em></em> Provides relative priority of this attendee from 1 to x, where 1 is the highest priority. Remote videos are allowed to have the same priority signifying equal priority between them.</li>
@@ -111,7 +117,9 @@
 						<li>Medium if there are 5-8 videos.</li>
 						<li>Low otherwise.</li>
 					</ul>
-					<p><strong>Configuring the receipt and priority of remote video sources</strong></p>
+					<a href="#configuring-the-receipt-and-priority-of-remote-video-sources" id="configuring-the-receipt-and-priority-of-remote-video-sources" style="color: inherit; text-decoration: none;">
+						<h3>Configuring the receipt and priority of remote video sources</h3>
+					</a>
 					<p>The main API being used is:</p>
 					<pre><code><span style="color: #795E26">chooseRemoteVideoSources</span><span style="color: #000000">(</span><span style="color: #001080">sources</span><span style="color: #000000">: </span><span style="color: #001080">VideoPreference</span><span style="color: #000000">[]): </span><span style="color: #0000FF">void</span>
 </code></pre>
@@ -127,9 +135,13 @@
 						<li>The policy may limit how often it updates the list of actual streams it subscribes to.</li>
 					</ul>
 					<p><em>(Note that the exact internal behavior of this policy may slightly change in future releases)</em></p>
-					<p><strong>Receiving notifications that a remote video was paused due to bandwidth constraint</strong>
-					If a remote video source is paused due to insufficient bandwidth, then the application will be notified through <code>tileWillBePausedByDownlinkPolicy</code> by  <code>VideoDownlinkObserver</code> and the <code>VideoTileState</code> will be set to <code>paused</code>.</p>
-					<p><strong>Configure network event delays</strong><span id="configure-network-event-delays"><span></p>
+					<a href="#receiving-notifications-that-a-remote-video-was-paused-due-to-bandwidth-constraint" id="receiving-notifications-that-a-remote-video-was-paused-due-to-bandwidth-constraint" style="color: inherit; text-decoration: none;">
+						<h3>Receiving notifications that a remote video was paused due to bandwidth constraint</h3>
+					</a>
+					<p>If a remote video source is paused due to insufficient bandwidth, then the application will be notified through <code>tileWillBePausedByDownlinkPolicy</code> by  <code>VideoDownlinkObserver</code> and the <code>VideoTileState</code> will be set to <code>paused</code>.</p>
+					<a href="#configure-network-event-delays-" id="configure-network-event-delays-" style="color: inherit; text-decoration: none;">
+						<h3>Configure network event delays <span id="configure-network-event-delays"><span></h3>
+					</a>
 					<p>The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser&#39;s internal estimation of bandwidth.  If you would like to modify these delays to better fit your application&#39;s use case, we have exposed control with a simple to use API. Builders can pass in <code>VideoPriorityBasedPolicyConfig</code> either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:</p>
 					<pre><code class="language-ts"><span style="color: #008000">// Method 1: Initialize with a preset</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">config</span><span style="color: #000000"> = </span>
@@ -164,6 +176,25 @@
 						<li><em>Unstable Network Preset</em>: <code>VideoPriorityBasedPolicyConfig.UnstableNetworkPreset</code> configures quick network issue response delay and slow recovery delay. If expecting a lot of mobile usage, builders can choose unstable network preset. It has less confidence in the network so it takes longer wait when network is recovered in case the network is inconsistent.</li>
 						<li><em>Stable Network Preset</em>: <code>VideoPriorityBasedPolicyConfig.StableNetworkPreset</code> configures slow network issue response delay and quick recovery delay. Select stable network preset when the network is expected to stay stable, for example in unified communications client or Ethernet connections. It will try to &#39;wait-out&#39; network downturns in case they are a temporary spike.</li>
 					</ul>
+					<a href="#enabling-server-side-network-adaption-features-" id="enabling-server-side-network-adaption-features-" style="color: inherit; text-decoration: none;">
+						<h3>Enabling Server Side Network Adaption Features <span id="server-side-network-adaption"><span></h3>
+					</a>
+					<p><code>VideoPriorityBasedPolicy</code> has support for configuring additional features on the backend. These features are currently opt-in but may become defaults in the future. To enable pacing and probing on the existing receive side estimator, and disable the policy based stream probing which can often oversubscribe over network constraints and lead to video freezes, set the following on <code>VideoPriorityBasedPolicyConfig</code> before injecting:</p>
+					<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">config</span><span style="color: #000000"> = </span>
+<span style="color: #000000">  </span><span style="color: #001080">VideoPriorityBasedPolicyConfig</span><span style="color: #000000">.</span><span style="color: #001080">Default</span><span style="color: #000000">;</span>
+<span style="color: #001080">config</span><span style="color: #000000">.</span><span style="color: #001080">serverSideNetworkAdaption</span><span style="color: #000000"> = </span>
+<span style="color: #000000">    </span><span style="color: #001080">ServerSideNetworkAdaption</span><span style="color: #000000">.</span><span style="color: #001080">BandwidthProbing</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">priorityBasedDownlinkPolicy</span><span style="color: #000000"> = </span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPriorityBasedPolicy</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">meetingLogger</span><span style="color: #000000">, </span><span style="color: #001080">config</span><span style="color: #000000">);</span>
+</code></pre>
+					<p>The server may override the value if left to default. If you do not want the server to update the value, set it explicitly to <code>ServerSideNetworkAdaption.None</code></p>
+					<a href="#impact-of-serversidenetworkadaptionbandwidthprobing" id="impact-of-serversidenetworkadaptionbandwidthprobing" style="color: inherit; text-decoration: none;">
+						<h4>Impact of <code>ServerSideNetworkAdaption.BandwidthProbing</code></h4>
+					</a>
+					<p>An occasional issue with the <code>VideoPriorityBasedPolicy</code> is that in recovery, it will periodically try to upgrade quality of its remote videos (or unpause), regardless of the size of the jump in bitrate. If the jump in bitrate hits the network constraint, it will immediately overuse the link, encountering packet loss, and possibly leading to a further dip in the bandwidth estimation.</p>
+					<p>For example, say an end-user&#39;s policy is picking between a 300 and 1200 kbps stream and suddenly their network is restricted to 400 kbps. Eventually the policy as is, should switch to the 300 kbps stream. The client side policy cannot know whether the link has recovered to anywhere between 300 and 1200 kbps because its only option is eventually try to upgrade to the 1200 stream. If the constraint is still anywhere under 1200 this will overuse the network as mentioned above.</p>
+					<p>As an alternative, we can instead mirror a traditional WebRTC 1-1 call, and gradually increase the bitrate using padding or pre-emptive retransmissions from the backend which will allow us to gracefully discover network constraints. This is what occurs when <code>ServerSideNetworkAdaption.BandwidthProbing</code> is set. In addition, setting that value will <em>disable all client side probing</em> as it is no longer necessary.</p>
+					<p>In the example above, the bitrate would gradually increase to 400kbps, at which it would ‘discover’ the network constraint, and stabilize there. The rate at which the backend will send padding is dependent on the receive estimate, which it receives via REMB. The change also incorporates libwebrtc based pacing (<a href="https://chromium.googlesource.com/external/webrtc/+/master/modules/pacing/g3doc/index.md">https://chromium.googlesource.com/external/webrtc/+/master/modules/pacing/g3doc/index.md</a>) for video to better stabilize the bandwidth estimation on the receive side, and the occasional sending of probe clusters for more rapid attempts of boosting bandwidth estimation.</p>
 					<a href="#builder-code-sample" id="builder-code-sample" style="color: inherit; text-decoration: none;">
 						<h2>Builder Code Sample</h2>
 					</a>

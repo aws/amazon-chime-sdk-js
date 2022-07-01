@@ -31,6 +31,9 @@ import {
 import Versioning from '../versioning/Versioning';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
+import ServerSideNetworkAdaption, {
+  convertServerSideNetworkAdaptionEnumToSignaled,
+} from './ServerSideNetworkAdaption';
 import SignalingClient from './SignalingClient';
 import SignalingClientConnectionRequest from './SignalingClientConnectionRequest';
 import SignalingClientEvent from './SignalingClientEvent';
@@ -107,7 +110,16 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.clientDetails = SdkClientDetails.create(sdkClientDetails);
     joinFrame.audioSessionId = this.audioSessionId;
     joinFrame.wantsCompressedSdp = DefaultSignalingClient.CLIENT_SUPPORTS_COMPRESSION;
-
+    joinFrame.serverSideNetworkAdaption = convertServerSideNetworkAdaptionEnumToSignaled(
+      settings.serverSideNetworkAdaption
+    );
+    if (settings.serverSideNetworkAdaption === ServerSideNetworkAdaption.BandwidthProbing) {
+      // Temporarily add deprecated signaling, to be removed later once backend is consistent
+      joinFrame.wantsServerSideNetworkProbingOnReceiveSideEstimator = true;
+    }
+    joinFrame.supportedServerSideNetworkAdaptions = settings.supportedServerSideNetworkAdaptions.map(
+      convertServerSideNetworkAdaptionEnumToSignaled
+    );
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
     message.join = joinFrame;
@@ -152,6 +164,12 @@ export default class DefaultSignalingClient implements SignalingClient {
         subscribeFrame.sendStreams.push(streamDescription.toStreamDescriptor());
       }
     }
+
+    if (settings.videoSubscriptionConfiguration.length > 0) {
+      subscribeFrame.videoSubscriptionConfiguration = settings.videoSubscriptionConfiguration.map(
+        this.convertVideoSubscriptionConfiguration
+      );
+    }
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.SUBSCRIBE;
     message.sub = subscribeFrame;
@@ -181,6 +199,9 @@ export default class DefaultSignalingClient implements SignalingClient {
     signalConfig.mid = config.mid;
     signalConfig.attendeeId = config.attendeeId;
     signalConfig.streamId = config.streamId;
+    signalConfig.groupId = config.groupId;
+    signalConfig.priority = config.priority;
+    signalConfig.targetBitrateKbps = config.targetBitrateKbps;
     return signalConfig;
   }
 
