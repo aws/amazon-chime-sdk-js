@@ -54,8 +54,15 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
         });
     }
     stop() {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             this.port.postMessage({ message: 'stop' });
+            try {
+                (_a = this.worker) === null || _a === void 0 ? void 0 : _a.terminate();
+            }
+            catch (e) {
+                console.error("failed to terminate worker:", e);
+            }
             this.disconnect();
         });
     }
