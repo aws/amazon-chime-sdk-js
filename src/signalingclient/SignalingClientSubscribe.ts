@@ -2,11 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
+import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVideoSubscriptionConfiguration';
 
 /**
  * [[SignalingClientSubscribe]] contains settings for the Subscribe SignalFrame.
  */
 export default class SignalingClientSubscribe {
+  videoSubscriptionConfiguration: SignalingClientVideoSubscriptionConfiguration[] = [];
+
   /** Initializes a SignalingClientSubscribe with the given properties.
    *
    * @param attendeeId Attendee ID of the client

@@ -116,6 +116,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       );
     }
 
+    // Null out cached maps, these will be recreated on demand
     this.streamToAttendeeMap = null;
     this.streamToExternalUserIdMap = null;
   }
@@ -317,6 +318,10 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   }
 
   groupIdForStreamId(streamId: number): number {
+    if (!this.currentIndex || !this.currentIndex.sources) {
+      return undefined;
+    }
+
     for (const source of this.currentIndex.sources) {
       if (source.streamId === streamId) {
         return source.groupId;

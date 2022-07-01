@@ -7,6 +7,7 @@ import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
 import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import Logger from '../logger/Logger';
 import { LogLevel } from '../logger/LogLevel';
+import ServerSideNetworkAdaption from '../signalingclient/ServerSideNetworkAdaption';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
@@ -108,6 +109,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   private timeBeforeAllowProbeMs: number;
   private lastProbeTimestamp: number;
   private probeFailed: boolean;
+  private serverSideNetworkAdaption: ServerSideNetworkAdaption;
 
   constructor(
     protected logger: Logger,
@@ -140,6 +142,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.downlinkStats = new LinkMediaStats();
     this.prevDownlinkStats = new LinkMediaStats();
     this.probeFailed = false;
+    this.serverSideNetworkAdaption = this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption;
   }
 
   bindToTileController(tileController: VideoTileController): void {
@@ -332,9 +335,12 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       chosenStreams
     );
 
+    const skipProbe =
+      this.serverSideNetworkAdaption !== ServerSideNetworkAdaption.None &&
+      this.serverSideNetworkAdaption !== ServerSideNetworkAdaption.Default;
     let subscriptionChoice = UseReceiveSet.NewOptimal;
     // Look for probing or override opportunities
-    if (!this.startupPeriod && sameStreamChoices) {
+    if (!skipProbe && !this.startupPeriod && sameStreamChoices) {
       if (this.rateProbeState === RateProbeState.Probing) {
         subscriptionChoice = this.handleProbe(chosenStreams, rates.targetDownlinkBitrate);
       } else if (rates.deltaToNextUpgrade !== 0) {
@@ -1055,7 +1061,31 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     return logString;
   }
 
-  private getCurrentVideoPreferences(): VideoPreferences {
+  protected getCurrentVideoPreferences(): VideoPreferences {
     return this.videoPreferences || this.defaultVideoPreferences;
+  }
+
+  getServerSideNetworkAdaption(): ServerSideNetworkAdaption {
+    return this.serverSideNetworkAdaption;
+  }
+
+  setServerSideNetworkAdaption(adaption: ServerSideNetworkAdaption): void {
+    this.serverSideNetworkAdaption = adaption;
+    this.setProbeState(RateProbeState.NotProbing); // In case we were probing
+  }
+
+  supportedServerSideNetworkAdaptions(): ServerSideNetworkAdaption[] {
+    return [ServerSideNetworkAdaption.None, ServerSideNetworkAdaption.BandwidthProbing];
+  }
+
+  getVideoPreferences(): VideoPreferences {
+    let preferences = this.getCurrentVideoPreferences();
+    if (!preferences) {
+      const dummyPreferences = VideoPreferences.prepare();
+      // Can't be undefined, occasionally the audio video controller
+      // will call this function before the first index is received
+      preferences = dummyPreferences.build();
+    }
+    return preferences;
   }
 }
