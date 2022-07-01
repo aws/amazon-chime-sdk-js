@@ -68,8 +68,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p><a href="signalingclientvideosubscriptionconfiguration.html">SignalingClientVideoSubscriptionConfiguration</a> contains a mapping of MID to parameters for customize what remote video is received and how,
-						on an individual stream level. This can be used to update remote video sessions set up through <code>subscribe</code></p>
+						<p><a href="signalingclientvideosubscriptionconfiguration.html">SignalingClientVideoSubscriptionConfiguration</a> is an internal representation of
+						<code>SignalingProtocol.VideoSubscriptionConfiguration</code></p>
 					</div>
 				</div>
 			</section>
@@ -95,8 +95,11 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientvideosubscriptionconfiguration.html#attendeeid" class="tsd-kind-icon">attendee<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientvideosubscriptionconfiguration.html#groupid" class="tsd-kind-icon">group<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientvideosubscriptionconfiguration.html#mid" class="tsd-kind-icon">mid</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientvideosubscriptionconfiguration.html#priority" class="tsd-kind-icon">priority</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientvideosubscriptionconfiguration.html#streamid" class="tsd-kind-icon">stream<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientvideosubscriptionconfiguration.html#targetbitratekbps" class="tsd-kind-icon">target<wbr>Bitrate<wbr>Kbps</a></li>
 							</ul>
 						</section>
 					</div>
@@ -127,20 +130,19 @@
 					<div class="tsd-signature tsd-kind-icon">attendee<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L28">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L10">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:10</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>If stream_id is not set but attendee_id is we will fill video session with
-								any of the given attendee&#39;s simulcast streams (given other constraints
-							possibly provided in the future), with preference to the highest quality.</p>
-						</div>
-						<p>If stream_id and attendee_id is set, we may fallback to any video from
-						the given attendee_id if the stream is unexpectedly dropped.</p>
-						<p>Not setting attendee_id will cause the backend to skip automated switching
-						which may lead to extended freeze times.</p>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="groupid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> group<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">group<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L12">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:12</a></li>
+						</ul>
+					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="mid" class="tsd-anchor"></a>
@@ -148,15 +150,19 @@
 					<div class="tsd-signature tsd-kind-icon">mid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L15">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L9">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:9</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Associated MID for this configuration, i.e. the key in the flat map when a list of <a href="signalingclientvideosubscriptionconfiguration.html">SignalingClientVideoSubscriptionConfiguration</a> is provided.</p>
-						</div>
-						<p>See <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/mid">https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/mid</a> for more details.</p>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="priority" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> priority</h3>
+					<div class="tsd-signature tsd-kind-icon">priority<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L13">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:13</a></li>
+						</ul>
+					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="streamid" class="tsd-anchor"></a>
@@ -164,14 +170,19 @@
 					<div class="tsd-signature tsd-kind-icon">stream<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L33">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L11">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:11</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>A target stream ID, as in the case for client-driven simulcast stream selection.</p>
-						</div>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="targetbitratekbps" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> target<wbr>Bitrate<wbr>Kbps</h3>
+					<div class="tsd-signature tsd-kind-icon">target<wbr>Bitrate<wbr>Kbps<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts#L14">src/signalingclient/SignalingClientVideoSubscriptionConfiguration.ts:14</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -197,10 +208,19 @@
 								<a href="signalingclientvideosubscriptionconfiguration.html#attendeeid" class="tsd-kind-icon">attendee<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="signalingclientvideosubscriptionconfiguration.html#groupid" class="tsd-kind-icon">group<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="signalingclientvideosubscriptionconfiguration.html#mid" class="tsd-kind-icon">mid</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="signalingclientvideosubscriptionconfiguration.html#priority" class="tsd-kind-icon">priority</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="signalingclientvideosubscriptionconfiguration.html#streamid" class="tsd-kind-icon">stream<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="signalingclientvideosubscriptionconfiguration.html#targetbitratekbps" class="tsd-kind-icon">target<wbr>Bitrate<wbr>Kbps</a>
 							</li>
 						</ul>
 					</li>

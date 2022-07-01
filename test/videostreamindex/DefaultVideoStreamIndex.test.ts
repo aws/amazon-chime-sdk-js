@@ -1359,6 +1359,10 @@ describe('DefaultVideoStreamIndex', () => {
   });
 
   describe('groupIdForStreamId', () => {
+    it('returns undefined if sources are not set', () => {
+      expect(index.groupIdForStreamId(6)).to.equal(undefined);
+    });
+
     it('returns correct groupId if exists', () => {
       const indexFrame = new SdkIndexFrame({
         sources: [
