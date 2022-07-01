@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
+import { AllHighestVideoBandwidthPolicy } from '../../src';
 import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -14,10 +16,12 @@ import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionSta
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
+import ServerSideNetworkAdaption from '../../src/signalingclient/ServerSideNetworkAdaption';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
 import {
   SdkIndexFrame,
   SdkJoinAckFrame,
+  SdkServerSideNetworkAdaption,
   SdkSignalFrame,
   SdkTurnCredentials,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
@@ -53,6 +57,7 @@ describe('JoinAndReceiveIndexTask', () => {
     context.browserBehavior = new DefaultBrowserBehavior();
     context.meetingSessionConfiguration = new MeetingSessionConfiguration();
     context.meetingSessionConfiguration.urls = new MeetingSessionURLs();
+    context.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy('self');
     task = new JoinAndReceiveIndexTask(context);
 
     request = new SignalingClientConnectionRequest(`ws://localhost:9999/control`, 'test-auth');
@@ -256,6 +261,83 @@ describe('JoinAndReceiveIndexTask', () => {
       await task.run();
       expect(context.indexFrame).to.not.equal(null);
       expect(context.serverSupportsCompression).to.equal(true);
+    });
+
+    it('can set the server side network adaption flag', async () => {
+      context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption = () => {
+        return ServerSideNetworkAdaption.BandwidthProbing;
+      };
+      const signalingSpy = sinon.spy(context.signalingClient, 'join');
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(signalingSpy.called).to.be.true;
+    });
+
+    it('can set the server side network adaption flag to None', async () => {
+      context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption = () => {
+        return ServerSideNetworkAdaption.None;
+      };
+      const signalingSpy = sinon.spy(context.signalingClient, 'join');
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(signalingSpy.called).to.be.true;
+    });
+
+    it('can have the server side network adaption overriden', async () => {
+      context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption = () => {
+        return ServerSideNetworkAdaption.Default;
+      };
+
+      context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions = () => {
+        return [ServerSideNetworkAdaption.BandwidthProbing];
+      };
+
+      context.videoDownlinkBandwidthPolicy.setServerSideNetworkAdaption = () => {};
+
+      const joinAckFrame = SdkJoinAckFrame.create();
+      joinAckFrame.turnCredentials = SdkTurnCredentials.create();
+      joinAckFrame.turnCredentials.username = 'fake-username';
+      joinAckFrame.turnCredentials.password = 'fake-password';
+      joinAckFrame.turnCredentials.ttl = 300;
+      joinAckFrame.turnCredentials.uris = ['fake-turn', 'fake-turns'];
+      joinAckFrame.videoSubscriptionLimit = 10;
+      joinAckFrame.defaultServerSideNetworkAdaption =
+        SdkServerSideNetworkAdaption.BANDWIDTH_PROBING;
+
+      const joinAckSignal = SdkSignalFrame.create();
+      joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
+      joinAckSignal.joinack = joinAckFrame;
+
+      const joinAckBuffer = SdkSignalFrame.encode(joinAckSignal).finish();
+      const altJoinAckSignalBuffer = new Uint8Array(joinAckBuffer.length + 1);
+      altJoinAckSignalBuffer[0] = 0x5;
+      altJoinAckSignalBuffer.set(joinAckBuffer, 1);
+
+      const signalingSpy = sinon.spy(context.signalingClient, 'join');
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(altJoinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(signalingSpy.called).to.be.true;
     });
 
     it('can run and send join with application metadata if valid', async () => {

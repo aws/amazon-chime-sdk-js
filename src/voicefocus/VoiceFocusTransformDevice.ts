@@ -36,7 +36,7 @@ class VoiceFocusTransformDevice implements AudioTransformDevice, AudioMixObserve
     /** mixDestNode is the Audio Destination Node where farEndStreams got mixed into one stream.*/
     private mixDestNode: MediaStreamAudioDestinationNode | undefined = undefined,
 
-    /** mixSourceNode is the Audio Source Node where the stream out of mixDestNode got transfered into Audio Worklet Node for processing.*/
+    /** mixSourceNode is the Audio Source Node where the stream out of mixDestNode got transferred into Audio Worklet Node for processing.*/
     private mixSourceNode: MediaStreamAudioSourceNode | undefined = undefined
   ) {}
 
