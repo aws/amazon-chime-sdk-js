@@ -628,149 +628,14 @@ export class DemoMeetingApp
       (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value = "";
     });
 
+    document.getElementById('quick-join').addEventListener('click', e => {
+      e.preventDefault();
+      this.redirectFromAuthentication(true);
+    });
+
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
-      this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
-      this.name = (document.getElementById('inputName') as HTMLInputElement).value;
-      this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
-      this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
-      this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
-      this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
-      this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
-      this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
-      this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
-      this.primaryExternalMeetingId = (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value;
-
-      const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
-      switch (chosenLogLevel) {
-        case 'INFO':
-          this.logLevel = LogLevel.INFO;
-          break;
-        case 'DEBUG':
-          this.logLevel = LogLevel.DEBUG;
-          break;
-        case 'WARN':
-          this.logLevel = LogLevel.WARN;
-          break;
-        case 'ERROR':
-          this.logLevel = LogLevel.ERROR;
-          break;
-        default:
-          this.logLevel = LogLevel.OFF;
-          break;
-      }
-
-      const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
-      switch (chosenVideoSendCodec) {
-        case 'vp8':
-          this.videoCodecPreferences = [VideoCodecCapability.vp8()];
-          break;
-        case 'h264ConstrainedBaselineProfile':
-          this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-          break;
-        default:
-          // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
-          // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
-          break;
-      }
-
-      AsyncScheduler.nextTick(
-        async (): Promise<void> => {
-          let chimeMeetingId: string = '';
-          this.showProgress('progress-authenticate');
-          try {
-            chimeMeetingId = await this.authenticate();
-          } catch (error) {
-            console.error(error);
-            const httpErrorMessage =
-              'UserMedia is not allowed in HTTP sites. Either use HTTPS or enable media capture on insecure sites.';
-            (document.getElementById(
-              'failed-meeting'
-            ) as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
-            (document.getElementById('failed-meeting-error') as HTMLDivElement).innerText =
-              window.location.protocol === 'http:' ? httpErrorMessage : error.message;
-            this.switchToFlow('flow-failed-meeting');
-            return;
-          }
-          (document.getElementById(
-            'meeting-id'
-          ) as HTMLSpanElement).innerText = `${this.meeting} (${this.region})`;
-          (document.getElementById(
-            'chime-meeting-id'
-          ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
-          (document.getElementById(
-            'mobile-chime-meeting-id'
-          ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
-          (document.getElementById(
-            'mobile-attendee-id'
-          ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
-          (document.getElementById(
-            'desktop-attendee-id'
-          ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
-          (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
-          (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
-
-          if (this.isViewOnly) {
-            this.updateUXForViewOnlyMode();
-            await this.openAudioOutputFromSelection();
-            await this.join();
-            this.switchToFlow('flow-meeting');
-            this.hideProgress('progress-authenticate');
-            return;
-          }
-          await this.initVoiceFocus();
-          await this.initBackgroundBlur();
-          await this.initBackgroundReplacement();
-          await this.populateAllDeviceLists();
-          await this.populateVideoFilterInputList(false);
-          await this.populateVideoFilterInputList(true);
-          if (this.enableSimulcast) {
-            const videoInputQuality = document.getElementById(
-              'video-input-quality'
-            ) as HTMLSelectElement;
-            videoInputQuality.value = '720p';
-            this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
-            videoInputQuality.disabled = true;
-          }
-
-          // `this.primaryExternalMeetingId` may by the join request
-          const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');
-          if (!this.primaryExternalMeetingId) {
-            buttonPromoteToPrimary.style.display = 'none';
-          } else {
-            this.setButtonVisibility('button-record-cloud', false);
-            this.updateUXForReplicaMeetingPromotionState('demoted');
-          }
-          /* @ts-ignore */
-          if ((e as SubmitEvent).submitter.id == 'quick-join') {
-            await this.openAudioInputFromSelectionAndPreview();
-            await this.openAudioOutputFromSelection();
-            await this.join();
-            this.displayButtonStates();
-            this.switchToFlow('flow-meeting');
-            this.hideProgress('progress-authenticate');
-            return;
-          }
-          this.switchToFlow('flow-devices');
-          await this.openAudioInputFromSelectionAndPreview();
-          try {
-            await this.openVideoInputFromSelection(
-              (document.getElementById('video-input') as HTMLSelectElement).value,
-              true
-            );
-          } catch (err) {
-            fatal(err);
-          }
-          await this.openAudioOutputFromSelection();
-          this.hideProgress('progress-authenticate');
-
-          // Open the signaling connection while the user is checking their input devices.
-          const preconnect = document.getElementById('preconnect') as HTMLInputElement;
-          if (preconnect.checked) {
-            this.audioVideo.start({ signalingOnly: true });
-          }
-        }
-      );
+      this.redirectFromAuthentication();
     });
 
     const earlyConnectCheckbox = document.getElementById('preconnect') as HTMLInputElement;
@@ -2003,8 +1868,8 @@ export class DemoMeetingApp
         new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId
         || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!present) {
-        this.roster.removeAttendee(attendeeId);      
-        this.audioVideo.realtimeUnsubscribeFromVolumeIndicator(attendeeId, this.volumeIndicatorHandler);  
+        this.roster.removeAttendee(attendeeId);
+        this.audioVideo.realtimeUnsubscribeFromVolumeIndicator(attendeeId, this.volumeIndicatorHandler);
         this.log(`${attendeeId} dropped = ${dropped} (${externalUserId})`);
         return;
       }
@@ -2020,7 +1885,7 @@ export class DemoMeetingApp
       const attendeeName =  externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
       this.roster.addAttendee(attendeeId, attendeeName);
 
-      this.volumeIndicatorHandler = async (  
+      this.volumeIndicatorHandler = async (
         attendeeId: string,
         volume: number | null,
         muted: boolean | null,
@@ -2043,7 +1908,7 @@ export class DemoMeetingApp
     this.activeSpeakerHandler = (attendeeIds: string[]): void => {
       // First reset all roster active speaker information
       for (const id of this.roster.getAllAttendeeIds()) {
-        this.roster.setAttendeeSpeakingStatus(id, false);        
+        this.roster.setAttendeeSpeakingStatus(id, false);
       }
 
       // Then re-update roster and tile collection with latest information
@@ -3672,6 +3537,140 @@ export class DemoMeetingApp
       toast.message = warningMessage;
       toast.show();
     }
+  }
+
+  private redirectFromAuthentication(quickjoin: boolean = false): void {
+    this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
+    this.name = (document.getElementById('inputName') as HTMLInputElement).value;
+    this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
+    this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
+    this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
+    this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
+    this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
+    this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
+    this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
+    this.primaryExternalMeetingId = (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value;
+
+    const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
+    switch (chosenLogLevel) {
+      case 'INFO':
+        this.logLevel = LogLevel.INFO;
+        break;
+      case 'DEBUG':
+        this.logLevel = LogLevel.DEBUG;
+        break;
+      case 'WARN':
+        this.logLevel = LogLevel.WARN;
+        break;
+      case 'ERROR':
+        this.logLevel = LogLevel.ERROR;
+        break;
+      default:
+        this.logLevel = LogLevel.OFF;
+        break;
+    }
+
+    AsyncScheduler.nextTick(
+      async (): Promise<void> => {
+        let chimeMeetingId: string = '';
+        this.showProgress('progress-authenticate');
+        try {
+          chimeMeetingId = await this.authenticate();
+        } catch (error) {
+          console.error(error);
+          const httpErrorMessage =
+            'UserMedia is not allowed in HTTP sites. Either use HTTPS or enable media capture on insecure sites.';
+          (document.getElementById(
+            'failed-meeting'
+          ) as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
+          (document.getElementById('failed-meeting-error') as HTMLDivElement).innerText =
+            window.location.protocol === 'http:' ? httpErrorMessage : error.message;
+          this.switchToFlow('flow-failed-meeting');
+          return;
+        }
+        (document.getElementById(
+          'meeting-id'
+        ) as HTMLSpanElement).innerText = `${this.meeting} (${this.region})`;
+        (document.getElementById(
+          'chime-meeting-id'
+        ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
+        (document.getElementById(
+          'mobile-chime-meeting-id'
+        ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
+        (document.getElementById(
+          'mobile-attendee-id'
+        ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
+        (document.getElementById(
+          'desktop-attendee-id'
+        ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
+        (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
+        (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
+
+        if (this.isViewOnly) {
+          this.updateUXForViewOnlyMode();
+          await this.skipDeviceSelection(false);
+          return;
+        }
+        await this.initVoiceFocus();
+        await this.initBackgroundBlur();
+        await this.initBackgroundReplacement();
+        await this.populateAllDeviceLists();
+        await this.populateVideoFilterInputList(false);
+        await this.populateVideoFilterInputList(true);
+        if (this.enableSimulcast) {
+          const videoInputQuality = document.getElementById(
+            'video-input-quality'
+          ) as HTMLSelectElement;
+          videoInputQuality.value = '720p';
+          this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
+          videoInputQuality.disabled = true;
+        }
+
+        // `this.primaryExternalMeetingId` may by the join request
+        const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');
+        if (!this.primaryExternalMeetingId) {
+          buttonPromoteToPrimary.style.display = 'none';
+        } else {
+          this.setButtonVisibility('button-record-cloud', false);
+          this.updateUXForReplicaMeetingPromotionState('demoted');
+        }
+
+        if (quickjoin) {
+          await this.skipDeviceSelection();
+          this.displayButtonStates();
+          return;
+        }
+        this.switchToFlow('flow-devices');
+        await this.openAudioInputFromSelectionAndPreview();
+        try {
+          await this.openVideoInputFromSelection(
+            (document.getElementById('video-input') as HTMLSelectElement).value,
+            true
+          );
+        } catch (err) {
+          fatal(err);
+        }
+        await this.openAudioOutputFromSelection();
+        this.hideProgress('progress-authenticate');
+
+        // Open the signaling connection while the user is checking their input devices.
+        const preconnect = document.getElementById('preconnect') as HTMLInputElement;
+        if (preconnect.checked) {
+          this.audioVideo.start({ signalingOnly: true });
+        }
+      }
+    );
+  }
+
+  // to call from form-authenticate form
+  private async skipDeviceSelection(autoSelectAudioInput: boolean = true): Promise<void> {
+    if (autoSelectAudioInput) {
+      await this.openAudioInputFromSelection();
+    }
+    await this.openAudioOutputFromSelection();
+    await this.join();
+    this.switchToFlow('flow-meeting');
+    this.hideProgress('progress-authenticate');
   }
 
   allowMaxContentShare(): boolean {
