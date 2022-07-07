@@ -5,6 +5,7 @@ import { Substitute } from '@fluffy-spoon/substitute';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { VideoCodecCapability } from '../../src';
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
 import AudioMixObserver from '../../src/audiomixobserver/AudioMixObserver';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
@@ -50,6 +51,8 @@ describe('DefaultAudioVideoFacade', () => {
     }
 
     setContentAudioProfile(_audioProfile: AudioProfile): void {}
+
+    setContentShareVideoCodecPreferences(_preferences: VideoCodecCapability[]): void {}
 
     pauseContentShare(): void {}
 
@@ -142,6 +145,12 @@ describe('DefaultAudioVideoFacade', () => {
     it('will call setVideoMaxBandwidthKbps', () => {
       const spy = sinon.spy(controller, 'setVideoMaxBandwidthKbps');
       facade.setVideoMaxBandwidthKbps(100);
+      assert(spy.calledOnce);
+    });
+
+    it('will call setVideoCodecSendPreferences', () => {
+      const spy = sinon.spy(controller, 'setVideoCodecSendPreferences');
+      facade.setVideoCodecSendPreferences([]);
       assert(spy.calledOnce);
     });
 
@@ -668,6 +677,12 @@ describe('DefaultAudioVideoFacade', () => {
     it('will call startContentShareFromScreenCapture', async () => {
       const spy = sinon.spy(contentShareController, 'startContentShareFromScreenCapture');
       await facade.startContentShareFromScreenCapture();
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('will call setContentShareVideoCodecPreferences', async () => {
+      const spy = sinon.spy(contentShareController, 'setContentShareVideoCodecPreferences');
+      facade.setContentShareVideoCodecPreferences([]);
       expect(spy.calledOnce).to.be.true;
     });
 

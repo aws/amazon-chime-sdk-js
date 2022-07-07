@@ -17,6 +17,7 @@ import {
   DevicePixelRatioWindowSource,
   NoOpLogger,
   SignalingClientVideoSubscriptionConfiguration,
+  VideoCodecCapability,
   VideoTile,
 } from '../../src';
 import Attendee from '../../src/attendee/Attendee';
@@ -2999,6 +3000,27 @@ describe('DefaultAudioVideoController', () => {
       const spy = sinon.spy(audioVideoController.meetingSessionContext.signalingClient, 'resume');
 
       audioVideoController.resumeReceivingStream(0);
+
+      await stop();
+
+      expect(spy.callCount).to.equal(1);
+    });
+  });
+
+  describe('setVideoCodecSendPreferences', () => {
+    it('calls update', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      await start();
+      // @ts-ignore
+      const spy = sinon.spy(audioVideoController, 'update');
+
+      audioVideoController.setVideoCodecSendPreferences([VideoCodecCapability.vp8()]);
 
       await stop();
 

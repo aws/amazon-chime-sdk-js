@@ -1528,6 +1528,22 @@ $root.SdkClientDetails = (function() {
     return SdkClientDetails;
 })();
 
+/**
+ * SdkServerSideNetworkAdaption enum.
+ * @exports SdkServerSideNetworkAdaption
+ * @enum {number}
+ * @property {number} DEFAULT=1 DEFAULT value
+ * @property {number} NONE=2 NONE value
+ * @property {number} BANDWIDTH_PROBING=3 BANDWIDTH_PROBING value
+ */
+$root.SdkServerSideNetworkAdaption = (function() {
+    var valuesById = {}, values = Object.create(valuesById);
+    values[valuesById[1] = "DEFAULT"] = 1;
+    values[valuesById[2] = "NONE"] = 2;
+    values[valuesById[3] = "BANDWIDTH_PROBING"] = 3;
+    return values;
+})();
+
 $root.SdkJoinFrame = (function() {
 
     /**
@@ -1540,6 +1556,9 @@ $root.SdkJoinFrame = (function() {
      * @property {ISdkClientDetails|null} [clientDetails] SdkJoinFrame clientDetails
      * @property {number|Long|null} [audioSessionId] SdkJoinFrame audioSessionId
      * @property {boolean|null} [wantsCompressedSdp] SdkJoinFrame wantsCompressedSdp
+     * @property {boolean|null} [wantsServerSideNetworkProbingOnReceiveSideEstimator] SdkJoinFrame wantsServerSideNetworkProbingOnReceiveSideEstimator
+     * @property {SdkServerSideNetworkAdaption|null} [serverSideNetworkAdaption] SdkJoinFrame serverSideNetworkAdaption
+     * @property {Array.<SdkServerSideNetworkAdaption>|null} [supportedServerSideNetworkAdaptions] SdkJoinFrame supportedServerSideNetworkAdaptions
      */
 
     /**
@@ -1551,6 +1570,7 @@ $root.SdkJoinFrame = (function() {
      * @param {ISdkJoinFrame=} [properties] Properties to set
      */
     function SdkJoinFrame(properties) {
+        this.supportedServerSideNetworkAdaptions = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -1606,6 +1626,30 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.prototype.wantsCompressedSdp = false;
 
     /**
+     * SdkJoinFrame wantsServerSideNetworkProbingOnReceiveSideEstimator.
+     * @member {boolean} wantsServerSideNetworkProbingOnReceiveSideEstimator
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.wantsServerSideNetworkProbingOnReceiveSideEstimator = false;
+
+    /**
+     * SdkJoinFrame serverSideNetworkAdaption.
+     * @member {SdkServerSideNetworkAdaption} serverSideNetworkAdaption
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.serverSideNetworkAdaption = 1;
+
+    /**
+     * SdkJoinFrame supportedServerSideNetworkAdaptions.
+     * @member {Array.<SdkServerSideNetworkAdaption>} supportedServerSideNetworkAdaptions
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.supportedServerSideNetworkAdaptions = $util.emptyArray;
+
+    /**
      * Creates a new SdkJoinFrame instance using the specified properties.
      * @function create
      * @memberof SdkJoinFrame
@@ -1641,6 +1685,13 @@ $root.SdkJoinFrame = (function() {
             writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.audioSessionId);
         if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.wantsCompressedSdp);
+        if (message.wantsServerSideNetworkProbingOnReceiveSideEstimator != null && Object.hasOwnProperty.call(message, "wantsServerSideNetworkProbingOnReceiveSideEstimator"))
+            writer.uint32(/* id 8, wireType 0 =*/64).bool(message.wantsServerSideNetworkProbingOnReceiveSideEstimator);
+        if (message.serverSideNetworkAdaption != null && Object.hasOwnProperty.call(message, "serverSideNetworkAdaption"))
+            writer.uint32(/* id 10, wireType 0 =*/80).int32(message.serverSideNetworkAdaption);
+        if (message.supportedServerSideNetworkAdaptions != null && message.supportedServerSideNetworkAdaptions.length)
+            for (var i = 0; i < message.supportedServerSideNetworkAdaptions.length; ++i)
+                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.supportedServerSideNetworkAdaptions[i]);
         return writer;
     };
 
@@ -1692,6 +1743,22 @@ $root.SdkJoinFrame = (function() {
                 break;
             case 7:
                 message.wantsCompressedSdp = reader.bool();
+                break;
+            case 8:
+                message.wantsServerSideNetworkProbingOnReceiveSideEstimator = reader.bool();
+                break;
+            case 10:
+                message.serverSideNetworkAdaption = reader.int32();
+                break;
+            case 11:
+                if (!(message.supportedServerSideNetworkAdaptions && message.supportedServerSideNetworkAdaptions.length))
+                    message.supportedServerSideNetworkAdaptions = [];
+                if ((tag & 7) === 2) {
+                    var end2 = reader.uint32() + reader.pos;
+                    while (reader.pos < end2)
+                        message.supportedServerSideNetworkAdaptions.push(reader.int32());
+                } else
+                    message.supportedServerSideNetworkAdaptions.push(reader.int32());
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -1748,6 +1815,31 @@ $root.SdkJoinFrame = (function() {
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             if (typeof message.wantsCompressedSdp !== "boolean")
                 return "wantsCompressedSdp: boolean expected";
+        if (message.wantsServerSideNetworkProbingOnReceiveSideEstimator != null && message.hasOwnProperty("wantsServerSideNetworkProbingOnReceiveSideEstimator"))
+            if (typeof message.wantsServerSideNetworkProbingOnReceiveSideEstimator !== "boolean")
+                return "wantsServerSideNetworkProbingOnReceiveSideEstimator: boolean expected";
+        if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
+            switch (message.serverSideNetworkAdaption) {
+            default:
+                return "serverSideNetworkAdaption: enum value expected";
+            case 1:
+            case 2:
+            case 3:
+                break;
+            }
+        if (message.supportedServerSideNetworkAdaptions != null && message.hasOwnProperty("supportedServerSideNetworkAdaptions")) {
+            if (!Array.isArray(message.supportedServerSideNetworkAdaptions))
+                return "supportedServerSideNetworkAdaptions: array expected";
+            for (var i = 0; i < message.supportedServerSideNetworkAdaptions.length; ++i)
+                switch (message.supportedServerSideNetworkAdaptions[i]) {
+                default:
+                    return "supportedServerSideNetworkAdaptions: enum value[] expected";
+                case 1:
+                case 2:
+                case 3:
+                    break;
+                }
+        }
         return null;
     };
 
@@ -1785,6 +1877,43 @@ $root.SdkJoinFrame = (function() {
                 message.audioSessionId = new $util.LongBits(object.audioSessionId.low >>> 0, object.audioSessionId.high >>> 0).toNumber(true);
         if (object.wantsCompressedSdp != null)
             message.wantsCompressedSdp = Boolean(object.wantsCompressedSdp);
+        if (object.wantsServerSideNetworkProbingOnReceiveSideEstimator != null)
+            message.wantsServerSideNetworkProbingOnReceiveSideEstimator = Boolean(object.wantsServerSideNetworkProbingOnReceiveSideEstimator);
+        switch (object.serverSideNetworkAdaption) {
+        case "DEFAULT":
+        case 1:
+            message.serverSideNetworkAdaption = 1;
+            break;
+        case "NONE":
+        case 2:
+            message.serverSideNetworkAdaption = 2;
+            break;
+        case "BANDWIDTH_PROBING":
+        case 3:
+            message.serverSideNetworkAdaption = 3;
+            break;
+        }
+        if (object.supportedServerSideNetworkAdaptions) {
+            if (!Array.isArray(object.supportedServerSideNetworkAdaptions))
+                throw TypeError(".SdkJoinFrame.supportedServerSideNetworkAdaptions: array expected");
+            message.supportedServerSideNetworkAdaptions = [];
+            for (var i = 0; i < object.supportedServerSideNetworkAdaptions.length; ++i)
+                switch (object.supportedServerSideNetworkAdaptions[i]) {
+                default:
+                case "DEFAULT":
+                case 1:
+                    message.supportedServerSideNetworkAdaptions[i] = 1;
+                    break;
+                case "NONE":
+                case 2:
+                    message.supportedServerSideNetworkAdaptions[i] = 2;
+                    break;
+                case "BANDWIDTH_PROBING":
+                case 3:
+                    message.supportedServerSideNetworkAdaptions[i] = 3;
+                    break;
+                }
+        }
         return message;
     };
 
@@ -1801,6 +1930,8 @@ $root.SdkJoinFrame = (function() {
         if (!options)
             options = {};
         var object = {};
+        if (options.arrays || options.defaults)
+            object.supportedServerSideNetworkAdaptions = [];
         if (options.defaults) {
             object.protocolVersion = 2;
             object.maxNumOfVideos = 0;
@@ -1812,6 +1943,8 @@ $root.SdkJoinFrame = (function() {
             } else
                 object.audioSessionId = options.longs === String ? "0" : 0;
             object.wantsCompressedSdp = false;
+            object.wantsServerSideNetworkProbingOnReceiveSideEstimator = false;
+            object.serverSideNetworkAdaption = options.enums === String ? "DEFAULT" : 1;
         }
         if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
             object.protocolVersion = message.protocolVersion;
@@ -1828,6 +1961,15 @@ $root.SdkJoinFrame = (function() {
                 object.audioSessionId = options.longs === String ? $util.Long.prototype.toString.call(message.audioSessionId) : options.longs === Number ? new $util.LongBits(message.audioSessionId.low >>> 0, message.audioSessionId.high >>> 0).toNumber(true) : message.audioSessionId;
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             object.wantsCompressedSdp = message.wantsCompressedSdp;
+        if (message.wantsServerSideNetworkProbingOnReceiveSideEstimator != null && message.hasOwnProperty("wantsServerSideNetworkProbingOnReceiveSideEstimator"))
+            object.wantsServerSideNetworkProbingOnReceiveSideEstimator = message.wantsServerSideNetworkProbingOnReceiveSideEstimator;
+        if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
+            object.serverSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.serverSideNetworkAdaption] : message.serverSideNetworkAdaption;
+        if (message.supportedServerSideNetworkAdaptions && message.supportedServerSideNetworkAdaptions.length) {
+            object.supportedServerSideNetworkAdaptions = [];
+            for (var j = 0; j < message.supportedServerSideNetworkAdaptions.length; ++j)
+                object.supportedServerSideNetworkAdaptions[j] = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.supportedServerSideNetworkAdaptions[j]] : message.supportedServerSideNetworkAdaptions[j];
+        }
         return object;
     };
 
@@ -1854,6 +1996,7 @@ $root.SdkJoinAckFrame = (function() {
      * @property {ISdkTurnCredentials|null} [turnCredentials] SdkJoinAckFrame turnCredentials
      * @property {number|null} [videoSubscriptionLimit] SdkJoinAckFrame videoSubscriptionLimit
      * @property {boolean|null} [wantsCompressedSdp] SdkJoinAckFrame wantsCompressedSdp
+     * @property {SdkServerSideNetworkAdaption|null} [defaultServerSideNetworkAdaption] SdkJoinAckFrame defaultServerSideNetworkAdaption
      */
 
     /**
@@ -1885,7 +2028,7 @@ $root.SdkJoinAckFrame = (function() {
      * @memberof SdkJoinAckFrame
      * @instance
      */
-    SdkJoinAckFrame.prototype.videoSubscriptionLimit = 25;
+    SdkJoinAckFrame.prototype.videoSubscriptionLimit = 0;
 
     /**
      * SdkJoinAckFrame wantsCompressedSdp.
@@ -1894,6 +2037,14 @@ $root.SdkJoinAckFrame = (function() {
      * @instance
      */
     SdkJoinAckFrame.prototype.wantsCompressedSdp = false;
+
+    /**
+     * SdkJoinAckFrame defaultServerSideNetworkAdaption.
+     * @member {SdkServerSideNetworkAdaption} defaultServerSideNetworkAdaption
+     * @memberof SdkJoinAckFrame
+     * @instance
+     */
+    SdkJoinAckFrame.prototype.defaultServerSideNetworkAdaption = 1;
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.
@@ -1925,6 +2076,8 @@ $root.SdkJoinAckFrame = (function() {
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.videoSubscriptionLimit);
         if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.wantsCompressedSdp);
+        if (message.defaultServerSideNetworkAdaption != null && Object.hasOwnProperty.call(message, "defaultServerSideNetworkAdaption"))
+            writer.uint32(/* id 4, wireType 0 =*/32).int32(message.defaultServerSideNetworkAdaption);
         return writer;
     };
 
@@ -1967,6 +2120,9 @@ $root.SdkJoinAckFrame = (function() {
                 break;
             case 3:
                 message.wantsCompressedSdp = reader.bool();
+                break;
+            case 4:
+                message.defaultServerSideNetworkAdaption = reader.int32();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -2014,6 +2170,15 @@ $root.SdkJoinAckFrame = (function() {
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             if (typeof message.wantsCompressedSdp !== "boolean")
                 return "wantsCompressedSdp: boolean expected";
+        if (message.defaultServerSideNetworkAdaption != null && message.hasOwnProperty("defaultServerSideNetworkAdaption"))
+            switch (message.defaultServerSideNetworkAdaption) {
+            default:
+                return "defaultServerSideNetworkAdaption: enum value expected";
+            case 1:
+            case 2:
+            case 3:
+                break;
+            }
         return null;
     };
 
@@ -2038,6 +2203,20 @@ $root.SdkJoinAckFrame = (function() {
             message.videoSubscriptionLimit = object.videoSubscriptionLimit >>> 0;
         if (object.wantsCompressedSdp != null)
             message.wantsCompressedSdp = Boolean(object.wantsCompressedSdp);
+        switch (object.defaultServerSideNetworkAdaption) {
+        case "DEFAULT":
+        case 1:
+            message.defaultServerSideNetworkAdaption = 1;
+            break;
+        case "NONE":
+        case 2:
+            message.defaultServerSideNetworkAdaption = 2;
+            break;
+        case "BANDWIDTH_PROBING":
+        case 3:
+            message.defaultServerSideNetworkAdaption = 3;
+            break;
+        }
         return message;
     };
 
@@ -2056,8 +2235,9 @@ $root.SdkJoinAckFrame = (function() {
         var object = {};
         if (options.defaults) {
             object.turnCredentials = null;
-            object.videoSubscriptionLimit = 25;
+            object.videoSubscriptionLimit = 0;
             object.wantsCompressedSdp = false;
+            object.defaultServerSideNetworkAdaption = options.enums === String ? "DEFAULT" : 1;
         }
         if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
             object.turnCredentials = $root.SdkTurnCredentials.toObject(message.turnCredentials, options);
@@ -2065,6 +2245,8 @@ $root.SdkJoinAckFrame = (function() {
             object.videoSubscriptionLimit = message.videoSubscriptionLimit;
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             object.wantsCompressedSdp = message.wantsCompressedSdp;
+        if (message.defaultServerSideNetworkAdaption != null && message.hasOwnProperty("defaultServerSideNetworkAdaption"))
+            object.defaultServerSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.defaultServerSideNetworkAdaption] : message.defaultServerSideNetworkAdaption;
         return object;
     };
 
@@ -2446,6 +2628,7 @@ $root.SdkSubscribeFrame = (function() {
      * @property {boolean|null} [audioCheckin] SdkSubscribeFrame audioCheckin
      * @property {boolean|null} [audioMuted] SdkSubscribeFrame audioMuted
      * @property {Uint8Array|null} [compressedSdpOffer] SdkSubscribeFrame compressedSdpOffer
+     * @property {Array.<ISdkVideoSubscriptionConfiguration>|null} [videoSubscriptionConfiguration] SdkSubscribeFrame videoSubscriptionConfiguration
      */
 
     /**
@@ -2459,6 +2642,7 @@ $root.SdkSubscribeFrame = (function() {
     function SdkSubscribeFrame(properties) {
         this.sendStreams = [];
         this.receiveStreamIds = [];
+        this.videoSubscriptionConfiguration = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -2530,6 +2714,14 @@ $root.SdkSubscribeFrame = (function() {
     SdkSubscribeFrame.prototype.compressedSdpOffer = $util.newBuffer([]);
 
     /**
+     * SdkSubscribeFrame videoSubscriptionConfiguration.
+     * @member {Array.<ISdkVideoSubscriptionConfiguration>} videoSubscriptionConfiguration
+     * @memberof SdkSubscribeFrame
+     * @instance
+     */
+    SdkSubscribeFrame.prototype.videoSubscriptionConfiguration = $util.emptyArray;
+
+    /**
      * Creates a new SdkSubscribeFrame instance using the specified properties.
      * @function create
      * @memberof SdkSubscribeFrame
@@ -2571,6 +2763,9 @@ $root.SdkSubscribeFrame = (function() {
             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.audioMuted);
         if (message.compressedSdpOffer != null && Object.hasOwnProperty.call(message, "compressedSdpOffer"))
             writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.compressedSdpOffer);
+        if (message.videoSubscriptionConfiguration != null && message.videoSubscriptionConfiguration.length)
+            for (var i = 0; i < message.videoSubscriptionConfiguration.length; ++i)
+                $root.SdkVideoSubscriptionConfiguration.encode(message.videoSubscriptionConfiguration[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
         return writer;
     };
 
@@ -2637,6 +2832,11 @@ $root.SdkSubscribeFrame = (function() {
                 break;
             case 8:
                 message.compressedSdpOffer = reader.bytes();
+                break;
+            case 9:
+                if (!(message.videoSubscriptionConfiguration && message.videoSubscriptionConfiguration.length))
+                    message.videoSubscriptionConfiguration = [];
+                message.videoSubscriptionConfiguration.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -2713,6 +2913,15 @@ $root.SdkSubscribeFrame = (function() {
         if (message.compressedSdpOffer != null && message.hasOwnProperty("compressedSdpOffer"))
             if (!(message.compressedSdpOffer && typeof message.compressedSdpOffer.length === "number" || $util.isString(message.compressedSdpOffer)))
                 return "compressedSdpOffer: buffer expected";
+        if (message.videoSubscriptionConfiguration != null && message.hasOwnProperty("videoSubscriptionConfiguration")) {
+            if (!Array.isArray(message.videoSubscriptionConfiguration))
+                return "videoSubscriptionConfiguration: array expected";
+            for (var i = 0; i < message.videoSubscriptionConfiguration.length; ++i) {
+                var error = $root.SdkVideoSubscriptionConfiguration.verify(message.videoSubscriptionConfiguration[i]);
+                if (error)
+                    return "videoSubscriptionConfiguration." + error;
+            }
+        }
         return null;
     };
 
@@ -2772,6 +2981,16 @@ $root.SdkSubscribeFrame = (function() {
                 $util.base64.decode(object.compressedSdpOffer, message.compressedSdpOffer = $util.newBuffer($util.base64.length(object.compressedSdpOffer)), 0);
             else if (object.compressedSdpOffer.length)
                 message.compressedSdpOffer = object.compressedSdpOffer;
+        if (object.videoSubscriptionConfiguration) {
+            if (!Array.isArray(object.videoSubscriptionConfiguration))
+                throw TypeError(".SdkSubscribeFrame.videoSubscriptionConfiguration: array expected");
+            message.videoSubscriptionConfiguration = [];
+            for (var i = 0; i < object.videoSubscriptionConfiguration.length; ++i) {
+                if (typeof object.videoSubscriptionConfiguration[i] !== "object")
+                    throw TypeError(".SdkSubscribeFrame.videoSubscriptionConfiguration: object expected");
+                message.videoSubscriptionConfiguration[i] = $root.SdkVideoSubscriptionConfiguration.fromObject(object.videoSubscriptionConfiguration[i]);
+            }
+        }
         return message;
     };
 
@@ -2791,6 +3010,7 @@ $root.SdkSubscribeFrame = (function() {
         if (options.arrays || options.defaults) {
             object.sendStreams = [];
             object.receiveStreamIds = [];
+            object.videoSubscriptionConfiguration = [];
         }
         if (options.defaults) {
             object.duplex = options.enums === String ? "RX" : 1;
@@ -2828,6 +3048,11 @@ $root.SdkSubscribeFrame = (function() {
             object.audioMuted = message.audioMuted;
         if (message.compressedSdpOffer != null && message.hasOwnProperty("compressedSdpOffer"))
             object.compressedSdpOffer = options.bytes === String ? $util.base64.encode(message.compressedSdpOffer, 0, message.compressedSdpOffer.length) : options.bytes === Array ? Array.prototype.slice.call(message.compressedSdpOffer) : message.compressedSdpOffer;
+        if (message.videoSubscriptionConfiguration && message.videoSubscriptionConfiguration.length) {
+            object.videoSubscriptionConfiguration = [];
+            for (var j = 0; j < message.videoSubscriptionConfiguration.length; ++j)
+                object.videoSubscriptionConfiguration[j] = $root.SdkVideoSubscriptionConfiguration.toObject(message.videoSubscriptionConfiguration[j], options);
+        }
         return object;
     };
 
@@ -3202,6 +3427,7 @@ $root.SdkIndexFrame = (function() {
      * @property {Array.<ISdkStreamDescriptor>|null} [sources] SdkIndexFrame sources
      * @property {Array.<number>|null} [pausedAtSourceIds] SdkIndexFrame pausedAtSourceIds
      * @property {number|null} [numParticipants] SdkIndexFrame numParticipants
+     * @property {Array.<SdkVideoCodecCapability>|null} [supportedReceiveCodecIntersection] SdkIndexFrame supportedReceiveCodecIntersection
      */
 
     /**
@@ -3215,6 +3441,7 @@ $root.SdkIndexFrame = (function() {
     function SdkIndexFrame(properties) {
         this.sources = [];
         this.pausedAtSourceIds = [];
+        this.supportedReceiveCodecIntersection = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -3254,6 +3481,14 @@ $root.SdkIndexFrame = (function() {
     SdkIndexFrame.prototype.numParticipants = 0;
 
     /**
+     * SdkIndexFrame supportedReceiveCodecIntersection.
+     * @member {Array.<SdkVideoCodecCapability>} supportedReceiveCodecIntersection
+     * @memberof SdkIndexFrame
+     * @instance
+     */
+    SdkIndexFrame.prototype.supportedReceiveCodecIntersection = $util.emptyArray;
+
+    /**
      * Creates a new SdkIndexFrame instance using the specified properties.
      * @function create
      * @memberof SdkIndexFrame
@@ -3287,6 +3522,9 @@ $root.SdkIndexFrame = (function() {
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.pausedAtSourceIds[i]);
         if (message.numParticipants != null && Object.hasOwnProperty.call(message, "numParticipants"))
             writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.numParticipants);
+        if (message.supportedReceiveCodecIntersection != null && message.supportedReceiveCodecIntersection.length)
+            for (var i = 0; i < message.supportedReceiveCodecIntersection.length; ++i)
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.supportedReceiveCodecIntersection[i]);
         return writer;
     };
 
@@ -3341,6 +3579,16 @@ $root.SdkIndexFrame = (function() {
                 break;
             case 4:
                 message.numParticipants = reader.uint32();
+                break;
+            case 5:
+                if (!(message.supportedReceiveCodecIntersection && message.supportedReceiveCodecIntersection.length))
+                    message.supportedReceiveCodecIntersection = [];
+                if ((tag & 7) === 2) {
+                    var end2 = reader.uint32() + reader.pos;
+                    while (reader.pos < end2)
+                        message.supportedReceiveCodecIntersection.push(reader.int32());
+                } else
+                    message.supportedReceiveCodecIntersection.push(reader.int32());
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -3399,6 +3647,18 @@ $root.SdkIndexFrame = (function() {
         if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
             if (!$util.isInteger(message.numParticipants))
                 return "numParticipants: integer expected";
+        if (message.supportedReceiveCodecIntersection != null && message.hasOwnProperty("supportedReceiveCodecIntersection")) {
+            if (!Array.isArray(message.supportedReceiveCodecIntersection))
+                return "supportedReceiveCodecIntersection: array expected";
+            for (var i = 0; i < message.supportedReceiveCodecIntersection.length; ++i)
+                switch (message.supportedReceiveCodecIntersection[i]) {
+                default:
+                    return "supportedReceiveCodecIntersection: enum value[] expected";
+                case 1:
+                case 3:
+                    break;
+                }
+        }
         return null;
     };
 
@@ -3435,6 +3695,23 @@ $root.SdkIndexFrame = (function() {
         }
         if (object.numParticipants != null)
             message.numParticipants = object.numParticipants >>> 0;
+        if (object.supportedReceiveCodecIntersection) {
+            if (!Array.isArray(object.supportedReceiveCodecIntersection))
+                throw TypeError(".SdkIndexFrame.supportedReceiveCodecIntersection: array expected");
+            message.supportedReceiveCodecIntersection = [];
+            for (var i = 0; i < object.supportedReceiveCodecIntersection.length; ++i)
+                switch (object.supportedReceiveCodecIntersection[i]) {
+                default:
+                case "VP8":
+                case 1:
+                    message.supportedReceiveCodecIntersection[i] = 1;
+                    break;
+                case "H264_CONSTRAINED_BASELINE_PROFILE":
+                case 3:
+                    message.supportedReceiveCodecIntersection[i] = 3;
+                    break;
+                }
+        }
         return message;
     };
 
@@ -3454,6 +3731,7 @@ $root.SdkIndexFrame = (function() {
         if (options.arrays || options.defaults) {
             object.sources = [];
             object.pausedAtSourceIds = [];
+            object.supportedReceiveCodecIntersection = [];
         }
         if (options.defaults) {
             object.atCapacity = false;
@@ -3473,6 +3751,11 @@ $root.SdkIndexFrame = (function() {
         }
         if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
             object.numParticipants = message.numParticipants;
+        if (message.supportedReceiveCodecIntersection && message.supportedReceiveCodecIntersection.length) {
+            object.supportedReceiveCodecIntersection = [];
+            for (var j = 0; j < message.supportedReceiveCodecIntersection.length; ++j)
+                object.supportedReceiveCodecIntersection[j] = options.enums === String ? $root.SdkVideoCodecCapability[message.supportedReceiveCodecIntersection[j]] : message.supportedReceiveCodecIntersection[j];
+        }
         return object;
     };
 
@@ -3497,6 +3780,7 @@ $root.SdkPauseResumeFrame = (function() {
      * @exports ISdkPauseResumeFrame
      * @interface ISdkPauseResumeFrame
      * @property {Array.<number>|null} [streamIds] SdkPauseResumeFrame streamIds
+     * @property {Array.<number>|null} [groupIds] SdkPauseResumeFrame groupIds
      */
 
     /**
@@ -3509,6 +3793,7 @@ $root.SdkPauseResumeFrame = (function() {
      */
     function SdkPauseResumeFrame(properties) {
         this.streamIds = [];
+        this.groupIds = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -3522,6 +3807,14 @@ $root.SdkPauseResumeFrame = (function() {
      * @instance
      */
     SdkPauseResumeFrame.prototype.streamIds = $util.emptyArray;
+
+    /**
+     * SdkPauseResumeFrame groupIds.
+     * @member {Array.<number>} groupIds
+     * @memberof SdkPauseResumeFrame
+     * @instance
+     */
+    SdkPauseResumeFrame.prototype.groupIds = $util.emptyArray;
 
     /**
      * Creates a new SdkPauseResumeFrame instance using the specified properties.
@@ -3550,6 +3843,9 @@ $root.SdkPauseResumeFrame = (function() {
         if (message.streamIds != null && message.streamIds.length)
             for (var i = 0; i < message.streamIds.length; ++i)
                 writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.streamIds[i]);
+        if (message.groupIds != null && message.groupIds.length)
+            for (var i = 0; i < message.groupIds.length; ++i)
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.groupIds[i]);
         return writer;
     };
 
@@ -3594,6 +3890,16 @@ $root.SdkPauseResumeFrame = (function() {
                 } else
                     message.streamIds.push(reader.uint32());
                 break;
+            case 2:
+                if (!(message.groupIds && message.groupIds.length))
+                    message.groupIds = [];
+                if ((tag & 7) === 2) {
+                    var end2 = reader.uint32() + reader.pos;
+                    while (reader.pos < end2)
+                        message.groupIds.push(reader.uint32());
+                } else
+                    message.groupIds.push(reader.uint32());
+                break;
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -3636,6 +3942,13 @@ $root.SdkPauseResumeFrame = (function() {
                 if (!$util.isInteger(message.streamIds[i]))
                     return "streamIds: integer[] expected";
         }
+        if (message.groupIds != null && message.hasOwnProperty("groupIds")) {
+            if (!Array.isArray(message.groupIds))
+                return "groupIds: array expected";
+            for (var i = 0; i < message.groupIds.length; ++i)
+                if (!$util.isInteger(message.groupIds[i]))
+                    return "groupIds: integer[] expected";
+        }
         return null;
     };
 
@@ -3658,6 +3971,13 @@ $root.SdkPauseResumeFrame = (function() {
             for (var i = 0; i < object.streamIds.length; ++i)
                 message.streamIds[i] = object.streamIds[i] >>> 0;
         }
+        if (object.groupIds) {
+            if (!Array.isArray(object.groupIds))
+                throw TypeError(".SdkPauseResumeFrame.groupIds: array expected");
+            message.groupIds = [];
+            for (var i = 0; i < object.groupIds.length; ++i)
+                message.groupIds[i] = object.groupIds[i] >>> 0;
+        }
         return message;
     };
 
@@ -3674,12 +3994,19 @@ $root.SdkPauseResumeFrame = (function() {
         if (!options)
             options = {};
         var object = {};
-        if (options.arrays || options.defaults)
+        if (options.arrays || options.defaults) {
             object.streamIds = [];
+            object.groupIds = [];
+        }
         if (message.streamIds && message.streamIds.length) {
             object.streamIds = [];
             for (var j = 0; j < message.streamIds.length; ++j)
                 object.streamIds[j] = message.streamIds[j];
+        }
+        if (message.groupIds && message.groupIds.length) {
+            object.groupIds = [];
+            for (var j = 0; j < message.groupIds.length; ++j)
+                object.groupIds[j] = message.groupIds[j];
         }
         return object;
     };
@@ -11327,6 +11654,9 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @property {string} mid SdkVideoSubscriptionConfiguration mid
      * @property {string|null} [attendeeId] SdkVideoSubscriptionConfiguration attendeeId
      * @property {number|null} [streamId] SdkVideoSubscriptionConfiguration streamId
+     * @property {number|null} [priority] SdkVideoSubscriptionConfiguration priority
+     * @property {number|null} [targetBitrateKbps] SdkVideoSubscriptionConfiguration targetBitrateKbps
+     * @property {number|null} [groupId] SdkVideoSubscriptionConfiguration groupId
      */
 
     /**
@@ -11369,6 +11699,30 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
     SdkVideoSubscriptionConfiguration.prototype.streamId = 0;
 
     /**
+     * SdkVideoSubscriptionConfiguration priority.
+     * @member {number} priority
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.priority = 0;
+
+    /**
+     * SdkVideoSubscriptionConfiguration targetBitrateKbps.
+     * @member {number} targetBitrateKbps
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.targetBitrateKbps = 0;
+
+    /**
+     * SdkVideoSubscriptionConfiguration groupId.
+     * @member {number} groupId
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.groupId = 0;
+
+    /**
      * Creates a new SdkVideoSubscriptionConfiguration instance using the specified properties.
      * @function create
      * @memberof SdkVideoSubscriptionConfiguration
@@ -11397,6 +11751,12 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.attendeeId);
         if (message.streamId != null && Object.hasOwnProperty.call(message, "streamId"))
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.streamId);
+        if (message.priority != null && Object.hasOwnProperty.call(message, "priority"))
+            writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.priority);
+        if (message.targetBitrateKbps != null && Object.hasOwnProperty.call(message, "targetBitrateKbps"))
+            writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.targetBitrateKbps);
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
+            writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.groupId);
         return writer;
     };
 
@@ -11439,6 +11799,15 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
                 break;
             case 3:
                 message.streamId = reader.uint32();
+                break;
+            case 4:
+                message.priority = reader.uint32();
+                break;
+            case 5:
+                message.targetBitrateKbps = reader.uint32();
+                break;
+            case 6:
+                message.groupId = reader.uint32();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -11485,6 +11854,15 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
         if (message.streamId != null && message.hasOwnProperty("streamId"))
             if (!$util.isInteger(message.streamId))
                 return "streamId: integer expected";
+        if (message.priority != null && message.hasOwnProperty("priority"))
+            if (!$util.isInteger(message.priority))
+                return "priority: integer expected";
+        if (message.targetBitrateKbps != null && message.hasOwnProperty("targetBitrateKbps"))
+            if (!$util.isInteger(message.targetBitrateKbps))
+                return "targetBitrateKbps: integer expected";
+        if (message.groupId != null && message.hasOwnProperty("groupId"))
+            if (!$util.isInteger(message.groupId))
+                return "groupId: integer expected";
         return null;
     };
 
@@ -11506,6 +11884,12 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             message.attendeeId = String(object.attendeeId);
         if (object.streamId != null)
             message.streamId = object.streamId >>> 0;
+        if (object.priority != null)
+            message.priority = object.priority >>> 0;
+        if (object.targetBitrateKbps != null)
+            message.targetBitrateKbps = object.targetBitrateKbps >>> 0;
+        if (object.groupId != null)
+            message.groupId = object.groupId >>> 0;
         return message;
     };
 
@@ -11526,6 +11910,9 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             object.mid = "";
             object.attendeeId = "";
             object.streamId = 0;
+            object.priority = 0;
+            object.targetBitrateKbps = 0;
+            object.groupId = 0;
         }
         if (message.mid != null && message.hasOwnProperty("mid"))
             object.mid = message.mid;
@@ -11533,6 +11920,12 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             object.attendeeId = message.attendeeId;
         if (message.streamId != null && message.hasOwnProperty("streamId"))
             object.streamId = message.streamId;
+        if (message.priority != null && message.hasOwnProperty("priority"))
+            object.priority = message.priority;
+        if (message.targetBitrateKbps != null && message.hasOwnProperty("targetBitrateKbps"))
+            object.targetBitrateKbps = message.targetBitrateKbps;
+        if (message.groupId != null && message.hasOwnProperty("groupId"))
+            object.groupId = message.groupId;
         return object;
     };
 
@@ -12292,6 +12685,20 @@ $root.SdkMeetingSessionCredentials = (function() {
     };
 
     return SdkMeetingSessionCredentials;
+})();
+
+/**
+ * SdkVideoCodecCapability enum.
+ * @exports SdkVideoCodecCapability
+ * @enum {number}
+ * @property {number} VP8=1 VP8 value
+ * @property {number} H264_CONSTRAINED_BASELINE_PROFILE=3 H264_CONSTRAINED_BASELINE_PROFILE value
+ */
+$root.SdkVideoCodecCapability = (function() {
+    var valuesById = {}, values = Object.create(valuesById);
+    values[valuesById[1] = "VP8"] = 1;
+    values[valuesById[3] = "H264_CONSTRAINED_BASELINE_PROFILE"] = 3;
+    return values;
 })();
 
 module.exports = $root;

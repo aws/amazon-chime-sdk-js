@@ -98,8 +98,7 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
     </div>
     <div class="modal-body">
       <fieldset>
-        <div class="custom-control" style="text-align: left;">
-          <label for="logLevel">Choose a Log Level:</label>
+        <div class="form-floating mb-3" style="text-align: left;">
           <select name="logLevel" class="form-select" id="logLevelSelect">
             <option value="INFO">INFO</option>
             <option value="DEBUG">DEBUG</option>
@@ -107,6 +106,15 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
             <option value="ERROR">ERROR</option>
             <option value="OFF">OFF</option>
           </select>
+          <label for="logLevel" style="text-align: left;">Log Level:</label>
+        </div>
+        <div class="form-floating mb-3">
+          <select name="videoCodec" class="form-select" id="videoCodecSelect">
+              <option value="default">Meeting Default</option>
+              <option value="vp8">VP8</option>
+              <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
+          </select>
+          <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
         </div>
         <div class="form-check" style="text-align: left;">
           <input type="checkbox" id="webaudio" class="form-check-input">
@@ -140,15 +148,22 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
           <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
           <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
             Policy</label>
-          <select id="priority-downlink-policy-preset" class="form-select" style="width:100%; display: none;">
-            <option value="default" selected>Default</option>
-            <option value="stable">Stable Network</option>
-            <option value="unstable">Unstable Network</option>
-          </select>
-          <div class="form-check" id="enable-pagination-checkbox" style="text-align: left; display: none;">
-            <input type="checkbox" id="enable-pagination" class="form-check-input">
-            <label for="enable-pagination" class="form-check-label">Paginate displayed video tiles</label>
-          </div>
+        </div>
+        <lable id="priority-downlink-policy-preset-title" for="priority-downlink-policy-preset" style="display: none; padding-top:5px">Policy Preset</lable>
+        <select id="priority-downlink-policy-preset" class="form-select" style="width:100%; display: none;">
+          <option value="default" selected>Default</option>
+          <option value="stable">Stable Network</option>
+          <option value="unstable">Unstable Network</option>
+        </select>
+        <lable id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</lable>
+        <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
+          <option value="default" selected>Default</option>
+          <option value="none">None</option>
+          <option value="enable-bandwidth-probing">Enable Bandwidth Probing</option>
+        </select>
+        <div class="form-check" id="enable-pagination-checkbox" style="text-align: left; display: none;">
+          <input type="checkbox" id="enable-pagination" class="form-check-input">
+          <label for="enable-pagination" class="form-check-label">Paginate displayed video tiles</label>
         </div>
         <div class="form-check" style="text-align: left;">
           <input type="checkbox" checked id="preconnect" class="form-check-input">
@@ -553,63 +568,63 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
         <span class="modal-title text-muted">Content Share Configurations</span>
         <span id="button-content-share-modal-close" class="close">&times;</span>
       </div>
-      <form>
-        <div class="form-row">
+      <form class="container">
+        <div class="row my-3">
           <h5>Screen Capture Configurations</h5>
         </div>
-        <div class="form-row">
-          <div class="form-group col-4">
+        <div class="row my-3">
+          <div class="col-6">
             <input type="number" id="content-capture-frame-rate" class="form-control" placeholder="Frame rate">
           </div>
         </div>
         <div id="content-simulcast-config">
-          <div class="form-row">
+          <div class="row my-3">
             <h5>Simulcast Encoding Parameters</h5>
           </div>
-          <div class="form-row">
-            <div class="form-group col-6">
+          <div class="row row-cols-2 my-3">
+            <div class="col-6">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="content-enable-simulcast">
                 <label class="form-check-label" for="content-enable-simulcast">Enable Simulcast</label>
               </div>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group col-6">
+          <div class="row row-cols-2 my-3">
+            <div class="col-6">
               <input type="number" id="content-simulcast-low-max-bitratekbps" class="form-control"
                      placeholder="Low max bitrate (kbps)">
             </div>
-            <div class="form-group col-6">
+            <div class="col-6">
               <input type="number" id="content-simulcast-high-max-bitratekbps" class="form-control"
                      placeholder="High max bitrate (kbps)">
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group col-6">
+          <div class="row row-cols-2 my-3">
+            <div class="col-6">
               <input type="number" id="content-simulcast-low-scale-factor" class="form-control"
                      placeholder="Low scale factor">
             </div>
-            <div class="form-group col-6">
+            <div class="col-6">
               <input type="number" id="content-simulcast-high-scale-factor" class="form-control"
                      placeholder="High scale factor">
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group col-6">
+          <div class="row row-cols-2 my-3">
+            <div class="col-6">
               <input type="number" id="content-simulcast-low-max-framerate" class="form-control"
                      placeholder="Low max frame rate">
             </div>
-            <div class="form-group col-6">
+            <div class="col-6">
               <input type="number" id="content-simulcast-high-max-framerate" class="form-control"
                      placeholder="High max frame rate">
             </div>
           </div>
         </div>
+        <button id="button-save-content-share-configs" type="button" class="btn btn-lg btn-primary btn-block w-100"
+                title="Save" data-toggle="button" aria-pressed="false" autocomplete="off">
+          Save
+        </button>
       </form>
-      <button id="button-save-content-share-configs" type="button" class="btn btn-lg btn-primary btn-block"
-              title="Save" data-toggle="button" aria-pressed="false" autocomplete="off">
-        Save
-      </button>
     </div>
   </div>
   <div class="p-2 d-none d-sm-block align-items-end" style="position:fixed;right:0;bottom:0;left:0;">

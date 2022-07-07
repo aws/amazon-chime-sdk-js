@@ -48,6 +48,7 @@ import {
   NoOpEventReporter,
   NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
+  ServerSideNetworkAdaption,
   SimulcastLayers,
   Transcript,
   TranscriptEvent,
@@ -75,6 +76,7 @@ import {
   DefaultEventController,
   MeetingSessionCredentials,
   POSTLogger,
+  VideoCodecCapability
 } from 'amazon-chime-sdk-js';
 
 import TestSound from './audio/TestSound';
@@ -250,6 +252,9 @@ export class DemoMeetingApp
 
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
+  volumeIndicatorHandler:  (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
+  canUnmuteLocalAudioHandler: (undefined | ((canUnmute: boolean) => void)) = undefined;
+  muteAndUnmuteLocalAudioHandler: (undefined | ((muted: boolean) => void)) = undefined;
   blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver) = undefined;
   replacementObserver: (undefined | BackgroundReplacementVideoFrameProcessorObserver) = undefined;
 
@@ -300,6 +305,7 @@ export class DemoMeetingApp
   // feature flags
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
+  videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
@@ -549,7 +555,6 @@ export class DemoMeetingApp
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('content-simulcast-config')).style.display = 'none';
     }
-
     if (!this.defaultBrowserBehavior.supportDownlinkBandwidthEstimation()) {
       (document.getElementById('priority-downlink-policy') as HTMLInputElement).disabled = true;
     }
@@ -564,17 +569,31 @@ export class DemoMeetingApp
       const priorityBasedDownlinkPolicyConfig = document.getElementById(
         'priority-downlink-policy-preset'
       ) as HTMLSelectElement;
+      const priorityBasedDownlinkPolicyConfigTitle = document.getElementById(
+        'priority-downlink-policy-preset-title'
+      ) as HTMLElement;
       const enablePaginationCheckbox = document.getElementById(
         'enable-pagination-checkbox'
       ) as HTMLSelectElement;
-
+      const serverSideNetworkAdaption = document.getElementById(
+        'server-side-network-adaption'
+      ) as HTMLSelectElement;
+      const serverSideNetworkAdaptionTitle = document.getElementById(
+        'server-side-network-adaption-title'
+      ) as HTMLElement;
 
       if (this.usePriorityBasedDownlinkPolicy) {
+        priorityBasedDownlinkPolicyConfigTitle.style.display = 'block';
         priorityBasedDownlinkPolicyConfig.style.display = 'block';
         enablePaginationCheckbox.style.display = 'block';
+        serverSideNetworkAdaption.style.display = 'block';
+        serverSideNetworkAdaptionTitle.style.display = 'block';
       } else {
+        priorityBasedDownlinkPolicyConfigTitle.style.display = 'none';
         priorityBasedDownlinkPolicyConfig.style.display = 'none';
         enablePaginationCheckbox.style.display = 'none';
+        serverSideNetworkAdaption.style.display = 'none';
+        serverSideNetworkAdaptionTitle.style.display = 'none';
       }
     });
 
@@ -638,6 +657,20 @@ export class DemoMeetingApp
           break;
         default:
           this.logLevel = LogLevel.OFF;
+          break;
+      }
+
+      const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
+      switch (chosenVideoSendCodec) {
+        case 'vp8':
+          this.videoCodecPreferences = [VideoCodecCapability.vp8()];
+          break;
+        case 'h264ConstrainedBaselineProfile':
+          this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+          break;
+        default:
+          // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
+          // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
           break;
       }
 
@@ -1801,10 +1834,23 @@ export class DemoMeetingApp
     }
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     if (this.usePriorityBasedDownlinkPolicy) {
+      const serverSideNetworkAdaptionDropDown = document.getElementById('server-side-network-adaption') as HTMLSelectElement;
+      switch (serverSideNetworkAdaptionDropDown.value) {
+        case 'default':
+          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.Default;
+          break;
+        case 'none':
+          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
+          break;
+        case 'enable-bandwidth-probing':
+          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbing;
+          break;
+      }
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
+
     configuration.applicationMetadata = ApplicationMetadata.create('amazon-chime-sdk-js-demo', '2.0.0');
 
     if ((document.getElementById('pause-last-frame') as HTMLInputElement).checked) {
@@ -1846,7 +1892,10 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this);
     this.meetingSession.eventController.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
-
+    if (this.videoCodecPreferences !== undefined && this.videoCodecPreferences.length > 0) {
+        this.audioVideo.setVideoCodecSendPreferences(this.videoCodecPreferences);
+        this.audioVideo.setContentShareVideoCodecPreferences(this.videoCodecPreferences);
+    }
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
       this.meetingLogger,
       this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
@@ -1916,20 +1965,20 @@ export class DemoMeetingApp
   }
 
   setupMuteHandler(): void {
-    const handler = (isMuted: boolean): void => {
+    this.muteAndUnmuteLocalAudioHandler = (isMuted: boolean): void => {
       this.log(`muted = ${isMuted}`);
     };
-    this.audioVideo.realtimeSubscribeToMuteAndUnmuteLocalAudio(handler);
+    this.audioVideo.realtimeSubscribeToMuteAndUnmuteLocalAudio(this.muteAndUnmuteLocalAudioHandler);
     const isMuted = this.audioVideo.realtimeIsLocalAudioMuted();
-    handler(isMuted);
+    this.muteAndUnmuteLocalAudioHandler(isMuted);
   }
 
   setupCanUnmuteHandler(): void {
-    const handler = (canUnmute: boolean): void => {
+    this.canUnmuteLocalAudioHandler = (canUnmute: boolean): void => {
       this.log(`canUnmute = ${canUnmute}`);
     };
-    this.audioVideo.realtimeSubscribeToSetCanUnmuteLocalAudio(handler);
-    handler(this.audioVideo.realtimeCanUnmuteLocalAudio());
+    this.audioVideo.realtimeSubscribeToSetCanUnmuteLocalAudio(this.canUnmuteLocalAudioHandler);
+    this.canUnmuteLocalAudioHandler(this.audioVideo.realtimeCanUnmuteLocalAudio());
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1940,7 +1989,7 @@ export class DemoMeetingApp
   }
 
   setupSubscribeToAttendeeIdPresenceHandler(): void {
-    const handler = (
+    this.attendeeIdPresenceHandler = (
       attendeeId: string,
       present: boolean,
       externalUserId: string,
@@ -1954,7 +2003,8 @@ export class DemoMeetingApp
         new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId
         || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!present) {
-        this.roster.removeAttendee(attendeeId);        
+        this.roster.removeAttendee(attendeeId);      
+        this.audioVideo.realtimeUnsubscribeFromVolumeIndicator(attendeeId, this.volumeIndicatorHandler);  
         this.log(`${attendeeId} dropped = ${dropped} (${externalUserId})`);
         return;
       }
@@ -1970,26 +2020,24 @@ export class DemoMeetingApp
       const attendeeName =  externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
       this.roster.addAttendee(attendeeId, attendeeName);
 
-      this.audioVideo.realtimeSubscribeToVolumeIndicator(
-        attendeeId,
-        async (
-          attendeeId: string,
-          volume: number | null,
-          muted: boolean | null,
-          signalStrength: number | null
-        ) => {
-          if (muted !== null) {
-            this.roster.setMuteStatus(attendeeId, muted);
-          }
-          if (signalStrength !== null) {
-            this.roster.setSignalStrength(attendeeId, Math.round(signalStrength * 100));
-          }
+      this.volumeIndicatorHandler = async (  
+        attendeeId: string,
+        volume: number | null,
+        muted: boolean | null,
+        signalStrength: number | null
+      ) => {
+        if (muted !== null) {
+          this.roster.setMuteStatus(attendeeId, muted);
         }
-      );
+        if (signalStrength !== null) {
+          this.roster.setSignalStrength(attendeeId, Math.round(signalStrength * 100));
+        }
+      };
+
+      this.audioVideo.realtimeSubscribeToVolumeIndicator(attendeeId, this.volumeIndicatorHandler);
     };
 
-    this.attendeeIdPresenceHandler = handler;
-    this.audioVideo.realtimeSubscribeToAttendeeIdPresence(handler);
+    this.audioVideo.realtimeSubscribeToAttendeeIdPresence(this.attendeeIdPresenceHandler);
 
     // Hang on to this so we can unsubscribe later.
     this.activeSpeakerHandler = (attendeeIds: string[]): void => {
@@ -3518,6 +3566,10 @@ export class DemoMeetingApp
 
       // Stop listening to transcript events.
       this.audioVideo.transcriptionController?.unsubscribeFromTranscriptEvent(this.transcriptEventHandler);
+
+      this.audioVideo.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(this.muteAndUnmuteLocalAudioHandler);
+      this.audioVideo.realtimeUnsubscribeToSetCanUnmuteLocalAudio(this.canUnmuteLocalAudioHandler);
+      this.audioVideo.realtimeUnsubscribeFromReceiveDataMessage(DemoMeetingApp.DATA_MESSAGE_TOPIC);
 
       // Stop watching device changes in the UI.
       this.audioVideo.removeDeviceChangeObserver(this);

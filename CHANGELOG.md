@@ -5,17 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.6.0] - 2022-06-23
+## [3.7.0] - 2022-07-05
 
 ### Added
-
-- Add a new API `enableSimulcastForContentShare` to enable simulcast for content share so that content share could be shown in network constrained clients. The lower quality layer has 300 kbps max bitrate, resolution scale factor of 2, and 5 max framerate.
 
 ### Removed
 
 ### Changed
 
 ### Fixed
+
+## [3.6.0] - 2022-06-23
+
+### Added
+
+- Add a new API `enableSimulcastForContentShare` to enable simulcast for content share so that content share could be shown in network constrained clients. The lower quality layer has 300 kbps max bitrate, resolution scale factor of 2, and 5 max framerate.
+- Add APIs `setVideoCodecSendPreferences` and `setContentShareVideoCodecPreferences` to allow configuration of codec being used to send. See the [JS SDK guide](https://aws.github.io/amazon-chime-sdk-js/modules/videocodecs.html) for more details.
+- Added tracer logs to missing subscribe and unsubscribe methods.
+- Added opt-in server side network adaption enablement flag `ServerSideNetworkAdaption.EnableBandwidthProbing`. See [this section in the guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#server-side-network-adaption) for more details.
+
+### Removed
+
+### Changed
+
+### Fixed
+- Fix issue closing a web worker in Amazon Voice Focus's inline worklet.
 
 ## [3.5.0] - 2022-06-02
 

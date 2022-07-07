@@ -2,8 +2,7 @@ name: Update pre build script on Saucelabs
 
 on:
   schedule:
-     - cron: '*/10 * * * *'
-#    - cron: '0 0 1 */1 *'
+    - cron: '0 0 1 */1 *'
 
 env:
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
@@ -104,5 +103,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16.x
+      - name: Install Axios
+        run: npm install axios
       - name: Send Slack message to channel
         run: node .github/script/send-prerun-script-pr-reminder.js ${{ secrets.SLACK_JS_SDK_DEV_PREBUILD_BOT }} ${{ needs.create-pr.outputs.pr-url }} ${{ needs.create-pr-previous-version.outputs.pmv-pr-url }}

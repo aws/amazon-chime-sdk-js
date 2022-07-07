@@ -226,6 +226,7 @@ import SDPMediaSection from './sdp/SDPMediaSection';
 import Scheduler from './scheduler/Scheduler';
 import SendAndReceiveDataMessagesTask from './task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from './task/SerialGroupTask';
+import ServerSideNetworkAdaption from './signalingclient/ServerSideNetworkAdaption';
 import SessionStateController from './sessionstatecontroller/SessionStateController';
 import SessionStateControllerAction from './sessionstatecontroller/SessionStateControllerAction';
 import SessionStateControllerDeferPriority from './sessionstatecontroller/SessionStateControllerDeferPriority';
@@ -276,6 +277,7 @@ import UserAgentParser from './useragentparser/UserAgentParser';
 import Versioning from './versioning/Versioning';
 import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
+import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
@@ -559,6 +561,7 @@ export {
   Scheduler,
   SendAndReceiveDataMessagesTask,
   SerialGroupTask,
+  ServerSideNetworkAdaption,
   SessionStateController,
   SessionStateControllerAction,
   SessionStateControllerDeferPriority,
@@ -610,6 +613,7 @@ export {
   Versioning,
   VideoAdaptiveProbePolicy,
   VideoCaptureAndEncodeParameter,
+  VideoCodecCapability,
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
   VideoElementFactory,

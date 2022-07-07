@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
+import ServerSideNetworkAdaption from '../signalingclient/ServerSideNetworkAdaption';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoDownlinkObserver from './VideoDownlinkObserver';
+import VideoPreferences from './VideoPreferences';
 
 /**
  * [[VideoDownlinkBandwidthPolicy]] makes decisions about downlink
@@ -62,4 +64,29 @@ export default interface VideoDownlinkBandwidthPolicy {
    * @param tileController the video tile controller
    */
   bindToTileController?(tileController: VideoTileController | undefined): void;
+
+  /**
+   * Additional server side features to be enabled for network adaption. Policy implementations
+   * must abide by the restrictions in the returned `ServerSideNetworkAdaption` enum value.
+   */
+  getServerSideNetworkAdaption?(): ServerSideNetworkAdaption;
+
+  /**
+   * Dynamically switch any client behavior to the adaption type which this policy indicated support
+   * to from `supportedServerSideNetworkAdaptions`.
+   */
+  setServerSideNetworkAdaption?(adaption: ServerSideNetworkAdaption): void;
+
+  /**
+   * Values which this policy supports being overriden to. The server may use this to transition
+   * clients to different values of `ServerSideNetworkAdaption`. Override this function
+   * to return an empty list to disable any server override attempts.
+   */
+  supportedServerSideNetworkAdaptions?(): ServerSideNetworkAdaption[];
+
+  /**
+   * Used in combination of `getServerSideNetworkAdaption` and `wantsResubscribe`
+   * to indicate any added, updated, or removed video preferences.
+   */
+  getVideoPreferences?(): VideoPreferences;
 }
