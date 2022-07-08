@@ -1,5 +1,5 @@
 const { AuthenticateUserStep, JoinMeetingStep, OpenAppStep, ClickContentShareButton, ClickVideoButton, ClickMediaCaptureButton, EndMeetingStep } = require('./steps');
-const { ContentShareVideoCheck, LocalVideoCheck, RosterCheck, UserAuthenticationCheck, UserJoinedMeetingCheck } = require('./checks');
+const { RosterCheck, UserAuthenticationCheck, UserJoinedMeetingCheck } = require('./checks');
 const { AppPage } = require('./pages/AppPage');
 const { TestUtils } = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
@@ -29,13 +29,9 @@ class MediaCaptureTest extends SdkBaseTest {
     await testWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
     await testWindow.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
     await TestUtils.waitAround(5000);
-    await testWindow.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON'));
-    await testWindow.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", testAttendeeId));
 
     await monitorWindow.runCommands(async () => await this.addUserToMeeting(monitorAttendeeId, session, this.region));
     await monitorWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
-    await monitorWindow.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON'));
-    await monitorWindow.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", testAttendeeId));
 
     // Start media capture session
     await testWindow.runCommands(async () => await ClickMediaCaptureButton.executeStep(this, session));
@@ -50,26 +46,11 @@ class MediaCaptureTest extends SdkBaseTest {
 
     await TestUtils.waitAround(5000);
 
-    await testWindow.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_OFF'));
-    await testWindow.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "OFF", testAttendeeId));
     await testWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
     await monitorWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
 
     await testWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
     await testWindow.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
-
-    await TestUtils.waitAround(5000);
-
-    await testWindow.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON'));
-    await testWindow.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", testAttendeeId));
-    await testWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
-    await monitorWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
-
-    await monitorWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
-    await monitorWindow.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_OFF'));
-
-    await monitorWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
-    await monitorWindow.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON'));
 
     await TestUtils.waitAround(5000);
 
