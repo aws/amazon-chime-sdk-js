@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Bump `protobufjs` from 6.8.8 to 6.11.3.
+- Update `DOMBlobMock` to accommodate `@types/node` changes.
+
 ### Fixed
 
 ## [2.31.0] - 2022-03-21
