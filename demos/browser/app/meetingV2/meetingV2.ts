@@ -3576,6 +3576,7 @@ export class DemoMeetingApp
         this.videoCodecPreferences = [VideoCodecCapability.vp8()];
         break;
       case 'h264ConstrainedBaselineProfile':
+        // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
         this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         break;
       default:
