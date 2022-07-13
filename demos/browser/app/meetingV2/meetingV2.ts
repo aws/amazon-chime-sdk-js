@@ -3570,6 +3570,21 @@ export class DemoMeetingApp
         break;
     }
 
+    const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
+    switch (chosenVideoSendCodec) {
+      case 'vp8':
+        this.videoCodecPreferences = [VideoCodecCapability.vp8()];
+        break;
+      case 'h264ConstrainedBaselineProfile':
+        // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
+        this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        break;
+      default:
+        // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
+        // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
+        break;
+    }
+
     AsyncScheduler.nextTick(
       async (): Promise<void> => {
         let chimeMeetingId: string = '';
