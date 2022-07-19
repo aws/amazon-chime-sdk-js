@@ -434,7 +434,6 @@ class AppPage {
       lastStartedIdx--;
     }
     if (lastStartedIdx < 0) {
-      console.error(`Unexpected received lastStartedIdx < 0: ${lastStartedIdx}`);
       return false;
     }
 
@@ -480,6 +479,7 @@ class AppPage {
       lastStartedIdx--;
     }
     if (lastStartedIdx < 0) {
+      console.error(`Unexpected received lastStartedIdx < 0: ${lastStartedIdx}`);
       return false;
     }
     const transcriptsToValidate = allTranscripts.slice(lastStartedIdx + 1);
