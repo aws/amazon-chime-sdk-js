@@ -518,7 +518,7 @@ class AppPage {
 
     // Temporarily filtering empty speakers for medical transcribe test. Empty speaker issue - P68074811
     if (isMedicalTranscribe) {
-      console.log(`Filtering empty speaker in medical transcribe. isMedicalTranscribe: ${isMedicalTranscribe}"`);
+      console.log(`Filtering empty speaker in medical transcribe.`);
       actualSpeakers = actualSpeakers.filter(speaker => speaker !== "")
     }
 
