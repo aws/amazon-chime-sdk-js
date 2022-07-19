@@ -434,6 +434,7 @@ class AppPage {
       lastStartedIdx--;
     }
     if (lastStartedIdx < 0) {
+      console.error(`Unexpected received lastStartedIdx < 0: ${lastStartedIdx}`);
       return false;
     }
 
