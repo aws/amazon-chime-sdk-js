@@ -84,7 +84,6 @@
     "fs-extra": "^8.1.0",
     "git-rev-sync": "^3.0.2",
     "longjohn": "^0.2.12",
-    "markdown-it": "^13.0.1",
     "mocha": "^10.0.0",
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
@@ -100,7 +99,6 @@
   "dependencies": {
     "@aws-crypto/sha256-js": "^2.0.1",
     "@aws-sdk/util-hex-encoding": "^3.47.0",
-    "@types/dom-mediacapture-record": "^1.0.7",
     "@types/ua-parser-js": "^0.7.35",
     "detect-browser": "^5.2.0",
     "pako": "^2.0.4",
