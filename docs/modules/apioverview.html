@@ -193,7 +193,7 @@
 					<p>To send video to remote attendees, list the available video input devices, optionally select video quality settings, and choose a device to use.</p>
 					<p>To get a list of available video input devices, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listvideoinputdevices">listVideoInputDevices()</a>.</p>
 					<p>You can configure the quality of the video that is sent to the remote attendees by calling meetingSession.audioVideo.
-						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality">chooseVideoInputQuality(width, height, frameRate)</a>.
+						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/devicecontrollerfacade.html#choosevideoinputquality">chooseVideoInputQuality(width, height, frameRate)</a>.
 						The changes take effect the next time a video input device is chosen. The default quality is 960x540 @ 15 fps. The maximum supported quality settings
 					are 1280x720 @ 30 fps. Actual quality achieved may vary throughout the call depending on what the device and system can provide.</p>
 					<p>To start or switch a video input device, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startvideoinput">startVideoInput(device)</a>.</p>
