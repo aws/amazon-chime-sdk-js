@@ -51,7 +51,7 @@ jobs:
         id: create-pull-request
         uses: peter-evans/create-pull-request@f094b77505fb89581e68a1163fbd2fffece39da1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.JS_SDK_BOT_ACCESS_KEY }}
           commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID
           branch: update-pre-run-script-id
@@ -84,7 +84,7 @@ jobs:
         id: pmv-create-pull-request
         uses: peter-evans/create-pull-request@f094b77505fb89581e68a1163fbd2fffece39da1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.JS_SDK_BOT_ACCESS_KEY }}
           commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID for previous release
           branch: update-pre-run-script-id-previous-release
