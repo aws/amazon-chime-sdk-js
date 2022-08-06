@@ -104,7 +104,7 @@ const getPrerunScript = (capabilities) =>{
   const name = capabilities.name;
   const blurName = "Background Blur Test";
   const repName = "Background Replacement Test";
-  return (name.includes(blurName) || name.includes(repName)) ?  'storage:d733d11b-a2cb-41c5-9dba-15abbd52c919' : "";
+  return (name.includes(blurName) || name.includes(repName)) ?  'storage:62a99d2e-4433-4044-9971-f2fa8a44eb18' : "";
 }
 const getChromeCapabilities = capabilities => {
   let cap = Capabilities.chrome();
@@ -130,8 +130,7 @@ const getSauceLabsConfig = (capabilities) => {
     seleniumVersion: '3.141.59',
     screenResolution: '1280x960',
     tunnelIdentifier: process.env.JOB_ID,
-    ...((capabilities.platform.toUpperCase() !== 'LINUX' &&
-      !((capabilities.name).includes('ContentShare'))) && {
+    ...(capabilities.platform.toUpperCase() !== 'LINUX' && {
         extendedDebugging: true
       }),
       prerun : prerunScript

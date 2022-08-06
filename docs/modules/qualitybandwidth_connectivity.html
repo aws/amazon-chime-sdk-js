@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="qualitybandwidth_connectivity.html">QualityBandwidth_Connectivity</a>
@@ -200,7 +199,7 @@
 					<a href="#choose-a-lower-local-video-quality" id="choose-a-lower-local-video-quality" style="color: inherit; text-decoration: none;">
 						<h4>Choose a lower local video quality</h4>
 					</a>
-					<p>Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/devicecontroller.html#choosevideoinputquality">chooseVideoInputQuality</a>(width, height, frameRate, maxBandwidthKbps) and lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for <code>chooseVideoInputQuality</code>.</p>
+					<p>Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality">chooseVideoInputQuality(width, height, frameRate)</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps">setVideoMaxBandwidthKbps(maxBandwidthKbps)</a> to lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for <code>chooseVideoInputQuality</code>.</p>
 					<a href="#pause-remote-videos" id="pause-remote-videos" style="color: inherit; text-decoration: none;">
 						<h4>Pause remote videos</h4>
 					</a>
@@ -212,7 +211,20 @@
 					<a href="#adjust-local-video-quality" id="adjust-local-video-quality" style="color: inherit; text-decoration: none;">
 						<h4>Adjust local video quality</h4>
 					</a>
-					<p>You can choose a video quality of up to 1280x720 (720p) at 30 fps and 2500 Kbps using <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality">chooseVideoInputQuality</a> (width, height, frameRate, maxBandwidthKbps) API before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.</p>
+					<p>You can choose a video quality of up to 1280x720 (720p) at 30 fps and 2500 Kbps using <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality">chooseVideoInputQuality(width, height, frameRate)</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps">setVideoMaxBandwidthKbps(maxBandwidthKbps)</a> APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.</p>
+					<p>Example:</p>
+					<pre><code class="language-js"><span style="color: #008000">// 360p</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">chooseVideoInputQuality</span><span style="color: #000000">(</span><span style="color: #098658">640</span><span style="color: #000000">, </span><span style="color: #098658">360</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000">);</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">setVideoMaxBandwidthKbps</span><span style="color: #000000">(</span><span style="color: #098658">600</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// 540p</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">chooseVideoInputQuality</span><span style="color: #000000">(</span><span style="color: #098658">960</span><span style="color: #000000">, </span><span style="color: #098658">540</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000">);</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">setVideoMaxBandwidthKbps</span><span style="color: #000000">(</span><span style="color: #098658">1400</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// 720p</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">chooseVideoInputQuality</span><span style="color: #000000">(</span><span style="color: #098658">1280</span><span style="color: #000000">, </span><span style="color: #098658">720</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000">);</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">setVideoMaxBandwidthKbps</span><span style="color: #000000">(</span><span style="color: #098658">1400</span><span style="color: #000000">);</span>
+</code></pre>
 					<p>The default resolution in the SDK is 540p at 15 fps and 1400 Kbps. Lower resolutions can be set if you anticipate a low bandwidth situation. Browser and codec support for very low resolutions may vary.</p>
 					<p>The value <code>maxBandwidthKbps</code> is a recommendation you make to WebRTC to use as the upper limit for upstream sending bandwidth. The Chime SDK default is 1400 Kbps for this value. The following table provides recommendations of minimum and maximum bandwidth value per resolution for typical video-conferencing scenarios. Note that when low values are selected the video can be appear pixelated. Using 15 fps instead of 30 fps will substantially decrease the required bit rate and may be acceptable for low-motion content.</p>
 					<table>
@@ -290,8 +302,65 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>
@@ -313,12 +382,13 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

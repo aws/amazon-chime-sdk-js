@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="simulcast.html">Simulcast</a>
@@ -167,38 +166,38 @@
 						<h3>Creating a simulcast enabled meeting</h3>
 					</a>
 					<p>First, create a meeting session configuration.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> {
-  ConsoleLogger,
-  DefaultDeviceController,
-  DefaultMeetingSession,
-  LogLevel,
-  MeetingSessionConfiguration
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+					<pre><code class="language-javascript"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">ConsoleLogger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">DefaultDeviceController</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">DefaultMeetingSession</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">LogLevel</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">MeetingSessionConfiguration</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;MyLogger&#x27;</span>, LogLevel.INFO);
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">logger</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ConsoleLogger</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;MyLogger&#039;</span><span style="color: #000000">, </span><span style="color: #001080">LogLevel</span><span style="color: #000000">.</span><span style="color: #0070C1">INFO</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
 
-<span class="hljs-comment">// You need responses from server-side Chime API. See &#x27;Getting responses from your server application&#x27; in the README.</span>
-<span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-comment">// The response from the CreateMeeting API action.</span>
-<span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee or BatchCreateAttendee API action.</span>
+<span style="color: #008000">// You need responses from server-side Chime API. See &#039;Getting responses from your server application&#039; in the README.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingResponse</span><span style="color: #000000"> = </span><span style="color: #008000">// The response from the CreateMeeting API action.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeResponse</span><span style="color: #000000"> = </span><span style="color: #008000">// The response from the CreateAttendee or BatchCreateAttendee API action.</span>
 
-<span class="hljs-comment">// This meeting session configuration will be used to enable simulcast in the next step.</span>
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+<span style="color: #008000">// This meeting session configuration will be used to enable simulcast in the next step.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(</span><span style="color: #001080">meetingResponse</span><span style="color: #000000">, </span><span style="color: #001080">attendeeResponse</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>Now enable <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> feature flag
 					in the created <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html">MeetingSessionConfiguration</a>.</p>
-					<pre><code class="language-javascript">configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = <span class="hljs-literal">true</span>;
+					<pre><code class="language-javascript"><span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">enableSimulcastForUnifiedPlanChromiumBasedBrowsers</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
 
-<span class="hljs-comment">//Specify the apdative probe downlink policy</span>
-configuration.videoDownlinkBandwidthPolicy = <span class="hljs-keyword">new</span> VideoAdaptiveProbePolicy(logger);
+<span style="color: #008000">//Specify the apdative probe downlink policy</span>
+<span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">videoDownlinkBandwidthPolicy</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoAdaptiveProbePolicy</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>Now create a meeting session with the simulcast enabled meeting session configuration.</p>
-					<pre><code class="language-javascript"><span class="hljs-comment">// In the examples below, you will use this meetingSession object.</span>
-<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
-  configuration,
-  logger,
-  deviceController
-);
+					<pre><code class="language-javascript"><span style="color: #008000">// In the examples below, you will use this meetingSession object.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMeetingSession</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #001080">configuration</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">deviceController</span>
+<span style="color: #000000">);</span>
 </code></pre>
 					<p>This <code>meetingSession</code> is now simulcast enabled and will have the <code>videoUplinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultsimulcastuplinkPolicy.html">DefaultSimulcastUplinkPolicy</a> and <code>videoDownlinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>. Due to these policies, the local and remote video resolutions may change. The video resolution depends on the available simulcast streams. The available simlucast streams are dependent on the number of attendees and the current bandwidth estimations. Check &quot;Simulcast resolutions and behavior&quot; section in this guide for more information.</p>
 					<a href="#receive-upstream-simulcast-layer-change-notification" id="receive-upstream-simulcast-layer-change-notification" style="color: inherit; text-decoration: none;">
@@ -213,24 +212,24 @@ configuration.videoDownlinkBandwidthPolicy = <span class="hljs-keyword">new</spa
 						<li><p>Now when you are in a simulcast enabled meeting and your upstream simulcast layer is changed, you will be notified in the <code>encodingSimulcastLayersDidChange</code> callback with the updated simulcast layer.</p>
 						</li>
 					</ul>
-					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { SimulcastLayers } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+					<pre><code class="language-javascript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">SimulcastLayers</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
-<span class="hljs-keyword">const</span> SimulcastLayersMapping = {
-  [SimulcastLayers.Low]: <span class="hljs-string">&#x27;Low&#x27;</span>,
-  [SimulcastLayers.LowAndMedium]: <span class="hljs-string">&#x27;Low and Medium&#x27;</span>,
-  [SimulcastLayers.LowAndHigh]: <span class="hljs-string">&#x27;Low and High&#x27;</span>,
-  [SimulcastLayers.Medium]: <span class="hljs-string">&#x27;Medium&#x27;</span>,
-  [SimulcastLayers.MediumAndHigh]: <span class="hljs-string">&#x27;Medium and High&#x27;</span>,
-  [SimulcastLayers.High]: <span class="hljs-string">&#x27;High&#x27;</span>
-};
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">SimulcastLayersMapping</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">[SimulcastLayers.Low]:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Low&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">[SimulcastLayers.LowAndMedium]:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Low and Medium&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">[SimulcastLayers.LowAndHigh]:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Low and High&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">[SimulcastLayers.Medium]:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Medium&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">[SimulcastLayers.MediumAndHigh]:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Medium and High&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">[SimulcastLayers.High]:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;High&#039;</span>
+<span style="color: #000000">};</span>
 
-<span class="hljs-keyword">const</span> observer = {
-  <span class="hljs-attr">encodingSimulcastLayersDidChange</span>: <span class="hljs-function"><span class="hljs-params">simulcastLayers</span> =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`current active simulcast layers changed to: <span class="hljs-subst">${SimulcastLayersMapping[simulcastLayers]}</span>`</span>);
-  }
-}
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">observer</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #795E26">encodingSimulcastLayersDidChange</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">simulcastLayers</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`current active simulcast layers changed to: </span><span style="color: #0000FF">${</span><span style="color: #001080">SimulcastLayersMapping</span><span style="color: #000000FF">[</span><span style="color: #001080">simulcastLayers</span><span style="color: #000000FF">]</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
 
-meetingSession.audioVideo.addObserver(observer);
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
 </code></pre>
 					<a href="#custom-simulcast-policy" id="custom-simulcast-policy" style="color: inherit; text-decoration: none;">
 						<h3>Custom Simulcast Policy</h3>
@@ -238,15 +237,67 @@ meetingSession.audioVideo.addObserver(observer);
 					<p>If the default simulcast uplink policy does not work for you, you can create your own simulcast video uplink policy
 						by implementing <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>
 					and set the video uplink policy via <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy">MeetingSessionConfiguration.videoUplinkBandwidthPolicy</a>.</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySimulcastUplinkPolicy</span> <span class="hljs-title">implements</span> <span class="hljs-title">SimulcastUplinkPolicy</span> </span>{
-}
+					<pre><code class="language-typescript"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MySimulcastUplinkPolicy</span><span style="color: #000000"> </span><span style="color: #0000FF">implements</span><span style="color: #000000"> </span><span style="color: #267F99">SimulcastUplinkPolicy</span><span style="color: #000000"> {</span>
+<span style="color: #000000">}</span>
 
-<span class="hljs-keyword">const</span> browserBehavior = <span class="hljs-keyword">new</span> DefaultBrowserBehavior();
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">browserBehavior</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultBrowserBehavior</span><span style="color: #000000">();</span>
 
-<span class="hljs-keyword">if</span> (browserBehavior.isSimulcastSupported()) {
-  meetingConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = <span class="hljs-literal">true</span>;
-  meetingConfiguration.videoUplinkBandwidthPolicy = <span class="hljs-keyword">new</span> MySimulcastUplinkPolicy();
-}
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">browserBehavior</span><span style="color: #000000">.</span><span style="color: #795E26">isSimulcastSupported</span><span style="color: #000000">()) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">meetingConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">enableSimulcastForUnifiedPlanChromiumBasedBrowsers</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">meetingConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">videoUplinkBandwidthPolicy</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MySimulcastUplinkPolicy</span><span style="color: #000000">();</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<a href="#enable-simulcast-for-content-share" id="enable-simulcast-for-content-share" style="color: inherit; text-decoration: none;">
+						<h3>Enable Simulcast For Content Share</h3>
+					</a>
+					<p>You can use <code>enableSimulcastForContentShare</code> to toggle simulcast on/off for content share. Note that you don&#39;t have
+						to set <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> yourself as this configuration will be set automatically
+					for content share attendee as part of <code>enableSimulcastForContentShare</code>.</p>
+					<pre><code class="language-js"><span style="color: #008000">// Enable simulcast</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">enableSimulcastForContentShare</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">();</span>
+
+<span style="color: #008000">// Disable simulcast</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">enableSimulcastForContentShare</span><span style="color: #000000">(</span><span style="color: #0000FF">false</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">();</span>
+</code></pre>
+					<p>Below is the default simulcast encoding parameters:</p>
+					<table>
+						<thead>
+							<tr>
+								<th align="center">Encoding Parameters</th>
+								<th align="center">Simulcast stream 1</th>
+								<th align="center">Simulcast stream 2</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td align="center">Max bitrate</td>
+								<td align="center">1200 kbps</td>
+								<td align="center">300 kbps</td>
+							</tr>
+							<tr>
+								<td align="center">Scale resolution down by</td>
+								<td align="center">1</td>
+								<td align="center">2</td>
+							</tr>
+							<tr>
+								<td align="center">Max framerate</td>
+								<td align="center">Same as capture framerate (default is 15fps)</td>
+								<td align="center">5</td>
+							</tr>
+					</tbody></table>
+					<p>You can override the encoding parameters to tailor to the type of content.
+						For example, for motion content, you may want to scale resolution down more but keep a high framerate for the low
+					quality layer but for static content, you may want to only reduce the framerate and keep a high resolution.</p>
+					<pre><code class="language-js"><span style="color: #008000">// Enable simulcast and override the low layer encoding parameters</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">enableSimulcastForContentShare</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">, {</span>
+<span style="color: #000000">  </span><span style="color: #001080">low:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">maxBitrateKbps:</span><span style="color: #000000"> </span><span style="color: #098658">350</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">scaleResolutionDownBy:</span><span style="color: #000000"> </span><span style="color: #098658">4</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">maxFramerate:</span><span style="color: #000000"> </span><span style="color: #098658">10</span><span style="color: #000000">,</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">});</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">();</span>
 </code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Simulcast%20feedback">Give feedback on this guide</a></p>
 				</div>
@@ -255,8 +306,65 @@ meetingSession.audioVideo.addObserver(observer);
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>
@@ -278,12 +386,13 @@ meetingSession.audioVideo.addObserver(observer);
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

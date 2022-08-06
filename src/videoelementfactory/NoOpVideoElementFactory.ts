@@ -21,8 +21,12 @@ export default class NoOpVideoElementFactory implements VideoElementFactory {
       removeAttribute: (): void => {},
       setAttribute: (): void => {},
       srcObject: false,
-      pause: (): void => {},
+      paused: true,
+      pause: (): void => {
+        element.paused = true;
+      },
       play: (): Promise<void> => {
+        element.paused = false;
         return Promise.resolve();
       },
     };

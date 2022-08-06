@@ -2,12 +2,7 @@ name: Update pre build script on Saucelabs
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
-#  schedule:
-#    - cron: '0 0 1 */2 *'
-permissions:
-  contents: read
-  pull-requests: write
+    - cron: '0 0 1 */1 *'
 
 env:
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
@@ -40,6 +35,8 @@ jobs:
     name: Create PR for origin branch
     runs-on: ubuntu-latest
     needs: [update-pre-run-script]
+    outputs:
+      pr-url: ${{ steps.create-pull-request.outputs.pull-request-url }}
     steps:
       - name: Checkout Package
         uses: actions/checkout@v3
@@ -51,8 +48,10 @@ jobs:
           SCRIPT_ID=${{ needs.update-pre-run-script.outputs.script-id }}
           sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
       - name: Create Pull Request
+        id: create-pull-request
         uses: peter-evans/create-pull-request@f094b77505fb89581e68a1163fbd2fffece39da1
         with:
+          token: ${{ secrets.JS_SDK_BOT_ACCESS_KEY }}
           commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID
           branch: update-pre-run-script-id
@@ -63,6 +62,8 @@ jobs:
     name: Create PR for previous version
     runs-on: ubuntu-latest
     needs: [update-pre-run-script]
+    outputs:
+      pmv-pr-url: ${{ steps.pmv-create-pull-request.outputs.pull-request-url }}
     steps:
       - name: Checkout Package
         uses: actions/checkout@v3
@@ -80,9 +81,29 @@ jobs:
           SCRIPT_ID=${{ needs.update-pre-run-script.outputs.script-id }}
           sed -i -E "s/storage.*'/storage:$SCRIPT_ID'/g" ${GITHUB_WORKSPACE}/integration/js/utils/WebdriverSauceLabs.js
       - name: Create Pull Request
+        id: pmv-create-pull-request
         uses: peter-evans/create-pull-request@f094b77505fb89581e68a1163fbd2fffece39da1
         with:
+          token: ${{ secrets.JS_SDK_BOT_ACCESS_KEY }}
           commit-message: Update integration tests pre-run script ID
           title: Update integration tests pre-run script ID for previous release
           branch: update-pre-run-script-id-previous-release
           delete-branch: true
+  
+  send-slack-message:
+    name: Send Slack message
+    runs-on: ubuntu-latest
+    needs: [create-pr, create-pr-previous-version]
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js - 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: Install Axios
+        run: npm install axios
+      - name: Send Slack message to channel
+        run: node .github/script/send-prerun-script-pr-reminder.js ${{ secrets.SLACK_JS_SDK_DEV_PREBUILD_BOT }} ${{ needs.create-pr.outputs.pr-url }} ${{ needs.create-pr-previous-version.outputs.pmv-pr-url }}

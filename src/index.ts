@@ -70,6 +70,7 @@ import ContentShareController from './contentsharecontroller/ContentShareControl
 import ContentShareControllerFacade from './contentsharecontroller/ContentShareControllerFacade';
 import ContentShareMediaStreamBroker from './contentsharecontroller/ContentShareMediaStreamBroker';
 import ContentShareObserver from './contentshareobserver/ContentShareObserver';
+import ContentShareSimulcastEncodingParameters from './videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 import CreatePeerConnectionTask from './task/CreatePeerConnectionTask';
 import CreateSDPTask from './task/CreateSDPTask';
 import DataMessage from './datamessage/DataMessage';
@@ -96,6 +97,7 @@ import DefaultSessionStateController from './sessionstatecontroller/DefaultSessi
 import DefaultSigV4 from './sigv4/DefaultSigV4';
 import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
+import DefaultSimulcastUplinkPolicyForContentShare from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
 import DefaultTranscriptionController from './transcript/DefaultTranscriptionController';
 import DefaultUserAgentParser from './useragentparser/DefaultUserAgentParser';
@@ -200,6 +202,7 @@ import ParallelGroupTask from './task/ParallelGroupTask';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
+import PrefetchOn from './messagingsession/PrefetchOn';
 import PromiseQueue from './utils/PromiseQueue';
 import PromoteToPrimaryMeetingTask from './task/PromoteToPrimaryMeetingTask';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
@@ -223,6 +226,7 @@ import SDPMediaSection from './sdp/SDPMediaSection';
 import Scheduler from './scheduler/Scheduler';
 import SendAndReceiveDataMessagesTask from './task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from './task/SerialGroupTask';
+import ServerSideNetworkAdaption from './signalingclient/ServerSideNetworkAdaption';
 import SessionStateController from './sessionstatecontroller/SessionStateController';
 import SessionStateControllerAction from './sessionstatecontroller/SessionStateControllerAction';
 import SessionStateControllerDeferPriority from './sessionstatecontroller/SessionStateControllerDeferPriority';
@@ -240,6 +244,7 @@ import SignalingClientJoin from './signalingclient/SignalingClientJoin';
 import SignalingClientObserver from './signalingclientobserver/SignalingClientObserver';
 import SignalingClientSubscribe from './signalingclient/SignalingClientSubscribe';
 import SignalingClientVideoSubscriptionConfiguration from './signalingclient/SignalingClientVideoSubscriptionConfiguration';
+import SimulcastContentShareTransceiverController from './transceivercontroller/SimulcastContentShareTransceiverController';
 import SimulcastLayers from './simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from './transceivercontroller/SimulcastTransceiverController';
 import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplinkObserver';
@@ -272,9 +277,11 @@ import UserAgentParser from './useragentparser/UserAgentParser';
 import Versioning from './versioning/Versioning';
 import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
+import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
+import VideoEncodingParameters from './videouplinkbandwidthpolicy/VideoEncodingParameters';
 import VideoFrameBuffer from './videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from './videoframeprocessor/VideoFrameProcessor';
 import VideoFrameProcessorPipeline from './videoframeprocessor/VideoFrameProcessorPipeline';
@@ -392,6 +399,7 @@ export {
   ContentShareControllerFacade,
   ContentShareMediaStreamBroker,
   ContentShareObserver,
+  ContentShareSimulcastEncodingParameters,
   CreatePeerConnectionTask,
   CreateSDPTask,
   DataMessage,
@@ -418,6 +426,7 @@ export {
   DefaultSigV4,
   DefaultSignalingClient,
   DefaultSimulcastUplinkPolicy,
+  DefaultSimulcastUplinkPolicyForContentShare,
   DefaultTransceiverController,
   DefaultTranscriptionController,
   DefaultUserAgentParser,
@@ -528,6 +537,7 @@ export {
   PermissionDeniedError,
   PingPong,
   PingPongObserver,
+  PrefetchOn,
   PromiseQueue,
   PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,
@@ -551,6 +561,7 @@ export {
   Scheduler,
   SendAndReceiveDataMessagesTask,
   SerialGroupTask,
+  ServerSideNetworkAdaption,
   SessionStateController,
   SessionStateControllerAction,
   SessionStateControllerDeferPriority,
@@ -568,6 +579,7 @@ export {
   SignalingClientObserver,
   SignalingClientSubscribe,
   SignalingClientVideoSubscriptionConfiguration,
+  SimulcastContentShareTransceiverController,
   SimulcastLayers,
   SimulcastTransceiverController,
   SimulcastUplinkObserver,
@@ -601,9 +613,11 @@ export {
   Versioning,
   VideoAdaptiveProbePolicy,
   VideoCaptureAndEncodeParameter,
+  VideoCodecCapability,
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
   VideoElementFactory,
+  VideoEncodingParameters,
   VideoFrameBuffer,
   VideoFrameProcessor,
   VideoFrameProcessorPipeline,

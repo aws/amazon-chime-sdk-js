@@ -3,10 +3,11 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SemVer | amazon-chime-sdk-js</title>
+	<title>ServerSideNetworkAdaption | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,13 +52,13 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
-					<a href="semver.html">SemVer</a>
+					<a href="serversidenetworkadaption.html">ServerSideNetworkAdaption</a>
 				</li>
 			</ul>
-			<h1>Interface SemVer</h1>
+			<h1>Enumeration ServerSideNetworkAdaption</h1>
 		</div>
 	</div>
 </header>
@@ -69,93 +68,80 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The components of a SemVer version, separated so they can be used individually.</p>
+						<p><a href="serversidenetworkadaption.html">ServerSideNetworkAdaption</a> represents additional server side features that can be enabled for network adaption.</p>
 					</div>
 				</div>
-			</section>
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">SemVer</span>
-					</li>
-				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="semver.html#major" class="tsd-kind-icon">major</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="semver.html#minor" class="tsd-kind-icon">minor</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="semver.html#patch" class="tsd-kind-icon">patch</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="semver.html#prerelease" class="tsd-kind-icon">pre<wbr>Release</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#bandwidthprobing" class="tsd-kind-icon">Bandwidth<wbr>Probing</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#default" class="tsd-kind-icon">Default</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#none" class="tsd-kind-icon">None</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="major" class="tsd-anchor"></a>
-					<h3>major</h3>
-					<div class="tsd-signature tsd-kind-icon">major<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="bandwidthprobing" class="tsd-anchor"></a>
+					<h3>Bandwidth<wbr>Probing</h3>
+					<div class="tsd-signature tsd-kind-icon">Bandwidth<wbr>Probing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/versioning/Versioning.ts#L14">src/versioning/Versioning.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L36">src/signalingclient/ServerSideNetworkAdaption.ts:36</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The major version.</p>
+							<p>Disable the existing client side bandwidth probing methods of waiting and unpausing,
+								or waiting and upgrading simulcast streams (which can be large increases of bitrates
+								and may lead to periodic oversubscription over network capacity
+								and resulting video freezes) and replace it with more gradual server
+								side probing of increasing amounts padding packets until the
+								bandwidth estimate safely reaches the value needed to resume the
+							next video source, or upgrade to the next higher simulcast stream.</p>
+						</div>
+						<p>When this is enabled, any policy &#39;probing&#39; for bandwidth headroom
+							should be disabled. This may also enable pacing of some media packets from the server
+						side, and may also enable packet burst probing.</p>
+						<p>End users should overall see reduced video freezes, reduced broken audio,
+						and reduced packet loss.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="default" class="tsd-anchor"></a>
+					<h3>Default</h3>
+					<div class="tsd-signature tsd-kind-icon">Default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L13">src/signalingclient/ServerSideNetworkAdaption.ts:13</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>No features enabled, but can be overriden from server side values.</p>
 						</div>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="minor" class="tsd-anchor"></a>
-					<h3>minor</h3>
-					<div class="tsd-signature tsd-kind-icon">minor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="none" class="tsd-anchor"></a>
+					<h3>None</h3>
+					<div class="tsd-signature tsd-kind-icon">None<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/versioning/Versioning.ts#L19">src/versioning/Versioning.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L18">src/signalingclient/ServerSideNetworkAdaption.ts:18</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The minor version.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="patch" class="tsd-anchor"></a>
-					<h3>patch</h3>
-					<div class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/versioning/Versioning.ts#L24">src/versioning/Versioning.ts:24</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The patch version.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="prerelease" class="tsd-anchor"></a>
-					<h3>pre<wbr>Release</h3>
-					<div class="tsd-signature tsd-kind-icon">pre<wbr>Release<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/versioning/Versioning.ts#L29">src/versioning/Versioning.ts:29</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The pre release identifier</p>
+							<p>No features enabled. Will not be override from server side choice.</p>
 						</div>
 					</div>
 				</section>
@@ -164,8 +150,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -173,20 +159,17 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="semver.html" class="tsd-kind-icon">Sem<wbr>Ver</a>
+					<li class="current tsd-kind-enum">
+						<a href="serversidenetworkadaption.html" class="tsd-kind-icon">Server<wbr>Side<wbr>Network<wbr>Adaption</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="semver.html#major" class="tsd-kind-icon">major</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serversidenetworkadaption.html#bandwidthprobing" class="tsd-kind-icon">Bandwidth<wbr>Probing</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="semver.html#minor" class="tsd-kind-icon">minor</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serversidenetworkadaption.html#default" class="tsd-kind-icon">Default</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="semver.html#patch" class="tsd-kind-icon">patch</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="semver.html#prerelease" class="tsd-kind-icon">pre<wbr>Release</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serversidenetworkadaption.html#none" class="tsd-kind-icon">None</a>
 							</li>
 						</ul>
 					</li>
@@ -208,12 +191,13 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

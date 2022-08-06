@@ -40,6 +40,18 @@ export default class SetRemoteDescriptionTask extends BaseTask {
       }
     }
 
+    if (
+      this.context.videoSendCodecPreferences !== undefined &&
+      this.context.videoSendCodecPreferences.length > 0
+    ) {
+      sdp = new SDP(sdp).withVideoSendCodecPreferences(
+        this.context.meetingSupportedVideoSendCodecPreferences !== undefined
+          ? this.context.meetingSupportedVideoSendCodecPreferences
+          : this.context.videoSendCodecPreferences
+      ).sdp;
+      this.context.currentVideoSendCodec = new SDP(sdp).highestPriorityVideoSendCodec();
+    }
+
     this.logger.info(`processed remote description is >>>${sdp}<<<`);
     const remoteDescription: RTCSessionDescription = {
       type: 'answer',

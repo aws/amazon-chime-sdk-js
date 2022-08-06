@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="replicatedmeetings.html">ReplicatedMeetings</a>
@@ -78,7 +77,7 @@
 					<p>This document will cover specifics of the behavior and features available to Replica meeting attendees with relation to the Amazon Chime SDK for Javascript. It assumes that:</p>
 					<ul>
 						<li>You have an understanding of the core media features of the Amazon Chime SDK for Javascript.</li>
-						<li>You have an understanding of the high level ideas around Replica meetings as covered in the [Chime Developer Guide](Link Pending).</li>
+						<li>You have an understanding of the high level ideas around Replica meetings as covered in the <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html">Chime Developer Guide</a>.</li>
 					</ul>
 					<p><em>Note:</em> This guide will refer to the meeting which is replicated as a Primary meeting, however there is no difference between a Primary meeting and a normal meeting. There is additionally no difference in the behavior and features of an attendee of a Primary meeting, so builders should not need to use the SDK any differently from the way they would for non-replicated meetings for those Primary meeting attendees.</p>
 					<a href="#replica-meeting-receive-behavior" id="replica-meeting-receive-behavior" style="color: inherit; text-decoration: none;">
@@ -133,28 +132,28 @@
 						<h3>Promotion of Replica attendees</h3>
 					</a>
 					<p>Primary meeting credentials for Replica attendees which desire promotion need to be retrieved in the same way as a normal Primary meeting attendee via <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html"><code>chime::CreateAttendee</code></a> Chime APIs. See <a href="https://github.com/aws/amazon-chime-sdk-js#getting-responses-from-your-server-application">Getting responses from your server application</a> for more information. Once the Primary meeting credentials have been retrieved, they can be provided to an <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html"><code>AudioVideoFacade</code></a> which is already connected to a Replica meeting:</p>
-					<pre><code><span class="hljs-comment">// We assume `replicaMeetingSession` is created using configuration created</span>
-<span class="hljs-comment">// with Replica meeting credentials.</span>
-<span class="hljs-keyword">const</span> replicaMeetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
-  configuration,
-  logger,
-  deviceController
-);
-<span class="hljs-comment">// Can then use `replicaMeetingSession` as non-participating session.</span>
+					<pre><code><span style="color: #008000">// We assume `replicaMeetingSession` is created using configuration created</span>
+<span style="color: #008000">// with Replica meeting credentials.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">replicaMeetingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMeetingSession</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #001080">configuration</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">deviceController</span>
+<span style="color: #000000">);</span>
+<span style="color: #008000">// Can then use `replicaMeetingSession` as non-participating session.</span>
 
-<span class="hljs-comment">// When promotion is desired...</span>
+<span style="color: #008000">// When promotion is desired...</span>
 
-<span class="hljs-comment">// Response from Primary&#x27;s CreateMeeting API call</span>
-<span class="hljs-keyword">const</span> meetingResponse = getPrimaryMeeting();
-<span class="hljs-comment">//Response from CreateAttendee API call against Primary</span>
-<span class="hljs-keyword">const</span> attendeeResponse = createPrimaryMeetingAttendee();
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(
-    meetingResponse,
-    attendeeResponse
-);
-<span class="hljs-comment">// This could also be created solely through the `CreateAttendee` response</span>
-<span class="hljs-keyword">const</span> credentials = configuration.credentials;
-<span class="hljs-keyword">const</span> status = meetingSession.audioVideo.promoteToPrimaryMeeting(credentials);
+<span style="color: #008000">// Response from Primary&#039;s CreateMeeting API call</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingResponse</span><span style="color: #000000"> = </span><span style="color: #795E26">getPrimaryMeeting</span><span style="color: #000000">();</span>
+<span style="color: #008000">//Response from CreateAttendee API call against Primary</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeResponse</span><span style="color: #000000"> = </span><span style="color: #795E26">createPrimaryMeetingAttendee</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #001080">meetingResponse</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">attendeeResponse</span>
+<span style="color: #000000">);</span>
+<span style="color: #008000">// This could also be created solely through the `CreateAttendee` response</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">credentials</span><span style="color: #000000"> = </span><span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">credentials</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">status</span><span style="color: #000000"> = </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">promoteToPrimaryMeeting</span><span style="color: #000000">(</span><span style="color: #001080">credentials</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>status is a <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html"><code>MeetingSessionStatus</code></a> object. See <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideocontrollerfacade.html#promotetoprimarymeeting"><code>promoteToPrimaryMeeting</code></a> documentation for possible return codes. If status.code is <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#ok"><code>MeetingSessionStatusCode.OK</code></a>, the connection has successfully authenticated as a Primary meeting attendee and the attendee experience should now be as if you had joined the Primary meeting directly. This means:</p>
 					<ul>
@@ -181,8 +180,65 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>
@@ -204,12 +260,13 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

@@ -467,6 +467,13 @@ export default class DefaultRealtimeController implements RealtimeController {
     if (attendeeIdRemote !== attendeeIdLocal) {
       return mutedRemote;
     }
+    // This is a workaround to check if no audio input then just use the remote value
+    if (
+      // @ts-ignore
+      !('activeDevices' in this.mediaStreamBroker && this.mediaStreamBroker.activeDevices['audio'])
+    ) {
+      return mutedRemote;
+    }
     return mutedLocal;
   }
 

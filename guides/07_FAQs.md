@@ -221,7 +221,7 @@ parameter to [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReferen
 
 ### How do I choose video resolution, frame rate and bitrate?
 
-Applications built with the Amazon Chime SDK for JavaScript can adjust video parameters before a meeting begins by using the [chooseVideoInputQuality](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html#adjust-local-video-quality) API.
+Applications built with the Amazon Chime SDK for JavaScript can adjust video parameters before a meeting begins by using the [chooseVideoInputQuality and setVideoMaxBandwidthKbps](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html#adjust-local-video-quality) APIs.
 
 ### How can I stream music or video into a meeting?
 

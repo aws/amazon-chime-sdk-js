@@ -155,7 +155,7 @@ Make sure you have Node.js version 12 or higher. Node 14 is recommended and supp
 To add the Amazon Chime SDK for JavaScript into an existing application,
 install the package directly from npm:
 
-```plaintext
+```
 npm install amazon-chime-sdk-js --save
 ```
 
@@ -250,10 +250,17 @@ const sessionId = /* The sessionId */;
 const configuration = new MessagingSessionConfiguration(userArn, sessionId, endpoint.Endpoint.Url, chime);
 const messagingSession = new DefaultMessagingSession(configuration, logger);
 ```
+If you would like to enable prefetch feature when connecting to a messaging session, you can follow the code below.
+Prefetch feature will send out CHANNEL_DETAILS event upon websocket connection, which includes information about channel, 
+channel messages, channel memberships etc.
+
+```js
+configuration.prefetchOn = PrefetchOn.Connect;
+```
 
 ## Building and testing
 
-```plaintext
+```
 git fetch --tags https://github.com/aws/amazon-chime-sdk-js
 npm run build
 npm run test
@@ -273,7 +280,7 @@ For example, if you have a `DefaultVideoTransformDevice` in your unit test then 
 
 To generate JavaScript API reference documentation run:
 
-```plaintext
+```
 npm run build
 npm run doc
 ```

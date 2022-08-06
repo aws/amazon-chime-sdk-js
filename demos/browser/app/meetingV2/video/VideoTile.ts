@@ -8,42 +8,48 @@ export class DemoVideoTile extends HTMLElement {
   <div class="video-tile-nameplate"></div>
   <div class="video-tile-pause-state"></div>
   <div class="button-video-tile-config" role="group">
-    <button type="button" class="btn btn-success dropdown-toggle button-video-tile-config-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../../node_modules/open-iconic/svg/cog.svg') %></button>
-    <div class="dropdown-menu dropdown-menu-right dropdown-video-tile-config" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+    <button type="button" class="btn btn-success dropdown-toggle button-video-tile-config-drop" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../../node_modules/open-iconic/svg/cog.svg') %></button>
+    <div class="dropdown-menu dropdown-menu-end dropdown-video-tile-config" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
       <a class="dropdown-item video-tile-pause">Pause</a>
       <div class="dropdown-divider"></div>
       <h6 class="dropdown-header target-resolution-header">Target Resolution</h6>
-      <form class="btn-group btn-group-toggle video-tile-config-toggle target-resolution-toggle" data-toggle="buttons">
-        <label class="btn btn-secondary">
-          <input type="radio" name="level" value="low" autocomplete="off">Low
-        </label>
-        <label class="btn btn-secondary">
-          <input type="radio" name="level" value="medium" autocomplete="off">Medium
-        </label>
-        <label class="btn btn-secondary active">
-          <input type="radio" name="level" value="high" autocomplete="off" checked>High
-        </label>
+      <form class="btn-group video-tile-config-toggle target-resolution-toggle" role="group">
+        <input type="radio" class="btn-check" name="level" value="low" id="resolution-low">
+        <label class="btn btn-secondary" id="resolution-low-label" for="low">Low</label>
+        <input type="radio" class="btn-check" name="level" value="medium" id="resolution-medium">
+        <label class="btn btn-secondary" id="resolution-medium-label" for="medium">Medium</label>
+        <input type="radio" class="btn-check" name="level" value="high" id="resolution-high" checked>
+        <label class="btn btn-secondary" id="resolution-high-label" for="high">High</label>
       </form>
       <h6 class="dropdown-header video-priority-header">Video Priority</h6>
-      <form class="btn-group btn-group-toggle video-tile-config-toggle video-priority-toggle" data-toggle="buttons">
-        <label class="btn btn-secondary">
-          <input type="radio" name="level" value="low" autocomplete="off">Low
-        </label>
-        <label class="btn btn-secondary active">
-          <input type="radio" name="level" value="medium" autocomplete="off" checked>Medium
-        </label>
-        <label class="btn btn-secondary">
-            <input type="radio" name="level" value="high" autocomplete="off">High
-        </label>
+      <form class="btn-group video-tile-config-toggle video-priority-toggle">
+        <input type="radio" class="btn-check" name="level" value="low" id="priority-low">
+        <label class="btn btn-secondary" id="priority-low-label" for="low">Low</label>
+        <input type="radio" class="btn-check" name="level" value="medium" id="priority-medium" checked>
+        <label class="btn btn-secondary" id="priority-medium-label" for="medium">Medium</label>
+        <input type="radio" class="btn-check" name="level" value="high" id="priority-high">
+        <label class="btn btn-secondary" id="priority-high-label" for="high">High</label>
       </form>
     </div>
   </div>
 `;
 
+
   public set tileIndex(tileIndex: number) {
     // Update IDs for integration tests which need them
     this.querySelector('.video-tile-nameplate').id = `nameplate-${tileIndex}`;
     this.querySelector('.video-tile-video').id = `video-${tileIndex}`;
+
+    // Bootstrap is not easy to get working with shadow DOMs, and also requires the use of IDs for radio buttons
+    // (putting the input within the label doesn't work in Bootstrap 5), so we manually update these IDs to make them
+    // unique
+    const nonUniqueInputAndLabelIdPrefixes = [
+      'priority-low', 'priority-medium', 'priority-high', 'resolution-low', 'resolution-medium', 'resolution-high'];
+    for (const prefix of nonUniqueInputAndLabelIdPrefixes) {
+      this.querySelector(`#${prefix}`).id = `${prefix}-${tileIndex}`;
+      this.querySelector(`#${prefix}-label`).setAttribute('for', `${prefix}-${tileIndex}`);
+      this.querySelector(`#${prefix}-label`).id = `${prefix}-label-${tileIndex}`;
+    }
   }
 
   public set showConfigDropdown(shouldShow: boolean) {

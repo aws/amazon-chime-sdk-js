@@ -75,6 +75,8 @@ export default class DefaultDeviceController
   private audioInputTaskQueue: PromiseQueue = new PromiseQueue();
   private videoInputTaskQueue: PromiseQueue = new PromiseQueue();
 
+  private muted: boolean = false;
+
   // This handles the dispatch of `mute` and `unmute` events from audio tracks.
   // There's a bit of a semantic mismatch here if input streams allow individual component tracks to be muted,
   // but addressing that gap is not feasible in our stream-oriented world.
@@ -228,7 +230,7 @@ export default class DefaultDeviceController
 
     try {
       if (isAudioTransformDevice(device)) {
-        // N.B., do not JSON.stringify here — for some kinds of devices this
+        // N.B., do not JSON.stringify here — for some kinds of devices this
         // will cause a cyclic object reference error.
         this.logger.info(`Choosing transform input device ${device}`);
 
@@ -243,6 +245,7 @@ export default class DefaultDeviceController
       if (this.useWebAudio) {
         this.attachAudioInputStreamToAudioContext(this.activeDevices['audio'].stream);
         this.pushAudioMeetingStateForPermissions(this.getMediaStreamDestinationNode().stream);
+        await this.transform?.device.mute(this.muted);
         return this.getMediaStreamDestinationNode().stream;
       } else {
         this.publishAudioInputDidChangeEvent(this.activeDevices['audio'].stream);
@@ -683,19 +686,24 @@ export default class DefaultDeviceController
   }
 
   private toggleLocalAudioInputStream(enabled: boolean): void {
-    if (!this.activeDevices['audio']) {
+    let audioDevice: MediaStreamAudioDestinationNode | DeviceSelection = this.activeDevices[
+      'audio'
+    ];
+    if (this.useWebAudio) {
+      audioDevice = this.getMediaStreamDestinationNode();
+    }
+    if (!audioDevice) {
       return;
     }
-    let isChanged = false;
-    for (const track of this.activeDevices['audio'].stream.getTracks()) {
+    for (const track of audioDevice.stream.getTracks()) {
       if (track.enabled === enabled) {
         continue;
       }
       track.enabled = enabled;
-      isChanged = true;
     }
-    if (isChanged) {
-      this.transform?.device.mute(!enabled);
+    if (this.muted !== !enabled) {
+      this.muted = !enabled;
+      this.transform?.device.mute(this.muted);
     }
   }
 

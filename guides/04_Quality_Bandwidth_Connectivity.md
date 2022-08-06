@@ -80,7 +80,7 @@ When possible, profile on devices that have similar performance characteristics 
 
 #### Choose a lower local video quality
 
-Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call [chooseVideoInputQuality](https://aws.github.io/amazon-chime-sdk-js/interfaces/devicecontroller.html#choosevideoinputquality)(width, height, frameRate, maxBandwidthKbps) and lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for `chooseVideoInputQuality`.
+Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call [chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) and [setVideoMaxBandwidthKbps(maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) to lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for `chooseVideoInputQuality`.
 
 #### Pause remote videos
 
@@ -92,7 +92,22 @@ In the absence of packet loss, keep in mind that the sender uplink and receiver 
 
 ####  Adjust local video quality
 
-You can choose a video quality of up to 1280x720 (720p) at 30 fps and 2500 Kbps using [chooseVideoInputQuality](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) (width, height, frameRate, maxBandwidthKbps) API before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.
+You can choose a video quality of up to 1280x720 (720p) at 30 fps and 2500 Kbps using [chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) and [setVideoMaxBandwidthKbps(maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.
+
+Example:
+```js
+// 360p
+meetingSession.audioVideo.chooseVideoInputQuality(640, 360, 15);
+meetingSession.audioVideo.setVideoMaxBandwidthKbps(600);
+
+// 540p
+meetingSession.audioVideo.chooseVideoInputQuality(960, 540, 15);
+meetingSession.audioVideo.setVideoMaxBandwidthKbps(1400);
+
+// 720p
+meetingSession.audioVideo.chooseVideoInputQuality(1280, 720, 15);
+meetingSession.audioVideo.setVideoMaxBandwidthKbps(1400);
+```
 
 The default resolution in the SDK is 540p at 15 fps and 1400 Kbps. Lower resolutions can be set if you anticipate a low bandwidth situation. Browser and codec support for very low resolutions may vary.
 

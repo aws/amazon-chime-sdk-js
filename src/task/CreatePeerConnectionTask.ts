@@ -83,17 +83,12 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     configuration.bundlePolicy = this.context.browserBehavior.requiresBundlePolicy();
     // @ts-ignore
     configuration.sdpSemantics = 'unified-plan';
-    // @ts-ignore
-    this.logger.info(`SDP semantics are ${configuration.sdpSemantics}`);
-    const connectionConstraints = {
-      optional: [{ googCpuOveruseDetection: false }, { googCombinedAudioVideoBwe: true }],
-    };
     if (this.context.peer) {
       this.context.logger.info('reusing peer connection');
     } else {
       this.context.logger.info('creating new peer connection');
       // @ts-ignore
-      this.context.peer = new RTCPeerConnection(configuration, connectionConstraints);
+      this.context.peer = new RTCPeerConnection(configuration);
       this.addPeerConnectionEventLogger();
     }
 

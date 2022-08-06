@@ -5,6 +5,7 @@ import { Substitute } from '@fluffy-spoon/substitute';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { VideoCodecCapability } from '../../src';
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
 import AudioMixObserver from '../../src/audiomixobserver/AudioMixObserver';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
@@ -21,6 +22,7 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import type VolumeIndicatorCallback from '../../src/realtimecontroller/VolumeIndicatorCallback';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
+import ContentShareSimulcastEncodingParameters from '../../src/videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultAudioVideoFacade', () => {
@@ -37,6 +39,11 @@ describe('DefaultAudioVideoFacade', () => {
   }
 
   class NoOpContentShareController implements ContentShareController {
+    enableSimulcastForContentShare(
+      _enable: boolean,
+      _encodingParams?: ContentShareSimulcastEncodingParameters
+    ): void {}
+
     async startContentShare(_stream: MediaStream): Promise<void> {}
 
     async startContentShareFromScreenCapture(_sourceId?: string): Promise<MediaStream> {
@@ -44,6 +51,8 @@ describe('DefaultAudioVideoFacade', () => {
     }
 
     setContentAudioProfile(_audioProfile: AudioProfile): void {}
+
+    setContentShareVideoCodecPreferences(_preferences: VideoCodecCapability[]): void {}
 
     pauseContentShare(): void {}
 
@@ -136,6 +145,12 @@ describe('DefaultAudioVideoFacade', () => {
     it('will call setVideoMaxBandwidthKbps', () => {
       const spy = sinon.spy(controller, 'setVideoMaxBandwidthKbps');
       facade.setVideoMaxBandwidthKbps(100);
+      assert(spy.calledOnce);
+    });
+
+    it('will call setVideoCodecSendPreferences', () => {
+      const spy = sinon.spy(controller, 'setVideoCodecSendPreferences');
+      facade.setVideoCodecSendPreferences([]);
       assert(spy.calledOnce);
     });
 
@@ -646,6 +661,12 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(profile));
     });
 
+    it('will call enableSimulcastForContentShare', () => {
+      const spy = sinon.spy(contentShareController, 'enableSimulcastForContentShare');
+      facade.enableSimulcastForContentShare(true);
+      spy.calledOnceWith(true);
+    });
+
     it('will call startContentShare', async () => {
       const spy = sinon.spy(contentShareController, 'startContentShare');
       const mediaStream = new MediaStream();
@@ -656,6 +677,12 @@ describe('DefaultAudioVideoFacade', () => {
     it('will call startContentShareFromScreenCapture', async () => {
       const spy = sinon.spy(contentShareController, 'startContentShareFromScreenCapture');
       await facade.startContentShareFromScreenCapture();
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('will call setContentShareVideoCodecPreferences', async () => {
+      const spy = sinon.spy(contentShareController, 'setContentShareVideoCodecPreferences');
+      facade.setContentShareVideoCodecPreferences([]);
       expect(spy.calledOnce).to.be.true;
     });
 

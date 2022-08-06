@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a>
@@ -73,7 +72,7 @@
 						<span class="target">VideoPriorityBasedPolicy</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<a href="videoadaptiveprobepolicy.html" class="tsd-signature-type">VideoAdaptiveProbePolicy</a>
+								<a href="videoadaptiveprobepolicy.html" class="tsd-signature-type" data-tsd-kind="Class">VideoAdaptiveProbePolicy</a>
 							</li>
 						</ul>
 					</li>
@@ -82,7 +81,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/videodownlinkbandwidthpolicy.html" class="tsd-signature-type">VideoDownlinkBandwidthPolicy</a></li>
+					<li><a href="../interfaces/videodownlinkbandwidthpolicy.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkBandwidthPolicy</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -118,9 +117,14 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#chooseremotevideosources" class="tsd-kind-icon">choose<wbr>Remote<wbr>Video<wbr>Sources</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#choosesubscriptions" class="tsd-kind-icon">choose<wbr>Subscriptions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#foreachobserver" class="tsd-kind-icon">for<wbr>Each<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="videoprioritybasedpolicy.html#getcurrentvideopreferences" class="tsd-kind-icon">get<wbr>Current<wbr>Video<wbr>Preferences</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#getserversidenetworkadaption" class="tsd-kind-icon">get<wbr>Server<wbr>Side<wbr>Network<wbr>Adaption</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#getvideopreferences" class="tsd-kind-icon">get<wbr>Video<wbr>Preferences</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#reset" class="tsd-kind-icon">reset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#setserversidenetworkadaption" class="tsd-kind-icon">set<wbr>Server<wbr>Side<wbr>Network<wbr>Adaption</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#setvideoprioritybasedpolicyconfigs" class="tsd-kind-icon">set<wbr>Video<wbr>Priority<wbr>Based<wbr>Policy<wbr>Configs</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#supportedserversidenetworkadaptions" class="tsd-kind-icon">supported<wbr>Server<wbr>Side<wbr>Network<wbr>Adaptions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#updateindex" class="tsd-kind-icon">update<wbr>Index</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#updatemetrics" class="tsd-kind-icon">update<wbr>Metrics</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#wantsresubscribe" class="tsd-kind-icon">wants<wbr>Resubscribe</a></li>
@@ -135,25 +139,25 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Video<wbr>Priority<wbr>Based<wbr>Policy<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, videoPriorityBasedPolicyConfig<span class="tsd-signature-symbol">?: </span><a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videoprioritybasedpolicy.html" class="tsd-signature-type">VideoPriorityBasedPolicy</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Video<wbr>Priority<wbr>Based<wbr>Policy<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a>, videoPriorityBasedPolicyConfig<span class="tsd-signature-symbol">?: </span><a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videoprioritybasedpolicy.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPriorityBasedPolicy</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L110">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L112">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:112</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
+									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> videoPriorityBasedPolicyConfig: <a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol"> = VideoPriorityBasedPolicyConfig.Default</span></h5>
+									<h5>videoPriorityBasedPolicyConfig: <a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol"> = ...</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="videoprioritybasedpolicy.html" class="tsd-signature-type">VideoPriorityBasedPolicy</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="videoprioritybasedpolicy.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPriorityBasedPolicy</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -163,30 +167,27 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="defaultvideopreferences" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> default<wbr>Video<wbr>Preferences</h3>
-					<div class="tsd-signature tsd-kind-icon">default<wbr>Video<wbr>Preferences<span class="tsd-signature-symbol">:</span> <a href="videopreferences.html" class="tsd-signature-type">VideoPreferences</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Video<wbr>Preferences<span class="tsd-signature-symbol">:</span> <a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L78">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:78</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L79">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:79</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="logger" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> logger</h3>
-					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
+					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L113">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:113</a></li>
-						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="observerqueue" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> observer<wbr>Queue</h3>
-					<div class="tsd-signature tsd-kind-icon">observer<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Set&lt;VideoDownlinkObserver&gt;()</span></div>
+					<div class="tsd-signature tsd-kind-icon">observer<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L82">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:82</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L83">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:83</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -196,37 +197,37 @@
 					<div class="tsd-signature tsd-kind-icon">should<wbr>Pause<wbr>Tiles<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L79">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L80">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:80</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="tilecontroller" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> tile<wbr>Controller</h3>
-					<div class="tsd-signature tsd-kind-icon">tile<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
+					<div class="tsd-signature tsd-kind-icon">tile<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTileController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L76">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L77">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:77</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="videoindex" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> video<wbr>Index</h3>
-					<div class="tsd-signature tsd-kind-icon">video<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videostreamindex.html" class="tsd-signature-type">VideoStreamIndex</a></div>
+					<div class="tsd-signature tsd-kind-icon">video<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videostreamindex.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoStreamIndex</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L80">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L81">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:81</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="videopreferences" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> video<wbr>Preferences</h3>
-					<div class="tsd-signature tsd-kind-icon">video<wbr>Preferences<span class="tsd-signature-symbol">:</span> <a href="videopreferences.html" class="tsd-signature-type">VideoPreferences</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
+					<div class="tsd-signature tsd-kind-icon">video<wbr>Preferences<span class="tsd-signature-symbol">:</span> <a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L77">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:77</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L78">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:78</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -236,7 +237,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Preferences<wbr>Updated<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L81">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:81</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L82">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:82</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -247,20 +248,25 @@
 					<a name="addobserver" class="tsd-anchor"></a>
 					<h3>add<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#addobserver">addObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L241">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:241</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L244">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:244</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>(Optional) Add VideoDownlinkObserver to observer resubscribe requests</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observer: <a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a></h5>
+									<h5>observer: <a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -271,19 +277,28 @@
 					<a name="bindtotilecontroller" class="tsd-anchor"></a>
 					<h3>bind<wbr>ToTile<wbr>Controller</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">bind<wbr>ToTile<wbr>Controller<span class="tsd-signature-symbol">(</span>tileController<span class="tsd-signature-symbol">: </span><a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>ToTile<wbr>Controller<span class="tsd-signature-symbol">(</span>tileController<span class="tsd-signature-symbol">: </span><a href="../interfaces/videotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTileController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#bindtotilecontroller">bindToTileController</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L145">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:145</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L148">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:148</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>(Optional) Bind the video tile controller to the policy to allow it to control the video tiles such as pause
+										and unpause.
+										The audio video controller should call this method to pass down a transceiver controller to the policy
+									when the meeting starts and set it to undefined when the meeting ends.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>tileController: <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a></h5>
+									<h5>tileController: <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTileController</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -300,7 +315,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L385">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:385</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L391">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:391</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -317,7 +332,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L259">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:259</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L262">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:262</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -328,19 +343,19 @@
 					<a name="chooseremotevideosources" class="tsd-anchor"></a>
 					<h3>choose<wbr>Remote<wbr>Video<wbr>Sources</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Remote<wbr>Video<wbr>Sources<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">: </span><a href="videopreferences.html" class="tsd-signature-type">VideoPreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">choose<wbr>Remote<wbr>Video<wbr>Sources<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">: </span><a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L153">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:153</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L156">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:156</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>preferences: <a href="videopreferences.html" class="tsd-signature-type">VideoPreferences</a></h5>
+									<h5>preferences: <a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -351,17 +366,26 @@
 					<a name="choosesubscriptions" class="tsd-anchor"></a>
 					<h3>choose<wbr>Subscriptions</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Subscriptions<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></li>
+						<li class="tsd-signature tsd-kind-icon">choose<wbr>Subscriptions<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamidset.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoStreamIdSet</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#choosesubscriptions">chooseSubscriptions</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L232">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:232</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L235">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:235</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Updates the internal state with the set of streams we expect to be
+										subscribed to, and return the set. This value will be truncated
+									to the maximum subscription limit of the call.</p>
+								</div>
+								<p>When a policy is passed into a meeting session, this will be called
+								once every two seconds to check if the subscriptions have changed.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/videostreamidset.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoStreamIdSet</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -369,30 +393,30 @@
 					<a name="foreachobserver" class="tsd-anchor"></a>
 					<h3>for<wbr>Each<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">for<wbr>Each<wbr>Observer<span class="tsd-signature-symbol">(</span>observerFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">for<wbr>Each<wbr>Observer<span class="tsd-signature-symbol">(</span>observerFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L249">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:249</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L252">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:252</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observerFunc: <span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<h5>observerFunc: <span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5>observer: <a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a></h5>
+															<h5>observer: <a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -406,24 +430,94 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="getcurrentvideopreferences" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Current<wbr>Video<wbr>Preferences</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Current<wbr>Video<wbr>Preferences<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1064">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1064</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getserversidenetworkadaption" class="tsd-anchor"></a>
+					<h3>get<wbr>Server<wbr>Side<wbr>Network<wbr>Adaption</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Server<wbr>Side<wbr>Network<wbr>Adaption<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/serversidenetworkadaption.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ServerSideNetworkAdaption</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#getserversidenetworkadaption">getServerSideNetworkAdaption</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1068">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1068</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Additional server side features to be enabled for network adaption. Policy implementations
+									must abide by the restrictions in the returned <code>ServerSideNetworkAdaption</code> enum value.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/serversidenetworkadaption.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ServerSideNetworkAdaption</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getvideopreferences" class="tsd-anchor"></a>
+					<h3>get<wbr>Video<wbr>Preferences</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Video<wbr>Preferences<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#getvideopreferences">getVideoPreferences</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1081">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1081</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Used in combination of <code>getServerSideNetworkAdaption</code> and <code>wantsResubscribe</code>
+									to indicate any added, updated, or removed video preferences.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="removeobserver" class="tsd-anchor"></a>
 					<h3>remove<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L245">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:245</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L248">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:248</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>(Optional) Removes the VideoDownlinkObserver.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observer: <a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a></h5>
+									<h5>observer: <a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -441,9 +535,44 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#reset">reset</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L119">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:119</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L121">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:121</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Reset back to initial state</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setserversidenetworkadaption" class="tsd-anchor"></a>
+					<h3>set<wbr>Server<wbr>Side<wbr>Network<wbr>Adaption</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Server<wbr>Side<wbr>Network<wbr>Adaption<span class="tsd-signature-symbol">(</span>adaption<span class="tsd-signature-symbol">: </span><a href="../enums/serversidenetworkadaption.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ServerSideNetworkAdaption</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#setserversidenetworkadaption">setServerSideNetworkAdaption</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1072">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1072</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Dynamically switch any client behavior to the adaption type which this policy indicated support
+									to from <code>supportedServerSideNetworkAdaptions</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>adaption: <a href="../enums/serversidenetworkadaption.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ServerSideNetworkAdaption</a></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -452,19 +581,19 @@
 					<a name="setvideoprioritybasedpolicyconfigs" class="tsd-anchor"></a>
 					<h3>set<wbr>Video<wbr>Priority<wbr>Based<wbr>Policy<wbr>Configs</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Video<wbr>Priority<wbr>Based<wbr>Policy<wbr>Configs<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Video<wbr>Priority<wbr>Based<wbr>Policy<wbr>Configs<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L255">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:255</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L258">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:258</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>config: <a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type">VideoPriorityBasedPolicyConfig</a></h5>
+									<h5>config: <a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPriorityBasedPolicyConfig</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -472,23 +601,54 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="supportedserversidenetworkadaptions" class="tsd-anchor"></a>
+					<h3>supported<wbr>Server<wbr>Side<wbr>Network<wbr>Adaptions</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">supported<wbr>Server<wbr>Side<wbr>Network<wbr>Adaptions<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/serversidenetworkadaption.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ServerSideNetworkAdaption</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#supportedserversidenetworkadaptions">supportedServerSideNetworkAdaptions</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1077">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1077</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Values which this policy supports being overriden to. The server may use this to transition
+										clients to different values of <code>ServerSideNetworkAdaption</code>. Override this function
+									to return an empty list to disable any server override attempts.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/serversidenetworkadaption.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ServerSideNetworkAdaption</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="updateindex" class="tsd-anchor"></a>
 					<h3>update<wbr>Index</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">update<wbr>Index<span class="tsd-signature-symbol">(</span>videoIndex<span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamindex.html" class="tsd-signature-type">VideoStreamIndex</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Index<span class="tsd-signature-symbol">(</span>videoIndex<span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamindex.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoStreamIndex</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#updateindex">updateIndex</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L165">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:165</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L168">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:168</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Potentially update the desired set of video streams to receive
+									based on the given <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>videoIndex: <a href="../interfaces/videostreamindex.html" class="tsd-signature-type">VideoStreamIndex</a></h5>
+									<h5>videoIndex: <a href="../interfaces/videostreamindex.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoStreamIndex</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -499,20 +659,25 @@
 					<a name="updatemetrics" class="tsd-anchor"></a>
 					<h3>update<wbr>Metrics</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">update<wbr>Metrics<span class="tsd-signature-symbol">(</span>clientMetricReport<span class="tsd-signature-symbol">: </span><a href="clientmetricreport.html" class="tsd-signature-type">ClientMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Metrics<span class="tsd-signature-symbol">(</span>clientMetricReport<span class="tsd-signature-symbol">: </span><a href="clientmetricreport.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#updatemetrics">updateMetrics</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L195">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:195</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L198">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:198</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Update connection metrics</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>clientMetricReport: <a href="clientmetricreport.html" class="tsd-signature-type">ClientMetricReport</a></h5>
+									<h5>clientMetricReport: <a href="clientmetricreport.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMetricReport</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -530,9 +695,15 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#wantsresubscribe">wantsResubscribe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L227">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:227</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L230">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:230</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns true if the policy has decided that a change to subscribed
+									set of video streams to receive would be beneficial.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -542,8 +713,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -602,6 +773,15 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="videoprioritybasedpolicy.html#foreachobserver" class="tsd-kind-icon">for<wbr>Each<wbr>Observer</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="videoprioritybasedpolicy.html#getcurrentvideopreferences" class="tsd-kind-icon">get<wbr>Current<wbr>Video<wbr>Preferences</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="videoprioritybasedpolicy.html#getserversidenetworkadaption" class="tsd-kind-icon">get<wbr>Server<wbr>Side<wbr>Network<wbr>Adaption</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="videoprioritybasedpolicy.html#getvideopreferences" class="tsd-kind-icon">get<wbr>Video<wbr>Preferences</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="videoprioritybasedpolicy.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a>
 							</li>
@@ -609,7 +789,13 @@
 								<a href="videoprioritybasedpolicy.html#reset" class="tsd-kind-icon">reset</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="videoprioritybasedpolicy.html#setserversidenetworkadaption" class="tsd-kind-icon">set<wbr>Server<wbr>Side<wbr>Network<wbr>Adaption</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="videoprioritybasedpolicy.html#setvideoprioritybasedpolicyconfigs" class="tsd-kind-icon">set<wbr>Video<wbr>Priority<wbr>Based<wbr>Policy<wbr>Configs</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="videoprioritybasedpolicy.html#supportedserversidenetworkadaptions" class="tsd-kind-icon">supported<wbr>Server<wbr>Side<wbr>Network<wbr>Adaptions</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="videoprioritybasedpolicy.html#updateindex" class="tsd-kind-icon">update<wbr>Index</a>
@@ -640,12 +826,13 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
