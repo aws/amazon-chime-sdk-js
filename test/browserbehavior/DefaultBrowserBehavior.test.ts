@@ -230,13 +230,13 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
     });
 
-    it('can test Safari version 11', () => {
+    it('can test Safari version 15', () => {
       domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.browserName = 'safari11';
+      domMockBehavior.browserName = 'safari15';
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
-      expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
-      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(11);
+      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(15);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
     });

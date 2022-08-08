@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fix `AbortError` when turning video ON in Safari.
+
 ## [3.6.0] - 2022-06-23
 
 ### Added

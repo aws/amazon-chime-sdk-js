@@ -198,7 +198,7 @@ describe('DefaultVideoTile', () => {
     });
 
     it('unbinds a video stream in Safari', done => {
-      domMockBehavior.browserName = 'safari12';
+      domMockBehavior.browserName = 'safari15';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       const videoElement = videoElementFactory.create();
@@ -249,6 +249,25 @@ describe('DefaultVideoTile', () => {
       expect(tileControllerSpy.called).to.be.true;
       new TimeoutScheduler(10).start(() => {
         expect(videoElementSpy.called).to.be.true;
+        expect(videoElement.srcObject).to.equal(mockVideoStream);
+        done();
+      });
+    });
+
+    it('catches AbortError and plays the paused video element in Safari after setting srcObject to a new video stream', done => {
+      domMockBehavior.browserName = 'safari15';
+      domMockBehavior.videoElementShouldFail = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+      const sinonSpy = sinon.spy(console, 'warn');
+      const videoElement = document.createElement('video');
+      videoElement.pause();
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+
+      new TimeoutScheduler(10).start(() => {
+        expect(sinonSpy.calledWithMatch('Error playing video')).to.be.true;
         expect(videoElement.srcObject).to.equal(mockVideoStream);
         done();
       });

@@ -605,8 +605,8 @@ export default class DOMMockBuilder {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
     const SAFARI12_USERAGENT =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15';
-    const SAFARI11_USERAGENT =
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Safari/605.1.15';
+    const SAFARI15_USERAGENT =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.5 Safari/605.1.15';
     const IOS_SAFARI12_0_USERAGENT =
       'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1';
     const IOS_SAFARI12_1_USERAGENT =
@@ -621,7 +621,7 @@ export default class DOMMockBuilder {
     USER_AGENTS.set('firefox', FIREFOX_USERAGENT);
     USER_AGENTS.set('safari', SAFARI_USERAGENT);
     USER_AGENTS.set('safari12', SAFARI12_USERAGENT);
-    USER_AGENTS.set('safari11', SAFARI11_USERAGENT);
+    USER_AGENTS.set('safari15', SAFARI15_USERAGENT);
     USER_AGENTS.set('ios12.0', IOS_SAFARI12_0_USERAGENT);
     USER_AGENTS.set('ios12.1', IOS_SAFARI12_1_USERAGENT);
     USER_AGENTS.set('ios15.1', IOS_SAFARI15_1_USERAGENT);
@@ -1330,6 +1330,7 @@ export default class DOMMockBuilder {
       style: { [key: string]: string } = {
         transform: '',
       };
+      paused: boolean;
 
       private clearAttribute(): void {
         this.videoHeight = 0;
@@ -1356,11 +1357,18 @@ export default class DOMMockBuilder {
         this.listeners[type].push(listener);
       }
 
-      pause(): void {}
+      pause(): void {
+        this.paused = true;
+      }
 
       play(): Promise<void> {
+        this.paused = false;
         if (mockBehavior.videoElementShouldFail) {
-          return Promise.reject();
+          if (['ios15.1', 'safari15'].includes(mockBehavior.browserName)) {
+            return Promise.reject(new MockError('AbortError', 'The operation was aborted'));
+          } else {
+            return Promise.reject();
+          }
         }
         if (this.refSrcObject) {
           new TimeoutScheduler(mockBehavior.videoElementStartPlayDelay).start(() => {

@@ -63,7 +63,20 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       // In Safari, a hidden video element can show a black screen.
       // See https://bugs.webkit.org/show_bug.cgi?id=241152 for more information.
       if (new DefaultBrowserBehavior().requiresVideoPlayWorkaround() && videoElement.paused) {
-        videoElement.play();
+        const promise = videoElement.play();
+        // See https://bugs.webkit.org/show_bug.cgi?id=243519 for more information.
+        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
+        /* istanbul ignore else */
+        if (promise !== undefined) {
+          promise
+            .catch(error => {
+              console.warn('Error playing video in Safari', error);
+            })
+            .then(() => {
+              // `then` block is needed, without it we run into black tile issue even though we catch the error.
+              console.debug('Video played successfully in Safari');
+            });
+        }
       }
     }
   }
