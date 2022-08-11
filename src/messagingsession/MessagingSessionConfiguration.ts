@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import PrefetchOn from './PrefetchOn';
-import PrefetchSortBy from "./PrefetchSortBy";
+import PrefetchSortBy from './PrefetchSortBy';
 
 /**
  * [[MessagingSessionConfiguration]] contains the information necessary to start
