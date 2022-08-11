@@ -131,6 +131,12 @@ export default class DefaultMessagingSession implements MessagingSession {
     if (this.configuration.prefetchOn === PrefetchOn.Connect) {
       queryParams.set('prefetch-on', [PrefetchOn.Connect]);
     }
+    if (this.configuration.prefetchOn === PrefetchOn.Connect) {
+      queryParams.set('prefetch-on', [PrefetchOn.Connect]);
+    }
+    if (this.configuration.prefetchSortBy) {
+      queryParams.set("prefetch-sort-by", [this.configuration.prefetchSortBy])
+    }
     return await this.sigV4.signURL(
       'GET',
       'wss',

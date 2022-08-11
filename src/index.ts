@@ -203,6 +203,7 @@ import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
 import PrefetchOn from './messagingsession/PrefetchOn';
+import PrefetchSortBy from './messagingsession/PrefetchSortBy';
 import PromiseQueue from './utils/PromiseQueue';
 import PromoteToPrimaryMeetingTask from './task/PromoteToPrimaryMeetingTask';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
@@ -538,6 +539,7 @@ export {
   PingPong,
   PingPongObserver,
   PrefetchOn,
+  PrefetchSortBy,
   PromiseQueue,
   PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,

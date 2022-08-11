@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add support in `MessagingSession` to allow websocket connection for messaging service to select sort by for Prefetch.
+
 ### Removed
 
 ### Changed
