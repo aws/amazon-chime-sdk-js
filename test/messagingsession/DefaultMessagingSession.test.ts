@@ -173,7 +173,7 @@ describe('DefaultMessagingSession', () => {
         chimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
-      prefetchConfiguration.prefetchSortBy = PrefetchSortBy.unread;
+      prefetchConfiguration.prefetchSortBy = PrefetchSortBy.Unread;
       const testSigV4 = new TestSigV4();
       const prefetchMessagingSession = new DefaultMessagingSession(
         prefetchConfiguration,
@@ -206,7 +206,7 @@ describe('DefaultMessagingSession', () => {
         chimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
-      prefetchConfiguration.prefetchSortBy = PrefetchSortBy.lastMessageTimestamp;
+      prefetchConfiguration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp;
       const testSigV4 = new TestSigV4();
       const prefetchMessagingSession = new DefaultMessagingSession(
         prefetchConfiguration,

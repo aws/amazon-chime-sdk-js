@@ -257,7 +257,7 @@ channel messages, channel memberships etc.  Prefetch sort order can be adjusted 
 
 ```js
 configuration.prefetchOn = Prefetch.Connect;
-configuration.prefetchSortBy = PrefetchSortBy.unread
+configuration.prefetchSortBy = PrefetchSortBy.Unread
 ```
 
 ## Building and testing

@@ -1,0 +1,703 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>VideoLayout | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
+				</li>
+				<li>
+					<a href="videolayout.html">VideoLayout</a>
+				</li>
+			</ul>
+			<h1>Namespace VideoLayout</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#managing-video-quality-for-different-video-layouts" id="managing-video-quality-for-different-video-layouts" style="color: inherit; text-decoration: none;">
+							<h1>Managing Video Quality for Different Video Layouts</h1>
+						</a>
+					</div>
+					<a href="#overview" id="overview" style="color: inherit; text-decoration: none;">
+						<h2>Overview</h2>
+					</a>
+					<p>The Amazon Chime SDK for JavaScript enables builders to create applications with custom and dynamic video layouts. Depending on the number of video tiles displayed on the screen, their relative display size and priority, different video upstream strategies and tile management methods are applied to provide the optimal video experience for end users.</p>
+					<p>The first section introduces basic concepts, such as video lifecycle management APIs and the uplink/downlink policies. The second section discusses several common use cases and how to implement them using the <a href="https://github.com/aws/amazon-chime-sdk-js">Amazon Chime SDK for JavaScript</a> (“JavaScript SDK”) and the <a href="https://github.com/aws/amazon-chime-sdk-component-library-react">Amazon Chime SDK React Components Library</a> (“React Components Library”).</p>
+					<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+						<h2>Introduction</h2>
+					</a>
+					<a href="#video-lifecycle-management-apis" id="video-lifecycle-management-apis" style="color: inherit; text-decoration: none;">
+						<h3>Video Lifecycle Management APIs</h3>
+					</a>
+					<p>Consider the following scenario: A meeting includes three attendees: attendee 0, attendee 1, and attendee 2. They are all sharing their local camera stream in a meeting, and attendee 2 is also sharing the screen via content share. The diagram below illustrates how all the video streams are received and managed from the perspective of attendee 0.</p>
+					<p><img src="../media/video_lifecycle.png" alt="video lifecycle diagram"></p>
+					<p>Typically, there are four steps involved in the lifecycle of a remote video with respect to a single receiving attendee:</p>
+					<ol>
+						<li><p>As remote attendees change their video stream, an up-to-date list of remote video sources is provided via the <code>remoteVideoSourcesDidChange</code> callback.</p>
+						</li>
+						<li><p>The receiving attendee will select the remote video sources (and possibly which simulcast layer) that they wish to receive, which will initiate a negotiation (or “subscription”) with the backend servers to start forwarding the selected remote video sources, depending on the attendee’s downlink policy (explained in a later section).</p>
+							<ul>
+								<li>Note: Some downlink policies may expose APIs to allow dynamic control over this decision, e.g., <a href="#videoprioritybasedpolicy"><code>VideoPriorityBasedPolicy</code></a>.</li>
+							</ul>
+						</li>
+						<li><p>For each subscribed/unsubscribed video, the receiving attendee will receive the <code>tileId</code> of the updated <code>VideoTile</code> from <code>videoTileDidUpdate</code>/<code>videoTileWasRemoved</code> callback.</p>
+						</li>
+						<li><p>To display/remove the video, the receiving attendee can bind/unbind the updated <code>VideoTile</code> to/from a <code>HTMLVideoElement</code> in their application using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#bindvideoelement"><code>bindVideoElement(tileId)</code></a>/<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unbindvideoelement"><code>unbindVideoElement(tileId)</code></a> API.</p>
+						</li>
+					</ol>
+					<a href="#video-uplink-and-downlink-policies" id="video-uplink-and-downlink-policies" style="color: inherit; text-decoration: none;">
+						<h3>Video Uplink and Downlink Policies</h3>
+					</a>
+					<p>Uplink and downlink policies help builders configure the video strategies for sending and receiving video streams in a meeting. The Amazon Chime SDK for JavaScript provides different policies, each with its own configuration and dynamic controls. Builders can choose between the provided policies or extend and create their own, depending on the requirements.</p>
+					<a href="#uplink-policy" id="uplink-policy" style="color: inherit; text-decoration: none;">
+						<h4>Uplink Policy</h4>
+					</a>
+					<p>The video encoding parameters are determined by the uplink policy, which takes into consideration the number of video publishers on the call. If necessary, it may suggest encoding multiple “simulcast” layers (with different bitrates and resolutions). The JavaScript SDK currently provides two uplink policies:</p>
+					<a href="#nscalevideouplinkbandwidthpolicy-default" id="nscalevideouplinkbandwidthpolicy-default" style="color: inherit; text-decoration: none;">
+						<h5>NScaleVideoUplinkBandwidthPolicy (Default)</h5>
+					</a>
+					<p>In this policy, an attendee encodes and sends one video layer upstream and scales the resolution and bitrate based on the number of video publishers. This is to ensure the receiving attendees who are subscribed to these videos do not experience excessive network or compute load, which may degrade the meeting quality.</p>
+					<a href="#simulcastuplinkpolicy" id="simulcastuplinkpolicy" style="color: inherit; text-decoration: none;">
+						<h5>SimulcastUplinkPolicy</h5>
+					</a>
+					<p>Each attendee may encode and send up to two layers of video with different bitrates and resolutions under this policy. It enables the recipient to switch between the two video layers to adapt to changing network conditions or different layouts (e.g., a featured video may desire a higher resolution than a gallery view video).</p>
+					<ul>
+						<li>Note: The <code>SimulcastUplinkPolicy</code> is currently only supported in Chrome 76 and above versions.</li>
+					</ul>
+					<a href="#downlink-policy" id="downlink-policy" style="color: inherit; text-decoration: none;">
+						<h4>Downlink Policy</h4>
+					</a>
+					<p>The downlink policy controls which remote video sources are received downstream based on the network condition, local resources (e.g., CPU), and other factors such as layout changes in the application. The JavaScript SDK currently provides two downlink policies:</p>
+					<a href="#allhighestvideobandwidthpolicy-default" id="allhighestvideobandwidthpolicy-default" style="color: inherit; text-decoration: none;">
+						<h5>AllHighestVideoBandwidthPolicy (Default)</h5>
+					</a>
+					<p>This policy subscribes to the highest quality video layer of all publishers. This policy allows builders to choose which remote video sources to subscribe to through the use of <code>chooseRemoteVideoSources</code> API.  Under constrained network, some or all videos may freeze as packets are lost on the network, and they will recover automatically once network congestion is reduced.</p>
+					<a href="#videoprioritybasedpolicy" id="videoprioritybasedpolicy" style="color: inherit; text-decoration: none;">
+						<h5>VideoPriorityBasedPolicy</h5>
+					</a>
+					<p>This policy allows builders to choose and configure which remote video sources to subscribe to, their relative priorities and preferences such as, <code>targetDisplaySize</code> . Under constrained network, the policy will automatically pause video tiles based on the priorities you set to these remote video sources until recovery. If used with the <code>SimulcastUplinkPolicy</code>, the policy may temporarily degrade to lower resolutions. For videos of the same priority, the policy first tries to allocate bandwidth to ensure as many videos can be displayed as possible before upgrading to higher quality if the bandwidth allows.</p>
+					<ul>
+						<li>Note: The <code>VideoPriorityBasedPolicy</code> uses webRTC&#39;s available downlink bandwidth estimate, which has not been
+						supported in Firefox yet, the policy should be only used in Chrome and Safari.</li>
+					</ul>
+					<a href="#recommendations-for-common-layouts" id="recommendations-for-common-layouts" style="color: inherit; text-decoration: none;">
+						<h2>Recommendations for Common Layouts</h2>
+					</a>
+					<a href="#case-1-small-grid-layout-up-to-4-videos-with-fixed-tile-size" id="case-1-small-grid-layout-up-to-4-videos-with-fixed-tile-size" style="color: inherit; text-decoration: none;">
+						<h3>Case 1: Small Grid Layout (up to 4 Videos) with Fixed Tile Size</h3>
+					</a>
+					<p>We recommend the default configuration of the <code>NScaleVideoUplinkBandwidthPolicy</code>  and  <code>AllHighestVideoBandwidthPolicy</code> when displaying a small number of video tiles of a fixed size, so the recipient is less likely to get overwhelmed. Video freezes can occur due to network congestion and recover automatically.</p>
+					<a href="#javascript-sdk-implementation" id="javascript-sdk-implementation" style="color: inherit; text-decoration: none;">
+						<h4>JavaScript SDK Implementation</h4>
+					</a>
+					<p>Refer to code sample in <a href="https://github.com/aws/amazon-chime-sdk-js#video">Use case 16</a>.</p>
+					<a href="#react-components-library-implementation" id="react-components-library-implementation" style="color: inherit; text-decoration: none;">
+						<h4>React Components Library Implementation</h4>
+					</a>
+					<p>The <code>videoTileDidUpdate</code> and <code>videoTileWasRemoved</code> callbacks are already handled by the React Components Library. If you don’t have the content sharing functionality in your application, you can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component with the <code>standard</code> layout from the React Components Library.</p>
+					<pre><code class="language-jsx"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">MeetingProvider</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">VideoTileGrid</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-component-library-react&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">App</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> (</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;</span><span style="color: #267F99">MeetingProvider</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;</span><span style="color: #267F99">VideoTileGrid</span><span style="color: #000000"> </span><span style="color: #FF0000">layout</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;standard&quot;</span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;/</span><span style="color: #267F99">MeetingProvider</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">);</span>
+</code></pre>
+					<p>Otherwise, you need to build a custom video grid using the components and hooks from the React Components Library.</p>
+					<pre><code class="language-jsx"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">LocalVideo</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">RemoteVideos</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">useLocalVideo</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">useRemoteVideoTileState</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">VideoGrid</span><span style="color: #000000">,</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-component-library-react&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">fluidStyles</span><span style="color: #000000"> = </span><span style="color: #A31515">`</span>
+<span style="color: #A31515">  height: 100%;</span>
+<span style="color: #A31515">  width: 100%;</span>
+<span style="color: #A31515">`</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">staticStyles</span><span style="color: #000000"> = </span><span style="color: #A31515">`</span>
+<span style="color: #A31515">  display: flex;</span>
+<span style="color: #A31515">  position: absolute;</span>
+<span style="color: #A31515">  bottom: 1rem;</span>
+<span style="color: #A31515">  right: 1rem;</span>
+<span style="color: #A31515">  width: 20vw;</span>
+<span style="color: #A31515">  max-height: 30vh;</span>
+<span style="color: #A31515">  height: auto;</span>
+
+<span style="color: #A31515">  video {</span>
+<span style="color: #A31515">    position: static;</span>
+<span style="color: #A31515">  }</span>
+<span style="color: #A31515">`</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">GalleryVideoTileGrid</span><span style="color: #000000">: </span><span style="color: #267F99">React</span><span style="color: #000000">.</span><span style="color: #267F99">FC</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">tiles</span><span style="color: #000000"> } = </span><span style="color: #795E26">useRemoteVideoTileState</span><span style="color: #000000">();</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">isVideoEnabled</span><span style="color: #000000"> } = </span><span style="color: #795E26">useLocalVideo</span><span style="color: #000000">();</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">gridSize</span><span style="color: #000000"> = </span><span style="color: #001080">isVideoEnabled</span><span style="color: #000000"> ? </span><span style="color: #001080">tiles</span><span style="color: #000000">.</span><span style="color: #001080">length</span><span style="color: #000000"> + </span><span style="color: #098658">1</span><span style="color: #000000"> : </span><span style="color: #001080">tiles</span><span style="color: #000000">.</span><span style="color: #001080">length</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">  </span><span style="color: #AF00DB">return</span><span style="color: #000000"> (</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;</span><span style="color: #267F99">VideoGrid</span><span style="color: #000000"> </span><span style="color: #FF0000">size</span><span style="color: #000000">=</span><span style="color: #0000FF">{</span><span style="color: #001080">gridSize</span><span style="color: #0000FF">}</span><span style="color: #000000"> </span><span style="color: #FF0000">layout</span><span style="color: #000000">=</span><span style="color: #A31515">&#039;standard&#039;</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">      </span><span style="color: #800000">&lt;</span><span style="color: #267F99">RemoteVideos</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">      </span><span style="color: #800000">&lt;</span><span style="color: #267F99">LocalVideo</span>
+<span style="color: #000000">        </span><span style="color: #FF0000">nameplate</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;Me&quot;</span>
+<span style="color: #000000">        </span><span style="color: #FF0000">css</span><span style="color: #000000">=</span><span style="color: #0000FF">{</span><span style="color: #001080">gridSize</span><span style="color: #000000FF"> </span><span style="color: #000000">&gt;</span><span style="color: #000000FF"> </span><span style="color: #098658">1</span><span style="color: #000000FF"> </span><span style="color: #000000">?</span><span style="color: #000000FF"> </span><span style="color: #001080">fluidStyles</span><span style="color: #000000FF"> </span><span style="color: #000000">:</span><span style="color: #000000FF"> </span><span style="color: #001080">staticStyles</span><span style="color: #0000FF">}</span>
+<span style="color: #000000">      </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;/</span><span style="color: #267F99">VideoGrid</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">  );</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #001080">GalleryVideoTileGrid</span><span style="color: #000000">;</span>
+</code></pre>
+					<a href="#case-2-gallery-layout-up-to-25-videos-with-fixed-tile-size" id="case-2-gallery-layout-up-to-25-videos-with-fixed-tile-size" style="color: inherit; text-decoration: none;">
+						<h3>Case 2: Gallery Layout (up to 25 Videos) with Fixed Tile Size</h3>
+					</a>
+					<p>While the JavaScript SDK supports viewing up to <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">25 video tiles</a> at this time, as the number of video publishers increases, the bandwidth and CPU consumption of receiving attendees may not be sufficient to display all videos.</p>
+					<p><img src="../media/gallery_layout_example.png" alt="gallery layout example"></p>
+					<p>The default setting of <code>NScaleVideoUplinkBandwidthPolicy</code> and <code>AllHighestVideoBandwidthPolicy</code> can result in video freezes as the number of videos goes up and more videos have to be decoded. Video packet loss and network delays are a result of high CPU consumption and can impact all streams equally. This may not be acceptable if the application wishes to preserve certain videos over others, and it can be mitigated by the application directly calling the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideocontroller.html#pausereceivingstream"><code>pauseReceivingStream(streamId)</code></a> API to pause certain videos. You can get the <code>streamId</code> via <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/videotile.html#stateref"><code>VideoTile.stateRef().streamId</code></a>.</p>
+					<p>The <code>VideoPriorityBasedPolicy</code> is recommended as the downlink policy if you wish to proactively pause (video will not be displayed) some videos to save the bandwidth in order to preserve others. This gives the application builder more control and makes the impact on the video experience resulting from network constraints more predictable. The <code>VideoPriorityBasedPolicy</code> triggers <code>tileWillBePausedByDownlinkPolicy</code> and <code>tileWillBeUnpausedByDownlinkPolicy</code> callbacks if video tiles are automatically paused or unpaused so that you can properly notify the users and potentially replace the empty video tile with something like avatars to reduce the visual impact.</p>
+					<a href="#javascript-sdk-implementation-1" id="javascript-sdk-implementation-1" style="color: inherit; text-decoration: none;">
+						<h4>JavaScript SDK Implementation</h4>
+					</a>
+					<p>Refer to code sample in <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#builder-code-sample">User Guide for PriorityBased Downlink Policy</a> and <a href="https://github.com/aws/amazon-chime-sdk-js#attendees">use case 24</a>.</p>
+					<a href="#react-components-library-implementation-1" id="react-components-library-implementation-1" style="color: inherit; text-decoration: none;">
+						<h4>React Components Library Implementation</h4>
+					</a>
+					<p>If you don’t have content sharing functionality in your application, you can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component with the <code>standard</code> layout from React Components Library. Otherwise, you need to build a custom video grid using the components and hooks from the React Components Library. Refer to the <a href="#react-components-library-implementation">implementation part under case 1</a> for details.</p>
+					<p>Create a <code>meetingConfig</code> object to store the configuration of <code>MeetingProvider</code>. This configuration is passed down to the <code>MeetingManager</code> and is used to initialize the <code>MeetingSession</code> when joining a meeting.</p>
+					<pre><code class="language-jsx"><span style="color: #008000">// Create a file named &#039;meetingConfig.ts&#039;.</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">ConsoleLogger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">LogLevel</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">VideoPriorityBasedPolicy</span><span style="color: #000000">,</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// Initialize `VideoPriorityBasedPolicy` and export it to use elsewhere.</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">logger</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ConsoleLogger</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;SDK&#039;</span><span style="color: #000000">, </span><span style="color: #001080">LogLevel</span><span style="color: #000000">.</span><span style="color: #0070C1">INFO</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">priorityBasedPolicy</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPriorityBasedPolicy</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingConfig</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">videoDownlinkBandwidthPolicy:</span><span style="color: #000000"> </span><span style="color: #001080">priorityBasedPolicy</span><span style="color: #000000">,</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #001080">meetingConfig</span><span style="color: #000000">;</span>
+</code></pre>
+					<p>Setup the <code>MeetingProvider</code> using the <code>meetingConfig</code>.</p>
+					<pre><code class="language-jsx"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MeetingProvider</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-component-library-react&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">meetingConfig</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./meetingConfig&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">App</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> (</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;</span><span style="color: #267F99">MeetingProvider</span><span style="color: #000000"> </span><span style="color: #0000FF">{</span><span style="color: #000000">...</span><span style="color: #001080">meetingConfig</span><span style="color: #0000FF">}</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;</span><span style="color: #267F99">MyApp</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;/</span><span style="color: #267F99">MeetingProvider</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">);</span>
+</code></pre>
+					<p>Create a <a href="https://reactjs.org/docs/context.html#contextprovider"><code>Context Provider</code></a> to use <code>priorityBasedDownlinkPolicy</code>.</p>
+					<ol>
+						<li><p>Import the previous <code>VideoPriorityBasedPolicy</code> instance in your provider.</p>
+						</li>
+						<li><p>Create an observer and subscribe to the <code>tileWillBePausedByDownlinkPolicy</code> and <code>tileWillBeUnpausedByDownlinkPolicy</code> callbacks, so you can update the UI to notify the user that the related video tile has been paused or unpaused.</p>
+						</li>
+						<li><p>Create an observer and subscribe to the <code>remoteVideoSourcesDidChange</code> callback, so you can track the states of remote video sources for future subscriptions. You need a variable like <code>roster: any = {}</code> to keep track of which attendees in the meeting are publishing videos. Check <a href="https://github.com/aws/amazon-chime-sdk-js#attendees">use case 24</a> for more details.</p>
+							<ul>
+								<li>Note: You may want to keep the content sharing in your <code>roster</code>, depending on your needs.</li>
+							</ul>
+						</li>
+					</ol>
+					<pre><code class="language-jsx"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">useAudioVideo</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-component-library-react&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">priorityBasedPolicy</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./meetingConfig&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">GridStateProvider</span><span style="color: #000000">: </span><span style="color: #267F99">React</span><span style="color: #000000">.</span><span style="color: #267F99">FC</span><span style="color: #000000"> = ({ </span><span style="color: #001080">children</span><span style="color: #000000"> }) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">audioVideo</span><span style="color: #000000"> = </span><span style="color: #795E26">useAudioVideo</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// Subscribe to `tileWillBePausedByDownlinkPolicy` and</span>
+<span style="color: #000000">  </span><span style="color: #008000">// `tileWillBeUnpausedByDownlinkPolicy` callbacks.</span>
+<span style="color: #000000">  </span><span style="color: #795E26">useEffect</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">priorityBasedPolicy</span><span style="color: #000000"> || !</span><span style="color: #001080">audioVideo</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">observer</span><span style="color: #000000">: </span><span style="color: #267F99">VideoDownlinkObserver</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">      </span><span style="color: #795E26">tileWillBePausedByDownlinkPolicy</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">tileId</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000">): </span><span style="color: #267F99">void</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> = </span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">getVideoTile</span><span style="color: #000000">(</span><span style="color: #001080">tileId</span><span style="color: #000000">)?.</span><span style="color: #795E26">state</span><span style="color: #000000">().</span><span style="color: #001080">boundAttendeeId</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">attendeeId</span><span style="color: #000000">) {</span>
+<span style="color: #000000">          </span><span style="color: #008000">// Update the UI to notify user the pause of</span>
+<span style="color: #000000">          </span><span style="color: #008000">// video tile according to below property.</span>
+<span style="color: #000000">          </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">paused</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">      },</span>
+<span style="color: #000000">      </span><span style="color: #795E26">tileWillBeUnpausedByDownlinkPolicy</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">tileId</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000">): </span><span style="color: #267F99">void</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> = </span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">getVideoTile</span><span style="color: #000000">(</span><span style="color: #001080">tileId</span><span style="color: #000000">)?.</span><span style="color: #795E26">state</span><span style="color: #000000">().</span><span style="color: #001080">boundAttendeeId</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">attendeeId</span><span style="color: #000000">) {</span>
+<span style="color: #000000">          </span><span style="color: #008000">// Update the UI to notify user the unpause </span>
+<span style="color: #000000">          </span><span style="color: #008000">// of video tile according to below property.</span>
+<span style="color: #000000">          </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">paused</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">      },</span>
+<span style="color: #000000">    };</span>
+
+<span style="color: #000000">    </span><span style="color: #001080">priorityBasedPolicy</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> (): </span><span style="color: #267F99">void</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">priorityBasedPolicy</span><span style="color: #000000">.</span><span style="color: #795E26">removeObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }, [</span><span style="color: #001080">audioVideo</span><span style="color: #000000">]);</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// Subscribe to `remoteVideoSourcesDidChange` callback.</span>
+<span style="color: #000000">  </span><span style="color: #795E26">useEffect</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">audioVideo</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">observer</span><span style="color: #000000">: </span><span style="color: #267F99">AudioVideoObserver</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">      </span><span style="color: #795E26">remoteVideoSourcesDidChange</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">videoSources</span><span style="color: #000000">: </span><span style="color: #267F99">VideoSource</span><span style="color: #000000">[]): </span><span style="color: #267F99">void</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Update your `roster` object to track the remote video sources state.</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #001080">roster</span><span style="color: #000000">) {</span>
+<span style="color: #000000">          </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">hasVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">source</span><span style="color: #000000"> </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #001080">videoSources</span><span style="color: #000000">) {</span>
+<span style="color: #000000">          </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> = </span><span style="color: #001080">source</span><span style="color: #000000">.</span><span style="color: #001080">attendee</span><span style="color: #000000">.</span><span style="color: #001080">attendeeId</span><span style="color: #000000">;</span>
+<span style="color: #000000">          </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">hasVideo</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">      },</span>
+<span style="color: #000000">    };</span>
+
+<span style="color: #000000">    </span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> (): </span><span style="color: #267F99">void</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">removeObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }, [</span><span style="color: #001080">audioVideo</span><span style="color: #000000">]);</span>
+
+<span style="color: #000000">  </span><span style="color: #AF00DB">return</span><span style="color: #000000"> (</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;</span><span style="color: #267F99">GridStateContext.Provider</span><span style="color: #000000"> </span><span style="color: #FF0000">value</span><span style="color: #000000">=</span><span style="color: #0000FF">{</span><span style="color: #001080">value</span><span style="color: #0000FF">}</span><span style="color: #000000"> </span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">      </span><span style="color: #0000FF">{</span><span style="color: #000000FF"> </span><span style="color: #001080">children</span><span style="color: #000000FF"> </span><span style="color: #0000FF">}</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;/</span><span style="color: #267F99">GridStateContext.Provider</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">  );</span>
+<span style="color: #000000">};</span>
+</code></pre>
+					<p>Call the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#apis-and-usage"><code>chooseRemoteVideoSources(sources: VideoPreference[])</code></a> API to set which remote video sources to receive and their related preferences (<a href="https://aws.github.io/amazon-chime-sdk-js/classes/videopreference.html"><code>VideoPreference</code></a>).</p>
+					<pre><code class="language-js"><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #001080">priority</span><span style="color: #000000">, </span><span style="color: #001080">targetSize</span><span style="color: #000000">?)</span>
+<span style="color: #008000">// `attendeeId: string`: Attendee ID of the video source.</span>
+<span style="color: #008000">// `priority: number`: The relative priority of this video source against others.</span>
+<span style="color: #008000">// `targetSize?: TargetDisplaySize`: The desired maximum simulcast layers to receive.</span>
+</code></pre>
+					<ul>
+						<li>Note: The <code>targetSize</code> doesn&#39;t work in this example, since <code>NScaleVideoUplinkBandwidthPolicy</code> only publishes one layer.</li>
+					</ul>
+					<pre><code class="language-jsx"><span style="color: #008000">// In this example, only render up to ten remote video sources.</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoPreferences</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Initialize `VideoPreferences`.</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoPreferences</span><span style="color: #000000"> = </span><span style="color: #001080">VideoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">prepare</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">  </span><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">numVideos</span><span style="color: #000000"> = </span><span style="color: #098658">0</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">  </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #001080">roster</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">hasVideo</span><span style="color: #000000"> &amp;&amp; </span><span style="color: #001080">numVideos</span><span style="color: #000000"> &lt; </span><span style="color: #098658">10</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #008000">// Subscribe to the first ten remote video sources</span>
+<span style="color: #000000">      </span><span style="color: #008000">// and set highest priority for them.</span>
+<span style="color: #000000">      </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">High</span><span style="color: #000000">)</span>
+<span style="color: #000000">      );</span>
+<span style="color: #000000">      </span><span style="color: #001080">numVideos</span><span style="color: #000000"> += </span><span style="color: #098658">1</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">    </span><span style="color: #008000">// The remaining remote video sources are not subscribed,</span>
+<span style="color: #000000">    </span><span style="color: #008000">// so they do not cost bandwidth.</span>
+<span style="color: #000000">  }</span>
+
+<span style="color: #000000">  </span><span style="color: #001080">priorityBasedDownlinkPolicy</span><span style="color: #000000">.</span><span style="color: #795E26">chooseRemoteVideoSources</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">()</span>
+<span style="color: #000000">  );</span>
+<span style="color: #000000">};</span>
+</code></pre>
+					<a href="#case-3-featured-layout" id="case-3-featured-layout" style="color: inherit; text-decoration: none;">
+						<h3>Case 3: Featured Layout</h3>
+					</a>
+					<p>The featured layout is designed to focus on important video sources such as an active speaker or content share. The featured tile displays a video source in a large area while other video sources (up to <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">25 video tiles</a>) are displayed as smaller tiles.</p>
+					<p><img src="../media/featured_layout_example.png" alt="featured layout example"></p>
+					<p>For layouts where all users feature the same content source or active speaker, the <code>NScaleVideoUplinkBandwidthPolicy</code> and <code>VideoPriorityBasedPolicy</code> are recommended.  The <code>NScaleVideoUplinkBandwidthPolicy</code> automatically prioritizes the content share and boosts the resolution of the active speaker video. The <code>VideoPriorityBasedPolicy</code> ensures the bandwidth is efficiently used to display only the video in the featured tile.</p>
+					<ul>
+						<li>Note: Ensure that you’re listening to changes in active speakers and passing them to the <code>VideoPriorityBasedPolicy</code>.</li>
+					</ul>
+					<a href="#javascript-sdk-implementation-2" id="javascript-sdk-implementation-2" style="color: inherit; text-decoration: none;">
+						<h4>JavaScript SDK Implementation</h4>
+					</a>
+					<p>Setup the <code>VideoPriorityBasedPolicy</code>, as described in <a href="#javascript-sdk-implementation-1">case 2</a>.</p>
+					<p>Listen to the changes in active speakers and track their states.</p>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">DefaultActiveSpeakerPolicy</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">activeSpeakerCallback</span><span style="color: #000000"> = (</span><span style="color: #001080">attendeeIds</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">[]): </span><span style="color: #267F99">void</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Reset `active` property</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #001080">roster</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">active</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">  }</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// Set `active` to true for the most active speaker.</span>
+<span style="color: #000000">  </span><span style="color: #008000">// The `attendeeIds` returned by the `activeSpeakerCallback` </span>
+<span style="color: #000000">  </span><span style="color: #008000">// are sorted by the most active</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #001080">attendeeIds</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">]) {</span>
+<span style="color: #000000">      </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">active</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">break</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  }</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// Update video preferences whenever there are changes of active speakers.</span>
+<span style="color: #000000">  </span><span style="color: #795E26">updateVideoPreferences</span><span style="color: #000000">();</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">subscribeToActiveSpeakerDetector</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultActiveSpeakerPolicy</span><span style="color: #000000">(),</span>
+<span style="color: #000000">  </span><span style="color: #001080">activeSpeakerCallback</span>
+<span style="color: #000000">);</span>
+</code></pre>
+					<p>Update video preferences whenever there are changes to active speakers.</p>
+					<pre><code class="language-js"><span style="color: #008000">// Video source priority in this example:</span>
+<span style="color: #008000">// Content share &gt; active speakers &gt; others</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoPreferences</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Initialize `VideoPreferences`.</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoPreferences</span><span style="color: #000000"> = </span><span style="color: #001080">VideoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">prepare</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">  </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #001080">roster</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">hasVideo</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultModality</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">).</span><span style="color: #795E26">hasModality</span><span style="color: #000000">(</span>
+<span style="color: #000000">          </span><span style="color: #001080">DefaultModality</span><span style="color: #000000">.</span><span style="color: #0070C1">MODALITY_CONTENT</span>
+<span style="color: #000000">        )</span>
+<span style="color: #000000">      ) {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Prioritize content share.</span>
+<span style="color: #000000">        </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span>
+<span style="color: #000000">          </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">High</span><span style="color: #000000">)</span>
+<span style="color: #000000">        );</span>
+<span style="color: #000000">      } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">active</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Prioritize active speakers.</span>
+<span style="color: #000000">        </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span>
+<span style="color: #000000">          </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">High</span><span style="color: #000000">)</span>
+<span style="color: #000000">        );</span>
+<span style="color: #000000">      } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Handle the rest of video sources.</span>
+<span style="color: #000000">        </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span>
+<span style="color: #000000">          </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #098658">3</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">Low</span><span style="color: #000000">)</span>
+<span style="color: #000000">        );</span>
+<span style="color: #000000">      }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  }</span>
+
+<span style="color: #000000">  </span><span style="color: #001080">priorityBasedDownlinkPolicy</span><span style="color: #000000">.</span><span style="color: #795E26">chooseRemoteVideoSources</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">()</span>
+<span style="color: #000000">  );</span>
+<span style="color: #000000">};</span>
+</code></pre>
+					<a href="#react-components-library-implementation-2" id="react-components-library-implementation-2" style="color: inherit; text-decoration: none;">
+						<h4>React Components Library Implementation</h4>
+					</a>
+					<p>You can use the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page"><code>VideoTileGrid</code></a> component from the React Components Library. The <code>featured</code> layout is used by default.</p>
+					<ul>
+						<li>Note: The <code>featured</code> layout <code>VideoTileGrid</code> component displays either the content sharing video or the active speaker video in the featured tile. If both are present, the content sharing video is displayed. If neither is present, there is no featured tile and all video tiles are of fixed and equal size, like in the gallery layout.</li>
+					</ul>
+					<pre><code class="language-jsx"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">MeetingProvider</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">VideoTileGrid</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-component-library-react&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">App</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> (</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;</span><span style="color: #267F99">MeetingProvider</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;</span><span style="color: #267F99">VideoTileGrid</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;/</span><span style="color: #267F99">MeetingProvider</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">);</span>
+</code></pre>
+					<p>Then create a provider to handle the <code>VideoPriorityBasedPolicy</code> and video preferences update logic.</p>
+					<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in the <a href="#react-components-library-implementation-1">case 2</a>.</p>
+					<p>Listen to the changes in active speakers and track their states.</p>
+					<ul>
+						<li>The React Components Library provides the <a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-hooks-useactivespeakersstate--page"><code>useActiveSpeakersState</code></a> hook that returns a list of attendee IDs of the active speaker. Use this hook directly.</li>
+					</ul>
+					<pre><code class="language-jsx"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">useAudioVideo</span><span style="color: #000000">, </span><span style="color: #001080">useActiveSpeakersState</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-component-library-react&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">priorityBasedPolicy</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./meetingConfig&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">GridStateProvider</span><span style="color: #000000">: </span><span style="color: #267F99">React</span><span style="color: #000000">.</span><span style="color: #267F99">FC</span><span style="color: #000000"> = ({ </span><span style="color: #001080">children</span><span style="color: #000000"> }) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">audioVideo</span><span style="color: #000000"> = </span><span style="color: #795E26">useAudioVideo</span><span style="color: #000000">();</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">activeSpeakers</span><span style="color: #000000"> = </span><span style="color: #795E26">useActiveSpeakersState</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// Set up observers and subscribe to callbacks.</span>
+<span style="color: #000000">  </span><span style="color: #008000">// ...</span>
+<span style="color: #000000">  </span>
+<span style="color: #000000">  </span><span style="color: #795E26">useEffect</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Reset `active` property</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #001080">roster</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">active</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// Set `active` to true for the most active speaker.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// The `activeSpeakers` returned by the `useActiveSpeakersState`</span>
+<span style="color: #000000">    </span><span style="color: #008000">// hook are sorted by the most active.</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #001080">activeSpeakers</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">]) {</span>
+<span style="color: #000000">        </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">active</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">break</span><span style="color: #000000">;</span>
+<span style="color: #000000">      }</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// Update video preferences whenever there are changes of active speakers.</span>
+<span style="color: #000000">    </span><span style="color: #795E26">updateVideoPreferences</span><span style="color: #000000">();</span>
+<span style="color: #000000">  }, [</span><span style="color: #001080">activeSpeakers</span><span style="color: #000000">]);</span>
+
+<span style="color: #000000">  </span><span style="color: #AF00DB">return</span><span style="color: #000000"> (</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;</span><span style="color: #267F99">GridStateContext.Provider</span><span style="color: #000000"> </span><span style="color: #FF0000">value</span><span style="color: #000000">= </span><span style="color: #0000FF">{</span><span style="color: #000000FF"> </span><span style="color: #001080">value</span><span style="color: #000000FF"> </span><span style="color: #0000FF">}</span><span style="color: #000000"> </span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">      </span><span style="color: #0000FF">{</span><span style="color: #000000FF"> </span><span style="color: #001080">children</span><span style="color: #000000FF"> </span><span style="color: #0000FF">}</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;/</span><span style="color: #267F99">GridStateContext.Provider</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">  );</span>
+<span style="color: #000000">};</span>
+</code></pre>
+					<p>Update video preferences whenever there are changes to active speakers, as described in the above <a href="#javascript-sdk-implementation-3">JavaScript SDK Implementation</a>.</p>
+					<p>For layouts where different users feature different videos, the <code>SimulcastUplinkPolicy</code> and <code>VideoPriorityBasedPolicy</code> are recommended. The <code>SimulcastUplinkPolicy</code> sends multiple resolutions of the same video to the Chime servers. The <code>TargetDisplaySize</code> property can be specified according to the layout for each user in the <code>VideoPriorityBasedPolicy</code>, which allows for featured video to be rendered in high quality and the other videos are efficiently rendered according to display size.</p>
+					<a href="#javascript-sdk-implementation-3" id="javascript-sdk-implementation-3" style="color: inherit; text-decoration: none;">
+						<h4>JavaScript SDK Implementation</h4>
+					</a>
+					<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in <a href="#javascript-sdk-implementation-1">case 2</a>.</p>
+					<p>Enable the below feature flags in the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html"><code>MeetingSessionConfiguration</code></a> to use <code>SimulcastUplinkPolicy</code>. Refer to the code sample in the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#creating-a-simulcast-enabled-meeting">User Guide for Simulcast</a> for details.</p>
+					<pre><code class="language-js"><span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">enableUnifiedPlanForChromiumBasedBrowsers</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">enableSimulcastForUnifiedPlanChromiumBasedBrowser</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+</code></pre>
+					<p>Update the video preferences whenever users feature or unfeature a video.</p>
+					<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">featureVideo</span><span style="color: #000000"> = (</span><span style="color: #001080">attendeeId</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">featured</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #795E26">updateVideoPreferences</span><span style="color: #000000">();</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">unfeatureVideo</span><span style="color: #000000"> = (</span><span style="color: #001080">attendeeId</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">featured</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #795E26">updateVideoPreferences</span><span style="color: #000000">();</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoPreferences</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Initialize `VideoPreferences`.</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoPreferences</span><span style="color: #000000"> = </span><span style="color: #001080">VideoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">prepare</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">  </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeId</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #001080">roster</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">hasVideo</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">featured</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Prioritize featured video sources.</span>
+<span style="color: #000000">        </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span>
+<span style="color: #000000">          </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">High</span><span style="color: #000000">)</span>
+<span style="color: #000000">        );</span>
+<span style="color: #000000">      } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Handle the rest of video sources.</span>
+<span style="color: #000000">        </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span>
+<span style="color: #000000">          </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">Low</span><span style="color: #000000">)</span>
+<span style="color: #000000">        );</span>
+<span style="color: #000000">      }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  }</span>
+
+<span style="color: #000000">  </span><span style="color: #001080">priorityBasedDownlinkPolicy</span><span style="color: #000000">.</span><span style="color: #795E26">chooseRemoteVideoSources</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">()</span>
+<span style="color: #000000">  );</span>
+<span style="color: #000000">};</span>
+</code></pre>
+					<a href="#react-components-library-implementation-3" id="react-components-library-implementation-3" style="color: inherit; text-decoration: none;">
+						<h4>React Components Library Implementation</h4>
+					</a>
+					<p>Setup <code>VideoPriorityBasedPolicy</code>, as described in <a href="#react-components-library-implementation-1">case 2</a>.</p>
+					<p>Update the <code>meetingConfig</code> object to use <code>SimulcastUplinkPolicy</code>.</p>
+					<pre><code class="language-jsx"><span style="color: #008000">// In &#039;meetingConfig.ts&#039; file.</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">ConsoleLogger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">LogLevel</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">VideoPriorityBasedPolicy</span><span style="color: #000000">,</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">logger</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ConsoleLogger</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;SDK&#039;</span><span style="color: #000000">, </span><span style="color: #001080">LogLevel</span><span style="color: #000000">.</span><span style="color: #0070C1">INFO</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">priorityBasedPolicy</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPriorityBasedPolicy</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingConfig</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Add this line to use `SimulcastUplinkPolicy`.</span>
+<span style="color: #000000">  </span><span style="color: #001080">simulcastEnabled:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">videoDownlinkBandwidthPolicy:</span><span style="color: #000000"> </span><span style="color: #001080">priorityBasedPolicy</span><span style="color: #000000">,</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #001080">meetingConfig</span><span style="color: #000000">;</span>
+</code></pre>
+					<p>Setup the <code>MeetingProvider</code> using the <code>meetingConfig</code>.</p>
+					<pre><code class="language-jsx"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MeetingProvider</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-component-library-react&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">meetingConfig</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./meetingConfig&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">App</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> (</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;</span><span style="color: #267F99">MeetingProvider</span><span style="color: #000000"> </span><span style="color: #0000FF">{</span><span style="color: #000000">...</span><span style="color: #001080">meetingConfig</span><span style="color: #0000FF">}</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;</span><span style="color: #267F99">MyApp</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;/</span><span style="color: #267F99">MeetingProvider</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">);</span>
+</code></pre>
+					<p>Update the video preferences whenever users feature a video, as described in the above <a href="#javascript-sdk-implementation-3">JavaScript SDK Implementation</a>.</p>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Video%20Layout%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -65,10 +65,10 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
         if (this.prefetchSortByUnread) {
           this.configuration.prefetchOn = PrefetchOn.Connect;
-          this.configuration.prefetchSortBy = PrefetchSortBy.unread
+          this.configuration.prefetchSortBy = PrefetchSortBy.Unread
         } else if (this.prefetchSortByLastMessageTimestamp) {
           this.configuration.prefetchOn = PrefetchOn.Connect;
-          this.configuration.prefetchSortBy = PrefetchSortBy.lastMessageTimestamp
+          this.configuration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp
         }
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
