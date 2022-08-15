@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { PrefetchSortBy } from '../../src';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
 import Logger from '../../src/logger/Logger';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -52,6 +53,8 @@ describe('DefaultMessagingSession', () => {
   };
 
   class TestSigV4 implements SigV4 {
+    lastSignedQueryParams: Map<string, string[]>;
+
     signURL(
       _method: string,
       _scheme: string,
@@ -61,6 +64,7 @@ describe('DefaultMessagingSession', () => {
       _payload: string,
       _queryParams: Map<string, string[]>
     ): Promise<string> {
+      this.lastSignedQueryParams = _queryParams;
       return Promise.resolve(hostname);
     }
   }
@@ -139,15 +143,86 @@ describe('DefaultMessagingSession', () => {
         chimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
+      const testSigV4 = new TestSigV4();
       const prefetchMessagingSession = new DefaultMessagingSession(
         prefetchConfiguration,
         logger,
         webSocket,
         reconnectController,
-        new TestSigV4()
+        testSigV4
       );
       prefetchMessagingSession.addObserver({
         messagingSessionDidStart(): void {
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
+          done();
+        },
+      });
+      prefetchMessagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
+      });
+    });
+
+    it('Can start with prefetch on sort by unread', done => {
+      const prefetchConfiguration = new MessagingSessionConfiguration(
+        'userArn',
+        '123',
+        undefined,
+        chimeClient
+      );
+      prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
+      prefetchConfiguration.prefetchSortBy = PrefetchSortBy.Unread;
+      const testSigV4 = new TestSigV4();
+      const prefetchMessagingSession = new DefaultMessagingSession(
+        prefetchConfiguration,
+        logger,
+        webSocket,
+        reconnectController,
+        testSigV4
+      );
+      prefetchMessagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by')[0]).to.be.eq('unread');
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by').length).to.be.eq(1);
+          done();
+        },
+      });
+      prefetchMessagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
+      });
+    });
+
+    it('Can start with prefetch on sort by last-message-timestamp', done => {
+      const prefetchConfiguration = new MessagingSessionConfiguration(
+        'userArn',
+        '123',
+        undefined,
+        chimeClient
+      );
+      prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
+      prefetchConfiguration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp;
+      const testSigV4 = new TestSigV4();
+      const prefetchMessagingSession = new DefaultMessagingSession(
+        prefetchConfiguration,
+        logger,
+        webSocket,
+        reconnectController,
+        testSigV4
+      );
+      prefetchMessagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by')[0]).to.be.eq(
+            'last-message-timestamp'
+          );
+          expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by').length).to.be.eq(1);
           done();
         },
       });

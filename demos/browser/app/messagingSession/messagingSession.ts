@@ -12,14 +12,15 @@ import {
   Logger,
   LogLevel,
   Message,
-  MessagingSessionObserver,
   MessagingSession,
   MessagingSessionConfiguration,
+  MessagingSessionObserver,
   PrefetchOn,
+  PrefetchSortBy,
   Versioning,
 } from 'amazon-chime-sdk-js';
 
-import { ChimeSDKMessagingClient, GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
+import {ChimeSDKMessagingClient, GetMessagingSessionEndpointCommand} from '@aws-sdk/client-chime-sdk-messaging';
 
 export class DemoMessagingSessionApp implements MessagingSessionObserver {
   static readonly BASE_URL: string = [
@@ -59,10 +60,15 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-        this.prefetchOn = (document.getElementById('prefetchOn') as HTMLInputElement).checked;
+        this.prefetchSortByUnread = (document.getElementById('prefetchSortByUnread') as HTMLInputElement).checked;
+        this.prefetchSortByLastMessageTimestamp = (document.getElementById('prefetchSortByLastMessageTimestamp') as HTMLInputElement).checked;
         this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
-        if (this.prefetchOn) {
+        if (this.prefetchSortByUnread) {
           this.configuration.prefetchOn = PrefetchOn.Connect;
+          this.configuration.prefetchSortBy = PrefetchSortBy.Unread
+        } else if (this.prefetchSortByLastMessageTimestamp) {
+          this.configuration.prefetchOn = PrefetchOn.Connect;
+          this.configuration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp
         }
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);

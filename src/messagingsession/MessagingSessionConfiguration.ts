@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import PrefetchOn from './PrefetchOn';
+import PrefetchSortBy from './PrefetchSortBy';
 
 /**
  * [[MessagingSessionConfiguration]] contains the information necessary to start
@@ -34,6 +35,14 @@ export default class MessagingSessionConfiguration {
    * upon websocket connection, which includes information about channel, channel messages, channel memberships etc.
    */
   prefetchOn: PrefetchOn | undefined = undefined;
+
+  /**
+   * The enum to indicate the sorting mechanism to use when deciding which channels to Prefetch. Prefetch feature will send out
+   * CHANNEL_DETAILS event upon websocket connection, which includes information about channel, channel messages, channel memberships etc.
+   * The first 50 channels matching the PrefetchSortBy will be sent.  If not set, channels will be returned first by those
+   * with unread messages and then those with the latest last sent message timestamp.
+   */
+  prefetchSortBy: PrefetchSortBy | undefined = undefined;
 
   /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
