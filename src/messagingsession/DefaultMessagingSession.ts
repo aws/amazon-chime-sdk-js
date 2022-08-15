@@ -112,8 +112,9 @@ export default class DefaultMessagingSession implements MessagingSession {
     if (endpointUrl === undefined) {
       try {
         if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
-          endpointUrl = (await this.configuration.chimeClient.getMessagingSessionEndpoint().promise())
-            .Endpoint.Url;
+          endpointUrl = (
+            await this.configuration.chimeClient.getMessagingSessionEndpoint().promise()
+          ).Endpoint.Url;
         } else {
           endpointUrl = (
             await this.configuration.chimeClient.send(new GetMessagingSessionEndpointCommand({}))
