@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
-import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
 import { PrefetchSortBy } from '../../src';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
 import Logger from '../../src/logger/Logger';
@@ -210,7 +210,7 @@ describe('DefaultMessagingSession', () => {
         'userArn',
         '123',
         undefined,
-          v3ChimeClient
+        v3ChimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
       const testSigV4 = new TestSigV4();
@@ -240,7 +240,7 @@ describe('DefaultMessagingSession', () => {
         'userArn',
         '123',
         undefined,
-          v3ChimeClient
+        v3ChimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
       prefetchConfiguration.prefetchSortBy = PrefetchSortBy.Unread;
@@ -273,7 +273,7 @@ describe('DefaultMessagingSession', () => {
         'userArn',
         '123',
         undefined,
-          v3ChimeClient
+        v3ChimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
       prefetchConfiguration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp;

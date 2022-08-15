@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
+
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Logger from '../logger/Logger';
@@ -17,7 +19,6 @@ import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
 import MessagingSession from './MessagingSession';
 import MessagingSessionConfiguration from './MessagingSessionConfiguration';
 import PrefetchOn from './PrefetchOn';
-import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
 
 export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
@@ -110,12 +111,12 @@ export default class DefaultMessagingSession implements MessagingSession {
     let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
     if (endpointUrl === undefined) {
       if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
-        endpointUrl = (await this.configuration.chimeClient.getMessagingSessionEndpoint()
-            .promise()).Endpoint.Url;
+        endpointUrl = (await this.configuration.chimeClient.getMessagingSessionEndpoint().promise())
+          .Endpoint.Url;
       } else {
-        endpointUrl = (await this.configuration.chimeClient.send(
-            new GetMessagingSessionEndpointCommand({})
-        )).Endpoint.Url;
+        endpointUrl = (
+          await this.configuration.chimeClient.send(new GetMessagingSessionEndpointCommand({}))
+        ).Endpoint.Url;
       }
     }
 
