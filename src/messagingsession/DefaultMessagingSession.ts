@@ -110,13 +110,24 @@ export default class DefaultMessagingSession implements MessagingSession {
     // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
     let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
     if (endpointUrl === undefined) {
-      if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
-        endpointUrl = (await this.configuration.chimeClient.getMessagingSessionEndpoint().promise())
-          .Endpoint.Url;
-      } else {
-        endpointUrl = (
-          await this.configuration.chimeClient.send(new GetMessagingSessionEndpointCommand({}))
-        ).Endpoint.Url;
+      try {
+        if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
+          endpointUrl = (await this.configuration.chimeClient.getMessagingSessionEndpoint().promise())
+            .Endpoint.Url;
+        } else {
+          endpointUrl = (
+            await this.configuration.chimeClient.send(new GetMessagingSessionEndpointCommand({}))
+          ).Endpoint.Url;
+        }
+      } catch (e) {
+        const closeEvent = new CloseEvent('close', {
+          wasClean: false,
+          code: 4999,
+          reason: 'Failed to getMessagingSessionEndpoint',
+          bubbles: false,
+        });
+        this.closeEventHandler(closeEvent);
+        return;
       }
     }
 
@@ -206,16 +217,18 @@ export default class DefaultMessagingSession implements MessagingSession {
     }
   }
 
+  private retryConnection(): boolean {
+    return this.reconnectController.retryWithBackoff(async () => {
+      await this.startConnecting(true);
+    }, null);
+  }
+
   private closeEventHandler(event: CloseEvent): void {
     this.logger.info(`WebSocket close: ${event.code} ${event.reason}`);
-    this.webSocket.destroy();
-    if (
-      !this.isClosing &&
-      this.canReconnect(event.code) &&
-      this.reconnectController.retryWithBackoff(async () => {
-        await this.startConnecting(true);
-      }, null)
-    ) {
+    if (event.code !== 4999) {
+      this.webSocket.destroy();
+    }
+    if (!this.isClosing && this.canReconnect(event.code) && this.retryConnection()) {
       return;
     }
     this.isClosing = false;

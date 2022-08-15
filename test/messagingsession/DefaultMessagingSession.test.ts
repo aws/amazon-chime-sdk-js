@@ -303,6 +303,48 @@ describe('DefaultMessagingSession', () => {
       });
     });
 
+    it('can reconnect with failures on getMessagingSession', done => {
+      configuration.chimeClient = v2ChimeClient;
+      let didStartCount = 0;
+      let didStartConnecting = 0;
+      const savedClientBehavior = v2ChimeClient.getMessagingSessionEndpoint;
+      messagingSession.addObserver({
+        messagingSessionDidStartConnecting(reconnecting: boolean): void {
+          didStartConnecting++;
+          if (!reconnecting) {
+            webSocket.addEventListener('open', () => {
+              webSocket.close(1006);
+              v2ChimeClient.getMessagingSessionEndpoint = function () {
+                throw 'some error';
+              };
+              setTimeout(function () {
+                v2ChimeClient.getMessagingSessionEndpoint = savedClientBehavior;
+              }, 100);
+            });
+          } else {
+            webSocket.addEventListener('open', () => {
+              webSocket.send(SESSION_SUBSCRIBED_MSG);
+            });
+            webSocket.addEventListener('message', (_event: MessageEvent) => {
+              new TimeoutScheduler(10).start(() => {
+                messagingSession.stop();
+              });
+            });
+          }
+        },
+        messagingSessionDidStart(): void {
+          didStartCount++;
+        },
+        messagingSessionDidStop(_event: CloseEvent): void {
+          expect(didStartConnecting).to.be.eq(2);
+          expect(didStartCount).to.be.eq(1);
+          expect(getMessSessionCnt).to.be.eq(2);
+          done();
+        },
+      });
+      messagingSession.start();
+    });
+
     it('Ignores messages before SESSION_ESTABLISH', done => {
       let messageCount = 0;
       messagingSession.addObserver({
