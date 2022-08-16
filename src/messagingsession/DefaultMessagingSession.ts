@@ -121,7 +121,6 @@ export default class DefaultMessagingSession implements MessagingSession {
         }
         this.logger.debug(`Messaging endpoint resolved to: ${endpointUrl}`);
       } catch (e) {
-        this.logger.error('DPW ' + e);
         // send artificial close code event so the
         // re-connect logic of underlying websocket client is
         // triggered in the close handler
