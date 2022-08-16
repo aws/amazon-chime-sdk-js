@@ -75,16 +75,11 @@ describe('DefaultMessagingSession', () => {
     },
 
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-    getMessagingSessionEndpoint: function () {
+    getMessagingSessionEndpoint: async function (): Promise<any> {
+      getMessSessionCnt++;
       return {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        promise: async function (): Promise<any> {
-          getMessSessionCnt++;
-          return {
-            Endpoint: {
-              Url: ENDPOINT_URL,
-            },
-          };
+        Endpoint: {
+          Url: ENDPOINT_URL,
         },
       };
     },

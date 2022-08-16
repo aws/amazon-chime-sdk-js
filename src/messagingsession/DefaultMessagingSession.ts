@@ -113,7 +113,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       try {
         if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
           endpointUrl = (
-            await this.configuration.chimeClient.getMessagingSessionEndpoint().promise()
+            await this.configuration.chimeClient.getMessagingSessionEndpoint()
           ).Endpoint.Url;
         } else {
           endpointUrl = (
@@ -122,6 +122,7 @@ export default class DefaultMessagingSession implements MessagingSession {
         }
         this.logger.debug(`Messaging endpoint resolved to: ${endpointUrl}`);
       } catch (e) {
+        this.logger.error("DPW " + e)
         // send artificial close code event so the
         // re-connect logic of underlying websocket client is
         // triggered in the close handler
