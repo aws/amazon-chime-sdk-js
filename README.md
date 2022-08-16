@@ -36,6 +36,7 @@ The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) ca
 - [Amazon Chime SDK Overview](https://aws.amazon.com/chime/chime-sdk/)
 - [Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
 - [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers)
+- [Getting Started Guides](https://github.com/aws/amazon-chime-sdk-js/tree/main/guides) 
 - [Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html)
 - [PSTN Audio Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html)
 - [Control Plane API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
