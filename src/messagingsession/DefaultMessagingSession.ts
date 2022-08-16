@@ -107,9 +107,9 @@ export default class DefaultMessagingSession implements MessagingSession {
   }
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
+    let endpointUrl = this.configuration.endpointUrl;
     // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
-    let endpointUrl = !reconnecting ? this.configuration.endpointUrl : undefined;
-    if (endpointUrl === undefined) {
+    if (reconnecting || endpointUrl === undefined) {
       try {
         if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
           endpointUrl = (
@@ -120,11 +120,15 @@ export default class DefaultMessagingSession implements MessagingSession {
             await this.configuration.chimeClient.send(new GetMessagingSessionEndpointCommand({}))
           ).Endpoint.Url;
         }
+        this.logger.debug(`Messaging endpoint resolved to: ${endpointUrl}`);
       } catch (e) {
+        // send artificial close code event so the
+        // re-connect logic of underlying websocket client is
+        // triggered in the close handler
         const closeEvent = new CloseEvent('close', {
           wasClean: false,
           code: 4999,
-          reason: 'Failed to getMessagingSessionEndpoint',
+          reason: 'Failed to get messaging session endpoint URL',
           bubbles: false,
         });
         this.closeEventHandler(closeEvent);
