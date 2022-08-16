@@ -74,7 +74,7 @@ describe('DefaultMessagingSession', () => {
       },
     },
 
-    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line  @typescript-eslint/typescript-eslint/no-explicit-any
     getMessagingSessionEndpoint: async function (): Promise<any> {
       getMessSessionCnt++;
       return {
