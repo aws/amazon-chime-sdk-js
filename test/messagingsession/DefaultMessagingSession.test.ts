@@ -298,7 +298,7 @@ describe('DefaultMessagingSession', () => {
       });
     });
 
-    it('can reconnect with failures on getMessagingSession', async done => {
+    it('can reconnect with failures on getMessagingSession', done => {
       configuration.chimeClient = v2ChimeClient;
       let didStartCount = 0;
       let didStartConnecting = 0;
@@ -337,7 +337,7 @@ describe('DefaultMessagingSession', () => {
           done();
         },
       });
-      await messagingSession.start();
+      messagingSession.start();
     });
 
     it('Ignores messages before SESSION_ESTABLISH', done => {
@@ -449,7 +449,7 @@ describe('DefaultMessagingSession', () => {
   });
 
   describe('reconnect', () => {
-    it('can reconnect', async done => {
+    it('can reconnect', done => {
       let didStartCount = 0;
       let didStartConnecting = 0;
       messagingSession.addObserver({
@@ -480,10 +480,10 @@ describe('DefaultMessagingSession', () => {
           done();
         },
       });
-      await messagingSession.start();
+      messagingSession.start();
     });
 
-    it('will not reconnect', async done => {
+    it('will not reconnect', done => {
       let didStartConnecting = 0;
       messagingSession.addObserver({
         messagingSessionDidStartConnecting(_reconnecting: boolean): void {
@@ -504,7 +504,7 @@ describe('DefaultMessagingSession', () => {
           done();
         },
       });
-      await messagingSession.start();
+      messagingSession.start();
     });
 
     it('reconnect will stop after timeout', done => {
