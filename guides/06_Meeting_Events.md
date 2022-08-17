@@ -102,6 +102,8 @@ The Chime SDK for JavaScript sends these meeting events.
 |`videoInputFailed`      |The camera selection failed.
 |`signalingDropped`      |The WebSocket failed or closed with an error.
 |`receivingAudioDropped` |A significant number of receive-audio packets dropped.
+|`sendingAudioFailed`    |Sending audio packets failed for `N` samples consecutively after an initial wait time of `T`. You can configure these values in [ConnectionHealthPolicyConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html) where `N` = `sendingAudioFailureSamplesToConsider` and `T` = `sendingAudioFailureInitialWaitTimeMs`.
+|`sendingAudioRecovered` |Sending audio packets successful after failure.
 
 <br>
 
@@ -134,16 +136,16 @@ The following table describes attributes for a meeting.
 
 |Attribute|Description|Included in
 |--|--|--
-|`attendeePresenceDurationMs`|The time taken for the attendee to be present in the meeting.<br><br>Unit: Milliseconds|`attendeePresenceReceived`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
-|`iceGatheringDurationMs`|The time taken for connection's ICE gathering state to complete.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
+|`attendeePresenceDurationMs`|The time taken for the attendee to be present in the meeting.<br><br>Unit: Milliseconds|`attendeePresenceReceived`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`, `sendingAudioFailed`, `sendingAudioRecovered`
+|`iceGatheringDurationMs`|The time taken for connection's ICE gathering state to complete.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`, `sendingAudioFailed`, `sendingAudioRecovered`
 |`maxVideoTileCount`|The maximum number of simultaneous video tiles shared during the meeting. This includes a local tile (your video), remote tiles, and content shares.<br><br>Unit: Count|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
-|`meetingDurationMs`|The time that elapsed between the beginning (`AudioVideoObserver.audioVideoDidStart`) and the end (`AudioVideoObserver.audioVideoDidStop`) of the meeting.<br><br>Unit: Milliseconds|`meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
+|`meetingDurationMs`|The time that elapsed between the beginning (`AudioVideoObserver.audioVideoDidStart`) and the end (`AudioVideoObserver.audioVideoDidStop`) of the meeting.<br><br>Unit: Milliseconds|`meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`, `sendingAudioFailed`, `sendingAudioRecovered`
 |`meetingErrorMessage`|The error message that explains why the meeting has failed. For more information, see the ["Meeting error messages" section](#meeting-error-messages). |`meetingStartFailed`, `meetingFailed`
-|`meetingStartDurationMs`|The time that elapsed between the start request `meetingSession.audioVideo.start` and the beginning of the meeting `AudioVideoObserver.audioVideoDidStart`.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
+|`meetingStartDurationMs`|The time that elapsed between the start request `meetingSession.audioVideo.start` and the beginning of the meeting `AudioVideoObserver.audioVideoDidStart`.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`, `sendingAudioFailed`, `sendingAudioRecovered`
 |`meetingStatus`|The meeting status when the meeting ended or failed. Note that this attribute indicates an enum name in [MeetingSessionStatusCode](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html), such as `Left` or `MeetingEnded`.|`meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`
 |`poorConnectionCount`|The number of times the significant packet loss occurred during the meeting. Per count, you receive `AudioVideoObserver.connectionDidBecomePoor` or `AudioVideoObserver.connectionDidSuggestStopVideo`.<br><br>Unit: Count|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
 |`retryCount`|The number of connection retries performed during the meeting.<br><br>Unit: Count|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
-|`signalingOpenDurationMs`|The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
+|`signalingOpenDurationMs`|The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`, `sendingAudioFailed`, `sendingAudioRecovered`
 
 <br>
 
@@ -204,6 +206,8 @@ The following table lists available states.
 |`videoInputFailed`|The camera selection failed.
 |`videoInputSelected`|The camera was selected.
 |`videoInputUnselected`|The camera was removed. You called `meetingSession.audioVideo.stopVideoInput` with `null`.
+|`sendingAudioFailed`|Sending audio packets failed for `N` samples consecutively after an initial wait time of `T`. You can configure these values in [ConnectionHealthPolicyConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html) where `N` = `sendingAudioFailureSamplesToConsider` and `T` = `sendingAudioFailureInitialWaitTimeMs`.
+|`sendingAudioRecovered`|Sending audio packets successful after failure.
 
 <br>
 
@@ -245,6 +249,20 @@ JavaScript uses the browser's [`getUserMedia` API](https://developer.mozilla.org
 |--|--
 |1. TypeError: Failed to execute 'getUserMedia' on 'MediaDevices': At least one of audio and video must be requested<br>2. NotAllowedError: The request is not allowed by the user agent or the platform in the current context.<br>3. TypeError: Type error|Ensure that you allow permission to the media devices. Also, the browser should have access to the media devices.
 |NotReadableError: Could not start video source|Ensure that you do not use the media devices in other browser tabs or applications. A hardware error may also occur at the operating system or browser. If the problem persists, restart the browser and try again.
+
+<br>
+
+### Audio transmission related events
+
+The Amazon Chime SDK for JavaScript publishes the following events to report issues with audio transmission and receipt:
+
+- The `receivingAudioDropped` event is triggered when the packet loss for receiving audio is high. This can be used to warn users about potential network connectivity issues but if you are already using the [connectionDidSuggestStopVideo](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo) or [connectionDidBecomePoor](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor) callbacks you do not need to take any action as these callbacks are triggered on the same predicate.
+
+- The `sendingAudioFailed` event is triggered when audio packets are not sent out consistently. This event can be used to alert the user that their audio is not reaching other attendees or to ask them to take a manual action such as changing the input audio device or restarting the application. When there's a recovery in the audio packets sent, the `sendingAudioRecovered` event is published which can be used to acknowledge that the user action did succeed.  Unlike the `receivingAudioDropped` event, there are no additional callbacks which are invoked for this case. There are few caveats attached to these events listed below:
+  - In certain genuine use-cases where applications want to allow users to join as an observer without any audio input (view-only mode), we may trigger the `sendingAudioFailed` event in Firefox and Safari. This behaviour is due to a [known issue](https://github.com/aws/amazon-chime-sdk-js/issues/474) which actually sends such attendees into a reconnection loop and eventually results in meeting failure. This behavior won't occur once the bug is fixed, but until then builders can try the workarounds mentioned [here](https://github.com/aws/amazon-chime-sdk-js/issues/474#issuecomment-870861009).
+
+Once published these events undergo a cool-down period to avoid overwhelming the event observer
+in case of an erratic network/audio device. In addition to this, within a connection, the number of times the events are published is also capped to a maximum. `cooldownTimeMs` and `maximumTimesToWarn` are the respective thresholds for this behaviour whose values are defined in [ConnectionHealthPolicyConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html).
 
 <br>
 

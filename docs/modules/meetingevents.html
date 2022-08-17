@@ -208,6 +208,14 @@
 								<td><code>receivingAudioDropped</code></td>
 								<td>A significant number of receive-audio packets dropped.</td>
 							</tr>
+							<tr>
+								<td><code>sendingAudioFailed</code></td>
+								<td>Sending audio packets failed for <code>N</code> samples consecutively after an initial wait time of <code>T</code>. You can configure these values in <a href="https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html">ConnectionHealthPolicyConfiguration</a> where <code>N</code> = <code>sendingAudioFailureSamplesToConsider</code> and <code>T</code> = <code>sendingAudioFailureInitialWaitTimeMs</code>.</td>
+							</tr>
+							<tr>
+								<td><code>sendingAudioRecovered</code></td>
+								<td>Sending audio packets successful after failure.</td>
+							</tr>
 					</tbody></table>
 					<br>
 					<a href="#standard-attributes" id="standard-attributes" style="color: inherit; text-decoration: none;">
@@ -294,12 +302,12 @@
 						<tbody><tr>
 								<td><code>attendeePresenceDurationMs</code></td>
 								<td>The time taken for the attendee to be present in the meeting.<br><br>Unit: Milliseconds</td>
-								<td><code>attendeePresenceReceived</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
+								<td><code>attendeePresenceReceived</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code>, <code>sendingAudioFailed</code>, <code>sendingAudioRecovered</code></td>
 							</tr>
 							<tr>
 								<td><code>iceGatheringDurationMs</code></td>
 								<td>The time taken for connection&#39;s ICE gathering state to complete.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code>, <code>sendingAudioFailed</code>, <code>sendingAudioRecovered</code></td>
 							</tr>
 							<tr>
 								<td><code>maxVideoTileCount</code></td>
@@ -309,7 +317,7 @@
 							<tr>
 								<td><code>meetingDurationMs</code></td>
 								<td>The time that elapsed between the beginning (<code>AudioVideoObserver.audioVideoDidStart</code>) and the end (<code>AudioVideoObserver.audioVideoDidStop</code>) of the meeting.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
+								<td><code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code>, <code>sendingAudioFailed</code>, <code>sendingAudioRecovered</code></td>
 							</tr>
 							<tr>
 								<td><code>meetingErrorMessage</code></td>
@@ -319,7 +327,7 @@
 							<tr>
 								<td><code>meetingStartDurationMs</code></td>
 								<td>The time that elapsed between the start request <code>meetingSession.audioVideo.start</code> and the beginning of the meeting <code>AudioVideoObserver.audioVideoDidStart</code>.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code>, <code>sendingAudioFailed</code>, <code>sendingAudioRecovered</code></td>
 							</tr>
 							<tr>
 								<td><code>meetingStatus</code></td>
@@ -339,7 +347,7 @@
 							<tr>
 								<td><code>signalingOpenDurationMs</code></td>
 								<td>The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code>, <code>sendingAudioFailed</code>, <code>sendingAudioRecovered</code></td>
 							</tr>
 					</tbody></table>
 					<br>
@@ -455,6 +463,14 @@
 								<td><code>videoInputUnselected</code></td>
 								<td>The camera was removed. You called <code>meetingSession.audioVideo.stopVideoInput</code> with <code>null</code>.</td>
 							</tr>
+							<tr>
+								<td><code>sendingAudioFailed</code></td>
+								<td>Sending audio packets failed for <code>N</code> samples consecutively after an initial wait time of <code>T</code>. You can configure these values in <a href="https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html">ConnectionHealthPolicyConfiguration</a> where <code>N</code> = <code>sendingAudioFailureSamplesToConsider</code> and <code>T</code> = <code>sendingAudioFailureInitialWaitTimeMs</code>.</td>
+							</tr>
+							<tr>
+								<td><code>sendingAudioRecovered</code></td>
+								<td>Sending audio packets successful after failure.</td>
+							</tr>
 					</tbody></table>
 					<br>
 					<a href="#meeting-error-messages" id="meeting-error-messages" style="color: inherit; text-decoration: none;">
@@ -552,6 +568,22 @@
 								<td>Ensure that you do not use the media devices in other browser tabs or applications. A hardware error may also occur at the operating system or browser. If the problem persists, restart the browser and try again.</td>
 							</tr>
 					</tbody></table>
+					<br>
+					<a href="#audio-transmission-related-events" id="audio-transmission-related-events" style="color: inherit; text-decoration: none;">
+						<h3>Audio transmission related events</h3>
+					</a>
+					<p>The Amazon Chime SDK for JavaScript publishes the following events to report issues with audio transmission and receipt:</p>
+					<ul>
+						<li><p>The <code>receivingAudioDropped</code> event is triggered when the packet loss for receiving audio is high. This can be used to warn users about potential network connectivity issues but if you are already using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo">connectionDidSuggestStopVideo</a> or <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor">connectionDidBecomePoor</a> callbacks you do not need to take any action as these callbacks are triggered on the same predicate.</p>
+						</li>
+						<li><p>The <code>sendingAudioFailed</code> event is triggered when audio packets are not sent out consistently. This event can be used to alert the user that their audio is not reaching other attendees or to ask them to take a manual action such as changing the input audio device or restarting the application. When there&#39;s a recovery in the audio packets sent, the <code>sendingAudioRecovered</code> event is published which can be used to acknowledge that the user action did succeed.  Unlike the <code>receivingAudioDropped</code> event, there are no additional callbacks which are invoked for this case. There are few caveats attached to these events listed below:</p>
+							<ul>
+								<li>In certain genuine use-cases where applications want to allow users to join as an observer without any audio input (view-only mode), we may trigger the <code>sendingAudioFailed</code> event in Firefox and Safari. This behaviour is due to a <a href="https://github.com/aws/amazon-chime-sdk-js/issues/474">known issue</a> which actually sends such attendees into a reconnection loop and eventually results in meeting failure. This behavior won&#39;t occur once the bug is fixed, but until then builders can try the workarounds mentioned <a href="https://github.com/aws/amazon-chime-sdk-js/issues/474#issuecomment-870861009">here</a>.</li>
+							</ul>
+						</li>
+					</ul>
+					<p>Once published these events undergo a cool-down period to avoid overwhelming the event observer
+					in case of an erratic network/audio device. In addition to this, within a connection, the number of times the events are published is also capped to a maximum. <code>cooldownTimeMs</code> and <code>maximumTimesToWarn</code> are the respective thresholds for this behaviour whose values are defined in <a href="https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html">ConnectionHealthPolicyConfiguration</a>.</p>
 					<br>
 					<a href="#example" id="example" style="color: inherit; text-decoration: none;">
 						<h2>Example</h2>

@@ -116,7 +116,20 @@ export default class SignalingAndMetricsConnectionMonitor
     if (packetsReceived === 0 || fractionPacketsLostInbound > 0) {
       this.connectionHealthData.setLastPacketLossInboundTimestampMs(Date.now());
     }
+    if (typeof metricReport.audioPacketsSent === 'number') {
+      this.updateAudioPacketsSentInConnectionHealth(metricReport.audioPacketsSent);
+    }
     this.updateConnectionHealth();
+  }
+
+  private updateAudioPacketsSentInConnectionHealth(audioPacketsSent: number): void {
+    if (audioPacketsSent > 0) {
+      this.connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(0);
+    } else {
+      this.connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(
+        this.connectionHealthData.consecutiveStatsWithNoAudioPacketsSent + 1
+      );
+    }
   }
 
   private addToMinuteWindow(array: number[], value: number): void {

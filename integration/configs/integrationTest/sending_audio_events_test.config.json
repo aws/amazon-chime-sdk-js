@@ -1,0 +1,25 @@
+{
+  "`": 1,
+  "name": "sending_audio_events_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Sending Audio Failure And Recovery Test %ts",
+      "description": "Test that sending audio failure and recovery events are published",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "SendingAudioFailureAndRecoveryTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}

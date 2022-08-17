@@ -93,6 +93,18 @@ describe('MonitorTask', () => {
   const RECONNECT_FIXED_WAIT_MS = 0;
   const RECONNECT_SHORT_BACKOFF_MS = 1 * 1000;
   const RECONNECT_LONG_BACKOFF_MS = 5 * 1000;
+  const baseAudioVideoEventAttributeKeys = [
+    'meetingStartDurationMs',
+    'meetingDurationMs',
+    'signalingOpenDurationMs',
+    'iceGatheringDurationMs',
+    'attendeePresenceDurationMs',
+  ];
+  const receivingAudioDroppedAudioVideoEventAttributeKeys = [
+    ...baseAudioVideoEventAttributeKeys,
+    'maxVideoTileCount',
+    'poorConnectionCount',
+  ];
 
   class TestAudioVideoController extends NoOpAudioVideoController {
     private testObserverQueue: Set<AudioVideoObserver> = new Set<AudioVideoObserver>();
@@ -837,6 +849,9 @@ describe('MonitorTask', () => {
           const additionalArgs = <AudioVideoEventAttributes>args[1];
           assert.equal(args[0], 'receivingAudioDropped');
           assert.equal(additionalArgs.poorConnectionCount, 1);
+          expect(additionalArgs).to.have.all.keys(
+            receivingAudioDroppedAudioVideoEventAttributeKeys
+          );
           done();
         }
       }
@@ -1017,6 +1032,34 @@ describe('MonitorTask', () => {
         0,
       ];
       task.connectionHealthDidChange(connectionHealthData);
+    });
+
+    it('notifies sending audio failure and recovery', done => {
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const testConfig = new ConnectionHealthPolicyConfiguration();
+      testConfig.sendingAudioFailureSamplesToConsider = 2;
+      class TestConnectionHealthData extends ConnectionHealthData {
+        isConnectionStartRecent(_recentDurationMs: number): boolean {
+          return false;
+        }
+      }
+      const connectionHealthData = new TestConnectionHealthData();
+      connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(
+        testConfig.sendingAudioFailureSamplesToConsider
+      );
+      task.connectionHealthDidChange(connectionHealthData);
+      expect(spy.calledWith('sendingAudioFailed')).to.be.true;
+
+      connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(0);
+      task.connectionHealthDidChange(connectionHealthData);
+      expect(spy.calledWith('sendingAudioRecovered')).to.be.true;
+
+      const calls = spy.getCalls();
+      for (const call of calls) {
+        const eventAttributes = call.args[1];
+        expect(eventAttributes).to.have.all.keys(baseAudioVideoEventAttributeKeys);
+      }
+      done();
     });
   });
 

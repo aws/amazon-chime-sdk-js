@@ -10,12 +10,18 @@ export default class BaseConnectionHealthPolicy implements ConnectionHealthPolic
   protected minHealth: number;
   protected maxHealth: number;
   protected currentHealth: number;
+  readonly name?: string;
 
-  constructor(configuration: ConnectionHealthPolicyConfiguration, data: ConnectionHealthData) {
+  constructor(
+    configuration: ConnectionHealthPolicyConfiguration,
+    data: ConnectionHealthData,
+    name?: string
+  ) {
     this.minHealth = configuration.minHealth;
     this.maxHealth = configuration.maxHealth;
     this.currentHealth = configuration.initialHealth;
     this.currentData = data.clone();
+    this.name = name;
   }
 
   minimumHealth(): number {

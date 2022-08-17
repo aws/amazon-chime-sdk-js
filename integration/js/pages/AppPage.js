@@ -1,4 +1,4 @@
-const {By, Key, until} = require('selenium-webdriver');
+const {By, Key, until, logging} = require('selenium-webdriver');
 const {TestUtils} = require('kite-common');
 const {performance} = require('perf_hooks');
 const {clickElement} = require('../utils/PageUtil');
@@ -46,6 +46,7 @@ function findAllElements() {
     microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
     microphoneDropDownPrecordedSpeechButton: By.id('dropdown-menu-microphone-Prerecorded-Speech'),
     microphoneDropDownNoneButton: By.id('dropdown-menu-microphone-None'),
+    microphoneDropDownNoAudioButton: By.id('dropdown-menu-microphone-No-Audio'),
     microphoneDropDownL500HzR1000HzButton: By.id('dropdown-menu-microphone-L-500Hz-R-1000Hz'),
     microphoneDropDownButton: By.id('button-microphone-drop'),
     microphoneButton: By.id('button-microphone'),
@@ -282,6 +283,11 @@ class AppPage {
 
   async selectNoneAudioInput() {
     let noneButton = await this.driver.findElement(elements.microphoneDropDownNoneButton);
+    await clickElement(this.driver, noneButton);
+  }
+
+  async selectNoAudioInput() {
+    let noneButton = await this.driver.findElement(elements.microphoneDropDownNoAudioButton);
     await clickElement(this.driver, noneButton);
   }
 
@@ -890,6 +896,31 @@ class AppPage {
         + "var imageData = ctx.getImageData(0,0,video.videoHeight-1,video.videoWidth-1).data;"
         + "var sum = imageData.reduce(getSum);"
         + "return sum;"
+  }
+
+  async sendingAudioCheck(stepInfo, expectedEvent, waitTimeMs) {
+    await TestUtils.waitAround(waitTimeMs);
+    let expectedStateFound = false;
+    try {
+      const logs = await this.driver.manage().logs().get(logging.Type.BROWSER);
+      const eventLogCaptureRegex = new RegExp('Received an event: (.*)"');
+
+      logs.forEach(entry => {
+        const matchedItems = eventLogCaptureRegex.exec(entry.message); // matchedItems[1] has our the JSON payload
+        if (matchedItems) {
+          // When running on Saucelabs double quotes in logs are weirdly escaped with just a single \ instead of \\
+          // so JSON.parse is throwing an error, so we escape all instances of \" with "
+          const validJsonString = matchedItems[1].replaceAll(/\\"/g, '"');
+          if (JSON.parse(validJsonString).name === expectedEvent) {
+            this.logger(`SendingAudioCheck successful for expectedEvent: ${expectedEvent}`);
+            expectedStateFound = true;
+          }
+        }
+      });
+    } catch (e) {
+      this.logger(`SendingAudioCheck failed with error: ${e}`);
+    }
+    return expectedStateFound;
   }
   
   async echoAudioCheck(stepInfo, expectedState){

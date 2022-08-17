@@ -32,6 +32,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   let setLastNoSignalTimestampMsCalled: boolean;
   let setLastWeakSignalTimestampMsCalled: boolean;
   let setLastGoodSignalTimestampMsCalled: boolean;
+  let consecutiveStatsWithNoAudioPacketsSentCalled: boolean;
   let signalStrengthCallback: (signalStrength: number) => void;
 
   class TestAudioVideoController extends NoOpAudioVideoController {
@@ -79,6 +80,10 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     setLastGoodSignalTimestampMs(_timeStamp: number): void {
       setLastGoodSignalTimestampMsCalled = true;
     }
+    setConsecutiveStatsWithNoAudioPacketsSent(_stats: number): void {
+      consecutiveStatsWithNoAudioPacketsSentCalled = true;
+      super.setConsecutiveStatsWithNoAudioPacketsSent(_stats);
+    }
   }
 
   class TestPingPong implements PingPong {
@@ -107,6 +112,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     videoDownstreamFramesDecodedPerSecond: RawMetrics = 100;
     videoDownstreamFrameHeight: RawMetrics = 100;
     videoDownstreamFrameWidth: RawMetrics = 100;
+    audioPacketsSent: RawMetrics = 50;
 
     getObservableMetrics(): { [id: string]: number } {
       return {
@@ -116,6 +122,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
         videoUpstreamBitrate: this.videoUpstreamBitrate,
         availableOutgoingBitrate: this.availableOutgoingBitrate,
         availableIncomingBitrate: this.availableIncomingBitrate,
+        audioPacketsSent: this.audioPacketsSent,
       };
     }
 
@@ -149,6 +156,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     setLastNoSignalTimestampMsCalled = false;
     setLastWeakSignalTimestampMsCalled = false;
     setLastGoodSignalTimestampMsCalled = false;
+    consecutiveStatsWithNoAudioPacketsSentCalled = false;
     audioVideoController = new TestAudioVideoController();
     realTimeController = new TestRealtimeController(new NoOpMediaStreamBroker());
     connectionHealthData = new TestConnectionHealthData();
@@ -306,5 +314,28 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     connectionMonitor.stop();
     signalStrengthCallback(1);
     expect(setLastGoodSignalTimestampMsCalled).to.equal(false);
+  });
+
+  it('can increment and reset consecutive stats with no audio packets sent', () => {
+    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.fractionLoss = 0;
+    sendClientMetricReport(testClientMetricReport);
+    expect(connectionHealthData.consecutiveStatsWithNoAudioPacketsSent).to.equal(0);
+
+    testClientMetricReport.audioPacketsSent = 0;
+    sendClientMetricReport(testClientMetricReport);
+    expect(connectionHealthData.consecutiveStatsWithNoAudioPacketsSent).to.equal(1);
+
+    testClientMetricReport.audioPacketsSent = 50;
+    sendClientMetricReport(testClientMetricReport);
+    expect(connectionHealthData.consecutiveStatsWithNoAudioPacketsSent).to.equal(0);
+  });
+
+  it('does not set consecutive stats with no audio packets sent when audioPacketsSent is not present', () => {
+    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsSent = undefined;
+    sendClientMetricReport(testClientMetricReport);
+    expect(consecutiveStatsWithNoAudioPacketsSentCalled).to.be.false;
   });
 });
