@@ -124,6 +124,7 @@ export default class DefaultMessagingSession implements MessagingSession {
         // send artificial close code event so the
         // re-connect logic of underlying websocket client is
         // triggered in the close handler
+        this.logger.error(`Messaging Session failed to resolve endpoint: ${e}`);
         const closeEvent = new CloseEvent('close', {
           wasClean: false,
           code: 4999,
