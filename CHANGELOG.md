@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `AbortError` when turning video ON in Safari.
+- `MessagingSession` reconnects with refreshed endpoint and credentials if needed.  `EndpointUrl` on `MessagingSessionConfiguration` is deprecated as it is resolved by calling `getMessagingSessionEndpoint` internally.
 
 ## [3.6.0] - 2022-06-23
 

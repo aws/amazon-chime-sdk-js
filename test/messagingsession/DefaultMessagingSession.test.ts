@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
@@ -40,8 +41,9 @@ describe('DefaultMessagingSession', () => {
   let messagingSession: MessagingSession;
   let dommMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
+  let getMessSessionCnt = 0;
 
-  const chimeClient = {
+  const v3ChimeClient = {
     config: {
       region: 'us-east-1',
       credentials: {
@@ -49,6 +51,37 @@ describe('DefaultMessagingSession', () => {
         secretAccessKey: 'secretKey',
         sessionToken: 'sessionToken',
       },
+    },
+
+    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+    send: function (command: GetMessagingSessionEndpointCommand) {
+      getMessSessionCnt++;
+      return {
+        Endpoint: {
+          Url: ENDPOINT_URL,
+        },
+      };
+    },
+  };
+
+  const v2ChimeClient = {
+    config: {
+      region: 'us-east-1',
+      credentials: {
+        accessKeyId: 'accessKey',
+        secretAccessKey: 'secretKey',
+        sessionToken: 'sessionToken',
+      },
+    },
+
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    getMessagingSessionEndpoint: async function (): Promise<any> {
+      getMessSessionCnt++;
+      return {
+        Endpoint: {
+          Url: ENDPOINT_URL,
+        },
+      };
     },
   };
 
@@ -84,7 +117,8 @@ describe('DefaultMessagingSession', () => {
     dommMockBehavior = new DOMMockBehavior();
     dommMockBehavior.webSocketSendEcho = true;
     domMockBuilder = new DOMMockBuilder(dommMockBehavior);
-    configuration = new MessagingSessionConfiguration('userArn', '123', ENDPOINT_URL, chimeClient);
+    getMessSessionCnt = 0;
+    configuration = new MessagingSessionConfiguration('userArn', '123', undefined, v3ChimeClient);
     configuration.reconnectTimeoutMs = 100;
     configuration.reconnectFixedWaitMs = 40;
     configuration.reconnectShortBackoffMs = 10;
@@ -125,6 +159,37 @@ describe('DefaultMessagingSession', () => {
     it('Can start', done => {
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(1);
+          done();
+        },
+      });
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
+      });
+    });
+
+    it('Can start with v2 client', done => {
+      configuration.chimeClient = v2ChimeClient;
+      messagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(1);
+          done();
+        },
+      });
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
+      });
+    });
+
+    it('Can start with hardcoded config url', done => {
+      configuration.endpointUrl = ENDPOINT_URL;
+      messagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(0);
           done();
         },
       });
@@ -140,7 +205,7 @@ describe('DefaultMessagingSession', () => {
         'userArn',
         '123',
         undefined,
-        chimeClient
+        v3ChimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
       const testSigV4 = new TestSigV4();
@@ -170,7 +235,7 @@ describe('DefaultMessagingSession', () => {
         'userArn',
         '123',
         undefined,
-        chimeClient
+        v3ChimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
       prefetchConfiguration.prefetchSortBy = PrefetchSortBy.Unread;
@@ -203,7 +268,7 @@ describe('DefaultMessagingSession', () => {
         'userArn',
         '123',
         undefined,
-        chimeClient
+        v3ChimeClient
       );
       prefetchConfiguration.prefetchOn = PrefetchOn.Connect;
       prefetchConfiguration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp;
@@ -231,6 +296,48 @@ describe('DefaultMessagingSession', () => {
           webSocket.send(SESSION_SUBSCRIBED_MSG);
         });
       });
+    });
+
+    it('can reconnect with failures on getMessagingSession', done => {
+      configuration.chimeClient = v2ChimeClient;
+      let didStartCount = 0;
+      let didStartConnecting = 0;
+      const savedClientBehavior = v2ChimeClient.getMessagingSessionEndpoint;
+      messagingSession.addObserver({
+        messagingSessionDidStartConnecting(reconnecting: boolean): void {
+          didStartConnecting++;
+          if (!reconnecting) {
+            webSocket.addEventListener('open', () => {
+              webSocket.close(1006);
+              v2ChimeClient.getMessagingSessionEndpoint = function () {
+                throw 'some error';
+              };
+              setTimeout(function () {
+                v2ChimeClient.getMessagingSessionEndpoint = savedClientBehavior;
+              }, 100);
+            });
+          } else {
+            webSocket.addEventListener('open', () => {
+              webSocket.send(SESSION_SUBSCRIBED_MSG);
+            });
+            webSocket.addEventListener('message', (_event: MessageEvent) => {
+              new TimeoutScheduler(10).start(() => {
+                messagingSession.stop();
+              });
+            });
+          }
+        },
+        messagingSessionDidStart(): void {
+          didStartCount++;
+        },
+        messagingSessionDidStop(_event: CloseEvent): void {
+          expect(didStartConnecting).to.be.eq(2);
+          expect(didStartCount).to.be.eq(1);
+          expect(getMessSessionCnt).to.be.eq(2);
+          done();
+        },
+      });
+      messagingSession.start();
     });
 
     it('Ignores messages before SESSION_ESTABLISH', done => {
@@ -369,6 +476,7 @@ describe('DefaultMessagingSession', () => {
         messagingSessionDidStop(_event: CloseEvent): void {
           expect(didStartConnecting).to.be.eq(2);
           expect(didStartCount).to.be.eq(1);
+          expect(getMessSessionCnt).to.be.eq(2);
           done();
         },
       });
