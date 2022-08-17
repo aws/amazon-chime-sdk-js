@@ -83,6 +83,7 @@ case $1 in
          r configs/integrationTest/audio_test.config.json
          r configs/integrationTest/app_quit_audio_test.config.json
          r configs/integrationTest/meeting_leave_audio_test.config.json
+         r configs/integrationTest/sending_audio_events_test.config.json
          ;;
       video)
          r configs/integrationTest/video_test.config.json

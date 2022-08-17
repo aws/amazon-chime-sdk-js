@@ -10,12 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add support in `MessagingSession` to allow websocket connection for messaging service to select sort by for Prefetch.
+- Added two new meeting events: `sendingAudioFailed` to indicate a failure in sending audio packets out and `sendingAudioRecovered` to indicate recovery after a `sendingAudioFailed` event.
+- Added a new `ConnectionHealthPolicy` named `SendingAudioFailureConnectionHealthPolicy` to evaluate and trigger the above events. Also, added `sendingAudioFailureSamplesToConsider` and `sendingAudioFailureInitialWaitTimeMs` to `ConnectionHealthPolicyConfiguration` fields for configuring the new health policy.
+- Added a new field `consecutiveStatsWithNoAudioPacketsSent` in `ConnectionHealthData` for evaluating the `SendingAudioFailureConnectionHealthPolicy`.
 
 ### Removed
 
 ### Changed
 
 - Update package.json to include Node 18.
+- Refactored `connectionHealthDidChange()` in `MonitorTask` by creating a new `applyHealthPolicy()` method to reduce redundancy in the health policy evaluation.
+- Modified `SignalingAndMetricsConnectionMonitor` to update `consecutiveStatsWithNoAudioPacketsSent`.
+- Reset `connectionHealthData` on every connect (as opposed to doing it only when `signalingClient` is not initialized). This allows us to honor the cool-down time in both `SendingAudioFailureConnectionHealthPolicy` and `UnusableAudioWarningConnectionHealthPolicy` in case when the connection is failing due to an error like "no ice candidates were gathered".
 
 ### Fixed
 

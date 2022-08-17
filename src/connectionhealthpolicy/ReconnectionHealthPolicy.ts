@@ -23,7 +23,7 @@ export default class ReconnectionHealthPolicy
     configuration: ConnectionHealthPolicyConfiguration,
     data: ConnectionHealthData
   ) {
-    super(configuration, data);
+    super(configuration, data, 'Reconnection Health');
     ReconnectionHealthPolicy.CONNECTION_UNHEALTHY_THRESHOLD =
       configuration.connectionUnhealthyThreshold;
     ReconnectionHealthPolicy.CONNECTION_WAIT_TIME_MS = configuration.connectionWaitTimeMs;

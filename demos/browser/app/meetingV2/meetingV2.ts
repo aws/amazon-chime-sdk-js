@@ -1640,6 +1640,8 @@ export class DemoMeetingApp
       case 'meetingReconnected':
       case 'receivingAudioDropped':
       case 'signalingDropped':
+      case 'sendingAudioFailed':
+      case 'sendingAudioRecovered':
       case 'attendeePresenceReceived': {
         // Exclude the "meetingHistory" attribute for successful -> published events.
         this.meetingEventPOSTLogger?.info(
@@ -2523,6 +2525,12 @@ export class DemoMeetingApp
     const additionalStereoTestDevices = ['L-500Hz R-1000Hz', 'Prerecorded Speech (Stereo)'];
     const additionalToggles = [];
 
+    if (!this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
+      // We don't add this in Firefox because there is no known mechanism, using MediaStream or WebAudio APIs,
+      // to *not* generate audio in Firefox. By default, everything generates silent audio packets in Firefox.
+      additionalDevices.push('No Audio');
+    }
+
     // This can't work unless Web Audio is enabled.
     if (this.enableWebAudio && this.supportsVoiceFocus) {
       additionalToggles.push({
@@ -2920,7 +2928,16 @@ export class DemoMeetingApp
       }
     }
 
+    if (value === 'No Audio') {
+      // An empty media stream destination without any source connected to it, so it doesn't generate any audio.
+      // This is currently only used for integration testing of 'sendingAudioFailed' and 'sendingAudioRecovered' events.
+      // Note: It's currently not possible to emulate 'No Audio' in Firefox, so we don't provide it
+      // as an option in the audio inputs list.
+      return DefaultDeviceController.getAudioContext().createMediaStreamDestination().stream;
+    }
+
     if (value === 'None' || value === '') {
+      // When the device is passed in as null, the SDK will synthesize an empty audio device that generates silence.
       return null;
     }
 
