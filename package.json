@@ -98,6 +98,7 @@
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^2.0.1",
+    "@aws-sdk/client-chime-sdk-messaging": "^3.0.0",
     "@aws-sdk/util-hex-encoding": "^3.47.0",
     "@types/ua-parser-js": "^0.7.35",
     "detect-browser": "^5.2.0",

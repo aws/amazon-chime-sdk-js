@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
+
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Logger from '../logger/Logger';
@@ -105,7 +107,36 @@ export default class DefaultMessagingSession implements MessagingSession {
   }
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
-    const signedUrl = await this.prepareWebSocketUrl();
+    let endpointUrl = this.configuration.endpointUrl;
+    // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
+    if (reconnecting || endpointUrl === undefined) {
+      try {
+        if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
+          endpointUrl = (await this.configuration.chimeClient.getMessagingSessionEndpoint())
+            .Endpoint.Url;
+        } else {
+          endpointUrl = (
+            await this.configuration.chimeClient.send(new GetMessagingSessionEndpointCommand({}))
+          ).Endpoint.Url;
+        }
+        this.logger.debug(`Messaging endpoint resolved to: ${endpointUrl}`);
+      } catch (e) {
+        // send artificial close code event so the
+        // re-connect logic of underlying websocket client is
+        // triggered in the close handler
+        this.logger.error(`Messaging Session failed to resolve endpoint: ${e}`);
+        const closeEvent = new CloseEvent('close', {
+          wasClean: false,
+          code: 4999,
+          reason: 'Failed to get messaging session endpoint URL',
+          bubbles: false,
+        });
+        this.closeEventHandler(closeEvent);
+        return;
+      }
+    }
+
+    const signedUrl = await this.prepareWebSocketUrl(endpointUrl);
     this.logger.info(`opening connection to ${signedUrl}`);
     if (!reconnecting) {
       this.reconnectController.reset();
@@ -124,7 +155,7 @@ export default class DefaultMessagingSession implements MessagingSession {
     this.setUpEventListeners();
   }
 
-  private async prepareWebSocketUrl(): Promise<string> {
+  private async prepareWebSocketUrl(endpointUrl: string): Promise<string> {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);
@@ -138,7 +169,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       'GET',
       'wss',
       'chime',
-      this.configuration.endpointUrl,
+      endpointUrl,
       '/connect',
       '',
       queryParams
@@ -191,16 +222,18 @@ export default class DefaultMessagingSession implements MessagingSession {
     }
   }
 
+  private retryConnection(): boolean {
+    return this.reconnectController.retryWithBackoff(async () => {
+      await this.startConnecting(true);
+    }, null);
+  }
+
   private closeEventHandler(event: CloseEvent): void {
     this.logger.info(`WebSocket close: ${event.code} ${event.reason}`);
-    this.webSocket.destroy();
-    if (
-      !this.isClosing &&
-      this.canReconnect(event.code) &&
-      this.reconnectController.retryWithBackoff(async () => {
-        this.startConnecting(true);
-      }, null)
-    ) {
+    if (event.code !== 4999) {
+      this.webSocket.destroy();
+    }
+    if (!this.isClosing && this.canReconnect(event.code) && this.retryConnection()) {
       return;
     }
     this.isClosing = false;
