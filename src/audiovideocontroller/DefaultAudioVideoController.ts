@@ -275,11 +275,11 @@ export default class DefaultAudioVideoController
   }
 
   private initSignalingClient(): void {
+    this.connectionHealthData.reset();
     if (this.meetingSessionContext.signalingClient) {
       return;
     }
 
-    this.connectionHealthData.reset();
     this.meetingSessionContext = new AudioVideoControllerState();
     this.meetingSessionContext.logger = this.logger;
     this.meetingSessionContext.eventController = this.eventController;

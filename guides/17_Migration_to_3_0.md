@@ -130,10 +130,10 @@ work for aws-sdk v3. Starting with Amazon Chime SDK for JavaScript V3, you no lo
 
 ```js
 // Before
-this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime, AWS);
+this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime, AWS);
 
 // After
-this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
+this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime);
 ```
 
 ### Update `messagingSession.start` to return `Promise<void>` instead of `void`

@@ -294,7 +294,7 @@
 					<h3>Messaging session</h3>
 				</a>
 				<p>Create a messaging session in your client application to receive messages from Amazon Chime SDK for Messaging.</p>
-				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ChimeSDKMessagingClient</span><span style="color: #000000">, </span><span style="color: #001080">GetMessagingSessionEndpointCommand</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@aws-sdk/client-chime-sdk-messaging&#039;</span><span style="color: #000000">;</span>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ChimeSDKMessagingClient</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@aws-sdk/client-chime-sdk-messaging&#039;</span><span style="color: #000000">;</span>
 
 <span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #001080">ConsoleLogger</span><span style="color: #000000">,</span>
@@ -307,11 +307,10 @@
 
 <span style="color: #008000">// You will need AWS credentials configured before calling AWS or Amazon Chime APIs.</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">chime</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ChimeSDKMessagingClient</span><span style="color: #000000">({ </span><span style="color: #001080">region:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;us-east-1&#039;</span><span style="color: #000000">});</span>
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">endpoint</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">GetMessagingSessionEndpointCommand</span><span style="color: #000000">());</span>
 
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">userArn</span><span style="color: #000000"> = </span><span style="color: #008000">/* The userArn */</span><span style="color: #000000">;</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">sessionId</span><span style="color: #000000"> = </span><span style="color: #008000">/* The sessionId */</span><span style="color: #000000">;</span>
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MessagingSessionConfiguration</span><span style="color: #000000">(</span><span style="color: #001080">userArn</span><span style="color: #000000">, </span><span style="color: #001080">sessionId</span><span style="color: #000000">, </span><span style="color: #001080">endpoint</span><span style="color: #000000">.</span><span style="color: #001080">Endpoint</span><span style="color: #000000">.</span><span style="color: #001080">Url</span><span style="color: #000000">, </span><span style="color: #001080">chime</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MessagingSessionConfiguration</span><span style="color: #000000">(</span><span style="color: #001080">userArn</span><span style="color: #000000">, </span><span style="color: #001080">sessionId</span><span style="color: #000000">, </span><span style="color: #0000FF">undefined</span><span style="color: #000000">, </span><span style="color: #001080">chime</span><span style="color: #000000">);</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">messagingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMessagingSession</span><span style="color: #000000">(</span><span style="color: #001080">configuration</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
 </code></pre>
 				<p>If you would like to enable prefetch feature when connecting to a messaging session, you can follow the code below.
@@ -1781,6 +1780,9 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/sendandreceivedatamessagestask.html" class="tsd-kind-icon">Send<wbr>And<wbr>Receive<wbr>Data<wbr>Messages<wbr>Task</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/sendingaudiofailureconnectionhealthpolicy.html" class="tsd-kind-icon">Sending<wbr>Audio<wbr>Failure<wbr>Connection<wbr>Health<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/serialgrouptask.html" class="tsd-kind-icon">Serial<wbr>Group<wbr>Task</a>
