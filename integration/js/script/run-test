@@ -156,11 +156,7 @@ case $1 in
          ;;
       content_share)
          r configs/browserCompatibilityTest/desktop/content_share_screen_capture_test.config.json
-         r configs/browserCompatibilityTest/desktop/meeting_leave_content_share_test.config.json
          r configs/browserCompatibilityTest/desktop/content_share_video_test.config.json
-         r configs/browserCompatibilityTest/desktop/content_share_only_allow_two_test.config.json
-         r configs/browserCompatibilityTest/desktop/content_share_join_later_test.config.json
-         r configs/browserCompatibilityTest/desktop/app_quit_content_share_test.config.json
          ;;
       data_message)
          r configs/browserCompatibilityTest/desktop/data_message_test.config.json
@@ -181,9 +177,8 @@ case $1 in
          r configs/browserCompatibilityTest/desktop/linux/video_test.config.json
          ;;
       linux_content_share)
-         r configs/browserCompatibilityTest/desktop/linux/content_share_join_later_test.config.json
-         r configs/browserCompatibilityTest/desktop/linux/content_share_only_allow_two_test.config.json
          r configs/browserCompatibilityTest/desktop/linux/content_share_screen_capture_test.config.json
+         r configs/browserCompatibilityTest/desktop/linux/content_share_video_test.config.json
          ;;
       linux_other)
          r configs/browserCompatibilityTest/desktop/linux/data_message_test.config.json
