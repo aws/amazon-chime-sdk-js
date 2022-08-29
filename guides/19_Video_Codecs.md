@@ -16,7 +16,7 @@ this.meetingSession.audioVideo.setVideoCodecSendPreferences([VideoCodecCapabilit
 This implies the following:
 * Ignoring other restrictions, the sending client will transmit video into the meeting using the H.264 video codec.
 * The sending client *will not* fallback to any other codec if another attendee joins without an H.264 decoder (which may occur on some browsers, see notes below). That receiving attendee will not receive this video.
-* If the sending client does not support encoding H.264, then it will fall back to any video codec it supports, that is also supported by the meeting. Currently that would be VP8 only.
+* If the sending client does not support encoding H.264, then it will fall back to any video codec that the browser supports (even though it wasn't set via `setVideoCodecSendPreferences`), that is also supported by the meeting (currently this meeting level configuration is not exposed). As meetings at this time support only H.264 CBP and VP8, that means the client would fall back to VP8.
 
 For more complex fallback behavior, consider the following example:
 ```
