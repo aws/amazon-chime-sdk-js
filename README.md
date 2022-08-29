@@ -223,6 +223,8 @@ const attendeeResponse = await chime.createAttendee({
 Now securely transfer the `meetingResponse` and `attendeeResponse` objects to your client application.
 These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.
 
+That said, if you need two or more people to join the same meeting, only the first user will call `createMeeting` and share the `meetingResponse` with the other users, so they can call their own `createAttendee` using the same common object. For meeting ids to seem more user-friendly or to give users the idea that they control such identification, you'll have to implement your own data structure to persist a map of "Chime meeting ids" to "domain ids" and vice-versa.
+
 The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic 'Choosing the nearest media Region' in the [Amazon Chime SDK Media Regions documentation](https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html).
 
 ### Messaging session
