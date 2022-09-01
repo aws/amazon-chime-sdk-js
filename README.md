@@ -36,6 +36,7 @@ The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) ca
 - [Amazon Chime SDK Overview](https://aws.amazon.com/chime/chime-sdk/)
 - [Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
 - [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers)
+- [Getting Started Guides](https://github.com/aws/amazon-chime-sdk-js/tree/main/guides)
 - [Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html)
 - [PSTN Audio Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html)
 - [Control Plane API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
@@ -113,7 +114,7 @@ The following developer guides cover the Amazon Chime SDK more broadly.
 
 - [Amazon Chime SDK Samples](https://github.com/aws-samples/amazon-chime-sdk) — Amazon Chime SDK Samples repository
 - [Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/browser) — A browser
- meeting application with a local server
+  meeting application with a local server
 - [Serverless Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) — A self-contained serverless meeting application
 - [Single JS](https://github.com/aws-samples/amazon-chime-sdk/tree/main/utils/singlejs) — A script to bundle the SDK into a single `.js` file
 - [Recording Demo](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) — Recording the meeting's audio, video and screen share in high definition
@@ -130,7 +131,7 @@ The following developer guides cover the Amazon Chime SDK more broadly.
 - [PSTN Dial In](https://github.com/aws-samples/chime-sipmediaapplication-samples) — Add PSTN dial-in capabilities to your Amazon Chime SDK Meeting using SIP media application
 - [Outbound Call Notifications](https://github.com/aws-samples/amazon-chime-sma-outbound-call-notifications) — Send meeting reminders with SIP media application and get real time results back
 - [Update In-Progress Call](https://github.com/aws-samples/amazon-chime-sma-update-call) - Update an in-progress SIP media application call via API call
-  
+
 ## Troubleshooting and Support
 
 Review the resources given in the README and use our [client documentation](https://aws.github.io/amazon-chime-sdk-js/) for guidance on how to develop on the Chime SDK for JavaScript. Additionally, search our [issues database](https://github.com/aws/amazon-chime-sdk-js/issues) and [FAQs](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html) to see if your issue is already addressed. If not please cut us an [issue](https://github.com/aws/amazon-chime-sdk-js/issues/new/choose) using the provided templates.
@@ -209,15 +210,19 @@ const { v4: uuid } = require('uuid');
 const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com');
 
-const meetingResponse = await chime.createMeeting({
-  ClientRequestToken: uuid(),
-  MediaRegion: 'us-west-2' // Specify the region in which to create the meeting.
-}).promise();
+const meetingResponse = await chime
+  .createMeeting({
+    ClientRequestToken: uuid(),
+    MediaRegion: 'us-west-2', // Specify the region in which to create the meeting.
+  })
+  .promise();
 
-const attendeeResponse = await chime.createAttendee({
-  MeetingId: meetingResponse.Meeting.MeetingId,
-  ExternalUserId: uuid() // Link the attendee to an identity managed by your application.
-}).promise();
+const attendeeResponse = await chime
+  .createAttendee({
+    MeetingId: meetingResponse.Meeting.MeetingId,
+    ExternalUserId: uuid(), // Link the attendee to an identity managed by your application.
+  })
+  .promise();
 ```
 
 Now securely transfer the `meetingResponse` and `attendeeResponse` objects to your client application.
@@ -249,14 +254,15 @@ const sessionId = /* The sessionId */;
 const configuration = new MessagingSessionConfiguration(userArn, sessionId, undefined, chime);
 const messagingSession = new DefaultMessagingSession(configuration, logger);
 ```
+
 If you would like to enable prefetch feature when connecting to a messaging session, you can follow the code below.
-Prefetch feature will send out CHANNEL_DETAILS event upon websocket connection, which includes information about channel, 
-channel messages, channel memberships etc.  Prefetch sort order can be adjusted with `prefetchSortBy`, setting it to either
+Prefetch feature will send out CHANNEL_DETAILS event upon websocket connection, which includes information about channel,
+channel messages, channel memberships etc. Prefetch sort order can be adjusted with `prefetchSortBy`, setting it to either
 `unread` (default value if not set) or `lastMessageTimestamp`
 
 ```js
 configuration.prefetchOn = Prefetch.Connect;
-configuration.prefetchSortBy = PrefetchSortBy.Unread
+configuration.prefetchSortBy = PrefetchSortBy.Unread;
 ```
 
 ## Building and testing
@@ -315,7 +321,7 @@ Please do **not** create a public GitHub issue.
 
 **Use case 1.** List audio input, audio output, and video input devices. The browser will ask for microphone and camera permissions.
 
-With the `forceUpdate` parameter set to true, cached device information is discarded and updated after the device label trigger is called. In some cases, builders need to delay the triggering of permission dialogs, e.g., when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels; specifying `forceUpdate`  allows this to occur.
+With the `forceUpdate` parameter set to true, cached device information is discarded and updated after the device label trigger is called. In some cases, builders need to delay the triggering of permission dialogs, e.g., when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels; specifying `forceUpdate` allows this to occur.
 
 ```js
 const audioInputDevices = await meetingSession.audioVideo.listAudioInputDevices();
@@ -350,7 +356,7 @@ const videoInputDeviceInfo = /* An array item from meetingSession.audioVideo.lis
 await meetingSession.audioVideo.startVideoInput(videoInputDeviceInfo.deviceId);
 
 // Stop video input. If the previously chosen camera has an LED light on,
-// it will turn off indicating the camera is no longer capturing. 
+// it will turn off indicating the camera is no longer capturing.
 await meetingSession.audioVideo.stopVideoInput();
 ```
 
@@ -384,7 +390,7 @@ const observer = {
 };
 
 meetingSession.audioVideo.addDeviceChangeObserver(observer);
-````
+```
 
 ### Starting a session
 
@@ -410,8 +416,8 @@ meetingSession.audioVideo.start();
 **Use case 6.** Add an observer to receive session lifecycle events: connecting, start, and stop.
 
 > Note: You can remove an observer by calling `meetingSession.audioVideo.removeObserver(observer)`.
-In a component-based architecture (such as React, Vue, and Angular), you may need to add an observer
-when a component is mounted, and remove it when unmounted.
+> In a component-based architecture (such as React, Vue, and Angular), you may need to add an observer
+> when a component is mounted, and remove it when unmounted.
 
 ```js
 const observer = {
@@ -427,7 +433,7 @@ const observer = {
       // e.g. the WiFi connection is dropped.
       console.log('Attempting to reconnect');
     }
-  }
+  },
 };
 
 meetingSession.audioVideo.addObserver(observer);
@@ -436,7 +442,7 @@ meetingSession.audioVideo.addObserver(observer);
 ### Audio
 
 > Note: So far, you've added observers to receive device and session lifecycle events.
-In the following use cases, you'll use the real-time API methods to send and receive volume indicators and control mute state.
+> In the following use cases, you'll use the real-time API methods to send and receive volume indicators and control mute state.
 
 **Use case 7.** Mute and unmute an audio input.
 
@@ -474,7 +480,7 @@ meetingSession.audioVideo.realtimeSetCanUnmuteLocalAudio(false);
 meetingSession.audioVideo.realtimeMuteLocalAudio();
 
 const unmuted = meetingSession.audioVideo.realtimeUnmuteLocalAudio();
-console.log(`${unmuted} is false. You cannot unmute yourself`)
+console.log(`${unmuted} is false. You cannot unmute yourself`);
 ```
 
 **Use case 10.** Subscribe to volume changes of a specific attendee. You can use this to build a real-time volume indicator UI.
@@ -500,7 +506,7 @@ meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
     console.log(`${attendeeId}'s volume data: `, {
       volume, // a fraction between 0 and 1
       muted, // a boolean
-      signalStrength // 0 (no signal), 0.5 (weak), 1 (strong)
+      signalStrength, // 0 (no signal), 0.5 (weak), 1 (strong)
     });
   }
 );
@@ -543,7 +549,7 @@ meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
 
     // signal strength changed
     console.log(`${attendeeId}'s signal strength changed: `, {
-      signalStrength // 0 (no signal), 0.5 (weak), 1 (strong)
+      signalStrength, // 0 (no signal), 0.5 (weak), 1 (strong)
     });
   }
 );
@@ -564,12 +570,12 @@ meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
   new DefaultActiveSpeakerPolicy(),
   activeSpeakerCallback
 );
-````
+```
 
 ### Video
 
 > Note: In Chime SDK terms, a video tile is an object containing an attendee ID,
-a video stream, etc. To view a video in your application, you must bind a tile to a `<video>` element.
+> a video stream, etc. To view a video in your application, you must bind a tile to a `<video>` element.
 >
 > - Make sure you bind a tile to the same video element until the tile is removed.
 > - A local video tile can be identified using `localTile` property.
@@ -637,7 +643,7 @@ meetingSession.audioVideo.addObserver(observer);
 meetingSession.audioVideo.stopLocalVideoTile();
 
 // Stop video input. If the previously chosen camera has an LED light on,
-// it will turn off indicating the camera is no longer capturing. 
+// it will turn off indicating the camera is no longer capturing.
 await meetingSession.audioVideo.stopVideoInput();
 
 // Optional: You can remove the local tile from the session.
@@ -685,7 +691,9 @@ and that an empty cell means it's taken.
   ║ 20 ║ 21 ║ 22 ║ 23 ║ 24 ║                 ║ 20 ║ 21 ║ 22 ║ 23 ║ 24 ║
   ╚════╩════╩════╩════╩════╝                 ╚════╩════╩════╩════╩════╝
  */
-const videoElements = [/* an array of 25 HTMLVideoElement objects in your application */];
+const videoElements = [
+  /* an array of 25 HTMLVideoElement objects in your application */
+];
 
 // index-tileId pairs
 const indexMap = {};
@@ -731,7 +739,7 @@ const observer = {
   },
   videoTileWasRemoved: tileId => {
     releaseVideoElement(tileId);
-  }
+  },
 };
 
 meetingSession.audioVideo.addObserver(observer);
@@ -744,18 +752,21 @@ const observer = {
   remoteVideoSourcesDidChange: videoSources => {
     videoSources.forEach(videoSource => {
       const { attendee } = videoSource;
-      console.log(`An attendee (${attendee.attendeeId} ${attendee.externalUserId}) is sending video`);
+      console.log(
+        `An attendee (${attendee.attendeeId} ${attendee.externalUserId}) is sending video`
+      );
     });
-  }
+  },
 };
 
 meetingSession.audioVideo.addObserver(observer);
 ```
 
 You can also call below method to know all the remote video sources:
+
 > Note: `getRemoteVideoSources` method is different from `getAllRemoteVideoTiles`,
-`getRemoteVideoSources` returns all the remote video sources that are available to be viewed,
-while `getAllRemoteVideoTiles` returns the ones that are actually being seen.
+> `getRemoteVideoSources` returns all the remote video sources that are available to be viewed,
+> while `getAllRemoteVideoTiles` returns the ones that are actually being seen.
 
 ```js
 const videoSources = meetingSession.audioVideo.getRemoteVideoSources();
@@ -768,10 +779,10 @@ videoSources.forEach(videoSource => {
 ### Screen and content share
 
 > Note: When you or other attendees share content (a screen capture, a video file, or any other MediaStream object),
-the content attendee (attendee-id#content) joins the session and shares content as if a regular attendee shares a video.
+> the content attendee (attendee-id#content) joins the session and shares content as if a regular attendee shares a video.
 >
 > For example, your attendee ID is "my-id". When you call `meetingSession.audioVideo.startContentShare`,
-the content attendee "my-id#content" will join the session and share your content.
+> the content attendee "my-id#content" will join the session and share your content.
 
 **Use case 18.** Start sharing your screen.
 
@@ -804,7 +815,7 @@ const observer = {
     // This method will be invoked if two attendees are already sharing content
     // when you call startContentShareFromScreenCapture or startContentShare.
     console.log('Screen share stopped');
-  }
+  },
 };
 
 meetingSession.audioVideo.addContentShareObserver(observer);
@@ -815,7 +826,7 @@ const contentShareStream = await meetingSession.audioVideo.startContentShareFrom
 ```
 
 If you want to display the content share stream for the sharer, you can bind the returned content share stream to a
- video element using `connectVideoStreamToVideoElement` from DefaultVideoTile.
+video element using `connectVideoStreamToVideoElement` from DefaultVideoTile.
 
 ```js
 DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, false);
@@ -854,7 +865,7 @@ inputElement.addEventListener('change', async () => {
 const observer = {
   contentShareDidStop: () => {
     console.log('Content share stopped');
-  }
+  },
 };
 
 meetingSession.audioVideo.addContentShareObserver(observer);
@@ -867,7 +878,9 @@ await meetingSession.audioVideo.stopContentShare();
 ```js
 import { DefaultModality } from 'amazon-chime-sdk-js';
 
-const videoElementStack = [/* an array of 2 HTMLVideoElement objects in your application */];
+const videoElementStack = [
+  /* an array of 2 HTMLVideoElement objects in your application */
+];
 
 // tileId-videoElement map
 const tileMap = {};
@@ -906,7 +919,7 @@ const observer = {
       videoElementStack.push(videoElement);
       delete tileMap[tileId];
     }
-  }
+  },
 };
 
 meetingSession.audioVideo.addObserver(observer);
@@ -938,43 +951,41 @@ import { DefaultModality } from 'amazon-chime-sdk-js';
 
 const roster = {};
 
-meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
-  (presentAttendeeId, present) => {
-    if (!present) {
-      delete roster[presentAttendeeId];
-      return;
-    }
-
-    meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
-      presentAttendeeId,
-      (attendeeId, volume, muted, signalStrength) => {
-        const baseAttendeeId = new DefaultModality(attendeeId).base();
-        if (baseAttendeeId !== attendeeId) {
-          // Optional: Do not include the content attendee (attendee-id#content) in the roster.
-          // See the "Screen and content share" section for details.
-          return;
-        }
-
-        if (roster.hasOwnProperty(attendeeId)) {
-          // A null value for any field means that it has not changed.
-          roster[attendeeId].volume = volume; // a fraction between 0 and 1
-          roster[attendeeId].muted = muted; // A boolean
-          roster[attendeeId].signalStrength = signalStrength; // 0 (no signal), 0.5 (weak), 1 (strong)
-        } else {
-          // Add an attendee.
-          // Optional: You can fetch more data, such as attendee name,
-          // from your server application and set them here.
-          roster[attendeeId] = {
-            attendeeId,
-            volume,
-            muted,
-            signalStrength
-          };
-        }
-      }
-    );
+meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence((presentAttendeeId, present) => {
+  if (!present) {
+    delete roster[presentAttendeeId];
+    return;
   }
-);
+
+  meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
+    presentAttendeeId,
+    (attendeeId, volume, muted, signalStrength) => {
+      const baseAttendeeId = new DefaultModality(attendeeId).base();
+      if (baseAttendeeId !== attendeeId) {
+        // Optional: Do not include the content attendee (attendee-id#content) in the roster.
+        // See the "Screen and content share" section for details.
+        return;
+      }
+
+      if (roster.hasOwnProperty(attendeeId)) {
+        // A null value for any field means that it has not changed.
+        roster[attendeeId].volume = volume; // a fraction between 0 and 1
+        roster[attendeeId].muted = muted; // A boolean
+        roster[attendeeId].signalStrength = signalStrength; // 0 (no signal), 0.5 (weak), 1 (strong)
+      } else {
+        // Add an attendee.
+        // Optional: You can fetch more data, such as attendee name,
+        // from your server application and set them here.
+        roster[attendeeId] = {
+          attendeeId,
+          volume,
+          muted,
+          signalStrength,
+        };
+      }
+    }
+  );
+});
 ```
 
 ### Monitoring and alerts
@@ -983,7 +994,7 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
 
 ```js
 const observer = {
-  metricsDidReceive: (clientMetricReport) => {
+  metricsDidReceive: clientMetricReport => {
     const metricReport = clientMetricReport.getObservableMetrics();
 
     const {
@@ -994,8 +1005,16 @@ const observer = {
       audioSpeakerDelayMs,
     } = metricReport;
 
-    console.log(`Sending video bitrate in kilobits per second: ${videoUpstreamBitrate / 1000} and sending packets per second: ${videoPacketSentPerSecond}`);
-    console.log(`Sending bandwidth is ${availableOutgoingBitrate / 1000}, and receiving bandwidth is ${availableIncomingBitrate / 1000}`);
+    console.log(
+      `Sending video bitrate in kilobits per second: ${
+        videoUpstreamBitrate / 1000
+      } and sending packets per second: ${videoPacketSentPerSecond}`
+    );
+    console.log(
+      `Sending bandwidth is ${availableOutgoingBitrate / 1000}, and receiving bandwidth is ${
+        availableIncomingBitrate / 1000
+      }`
+    );
     console.log(`Audio speaker delay is ${audioSpeakerDelayMs}`);
   },
 };
@@ -1026,7 +1045,7 @@ const observer = {
     } else {
       console.log('You cannot share your video');
     }
-  }
+  },
 };
 
 meetingSession.audioVideo.addObserver(observer);
@@ -1051,7 +1070,7 @@ const observer = {
     } else {
       console.log('Stopped with a session status code: ', sessionStatusCode);
     }
-  }
+  },
 };
 
 meetingSession.audioVideo.addObserver(observer);
@@ -1081,7 +1100,7 @@ const observer = {
     } else {
       console.log('Stopped with a session status code: ', sessionStatusCode);
     }
-  }
+  },
 };
 
 meetingSession.audioVideo.addObserver(observer);
@@ -1148,7 +1167,7 @@ console.log(`Feedback result: ${CheckContentShareConnectivityFeedback[contentSha
 ```js
 import {
   CheckNetworkUDPConnectivityFeedback,
-  CheckNetworkTCPConnectivityFeedback
+  CheckNetworkTCPConnectivityFeedback,
 } from 'amazon-chime-sdk-js';
 
 // Tests for UDP network connectivity
@@ -1200,9 +1219,9 @@ meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStere
 start a messaging session.
 
 > Note: You can remove an observer by calling `messagingSession.removeObserver(observer)`.
-In a component-based architecture (such as React, Vue, and Angular), you may need to add an observer
-when a component is mounted, and remove it when unmounted.
->
+> In a component-based architecture (such as React, Vue, and Angular), you may need to add an observer
+> when a component is mounted, and remove it when unmounted.
+
 ```js
 const observer = {
   messagingSessionDidStart: () => {
@@ -1220,7 +1239,7 @@ const observer = {
   },
   messagingSessionDidReceiveMessage: message => {
     console.log(`Receive message type ${message.type}`);
-  }
+  },
 };
 
 messagingSession.addObserver(observer);
@@ -1229,7 +1248,7 @@ await messagingSession.start();
 
 ### Providing application metadata
 
-Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience. 
+Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience.
 
 > ⚠️ Do not pass any Personal Identifiable Information (PII).
 
@@ -1264,7 +1283,6 @@ appName: string;
 // https://semver.org/
 appVersion: string;
 ```
-
 
 ## Notice
 
