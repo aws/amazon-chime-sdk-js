@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Use a default "playback" `latencyHint` when creating the `AudioContext` on Windows. Also adds a `setDefaultLatencyHint` API to `DefaultDeviceController` to allow for overriding.
+
 ## [3.7.0] - 2022-07-05
 
 ### Added
