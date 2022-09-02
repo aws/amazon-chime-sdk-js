@@ -83,6 +83,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return this.isFirefox();
   }
 
+  requiresPlaybackLatencyHintForAudioContext(): boolean {
+    return navigator.userAgent.indexOf('Windows') !== -1;
+  }
+
   supportsCanvasCapturedStreamPlayback(): boolean {
     return !this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox();
   }

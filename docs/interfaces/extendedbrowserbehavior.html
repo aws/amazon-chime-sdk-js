@@ -117,6 +117,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="extendedbrowserbehavior.html#requiresgroupidmediastreamconstraints" class="tsd-kind-icon">requires<wbr>Group<wbr>IdMedia<wbr>Stream<wbr>Constraints</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="extendedbrowserbehavior.html#requiresicecandidategatheringtimeoutworkaround" class="tsd-kind-icon">requires<wbr>Ice<wbr>Candidate<wbr>Gathering<wbr>Timeout<wbr>Workaround</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="extendedbrowserbehavior.html#requiresnoexactmediastreamconstraints" class="tsd-kind-icon">requires<wbr>NoExact<wbr>Media<wbr>Stream<wbr>Constraints</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="extendedbrowserbehavior.html#requiresplaybacklatencyhintforaudiocontext" class="tsd-kind-icon">requires<wbr>Playback<wbr>Latency<wbr>Hint<wbr>For<wbr>Audio<wbr>Context</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="extendedbrowserbehavior.html#requiresresolutionalignment" class="tsd-kind-icon">requires<wbr>Resolution<wbr>Alignment</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="extendedbrowserbehavior.html#supportdownlinkbandwidthestimation" class="tsd-kind-icon">support<wbr>Downlink<wbr>Bandwidth<wbr>Estimation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="extendedbrowserbehavior.html#supportstring" class="tsd-kind-icon">support<wbr>String</a></li>
@@ -241,7 +242,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#issupported">isSupported</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L53">src/browserbehavior/BrowserBehavior.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L58">src/browserbehavior/BrowserBehavior.ts:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -310,7 +311,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#requiresbundlepolicy">requiresBundlePolicy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L38">src/browserbehavior/BrowserBehavior.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L43">src/browserbehavior/BrowserBehavior.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -333,7 +334,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#requirescheckforsdpconnectionattributes">requiresCheckForSdpConnectionAttributes</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L43">src/browserbehavior/BrowserBehavior.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L48">src/browserbehavior/BrowserBehavior.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -390,7 +391,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#requiresicecandidategatheringtimeoutworkaround">requiresIceCandidateGatheringTimeoutWorkaround</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L33">src/browserbehavior/BrowserBehavior.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L38">src/browserbehavior/BrowserBehavior.ts:38</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -413,12 +414,35 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#requiresnoexactmediastreamconstraints">requiresNoExactMediaStreamConstraints</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L48">src/browserbehavior/BrowserBehavior.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L53">src/browserbehavior/BrowserBehavior.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Returns whether the keyword &quot;exact&quot; should be omitted in a MediaStreamConstraints object</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a name="requiresplaybacklatencyhintforaudiocontext" class="tsd-anchor"></a>
+					<h3>requires<wbr>Playback<wbr>Latency<wbr>Hint<wbr>For<wbr>Audio<wbr>Context</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">requires<wbr>Playback<wbr>Latency<wbr>Hint<wbr>For<wbr>Audio<wbr>Context<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#requiresplaybacklatencyhintforaudiocontext">requiresPlaybackLatencyHintForAudioContext</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L33">src/browserbehavior/BrowserBehavior.ts:33</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether the browser requires the &quot;playback&quot; latency hint for Web Audio</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -479,7 +503,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#supportstring">supportString</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L58">src/browserbehavior/BrowserBehavior.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L63">src/browserbehavior/BrowserBehavior.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -502,7 +526,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#supportedvideocodecs">supportedVideoCodecs</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L63">src/browserbehavior/BrowserBehavior.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L68">src/browserbehavior/BrowserBehavior.ts:68</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -542,7 +566,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#supportscanvascapturedstreamplayback">supportsCanvasCapturedStreamPlayback</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L73">src/browserbehavior/BrowserBehavior.ts:73</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L78">src/browserbehavior/BrowserBehavior.ts:78</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -565,7 +589,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#supportssetsinkid">supportsSetSinkId</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L68">src/browserbehavior/BrowserBehavior.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L73">src/browserbehavior/BrowserBehavior.ts:73</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -675,6 +699,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="extendedbrowserbehavior.html#requiresnoexactmediastreamconstraints" class="tsd-kind-icon">requires<wbr>NoExact<wbr>Media<wbr>Stream<wbr>Constraints</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+								<a href="extendedbrowserbehavior.html#requiresplaybacklatencyhintforaudiocontext" class="tsd-kind-icon">requires<wbr>Playback<wbr>Latency<wbr>Hint<wbr>For<wbr>Audio<wbr>Context</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="extendedbrowserbehavior.html#requiresresolutionalignment" class="tsd-kind-icon">requires<wbr>Resolution<wbr>Alignment</a>
