@@ -7,6 +7,15 @@
 The goal of this document is to help you work through the various phases of a builder's journey using the Amazon Chime SDK. These follow the Amazon Chime SDK Builder's Journey path:
 
 ![](RackMultipart20220816-1-gyffxg_html_e7f73c9f1864449d.png)
+| Phase | Action  | Gate  |
+|:----------|:----------|:----------|
+| Awareness   | Learn about Audio / Video offerings and what's possible |     |
+| Discovery   | Considering options against business outcomes, defining requirements, comparing providers| POC Readiness Review |
+| Tech POC   | POC – Validating that key features and functionality will work for a given application | POC Results Review    |
+| Business Decision   | After reviewing the POC results, decides whether to move forward  | Application Readiness Review    |
+| Pilot  | Build and deploy a MVP for limited users including features for Monitoring, Notification and Troubleshooting  | Production Readiness Review |
+| Production   | Ramp up availability to all users in one Group (e.g. Geo, Line of Business, etc.)  | Deployment  |
+| Expansion    | Add other Group users, add additional functionality   |   |
 
 ###
 
