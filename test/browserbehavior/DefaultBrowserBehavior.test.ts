@@ -297,4 +297,16 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().isSimulcastSupported()).to.be.false;
     });
   });
+
+  describe('latency hint', () => {
+    it('Detects browsers not requiring "playback" latency hint', () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresPlaybackLatencyHintForAudioContext()).to.be.false;
+    });
+
+    it('Detects browsers requiring "playback" latency hint', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresPlaybackLatencyHintForAudioContext()).to.be.true;
+    });
+  });
 });

@@ -28,6 +28,11 @@ export default interface BrowserBehavior {
   hasFirefoxWebRTC(): boolean;
 
   /**
+   * Returns whether the browser requires the "playback" latency hint for Web Audio
+   */
+  requiresPlaybackLatencyHintForAudioContext(): boolean;
+
+  /**
    * Returns whether the browser requires an ICE connection gathering timeout workaround
    */
   requiresIceCandidateGatheringTimeoutWorkaround(): boolean;

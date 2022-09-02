@@ -47,6 +47,16 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('DefaultDeviceController', () => {
+  const CHROME_MAC_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
+  const CHROMIUM_EDGE_WINDOWS_USER_AGENT =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3729.48 Safari/537.36 Edg/79.1.96.24';
+
+  const setUserAgent = (userAgent: string): void => {
+    // @ts-ignore
+    navigator.userAgent = userAgent;
+  };
+
   const assert: Chai.AssertStatic = chai.assert;
   const expect: Chai.ExpectStatic = chai.expect;
   const logger = new NoOpLogger();
@@ -339,8 +349,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('adjusts width and height if required', async () => {
-      // @ts-ignore
-      navigator.userAgent = 'android pixel 3';
+      setUserAgent('android pixel 3');
       deviceController = new DefaultDeviceController(logger);
 
       const width = 540;
@@ -2455,6 +2464,52 @@ describe('DefaultDeviceController', () => {
       DefaultDeviceController.closeAudioContext();
       const audioContext2 = DefaultDeviceController.getAudioContext();
       expect(audioContext).to.not.equal(audioContext2);
+    });
+
+    it('uses "playback" latency hint on Windows platform', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      let usedContextOptions: AudioContextOptions;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GlobalAny = global as any;
+      GlobalAny['window'].AudioContext = class MockAudioContext {
+        constructor(contextOptions: AudioContextOptions = {}) {
+          usedContextOptions = contextOptions;
+        }
+      };
+
+      DefaultDeviceController.getAudioContext();
+      expect(usedContextOptions.latencyHint).to.equal('playback');
+    });
+
+    it('uses default latency hint on non-Windows platform', () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      let usedContextOptions: AudioContextOptions;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GlobalAny = global as any;
+      GlobalAny['window'].AudioContext = class MockAudioContext {
+        constructor(contextOptions: AudioContextOptions = {}) {
+          usedContextOptions = contextOptions;
+        }
+      };
+
+      DefaultDeviceController.getAudioContext();
+      expect(usedContextOptions.latencyHint).to.be.undefined;
+    });
+
+    it('uses the specified latency hint override', () => {
+      let usedContextOptions: AudioContextOptions;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GlobalAny = global as any;
+      GlobalAny['window'].AudioContext = class MockAudioContext {
+        constructor(contextOptions: AudioContextOptions = {}) {
+          usedContextOptions = contextOptions;
+        }
+      };
+
+      const latencyHint: AudioContextLatencyCategory = 'balanced';
+      DefaultDeviceController.setDefaultLatencyHint(latencyHint);
+      DefaultDeviceController.getAudioContext();
+      expect(usedContextOptions.latencyHint).to.equal(latencyHint);
     });
   });
 
