@@ -92,6 +92,7 @@
 					<li><a href="https://aws.amazon.com/chime/chime-sdk/">Amazon Chime SDK Overview</a></li>
 					<li><a href="https://aws.amazon.com/chime/pricing/#Chime_SDK_">Pricing</a></li>
 					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">Supported Browsers</a></li>
+					<li><a href="guides/20_Builders_Journey.md">Getting Started Guides</a></li>
 					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html">Developer Guide</a></li>
 					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html">PSTN Audio Developer Guide</a></li>
 					<li><a href="https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Control Plane API Reference</a></li>
@@ -277,15 +278,19 @@
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">chime</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #0070C1">AWS</span><span style="color: #000000">.</span><span style="color: #795E26">Chime</span><span style="color: #000000">({ </span><span style="color: #001080">region:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;us-east-1&#039;</span><span style="color: #000000"> });</span>
 <span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #001080">endpoint</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #0070C1">AWS</span><span style="color: #000000">.</span><span style="color: #795E26">Endpoint</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;https://service.chime.aws.amazon.com&#039;</span><span style="color: #000000">);</span>
 
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingResponse</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #795E26">createMeeting</span><span style="color: #000000">({</span>
-<span style="color: #000000">  </span><span style="color: #001080">ClientRequestToken:</span><span style="color: #000000"> </span><span style="color: #795E26">uuid</span><span style="color: #000000">(),</span>
-<span style="color: #000000">  </span><span style="color: #001080">MediaRegion:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;us-west-2&#039;</span><span style="color: #000000"> </span><span style="color: #008000">// Specify the region in which to create the meeting.</span>
-<span style="color: #000000">}).</span><span style="color: #795E26">promise</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingResponse</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chime</span>
+<span style="color: #000000">  .</span><span style="color: #795E26">createMeeting</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">ClientRequestToken:</span><span style="color: #000000"> </span><span style="color: #795E26">uuid</span><span style="color: #000000">(),</span>
+<span style="color: #000000">    </span><span style="color: #001080">MediaRegion:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;us-west-2&#039;</span><span style="color: #000000">, </span><span style="color: #008000">// Specify the region in which to create the meeting.</span>
+<span style="color: #000000">  })</span>
+<span style="color: #000000">  .</span><span style="color: #795E26">promise</span><span style="color: #000000">();</span>
 
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeResponse</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #795E26">createAttendee</span><span style="color: #000000">({</span>
-<span style="color: #000000">  </span><span style="color: #001080">MeetingId:</span><span style="color: #000000"> </span><span style="color: #001080">meetingResponse</span><span style="color: #000000">.</span><span style="color: #001080">Meeting</span><span style="color: #000000">.</span><span style="color: #001080">MeetingId</span><span style="color: #000000">,</span>
-<span style="color: #000000">  </span><span style="color: #001080">ExternalUserId:</span><span style="color: #000000"> </span><span style="color: #795E26">uuid</span><span style="color: #000000">() </span><span style="color: #008000">// Link the attendee to an identity managed by your application.</span>
-<span style="color: #000000">}).</span><span style="color: #795E26">promise</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">attendeeResponse</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chime</span>
+<span style="color: #000000">  .</span><span style="color: #795E26">createAttendee</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">MeetingId:</span><span style="color: #000000"> </span><span style="color: #001080">meetingResponse</span><span style="color: #000000">.</span><span style="color: #001080">Meeting</span><span style="color: #000000">.</span><span style="color: #001080">MeetingId</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">ExternalUserId:</span><span style="color: #000000"> </span><span style="color: #795E26">uuid</span><span style="color: #000000">(), </span><span style="color: #008000">// Link the attendee to an identity managed by your application.</span>
+<span style="color: #000000">  })</span>
+<span style="color: #000000">  .</span><span style="color: #795E26">promise</span><span style="color: #000000">();</span>
 </code></pre>
 				<p>Now securely transfer the <code>meetingResponse</code> and <code>attendeeResponse</code> objects to your client application.
 				These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.</p>
@@ -315,10 +320,10 @@
 </code></pre>
 				<p>If you would like to enable prefetch feature when connecting to a messaging session, you can follow the code below.
 					Prefetch feature will send out CHANNEL_DETAILS event upon websocket connection, which includes information about channel,
-					channel messages, channel memberships etc.  Prefetch sort order can be adjusted with <code>prefetchSortBy</code>, setting it to either
+					channel messages, channel memberships etc. Prefetch sort order can be adjusted with <code>prefetchSortBy</code>, setting it to either
 				<code>unread</code> (default value if not set) or <code>lastMessageTimestamp</code></p>
 				<pre><code class="language-js"><span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">prefetchOn</span><span style="color: #000000"> = </span><span style="color: #001080">Prefetch</span><span style="color: #000000">.</span><span style="color: #001080">Connect</span><span style="color: #000000">;</span>
-<span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">prefetchSortBy</span><span style="color: #000000"> = </span><span style="color: #001080">PrefetchSortBy</span><span style="color: #000000">.</span><span style="color: #001080">Unread</span>
+<span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">prefetchSortBy</span><span style="color: #000000"> = </span><span style="color: #001080">PrefetchSortBy</span><span style="color: #000000">.</span><span style="color: #001080">Unread</span><span style="color: #000000">;</span>
 </code></pre>
 				<a href="#building-and-testing" id="building-and-testing" style="color: inherit; text-decoration: none;">
 					<h2>Building and testing</h2>
@@ -370,7 +375,7 @@
 					<p>Note: Before starting a session, you need to choose your microphone, speaker, and camera.</p>
 				</blockquote>
 				<p><strong>Use case 1.</strong> List audio input, audio output, and video input devices. The browser will ask for microphone and camera permissions.</p>
-				<p>With the <code>forceUpdate</code> parameter set to true, cached device information is discarded and updated after the device label trigger is called. In some cases, builders need to delay the triggering of permission dialogs, e.g., when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels; specifying <code>forceUpdate</code>  allows this to occur.</p>
+				<p>With the <code>forceUpdate</code> parameter set to true, cached device information is discarded and updated after the device label trigger is called. In some cases, builders need to delay the triggering of permission dialogs, e.g., when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels; specifying <code>forceUpdate</code> allows this to occur.</p>
 				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">audioInputDevices</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">listAudioInputDevices</span><span style="color: #000000">();</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">audioOutputDevices</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">listAudioOutputDevices</span><span style="color: #000000">();</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoInputDevices</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">listVideoInputDevices</span><span style="color: #000000">();</span>
@@ -396,7 +401,7 @@
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">videoInputDeviceInfo</span><span style="color: #000000">.</span><span style="color: #001080">deviceId</span><span style="color: #000000">);</span>
 
 <span style="color: #008000">// Stop video input. If the previously chosen camera has an LED light on,</span>
-<span style="color: #008000">// it will turn off indicating the camera is no longer capturing. </span>
+<span style="color: #008000">// it will turn off indicating the camera is no longer capturing.</span>
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">stopVideoInput</span><span style="color: #000000">();</span>
 </code></pre>
 				<p><strong>Use case 4.</strong> Add a device change observer to receive the updated device list.
@@ -465,7 +470,7 @@
 <span style="color: #000000">      </span><span style="color: #008000">// e.g. the WiFi connection is dropped.</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Attempting to reconnect&#039;</span><span style="color: #000000">);</span>
 <span style="color: #000000">    }</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -505,7 +510,7 @@
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">realtimeMuteLocalAudio</span><span style="color: #000000">();</span>
 
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">unmuted</span><span style="color: #000000"> = </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">realtimeUnmuteLocalAudio</span><span style="color: #000000">();</span>
-<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">unmuted</span><span style="color: #0000FF">}</span><span style="color: #A31515"> is false. You cannot unmute yourself`</span><span style="color: #000000">)</span>
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">unmuted</span><span style="color: #0000FF">}</span><span style="color: #A31515"> is false. You cannot unmute yourself`</span><span style="color: #000000">);</span>
 </code></pre>
 				<p><strong>Use case 10.</strong> Subscribe to volume changes of a specific attendee. You can use this to build a real-time volume indicator UI.</p>
 				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">DefaultModality</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
@@ -528,7 +533,7 @@
 <span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">attendeeId</span><span style="color: #0000FF">}</span><span style="color: #A31515">&#039;s volume data: `</span><span style="color: #000000">, {</span>
 <span style="color: #000000">      </span><span style="color: #001080">volume</span><span style="color: #000000">, </span><span style="color: #008000">// a fraction between 0 and 1</span>
 <span style="color: #000000">      </span><span style="color: #001080">muted</span><span style="color: #000000">, </span><span style="color: #008000">// a boolean</span>
-<span style="color: #000000">      </span><span style="color: #001080">signalStrength</span><span style="color: #000000"> </span><span style="color: #008000">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
+<span style="color: #000000">      </span><span style="color: #001080">signalStrength</span><span style="color: #000000">, </span><span style="color: #008000">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
 <span style="color: #000000">    });</span>
 <span style="color: #000000">  }</span>
 <span style="color: #000000">);</span>
@@ -568,7 +573,7 @@
 
 <span style="color: #000000">    </span><span style="color: #008000">// signal strength changed</span>
 <span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">attendeeId</span><span style="color: #0000FF">}</span><span style="color: #A31515">&#039;s signal strength changed: `</span><span style="color: #000000">, {</span>
-<span style="color: #000000">      </span><span style="color: #001080">signalStrength</span><span style="color: #000000"> </span><span style="color: #008000">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
+<span style="color: #000000">      </span><span style="color: #001080">signalStrength</span><span style="color: #000000">, </span><span style="color: #008000">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
 <span style="color: #000000">    });</span>
 <span style="color: #000000">  }</span>
 <span style="color: #000000">);</span>
@@ -656,7 +661,7 @@
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">stopLocalVideoTile</span><span style="color: #000000">();</span>
 
 <span style="color: #008000">// Stop video input. If the previously chosen camera has an LED light on,</span>
-<span style="color: #008000">// it will turn off indicating the camera is no longer capturing. </span>
+<span style="color: #008000">// it will turn off indicating the camera is no longer capturing.</span>
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">stopVideoInput</span><span style="color: #000000">();</span>
 
 <span style="color: #008000">// Optional: You can remove the local tile from the session.</span>
@@ -698,7 +703,9 @@
 <span style="color: #008000">  ║ 20 ║ 21 ║ 22 ║ 23 ║ 24 ║                 ║ 20 ║ 21 ║ 22 ║ 23 ║ 24 ║</span>
 <span style="color: #008000">  ╚════╩════╩════╩════╩════╝                 ╚════╩════╩════╩════╩════╝</span>
 <span style="color: #008000"> */</span>
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoElements</span><span style="color: #000000"> = [</span><span style="color: #008000">/* an array of 25 HTMLVideoElement objects in your application */</span><span style="color: #000000">];</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoElements</span><span style="color: #000000"> = [</span>
+<span style="color: #000000">  </span><span style="color: #008000">/* an array of 25 HTMLVideoElement objects in your application */</span>
+<span style="color: #000000">];</span>
 
 <span style="color: #008000">// index-tileId pairs</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">indexMap</span><span style="color: #000000"> = {};</span>
@@ -744,7 +751,7 @@
 <span style="color: #000000">  },</span>
 <span style="color: #000000">  </span><span style="color: #795E26">videoTileWasRemoved</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">tileId</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #795E26">releaseVideoElement</span><span style="color: #000000">(</span><span style="color: #001080">tileId</span><span style="color: #000000">);</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -754,9 +761,11 @@
 <span style="color: #000000">  </span><span style="color: #795E26">remoteVideoSourcesDidChange</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">videoSources</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #001080">videoSources</span><span style="color: #000000">.</span><span style="color: #795E26">forEach</span><span style="color: #000000">(</span><span style="color: #001080">videoSource</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">      </span><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">attendee</span><span style="color: #000000"> } = </span><span style="color: #001080">videoSource</span><span style="color: #000000">;</span>
-<span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`An attendee (</span><span style="color: #0000FF">${</span><span style="color: #001080">attendee</span><span style="color: #000000FF">.</span><span style="color: #001080">attendeeId</span><span style="color: #0000FF">}</span><span style="color: #A31515"> </span><span style="color: #0000FF">${</span><span style="color: #001080">attendee</span><span style="color: #000000FF">.</span><span style="color: #001080">externalUserId</span><span style="color: #0000FF">}</span><span style="color: #A31515">) is sending video`</span><span style="color: #000000">);</span>
+<span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span>
+<span style="color: #000000">        </span><span style="color: #A31515">`An attendee (</span><span style="color: #0000FF">${</span><span style="color: #001080">attendee</span><span style="color: #000000FF">.</span><span style="color: #001080">attendeeId</span><span style="color: #0000FF">}</span><span style="color: #A31515"> </span><span style="color: #0000FF">${</span><span style="color: #001080">attendee</span><span style="color: #000000FF">.</span><span style="color: #001080">externalUserId</span><span style="color: #0000FF">}</span><span style="color: #A31515">) is sending video`</span>
+<span style="color: #000000">      );</span>
 <span style="color: #000000">    });</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -811,7 +820,7 @@
 <span style="color: #000000">    </span><span style="color: #008000">// This method will be invoked if two attendees are already sharing content</span>
 <span style="color: #000000">    </span><span style="color: #008000">// when you call startContentShareFromScreenCapture or startContentShare.</span>
 <span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Screen share stopped&#039;</span><span style="color: #000000">);</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addContentShareObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -849,7 +858,7 @@
 				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">observer</span><span style="color: #000000"> = {</span>
 <span style="color: #000000">  </span><span style="color: #795E26">contentShareDidStop</span><span style="color: #001080">:</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Content share stopped&#039;</span><span style="color: #000000">);</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addContentShareObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -859,7 +868,9 @@
 				<p><strong>Use case 22.</strong> View up to 2 attendee content or screens. Chime SDK allows 2 simultaneous content shares per meeting.</p>
 				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">DefaultModality</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoElementStack</span><span style="color: #000000"> = [</span><span style="color: #008000">/* an array of 2 HTMLVideoElement objects in your application */</span><span style="color: #000000">];</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoElementStack</span><span style="color: #000000"> = [</span>
+<span style="color: #000000">  </span><span style="color: #008000">/* an array of 2 HTMLVideoElement objects in your application */</span>
+<span style="color: #000000">];</span>
 
 <span style="color: #008000">// tileId-videoElement map</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">tileMap</span><span style="color: #000000"> = {};</span>
@@ -898,7 +909,7 @@
 <span style="color: #000000">      </span><span style="color: #001080">videoElementStack</span><span style="color: #000000">.</span><span style="color: #795E26">push</span><span style="color: #000000">(</span><span style="color: #001080">videoElement</span><span style="color: #000000">);</span>
 <span style="color: #000000">      </span><span style="color: #0000FF">delete</span><span style="color: #000000"> </span><span style="color: #001080">tileMap</span><span style="color: #000000">[</span><span style="color: #001080">tileId</span><span style="color: #000000">];</span>
 <span style="color: #000000">    }</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -925,50 +936,48 @@
 
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">roster</span><span style="color: #000000"> = {};</span>
 
-<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">realtimeSubscribeToAttendeeIdPresence</span><span style="color: #000000">(</span>
-<span style="color: #000000">  (</span><span style="color: #001080">presentAttendeeId</span><span style="color: #000000">, </span><span style="color: #001080">present</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">present</span><span style="color: #000000">) {</span>
-<span style="color: #000000">      </span><span style="color: #0000FF">delete</span><span style="color: #000000"> </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">presentAttendeeId</span><span style="color: #000000">];</span>
-<span style="color: #000000">      </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
-<span style="color: #000000">    }</span>
-
-<span style="color: #000000">    </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">realtimeSubscribeToVolumeIndicator</span><span style="color: #000000">(</span>
-<span style="color: #000000">      </span><span style="color: #001080">presentAttendeeId</span><span style="color: #000000">,</span>
-<span style="color: #000000">      (</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #001080">volume</span><span style="color: #000000">, </span><span style="color: #001080">muted</span><span style="color: #000000">, </span><span style="color: #001080">signalStrength</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">baseAttendeeId</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultModality</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">).</span><span style="color: #795E26">base</span><span style="color: #000000">();</span>
-<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">baseAttendeeId</span><span style="color: #000000"> !== </span><span style="color: #001080">attendeeId</span><span style="color: #000000">) {</span>
-<span style="color: #000000">          </span><span style="color: #008000">// Optional: Do not include the content attendee (attendee-id#content) in the roster.</span>
-<span style="color: #000000">          </span><span style="color: #008000">// See the &quot;Screen and content share&quot; section for details.</span>
-<span style="color: #000000">          </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
-<span style="color: #000000">        }</span>
-
-<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">.</span><span style="color: #795E26">hasOwnProperty</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">)) {</span>
-<span style="color: #000000">          </span><span style="color: #008000">// A null value for any field means that it has not changed.</span>
-<span style="color: #000000">          </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">volume</span><span style="color: #000000"> = </span><span style="color: #001080">volume</span><span style="color: #000000">; </span><span style="color: #008000">// a fraction between 0 and 1</span>
-<span style="color: #000000">          </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">muted</span><span style="color: #000000"> = </span><span style="color: #001080">muted</span><span style="color: #000000">; </span><span style="color: #008000">// A boolean</span>
-<span style="color: #000000">          </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">signalStrength</span><span style="color: #000000"> = </span><span style="color: #001080">signalStrength</span><span style="color: #000000">; </span><span style="color: #008000">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
-<span style="color: #000000">        } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
-<span style="color: #000000">          </span><span style="color: #008000">// Add an attendee.</span>
-<span style="color: #000000">          </span><span style="color: #008000">// Optional: You can fetch more data, such as attendee name,</span>
-<span style="color: #000000">          </span><span style="color: #008000">// from your server application and set them here.</span>
-<span style="color: #000000">          </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">] = {</span>
-<span style="color: #000000">            </span><span style="color: #001080">attendeeId</span><span style="color: #000000">,</span>
-<span style="color: #000000">            </span><span style="color: #001080">volume</span><span style="color: #000000">,</span>
-<span style="color: #000000">            </span><span style="color: #001080">muted</span><span style="color: #000000">,</span>
-<span style="color: #000000">            </span><span style="color: #001080">signalStrength</span>
-<span style="color: #000000">          };</span>
-<span style="color: #000000">        }</span>
-<span style="color: #000000">      }</span>
-<span style="color: #000000">    );</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">realtimeSubscribeToAttendeeIdPresence</span><span style="color: #000000">((</span><span style="color: #001080">presentAttendeeId</span><span style="color: #000000">, </span><span style="color: #001080">present</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">present</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">delete</span><span style="color: #000000"> </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">presentAttendeeId</span><span style="color: #000000">];</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
 <span style="color: #000000">  }</span>
-<span style="color: #000000">);</span>
+
+<span style="color: #000000">  </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">realtimeSubscribeToVolumeIndicator</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #001080">presentAttendeeId</span><span style="color: #000000">,</span>
+<span style="color: #000000">    (</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #001080">volume</span><span style="color: #000000">, </span><span style="color: #001080">muted</span><span style="color: #000000">, </span><span style="color: #001080">signalStrength</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">      </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">baseAttendeeId</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultModality</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">).</span><span style="color: #795E26">base</span><span style="color: #000000">();</span>
+<span style="color: #000000">      </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">baseAttendeeId</span><span style="color: #000000"> !== </span><span style="color: #001080">attendeeId</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Optional: Do not include the content attendee (attendee-id#content) in the roster.</span>
+<span style="color: #000000">        </span><span style="color: #008000">// See the &quot;Screen and content share&quot; section for details.</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+<span style="color: #000000">      }</span>
+
+<span style="color: #000000">      </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">roster</span><span style="color: #000000">.</span><span style="color: #795E26">hasOwnProperty</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">)) {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// A null value for any field means that it has not changed.</span>
+<span style="color: #000000">        </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">volume</span><span style="color: #000000"> = </span><span style="color: #001080">volume</span><span style="color: #000000">; </span><span style="color: #008000">// a fraction between 0 and 1</span>
+<span style="color: #000000">        </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">muted</span><span style="color: #000000"> = </span><span style="color: #001080">muted</span><span style="color: #000000">; </span><span style="color: #008000">// A boolean</span>
+<span style="color: #000000">        </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">].</span><span style="color: #001080">signalStrength</span><span style="color: #000000"> = </span><span style="color: #001080">signalStrength</span><span style="color: #000000">; </span><span style="color: #008000">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
+<span style="color: #000000">      } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Add an attendee.</span>
+<span style="color: #000000">        </span><span style="color: #008000">// Optional: You can fetch more data, such as attendee name,</span>
+<span style="color: #000000">        </span><span style="color: #008000">// from your server application and set them here.</span>
+<span style="color: #000000">        </span><span style="color: #001080">roster</span><span style="color: #000000">[</span><span style="color: #001080">attendeeId</span><span style="color: #000000">] = {</span>
+<span style="color: #000000">          </span><span style="color: #001080">attendeeId</span><span style="color: #000000">,</span>
+<span style="color: #000000">          </span><span style="color: #001080">volume</span><span style="color: #000000">,</span>
+<span style="color: #000000">          </span><span style="color: #001080">muted</span><span style="color: #000000">,</span>
+<span style="color: #000000">          </span><span style="color: #001080">signalStrength</span><span style="color: #000000">,</span>
+<span style="color: #000000">        };</span>
+<span style="color: #000000">      }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  );</span>
+<span style="color: #000000">});</span>
 </code></pre>
 				<a href="#monitoring-and-alerts" id="monitoring-and-alerts" style="color: inherit; text-decoration: none;">
 					<h3>Monitoring and alerts</h3>
 				</a>
 				<p><strong>Use case 25.</strong> Add an observer to receive WebRTC metrics processed by Chime SDK such as bitrate, packet loss, and bandwidth. See <code>AudioVideoObserver</code> for more available metrics.</p>
 				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">observer</span><span style="color: #000000"> = {</span>
-<span style="color: #000000">  </span><span style="color: #795E26">metricsDidReceive</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">clientMetricReport</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #795E26">metricsDidReceive</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">clientMetricReport</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">metricReport</span><span style="color: #000000"> = </span><span style="color: #001080">clientMetricReport</span><span style="color: #000000">.</span><span style="color: #795E26">getObservableMetrics</span><span style="color: #000000">();</span>
 
 <span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> {</span>
@@ -979,8 +988,16 @@
 <span style="color: #000000">      </span><span style="color: #0070C1">audioSpeakerDelayMs</span><span style="color: #000000">,</span>
 <span style="color: #000000">    } = </span><span style="color: #001080">metricReport</span><span style="color: #000000">;</span>
 
-<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`Sending video bitrate in kilobits per second: </span><span style="color: #0000FF">${</span><span style="color: #001080">videoUpstreamBitrate</span><span style="color: #000000FF"> </span><span style="color: #000000">/</span><span style="color: #000000FF"> </span><span style="color: #098658">1000</span><span style="color: #0000FF">}</span><span style="color: #A31515"> and sending packets per second: </span><span style="color: #0000FF">${</span><span style="color: #001080">videoPacketSentPerSecond</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
-<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`Sending bandwidth is </span><span style="color: #0000FF">${</span><span style="color: #001080">availableOutgoingBitrate</span><span style="color: #000000FF"> </span><span style="color: #000000">/</span><span style="color: #000000FF"> </span><span style="color: #098658">1000</span><span style="color: #0000FF">}</span><span style="color: #A31515">, and receiving bandwidth is </span><span style="color: #0000FF">${</span><span style="color: #001080">availableIncomingBitrate</span><span style="color: #000000FF"> </span><span style="color: #000000">/</span><span style="color: #000000FF"> </span><span style="color: #098658">1000</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span>
+<span style="color: #000000">      </span><span style="color: #A31515">`Sending video bitrate in kilobits per second: </span><span style="color: #0000FF">${</span>
+<span style="color: #000000FF">        </span><span style="color: #001080">videoUpstreamBitrate</span><span style="color: #000000FF"> </span><span style="color: #000000">/</span><span style="color: #000000FF"> </span><span style="color: #098658">1000</span>
+<span style="color: #000000FF">      </span><span style="color: #0000FF">}</span><span style="color: #A31515"> and sending packets per second: </span><span style="color: #0000FF">${</span><span style="color: #001080">videoPacketSentPerSecond</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span>
+<span style="color: #000000">    );</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span>
+<span style="color: #000000">      </span><span style="color: #A31515">`Sending bandwidth is </span><span style="color: #0000FF">${</span><span style="color: #001080">availableOutgoingBitrate</span><span style="color: #000000FF"> </span><span style="color: #000000">/</span><span style="color: #000000FF"> </span><span style="color: #098658">1000</span><span style="color: #0000FF">}</span><span style="color: #A31515">, and receiving bandwidth is </span><span style="color: #0000FF">${</span>
+<span style="color: #000000FF">        </span><span style="color: #001080">availableIncomingBitrate</span><span style="color: #000000FF"> </span><span style="color: #000000">/</span><span style="color: #000000FF"> </span><span style="color: #098658">1000</span>
+<span style="color: #000000FF">      </span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span>
+<span style="color: #000000">    );</span>
 <span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`Audio speaker delay is </span><span style="color: #0000FF">${</span><span style="color: #001080">audioSpeakerDelayMs</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
 <span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
@@ -1008,7 +1025,7 @@
 <span style="color: #000000">    } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;You cannot share your video&#039;</span><span style="color: #000000">);</span>
 <span style="color: #000000">    }</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -1031,7 +1048,7 @@
 <span style="color: #000000">    } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Stopped with a session status code: &#039;</span><span style="color: #000000">, </span><span style="color: #001080">sessionStatusCode</span><span style="color: #000000">);</span>
 <span style="color: #000000">    }</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -1058,7 +1075,7 @@
 <span style="color: #000000">    } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Stopped with a session status code: &#039;</span><span style="color: #000000">, </span><span style="color: #001080">sessionStatusCode</span><span style="color: #000000">);</span>
 <span style="color: #000000">    }</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -1114,7 +1131,7 @@
 				<p><strong>Use case 32.</strong> Use the meeting readiness checker to perform network checks, e.g. TCP and UDP.</p>
 				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #001080">CheckNetworkUDPConnectivityFeedback</span><span style="color: #000000">,</span>
-<span style="color: #000000">  </span><span style="color: #001080">CheckNetworkTCPConnectivityFeedback</span>
+<span style="color: #000000">  </span><span style="color: #001080">CheckNetworkTCPConnectivityFeedback</span><span style="color: #000000">,</span>
 <span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
 <span style="color: #008000">// Tests for UDP network connectivity</span>
@@ -1170,7 +1187,7 @@
 <span style="color: #000000">  },</span>
 <span style="color: #000000">  </span><span style="color: #795E26">messagingSessionDidReceiveMessage</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">message</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`Receive message type </span><span style="color: #0000FF">${</span><span style="color: #001080">message</span><span style="color: #000000FF">.</span><span style="color: #001080">type</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
-<span style="color: #000000">  }</span>
+<span style="color: #000000">  },</span>
 <span style="color: #000000">};</span>
 
 <span style="color: #001080">messagingSession</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">observer</span><span style="color: #000000">);</span>
@@ -1179,7 +1196,7 @@
 				<a href="#providing-application-metadata" id="providing-application-metadata" style="color: inherit; text-decoration: none;">
 					<h3>Providing application metadata</h3>
 				</a>
-				<p>Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience. </p>
+				<p>Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience.</p>
 				<blockquote>
 					<p>⚠️ Do not pass any Personal Identifiable Information (PII).</p>
 				</blockquote>
@@ -1239,6 +1256,9 @@
 					</li>
 					<li class=" tsd-kind-namespace">
 						<a href="modules/backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/buildersjourney.html">Builders<wbr>Journey</a>
 					</li>
 					<li class=" tsd-kind-namespace">
 						<a href="modules/clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
