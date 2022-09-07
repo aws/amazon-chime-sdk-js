@@ -50,7 +50,7 @@ runs:
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
         aws-region: us-east-1
     - name: Setup Sauce Connect
-      uses: saucelabs/sauce-connect-action@v1
+      uses: saucelabs/sauce-connect-action@v2
       with:
         username: ${{ inputs.sauce-username }}
         accessKey: ${{ inputs.sauce-access-key }}
