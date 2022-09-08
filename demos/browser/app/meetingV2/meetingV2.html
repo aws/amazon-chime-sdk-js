@@ -760,6 +760,11 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
           title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
           <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
         </button>
+        <button id="button-live-connector" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
+                title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+          <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
+        </button>
+        <p id="playBackUrlText"></p>
         <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
           title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
           autocomplete="off">

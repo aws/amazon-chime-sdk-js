@@ -3,8 +3,8 @@
 
 const AWS = require('aws-sdk');
 const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
-const { metricScope } = require('aws-embedded-metrics');
+const {v4: uuidv4} = require('uuid');
+const {metricScope} = require('aws-embedded-metrics');
 
 // Store meetings in a DynamoDB table so attendees can join by meeting title
 const ddb = new AWS.DynamoDB();
@@ -17,17 +17,17 @@ const chimeSDKMeetingsEndpoint = process.env.CHIME_SDK_MEETINGS_ENDPOINT;
 const mediaPipelinesControlRegion = process.env.MEDIA_PIPELINES_CONTROL_REGION;
 const useChimeSDKMediaPipelines = process.env.USE_CHIME_SDK_MEDIA_PIPELINES;
 const chimeSDKMediaPipelinesEndpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT;
-
+ivsCreated = false
 // Create an AWS SDK Chime object.
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
-const chime = new AWS.Chime({ region: 'us-east-1' });
-
+const chime = new AWS.Chime({region: 'us-east-1'});
+const ivs = new AWS.IVS({apiVersion: '2020-07-14'});
 // Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
 chime.endpoint = new AWS.Endpoint(endpoint);
 
-const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
-if(chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true'){
+const chimeSDKMeetings = new AWS.ChimeSDKMeetings({region: currentRegion});
+if (chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true') {
   chimeSDKMeetings.endpoint = new AWS.Endpoint(chimeSDKMeetingsEndpoint);
 }
 
@@ -43,10 +43,11 @@ function getClientForMeeting(meeting) {
 }
 
 // Create an AWS SDK Media Pipelines object.
-const chimeSdkMediaPipelines = new AWS.ChimeSDKMediaPipelines({ region: mediaPipelinesControlRegion });
+const chimeSdkMediaPipelines = new AWS.ChimeSDKMediaPipelines({region: mediaPipelinesControlRegion});
 if (useChimeSDKMediaPipelines === 'true') {
   chimeSdkMediaPipelines.endpoint = new AWS.Endpoint(chimeSDKMediaPipelinesEndpoint);
 }
+
 function getClientForMediaCapturePipelines() {
   if (useChimeSDKMediaPipelines === 'true') {
     return chimeSdkMediaPipelines;
@@ -64,20 +65,21 @@ const {
   BROWSER_EVENT_INGESTION_LOG_GROUP_NAME,
   CAPTURE_S3_DESTINATION_PREFIX,
   AWS_ACCOUNT_ID,
+  IVS_CHANNEL_PREFIX
 } = process.env;
 
 // === Handlers ===
 
 exports.index = async (event, context, callback) => {
   // Return the contents of the index page
-  return response(200, 'text/html', fs.readFileSync('./index.html', { encoding: 'utf8' }));
+  return response(200, 'text/html', fs.readFileSync('./index.html', {encoding: 'utf8'}));
 };
 
 exports.join = async (event, context) => {
   const meetingIdFormat = /^[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/
   const query = event.queryStringParameters;
   if (!query.title || !query.name) {
-    return response(400, 'application/json', JSON.stringify({ error: 'Need parameters: title, name' }));
+    return response(400, 'application/json', JSON.stringify({error: 'Need parameters: title, name'}));
   }
 
   // Look up the meeting by its title
@@ -105,13 +107,13 @@ exports.join = async (event, context) => {
       }
     }
     if (!primaryMeeting) {
-      return response(400, 'application/json', JSON.stringify({ error: 'Primary meeting has not been created' }));
+      return response(400, 'application/json', JSON.stringify({error: 'Primary meeting has not been created'}));
     }
   }
 
   if (!meeting) {
     if (!query.region) {
-      return response(400, 'application/json', JSON.stringify({ error: 'Need region parameter set if meeting has not yet been created' }));
+      return response(400, 'application/json', JSON.stringify({error: 'Need region parameter set if meeting has not yet been created'}));
     }
     // If the meeting does not exist, check if we were passed in a meeting ID instead of an external meeting ID.  If so, use that one
     try {
@@ -136,7 +138,7 @@ exports.join = async (event, context) => {
         MediaRegion: query.region,
 
         // Set up SQS notifications if being used
-        NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? { SqsQueueArn: SQS_QUEUE_ARN } : {},
+        NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? {SqsQueueArn: SQS_QUEUE_ARN} : {},
 
         // Any meeting ID you wish to associate with the meeting.
         // For simplicity here, we use the meeting title.
@@ -201,7 +203,7 @@ exports.end = async (event, context) => {
   let client = getClientForMeeting(meeting);
 
   // End the meeting. All attendee connections will hang up.
-  await client.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId }).promise();
+  await client.deleteMeeting({MeetingId: meeting.Meeting.MeetingId}).promise();
   return response(200, 'application/json', JSON.stringify({}));
 };
 
@@ -235,8 +237,7 @@ exports.start_transcription = async (event, context) => {
   }
   if (event.queryStringParameters.engine === 'transcribe') {
     transcriptionConfiguration = {
-      EngineTranscribeSettings: {
-      }
+      EngineTranscribeSettings: {}
     };
     if (languageCode) {
       transcriptionConfiguration.EngineTranscribeSettings.LanguageCode = languageCode;
@@ -341,16 +342,98 @@ exports.end_capture = async (event, context) => {
     }).promise();
     return response(200, 'application/json', JSON.stringify({}));
   } else {
-    return response(500, 'application/json', JSON.stringify({ msg: "No pipeline to stop for this meeting" }))
+    return response(500, 'application/json', JSON.stringify({msg: "No pipeline to stop for this meeting"}))
+  }
+};
+
+
+exports.start_live_connector = async (event, context) => {
+  // Fetch the meeting by title
+  const meeting = await getMeeting(event.queryStringParameters.title);
+  meetingRegion = meeting.Meeting.MediaRegion;
+  const ivsChannelNamePrefix = IVS_CHANNEL_PREFIX?IVS_CHANNEL_PREFIX: "liveConnector"
+  const ivsChannelName = `${ivsChannelNamePrefix}-${meetingRegion}`;
+  ivsEndpoint = ''
+  rtmpURL = ''
+  ivsPlaybackUrl = ''
+  ivsChannelArn = ''
+  const params = {
+    name: ivsChannelName,
+  };
+  const ivsCreateChannelResponse = await ivs.createChannel(params).promise();
+  ivsPlaybackUrl = ivsCreateChannelResponse.channel.playbackUrl
+  ivsEndpoint = ivsCreateChannelResponse.channel.ingestEndpoint
+  ivsStreamKey = ivsCreateChannelResponse.streamKey.value
+  ivsChannelArn = ivsCreateChannelResponse.channel.arn
+  rtmpURL = "rtmps://" + ivsEndpoint + ":443/app/" + ivsStreamKey
+  console.log("Successfully created ivs channel: ", ivsCreateChannelResponse)
+  const request =
+      {
+        Sinks: [
+          {
+            RTMPConfiguration: {
+              AudioChannels: "Stereo",
+              AudioSampleRate: "48000",
+              Url: rtmpURL
+            },
+            SinkType: "RTMP"
+          }
+        ],
+        Sources: [
+          {
+            ChimeSdkMeetingLiveConnectorConfiguration: {
+              Arn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
+              CompositedVideo: {
+                GridViewConfiguration: {
+                  ContentShareLayout: "Vertical",
+                },
+                Layout: "GridView",
+                Resolution: "FHD",
+              },
+              MuxType: "AudioWithCompositedVideo"
+            },
+            SourceType: "ChimeSdkMeeting"
+          }
+        ]
+      };
+  console.log("Creating new media live connector pipeline: ", request)
+  liveConnectorPipelineInfo = await chimeSdkMediaPipelines.createMediaLiveConnectorPipeline(request).promise();
+  await putLiveConnectorPipeline(event.queryStringParameters.title, liveConnectorPipelineInfo)
+  await putIvsArn(event.queryStringParameters.title, ivsChannelArn)
+  console.log("Successfully created media live connector pipeline: ", liveConnectorPipelineInfo)
+  liveConnectorPipelineInfo["playBackUrl"] = ivsPlaybackUrl
+  return response(201, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
+};
+
+exports.end_live_connector = async (event, context) => {
+  // Fetch the live connector pipeline info by title
+  const liveConnectorPipelineInfo = await getLiveConnectorPipeline(event.queryStringParameters.title);
+  if (liveConnectorPipelineInfo) {
+    ivsCreated = false
+    const ivsChannelArn = await getIvsArn(event.queryStringParameters.title)
+    await getClientForMediaCapturePipelines().deleteMediaPipeline({
+      MediaPipelineId: liveConnectorPipelineInfo.MediaLiveConnectorPipeline.MediaPipelineId
+    }).promise();
+
+    try {
+      await delay(3000);
+      await ivs.deleteChannel({arn: ivsChannelArn}).promise()
+    }
+    catch (e) {
+      console.log("error deleting ivs :" + e)
+    }
+    return response(200, 'application/json', JSON.stringify({}));
+  } else {
+    return response(500, 'application/json', JSON.stringify({msg: "No pipeline to stop for this meeting"}))
   }
 };
 
 exports.audio_file = async (event, context) => {
-  return response(200, 'audio/mpeg', fs.readFileSync('./speech.mp3', { encoding: 'base64' }), true);
+  return response(200, 'audio/mpeg', fs.readFileSync('./speech.mp3', {encoding: 'base64'}), true);
 };
 
 exports.stereo_audio_file = async (event, context) => {
-  return response(200, 'audio/mpeg', fs.readFileSync('./speech_stereo.mp3', { encoding: 'base64' }), true);
+  return response(200, 'audio/mpeg', fs.readFileSync('./speech_stereo.mp3', {encoding: 'base64'}), true);
 };
 
 exports.fetch_credentials = async (event, context) => {
@@ -457,8 +540,8 @@ async function putMeeting(title, meeting) {
   await ddb.putItem({
     TableName: MEETINGS_TABLE_NAME,
     Item: {
-      'Title': { S: title },
-      'Data': { S: JSON.stringify(meeting) },
+      'Title': {S: title},
+      'Data': {S: JSON.stringify(meeting)},
       'TTL': {
         N: `${Math.floor(Date.now() / 1000) + 60 * 60 * 24}` // clean up meeting record one day from now
       }
@@ -484,14 +567,69 @@ async function putCapturePipeline(title, capture) {
   await ddb.updateItem({
     TableName: MEETINGS_TABLE_NAME,
     Key: {
-      'Title': { S: title }
+      'Title': {S: title}
     },
     UpdateExpression: "SET CaptureData = :capture",
     ExpressionAttributeValues: {
-      ":capture": { S: JSON.stringify(capture) }
+      ":capture": {S: JSON.stringify(capture)}
     }
   }).promise()
 }
+
+// Retrieves live connector data for a meeting by title
+async function getLiveConnectorPipeline(title) {
+  const result = await ddb.getItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {
+        S: title
+      }
+    }
+  }).promise();
+  return result.Item && result.Item.LiveConnectorData ? JSON.parse(result.Item.LiveConnectorData.S) : null;
+}
+
+// Adds meeting live connector data to the meeting table
+async function putLiveConnectorPipeline(title, liveConnector) {
+  await ddb.updateItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {S: title}
+    },
+    UpdateExpression: "SET LiveConnectorData = :liveConnector",
+    ExpressionAttributeValues: {
+      ":liveConnector": {S: JSON.stringify(liveConnector)}
+    }
+  }).promise()
+}
+
+// Retrieves live connector data for a meeting by title
+async function getIvsArn(title) {
+  const result = await ddb.getItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {
+        S: title
+      }
+    }
+  }).promise();
+  return result.Item && result.Item.IvsArnData ? JSON.parse(result.Item.IvsArnData.S) : null;
+}
+
+// Adds meeting live connector data to the meeting table
+async function putIvsArn(title, ivsArn) {
+  await ddb.updateItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {S: title}
+    },
+    UpdateExpression: "SET IvsArnData = :ivsArn",
+    ExpressionAttributeValues: {
+      ":ivsArn": {S: JSON.stringify(ivsArn)}
+    }
+  }).promise()
+}
+
 
 async function putLogEvents(event, logGroupName, createLogEvents) {
   const body = JSON.parse(event.body);
@@ -503,7 +641,7 @@ async function putLogEvents(event, logGroupName, createLogEvents) {
     return response(200, 'application/json', JSON.stringify({}));
   }
 
-  const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+  const cloudWatchClient = new AWS.CloudWatchLogs({apiVersion: '2014-03-28'});
   const putLogEventsInput = {
     logGroupName,
     logStreamName: createLogStreamName(body.meetingId, body.attendeeId),
@@ -552,7 +690,7 @@ async function createLogStream(event, logGroupName) {
       error: 'Required properties: meetingId, attendeeId'
     }));
   }
-  const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+  const cloudWatchClient = new AWS.CloudWatchLogs({apiVersion: '2014-03-28'});
   await cloudWatchClient.createLogStream({
     logGroupName,
     logStreamName: createLogStreamName(body.meetingId, body.attendeeId)
@@ -564,10 +702,17 @@ function createLogStreamName(meetingId, attendeeId) {
   return `ChimeSDKMeeting_${meetingId}_${attendeeId}`;
 }
 
+function delay(milliseconds){
+  return new Promise(resolve => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+
 function response(statusCode, contentType, body, isBase64Encoded = false) {
   return {
     statusCode: statusCode,
-    headers: { 'Content-Type': contentType },
+    headers: {'Content-Type': contentType},
     body: body,
     isBase64Encoded,
   };
@@ -577,11 +722,11 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
   const logMsgJson = JSON.parse(logMsg);
   const metricList = ['signalingOpenDurationMs', 'iceGatheringDurationMs', 'attendeePresenceDurationMs', 'meetingStartDurationMs'];
   const putMetric =
-    metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
-      metrics.setProperty('MeetingId', meetingId);
-      metrics.setProperty('AttendeeId', attendeeId);
-      metrics.putMetric(metricName, metricValue);
-    });
+      metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
+        metrics.setProperty('MeetingId', meetingId);
+        metrics.setProperty('AttendeeId', attendeeId);
+        metrics.putMetric(metricName, metricValue);
+      });
   for (let metricIndex = 0; metricIndex <= metricList.length; metricIndex += 1) {
     const metricName = metricList[metricIndex];
     if (logMsgJson.attributes.hasOwnProperty(metricName)) {
@@ -594,12 +739,12 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
 
 function addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId) {
   const putMetric =
-    metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
-      metrics.setProperty('MeetingId', meetingId);
-      metrics.setProperty('AttendeeId', attendeeId);
-      metrics.putMetric(metricName, metricValue);
-    });
-  const { logLevel, message } = log;
+      metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
+        metrics.setProperty('MeetingId', meetingId);
+        metrics.setProperty('AttendeeId', attendeeId);
+        metrics.putMetric(metricName, metricValue);
+      });
+  const {logLevel, message} = log;
   let errorMetricValue = 0;
   let retryMetricValue = 0;
   let ingestionTriggerSuccessMetricValue = 0;

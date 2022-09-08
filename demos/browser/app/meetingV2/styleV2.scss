@@ -30,7 +30,7 @@ $dark: $gray-700;
 $yiq-contrasted-threshold: 175;
 $link-color: $success;
 $font-family-base: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-  'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 $font-size-base: 0.9375rem;
 $form-select-color: $gray-700;
 $h1-font-size: 3rem;
@@ -287,11 +287,11 @@ $overlay-z-index: 10;
 // Forms =======================================================================
 
 #primary-meeting-external-id {
-    display: none;
+  display: none;
 }
 
 #replica-meeting-input:checked ~ #primary-meeting-external-id {
-    display: block;
+  display: block;
 }
 
 // Navs ========================================================================
@@ -1061,7 +1061,16 @@ a.markdown:active {
 }
 
 #toast-container {
-    bottom: 20px;
-    right: 20px;
-    position: absolute;
+  bottom: 20px;
+  right: 20px;
+  position: absolute;
+}
+
+#live-connector-playback-url-hide {
+  display: none;
+}
+
+#button-live-connector:hover + #live-connector-playback-url-hide {
+  display: block;
+  color: red;
 }
