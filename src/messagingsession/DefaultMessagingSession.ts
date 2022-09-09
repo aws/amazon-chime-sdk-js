@@ -108,6 +108,16 @@ export default class DefaultMessagingSession implements MessagingSession {
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
     let endpointUrl = this.configuration.endpointUrl;
+
+    if (!reconnecting) {
+      this.reconnectController.reset();
+    }
+    if (this.reconnectController.hasStartedConnectionAttempt()) {
+      this.reconnectController.startedConnectionAttempt(false);
+    } else {
+      this.reconnectController.startedConnectionAttempt(true);
+    }
+    
     // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
     if (reconnecting || endpointUrl === undefined) {
       try {
@@ -138,14 +148,6 @@ export default class DefaultMessagingSession implements MessagingSession {
 
     const signedUrl = await this.prepareWebSocketUrl(endpointUrl);
     this.logger.info(`opening connection to ${signedUrl}`);
-    if (!reconnecting) {
-      this.reconnectController.reset();
-    }
-    if (this.reconnectController.hasStartedConnectionAttempt()) {
-      this.reconnectController.startedConnectionAttempt(false);
-    } else {
-      this.reconnectController.startedConnectionAttempt(true);
-    }
     this.webSocket.create(signedUrl, [], true);
     this.forEachObserver(observer => {
       if (observer.messagingSessionDidStartConnecting) {
