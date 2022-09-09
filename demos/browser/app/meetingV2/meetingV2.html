@@ -750,16 +750,34 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
           title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
           <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
         </button>
-        <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-          title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-          <svg class="svg">
-            <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
-          </svg>
-        </button>
-        <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-          title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-          <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
-        </button>
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Select destination">
+          <div class="btn-group" role="group">
+            <button id="button-video-recording-drop" type="button" class="btn btn-success dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
+              <%= require('../../node_modules/open-iconic/svg/cloud.svg') %>
+            </button>
+            <div id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
+                 aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
+              <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <svg class="svg">
+                  <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
+                </svg>
+                Capture Media to Device
+              </button>
+              <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
+                Capture Media to S3
+              </button>
+              <button id="button-live-connector" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
+                Broadcast Media to IVS
+              </button>
+            </div>
+          </div>
+        </div>
         <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
           title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
           autocomplete="off">

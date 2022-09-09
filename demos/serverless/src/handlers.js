@@ -17,17 +17,16 @@ const chimeSDKMeetingsEndpoint = process.env.CHIME_SDK_MEETINGS_ENDPOINT;
 const mediaPipelinesControlRegion = process.env.MEDIA_PIPELINES_CONTROL_REGION;
 const useChimeSDKMediaPipelines = process.env.USE_CHIME_SDK_MEDIA_PIPELINES;
 const chimeSDKMediaPipelinesEndpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT;
-
 // Create an AWS SDK Chime object.
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
-
+const ivs = new AWS.IVS({ apiVersion: '2020-07-14' });
 // Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
 chime.endpoint = new AWS.Endpoint(endpoint);
 
-const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
-if(chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true'){
+const chimeSDKMeetings = new AWS.ChimeSDKMeetings({region: currentRegion});
+if (chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true'){
   chimeSDKMeetings.endpoint = new AWS.Endpoint(chimeSDKMeetingsEndpoint);
 }
 
@@ -47,6 +46,7 @@ const chimeSdkMediaPipelines = new AWS.ChimeSDKMediaPipelines({ region: mediaPip
 if (useChimeSDKMediaPipelines === 'true') {
   chimeSdkMediaPipelines.endpoint = new AWS.Endpoint(chimeSDKMediaPipelinesEndpoint);
 }
+
 function getClientForMediaCapturePipelines() {
   if (useChimeSDKMediaPipelines === 'true') {
     return chimeSdkMediaPipelines;
@@ -345,6 +345,87 @@ exports.end_capture = async (event, context) => {
   }
 };
 
+
+exports.start_live_connector = async (event, context) => {
+  // Fetch the meeting by title
+  const meeting = await getMeeting(event.queryStringParameters.title);
+  meetingRegion = meeting.Meeting.MediaRegion;
+  const ivsChannelNamePrefix = "liveConnector"
+  const ivsChannelName = `${ivsChannelNamePrefix}-${meetingRegion}`;
+  ivsEndpoint = ''
+  rtmpURL = ''
+  ivsPlaybackUrl = ''
+  ivsChannelArn = ''
+  const params = {
+    name: ivsChannelName,
+  };
+  const ivsCreateChannelResponse = await ivs.createChannel(params).promise();
+  ivsPlaybackUrl = ivsCreateChannelResponse.channel.playbackUrl
+  ivsEndpoint = ivsCreateChannelResponse.channel.ingestEndpoint
+  ivsStreamKey = ivsCreateChannelResponse.streamKey.value
+  ivsChannelArn = ivsCreateChannelResponse.channel.arn
+  rtmpURL = "rtmps://" + ivsEndpoint + ":443/app/" + ivsStreamKey
+  console.log("Successfully created ivs channel: ", ivsCreateChannelResponse)
+  const request =
+      {
+        Sinks: [
+          {
+            RTMPConfiguration: {
+              AudioChannels: "Stereo",
+              AudioSampleRate: "48000",
+              Url: rtmpURL
+            },
+            SinkType: "RTMP"
+          }
+        ],
+        Sources: [
+          {
+            ChimeSdkMeetingLiveConnectorConfiguration: {
+              Arn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
+              CompositedVideo: {
+                GridViewConfiguration: {
+                  ContentShareLayout: "Vertical",
+                },
+                Layout: "GridView",
+                Resolution: "FHD",
+              },
+              MuxType: "AudioWithCompositedVideo"
+            },
+            SourceType: "ChimeSdkMeeting"
+          }
+        ]
+      };
+  console.log("Creating new media live connector pipeline: ", request)
+  liveConnectorPipelineInfo = await chimeSdkMediaPipelines.createMediaLiveConnectorPipeline(request).promise();
+  await putLiveConnectorPipeline(event.queryStringParameters.title, liveConnectorPipelineInfo)
+  await putIvsArn(event.queryStringParameters.title, ivsChannelArn)
+  console.log("Successfully created media live connector pipeline: ", liveConnectorPipelineInfo)
+  liveConnectorPipelineInfo["playBackUrl"] = ivsPlaybackUrl
+  return response(201, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
+};
+
+exports.end_live_connector = async (event, context) => {
+  // Fetch the live connector pipeline info by title
+  const liveConnectorPipelineInfo = await getLiveConnectorPipeline(event.queryStringParameters.title);
+  if (liveConnectorPipelineInfo) {
+    const ivsChannelArn = await getIvsArn(event.queryStringParameters.title)
+    await getClientForMediaCapturePipelines().deleteMediaPipeline({
+      MediaPipelineId: liveConnectorPipelineInfo.MediaLiveConnectorPipeline.MediaPipelineId
+    }).promise();
+
+    try {
+      await delay(3000);
+      await ivs.deleteChannel({arn: ivsChannelArn}).promise()
+    }
+    catch (e) {
+      console.log("error deleting ivs :" + e)
+    }
+    return response(200, 'application/json', JSON.stringify({}));
+  } else {
+    return response(500, 'application/json', JSON.stringify({ msg: "No pipeline to stop for this meeting" }))
+  }
+};
+
 exports.audio_file = async (event, context) => {
   return response(200, 'audio/mpeg', fs.readFileSync('./speech.mp3', { encoding: 'base64' }), true);
 };
@@ -493,6 +574,61 @@ async function putCapturePipeline(title, capture) {
   }).promise()
 }
 
+// Retrieves live connector data for a meeting by title
+async function getLiveConnectorPipeline(title) {
+  const result = await ddb.getItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {
+        S: title
+      }
+    }
+  }).promise();
+  return result.Item && result.Item.LiveConnectorData ? JSON.parse(result.Item.LiveConnectorData.S) : null;
+}
+
+// Adds meeting live connector data to the meeting table
+async function putLiveConnectorPipeline(title, liveConnector) {
+  await ddb.updateItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {S: title}
+    },
+    UpdateExpression: "SET LiveConnectorData = :liveConnector",
+    ExpressionAttributeValues: {
+      ":liveConnector": {S: JSON.stringify(liveConnector)}
+    }
+  }).promise()
+}
+
+// Retrieves live connector data for a meeting by title
+async function getIvsArn(title) {
+  const result = await ddb.getItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {
+        S: title
+      }
+    }
+  }).promise();
+  return result.Item && result.Item.IvsArnData ? JSON.parse(result.Item.IvsArnData.S) : null;
+}
+
+// Adds meeting live connector data to the meeting table
+async function putIvsArn(title, ivsArn) {
+  await ddb.updateItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {S: title}
+    },
+    UpdateExpression: "SET IvsArnData = :ivsArn",
+    ExpressionAttributeValues: {
+      ":ivsArn": {S: JSON.stringify(ivsArn)}
+    }
+  }).promise()
+}
+
+
 async function putLogEvents(event, logGroupName, createLogEvents) {
   const body = JSON.parse(event.body);
   if (!body.logs || !body.meetingId || !body.attendeeId || !body.appName) {
@@ -563,6 +699,13 @@ async function createLogStream(event, logGroupName) {
 function createLogStreamName(meetingId, attendeeId) {
   return `ChimeSDKMeeting_${meetingId}_${attendeeId}`;
 }
+
+function delay(milliseconds){
+  return new Promise(resolve => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
 
 function response(statusCode, contentType, body, isBase64Encoded = false) {
   return {

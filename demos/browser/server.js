@@ -28,6 +28,9 @@ const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || 'true';
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
+
+const chimeSDKMediaPipelinesRegional = new AWS.ChimeSDKMediaPipelines( {region: 'us-east-1'});
+chimeSDKMediaPipelinesRegional.endpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com"
 chime.endpoint = endpoint;
 
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
@@ -42,6 +45,13 @@ if (captureS3Destination) {
   console.info(`S3 destination for capture is ${captureS3Destination}`)
 } else {
   console.info(`S3 destination for capture not set.  Cloud media capture will not be available.`)
+}
+
+const ivsEndpoint = process.env.IVS_ENDPOINT;
+if (ivsEndpoint) {
+  console.info(`IVS destination for live connector is ${ivsEndpoint}`)
+} else {
+  console.info(`IVS destination for live connector not set. Live Connector will not be available.`)
 }
 
 // return Chime Meetings SDK Client just for Echo Reduction for now.
@@ -186,7 +196,6 @@ function serve(host = '127.0.0.1:8080') {
       } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
         // End the meeting. All attendee connections will hang up.
         let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
-
         await client.deleteMeeting({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
         }).promise();
@@ -206,7 +215,62 @@ function serve(host = '127.0.0.1:8080') {
           console.warn("Cloud media capture not available")
           respond(response, 500, 'application/json', JSON.stringify({}))
         }
-      } else if (request.method === 'POST' && requestUrl.pathname === '/deleteAttendee') {
+      } else if (request.method === 'POST' && requestUrl.pathname === '/startLiveConnector') {
+        if (ivsEndpoint) {
+          try {
+            const callerInfo = await sts.getCallerIdentity().promise()
+            liveConnectorPipelineInfo = await chimeSDKMediaPipelinesRegional.createMediaLiveConnectorPipeline({
+              Sinks: [
+                {
+                  RTMPConfiguration: {
+                    AudioChannels: "Stereo",
+                    AudioSampleRate: "48000",
+                    Url: ivsEndpoint
+                  },
+                  SinkType: "RTMP"
+                }
+              ],
+              Sources: [
+                {
+                  ChimeSdkMeetingLiveConnectorConfiguration: {
+                    Arn: `arn:aws:chime::${callerInfo.Account}:meeting:${meetingTable[requestUrl.query.title].Meeting.MeetingId}`,
+                    CompositedVideo: {
+                      GridViewConfiguration: {
+                        ContentShareLayout: "Vertical",
+                      },
+                      Layout: "GridView",
+                      Resolution: "FHD",
+                    },
+                    MuxType: "AudioWithCompositedVideo"
+                  },
+                  SourceType: "ChimeSdkMeeting"
+                }
+              ]
+            }).promise();
+            meetingTable[requestUrl.query.title].LiveConnector = liveConnectorPipelineInfo.MediaLiveConnectorPipeline;
+            respond(response, 201, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
+          }
+          catch (err) {
+            respond(response, 500, 'application/json', JSON.stringify({ error: err.message }, null, 2));
+          }
+        } else {
+          console.warn("Live Connector not available")
+          respond(response, 500, 'application/json', JSON.stringify({}))
+        }
+      } else if (request.method === 'POST' && requestUrl.pathname === '/endLiveConnector') {
+        if (ivsEndpoint) {
+          liveConnectorPipelineId = meetingTable[requestUrl.query.title].LiveConnector.MediaPipelineId;
+          liveConnectorPipelineInfo = await chimeSDKMediaPipelinesRegional.deleteMediaPipeline({
+            MediaPipelineId: liveConnectorPipelineId
+          }).promise();
+          meetingTable[requestUrl.query.title].LiveConnector = undefined;
+          respond(response, 200, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
+        } else {
+          console.warn("Live Connector not available")
+          respond(response, 500, 'application/json', JSON.stringify({}))
+        }
+      }
+      else if (request.method === 'POST' && requestUrl.pathname === '/deleteAttendee') {
         if (!requestUrl.query.title || !requestUrl.query.attendeeId) {
           throw new Error('Need parameters: title, attendeeId');
         }

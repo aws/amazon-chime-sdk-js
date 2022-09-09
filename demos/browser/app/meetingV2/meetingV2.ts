@@ -296,6 +296,7 @@ export class DemoMeetingApp
     'button-video-filter': 'off',
     'button-record-self': 'off',
     'button-record-cloud': 'off',
+    'button-live-connector': 'off',
   };
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
@@ -856,6 +857,30 @@ export class DemoMeetingApp
           buttonCloudCapture.disabled = true;
           await this.stopMediaCapture();
           buttonCloudCapture.disabled = false;
+        });
+      }
+    });
+
+    const buttonLiveConnector = document.getElementById('button-live-connector') as HTMLButtonElement;
+    buttonLiveConnector.addEventListener('click', _e => {
+      this.toggleButton('button-live-connector');
+      if (this.isButtonOn('button-live-connector')) {
+        AsyncScheduler.nextTick(async () => {
+          buttonLiveConnector.disabled = true;
+          const response = await this.startLiveConnector();
+          const toastContainer = document.getElementById('toast-container');
+          const toast = document.createElement('meeting-toast') as MeetingToast
+          toastContainer.appendChild(toast);
+          toast.message = "Playback URL: " + response.playBackUrl;
+          toast.delay = "50000"
+          toast.show();
+          buttonLiveConnector.disabled = false;
+        });
+      } else {
+        AsyncScheduler.nextTick(async () => {
+          buttonLiveConnector.disabled = true;
+          await this.stopLiveConnector();
+          buttonLiveConnector.disabled = false;
         });
       }
     });
@@ -2253,6 +2278,25 @@ export class DemoMeetingApp
       `${DemoMeetingApp.BASE_URL}endCapture?title=${encodeURIComponent(this.meeting)}`, {
       method: 'POST',
     });
+  }
+
+  async startLiveConnector(): Promise<any> {
+    const liveConnectorresponse = await fetch(
+        `${DemoMeetingApp.BASE_URL}startLiveConnector?title=${encodeURIComponent(this.meeting)}`, {
+          method: 'POST',
+        });
+    const json = await liveConnectorresponse.json();
+    if (json.error) {
+      throw new Error(`Server error: ${json.error}`);
+    }
+    return json;
+  }
+
+  async stopLiveConnector(): Promise<any> {
+    await fetch(
+        `${DemoMeetingApp.BASE_URL}endLiveConnector?title=${encodeURIComponent(this.meeting)}`, {
+          method: 'POST',
+        });
   }
 
 

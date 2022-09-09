@@ -36,6 +36,12 @@ the same AWS region as the meeting and have the following bucket policy:
     ]
 }
 ```
+To use the Amazon Chime SDK media pipelines live connector feature, provide an Amazon Interactive Video Service (IVS) channel endpoint and set the environment variable when running locally. For example:
+```
+export IVS_ENDPOINT=<rtmps://ingest-server-url:443/app/stream-key>
+```
+
+Check Amazon Chime SDK launches live connector for streaming blog post for more information.
 
 For messaging session, make sure your role policy contains `chime:Connect` and `chime:GetMessagingSessionEndpoint`.
 

@@ -51,6 +51,7 @@ Parameters:
     Type: String
     AllowedValues: [ true, false ]
 
+
 Conditions:
   ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
   ShouldDeployFetchCredentialLambda: !Equals [true, !Ref UseFetchCredentialLambda]
@@ -101,6 +102,10 @@ Resources:
               - 'chime:StopMeetingTranscription'
               - 'chime:CreateMediaCapturePipeline'
               - 'chime:DeleteMediaCapturePipeline'
+              - 'chime:CreateMediaLiveConnectorPipeline'
+              - 'chime:DeleteMediaPipeline'
+              - 'ivs:CreateChannel'
+              - 'ivs:DeleteChannel'
               - 's3:GetBucketPolicy'
               - 's3:GetBucketLocation'
             Resource: '*'
@@ -112,6 +117,8 @@ Resources:
         - Ref: ChimeSdkStopTranscriptionLambdaRole
         - Ref: ChimeSdkStartCaptureLambdaRole
         - Ref: ChimeSdkEndCaptureLambdaRole
+        - Ref: ChimeSdkStartLiveConnectorLambdaRole
+        - Ref: ChimeSdkEndLiveConnectorLambdaRole
   ChimeMessagingAccessPolicy:
     Type: AWS::IAM::Policy
     Condition: ShouldDeployFetchCredentialLambda
@@ -313,6 +320,39 @@ Resources:
           Properties:
             Path: /endCapture
             Method: POST
+
+  ChimeSdkStartLiveConnectorLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.start_live_connector
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Environment:
+        Variables:
+          USE_EVENT_BRIDGE: !Ref UseEventBridge
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /startLiveConnector
+            Method: POST
+  ChimeSdkEndLiveConnectorLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.end_live_connector
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /endLiveConnector
+            Method: POST
+
   ChimeSQSQueueLambda:
     Type: AWS::Serverless::Function
     Properties:
