@@ -248,7 +248,7 @@ message SdkMetric {
         VIDEO_ENCODE_USAGE_PERCENT = 22;
         VIDEO_NACKS_RECEIVED = 23;
         VIDEO_PLIS_RECEIVED = 24;
-        VIDEO_AVERAGE_ENCODE_MS = 25;
+        VIDEO_ENCODE_MS = 25;
         VIDEO_INPUT_FPS = 26;
         VIDEO_ENCODE_FPS = 27;
         VIDEO_SENT_FPS = 28;
@@ -279,6 +279,8 @@ message SdkMetric {
         VIDEO_RECEIVED_QP_SUM = 72;
         VIDEO_ENCODE_WIDTH = 86;
         VIDEO_DECODE_WIDTH = 87;
+        VIDEO_ENCODER_IS_HARDWARE = 88;
+        VIDEO_DECODER_IS_HARDWARE = 89;
     }
     optional Type type = 1;
     optional double value = 2;
@@ -288,11 +290,28 @@ message SdkStreamMetricFrame {
     optional uint32 stream_id = 3;
     optional uint32 group_id = 4;
     repeated SdkMetric metrics = 5;
+    repeated SdkStreamDimension dimensions = 6;
 }
 
 message SdkClientMetricFrame {
     repeated SdkMetric global_metrics = 1;
     repeated SdkStreamMetricFrame stream_metric_frames = 2;
+}
+
+
+message SdkStreamDimension {
+    enum Type {
+        VIDEO_ENCODER_NAME = 1;
+        VIDEO_DECODER_NAME = 2;
+    }
+    optional Type type = 1;
+    optional SdkDimensionValue value = 2;
+}
+
+message SdkDimensionValue {
+    optional string string_value = 1;
+    optional bool bool_value = 2;
+    optional uint64 uint_value = 3;
 }
 
 message SdkDataMessageFrame {

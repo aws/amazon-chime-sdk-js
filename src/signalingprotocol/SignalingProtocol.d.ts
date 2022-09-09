@@ -2717,7 +2717,7 @@ export namespace SdkMetric {
         VIDEO_ENCODE_USAGE_PERCENT = 22,
         VIDEO_NACKS_RECEIVED = 23,
         VIDEO_PLIS_RECEIVED = 24,
-        VIDEO_AVERAGE_ENCODE_MS = 25,
+        VIDEO_ENCODE_MS = 25,
         VIDEO_INPUT_FPS = 26,
         VIDEO_ENCODE_FPS = 27,
         VIDEO_SENT_FPS = 28,
@@ -2747,7 +2747,9 @@ export namespace SdkMetric {
         VIDEO_DECODE_HEIGHT = 69,
         VIDEO_RECEIVED_QP_SUM = 72,
         VIDEO_ENCODE_WIDTH = 86,
-        VIDEO_DECODE_WIDTH = 87
+        VIDEO_DECODE_WIDTH = 87,
+        VIDEO_ENCODER_IS_HARDWARE = 88,
+        VIDEO_DECODER_IS_HARDWARE = 89
     }
 }
 
@@ -2762,6 +2764,9 @@ export interface ISdkStreamMetricFrame {
 
     /** SdkStreamMetricFrame metrics */
     metrics?: (ISdkMetric[]|null);
+
+    /** SdkStreamMetricFrame dimensions */
+    dimensions?: (ISdkStreamDimension[]|null);
 }
 
 /** Represents a SdkStreamMetricFrame. */
@@ -2781,6 +2786,9 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
 
     /** SdkStreamMetricFrame metrics. */
     public metrics: ISdkMetric[];
+
+    /** SdkStreamMetricFrame dimensions. */
+    public dimensions: ISdkStreamDimension[];
 
     /**
      * Creates a new SdkStreamMetricFrame instance using the specified properties.
@@ -2944,6 +2952,213 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
 
     /**
      * Converts this SdkClientMetricFrame to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkStreamDimension. */
+export interface ISdkStreamDimension {
+
+    /** SdkStreamDimension type */
+    type?: (SdkStreamDimension.Type|null);
+
+    /** SdkStreamDimension value */
+    value?: (ISdkDimensionValue|null);
+}
+
+/** Represents a SdkStreamDimension. */
+export class SdkStreamDimension implements ISdkStreamDimension {
+
+    /**
+     * Constructs a new SdkStreamDimension.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkStreamDimension);
+
+    /** SdkStreamDimension type. */
+    public type: SdkStreamDimension.Type;
+
+    /** SdkStreamDimension value. */
+    public value?: (ISdkDimensionValue|null);
+
+    /**
+     * Creates a new SdkStreamDimension instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkStreamDimension instance
+     */
+    public static create(properties?: ISdkStreamDimension): SdkStreamDimension;
+
+    /**
+     * Encodes the specified SdkStreamDimension message. Does not implicitly {@link SdkStreamDimension.verify|verify} messages.
+     * @param message SdkStreamDimension message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkStreamDimension, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkStreamDimension message, length delimited. Does not implicitly {@link SdkStreamDimension.verify|verify} messages.
+     * @param message SdkStreamDimension message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkStreamDimension, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkStreamDimension message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkStreamDimension
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkStreamDimension;
+
+    /**
+     * Decodes a SdkStreamDimension message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkStreamDimension
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkStreamDimension;
+
+    /**
+     * Verifies a SdkStreamDimension message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkStreamDimension message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkStreamDimension
+     */
+    public static fromObject(object: { [k: string]: any }): SdkStreamDimension;
+
+    /**
+     * Creates a plain object from a SdkStreamDimension message. Also converts values to other types if specified.
+     * @param message SdkStreamDimension
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkStreamDimension, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkStreamDimension to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+export namespace SdkStreamDimension {
+
+    /** Type enum. */
+    enum Type {
+        VIDEO_ENCODER_NAME = 1,
+        VIDEO_DECODER_NAME = 2
+    }
+}
+
+/** Properties of a SdkDimensionValue. */
+export interface ISdkDimensionValue {
+
+    /** SdkDimensionValue stringValue */
+    stringValue?: (string|null);
+
+    /** SdkDimensionValue boolValue */
+    boolValue?: (boolean|null);
+
+    /** SdkDimensionValue uintValue */
+    uintValue?: (number|Long|null);
+}
+
+/** Represents a SdkDimensionValue. */
+export class SdkDimensionValue implements ISdkDimensionValue {
+
+    /**
+     * Constructs a new SdkDimensionValue.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkDimensionValue);
+
+    /** SdkDimensionValue stringValue. */
+    public stringValue: string;
+
+    /** SdkDimensionValue boolValue. */
+    public boolValue: boolean;
+
+    /** SdkDimensionValue uintValue. */
+    public uintValue: (number|Long);
+
+    /**
+     * Creates a new SdkDimensionValue instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkDimensionValue instance
+     */
+    public static create(properties?: ISdkDimensionValue): SdkDimensionValue;
+
+    /**
+     * Encodes the specified SdkDimensionValue message. Does not implicitly {@link SdkDimensionValue.verify|verify} messages.
+     * @param message SdkDimensionValue message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkDimensionValue, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkDimensionValue message, length delimited. Does not implicitly {@link SdkDimensionValue.verify|verify} messages.
+     * @param message SdkDimensionValue message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkDimensionValue, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkDimensionValue message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkDimensionValue
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkDimensionValue;
+
+    /**
+     * Decodes a SdkDimensionValue message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkDimensionValue
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkDimensionValue;
+
+    /**
+     * Verifies a SdkDimensionValue message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkDimensionValue message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkDimensionValue
+     */
+    public static fromObject(object: { [k: string]: any }): SdkDimensionValue;
+
+    /**
+     * Creates a plain object from a SdkDimensionValue message. Also converts values to other types if specified.
+     * @param message SdkDimensionValue
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkDimensionValue, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkDimensionValue to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
