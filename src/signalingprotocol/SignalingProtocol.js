@@ -7044,6 +7044,8 @@ $root.SdkMetric = (function() {
             case 72:
             case 86:
             case 87:
+            case 88:
+            case 89:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -7161,7 +7163,7 @@ $root.SdkMetric = (function() {
         case 24:
             message.type = 24;
             break;
-        case "VIDEO_AVERAGE_ENCODE_MS":
+        case "VIDEO_ENCODE_MS":
         case 25:
             message.type = 25;
             break;
@@ -7285,6 +7287,14 @@ $root.SdkMetric = (function() {
         case 87:
             message.type = 87;
             break;
+        case "VIDEO_ENCODER_IS_HARDWARE":
+        case 88:
+            message.type = 88;
+            break;
+        case "VIDEO_DECODER_IS_HARDWARE":
+        case 89:
+            message.type = 89;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -7354,7 +7364,7 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_ENCODE_USAGE_PERCENT=22 VIDEO_ENCODE_USAGE_PERCENT value
      * @property {number} VIDEO_NACKS_RECEIVED=23 VIDEO_NACKS_RECEIVED value
      * @property {number} VIDEO_PLIS_RECEIVED=24 VIDEO_PLIS_RECEIVED value
-     * @property {number} VIDEO_AVERAGE_ENCODE_MS=25 VIDEO_AVERAGE_ENCODE_MS value
+     * @property {number} VIDEO_ENCODE_MS=25 VIDEO_ENCODE_MS value
      * @property {number} VIDEO_INPUT_FPS=26 VIDEO_INPUT_FPS value
      * @property {number} VIDEO_ENCODE_FPS=27 VIDEO_ENCODE_FPS value
      * @property {number} VIDEO_SENT_FPS=28 VIDEO_SENT_FPS value
@@ -7385,6 +7395,8 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_RECEIVED_QP_SUM=72 VIDEO_RECEIVED_QP_SUM value
      * @property {number} VIDEO_ENCODE_WIDTH=86 VIDEO_ENCODE_WIDTH value
      * @property {number} VIDEO_DECODE_WIDTH=87 VIDEO_DECODE_WIDTH value
+     * @property {number} VIDEO_ENCODER_IS_HARDWARE=88 VIDEO_ENCODER_IS_HARDWARE value
+     * @property {number} VIDEO_DECODER_IS_HARDWARE=89 VIDEO_DECODER_IS_HARDWARE value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -7412,7 +7424,7 @@ $root.SdkMetric = (function() {
         values[valuesById[22] = "VIDEO_ENCODE_USAGE_PERCENT"] = 22;
         values[valuesById[23] = "VIDEO_NACKS_RECEIVED"] = 23;
         values[valuesById[24] = "VIDEO_PLIS_RECEIVED"] = 24;
-        values[valuesById[25] = "VIDEO_AVERAGE_ENCODE_MS"] = 25;
+        values[valuesById[25] = "VIDEO_ENCODE_MS"] = 25;
         values[valuesById[26] = "VIDEO_INPUT_FPS"] = 26;
         values[valuesById[27] = "VIDEO_ENCODE_FPS"] = 27;
         values[valuesById[28] = "VIDEO_SENT_FPS"] = 28;
@@ -7443,6 +7455,8 @@ $root.SdkMetric = (function() {
         values[valuesById[72] = "VIDEO_RECEIVED_QP_SUM"] = 72;
         values[valuesById[86] = "VIDEO_ENCODE_WIDTH"] = 86;
         values[valuesById[87] = "VIDEO_DECODE_WIDTH"] = 87;
+        values[valuesById[88] = "VIDEO_ENCODER_IS_HARDWARE"] = 88;
+        values[valuesById[89] = "VIDEO_DECODER_IS_HARDWARE"] = 89;
         return values;
     })();
 
@@ -7458,6 +7472,7 @@ $root.SdkStreamMetricFrame = (function() {
      * @property {number|null} [streamId] SdkStreamMetricFrame streamId
      * @property {number|null} [groupId] SdkStreamMetricFrame groupId
      * @property {Array.<ISdkMetric>|null} [metrics] SdkStreamMetricFrame metrics
+     * @property {Array.<ISdkStreamDimension>|null} [dimensions] SdkStreamMetricFrame dimensions
      */
 
     /**
@@ -7470,6 +7485,7 @@ $root.SdkStreamMetricFrame = (function() {
      */
     function SdkStreamMetricFrame(properties) {
         this.metrics = [];
+        this.dimensions = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -7499,6 +7515,14 @@ $root.SdkStreamMetricFrame = (function() {
      * @instance
      */
     SdkStreamMetricFrame.prototype.metrics = $util.emptyArray;
+
+    /**
+     * SdkStreamMetricFrame dimensions.
+     * @member {Array.<ISdkStreamDimension>} dimensions
+     * @memberof SdkStreamMetricFrame
+     * @instance
+     */
+    SdkStreamMetricFrame.prototype.dimensions = $util.emptyArray;
 
     /**
      * Creates a new SdkStreamMetricFrame instance using the specified properties.
@@ -7531,6 +7555,9 @@ $root.SdkStreamMetricFrame = (function() {
         if (message.metrics != null && message.metrics.length)
             for (var i = 0; i < message.metrics.length; ++i)
                 $root.SdkMetric.encode(message.metrics[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+        if (message.dimensions != null && message.dimensions.length)
+            for (var i = 0; i < message.dimensions.length; ++i)
+                $root.SdkStreamDimension.encode(message.dimensions[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
         return writer;
     };
 
@@ -7575,6 +7602,11 @@ $root.SdkStreamMetricFrame = (function() {
                 if (!(message.metrics && message.metrics.length))
                     message.metrics = [];
                 message.metrics.push($root.SdkMetric.decode(reader, reader.uint32()));
+                break;
+            case 6:
+                if (!(message.dimensions && message.dimensions.length))
+                    message.dimensions = [];
+                message.dimensions.push($root.SdkStreamDimension.decode(reader, reader.uint32()));
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -7626,6 +7658,15 @@ $root.SdkStreamMetricFrame = (function() {
                     return "metrics." + error;
             }
         }
+        if (message.dimensions != null && message.hasOwnProperty("dimensions")) {
+            if (!Array.isArray(message.dimensions))
+                return "dimensions: array expected";
+            for (var i = 0; i < message.dimensions.length; ++i) {
+                var error = $root.SdkStreamDimension.verify(message.dimensions[i]);
+                if (error)
+                    return "dimensions." + error;
+            }
+        }
         return null;
     };
 
@@ -7655,6 +7696,16 @@ $root.SdkStreamMetricFrame = (function() {
                 message.metrics[i] = $root.SdkMetric.fromObject(object.metrics[i]);
             }
         }
+        if (object.dimensions) {
+            if (!Array.isArray(object.dimensions))
+                throw TypeError(".SdkStreamMetricFrame.dimensions: array expected");
+            message.dimensions = [];
+            for (var i = 0; i < object.dimensions.length; ++i) {
+                if (typeof object.dimensions[i] !== "object")
+                    throw TypeError(".SdkStreamMetricFrame.dimensions: object expected");
+                message.dimensions[i] = $root.SdkStreamDimension.fromObject(object.dimensions[i]);
+            }
+        }
         return message;
     };
 
@@ -7671,8 +7722,10 @@ $root.SdkStreamMetricFrame = (function() {
         if (!options)
             options = {};
         var object = {};
-        if (options.arrays || options.defaults)
+        if (options.arrays || options.defaults) {
             object.metrics = [];
+            object.dimensions = [];
+        }
         if (options.defaults) {
             object.streamId = 0;
             object.groupId = 0;
@@ -7685,6 +7738,11 @@ $root.SdkStreamMetricFrame = (function() {
             object.metrics = [];
             for (var j = 0; j < message.metrics.length; ++j)
                 object.metrics[j] = $root.SdkMetric.toObject(message.metrics[j], options);
+        }
+        if (message.dimensions && message.dimensions.length) {
+            object.dimensions = [];
+            for (var j = 0; j < message.dimensions.length; ++j)
+                object.dimensions[j] = $root.SdkStreamDimension.toObject(message.dimensions[j], options);
         }
         return object;
     };
@@ -7953,6 +8011,494 @@ $root.SdkClientMetricFrame = (function() {
     };
 
     return SdkClientMetricFrame;
+})();
+
+$root.SdkStreamDimension = (function() {
+
+    /**
+     * Properties of a SdkStreamDimension.
+     * @exports ISdkStreamDimension
+     * @interface ISdkStreamDimension
+     * @property {SdkStreamDimension.Type|null} [type] SdkStreamDimension type
+     * @property {ISdkDimensionValue|null} [value] SdkStreamDimension value
+     */
+
+    /**
+     * Constructs a new SdkStreamDimension.
+     * @exports SdkStreamDimension
+     * @classdesc Represents a SdkStreamDimension.
+     * @implements ISdkStreamDimension
+     * @constructor
+     * @param {ISdkStreamDimension=} [properties] Properties to set
+     */
+    function SdkStreamDimension(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkStreamDimension type.
+     * @member {SdkStreamDimension.Type} type
+     * @memberof SdkStreamDimension
+     * @instance
+     */
+    SdkStreamDimension.prototype.type = 1;
+
+    /**
+     * SdkStreamDimension value.
+     * @member {ISdkDimensionValue|null|undefined} value
+     * @memberof SdkStreamDimension
+     * @instance
+     */
+    SdkStreamDimension.prototype.value = null;
+
+    /**
+     * Creates a new SdkStreamDimension instance using the specified properties.
+     * @function create
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {ISdkStreamDimension=} [properties] Properties to set
+     * @returns {SdkStreamDimension} SdkStreamDimension instance
+     */
+    SdkStreamDimension.create = function create(properties) {
+        return new SdkStreamDimension(properties);
+    };
+
+    /**
+     * Encodes the specified SdkStreamDimension message. Does not implicitly {@link SdkStreamDimension.verify|verify} messages.
+     * @function encode
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {ISdkStreamDimension} message SdkStreamDimension message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkStreamDimension.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
+        if (message.value != null && Object.hasOwnProperty.call(message, "value"))
+            $root.SdkDimensionValue.encode(message.value, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkStreamDimension message, length delimited. Does not implicitly {@link SdkStreamDimension.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {ISdkStreamDimension} message SdkStreamDimension message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkStreamDimension.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkStreamDimension message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkStreamDimension} SdkStreamDimension
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkStreamDimension.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkStreamDimension();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.type = reader.int32();
+                break;
+            case 2:
+                message.value = $root.SdkDimensionValue.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkStreamDimension message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkStreamDimension} SdkStreamDimension
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkStreamDimension.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkStreamDimension message.
+     * @function verify
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkStreamDimension.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.type != null && message.hasOwnProperty("type"))
+            switch (message.type) {
+            default:
+                return "type: enum value expected";
+            case 1:
+            case 2:
+                break;
+            }
+        if (message.value != null && message.hasOwnProperty("value")) {
+            var error = $root.SdkDimensionValue.verify(message.value);
+            if (error)
+                return "value." + error;
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkStreamDimension message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkStreamDimension} SdkStreamDimension
+     */
+    SdkStreamDimension.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkStreamDimension)
+            return object;
+        var message = new $root.SdkStreamDimension();
+        switch (object.type) {
+        case "VIDEO_ENCODER_NAME":
+        case 1:
+            message.type = 1;
+            break;
+        case "VIDEO_DECODER_NAME":
+        case 2:
+            message.type = 2;
+            break;
+        }
+        if (object.value != null) {
+            if (typeof object.value !== "object")
+                throw TypeError(".SdkStreamDimension.value: object expected");
+            message.value = $root.SdkDimensionValue.fromObject(object.value);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkStreamDimension message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {SdkStreamDimension} message SdkStreamDimension
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkStreamDimension.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.type = options.enums === String ? "VIDEO_ENCODER_NAME" : 1;
+            object.value = null;
+        }
+        if (message.type != null && message.hasOwnProperty("type"))
+            object.type = options.enums === String ? $root.SdkStreamDimension.Type[message.type] : message.type;
+        if (message.value != null && message.hasOwnProperty("value"))
+            object.value = $root.SdkDimensionValue.toObject(message.value, options);
+        return object;
+    };
+
+    /**
+     * Converts this SdkStreamDimension to JSON.
+     * @function toJSON
+     * @memberof SdkStreamDimension
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkStreamDimension.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Type enum.
+     * @name SdkStreamDimension.Type
+     * @enum {number}
+     * @property {number} VIDEO_ENCODER_NAME=1 VIDEO_ENCODER_NAME value
+     * @property {number} VIDEO_DECODER_NAME=2 VIDEO_DECODER_NAME value
+     */
+    SdkStreamDimension.Type = (function() {
+        var valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[1] = "VIDEO_ENCODER_NAME"] = 1;
+        values[valuesById[2] = "VIDEO_DECODER_NAME"] = 2;
+        return values;
+    })();
+
+    return SdkStreamDimension;
+})();
+
+$root.SdkDimensionValue = (function() {
+
+    /**
+     * Properties of a SdkDimensionValue.
+     * @exports ISdkDimensionValue
+     * @interface ISdkDimensionValue
+     * @property {string|null} [stringValue] SdkDimensionValue stringValue
+     * @property {boolean|null} [boolValue] SdkDimensionValue boolValue
+     * @property {number|Long|null} [uintValue] SdkDimensionValue uintValue
+     */
+
+    /**
+     * Constructs a new SdkDimensionValue.
+     * @exports SdkDimensionValue
+     * @classdesc Represents a SdkDimensionValue.
+     * @implements ISdkDimensionValue
+     * @constructor
+     * @param {ISdkDimensionValue=} [properties] Properties to set
+     */
+    function SdkDimensionValue(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkDimensionValue stringValue.
+     * @member {string} stringValue
+     * @memberof SdkDimensionValue
+     * @instance
+     */
+    SdkDimensionValue.prototype.stringValue = "";
+
+    /**
+     * SdkDimensionValue boolValue.
+     * @member {boolean} boolValue
+     * @memberof SdkDimensionValue
+     * @instance
+     */
+    SdkDimensionValue.prototype.boolValue = false;
+
+    /**
+     * SdkDimensionValue uintValue.
+     * @member {number|Long} uintValue
+     * @memberof SdkDimensionValue
+     * @instance
+     */
+    SdkDimensionValue.prototype.uintValue = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+    /**
+     * Creates a new SdkDimensionValue instance using the specified properties.
+     * @function create
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {ISdkDimensionValue=} [properties] Properties to set
+     * @returns {SdkDimensionValue} SdkDimensionValue instance
+     */
+    SdkDimensionValue.create = function create(properties) {
+        return new SdkDimensionValue(properties);
+    };
+
+    /**
+     * Encodes the specified SdkDimensionValue message. Does not implicitly {@link SdkDimensionValue.verify|verify} messages.
+     * @function encode
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {ISdkDimensionValue} message SdkDimensionValue message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkDimensionValue.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.stringValue != null && Object.hasOwnProperty.call(message, "stringValue"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.stringValue);
+        if (message.boolValue != null && Object.hasOwnProperty.call(message, "boolValue"))
+            writer.uint32(/* id 2, wireType 0 =*/16).bool(message.boolValue);
+        if (message.uintValue != null && Object.hasOwnProperty.call(message, "uintValue"))
+            writer.uint32(/* id 3, wireType 0 =*/24).uint64(message.uintValue);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkDimensionValue message, length delimited. Does not implicitly {@link SdkDimensionValue.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {ISdkDimensionValue} message SdkDimensionValue message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkDimensionValue.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkDimensionValue message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkDimensionValue} SdkDimensionValue
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkDimensionValue.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkDimensionValue();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.stringValue = reader.string();
+                break;
+            case 2:
+                message.boolValue = reader.bool();
+                break;
+            case 3:
+                message.uintValue = reader.uint64();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkDimensionValue message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkDimensionValue} SdkDimensionValue
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkDimensionValue.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkDimensionValue message.
+     * @function verify
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkDimensionValue.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.stringValue != null && message.hasOwnProperty("stringValue"))
+            if (!$util.isString(message.stringValue))
+                return "stringValue: string expected";
+        if (message.boolValue != null && message.hasOwnProperty("boolValue"))
+            if (typeof message.boolValue !== "boolean")
+                return "boolValue: boolean expected";
+        if (message.uintValue != null && message.hasOwnProperty("uintValue"))
+            if (!$util.isInteger(message.uintValue) && !(message.uintValue && $util.isInteger(message.uintValue.low) && $util.isInteger(message.uintValue.high)))
+                return "uintValue: integer|Long expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkDimensionValue message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkDimensionValue} SdkDimensionValue
+     */
+    SdkDimensionValue.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkDimensionValue)
+            return object;
+        var message = new $root.SdkDimensionValue();
+        if (object.stringValue != null)
+            message.stringValue = String(object.stringValue);
+        if (object.boolValue != null)
+            message.boolValue = Boolean(object.boolValue);
+        if (object.uintValue != null)
+            if ($util.Long)
+                (message.uintValue = $util.Long.fromValue(object.uintValue)).unsigned = true;
+            else if (typeof object.uintValue === "string")
+                message.uintValue = parseInt(object.uintValue, 10);
+            else if (typeof object.uintValue === "number")
+                message.uintValue = object.uintValue;
+            else if (typeof object.uintValue === "object")
+                message.uintValue = new $util.LongBits(object.uintValue.low >>> 0, object.uintValue.high >>> 0).toNumber(true);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkDimensionValue message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {SdkDimensionValue} message SdkDimensionValue
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkDimensionValue.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.stringValue = "";
+            object.boolValue = false;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, true);
+                object.uintValue = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.uintValue = options.longs === String ? "0" : 0;
+        }
+        if (message.stringValue != null && message.hasOwnProperty("stringValue"))
+            object.stringValue = message.stringValue;
+        if (message.boolValue != null && message.hasOwnProperty("boolValue"))
+            object.boolValue = message.boolValue;
+        if (message.uintValue != null && message.hasOwnProperty("uintValue"))
+            if (typeof message.uintValue === "number")
+                object.uintValue = options.longs === String ? String(message.uintValue) : message.uintValue;
+            else
+                object.uintValue = options.longs === String ? $util.Long.prototype.toString.call(message.uintValue) : options.longs === Number ? new $util.LongBits(message.uintValue.low >>> 0, message.uintValue.high >>> 0).toNumber(true) : message.uintValue;
+        return object;
+    };
+
+    /**
+     * Converts this SdkDimensionValue to JSON.
+     * @function toJSON
+     * @memberof SdkDimensionValue
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkDimensionValue.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkDimensionValue;
 })();
 
 $root.SdkDataMessageFrame = (function() {
