@@ -14,7 +14,9 @@ import IntervalScheduler from '../scheduler/IntervalScheduler';
 import SignalingClient from '../signalingclient/SignalingClient';
 import {
   SdkClientMetricFrame,
+  SdkDimensionValue,
   SdkMetric,
+  SdkStreamDimension,
   SdkStreamMetricFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
 import { Maybe } from '../utils/Types';
@@ -253,8 +255,16 @@ export default class StatsCollector {
 
     for (const rawMetric in rawMetricReport) {
       if (rawMetric in metricMap) {
-        metricReport.previousMetrics[rawMetric] = metricReport.currentMetrics[rawMetric];
-        metricReport.currentMetrics[rawMetric] = rawMetricReport[rawMetric];
+        if (typeof rawMetricReport[rawMetric] === 'number') {
+          metricReport.previousMetrics[rawMetric] = metricReport.currentMetrics[rawMetric];
+          metricReport.currentMetrics[rawMetric] = rawMetricReport[rawMetric];
+        } else if (typeof rawMetricReport[rawMetric] === 'string') {
+          metricReport.stringValues[rawMetric] = rawMetricReport[rawMetric];
+        } else {
+          this.logger.error(
+            `Unknown metric value type ${typeof rawMetricReport[rawMetric]} for metric ${rawMetric}`
+          );
+        }
       }
     }
   }
@@ -298,6 +308,26 @@ export default class StatsCollector {
     this.clientMetricReport.previousTimestampMs = this.clientMetricReport.currentTimestampMs;
     this.clientMetricReport.currentTimestampMs = timeStamp;
     this.clientMetricReport.print();
+  }
+
+  /**
+   *  Add stream metric dimension frames derived from metrics
+   */
+  private addStreamMetricDimensionFrames(
+    streamMetricFrame: SdkStreamMetricFrame,
+    streamMetricReport: StreamMetricReport
+  ): void {
+    const streamDimensionMap = this.clientMetricReport.getStreamMetricDimensionMap();
+    for (const metricName in streamMetricReport.stringValues) {
+      if (metricName in streamDimensionMap) {
+        const dimensionFrame = SdkStreamDimension.create();
+        dimensionFrame.type = streamDimensionMap[metricName];
+        const dimensionValue = SdkDimensionValue.create();
+        dimensionValue.stringValue = streamMetricReport.stringValues[metricName];
+        dimensionFrame.value = dimensionValue;
+        streamMetricFrame.dimensions.push(dimensionFrame);
+      }
+    }
   }
 
   /**
@@ -350,11 +380,13 @@ export default class StatsCollector {
       const streamMetricFrame = SdkStreamMetricFrame.create();
       streamMetricFrame.streamId = streamMetricReport.streamId;
       streamMetricFrame.metrics = [];
+      this.addStreamMetricDimensionFrames(streamMetricFrame, streamMetricReport);
       clientMetricFrame.streamMetricFrames.push(streamMetricFrame);
       const metricMap = this.clientMetricReport.getMetricMap(
         streamMetricReport.mediaType,
         streamMetricReport.direction
       );
+
       for (const metricName in streamMetricReport.currentMetrics) {
         this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
       }

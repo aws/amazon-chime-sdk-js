@@ -10,4 +10,5 @@ export default class StreamMetricReport {
   direction: Direction;
   previousMetrics: { [id: string]: number } = {};
   currentMetrics: { [id: string]: number } = {};
+  stringValues: { [id: string]: string } = {};
 }

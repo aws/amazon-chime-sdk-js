@@ -248,6 +248,106 @@ describe('ClientMetricReport', () => {
     });
   });
 
+  describe('millisecondsPerSecond', () => {
+    const metricName = 'metric-name';
+
+    it('returns 0 if the interval is 0', () => {
+      const report = new GlobalMetricReport();
+      clientMetricReport.globalMetricReport = report;
+      clientMetricReport.currentTimestampMs = 0;
+      clientMetricReport.previousTimestampMs = 0;
+      expect(clientMetricReport.millisecondsPerSecond(metricName)).to.equal(0);
+    });
+
+    it('returns 0 if the diff is 0', () => {
+      const report = new GlobalMetricReport();
+      report.currentMetrics[metricName] = 0;
+      clientMetricReport.globalMetricReport = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 0;
+      expect(clientMetricReport.millisecondsPerSecond(metricName)).to.equal(0);
+    });
+
+    it('interval is 1 second if pervious timestamp is 0', () => {
+      const report = new GlobalMetricReport();
+      report.currentMetrics[metricName] = 0.1;
+      clientMetricReport.globalMetricReport = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 0;
+      expect(clientMetricReport.millisecondsPerSecond(metricName)).to.equal(100);
+    });
+
+    it('returns the count from the stream metric reports', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentMetrics[metricName] = 0.1;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      expect(clientMetricReport.millisecondsPerSecond(metricName, ssrc)).to.equal(100);
+    });
+  });
+
+  describe('isHardwareImplementation', () => {
+    const metricName = 'metric-name';
+
+    it('return 0 for software implementation FFmpeg', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.stringValues[metricName] = 'FFmpeg';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+
+    it('return 0 for software implementation OpenH264', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.stringValues[metricName] = 'OpenH264';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+
+    it('return 0 for software implementation libvpx', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.stringValues[metricName] = 'libvpx';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+
+    it('return 1 for hardware implementation with ExternalDecoder', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.stringValues[metricName] = 'ExternalDecoder (VDAVideoDecoder)';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(1);
+    });
+
+    it('return 1 for hardware implementation with ExternalEncoder', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.stringValues[metricName] = 'ExternalEncoder';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(1);
+    });
+
+    it('return 1 for hardware implementation with HardwareAccelerator', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.stringValues[metricName] = 'MediaFoundationVideoEncodeAccelerator';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(1);
+    });
+
+    it('return 0 for implementation fallback from hardware', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.stringValues[metricName] = 'FFmpeg (fallback from: ExternalDecoder (VDAVideoDecoder)';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+  });
+
   describe('getMetricMap', () => {
     it('returns the global metric map if not passing the media type and the direction', () => {
       expect(clientMetricReport.getMetricMap()).to.equal(clientMetricReport.globalMetricMap);

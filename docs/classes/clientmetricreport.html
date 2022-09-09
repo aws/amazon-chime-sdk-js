@@ -104,6 +104,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmetricreport.html#observablevideometricspec" class="tsd-kind-icon">observable<wbr>Video<wbr>Metric<wbr>Spec</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmetricreport.html#previoustimestampms" class="tsd-kind-icon">previous<wbr>Timestamp<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmetricreport.html#rtcstatsreport" class="tsd-kind-icon">rtc<wbr>Stats<wbr>Report</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmetricreport.html#streammetricdimensionmap" class="tsd-kind-icon">stream<wbr>Metric<wbr>Dimension<wbr>Map</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmetricreport.html#streammetricreports" class="tsd-kind-icon">stream<wbr>Metric<wbr>Reports</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmetricreport.html#videodownstreammetricmap" class="tsd-kind-icon">video<wbr>Downstream<wbr>Metric<wbr>Map</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmetricreport.html#videoupstreammetricmap" class="tsd-kind-icon">video<wbr>Upstream<wbr>Metric<wbr>Map</a></li>
@@ -122,8 +123,11 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#getobservablevideometricvalue" class="tsd-kind-icon">get<wbr>Observable<wbr>Video<wbr>Metric<wbr>Value</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#getobservablevideometrics" class="tsd-kind-icon">get<wbr>Observable<wbr>Video<wbr>Metrics</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#getrtcstatsreport" class="tsd-kind-icon">getRTCStats<wbr>Report</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#getstreammetricdimensionmap" class="tsd-kind-icon">get<wbr>Stream<wbr>Metric<wbr>Dimension<wbr>Map</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#identityvalue" class="tsd-kind-icon">identity<wbr>Value</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#ishardwareimplementation" class="tsd-kind-icon">is<wbr>Hardware<wbr>Implementation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#jitterbufferms" class="tsd-kind-icon">jitter<wbr>Buffer<wbr>Ms</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#millisecondspersecond" class="tsd-kind-icon">milliseconds<wbr>Per<wbr>Second</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#packetlosspercent" class="tsd-kind-icon">packet<wbr>Loss<wbr>Percent</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#print" class="tsd-kind-icon">print</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#removedestroyedssrcs" class="tsd-kind-icon">remove<wbr>Destroyed<wbr>Ssrcs</a></li>
@@ -173,7 +177,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Downstream<wbr>Metric<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L189">src/clientmetricreport/ClientMetricReport.ts:189</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L218">src/clientmetricreport/ClientMetricReport.ts:218</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -223,7 +227,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Upstream<wbr>Metric<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L171">src/clientmetricreport/ClientMetricReport.ts:171</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L200">src/clientmetricreport/ClientMetricReport.ts:200</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -301,7 +305,7 @@
 					<div class="tsd-signature tsd-kind-icon">global<wbr>Metric<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L133">src/clientmetricreport/ClientMetricReport.ts:133</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L162">src/clientmetricreport/ClientMetricReport.ts:162</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -366,7 +370,7 @@
 					<div class="tsd-signature tsd-kind-icon">observable<wbr>Metric<wbr>Spec<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L429">src/clientmetricreport/ClientMetricReport.ts:429</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L489">src/clientmetricreport/ClientMetricReport.ts:489</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -400,7 +404,7 @@
 					<div class="tsd-signature tsd-kind-icon">observable<wbr>Video<wbr>Metric<wbr>Spec<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L336">src/clientmetricreport/ClientMetricReport.ts:336</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L396">src/clientmetricreport/ClientMetricReport.ts:396</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -449,6 +453,29 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="streammetricdimensionmap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> stream<wbr>Metric<wbr>Dimension<wbr>Map</h3>
+					<div class="tsd-signature tsd-kind-icon">stream<wbr>Metric<wbr>Dimension<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L379">src/clientmetricreport/ClientMetricReport.ts:379</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p> Dimensions derived from metric</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">SdkStreamDimension.Type</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="streammetricreports" class="tsd-anchor"></a>
 					<h3>stream<wbr>Metric<wbr>Reports</h3>
 					<div class="tsd-signature tsd-kind-icon">stream<wbr>Metric<wbr>Reports<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = {}</span></div>
@@ -472,7 +499,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Downstream<wbr>Metric<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L257">src/clientmetricreport/ClientMetricReport.ts:257</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L294">src/clientmetricreport/ClientMetricReport.ts:294</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -522,7 +549,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Upstream<wbr>Metric<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L226">src/clientmetricreport/ClientMetricReport.ts:226</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L255">src/clientmetricreport/ClientMetricReport.ts:255</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -605,7 +632,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L599">src/clientmetricreport/ClientMetricReport.ts:599</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L659">src/clientmetricreport/ClientMetricReport.ts:659</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -679,7 +706,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L302">src/clientmetricreport/ClientMetricReport.ts:302</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L346">src/clientmetricreport/ClientMetricReport.ts:346</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -742,7 +769,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L500">src/clientmetricreport/ClientMetricReport.ts:500</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L560">src/clientmetricreport/ClientMetricReport.ts:560</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -770,7 +797,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L543">src/clientmetricreport/ClientMetricReport.ts:543</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L603">src/clientmetricreport/ClientMetricReport.ts:603</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -797,7 +824,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L526">src/clientmetricreport/ClientMetricReport.ts:526</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L586">src/clientmetricreport/ClientMetricReport.ts:586</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -828,7 +855,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L554">src/clientmetricreport/ClientMetricReport.ts:554</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L614">src/clientmetricreport/ClientMetricReport.ts:614</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -862,7 +889,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L592">src/clientmetricreport/ClientMetricReport.ts:592</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L652">src/clientmetricreport/ClientMetricReport.ts:652</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -871,6 +898,28 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RTCStatsReport</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getstreammetricdimensionmap" class="tsd-anchor"></a>
+					<h3>get<wbr>Stream<wbr>Metric<wbr>Dimension<wbr>Map</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Stream<wbr>Metric<wbr>Dimension<wbr>Map<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L386">src/clientmetricreport/ClientMetricReport.ts:386</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{}</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-index-signature">
+									<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">SdkStreamDimension.Type</span></h5>
+								</li>
+							</ul>
 						</li>
 					</ul>
 				</section>
@@ -906,6 +955,32 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="ishardwareimplementation" class="tsd-anchor"></a>
+					<h3>is<wbr>Hardware<wbr>Implementation</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Hardware<wbr>Implementation<span class="tsd-signature-symbol">(</span>metricName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, ssrc<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L146">src/clientmetricreport/ClientMetricReport.ts:146</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> metricName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> ssrc: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="jitterbufferms" class="tsd-anchor"></a>
 					<h3>jitter<wbr>Buffer<wbr>Ms</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -916,6 +991,32 @@
 							<aside class="tsd-sources">
 								<ul>
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L72">src/clientmetricreport/ClientMetricReport.ts:72</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> metricName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> ssrc: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="millisecondspersecond" class="tsd-anchor"></a>
+					<h3>milliseconds<wbr>Per<wbr>Second</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">milliseconds<wbr>Per<wbr>Second<span class="tsd-signature-symbol">(</span>metricName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, ssrc<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L129">src/clientmetricreport/ClientMetricReport.ts:129</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -967,7 +1068,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L612">src/clientmetricreport/ClientMetricReport.ts:612</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L672">src/clientmetricreport/ClientMetricReport.ts:672</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -989,7 +1090,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L627">src/clientmetricreport/ClientMetricReport.ts:627</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L687">src/clientmetricreport/ClientMetricReport.ts:687</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1078,6 +1179,9 @@
 								<a href="clientmetricreport.html#rtcstatsreport" class="tsd-kind-icon">rtc<wbr>Stats<wbr>Report</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="clientmetricreport.html#streammetricdimensionmap" class="tsd-kind-icon">stream<wbr>Metric<wbr>Dimension<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="clientmetricreport.html#streammetricreports" class="tsd-kind-icon">stream<wbr>Metric<wbr>Reports</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -1117,10 +1221,19 @@
 								<a href="clientmetricreport.html#getrtcstatsreport" class="tsd-kind-icon">getRTCStats<wbr>Report</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="clientmetricreport.html#getstreammetricdimensionmap" class="tsd-kind-icon">get<wbr>Stream<wbr>Metric<wbr>Dimension<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="clientmetricreport.html#identityvalue" class="tsd-kind-icon">identity<wbr>Value</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="clientmetricreport.html#ishardwareimplementation" class="tsd-kind-icon">is<wbr>Hardware<wbr>Implementation</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="clientmetricreport.html#jitterbufferms" class="tsd-kind-icon">jitter<wbr>Buffer<wbr>Ms</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="clientmetricreport.html#millisecondspersecond" class="tsd-kind-icon">milliseconds<wbr>Per<wbr>Second</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="clientmetricreport.html#packetlosspercent" class="tsd-kind-icon">packet<wbr>Loss<wbr>Percent</a>

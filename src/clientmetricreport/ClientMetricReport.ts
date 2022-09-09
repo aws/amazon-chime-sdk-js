@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
-import { SdkMetric } from '../signalingprotocol/SignalingProtocol.js';
+import { SdkMetric, SdkStreamDimension } from '../signalingprotocol/SignalingProtocol.js';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import Direction from './ClientMetricReportDirection';
 import MediaType from './ClientMetricReportMediaType';
@@ -124,6 +124,35 @@ export default class ClientMetricReport {
   secondsToMilliseconds = (metricName?: string, ssrc?: number): number => {
     const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
     return Number(metricReport.currentMetrics[metricName] * 1000);
+  };
+
+  millisecondsPerSecond = (metricName?: string, ssrc?: number): number => {
+    const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
+    let intervalSeconds = (this.currentTimestampMs - this.previousTimestampMs) / 1000;
+    if (intervalSeconds <= 0) {
+      return 0;
+    }
+    if (this.previousTimestampMs <= 0) {
+      intervalSeconds = 1;
+    }
+    const diff =
+      metricReport.currentMetrics[metricName] - (metricReport.previousMetrics[metricName] || 0);
+    if (diff <= 0) {
+      return 0;
+    }
+    return (diff * 1000) / intervalSeconds;
+  };
+
+  isHardwareImplementation = (metricName?: string, ssrc?: number): number => {
+    const metricReport = this.streamMetricReports[ssrc];
+    const implName = String(metricReport.stringValues[metricName]);
+    const hasHwName =
+      implName.includes('ExternalDecoder') ||
+      implName.includes('ExternalEncoder') ||
+      implName.includes('EncodeAccelerator') ||
+      implName.includes('DecodeAccelerator');
+    const isFallback = implName.includes('fallback from');
+    return hasHwName && !isFallback ? 1 : 0;
   };
 
   /**
@@ -252,6 +281,14 @@ export default class ClientMetricReport {
     jitter: {
       transform: this.secondsToMilliseconds,
     },
+    totalEncodeTime: {
+      transform: this.millisecondsPerSecond,
+      type: SdkMetric.Type.VIDEO_ENCODE_MS,
+    },
+    encoderImplementation: {
+      transform: this.isHardwareImplementation,
+      type: SdkMetric.Type.VIDEO_ENCODER_IS_HARDWARE,
+    },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -261,7 +298,6 @@ export default class ClientMetricReport {
       source?: string;
     };
   } = {
-    totalDecodeTime: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_MS },
     packetsReceived: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_RECEIVED_PPS },
     packetsLost: {
       transform: this.packetLossPercent,
@@ -297,6 +333,14 @@ export default class ClientMetricReport {
     },
     frameHeight: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_HEIGHT },
     frameWidth: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_WIDTH },
+    totalDecodeTime: {
+      transform: this.millisecondsPerSecond,
+      type: SdkMetric.Type.VIDEO_DECODE_MS,
+    },
+    decoderImplementation: {
+      transform: this.isHardwareImplementation,
+      type: SdkMetric.Type.VIDEO_DECODER_IS_HARDWARE,
+    },
   };
 
   getMetricMap(
@@ -327,6 +371,22 @@ export default class ClientMetricReport {
       default:
         return this.globalMetricMap;
     }
+  }
+
+  /**
+   *  Dimensions derived from metric
+   */
+  readonly streamMetricDimensionMap: {
+    [id: string]: SdkStreamDimension.Type;
+  } = {
+    encoderImplementation: SdkStreamDimension.Type.VIDEO_ENCODER_NAME,
+    decoderImplementation: SdkStreamDimension.Type.VIDEO_DECODER_NAME,
+  };
+
+  getStreamMetricDimensionMap(): {
+    [id: string]: SdkStreamDimension.Type;
+  } {
+    return this.streamMetricDimensionMap;
   }
 
   /**
