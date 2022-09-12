@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `MessagingSession` infinite reconnect loop to break on timeout.
+- `MessagingSession` `getMessagingSessionEndpoint` call is now backwards compatible with aws js sdk v2 and lower.
 
 - Use a default "playback" `latencyHint` when creating the `AudioContext` on Windows. Also adds a `setDefaultLatencyHint` API to `DefaultDeviceController` to allow for overriding.
 

@@ -117,13 +117,22 @@ export default class DefaultMessagingSession implements MessagingSession {
     } else {
       this.reconnectController.startedConnectionAttempt(true);
     }
-    
+
     // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
     if (reconnecting || endpointUrl === undefined) {
       try {
         if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
-          endpointUrl = (await this.configuration.chimeClient.getMessagingSessionEndpoint())
-            .Endpoint.Url;
+          const response = await this.configuration.chimeClient.getMessagingSessionEndpoint();
+          // Check for aws sdk v3 with v2 style compatibility first
+          if (response?.Endpoint?.Url) {
+            endpointUrl = response.Endpoint.Url;
+          } else {
+            // Make aws sdk v2 call
+            const endpoint = await this.configuration.chimeClient
+              .getMessagingSessionEndpoint()
+              .promise();
+            endpointUrl = endpoint?.Endpoint?.Url;
+          }
         } else {
           endpointUrl = (
             await this.configuration.chimeClient.send(new GetMessagingSessionEndpointCommand({}))
