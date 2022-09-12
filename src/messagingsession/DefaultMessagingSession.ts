@@ -124,14 +124,14 @@ export default class DefaultMessagingSession implements MessagingSession {
         if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
           const response = await this.configuration.chimeClient.getMessagingSessionEndpoint();
           // Check for aws sdk v3 with v2 style compatibility first
-          if (response?.Endpoint?.Url) {
+          if (response.Endpoint?.Url) {
             endpointUrl = response.Endpoint.Url;
           } else {
             // Make aws sdk v2 call
             const endpoint = await this.configuration.chimeClient
               .getMessagingSessionEndpoint()
               .promise();
-            endpointUrl = endpoint?.Endpoint?.Url;
+            endpointUrl = endpoint.Endpoint.Url;
           }
         } else {
           endpointUrl = (
