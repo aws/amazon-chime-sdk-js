@@ -10,5 +10,6 @@ export default class StreamMetricReport {
   direction: Direction;
   previousMetrics: { [id: string]: number } = {};
   currentMetrics: { [id: string]: number } = {};
-  stringValues: { [id: string]: string } = {};
+  // As metric values do not necessarily be number, this is a workaround in case metric value is string
+  currentStringMetrics: { [id: string]: string } = {};
 }

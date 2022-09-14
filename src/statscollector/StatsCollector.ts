@@ -259,7 +259,7 @@ export default class StatsCollector {
           metricReport.previousMetrics[rawMetric] = metricReport.currentMetrics[rawMetric];
           metricReport.currentMetrics[rawMetric] = rawMetricReport[rawMetric];
         } else if (typeof rawMetricReport[rawMetric] === 'string') {
-          metricReport.stringValues[rawMetric] = rawMetricReport[rawMetric];
+          metricReport.currentStringMetrics[rawMetric] = rawMetricReport[rawMetric];
         } else {
           this.logger.error(
             `Unknown metric value type ${typeof rawMetricReport[rawMetric]} for metric ${rawMetric}`
@@ -317,13 +317,13 @@ export default class StatsCollector {
     streamMetricFrame: SdkStreamMetricFrame,
     streamMetricReport: StreamMetricReport
   ): void {
-    const streamDimensionMap = this.clientMetricReport.getStreamMetricDimensionMap();
-    for (const metricName in streamMetricReport.stringValues) {
+    const streamDimensionMap = this.clientMetricReport.getStreamDimensionMap();
+    for (const metricName in streamMetricReport.currentStringMetrics) {
       if (metricName in streamDimensionMap) {
         const dimensionFrame = SdkStreamDimension.create();
         dimensionFrame.type = streamDimensionMap[metricName];
         const dimensionValue = SdkDimensionValue.create();
-        dimensionValue.stringValue = streamMetricReport.stringValues[metricName];
+        dimensionValue.stringValue = streamMetricReport.currentStringMetrics[metricName];
         dimensionFrame.value = dimensionValue;
         streamMetricFrame.dimensions.push(dimensionFrame);
       }

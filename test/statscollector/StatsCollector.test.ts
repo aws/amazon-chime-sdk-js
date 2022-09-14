@@ -513,8 +513,8 @@ describe('StatsCollector', () => {
       streamMetricReport.direction = ClientMetricReportDirection.UPSTREAM;
       streamMetricReport.currentMetrics['packetsLost'] = 10;
       streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
-      streamMetricReport.stringValues['decoderImplementation'] = 'FFmpeg';
-      streamMetricReport.stringValues['invalid-type'] = 'invalid-value';
+      streamMetricReport.currentStringMetrics['decoderImplementation'] = 'FFmpeg';
+      streamMetricReport.currentStringMetrics['invalid-type'] = 'invalid-value';
 
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));

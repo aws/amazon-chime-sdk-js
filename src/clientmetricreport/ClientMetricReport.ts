@@ -145,7 +145,7 @@ export default class ClientMetricReport {
 
   isHardwareImplementation = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
-    const implName = String(metricReport.stringValues[metricName]);
+    const implName = String(metricReport.currentStringMetrics[metricName]);
     const hasHwName =
       implName.includes('ExternalDecoder') ||
       implName.includes('ExternalEncoder') ||
@@ -376,17 +376,17 @@ export default class ClientMetricReport {
   /**
    *  Dimensions derived from metric
    */
-  readonly streamMetricDimensionMap: {
+  readonly streamDimensionMap: {
     [id: string]: SdkStreamDimension.Type;
   } = {
     encoderImplementation: SdkStreamDimension.Type.VIDEO_ENCODER_NAME,
     decoderImplementation: SdkStreamDimension.Type.VIDEO_DECODER_NAME,
   };
 
-  getStreamMetricDimensionMap(): {
+  getStreamDimensionMap(): {
     [id: string]: SdkStreamDimension.Type;
   } {
-    return this.streamMetricDimensionMap;
+    return this.streamDimensionMap;
   }
 
   /**
