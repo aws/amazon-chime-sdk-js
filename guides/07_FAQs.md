@@ -104,11 +104,22 @@ The Amazon Chime SDK uses join tokens to control access to meetings. These token
 
 ### When does an Amazon Chime SDK meeting end?
 
-An Amazon Chime SDK meeting ends when you invoke the [DeleteMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html) API action. Also, a meeting automatically ends after a period of inactivity, based on the following rules:
+An Amazon Chime SDK meeting ends when you invoke the [DeleteMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html) API action.
+
+Also, a meeting automatically ends after a period of inactivity, based on the following rules:
+
+For [Amazon Chime SDK](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace:
+
+* No audio connections are present in the meeting for more than five minutes.
+* 24 hours have elapsed since the meeting was created.
+
+For [Amazon Chime](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime.html) namespace:
 
 * No audio connections are present in the meeting for more than five minutes.
 * Only one audio connection is present in the meeting for more than 30 minutes.
 * 24 hours have elapsed since the meeting was created.
+
+Learn more about [Amazon Chime SDK](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace and [Amazon Chime](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime.html) namespace in [Migrating to the Amazon Chime SDK Meetings namespace](https://docs.aws.amazon.com/chime-sdk/latest/dg/meeting-namespace-migration.html).
 
 ### How many simultaneous meetings can be hosted in an account? Can this limit be raised?
 
