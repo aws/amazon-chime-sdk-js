@@ -40,7 +40,15 @@ npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting -u f
 ```
 
 #### Media Capture
-If you want to use media capture, an S3 bucket needs to be created for each region.
+You can use the live connector feature to broadcast the captured artifacts. The default layout is vertical layout and FHD resolution. You can use the playback url that showed up in any M3U8 player, such as `https://www.hlsplayer.net/`.
+If you want to try differnt layout configuration, please check our [ public document](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_media-pipelines-chime_CreateMediaLiveConnectorPipeline.html).
+```
+cd demos/serverless
+npm install
+npm run deploy -- -r us-east-1 -b <deploy-bucekt> -i af-south-1,eu-south-1 -s <my-stack-name> -a meeting
+```
+
+If you want to also use media capture in the same meeting, an S3 bucket needs to be created for each region.
 The S3 bucket will be created with a prefix specified with the -o option.
 
 ```
@@ -60,6 +68,8 @@ npm run deploy -- -r us-east-1 -b <deploy-bucekt> -o <capture-bucket-prefix> -i 
 ```
 
 Note that you need to enable these regions if you plan to use media capture. For more information, see [Managing AWS Regions](https://docs.aws.amazon.com/general/latest/gr/rande-manage.html).
+
+
 
 ##### ChimeSDKMediaPipelines Namespace vs Chime Namespace
 The `AWS.Chime` and the `AWS.ChimeSDKMediaPipelines` are both Amazon Chime's AWS clients to help builders create Amazon Chime SDK media pipelines. `AWS.ChimeSDKMediaPipelines` is intended to replace the previous `AWS.Chime` client.
@@ -91,7 +101,7 @@ with Lambda and API Gateway resources required to run the demo. After the script
 finishes, it will output a URL that can be opened in a browser.
 
 ### Updating deployed application
-Over time JS SDK will push new features, improvements, and bug fixes etc. It is important for the deployed application to maintain a recent version of the SDK. Updating the deployed application is easy to do with the help of the deploy script. 
+Over time JS SDK will push new features, improvements, and bug fixes etc. It is important for the deployed application to maintain a recent version of the SDK. Updating the deployed application is easy to do with the help of the deploy script.
 
 > NOTE: When you deploy the demo, make sure the params (for ex. my-bucket and my-stack-name) passed to the deploy script are the same as your original deployment. This is will cause the exisiting resources to be updated rather than creating new ones. If you change the name of resources you will end up with a new cloudformation stack and that might cause unintended billing charges.
 
@@ -116,7 +126,7 @@ The Lambda function uploads these events to CloudWatch Logs for searching and an
 3. In the navigation pane, choose Dashboards.
 4. Choose the meeting event dashboard.
 5. You can view the meeting success rate, the platform information, and other operational data from meeting attendees.
-  At the bottom of the dashboard, the widget explains how to search for a specific attendee's events.
+   At the bottom of the dashboard, the widget explains how to search for a specific attendee's events.
 
 
 ## Notice
