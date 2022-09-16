@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add encoder/decoder is in hardware metric and stream dimension to signaling protocol
+- Report encode/decode time and if encoder/decoder is in hardware, and add encoder/decoder name as a metric dimension
 
 ### Removed
 
