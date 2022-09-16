@@ -60,7 +60,7 @@
       </div>
       <div class="row mt-3">
         <button type="button" class="btn btn-outline-secondary h-50 d-sm-block" data-bs-toggle="modal" id="additional-options-button"
-          data-bs-target="#additional-options-modal">
+                data-bs-target="#additional-options-modal">
           Additional Options
         </button>
       </div>
@@ -79,7 +79,7 @@
       <div class="row mt-3">
         <div id="progress-authenticate" class="w-100 progress progress-hidden">
           <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-            aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+               aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
       </div>
     </form>
@@ -89,117 +89,117 @@
 <!-- Additional options modal -->
 
 <div class="modal fade" id="additional-options-modal" tabindex="-1"
-aria-labelledby="additional-options-modal-label" aria-hidden="true">
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="additional-options-modal-label">Additional Options</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-      <fieldset>
-        <div class="form-floating mb-3" style="text-align: left;">
-          <select name="logLevel" class="form-select" id="logLevelSelect">
-            <option value="INFO">INFO</option>
-            <option value="DEBUG">DEBUG</option>
-            <option value="WARN">WARN</option>
-            <option value="ERROR">ERROR</option>
-            <option value="OFF">OFF</option>
-          </select>
-          <label for="logLevel" style="text-align: left;">Log Level:</label>
-        </div>
-        <div class="form-floating mb-3">
-          <select name="videoCodec" class="form-select" id="videoCodecSelect">
+     aria-labelledby="additional-options-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="additional-options-modal-label">Additional Options</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <fieldset>
+          <div class="form-floating mb-3" style="text-align: left;">
+            <select name="logLevel" class="form-select" id="logLevelSelect">
+              <option value="INFO">INFO</option>
+              <option value="DEBUG">DEBUG</option>
+              <option value="WARN">WARN</option>
+              <option value="ERROR">ERROR</option>
+              <option value="OFF">OFF</option>
+            </select>
+            <label for="logLevel" style="text-align: left;">Log Level:</label>
+          </div>
+          <div class="form-floating mb-3">
+            <select name="videoCodec" class="form-select" id="videoCodecSelect">
               <option value="default">Meeting Default</option>
               <option value="vp8">VP8</option>
               <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
+            </select>
+            <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="webaudio" class="form-check-input">
+            <label for="webaudio" class="form-check-label">Use WebAudio</label>
+          </div>
+          <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
+            <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
+            <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
+              only)</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
+            <label for="fullband-speech-mono-quality" class="form-check-label">Set fullband speech (mono)
+              quality</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="fullband-music-mono-quality" class="form-check-input">
+            <label for="fullband-music-mono-quality" class="form-check-label">Set fullband music (mono)
+              quality</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="fullband-music-stereo-quality" class="form-check-input">
+            <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
+              quality</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="simulcast" class="form-check-input">
+            <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
+            <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
+              Policy</label>
+          </div>
+          <lable id="priority-downlink-policy-preset-title" for="priority-downlink-policy-preset" style="display: none; padding-top:5px">Policy Preset</lable>
+          <select id="priority-downlink-policy-preset" class="form-select" style="width:100%; display: none;">
+            <option value="default" selected>Default</option>
+            <option value="stable">Stable Network</option>
+            <option value="unstable">Unstable Network</option>
           </select>
-          <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="webaudio" class="form-check-input">
-          <label for="webaudio" class="form-check-label">Use WebAudio</label>
-        </div>
-        <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
-          <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
-          <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
-            only)</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
-          <label for="fullband-speech-mono-quality" class="form-check-label">Set fullband speech (mono)
-            quality</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="fullband-music-mono-quality" class="form-check-input">
-          <label for="fullband-music-mono-quality" class="form-check-label">Set fullband music (mono)
-            quality</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="fullband-music-stereo-quality" class="form-check-input">
-          <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
-            quality</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="simulcast" class="form-check-input">
-          <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
-          <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
-            Policy</label>
-        </div>
-        <lable id="priority-downlink-policy-preset-title" for="priority-downlink-policy-preset" style="display: none; padding-top:5px">Policy Preset</lable>
-        <select id="priority-downlink-policy-preset" class="form-select" style="width:100%; display: none;">
-          <option value="default" selected>Default</option>
-          <option value="stable">Stable Network</option>
-          <option value="unstable">Unstable Network</option>
-        </select>
-        <lable id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</lable>
-        <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
-          <option value="default" selected>Default</option>
-          <option value="none">None</option>
-          <option value="enable-bandwidth-probing">Enable Bandwidth Probing</option>
-        </select>
-        <div class="form-check" id="enable-pagination-checkbox" style="text-align: left; display: none;">
-          <input type="checkbox" id="enable-pagination" class="form-check-input">
-          <label for="enable-pagination" class="form-check-label">Paginate displayed video tiles</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" checked id="preconnect" class="form-check-input">
-          <label for="preconnect" class="form-check-label">Open signaling connection early</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="join-view-only" class="form-check-input">
-          <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="pause-last-frame" class="form-check-input">
-          <label for="pause-last-frame" class="form-check-label">Keep Video Last Frame When Paused</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="event-reporting" class="form-check-input">
-          <label for="event-reporting" class="form-check-label">Enable event reporting</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="replica-meeting-input" class="form-check-input">
-          <label for="replica-meeting-input" class="form-check-label">Create meeting as replica</label>
-          <input type="name" id="primary-meeting-external-id" class="form-control"
-            placeholder="Primary Meeting Title or ID">
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="delete-attendee" class="form-check-input">
-          <label for="delete-attendee" class="form-check-label">Delete own attendee to leave</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="die" class="form-check-input" checked=true>
-          <label for="die" class="form-check-label">Abort on fatal errors</label>
-        </div>
-      </fieldset>
+          <lable id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</lable>
+          <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
+            <option value="default" selected>Default</option>
+            <option value="none">None</option>
+            <option value="enable-bandwidth-probing">Enable Bandwidth Probing</option>
+          </select>
+          <div class="form-check" id="enable-pagination-checkbox" style="text-align: left; display: none;">
+            <input type="checkbox" id="enable-pagination" class="form-check-input">
+            <label for="enable-pagination" class="form-check-label">Paginate displayed video tiles</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" checked id="preconnect" class="form-check-input">
+            <label for="preconnect" class="form-check-label">Open signaling connection early</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="join-view-only" class="form-check-input">
+            <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="pause-last-frame" class="form-check-input">
+            <label for="pause-last-frame" class="form-check-label">Keep Video Last Frame When Paused</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="event-reporting" class="form-check-input">
+            <label for="event-reporting" class="form-check-label">Enable event reporting</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="replica-meeting-input" class="form-check-input">
+            <label for="replica-meeting-input" class="form-check-label">Create meeting as replica</label>
+            <input type="name" id="primary-meeting-external-id" class="form-control"
+                   placeholder="Primary Meeting Title or ID">
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="delete-attendee" class="form-check-input">
+            <label for="delete-attendee" class="form-check-label">Delete own attendee to leave</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="die" class="form-check-input" checked=true>
+            <label for="die" class="form-check-label">Abort on fatal errors</label>
+          </div>
+        </fieldset>
+      </div>
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="additional-options-save-button">Save</button>
     </div>
-    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="additional-options-save-button">Save</button>
   </div>
-</div>
 </div>
 
 <!-- Authenticate for SIP with meeting and voice connector ID -->
@@ -301,7 +301,7 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
           <label>Preview</label>
           <div class="w-100 progress" style="margin-top:0.75rem">
             <div id="audio-preview" class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
-              aria-valuemin="0" aria-valuemax="100"></div>
+                 aria-valuemin="0" aria-valuemax="100"></div>
           </div>
         </div>
       </div>
@@ -343,14 +343,14 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
         </div>
         <div class="col-12">
           <button id="button-test-sound" class="btn btn-outline-secondary h-50 d-sm-block"
-            style="width:100%;margin-top:2rem">Test Speaker</button>
+                  style="width:100%;margin-top:2rem">Test Speaker</button>
         </div>
       </div>
 
       <div class="row mt-3">
         <div class="col-lg">
           <button id="joinButton" class="btn btn-lg btn-primary" style="width:100%"
-            type="submit">Join</button>
+                  type="submit">Join</button>
         </div>
       </div>
       <div class="row mt-3">
@@ -361,7 +361,7 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
     </form>
     <div id="progress-join" class="w-100 progress progress-hidden">
       <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100"
-        aria-valuemin="0" aria-valuemax="100"></div>
+           aria-valuemin="0" aria-valuemax="100"></div>
     </div>
   </div>
 </div>
@@ -380,7 +380,7 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
         <input type="radio" id="engine-transcribe" name="transcription-engine" value="engine-transcribe" checked=true>
         <label for="engine-transcribe">Amazon Transcribe</label><br>
         <input type="radio" id="engine-transcribe-medical" name="transcription-engine"
-          value="engine-transcribe-medical">
+               value="engine-transcribe-medical">
         <label for="engine-transcribe-medical">Amazon Transcribe Medical</label><br>
       </div>
       <div id="engine-language-group">
@@ -446,17 +446,17 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
         <div id="engine-transcribe-identify-language" class="form-check" style="text-align: left;">
           <input type="checkbox" id="identify-language-checkbox" class="form-check-input">
           <label for="identify-language-checkbox" class="form-check-label"
-            title="Automatically identify the language spoken in a media file without you having to specify a language code">Enable
+                 title="Automatically identify the language spoken in a media file without you having to specify a language code">Enable
             Automatic Language Identification</label>
         </div>
         <div id="language-options" class="hidden">
           <label for="language-options" class="visually-hidden">Language Options</label>
           <p
-            title="For better accuracy of automatic language identification, select at least 2 languages, one from each group.">
+                  title="For better accuracy of automatic language identification, select at least 2 languages, one from each group.">
             <small>Select a minimum of 2 language options</small>
           </p>
           <select name="language-options" id="language-options" multiple="multiple" class="form-select"
-            style="width:100%">
+                  style="width:100%">
             <optgroup id="group1" label="English">
               <option value="en-US">US English (en-US)</option>
               <option value="en-GB">British English (en-GB)</option>
@@ -556,7 +556,7 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
         </select>
       </div>
       <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
-        data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+              data-bs-toggle="button" aria-pressed="false" autocomplete="off">
         <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
       </button>
     </div>
@@ -666,10 +666,10 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
             <%= require('../../node_modules/open-iconic/svg/microphone.svg') %>
           </button>
           <button id="button-microphone-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-            aria-expanded="false" title="Select microphone"><span class="visually-hidden">Toggle Dropdown</span></button>
+                  aria-expanded="false" title="Select microphone"><span class="visually-hidden">Toggle Dropdown</span></button>
           <div id="dropdown-menu-microphone" class="dropdown-menu dropdown-menu-end"
-          aria-labelledby="button-microphone-drop" x-placement="bottom-start"
-          style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+               aria-labelledby="button-microphone-drop" x-placement="bottom-start"
+               style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
             <a class="dropdown-item" href="#">Default microphone</a>
           </div>
         </div>
@@ -678,7 +678,7 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
             <%= require('../../node_modules/open-iconic/svg/video.svg') %>
           </button>
           <button id="button-camera-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-            aria-expanded="false" title="Select camera"><span class="visually-hidden">Toggle Dropdown</span></button>
+                  aria-expanded="false" title="Select camera"><span class="visually-hidden">Toggle Dropdown</span></button>
           <div id="dropdown-menu-camera" class="dropdown-menu dropdown-menu-end">
             <a class="dropdown-item" href="#">Default camera</a>
           </div>
@@ -689,9 +689,9 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
           </button>
           <div class="btn-group" role="group">
             <button id="button-video-filter-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
             <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
+                 aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
               <a class="dropdown-item" href="#">No filter</a>
             </div>
           </div>
@@ -702,11 +702,11 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
           </button>
           <div class="btn-group" role="group">
             <button id="button-content-share-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-              title="Select content to share"></button>
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                    title="Select content to share"></button>
             <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-content-share-drop" x-placement="bottom-start"
-              style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                 aria-labelledby="button-content-share-drop" x-placement="bottom-start"
+                 style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
               <a id="dropdown-item-content-share-configuration" class="dropdown-item" href="#">Configurations</a>
               <a id="dropdown-item-content-share-screen-capture" class="dropdown-item" href="#">Screen Capture...</a>
               <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item" href="#">Test Video</a>
@@ -717,14 +717,14 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
               <a id="dropdown-item-content-share-test-stereo-audio-tone" class="dropdown-item" href="#">Test Stereo
                 Tone (L-500Hz R-1000Hz)</a>
               <a id="dropdown-item-content-share-file-item" class="dropdown-item" href="#"><input
-                  id="content-share-item" type="file"></a>
+                      id="content-share-item" type="file"></a>
               <a id="dropdown-item-content-share-stop" style="display:none" class="dropdown-item" href="#">Stop
                 Sharing</a>
             </div>
           </div>
         </div>
         <button id="button-pause-content-share" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-          title="Pause and unpause content share">
+                title="Pause and unpause content share">
           <%= require('../../node_modules/open-iconic/svg/media-pause.svg') %>
         </button>
         <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle speaker">
@@ -733,46 +733,64 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
           </button>
           <div class="btn-group" role="group">
             <button id="button-speaker-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
             <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-speaker-drop" x-placement="bottom-start"
-              style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                 aria-labelledby="button-speaker-drop" x-placement="bottom-start"
+                 style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
               <a class="dropdown-item" href="#">Default speaker</a>
             </div>
           </div>
         </div>
         <button id="button-live-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-          title="Toggle live transcription display" data-bs-toggle="button" aria-pressed="false" autocomplete="off"
-          style="display: none">
+                title="Toggle live transcription display" data-bs-toggle="button" aria-pressed="false" autocomplete="off"
+                style="display: none">
           <%= require('../../node_modules/open-iconic/svg/code.svg') %>
         </button>
         <button id="button-video-stats" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-          title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
           <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
         </button>
-        <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-          title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-          <svg class="svg">
-            <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
-          </svg>
-        </button>
-        <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-          title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-          <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
-        </button>
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Select destination">
+          <div class="btn-group" role="group">
+            <button id="button-video-recording-drop" type="button" class="btn btn-success dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
+              <%= require('../../node_modules/open-iconic/svg/cloud.svg') %>
+            </button>
+            <div id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
+                 aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
+              <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <svg class="svg">
+                  <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
+                </svg>
+                Capture Media to Device
+              </button>
+              <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
+                Capture Media to S3
+              </button>
+              <button id="button-live-connector" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
+                Broadcast Media to IVS
+              </button>
+            </div>
+          </div>
+        </div>
         <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-          title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
-          autocomplete="off">
+                title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
+                autocomplete="off">
           <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
         </button>
       </div>
       <div class="col-4 col-lg-3 order-3 order-lg-3 text-end text-lg-right">
         <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4"
-          title="Leave meeting">
+                title="Leave meeting">
           <%= require('../../node_modules/open-iconic/svg/account-logout.svg') %>
         </button>
         <button id="button-meeting-end" type="button" class="btn btn-outline-danger mx-1 mx-xl-2 my-2 px-4"
-          title="End meeting">
+                title="End meeting">
           <%= require('../../node_modules/open-iconic/svg/power-standby.svg') %>
         </button>
       </div>
@@ -787,13 +805,13 @@ aria-labelledby="additional-options-modal-label" aria-hidden="true">
             border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
           <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
             <textarea class="form-control shadow-none" id="send-message" rows="1"
-              placeholder="Type a message (markdown supported)" style="display:inline-block; width:100%;
+                      placeholder="Type a message (markdown supported)" style="display:inline-block; width:100%;
               resize:none; border-color: rgba(0, 0, 0, 0.125); outline: none; padding-left: 1.4rem"></textarea>
           </div>
         </div>
       </div>
       <div id="tile-transcript-container"
-        class="d-flex flex-column col-12 col-sm-7 col-md-8 col-lg-9 my-4 my-sm-0 h-100" style="overflow-y: scroll">
+           class="d-flex flex-column col-12 col-sm-7 col-md-8 col-lg-9 my-4 my-sm-0 h-100" style="overflow-y: scroll">
         <div id="tile-area" class="v-grid"></div>
         <div id="transcript-container" class="transcript-container" style="display:none"></div>
       </div>
