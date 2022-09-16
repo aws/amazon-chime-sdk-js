@@ -476,6 +476,7 @@ describe('StatsCollector', () => {
         kind: 'video',
         packetsLost: 10,
         jitterBufferDelay: 100,
+        decoderImplementation: 'FFmpeg',
       };
 
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
@@ -503,6 +504,7 @@ describe('StatsCollector', () => {
         kind: 'video',
         packetsLost: 10,
         jitterBufferDelay: 100,
+        decoderImplementation: 'FFmpeg',
       };
 
       const streamMetricReport = new StreamMetricReport();
@@ -511,6 +513,8 @@ describe('StatsCollector', () => {
       streamMetricReport.direction = ClientMetricReportDirection.UPSTREAM;
       streamMetricReport.currentMetrics['packetsLost'] = 10;
       streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
+      streamMetricReport.currentStringMetrics['decoderImplementation'] = 'FFmpeg';
+      streamMetricReport.currentStringMetrics['invalid-type'] = 'invalid-value';
 
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
@@ -540,6 +544,33 @@ describe('StatsCollector', () => {
         kind: 'video',
         packetsLost: 10,
         jitterBufferDelay: 100,
+      };
+
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('adds the metric frame from the stream metric report when videoStreamIndex has streams and value in null type', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+      domMockBehavior.rtcPeerConnectionGetStatsReport = {
+        id: 'RTCInboundRTPVideoStream',
+        type: 'inbound-rtp',
+        kind: 'video',
+        packetsLost: 10,
+        jitterBufferDelay: 100,
+        decoderImplementation: null,
       };
 
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
