@@ -248,7 +248,7 @@ describe('ClientMetricReport', () => {
     });
   });
 
-  describe('millisecondsPerSecond', () => {
+  describe('averageTimeSpentPerSecondInMilliseconds', () => {
     const metricName = 'metric-name';
 
     it('returns 0 if the interval is 0', () => {
@@ -256,7 +256,7 @@ describe('ClientMetricReport', () => {
       clientMetricReport.globalMetricReport = report;
       clientMetricReport.currentTimestampMs = 0;
       clientMetricReport.previousTimestampMs = 0;
-      expect(clientMetricReport.millisecondsPerSecond(metricName)).to.equal(0);
+      expect(clientMetricReport.averageTimeSpentPerSecondInMilliseconds(metricName)).to.equal(0);
     });
 
     it('returns 0 if the diff is 0', () => {
@@ -265,7 +265,7 @@ describe('ClientMetricReport', () => {
       clientMetricReport.globalMetricReport = report;
       clientMetricReport.currentTimestampMs = 2000;
       clientMetricReport.previousTimestampMs = 0;
-      expect(clientMetricReport.millisecondsPerSecond(metricName)).to.equal(0);
+      expect(clientMetricReport.averageTimeSpentPerSecondInMilliseconds(metricName)).to.equal(0);
     });
 
     it('interval is 1 second if pervious timestamp is 0', () => {
@@ -274,7 +274,7 @@ describe('ClientMetricReport', () => {
       clientMetricReport.globalMetricReport = report;
       clientMetricReport.currentTimestampMs = 2000;
       clientMetricReport.previousTimestampMs = 0;
-      expect(clientMetricReport.millisecondsPerSecond(metricName)).to.equal(100);
+      expect(clientMetricReport.averageTimeSpentPerSecondInMilliseconds(metricName)).to.equal(100);
     });
 
     it('returns the count from the stream metric reports', () => {
@@ -284,7 +284,9 @@ describe('ClientMetricReport', () => {
       clientMetricReport.streamMetricReports[ssrc] = report;
       clientMetricReport.currentTimestampMs = 2000;
       clientMetricReport.previousTimestampMs = 1000;
-      expect(clientMetricReport.millisecondsPerSecond(metricName, ssrc)).to.equal(100);
+      expect(clientMetricReport.averageTimeSpentPerSecondInMilliseconds(metricName, ssrc)).to.equal(
+        100
+      );
     });
   });
 

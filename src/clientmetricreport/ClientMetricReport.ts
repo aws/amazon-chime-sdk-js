@@ -126,7 +126,7 @@ export default class ClientMetricReport {
     return Number(metricReport.currentMetrics[metricName] * 1000);
   };
 
-  millisecondsPerSecond = (metricName?: string, ssrc?: number): number => {
+  averageTimeSpentPerSecondInMilliseconds = (metricName?: string, ssrc?: number): number => {
     const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
     let intervalSeconds = (this.currentTimestampMs - this.previousTimestampMs) / 1000;
     if (intervalSeconds <= 0) {
@@ -282,7 +282,7 @@ export default class ClientMetricReport {
       transform: this.secondsToMilliseconds,
     },
     totalEncodeTime: {
-      transform: this.millisecondsPerSecond,
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_ENCODE_MS,
     },
     encoderImplementation: {
@@ -334,7 +334,7 @@ export default class ClientMetricReport {
     frameHeight: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_HEIGHT },
     frameWidth: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_WIDTH },
     totalDecodeTime: {
-      transform: this.millisecondsPerSecond,
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_DECODE_MS,
     },
     decoderImplementation: {

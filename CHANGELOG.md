@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Fix a confusing function name from `millisecondsPerSecond` to `averageTimeSpentPerSecondInMilliseconds`.
+
 ### Fixed
 
 - `MessagingSession` infinite reconnect loop to break on timeout.

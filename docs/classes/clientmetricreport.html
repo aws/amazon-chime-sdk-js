@@ -113,6 +113,7 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#averagetimespentpersecondinmilliseconds" class="tsd-kind-icon">average<wbr>Time<wbr>Spent<wbr>Per<wbr>Second<wbr>InMilliseconds</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#bitspersecond" class="tsd-kind-icon">bits<wbr>Per<wbr>Second</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#clone" class="tsd-kind-icon">clone</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#countpersecond" class="tsd-kind-icon">count<wbr>Per<wbr>Second</a></li>
@@ -127,7 +128,6 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#identityvalue" class="tsd-kind-icon">identity<wbr>Value</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#ishardwareimplementation" class="tsd-kind-icon">is<wbr>Hardware<wbr>Implementation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#jitterbufferms" class="tsd-kind-icon">jitter<wbr>Buffer<wbr>Ms</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#millisecondspersecond" class="tsd-kind-icon">milliseconds<wbr>Per<wbr>Second</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#packetlosspercent" class="tsd-kind-icon">packet<wbr>Loss<wbr>Percent</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#print" class="tsd-kind-icon">print</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="clientmetricreport.html#removedestroyedssrcs" class="tsd-kind-icon">remove<wbr>Destroyed<wbr>Ssrcs</a></li>
@@ -597,6 +597,32 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="averagetimespentpersecondinmilliseconds" class="tsd-anchor"></a>
+					<h3>average<wbr>Time<wbr>Spent<wbr>Per<wbr>Second<wbr>InMilliseconds</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">average<wbr>Time<wbr>Spent<wbr>Per<wbr>Second<wbr>InMilliseconds<span class="tsd-signature-symbol">(</span>metricName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, ssrc<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L129">src/clientmetricreport/ClientMetricReport.ts:129</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> metricName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> ssrc: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="bitspersecond" class="tsd-anchor"></a>
 					<h3>bits<wbr>Per<wbr>Second</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1007,32 +1033,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="millisecondspersecond" class="tsd-anchor"></a>
-					<h3>milliseconds<wbr>Per<wbr>Second</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">milliseconds<wbr>Per<wbr>Second<span class="tsd-signature-symbol">(</span>metricName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, ssrc<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/clientmetricreport/ClientMetricReport.ts#L129">src/clientmetricreport/ClientMetricReport.ts:129</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> metricName: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> ssrc: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="packetlosspercent" class="tsd-anchor"></a>
 					<h3>packet<wbr>Loss<wbr>Percent</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1191,6 +1191,9 @@
 								<a href="clientmetricreport.html#videoupstreammetricmap" class="tsd-kind-icon">video<wbr>Upstream<wbr>Metric<wbr>Map</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="clientmetricreport.html#averagetimespentpersecondinmilliseconds" class="tsd-kind-icon">average<wbr>Time<wbr>Spent<wbr>Per<wbr>Second<wbr>InMilliseconds</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="clientmetricreport.html#bitspersecond" class="tsd-kind-icon">bits<wbr>Per<wbr>Second</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -1231,9 +1234,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="clientmetricreport.html#jitterbufferms" class="tsd-kind-icon">jitter<wbr>Buffer<wbr>Ms</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="clientmetricreport.html#millisecondspersecond" class="tsd-kind-icon">milliseconds<wbr>Per<wbr>Second</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="clientmetricreport.html#packetlosspercent" class="tsd-kind-icon">packet<wbr>Loss<wbr>Percent</a>
