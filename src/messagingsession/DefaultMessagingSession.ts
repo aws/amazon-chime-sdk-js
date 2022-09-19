@@ -109,6 +109,8 @@ export default class DefaultMessagingSession implements MessagingSession {
   private async startConnecting(reconnecting: boolean): Promise<void> {
     let endpointUrl = this.configuration.endpointUrl;
 
+    // Moving this reconnect logic can potentially result into an infinite reconnect loop on errors.
+    // Check https://github.com/aws/amazon-chime-sdk-js/issues/2372 for details.
     if (!reconnecting) {
       this.reconnectController.reset();
     }
