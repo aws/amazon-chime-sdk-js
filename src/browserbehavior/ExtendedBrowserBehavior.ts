@@ -22,4 +22,8 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
   supportDownlinkBandwidthEstimation(): boolean;
   supportsVideoLayersAllocationRtpHeaderExtension(): boolean;
   disable480pResolutionScaleDown(): boolean;
+  /**
+   * Returns whether the browser requires the "playback" latency hint for Web Audio.
+   */
+  requiresPlaybackLatencyHintForAudioContext(): boolean;
 }
