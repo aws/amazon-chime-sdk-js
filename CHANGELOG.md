@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MessagingSession` reconnect loop did not break on error past reconnect deadline. Infinite reconnect loop was caused due to `firstConnectionAttemptTimestamp` not being set as `startedConnectionAttempt` was not invoked. Check https://github.com/aws/amazon-chime-sdk-js/issues/2372 for details.
 - `MessagingSession` `getMessagingSessionEndpoint` call is now backwards compatible with AWS JS SDK v2.
 - Use a default "playback" `latencyHint` when creating the `AudioContext` on Windows. Also adds a `setDefaultLatencyHint` API to `DefaultDeviceController` to allow for overriding.
+- Fix behavior of websocket disconnects before a session is connected. Session.start() promise shall fail in the scenario.
+- Queue messages before a messaging session is established to avoid dropping them.
 
 ## [3.7.0] - 2022-07-05
 
