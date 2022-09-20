@@ -393,7 +393,7 @@ describe('DefaultMessagingSession', () => {
       new TimeoutScheduler(10).start(() => {
         webSocket.close(4401);
       });
-      messagingSession.start().catch((event) => {
+      messagingSession.start().catch(event => {
         expect(event.code).to.be.eq(4401);
         done();
       });

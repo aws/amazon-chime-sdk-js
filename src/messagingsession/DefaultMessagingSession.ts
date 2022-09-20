@@ -24,8 +24,8 @@ export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
   private isClosing: boolean;
   private isSessionEstablished: boolean;
-  private bootstrapResolved: any; // Variable to determine that a session bootstrap was successful, resolves the StartSession promise
-  private bootstrapRejected: any; // Variable to determine that a session disconnection was before bootstrap, rejects the StartSession promise
+  private bootstrapResolved: (value: PromiseLike<void> | void) => void; // Variable to determine that a session bootstrap was successful, resolves the StartSession promise
+  private bootstrapRejected: (reason?: CloseEvent) => void; // Variable to determine that a session disconnection was before bootstrap, rejects the StartSession promise
   private preBootstrapMessages: Message[];
 
   constructor(
@@ -110,9 +110,9 @@ export default class DefaultMessagingSession implements MessagingSession {
     });
   }
 
-  private async startConnecting(reconnecting: boolean): Promise<any> {
+  private async startConnecting(reconnecting: boolean): Promise<void> {
     await this.startConnectingInternal(reconnecting);
-    return await new Promise<any>((resolve, reject) => {
+    return await new Promise<void>((resolve, reject) => {
       this.bootstrapResolved = resolve;
       this.bootstrapRejected = reject;
     });
@@ -222,7 +222,7 @@ export default class DefaultMessagingSession implements MessagingSession {
         // Send message and flush the queue.
         const preBootstrapMessageLength = this.preBootstrapMessages.length;
         for (let iter = 0; iter < preBootstrapMessageLength; iter++) {
-          let preBootstrapMessage = this.preBootstrapMessages.shift();
+          const preBootstrapMessage = this.preBootstrapMessages.shift();
           this.forEachObserver(observer => {
             this.sendMessageToObserver(observer, preBootstrapMessage);
           });
@@ -236,7 +236,7 @@ export default class DefaultMessagingSession implements MessagingSession {
         return;
       }
       this.forEachObserver(observer => {
-        this.sendMessageToObserver(observer, message)
+        this.sendMessageToObserver(observer, message);
       });
     } catch (error) {
       this.logger.error(`Messaging parsing failed: ${error}`);
