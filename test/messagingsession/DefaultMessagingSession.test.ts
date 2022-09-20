@@ -64,7 +64,7 @@ describe('DefaultMessagingSession', () => {
     },
   };
 
-  const v2ChimeClient = {
+  const v3ChimeClientV2style = {
     config: {
       region: 'us-east-1',
       credentials: {
@@ -80,6 +80,30 @@ describe('DefaultMessagingSession', () => {
       return {
         Endpoint: {
           Url: ENDPOINT_URL,
+        },
+      };
+    },
+  };
+
+  const v2ChimeClient = {
+    config: {
+      region: 'us-east-1',
+      credentials: {
+        accessKeyId: 'accessKey',
+        secretAccessKey: 'secretKey',
+        sessionToken: 'sessionToken',
+      },
+    },
+    getMessagingSessionEndpoint: function () {
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        promise: async function (): Promise<any> {
+          getMessSessionCnt++;
+          return {
+            Endpoint: {
+              Url: ENDPOINT_URL,
+            },
+          };
         },
       };
     },
@@ -157,6 +181,21 @@ describe('DefaultMessagingSession', () => {
 
   describe('start', () => {
     it('Can start', done => {
+      messagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(getMessSessionCnt).to.be.eq(1);
+          done();
+        },
+      });
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
+      });
+    });
+
+    it('Can start with v3 client with v2 style', done => {
+      configuration.chimeClient = v3ChimeClientV2style;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
           expect(getMessSessionCnt).to.be.eq(1);
@@ -299,21 +338,21 @@ describe('DefaultMessagingSession', () => {
     });
 
     it('can reconnect with failures on getMessagingSession', done => {
-      configuration.chimeClient = v2ChimeClient;
+      configuration.chimeClient = v3ChimeClientV2style;
       let didStartCount = 0;
       let didStartConnecting = 0;
-      const savedClientBehavior = v2ChimeClient.getMessagingSessionEndpoint;
+      const savedClientBehavior = v3ChimeClientV2style.getMessagingSessionEndpoint;
       messagingSession.addObserver({
         messagingSessionDidStartConnecting(reconnecting: boolean): void {
           didStartConnecting++;
           if (!reconnecting) {
             webSocket.addEventListener('open', () => {
               webSocket.close(1006);
-              v2ChimeClient.getMessagingSessionEndpoint = function () {
+              v3ChimeClientV2style.getMessagingSessionEndpoint = function () {
                 throw 'some error';
               };
               setTimeout(function () {
-                v2ChimeClient.getMessagingSessionEndpoint = savedClientBehavior;
+                v3ChimeClientV2style.getMessagingSessionEndpoint = savedClientBehavior;
               }, 100);
             });
           } else {
