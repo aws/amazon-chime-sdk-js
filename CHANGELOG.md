@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Use a default "playback" `latencyHint` when creating the `AudioContext` on Windows. Also adds a `setDefaultLatencyHint` API to `DefaultDeviceController` to allow for overriding.
+- Fix behavior of websocket disconnects before a session is connected. Session.start() promise shall fail in the scenario.
+- Queue messages before a messaging session is established to avoid dropping them.
 
 ## [3.7.0] - 2022-07-05
 
