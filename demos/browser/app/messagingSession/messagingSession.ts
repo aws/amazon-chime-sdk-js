@@ -71,10 +71,10 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
         }
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
-        this.session.start();
+        await this.session.start();
       } catch (error) {
         console.error(error);
-        console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
+        console.error(`Failed to start a session: ${error.reason}`);
       }
     });
     document.getElementById('disconnect').addEventListener('click', () => {

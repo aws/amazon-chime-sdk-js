@@ -5,7 +5,8 @@ import MessagingSessionObserver from '../messagingsessionobserver/MessagingSessi
 
 export default interface MessagingSession {
   /**
-   * Start a messaging session.
+   * Start a messaging session. This promise is fulfilled when messaging session is established successfully.
+   * Promise is rejected when there are errors in communicating to messaging endpoint or connection is Unauthorized.
    */
   start(): Promise<void>;
 
