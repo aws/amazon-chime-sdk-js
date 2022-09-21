@@ -24,6 +24,9 @@ export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
   private isClosing: boolean;
   private isSessionEstablished: boolean;
+  private bootstrapResolved: (value: PromiseLike<void> | void) => void; // Variable to determine that a session bootstrap was successful, resolves the StartSession promise
+  private bootstrapRejected: (reason?: CloseEvent) => void; // Variable to determine that a session disconnection was before bootstrap, rejects the StartSession promise
+  private preBootstrapMessages: Message[];
 
   constructor(
     private configuration: MessagingSessionConfiguration,
@@ -51,6 +54,7 @@ export default class DefaultMessagingSession implements MessagingSession {
 
     CSPMonitor.addLogger(this.logger);
     CSPMonitor.register();
+    this.preBootstrapMessages = [];
   }
 
   addObserver(observer: MessagingSessionObserver): void {
@@ -107,6 +111,14 @@ export default class DefaultMessagingSession implements MessagingSession {
   }
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
+    await this.startConnectingInternal(reconnecting);
+    return await new Promise<void>((resolve, reject) => {
+      this.bootstrapResolved = resolve;
+      this.bootstrapRejected = reject;
+    });
+  }
+
+  private async startConnectingInternal(reconnecting: boolean): Promise<void> {
     let endpointUrl = this.configuration.endpointUrl;
 
     // Moving this reconnect logic can potentially result into an infinite reconnect loop on errors.
@@ -224,21 +236,36 @@ export default class DefaultMessagingSession implements MessagingSession {
             observer.messagingSessionDidStart();
           }
         });
+        this.bootstrapResolved();
         this.isSessionEstablished = true;
+
+        // Send message and flush the queue.
+        const preBootstrapMessageLength = this.preBootstrapMessages.length;
+        for (let iter = 0; iter < preBootstrapMessageLength; iter++) {
+          const preBootstrapMessage = this.preBootstrapMessages.shift();
+          this.forEachObserver(observer => {
+            this.sendMessageToObserver(observer, preBootstrapMessage);
+          });
+        }
       } else if (!this.isSessionEstablished) {
         // SESSION_ESTABLISHED is not guaranteed to be the first message, and in rare conditions a message or event from
         // a channel the member is a member of might arrive prior to SESSION_ESTABLISHED.  Because SESSION_ESTABLISHED indicates
-        // it is safe to bootstrap the user application with out any race conditions in losing events we opt to drop messages prior
-        // to SESSION_ESTABLISHED being received
+        // it is safe to bootstrap the user application without any race conditions in losing events we opt to store messages prior
+        // to SESSION_ESTABLISHED being received and send when once SESSION_ESTABLISHED.
+        this.preBootstrapMessages.push(message);
         return;
       }
       this.forEachObserver(observer => {
-        if (observer.messagingSessionDidReceiveMessage) {
-          observer.messagingSessionDidReceiveMessage(message);
-        }
+        this.sendMessageToObserver(observer, message);
       });
     } catch (error) {
       this.logger.error(`Messaging parsing failed: ${error}`);
+    }
+  }
+
+  private sendMessageToObserver(observer: MessagingSessionObserver, message: Message): void {
+    if (observer.messagingSessionDidReceiveMessage) {
+      observer.messagingSessionDidReceiveMessage(message);
     }
   }
 
@@ -263,6 +290,8 @@ export default class DefaultMessagingSession implements MessagingSession {
           observer.messagingSessionDidStop(event);
         }
       });
+    } else {
+      this.bootstrapRejected(event);
     }
   }
 
