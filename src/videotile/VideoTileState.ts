@@ -26,7 +26,9 @@ export default class VideoTileState {
   isContent: boolean = false;
 
   /**
-   * Indication of whether the tile has active video stream.
+   * Indication of whether the tile has active video stream. This value may be somewhat arbitrary in how it is calculated,
+   * it is recommended to used the more specific values (e.g. `paused`, `boundVideoElement`, and `boundVideoStream`) to
+   * determine activity as appropriate for your application.
    */
   active: boolean = false;
 

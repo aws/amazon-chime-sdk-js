@@ -952,6 +952,7 @@ export default class DefaultAudioVideoController
     if (added.length !== 0 || removed.length !== 0) {
       return false;
     }
+    context.videoStreamIndex.subscribeFrameSent();
     return true;
   }
 
