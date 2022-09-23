@@ -294,6 +294,7 @@ export class DemoMeetingApp
     'button-video-stats': 'off',
     'button-promote-to-primary': 'off',
     'button-video-filter': 'off',
+    'button-video-recording-drop' : 'off',
     'button-record-self': 'off',
     'button-record-cloud': 'off',
     'button-live-connector': 'off',
@@ -846,6 +847,7 @@ export class DemoMeetingApp
     const buttonCloudCapture = document.getElementById('button-record-cloud') as HTMLButtonElement;
     buttonCloudCapture.addEventListener('click', _e => {
       this.toggleButton('button-record-cloud');
+      this.updateButtonVideoRecordingDrop()
       if (this.isButtonOn('button-record-cloud')) {
         AsyncScheduler.nextTick(async () => {
           buttonCloudCapture.disabled = true;
@@ -864,6 +866,7 @@ export class DemoMeetingApp
     const buttonLiveConnector = document.getElementById('button-live-connector') as HTMLButtonElement;
     buttonLiveConnector.addEventListener('click', _e => {
       this.toggleButton('button-live-connector');
+      this.updateButtonVideoRecordingDrop()
       if (this.isButtonOn('button-live-connector')) {
         AsyncScheduler.nextTick(async () => {
           buttonLiveConnector.disabled = true;
@@ -891,6 +894,7 @@ export class DemoMeetingApp
       const chunks: Blob[] = [];
       AsyncScheduler.nextTick(async () => {
         this.toggleButton('button-record-self');
+        this.updateButtonVideoRecordingDrop()
         if (!this.isButtonOn('button-record-self')) {
           console.info('Stopping recorder ', recorder);
           recorder.stop();
@@ -1484,6 +1488,15 @@ export class DemoMeetingApp
 
   isButtonOn(button: string): boolean {
     return this.buttonStates[button] === 'on';
+  }
+
+  updateButtonVideoRecordingDrop(): void {
+    if (this.buttonStates['button-record-self'] === 'on' || this.buttonStates['button-record-cloud'] === 'on'  || this.buttonStates['button-live-connector'] === 'on') {
+      this.buttonStates['button-video-recording-drop'] = 'on';
+    } else if (this.buttonStates['button-record-self'] === 'off' && this.buttonStates['button-record-cloud'] === 'off' && this.buttonStates['button-live-connector'] === 'off') {
+      this.buttonStates['button-video-recording-drop'] = 'off';
+    }
+    this.displayButtonStates()
   }
 
   displayButtonStates(): void {
