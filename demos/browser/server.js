@@ -180,12 +180,26 @@ function serve(host = '127.0.0.1:8080') {
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
         }).promise();
 
+        // Create new attendee for the meeting
+        const callAndBridgeAttendee = await client.createAttendee({
+          // The meeting ID of the created meeting to add the attendee to
+          MeetingId: meeting.Meeting.MeetingId,
+
+          // Any user ID you wish to associate with the attendeee.
+          // For simplicity here, we use a random id for uniqueness
+          // combined with the name the user provided, which can later
+          // be used to help build the roster.
+          ExternalUserId: 'CallAndBridgeAttendee',
+        }).promise();
+        console.log('CallAndBridgeAttendee: ', callAndBridgeAttendee);
+
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
         let joinResponse = {
           JoinInfo: {
             Meeting: meeting,
             Attendee: attendee,
+            CallAndBridgeAttendee: callAndBridgeAttendee
           },
         }
         if (meeting.Meeting.PrimaryExternalMeetingId !== undefined) {
