@@ -952,6 +952,9 @@ export default class DefaultAudioVideoController
     if (added.length !== 0 || removed.length !== 0) {
       return false;
     }
+    // `updateRemoteVideosFromLastVideosToReceive` does not actually send a subscribe but it uses
+    // `subscribeFrameSent` to cache the previous index so that we are able to do switches (not add/removes)
+    // for simulcast stream layer changes. See `subscribeFrameSent` for more details.
     context.videoStreamIndex.subscribeFrameSent();
     return true;
   }
