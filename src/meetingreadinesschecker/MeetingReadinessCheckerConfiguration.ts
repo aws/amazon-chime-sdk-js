@@ -16,4 +16,14 @@ export default class MeetingReadinessCheckerConfiguration {
    * If null, it will use the default value.
    */
   waitDurationMs: number = 3000;
+
+  /**
+   * Specify the frequency of oscillation in hertz for the audio output test.
+   */
+  audioOutputFrequency?: number = 440;
+
+  /**
+   * Specify the gain value from 0 to 1.0 for the audio output test.
+   */
+  audioOutputGain?: number = 0.1;
 }
