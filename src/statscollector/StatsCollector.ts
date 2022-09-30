@@ -390,6 +390,10 @@ export default class StatsCollector {
       for (const metricName in streamMetricReport.currentMetrics) {
         this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
       }
+
+      for (const metricName in streamMetricReport.currentStringMetrics) {
+        this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
+      }
     }
   }
 
