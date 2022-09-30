@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Add metric derived from string metric in metric report.
+
 ### Fixed
 * Fixed missing videos, or unnecessarily long freezes when switching simulcast streams.
 
