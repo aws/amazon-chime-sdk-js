@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.8.0] - 2022-08-18
+## [3.9.0] - 2022-09-21
 
 ### Added
 
@@ -14,6 +14,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
+## [3.8.0] - 2022-08-18
+
+### Added
+
+- Add encoder/decoder is in hardware metric and stream dimension to signaling protocol
+- Report encode/decode time and if encoder/decoder is in hardware, and add encoder/decoder name as a metric dimension
+
+### Removed
+
+### Changed
+
+- Fix a confusing function name from `millisecondsPerSecond` to `averageTimeSpentPerSecondInMilliseconds`.
+- Move `requiresPlaybackLatencyHintForAudioContext` to `ExtendedBrowserBehavior`.
+
+### Fixed
+
+- `MessagingSession` reconnect loop did not break on error past reconnect deadline. Infinite reconnect loop was caused due to `firstConnectionAttemptTimestamp` not being set as `startedConnectionAttempt` was not invoked. Check https://github.com/aws/amazon-chime-sdk-js/issues/2372 for details.
+- `MessagingSession` `getMessagingSessionEndpoint` call is now backwards compatible with AWS JS SDK v2.
+- Use a default "playback" `latencyHint` when creating the `AudioContext` on Windows. Also adds a `setDefaultLatencyHint` API to `DefaultDeviceController` to allow for overriding.
+- Fix behavior of websocket disconnects before a session is connected. Session.start() promise shall fail in the scenario.
+- Queue messages before a messaging session is established to avoid dropping them.
 
 ## [3.7.0] - 2022-07-05
 

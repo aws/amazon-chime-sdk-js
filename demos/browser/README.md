@@ -36,6 +36,13 @@ the same AWS region as the meeting and have the following bucket policy:
     ]
 }
 ```
+To use the Amazon Chime SDK media pipelines live connector feature, you need to provide an Amazon Interactive Video Service (IVS) channel endpoint and set the environment variable when running locally. IVS channel is created in only in the serverless browser demo and not in local browser demo.
+For example:
+```
+export IVS_ENDPOINT=<rtmps://ingest-server-url:443/app/stream-key>
+```
+
+Check Amazon Chime SDK launches live connector for streaming [blog post](https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-launches-live-connector-for-streaming/) for more information.
 
 For messaging session, make sure your role policy contains `chime:Connect` and `chime:GetMessagingSessionEndpoint`.
 
@@ -99,7 +106,7 @@ npm run start:fast (--app=<app>)
 
 ### Providing a custom application metadata
 
-Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience. 
+Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience.
 
 > ⚠️ Do not pass any Personal Identifiable Information (PII).
 

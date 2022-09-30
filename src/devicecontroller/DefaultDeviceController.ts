@@ -41,6 +41,7 @@ export default class DefaultDeviceController
   private static defaultSampleRate = 48000;
   private static defaultSampleSize = 16;
   private static defaultChannelCount = 1;
+  private static defaultLatencyHint?: AudioContextLatencyCategory | number;
   private static audioContext: AudioContext | null = null;
 
   private deviceInfoCache: MediaDeviceInfo[] | null = null;
@@ -1464,16 +1465,38 @@ export default class DefaultDeviceController
     return this.transform?.nodes?.start || this.getMediaStreamDestinationNode();
   }
 
+  /**
+   * Overrides the default latency hint used by the user agent when creating the `AudioContext`. By default,
+   * user agents will choose "interactive" which opts for the smallest possible audio buffer. This can
+   * cause choppy audio in some cases on Windows. Therefore, "playback" will be chosen on Windows unless
+   * this value is overridden with this function.
+   * @param latencyHint The latency hint to be used when creating the Web Audio `AudioContext`
+   */
+  static setDefaultLatencyHint(latencyHint?: AudioContextLatencyCategory | number): void {
+    DefaultDeviceController.defaultLatencyHint = latencyHint;
+  }
+
+  /**
+   * Returns the Web Audio `AudioContext` used by the {@link DefaultDeviceController}. The `AudioContext`
+   * is created lazily the first time this function is called.
+   * @returns a Web Audio `AudioContext`
+   */
   static getAudioContext(): AudioContext {
     if (!DefaultDeviceController.audioContext) {
       const options: AudioContextOptions = {};
       if (navigator.mediaDevices.getSupportedConstraints().sampleRate) {
         options.sampleRate = DefaultDeviceController.defaultSampleRate;
       }
-      // @ts-ignore
-      DefaultDeviceController.audioContext = new (window.AudioContext || window.webkitAudioContext)(
-        options
-      );
+      const browserBehavior = new DefaultBrowserBehavior();
+      if (browserBehavior.requiresPlaybackLatencyHintForAudioContext()) {
+        options.latencyHint = 'playback'; // 'playback' is equivalent to 0.02s (20ms) on Windows
+      }
+      if (DefaultDeviceController.defaultLatencyHint) {
+        options.latencyHint = DefaultDeviceController.defaultLatencyHint;
+      }
+      DefaultDeviceController.audioContext = new (window.AudioContext ||
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).webkitAudioContext)(options);
     }
     return DefaultDeviceController.audioContext;
   }

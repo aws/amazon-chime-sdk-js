@@ -1,0 +1,779 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>BuildersJourney | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
+				</li>
+				<li>
+					<a href="buildersjourney.html">BuildersJourney</a>
+				</li>
+			</ul>
+			<h1>Namespace BuildersJourney</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#" id="" style="color: inherit; text-decoration: none;">
+							<h1></h1>
+						</a>
+					</div>
+					<a href="#amazon-chime-sdk-builder39s-journey" id="amazon-chime-sdk-builder39s-journey" style="color: inherit; text-decoration: none;">
+						<h1>Amazon Chime SDK Builder&#39;s Journey</h1>
+					</a>
+					<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+						<h2>Introduction</h2>
+					</a>
+					<p>The goal of this document is to help you work through the various phases of a builder&#39;s journey using the Amazon Chime SDK. These follow the Amazon Chime SDK Builder&#39;s Journey path:</p>
+					<p><img src="RackMultipart20220816-1-gyffxg_html_e7f73c9f1864449d.png" alt="">
+						| Phase | Action  | Gate  |
+						|:----------|:----------|:----------|
+						| Awareness   | Learn about Audio / Video offerings and what&#39;s possible |     |
+						| Discovery   | Considering options against business outcomes, defining requirements, comparing providers| POC Readiness Review |
+						| Tech POC   | POC – Validating that key features and functionality will work for a given application | POC Results Review    |
+						| Business Decision   | After reviewing the POC results, decides whether to move forward  | Application Readiness Review    |
+						| Pilot  | Build and deploy a MVP for limited users including features for Monitoring, Notification and Troubleshooting  | Production Readiness Review |
+						| Production   | Ramp up availability to all users in one Group (e.g. Geo, Line of Business, etc.)  | Deployment  |
+					| Expansion    | Add other Group users, add additional functionality   |   |</p>
+					<a href="#" id="" style="color: inherit; text-decoration: none;">
+						<h3></h3>
+					</a>
+					<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
+						<h3>Prerequisites</h3>
+					</a>
+					<p>To develop applications using the Amazon Chime SDK for JavaScript you will need to be a proficient JavaScript and / or TypeScript programmer. For mobile development you will need to be a proficient Kotlin or Swift programmer familiar with programming for the iOS or Android platforms. Refreshers for each can be found here:</p>
+					<ul>
+						<li><a href="https://www.w3schools.com/js/default.asp">JavaScript Tutorial</a></li>
+						<li><a href="https://www.w3schools.blog/typescript-tutorial">TypeScript Tutorial</a></li>
+						<li><a href="https://dev.to/programliftoff/create-a-basic-webpage-with-css-and-javascript--104i">Create a Basic Webpage with CSS and JavaScript</a></li>
+						<li><a href="https://www.tutorialspoint.com/android/index.htm">Android Tutorial (Android Basics Section)</a></li>
+						<li><a href="https://www.youtube.com/watch?v=09TeUXjzpKs">iOS Tutorial</a></li>
+					</ul>
+					<p>To use the demos in this document, you will need an AWS Account and may need access to the Cloud9 development environment along with the authorization to create Lambda functions and API gateways.</p>
+					<a href="#10-amazon-chime-sdk-components-architecture-and-common-use-cases" id="10-amazon-chime-sdk-components-architecture-and-common-use-cases" style="color: inherit; text-decoration: none;">
+						<h2>1.0 Amazon Chime SDK components, architecture and common use cases.</h2>
+					</a>
+					<a href="#11-what-is-amazon-chime-sdk-and-what-isn39t-it" id="11-what-is-amazon-chime-sdk-and-what-isn39t-it" style="color: inherit; text-decoration: none;">
+						<h3>1.1 What is Amazon Chime SDK (and what isn&#39;t it)?</h3>
+					</a>
+					<p>The Amazon Chime SDK provides a rich set of APIs and example code that enables customers to build modern communication applications that easily interface to other AWS services, including Connect, Pinpoint, Lex, Polly, Transcribe, and others. The Amazon Chime SDK has three key pillars:</p>
+					<ul>
+						<li>Meetings, including audio/video via browser (WebRTC), iOS, or Android</li>
+						<li>Messaging</li>
+						<li>PSTN Audio, including SIP Trunking</li>
+					</ul>
+					<p>The Amazon Chime SDK makes it easy to add collaborative audio calling, video calling, screen share, messaging and Public Switched Telephone Network (PSTN) features to web applications by using the same infrastructure services that power millions of Amazon Chime online meetings. However, while they share some of the same backend services, it is distinct and separate from the Amazon Chime Application. The Amazon Chime Application provides a complete application for real-time communications. It&#39;s functionality and user interface (UI) is fixed and cannot be customized. The Amazon Chime SDK is a Software Development Kit that lets you build your own custom web or mobile application with full control of the user experience and UI. The following pages can help you understand the two distinct services:</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/chime/chime-sdk/">Amazon Chime SDK</a></li>
+						<li><a href="https://aws.amazon.com/chime/?nc=sn&amp;loc=0&amp;chime-blog-posts.sort-by=item.additionalFields.createdDate&amp;chime-blog-posts.sort-order=desc">Amazon Chime Application</a></li>
+					</ul>
+					<a href="#12-major-amazon-chime-sdk-features" id="12-major-amazon-chime-sdk-features" style="color: inherit; text-decoration: none;">
+						<h3>1.2 Major Amazon Chime SDK Features</h3>
+					</a>
+					<p>The Amazon Chime SDK makes it easy to build collaborative audio/video calling, and screen share capabilities. These can span web and mobile applications as well as audio over regular phone calls. This all uses the same infrastructure services that power millions of Amazon Chime online meetings. The Amazon Chime SDK is comprised of number of services and components, including:</p>
+					<ul>
+						<li><p><a href="https://aws.amazon.com/chime/chime-sdk/features/#Meetings">Amazon Chime SDK Meetings</a> – The Meetings feature of the SDK allows you to create and delete meetings, create and delete attendees as well as add and remove attendees from a meeting.</p>
+						</li>
+						<li><p><a href="https://docs.aws.amazon.com/chime/latest/dg/use-javascript-sdk-top.html">Amazon Chime SDK for JavaScript</a>- core code to support building web-based collaboration apps</p>
+						</li>
+						<li><p><a href="https://docs.aws.amazon.com/chime/latest/dg/sdk-for-ios.html">Amazon Chime SDK for iOS</a> - core code to support building iOS-based collaboration apps</p>
+						</li>
+						<li><p><a href="https://docs.aws.amazon.com/chime/latest/dg/sdk-for-android.html">Amazon Chime SDK for Android</a> - core code to support building Android-based collaboration apps</p>
+						</li>
+						<li><p><a href="https://aws.amazon.com/chime/chime-sdk/features/#Messaging">Amazon Chime SDK Messaging</a> – The Messaging feature of the SDK allows you to create persistent messaging applications that can exist either within or outside of a meeting. Click <a href="https://aws.amazon.com/chime/chime-sdk/features/#Messaging">here</a> for more details.</p>
+						</li>
+						<li><p><a href="https://aws.amazon.com/chime/chime-sdk/features/#Public_Switched_Telephone_Network_.28PSTN.29_Audio">Amazon Chime SDK for PSTN Audio</a> – The PSTN feature of the SDK supports a number of functions but the ones we will be focused on will be those that relate to meetings including Inbound Calling and Outbound Calling. Click <a href="https://aws.amazon.com/chime/chime-sdk/features/#Public_Switched_Telephone_Network_.28PSTN.29_Audio">here</a> for more details.</p>
+						</li>
+					</ul>
+					<p>For more information on the Amazon Chime SDK offering see:</p>
+					<ul>
+						<li>Amazon Chime SDK Website</li>
+						<li><a href="https://aws.amazon.com/chime/chime-sdk/customers/">Amazon Chime - Customers</a></li>
+						<li><a href="https://aws.amazon.com/chime/chime-sdk/features/">Amazon Chime SDK Features</a> - Meetings, Messaging, PSTN, and Media Pipelines</li>
+						<li><a href="https://aws.amazon.com/chime/chime-sdk/partners/">Amazon Chime SDK Partners</a></li>
+						<li><a href="https://aws.amazon.com/chime/pricing/#Chime_SDK_">Chime SDK Pricing</a></li>
+						<li><a href="https://aws.amazon.com/chime/chime-sdk/customers/">Customer Stories</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/customers-like-slack-choose-the-amazon-chime-sdk-for-real-time-communications/">Customers like Slack choose the Amazon Chime SDK for real-time communications</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/how-cerner-uses-the-amazon-chime-sdk-to-enhance-its-virtual-health-strategy/">How Cerner uses the Amazon Chime SDK to enhance its virtual health strategy</a></li>
+						<li><a href="https://aws.amazon.com/blogs/mobile/delivering-video-at-scale-in-mobile-and-web-applications-with-orangetheory-fitness/">Delivering Video at Scale in Mobile and Web Applications with Orangetheory Fitness</a></li>
+						<li><a href="https://www.healthcareitnews.com/news/beth-israel-deaconess-creates-homegrown-telehealth-help-amazon">Beth Israel Deaconess</a></li>
+					</ul>
+					<a href="#13-extending-the-amazon-chime-sdk" id="13-extending-the-amazon-chime-sdk" style="color: inherit; text-decoration: none;">
+						<h3>1.3 Extending the Amazon Chime SDK</h3>
+					</a>
+					<p>Amazon Chime SDK can be extended using a number of AWS services including Transcribe, Connect, SMA, media capture as shown in the following:</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/build-a-video-contact-center-with-amazon-connect-and-amazon-chime-sdk/">Build a video contact center with Amazon Connect and Amazon Chime SDK</a></li>
+						<li><a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/videohelpdesk">Video Help Desk</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-to-power-video-for-new-salesforce-anywhere-application/">Amazon Chime SDK to power video for new Salesforce Anywhere application</a></li>
+						<li><a href="https://github.com/siddhartharao/visual-voicemail">Visual voicemail SMA example</a></li>
+						<li><a href="https://github.com/aws-samples/amazon-chime-voiceconnector-transcription">Real-Time Transcription with Amazon Chime Voice Connector</a></li>
+						<li><a href="https://github.com/aws-samples/chime-sipmediaapplication-samples">PSTN dial-in for Amazon Chime SDK with Amazon Chime SIP Media Application</a></li>
+						<li><a href="https://dannadori.medium.com/amazon-chime-sdk-whiteboard-with-data-messages-for-real-time-signaling-c0740575a6c0">Whiteboarding</a></li>
+						<li><a href="https://github.com/aws-samples/chime-voiceconnector-agent-assist">AI-powered Speech Analytics with Amazon Chime Voice Connector</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/building-a-pstn-call-answering-system-with-the-amazon-chime-sdk-amazon-lex-and-amazon-polly/">Building a PSTN call answering system with the Amazon Chime SDK, Amazon Lex and Amazon Polly</a></li>
+					</ul>
+					<a href="#14-typical-use-cases" id="14-typical-use-cases" style="color: inherit; text-decoration: none;">
+						<h3>1.4 Typical Use Cases</h3>
+					</a>
+					<p>Applications built with Amazon Chime SDK can be new or an expansion of existing applications. They can add video / audio, messaging and/or PSTN calling to an existing web page or mobile app. They can be used for Telemedicine, Remote Learning, Remote Assistance, Virtual Events, Unified Communications, Gaming, and Retail.</p>
+					<p>The <a href="https://aws.amazon.com/chime/chime-sdk/customers/">Amazon Chime SDK Customers</a> page provides a list of Industries that use Amazon Chime SDK.</p>
+					<a href="#20-amazon-chime-sdk---how-it-works" id="20-amazon-chime-sdk---how-it-works" style="color: inherit; text-decoration: none;">
+						<h2>2.0 Amazon Chime SDK - How it works</h2>
+					</a>
+					<p>If you are building a collaboration app (standalone or integrated into an existing application) then you will at least need to work with Amazon Chime SDK meetings. Depending on your target platform, you may need to use various other components. If your application needs to run in a web browser, you will need the Amazon Chime SDK for JavaScript. If your application supports mobile devices, you will need the Amazon Chime SDK for iOS and/or Android. If your application needs to support the ability to collaborate by dialing a phone number or across the PSTN, you will need to include the Amazon Chime SDK for PSTN Audio. These all work by connecting to meeting session resources that you create dynamically in your AWS account.</p>
+					<a href="#21-amazon-chime-sdk-for-javascript" id="21-amazon-chime-sdk-for-javascript" style="color: inherit; text-decoration: none;">
+						<h3>2.1 Amazon Chime SDK for JavaScript</h3>
+					</a>
+					<p>The Amazon Chime SDK for JavaScript has everything you need to build custom calling and collaboration experiences in your web application, including methods to: configure meeting sessions, list and select audio and video devices, start and stop screen share and screen share viewing, receive callbacks when media events occur such as volume changes, and control meeting features such as audio mute and video tile bindings.</p>
+					<p>The Amazon Chime SDK for JavaScript works by connecting to meeting session resources that you have created in your AWS account. Built on top of WebRTC, the Amazon Chime SDK has everything you need to build custom calling and collaboration experiences in your web application, including methods to: configure meeting sessions, list and select audio and video devices, start and stop screen share and screen share viewing, receive callbacks when media events occur such as volume changes, and control meeting features such as audio mute and video tile bindings. For additional information, please see:</p>
+					<ul>
+						<li>Tutorial - <a href="https://catalog.us-east-1.prod.workshops.aws/v2/workshops/de1c7d2d-6826-44db-a678-ff7a62747ec4/en-US/">Workshop Studio – Building with Amazon Chime SDK</a></li>
+						<li><a href="https://www.tutorialspoint.com/webrtc/index.htm">WebRTC Tutorial</a></li>
+						<li>SDK Tech Talk:<a href="https://www.youtube.com/watch?v=v9KFalEv6gw">https://www.youtube.com/watch?v=v9KFalEv6gw</a></li>
+						<li>SDK Video:<a href="https://youtu.be/lNQ1_WfUQl4">https://youtu.be/lNQ1_WfUQl4</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/index.html">Amazon Chime SDK for JavaScript Overview</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#1-create-a-session">Getting Started</a></li>
+						<li>Frequently Asked Questions<ul>
+								<li><a href="https://aws.amazon.com/chime/chime-sdk/faq/">Amazon Chime SDK FAQ</a> (Web Page)</li>
+								<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html">Amazon Chime SDK FAQ</a> (GitHub)</li>
+								<li><a href="https://quip-amazon.com/2eChAFiHKcpi/Amazon-Chime-SDK-FAQ">SA Internal Amazon Chime SDK FAQ</a> (Internal Quip Document)</li>
+							</ul>
+						</li>
+						<li><a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/guides">Amazon Chime SDK Guides</a>(Please review each document in this list)</li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/a-builders-guide-to-amazon-chime-sessions-at-reinvent-2019/">A Builder&#39;s Guide to Amazon Chime sessions at</a><a href="https://aws.amazon.com/blogs/business-productivity/a-builders-guide-to-amazon-chime-sessions-at-reinvent-2019/">re:Invent 2019</a></li>
+						<li><a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless">Serverless Demo</a></li>
+						<li><a href="https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html">Developer Guide</a></li>
+					</ul>
+					<a href="#22-quotas--limits" id="22-quotas--limits" style="color: inherit; text-decoration: none;">
+						<h3>2.2 Quotas / Limits</h3>
+					</a>
+					<p>AWS has service quotas (previously call service limits) to help prevent accidental provisioning of more resources than needed and to help ensure availability of AWS resources.</p>
+					<p>For each AWS account there are hard limits that cannot be adjusted and soft limits which can be adjusted:</p>
+					<p><strong>Hard limits:</strong></p>
+					<ul>
+						<li>250 users per session</li>
+						<li>100 video sources on simultaneously</li>
+						<li>25 tiles displayed simultaneously</li>
+					</ul>
+					<p><strong>Soft Limits (can be adjusted):</strong></p>
+					<ul>
+						<li>250 simultaneous Amazon Chime SDK meetings per AWS Account</li>
+						<li>Adjustments can be requested via the <a href="https://console.aws.amazon.com/servicequotas/home/services/chime/quotas">Amazon Chime Service Quota Dashboard</a>.</li>
+					</ul>
+					<p>Note: Adjusting the Active Amazon Chime SDK meetings per account will cause the &quot;All meeting management API requests limit&quot; and the &quot;All meeting management API requests rate limit in transactions per second&quot; to be automatically adjusted as well</p>
+					<p>Additionally, the Amazon Chime SDK has limits on meeting length to protect against abandoned meetings. A meeting will automatically end under the following conditions:</p>
+					<ul>
+						<li>Call to the DeleteMeeting API</li>
+						<li>5 minutes with nobody in the meeting (primary meetings only)</li>
+						<li>primary meeting has ended (replica meetings only)</li>
+						<li>30 minutes with one person in the meeting (old Chime namespace only)</li>
+						<li>24 hours with one person in the meeting (new ChimeSDKMeetings namespace only)</li>
+						<li>6 hours with 2 or more attendees but no detected audio</li>
+					</ul>
+					<p>Messaging quotas can be found here: <a href="https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html">https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html</a>.</p>
+					<a href="#-1" id="-1" style="color: inherit; text-decoration: none;">
+						<h3></h3>
+					</a>
+					<a href="#-2" id="-2" style="color: inherit; text-decoration: none;">
+						<h3></h3>
+					</a>
+					<a href="#23-supported-browsers-and-operating-systems" id="23-supported-browsers-and-operating-systems" style="color: inherit; text-decoration: none;">
+						<h3>2.3 Supported Browsers and Operating Systems</h3>
+					</a>
+					<p>Amazon Chime SDK is dependent on the supported features of various browsers to be able to function. Therefore, there are only certain browsers and operating system we support. The current list of supported browsers and their versions can be found in the <a href="https://aws.amazon.com/chime/chime-sdk/faq/">Amazon Chime SDK FAQs</a> under &quot;General Heading Q: What browsers does the Amazon Chime SDK for JavaScript support?&quot;.</p>
+					<p>We do not specify hardware requirements because they are dependent on the requirements of the application and are therefore left up to the you to determine. It is important that the you make a determination based on testing with your application so they can advise your users of the hardware requirements for your application.</p>
+					<a href="#24-media-and-control-planes-for-meetings" id="24-media-and-control-planes-for-meetings" style="color: inherit; text-decoration: none;">
+						<h3>2.4 Media and Control Planes for Meetings</h3>
+					</a>
+					<p>The Amazon Chime SDK consists of Control Planes and a Media Planes. The control plane is used to set up a meeting and the medial Plane is where the meeting actually happens. The available regions for each can be found in <a href="https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html">https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html</a>. Additional information and guidance on selecting a region can be found here: <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html">https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html</a>.</p>
+					<p><img src="RackMultipart20220816-1-gyffxg_html_46f0e418fa28f44a.png" alt=""></p>
+					<a href="#25-messaging" id="25-messaging" style="color: inherit; text-decoration: none;">
+						<h3>2.5 Messaging</h3>
+					</a>
+					<p>Amazon Chime SDK Messaging can be used to add massively scalable messaging capability to your application. This may be in the context of a meeting, but it does not need to be. Amazon Chime SDK Messaging is a service that can be used independently from the other components of the SDK.</p>
+					<ul>
+						<li><a href="https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html">Using Amazon Chime SDK messaging</a></li>
+					</ul>
+					<a href="#26-getting-a-public-switched-telephone-network-pstn-audio-call-into-a-meeting" id="26-getting-a-public-switched-telephone-network-pstn-audio-call-into-a-meeting" style="color: inherit; text-decoration: none;">
+						<h3>2.6 Getting a Public Switched Telephone Network (PSTN) audio call into a meeting</h3>
+					</a>
+					<p>Amazon Chime SDK PSTN Audio enables integration with common telephony interfaces including PSTN phone numbers and SIP Trunks. This allows you to build applications that use audio from phone calls, either in the context of a meeting or not. SIP Trunks allow you to integrate directly with your on-premise PBX under programmatic control. You can provision Amazon Chime SDK managed phone numbers in the US and other countries. Using the SIP Media Appliance (SMA) managed object and SIP rules you can associate events that occur on phone line with a lambda function that you write. The lambda function instructs the PSTN Audio Service what actions to take on the phone call: connect to a meeting, play an audio file, record audio from the caller, collect pressed STMF digits, etc. More sophisticated examples include integrating with other Amazon AWS services such as Lex, Polly, Transcribe, etc.</p>
+					<ul>
+						<li><a href="https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html">Using Amazon PSTN Audio Service</a></li>
+					</ul>
+					<p>When in an Amazon Chime SDK Meeting, it is often helpful to allow users to call into a meeting with their desk or mobile phone. It lets you do much more but this document will focus on the call-in capabilities. The following document provides the details about using the Amazon Chime SDK PSTN Audio feature:</p>
+					<ul>
+						<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html">Using the Amazon Chime SDK PSTN Audio service</a></li>
+					</ul>
+					<p>This blog explains how to add a PSTN caller to an Amazon Chime SDK meeting:</p>
+					<ul>
+						<li><a href="https://github.com/aws-samples/amazon-chime-sma-update-call">Updating an In-Progress Amazon Chime SIP Media Application Call</a></li>
+					</ul>
+					<p>Tutorial - This workshop is a good introduction to Amazon Chime SDK PSTN Audio:</p>
+					<ul>
+						<li><a href="https://catalog.workshops.aws/building-with-chime-sdk">https://catalog.workshops.aws/building-with-chime-sdk</a>.</li>
+					</ul>
+					<a href="#27-review-install-and-test-drive-our-full-featured-demos" id="27-review-install-and-test-drive-our-full-featured-demos" style="color: inherit; text-decoration: none;">
+						<h3>2.7 Review, install and test drive our full-featured demos</h3>
+					</a>
+					<p>There are many demos for Amazon Chime SDK features you can run in your own environment. Below are the key demos for each platform:</p>
+					<table>
+						<thead>
+							<tr>
+								<th><strong>Amazon Chime SDK</strong></th>
+								<th><strong>Feature</strong></th>
+								<th><strong>Demo Resources</strong></th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>JavaScript</td>
+								<td>Meetings Web</td>
+								<td><a href="https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-using-the-amazon-chime-sdk/">Blog</a><a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless">Demo Instructions</a><a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser">Source Code</a></td>
+							</tr>
+							<tr>
+								<td>Messaging</td>
+								<td>TBD</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>React</td>
+								<td>Meetings Web</td>
+								<td><a href="https://github.com/aws-samples/amazon-chime-sdk/tree/main/apps/meeting">Demo Instructions</a><a href="https://github.com/aws-samples/amazon-chime-sdk/tree/main/apps/meeting/src">Source Code</a></td>
+							</tr>
+							<tr>
+								<td>Messaging</td>
+								<td><a href="https://aws.amazon.com/blogs/business-productivity/build-meeting-features-into-your-amazon-chime-sdk-messaging-application/">Blog</a><a href="https://github.com/aws-samples/amazon-chime-sdk/tree/main/apps/chat">Demo Instructions</a><a href="https://github.com/aws-samples/amazon-chime-sdk/tree/main/apps/chat/src">Source Code</a></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>iOS*</td>
+								<td>Meetings</td>
+								<td><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdks-ios-android/">iOS and Android Overview</a><a href="https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-on-ios-using-the-amazon-chime-sdk/">Blog</a></td>
+							</tr>
+							<tr>
+								<td>Messaging</td>
+								<td><a href="https://aws.amazon.com/blogs/business-productivity/build-chat-applications-in-ios-and-android-with-amazon-chime-sdk-messaging/">Blog</a></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>Android*</td>
+								<td>Meetings</td>
+								<td><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdks-ios-android/">iOS and Android Overview</a><a href="https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-on-android-using-the-amazon-chime-sdk/">Blog</a></td>
+							</tr>
+							<tr>
+								<td>Messaging</td>
+								<td><a href="https://aws.amazon.com/blogs/business-productivity/build-chat-applications-in-ios-and-android-with-amazon-chime-sdk-messaging/">Blog</a></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>PSTN / SMA</td>
+								<td>Inbound Calling</td>
+								<td><a href="https://github.com/aws-samples/amazon-chime-sma-update-call">Blog</a><a href="https://github.com/aws-samples/amazon-chime-sma-update-call">Demo Code</a></td>
+							</tr>
+					</tbody></table>
+					<p>*Requires access to compatible iOS or Android hardware</p>
+					<a href="#30-get-ready-for-a-proof-of-concept-poc" id="30-get-ready-for-a-proof-of-concept-poc" style="color: inherit; text-decoration: none;">
+						<h2>3.0 Get ready for a Proof of Concept (POC)</h2>
+					</a>
+					<p>According to the Meriam Webster Dictionary a Proof of Concept is &quot;something that demonstrates the feasibility of a concept&quot;. An Amazon Chime SDK POC is usually designed to help validate that core goals can be met using the Amazon Chime SDK. It is not generally a full-blown application and is not usually deployed to the masses but is tested and verified by a small subset of folks, often just within IT.</p>
+					<a href="#-3" id="-3" style="color: inherit; text-decoration: none;">
+						<h3></h3>
+					</a>
+					<a href="#31-what-is-a-poc-readiness-review" id="31-what-is-a-poc-readiness-review" style="color: inherit; text-decoration: none;">
+						<h3>3.1 What is a POC Readiness Review?</h3>
+					</a>
+					<p>It is important that you what your goals are. You document what they are trying to accomplish in the POC in the POC Readiness Review. In this review, you and AWS review the timelines, success criteria, and expectations.</p>
+					<a href="#32-poc-readiness-review" id="32-poc-readiness-review" style="color: inherit; text-decoration: none;">
+						<h3>3.2 POC Readiness Review</h3>
+					</a>
+					<p>You would hold a POC Readiness Review with the Amazon Chime SDK SA, TAM and the Account Team before starting to develop for the POC. Here&#39;s some examples of things you will want to document in a POC Readiness Review:</p>
+					<ul>
+						<li>What are you hoping to accomplish?</li>
+						<li>Who is the owner for the POC?</li>
+						<li>Who are the developers?<ul>
+								<li>Is a Partner needed?</li>
+							</ul>
+						</li>
+						<li>What is the POC Minimum Viable Product?</li>
+						<li>Architecture?</li>
+						<li>Timeline?<ul>
+								<li>Start date</li>
+								<li>End date</li>
+							</ul>
+						</li>
+						<li>How will you measure success?</li>
+					</ul>
+					<a href="#33-poc-roadmap" id="33-poc-roadmap" style="color: inherit; text-decoration: none;">
+						<h3>3.3 POC Roadmap</h3>
+					</a>
+					<p>There is a base knowledge level needed to build an Amazon Chime SDK application. First, you will need to choose the framework you will use, HTML w/ JavaScript (no framework or any framework other than React) or the React framework. For mobile devices (Android and iOS) you can choose to use the same Web-based application or create native apps. In general, new features and functionality come out first in the JavaScript version followed by the React version often several weeks later. However, using the built-in React components can mean less development effort and faster time to market.</p>
+					<a href="#34-sdk-basics" id="34-sdk-basics" style="color: inherit; text-decoration: none;">
+						<h4>3.4 SDK Basics</h4>
+					</a>
+					<a href="#341-building-a-javascript-app" id="341-building-a-javascript-app" style="color: inherit; text-decoration: none;">
+						<h4>3.4.1 Building a JavaScript App</h4>
+					</a>
+					<p>To understand how to get a basic video and audio application working in JavaScript please review the following links. Pay particular attention to the &quot;Building a Meeting Application using the Amazon Chime SDK with JavaScript&quot; blog and the workshop. These documents help you to understand the options for Participant Layout Control, how to construct a Roster and detect the active speaker.</p>
+					<ul>
+						<li><a href="https://github.com/aws/amazon-chime-sdk-js">GitHub Repository</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html">API Overview</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/gettingstarted.html">Getting Started</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-using-the-amazon-chime-sdk/">Building a Meeting Application using the Amazon Chime SDK with JavaScript</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#6-mute-and-unmute-microphone-audio-with-the-real-time-api">Mute / Unmute</a><ul>
+								<li>Remote Mute can be implemented using <a href="https://aws.amazon.com/about-aws/whats-new/2022/06/amazon-chime-sdk-supports-centralized-attendee-controls">Centralized Attendee Controls</a><ul>
+										<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_UpdateAttendeeCapabilities.html">https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_UpdateAttendeeCapabilities.html</a></li>
+										<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_AttendeeCapabilities.html">https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_AttendeeCapabilities.html</a></li>
+									</ul>
+								</li>
+								<li>Or using <a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#9-send-and-receive-data-messages-optional">dataMessages</a></li>
+							</ul>
+						</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#7-share-and-display-video">Participant Layout control</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#5d-subscribe-to-an-active-speaker-detector-optional">Subscribe to an Active Speaker Detector</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#5-build-a-roster-of-participants-using-the-real-time-api">Roster</a></li>
+					</ul>
+					<a href="#342-building-a-react-app" id="342-building-a-react-app" style="color: inherit; text-decoration: none;">
+						<h4>3.4.2 Building a React App</h4>
+					</a>
+					<p>To understand how to get a basic video and audio application working in JavaScipt with Reacct, please review the following links. Pay particular attention to the &quot;Building with Amazon Chime SDK Using React&quot; workshop. It will help you understand how a basic Amazon Chime SDK application is constructed, and build an Amazon Chime SDK React application. The documents will also help you understand the options for Participant Layout Control, how to construct a Roster and detect the current Active Speaker.</p>
+					<ul>
+						<li><a href="https://github.com/aws/amazon-chime-sdk-component-library-react">GitHub Repository</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/docs/quick-starts--page">Getting Started</a></li>
+						<li>This Hands-on Workshop creates a working React Amazon Chime SDK Web App<ul>
+								<li><a href="https://catalog.us-east-1.prod.workshops.aws/v2/workshops/de1c7d2d-6826-44db-a678-ff7a62747ec4/en-US/">Workshop Studio - Building with Amazon Chime SDK Using React</a></li>
+							</ul>
+						</li>
+						<li>Here is a third-party article about building with the Amazon Chime SDK<ul>
+								<li><a href="https://blog.nona.digital/how-to-build-a-video-calling-poc-with-aws-chime-and-reactjs/">How to build a video calling POC with AWS chime and ReactJS</a></li>
+							</ul>
+						</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-hooks-usetogglelocalmute--page">Mute / Unmute</a><ul>
+								<li>Remote Mute can be implemented using <a href="https://aws.amazon.com/about-aws/whats-new/2022/06/amazon-chime-sdk-supports-centralized-attendee-controls">Centralized Attendee Controls</a><ul>
+										<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_UpdateAttendeeCapabilities.html">https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_UpdateAttendeeCapabilities.html</a></li>
+										<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_AttendeeCapabilities.html">https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_AttendeeCapabilities.html</a></li>
+									</ul>
+								</li>
+								<li>Or using <a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#9-send-and-receive-data-messages-optional">dataMessages</a></li>
+							</ul>
+						</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/docs/ui-components-grid--named-grid">Participant Layout control</a></li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-hooks-useactivespeakersstate--page">Highlight Current Speaker</a></li>
+						<li>Roster<ul>
+								<li><a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-hooks-userosterstate--page">useRosterState</a></li>
+								<li><a href="https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/ui-components-roster--roster-header-with-navigation-icon">Roster Header with Navigation Icon</a></li>
+							</ul>
+						</li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-smart-video-sending-demo/">Amazon Chime SDK Smart Video Sending Demo</a></li>
+					</ul>
+					<a href="#343-building-a-mobile-app" id="343-building-a-mobile-app" style="color: inherit; text-decoration: none;">
+						<h4>3.4.3 Building a Mobile App</h4>
+					</a>
+					<p>You can choose to create native apps for Android and iOS. Run through the demo apps and workshops below to see what examples of what can be done:</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdks-ios-android/">Introducing the Amazon Chime SDKs for iOS and Android</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-on-ios-using-the-amazon-chime-sdk/">Building a Meeting Application on iOS using the Amazon Chime SDK</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-on-android-using-the-amazon-chime-sdk/">Building a Meeting Application on Android using the Amazon Chime SDK</a></li>
+						<li><a href="https://aws.amazon.com/about-aws/whats-new/2021/05/wkwebview-now-supported-with-amazon-chime-sdk-for-javascript/">WKWebView and Webview</a>(embedding Amazon Chime SDK JavaScript into a mobile app)<ul>
+								<li><a href="https://github.com/aws-samples/amazon-chime-sdk/tree/main/apps/iOS-WKWebView-sample">https://github.com/aws-samples/amazon-chime-sdk/tree/main/apps/iOS-WKWebView-sample</a></li>
+								<li><a href="https://developer.chrome.com/docs/multidevice/webview/gettingstarted/">https://developer.chrome.com/docs/multidevice/webview/gettingstarted/</a></li>
+							</ul>
+						</li>
+					</ul>
+					<a href="#35-review-layout-options" id="35-review-layout-options" style="color: inherit; text-decoration: none;">
+						<h3>3.5 Review Layout Options</h3>
+					</a>
+					<p>An important consideration for the user experience is the layout of the display. This document walks you through the more common layouts and how to implement them with JavaScript and React: <a href="https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html#managing-video-quality-for-different-video-layouts">Managing Video Quality for Different Video Layouts</a>. It will help you get it right the first time.</p>
+					<a href="#36-considerations-for-quality-bandwidth-and-connectivity" id="36-considerations-for-quality-bandwidth-and-connectivity" style="color: inherit; text-decoration: none;">
+						<h3>3.6 Considerations for Quality, Bandwidth and Connectivity</h3>
+					</a>
+					<p>The Amazon Chime SDK allows you to show up to 25 video tiles and resolution up to 720p. However, you will not be able to show 25 video tiles at the highest resolution because of CPU and bandwidth limitations. Current guidance is to only show 4 720p tiles on a screen. A client&#39;s CPU, bandwidth and the resolution of the tiles will affect how many tiles their device can display. Finally, the SDK can make some automated adjustments of the transmitted video resolution based on the number of participants with video turned on. Additional guidance can be found in &quot;<a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html">Quality, Bandwidth and Connectivity</a>&quot;.</p>
+					<a href="#37-security" id="37-security" style="color: inherit; text-decoration: none;">
+						<h3>3.7 Security</h3>
+					</a>
+					<p>Because there are a number of ways to implement authentication and authorization (including no authentication), Amazon Chime SDK provides a way your server side application can control who can attend a meeting. When an attendee joins a meeting, they are given a join token. That join token is what allows them to get and send the media. The primary way to control who gets a join token is via your server-side app. The links below provide additional information.</p>
+					<ul>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html#how-do-users-authenticate-into-a-meeting">How do users authenticate into a meeting?</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/understanding-security-in-the-amazon-chime-application-and-sdk/">Understanding Security in the Amazon Chime Application and SDK</a></li>
+						<li><a href="https://aws.amazon.com/blogs/opensource/real-world-serverless-application/">Identification and Authorization</a></li>
+					</ul>
+					<a href="#38-advanced-features" id="38-advanced-features" style="color: inherit; text-decoration: none;">
+						<h3>3.8 Advanced Features</h3>
+					</a>
+					<p>Up until now we have been focused on getting into meetings and starting a meeting with voice, video and screen sharing. Now let&#39;s look at things that can be added to further enhance the meeting experience.</p>
+					<a href="#381-meeting-management" id="381-meeting-management" style="color: inherit; text-decoration: none;">
+						<h4>3.8.1 Meeting Management</h4>
+					</a>
+					<p>In addition to the main meeting, you may want to hold attendees in a Waiting Room until a certain number of attendees join or until the presenter joins. This is often just implemented as a web page that then automatically moves them to the main meeting at the appropriate time, or when a particular dataMessage is received.. Breakout rooms allow a presenter or administrator to create meetings for a subset of the attendees in the main meeting for smaller group discussions. These are just additional meetings with people moved to / from the main meeting. If you need to have separate groups of audio or video an attendee can choose from (multiple languages, more than 100 video sources), it is possible to join multiple meetings simultaneously. Please read through the additional information in the links below.</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/breakout-room-amazon-chime-sdk-react-component-library/">Break-out Rooms</a></li>
+						<li><a href="https://aws.amazon.com/about-aws/whats-new/2022/06/amazon-chime-sdk-supports-centralized-attendee-controls">Centralized Attendee Controls</a><ul>
+								<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_UpdateAttendeeCapabilities.html">https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_UpdateAttendeeCapabilities.html</a></li>
+								<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_AttendeeCapabilities.html">https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_AttendeeCapabilities.html</a></li>
+							</ul>
+						</li>
+					</ul>
+					<a href="#382-recording--media-capture" id="382-recording--media-capture" style="color: inherit; text-decoration: none;">
+						<h4>3.8.2 Recording / Media Capture</h4>
+					</a>
+					<p>If you want to record a meeting, there are multiple ways of doing it with the Amazon Chime SDK. The client can have recording built-in so that it records directly to the local client&#39;s hard drive. This has the advantage of being easy but can take up a lot of room on the hard drive and presents an additional local CPU load which can cause audio and video problems for larger meetings. The second method is to have a remote app you deploy join the meeting and record whatever a browser sees in the meeting (see the Recording Demo). You are responsible for running the infrastructure but the output is a simple, single MP4 video file in an S3 bucket. Finally, you can use the Media Capture API to have the system (in the cloud) join your meeting. You can then record just the active speaker or 1 to all individual video streams and mixed audio in the meeting. Each stream is captured in 5 second chunks to allow for near real-time AI/ML processing of the video and audio. This means that you will have to stitch these chunks back together to reconstitute the whole stream. This also means that if you want to get all of the video into a single MP4 file, you will have to do the processing to create a composite video of all of the individual MP4 files. You can set up and run each of the recording options so you can experience the differences.</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/">How to Enable Client-Side Recording Using the Amazon Chime SDK</a></li>
+						<li><a href="https://github.com/aws-samples/amazon-chime-sdk-recording-demo">Recording Demo</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/capture-amazon-chime-sdk-meetings-using-media-capture-pipelines/">Media Capture</a></li>
+					</ul>
+					<a href="#383-messaging--chat" id="383-messaging--chat" style="color: inherit; text-decoration: none;">
+						<h4>3.8.3 Messaging / Chat</h4>
+					</a>
+					<p>The Messaging API of the Amazon Chime SDK can be using with or completely independent of a Meeting. The following blog shows an example of a basic Messaging application. Deploy it and run it to become familiar with its capabilities.</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/build-chat-features-into-your-application-with-amazon-chime-sdk-messaging/">Build chat features into your application with Amazon Chime SDK messaging</a></li>
+					</ul>
+					<p>Sometimes you want to use your own identity provider. Read through this blog to learn how:</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/integrate-your-identity-provider-with-amazon-chime-sdk-messaging/">Integrate your Identity Provider with Amazon Chime SDK Messaging</a></li>
+					</ul>
+					<a href="#384-background--image-modification" id="384-background--image-modification" style="color: inherit; text-decoration: none;">
+						<h4>3.8.4 Background / Image Modification</h4>
+					</a>
+					<p>With the Amazon Chime SDK, it is possible to process the image from the camera before sending it on to the meeting. There is a lower-level set of APIs for doing your own video processing of a video frame and higher-level APIs for adding background blur or for replacing the entire background image. Read through the first two Video Processing API papers to get an understanding of what it can do and set up and run the demo in the &quot;Blur your Background and Suppress Noise&quot; blog.</p>
+					<ul>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/videoprocessor.html">Video Processing APIs</a></li>
+						<li><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/10_Video_Processor.md">Chime Video Processing API&#39;s GitHub Repo</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/blur-your-background-and-suppress-noise-in-an-online-meeting-application-built-with-the-amazon-chime-sdk-for-javascript/">Blur your Background and suppress noise</a></li>
+					</ul>
+					<a href="#385-pstn-call-processing" id="385-pstn-call-processing" style="color: inherit; text-decoration: none;">
+						<h4>3.8.5 PSTN call processing</h4>
+					</a>
+					<p>Users can call to/from meetings from the Public Switched Telephone Network (PSTN) using a desk phone or mobile phone. They can also build stand-alone PSTN apps that can dynamically route calls based on user (DTMF), database, or AI/ML data. Review the links below to become familiar with the techniques and capabilities:</p>
+					<ul>
+						<li><a href="https://github.com/aws-samples/amazon-chime-sma-update-call">Updating an In-Progress Amazon Chime SIP Media Application Call</a></li>
+						<li><a href="https://docs.aws.amazon.com/chime/latest/dg/call-flow.html">Amazon Chime SDK PSTN Audio Sample Call Flow</a></li>
+						<li><a href="https://github.com/aws-samples/chime-sipmediaapplication-samples">PSTN dial-in for Amazon Chime SDK with Amazon Chime SIP Media Application</a></li>
+						<li><a href="https://catalog.us-east-1.prod.workshops.aws/workshops/43b40159-ea91-4a81-ac6e-3f6906034ea0/en-US">Building a Click-To-Call Application with Amazon Chime SDK</a> (Meeting Outbound dialing)</li>
+						<li><a href="https://catalog.workshops.aws/building-with-chime-sdk/en-US">Building Telephony-Powered Applications with the Amazon Chime SDK PSTN Audio Service</a></li>
+						<li><a href="https://github.com/aws-samples/amazon-chime-sdk-click-to-call">Amazon Chime Click-To-Call Starter Project</a></li>
+						<li><a href="https://github.com/aws-samples/amazon-chime-sdk-pstn-audio-workshop">Amazon Chime SDK PSTN Audio Workshop</a></li>
+					</ul>
+					<a href="#386-react-native" id="386-react-native" style="color: inherit; text-decoration: none;">
+						<h4>3.8.6 React Native</h4>
+					</a>
+					<p>The following React Native demo will show how you can integrate the Amazon Chime SDK with a React Native application.</p>
+					<ul>
+						<li><a href="https://github.com/aws-samples/amazon-chime-react-native-demo">Amazon Chime SDK React Native Demo</a></li>
+					</ul>
+					<p>Note: This is a limited function demo. Many times, folks wanting to use this demo are looking for a way to create an Amazon Chime SDK application without having to know the underlying iOS or Android environment. If they find that the functionality they want to implement is not in the demo, they will have to go into the native application to implement it.</p>
+					<a href="#39-understanding-key-use-cases" id="39-understanding-key-use-cases" style="color: inherit; text-decoration: none;">
+						<h3>3.9 Understanding Key Use Cases</h3>
+					</a>
+					<a href="#391-virtual-classroom" id="391-virtual-classroom" style="color: inherit; text-decoration: none;">
+						<h4>3.9.1 Virtual Classroom</h4>
+					</a>
+					<p>A popular use case for the Amazon Chime SDK is building a remote classroom application. Read through this blog and deploy the demo application below:</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/">Building a Virtual Classroom Application using the Amazon Chime SDK and Electron</a></li>
+					</ul>
+					<a href="#392-broadcast-live-events" id="392-broadcast-live-events" style="color: inherit; text-decoration: none;">
+						<h4>3.9.2 Broadcast Live Events</h4>
+					</a>
+					<p>You can build a live events platform with Amazon Chime SDK at its core. The SDK provides a space for the interactive portion while IVS (or other Broadcast Service) provides one-way distribution to over 100,000 users. Review the demos below. Deploy and use &quot;Amazon Chime Meeting Broadcast Demo&quot; to test this capability.</p>
+					<ul>
+						<li><a href="https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo">Amazon Chime Meeting Broadcast Demo</a></li>
+						<li><a href="https://aws.amazon.com/blogs/opensource/how-to-deploy-a-live-events-solution-built-with-the-amazon-chime-sdk/">How to deploy a live events solution built with the Amazon Chime SDK</a></li>
+						<li><a href="https://github.com/aws-samples/amazon-chime-live-events">Town Hall/Webinar sample application</a></li>
+					</ul>
+					<a href="#393-telehealth" id="393-telehealth" style="color: inherit; text-decoration: none;">
+						<h4>3.9.3 Telehealth</h4>
+					</a>
+					<ul>
+						<li><a href="https://aws.amazon.com/solutions/case-studies/caremonitor/">CareMonitor Scales Telehealth and Remote Patient Monitoring Platform with AWS</a></li>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/embed-healthcare-appointment-scheduling-widget-with-the-amazon-chime-sdk/">Embed Healthcare Appointment Scheduling Widget with the Amazon Chime SDK</a></li>
+					</ul>
+					<a href="#310-poc-testing" id="310-poc-testing" style="color: inherit; text-decoration: none;">
+						<h3>3.10 POC Testing</h3>
+					</a>
+					<p>Testing is one of the most important steps in developing an app for the Amazon Chime SDK. Because each application provides a unique combination of bandwidth and CPU loads, it is necessary to test the hardware and bandwidth configurations you plan to support.</p>
+					<ul>
+						<li>Test a range of supported devices (current and older): Windows, Mac, iOS, Android, Chromebook. Will you support a 5 year old Chromebook? If so, you need to test it.</li>
+						<li>Test on all supported browsers (see <a href="https://aws.amazon.com/chime/chime-sdk/faq/">https://aws.amazon.com/chime/chime-sdk/faq/</a>)</li>
+						<li>Test with heavy CPU load<ul>
+								<li><a href="https://docs.microsoft.com/en-us/sysinternals/downloads/cpustres">https://docs.microsoft.com/en-us/sysinternals/downloads/cpustres</a></li>
+								<li><a href="https://osxdaily.com/2012/10/02/stress-test-mac-cpu/">https://osxdaily.com/2012/10/02/stress-test-mac-cpu/</a></li>
+							</ul>
+						</li>
+						<li>Test with bandwidth constraints<ul>
+								<li><a href="https://www.guidingtech.com/manage-throttle-download-speed-chrome/">Throttling within Chrome Browser</a></li>
+								<li><a href="http://wanem.sourceforge.net/">http://wanem.sourceforge.net/</a> (Windows)</li>
+								<li><a href="https://nshipster.com/network-link-conditioner/">https://nshipster.com/network-link-conditioner/</a> (Mac &amp; iOS)</li>
+							</ul>
+						</li>
+					</ul>
+					<a href="#4-amazon-chime-sdk-business-case--gono-go" id="4-amazon-chime-sdk-business-case--gono-go" style="color: inherit; text-decoration: none;">
+						<h2>4 Amazon Chime SDK Business Case – Go/No-go</h2>
+					</a>
+					<p>In order to proceed there must be a valid business case that justifies the continued effort required to build a production Amazon Chime SDK meetings application. Review the results of the POC, decide if it is worth proceeding and establish requirements and goals for the next phase, Pilot deployment.</p>
+					<a href="#41-poc-outcome-review--pilot-readiness-review" id="41-poc-outcome-review--pilot-readiness-review" style="color: inherit; text-decoration: none;">
+						<h3>4.1 POC Outcome Review / Pilot Readiness Review</h3>
+					</a>
+					<p>A POC Outcome Review documents how your application performed against the POC goals and timelines. You would hold a POC Outcome Review when a the POC is complete. The purpose of the review is to decide if the POC shows you can proceed to a larger Pilot Deployment. Here are some of the things you should examine</p>
+					<ul>
+						<li>Who is the owner for the Pilot?</li>
+						<li>Who are the developers?<ul>
+								<li>Is a Partner needed?</li>
+							</ul>
+						</li>
+						<li>What is the Pilot Minimum Viable Product?<ul>
+								<li>Be sure to include any new operations requirements</li>
+							</ul>
+						</li>
+						<li>Architecture?</li>
+						<li>Understand line of business impacts</li>
+						<li>Success metrics and expectations</li>
+						<li>Pricing questions and understanding</li>
+						<li>Deployment plan and needed support (marketing awareness)</li>
+						<li>Timelines for launch, ramp period to peak, growth expectations</li>
+						<li>Known usage patterns or spikes</li>
+					</ul>
+					<a href="#50-pilot-deployment" id="50-pilot-deployment" style="color: inherit; text-decoration: none;">
+						<h2>5.0 Pilot Deployment</h2>
+					</a>
+					<p>Once you have decided to build a Pilot application you may need to add additional functionality. Some will be functionality listed above in the POC section. Often, you will need to add functionality to make the application more supportable as listed below. When you have your MVP complete for the Pilot launch, it is time for an Amazon Chime SDK Application Review.</p>
+					<a href="#51-resiliency" id="51-resiliency" style="color: inherit; text-decoration: none;">
+						<h3>5.1 Resiliency</h3>
+					</a>
+					<p>There are a number of environmental issues that can impact the performance of an Amazon Chime SDK application including the device CPU and bandwidth it is running on. Please review the following document for guidance on how best to identify when you are having issues, the causes and how to mitigate them:</p>
+					<ul>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html">Quality, Bandwidth and Connectivity</a></li>
+					</ul>
+					<a href="#52-logging-monitoring-and-troubleshooting" id="52-logging-monitoring-and-troubleshooting" style="color: inherit; text-decoration: none;">
+						<h3>5.2 Logging, Monitoring, and Troubleshooting</h3>
+					</a>
+					<p>For a POC, you may be able to do without much in the way of logging or monitoring for the application (though it can still help if you run into issues). When going into production, it is very important to be able to collect logs for each call so that you can try to find the cause of a user&#39;s issue. The server-side events (Meeting created /deleted, Attendee added / deleted, and Attendee joined / left / dropped) should be logged at a minimum. The following blogs walks you through logging server-side events in CloudWatch and setting up a simple dashboard for them:</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/server-side-logging-and-monitoring-of-amazon-chime-sdk-events/">Server-Side Logging and Monitoring of Amazon Chime SDK Events</a></li>
+					</ul>
+					<p>This next blog talks about adding client-side events to CloudWatch:</p>
+					<ul>
+						<li><a href="https://aws.amazon.com/blogs/business-productivity/monitoring-and-troubleshooting-with-amazon-chime-sdk-meeting-events/">Monitoring and troubleshooting with Amazon Chime SDK meeting events |...</a></li>
+						<li><a href="https://docs.aws.amazon.com/chime/latest/ag/automating-chime-with-cloudwatch-events.html#events-sdk">Automating Amazon Chime with EventBridge - Amazon Chime</a></li>
+					</ul>
+					<p>These slide decks provide some guidance for troubleshooting:</p>
+					<ul>
+						<li><a href="#_Appendix_B_%E2%80%93">Amazon Chime SDK Monitoring and Troubleshooting Powerpoint</a></li>
+					</ul>
+					<a href="#53-amazon-chime-sdk-application-review" id="53-amazon-chime-sdk-application-review" style="color: inherit; text-decoration: none;">
+						<h3>5.3 Amazon Chime SDK Application Review</h3>
+					</a>
+					<p>The application review is a guided conversation about your meeting service (back end) and meeting application (front end) usually conducted by an Amazon Chime SDK SA. It is intended to identify potential major issues, discover anti-patterns, and share best practices in the context of the your solution. It is not a comprehensive code review.</p>
+					<p>Beyond your application, a <a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html">Well Architected Review</a> looks at Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization and Sustainability of the deployed resources as well and is worth considering. It is typically conducted by the Account SA.</p>
+					<a href="#54-implement-any-required-changes-and-deploy-the-pilot" id="54-implement-any-required-changes-and-deploy-the-pilot" style="color: inherit; text-decoration: none;">
+						<h3>5.4 Implement any required changes and Deploy the Pilot</h3>
+					</a>
+					<p>Any required changes from the Application Review would need to be implemented then the Amazon Chime SDK application can be deployed. The Pilot deployment should have defined goals to meet for time and thresholds for expanding the deployment to Production. If the you have Enterprise Support or Business Support (with an additional charge), you should work with the TAM to determine if an <a href="https://w.amazon.com/bin/view/AWS/IEM">IEM (Infrastructure Event Management)</a> engagement would be helpful. Note that an IEM is typically planned 6-8 weeks in advance but shorter-term IEM&#39;s can sometimes be accommodated if needed.</p>
+					<a href="#60-production-deployment" id="60-production-deployment" style="color: inherit; text-decoration: none;">
+						<h2>6.0 Production Deployment</h2>
+					</a>
+					<p>Prior to expanding the Pilot into Production, any issues discovered in Pilot will have to be triaged and those that are show stoppers, fixed. A Production Readiness Review is a formal meeting with the you, the Account team, the TAM, the Sales Specialist and Specialist SA to assess the readiness to expand the deployment into Production. This expansion is sometimes limited to a specific geography or set of users but usually represents a significant portion of the planned usage.</p>
+					<a href="#61-production-readiness-review" id="61-production-readiness-review" style="color: inherit; text-decoration: none;">
+						<h3>6.1 Production Readiness Review</h3>
+					</a>
+					<p>A Production Readiness Review helps you document your goals and timelines. You would hold a Production Readiness Review when the Pilot is complete and you are ready to support a production workload. You will need to consider the following for a Production Readiness Review:</p>
+					<ul>
+						<li>Review Pilot Results / Issues</li>
+						<li>Review launch date, ramp period to peak, growth expectations</li>
+						<li>Review known usage patterns or spikes</li>
+						<li>Expected service team support</li>
+					</ul>
+					<a href="#61-production-launch" id="61-production-launch" style="color: inherit; text-decoration: none;">
+						<h3>6.1 Production Launch</h3>
+					</a>
+					<p>After The Production Readiness Review, the application can be opened up to additional users. Ideally this would be a phased roll-out of a short time-period while watching for load related issues.</p>
+					<a href="#70-post-launch-phase" id="70-post-launch-phase" style="color: inherit; text-decoration: none;">
+						<h2>7.0 Post-Launch phase</h2>
+					</a>
+					<p>After launch, it would be good to assess what went well and where there were issues. It would be a good time to review your usage and metrics and bring seek suggestions for optimizing your utilization, quota utilization, infrastructure, expansion on your application functionality, and improvements in operational metrics. It would also be a good time to have an NDA Roadmap discussion with the Specialist SA so they can plan for any new features that are coming out in the near future.</p>
+					<a href="#reference-information" id="reference-information" style="color: inherit; text-decoration: none;">
+						<h2>Reference Information</h2>
+					</a>
+					<ul>
+						<li><a href="https://github.com/aws/amazon-chime-sdk-js/tree/main/guides">Getting Started Guides</a></li>
+						<li><a href="https://docs.aws.amazon.com/general/latest/gr/glos-chap.html">AWS glossary - AWS General Reference</a></li>
+						<li><a href="https://aws.amazon.com/premiumsupport/">Support Technology and Programs</a></li>
+						<li><a href="https://aws.amazon.com/chime/chime-sdk/faq/">Amazon Chime SDK FAQs</a></li>
+						<li><a href="https://github.com/aws/amazon-chime-sdk-js/tree/main/guides">https://github.com/aws/amazon-chime-sdk-js/tree/main/guides</a></li>
+						<li>Making Amazon Chime SDK an installable Windows or Mac App<ul>
+								<li><a href="https://www.electronjs.org/">https://www.electronjs.org/</a></li>
+								<li><a href="https://github.com/aws-samples/amazon-chime-sdk-classroom-demo">https://github.com/aws-samples/amazon-chime-sdk-classroom-demo</a></li>
+							</ul>
+						</li>
+					</ul>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Builders%20Journey%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="buildersjourney.html">Builders<wbr>Journey</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

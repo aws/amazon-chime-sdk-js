@@ -19,6 +19,10 @@ export default class MeetingToast extends HTMLElement {
     this.querySelector('.toast-message').innerHTML = message;
   }
 
+  public set delay(delay: string) {
+    this.querySelector('.toast').setAttribute("data-delay", delay);
+  }
+
   addButton(label: string, action: () => void) {
     let newButton = document.createElement('button');
     newButton.classList.add('btn');

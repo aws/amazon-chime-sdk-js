@@ -2,6 +2,7 @@
 demos/browser
 src/
 integration/
+.github/
 
 # exceptions
 !.eslintignore
@@ -12,5 +13,4 @@ integration/
 !demos/device/README.md
 !guides/
 !docs/
-!.github/
 !.integration-watchlist
