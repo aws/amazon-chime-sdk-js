@@ -68,7 +68,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       const audioOutputDeviceId = audioOutputDeviceInfo
         ? (DefaultDeviceController.getIntrinsicDeviceId(audioOutputDeviceInfo) as string)
         : '';
-      await this.playTone(audioOutputDeviceId, 440, audioElement);
+      await this.playTone(
+        audioOutputDeviceId,
+        this.configuration.audioOutputFrequency,
+        audioElement
+      );
       const userFeedback = await audioOutputVerificationCallback();
       if (userFeedback) {
         return CheckAudioOutputFeedback.Succeeded;
@@ -88,7 +92,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     audioElement: HTMLAudioElement | null
   ): Promise<void> {
     const rampSec = 0.1;
-    const maxGainValue = 0.1;
+    const maxGainValue = this.configuration.audioOutputGain;
 
     if (this.oscillatorNode) {
       this.stopTone();
@@ -135,7 +139,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     }
     const durationSec = 1;
     const rampSec = 0.1;
-    const maxGainValue = 0.1;
+    const maxGainValue = this.configuration.audioOutputGain;
     const currentTime = this.audioContext.currentTime;
     this.gainNode.gain.linearRampToValueAtTime(maxGainValue, currentTime + rampSec + durationSec);
     this.gainNode.gain.linearRampToValueAtTime(0, currentTime + rampSec * 2 + durationSec);
