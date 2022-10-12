@@ -195,7 +195,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
     demoVideoTile.attendeeId = tileState.boundAttendeeId;
 
-    if (tileState.active || tileState.paused) {
+    if (tileState.boundVideoStream) {
         demoVideoTile.show(tileState.isContent);
     } else {
         // Hide non-active tiles that aren't just paused
