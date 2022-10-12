@@ -42,10 +42,35 @@ The construction of the `DefaultVideoTransformDevice` will not start the camera 
 
 The parameters to `chooseVideoInputQuality` are used as constraints on the source `MediaStream`. After the video input is chosen, `meetingSession.audioVideo.startLocalVideoTile` can be called to start streaming video.
 
+```typescript
+import {
+  DefaultVideoTransformDevice
+} from 'amazon-chime-sdk-js';
+
+const stages = [new VideoResizeProcessor(4/3)]; // constructs  processor
+
+const transformDevice = new DefaultVideoTransformDevice(
+  logger,
+  'foo', // device id string
+  stages
+);
+
+await meetingSession.audioVideo.startVideoInput(transformDevice);
+meetingSession.audioVideo.startLocalVideo();
+
+```
+
 #### Switching the Inner Device on VideoTransformDevice
 
 To switch the inner `Device` on `DefaultVideoTransformDevice`, call `DefaultVideoTransformDevice.chooseNewInnerDevice` with a new `Device`.
 `DefaultVideoTransformDevice.chooseNewInnerDevice` returns a new `DefaultVideoTransformDevice` but preserves the state of `VideoFrameProcessor`s. Then call `meetingSession.audioVideo.startVideoInput` with the new transform device.
+
+```typescript
+const newInnerDevice = 'bar';
+if (transformDevice.getInnerDevice() !== innerDevice) {
+  transformDevice = transformDevice.chooseNewInnerDevice(innerDevice);
+}
+```
 
 #### Stopping VideoTransformDevice
 
@@ -54,6 +79,11 @@ To stop video processing for the chosen `DefaultVideoTransformDevice`, call `mee
 After stopping the video processing, the inner `Device` will be released by device controller unless the inner `Device` is a `MediaStream` provided by users where it is their responsibility of users to handle the lifecycle.
 
 After `DefaultVideoTransformDevice` is no longer used by device controller, call `DefaultVideoTransformDevice.stop` to release the `VideoProcessor`s and underlying pipeline. After `stop` is called, users must discard the `DefaultVideoTransformDevice` as it will not be reusable.`DefaultVideoTransformDevice.stop` is necessary to release the internal resources.
+
+```typescript
+await meetingSession.audioVideo.stopVideoInput();
+transformDevice.stop();
+```
 
 Applications will need to stop and replace `DefaultVideoTransformDevice` when they want to change video processors or change the video input quality.
 
@@ -134,7 +164,7 @@ async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
 
 ### Building an overlay processor
 
-An overlay processor can be a customized processor for loading an external image:
+An overlay processor can be a customized processor for loading an external image. Note that this example accounts for the usage of [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS):
 
 ```typescript
 class VideoLoadImageProcessor implements VideoFrameProcessor { 
@@ -176,9 +206,11 @@ class VideoLoadImageProcessor implements VideoFrameProcessor {
 }
 ```
 
-## Video Processing Usage
+## Additional Video Processing Use-Cases
 
-### Custom processor usage during meeting
+### Custom processor usage during meeting preview
+
+Local video post processing can be previewed before transmitting to remote clients just for a normal device.
 
 ```typescript
 import {
@@ -186,7 +218,7 @@ import {
 } from 'amazon-chime-sdk-js';
 
 const stages = [new VideoResizeProcessor(4/3)]; // constructs  processor
-
+const videoElement = document.getElementById('video-preview') as HTMLVideoElement;
 const transformDevice = new DefaultVideoTransformDevice(
   logger,
   'foobar', // device id string
@@ -194,25 +226,50 @@ const transformDevice = new DefaultVideoTransformDevice(
 );
 
 await meetingSession.audioVideo.startVideoInput(transformDevice);
-meetingSession.audioVideo.startLocalVideo();
-
+meetingSession.audioVideo.startVideoPreviewForVideoInput(videoElement);
 ```
 
-### Custom processor usage during meeting preview
+### Custom video processor usage for content share
+
+The API `ContentShareControllerFacade.startContentShare` does not currently support passing in a `VideoTransformDevice` or similar. But the `DefaultVideoTransformDevice` makes it straight forward to apply transforms on a given `MediaStream`, and output a new `MediaStream`.
+
+Note that for screen share usage we need to use `ContentShareMediaStreamBroker` directly rather then the helper function `ContentShareControllerFacade.startContentShareFromScreenCapture`.
 
 ```typescript
 import {
   DefaultVideoTransformDevice
 } from 'amazon-chime-sdk-js';
 
-const processor = new VideoResizeProcessor(4/3);
-const videoElement = document.getElementById('video-preview') as HTMLVideoElement;
-const transformDevice = new DefaultVideoTransformDevice(
-  logger,
-  'foobar', // device id string
-  processor
+const framerate = 30;
+var mediaStream: MediaStream = new ContentShareMediaStreamBroker(logger).acquireScreenCaptureDisplayInputStream(
+  undefined,
+  framerate
 );
 
-await meetingSession.audioVideo.startVideoInput(transformDevice);
-meetingSession.audioVideo.startVideoPreviewForVideoInput(videoElement);
+const stages = [new CircularCut()]; // constructs some custom processor
+const transformDevice = new DefaultVideoTransformDevice(
+  logger,
+  undefined, // Not needed when using transform directly
+  stages
+);
+
+await meetingSession.audioVideo.startContentShare(await transformDevice.transformStream(mediaStream));
+```
+
+The `MediaStream` can also be from a file input or other source. Note that `DefaultVideoTransformDevice` will not forward audio tracks from the input `MediaStream`. These can be spliced back into a new combined `MediaStream`:
+
+```typescript
+const filePath = // ...
+mediaStream = createMediaStreamFromFile(filePath);
+transformDevice = new DefaultVideoTransformDevice(logger, undefined, stages);
+const transformedStream = await transformDevice.transformStream(mediaStream);
+
+const combinedStream = new MediaStream();
+for (const videoTrack of transformedStream.getVideoTracks()) {
+  combinedStream.addTrack(videoTrack.clone());
+}
+for (const audioTrack of mediaStream.getAudioTracks()) { // Note use of original `MediaStream`
+  combinedStream.addTrack(audioTrack.clone());
+}
+await meetingSession.audioVideo.startContentShare(combinedStream);
 ```
