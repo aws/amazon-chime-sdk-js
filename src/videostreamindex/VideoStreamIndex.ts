@@ -20,7 +20,12 @@ export default interface VideoStreamIndex {
   integrateIndexFrame(indexFrame: SdkIndexFrame): void;
 
   /**
-   * Subscribe frame sent
+   * This function caches the currently ingested index frame (and may be eventually renamed). It can
+   * use the stored index as a backup for map functions like `groupIdForStreamId` and can be used for:
+   *   * Maintaining consistent information during a subscribe even if an index is received concurrently
+   *   * Maintaining information about previous senders simulcast streams to enable stream switching, e.g.
+   *     if a sender is transmitting low/hi and switches to just low, receivers need the previous index
+   *     to be able to know what group ID the high stream corresponds to.
    */
   subscribeFrameSent(): void;
 

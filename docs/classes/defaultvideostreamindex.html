@@ -910,7 +910,14 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Subscribe frame sent</p>
+									<p>This function caches the currently ingested index frame (and may be eventually renamed). It can
+									use the stored index as a backup for map functions like <code>groupIdForStreamId</code> and can be used for:</p>
+									<ul>
+										<li>Maintaining consistent information during a subscribe even if an index is received concurrently</li>
+										<li>Maintaining information about previous senders simulcast streams to enable stream switching, e.g.
+											if a sender is transmitting low/hi and switches to just low, receivers need the previous index
+										to be able to know what group ID the high stream corresponds to.</li>
+									</ul>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
