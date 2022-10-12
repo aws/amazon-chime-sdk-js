@@ -28,7 +28,7 @@ Parameters:
     Description: The AWS Chime SDK Meetings endpoint
     Default: "https://service.chime.aws.amazon.com"
     Type: String
-  ChimeMediaCaptureS3BucketPrefix:
+  ChimeMediaCaptureS3Bucket:
     Description: Prefix of S3 bucket to write capture artifacts.  The bucket name will be suffixed with the region.
     Default: ""
     Type: String
@@ -55,6 +55,7 @@ Parameters:
 Conditions:
   ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
   ShouldDeployFetchCredentialLambda: !Equals [true, !Ref UseFetchCredentialLambda]
+  ShouldCreateS3BucketForMediaCapture: !Not [!Equals ["", !Ref ChimeMediaCaptureS3Bucket]]
 Globals:
   Function:
     Runtime: nodejs14.x
@@ -74,10 +75,60 @@ Globals:
         USE_CHIME_SDK_MEDIA_PIPELINES: !Ref UseChimeSDKMediaPipelines
         CHIME_SDK_MEDIA_PIPELINES_ENDPOINT: !Ref ChimeSDKMediaPipelinesEndpoint
         BROWSER_EVENT_INGESTION_LOG_GROUP_NAME: !Ref ChimeBrowserEventIngestionLogs
-        CAPTURE_S3_DESTINATION_PREFIX: !Ref ChimeMediaCaptureS3BucketPrefix
+        CAPTURE_S3_DESTINATION: !Ref ChimeMediaCaptureS3Bucket
         AWS_ACCOUNT_ID: !Sub "${AWS::AccountId}"
 Resources:
-
+  MediaCapturePipelineCaptureBucket:
+    Type: AWS::S3::Bucket
+    Condition: ShouldCreateS3BucketForMediaCapture
+    Properties:
+      BucketName: !Ref ChimeMediaCaptureS3Bucket
+      LifecycleConfiguration:
+        Rules:
+          - Id: "Delete artifacts after 1 day"
+            ExpirationInDays: 1
+            Status: Enabled
+            Prefix: ""
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+  MediaCaptureBucketPolicy:
+    Condition: ShouldCreateS3BucketForMediaCapture
+    Type: AWS::S3::BucketPolicy
+    Properties: 
+      Bucket: !Ref ChimeMediaCaptureS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Id: 'Policy1625687208360'
+        Statement:
+          - Action:
+              - 's3:PutObject'
+              - 's3:PutObjectAcl'
+              - 's3:GetObject'
+              - 's3:ListBucket'
+            Effect: Allow
+            Resource:
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref ChimeMediaCaptureS3Bucket
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref ChimeMediaCaptureS3Bucket
+                  - '/*'
+            Principal: 
+              Service: 
+                - 'mediapipelines.chime.amazonaws.com'
+            Condition:
+              StringEquals:
+                'aws:SourceAccount': !Ref AWS::AccountId
+              ArnLike:
+                'aws:SourceArn': !Join
+                  - ''
+                  - - 'arn:aws:chime:*:'
+                    - !Ref AWS::AccountId
+                    - ':*'
   ChimeMeetingsAccessPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -103,6 +154,7 @@ Resources:
               - 'chime:CreateMediaCapturePipeline'
               - 'chime:DeleteMediaCapturePipeline'
               - 'chime:CreateMediaLiveConnectorPipeline'
+              - 'chime:CreateMediaConcatenationPipeline'
               - 'chime:DeleteMediaPipeline'
               - 'ivs:CreateChannel'
               - 'ivs:DeleteChannel'

@@ -39,37 +39,29 @@ npm install
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting -u false
 ```
 
-#### Media Capture
-You can use the live connector feature to broadcast the captured artifacts. The default layout is vertical layout and FHD resolution. You can use the playback url that showed up in any M3U8 player, such as `https://www.hlsplayer.net/`.
+#### Media Live Connector
+You can use the live connector feature to livestream the Chime SDK meeting with supported layout. The default layout in this demo is vertical layout and FHD resolution. You can use the playback url that showed up after clicking "livestream to IVS" button. **This feature will not work under "chime" namespace.**
+
 If you want to try differnt layout configuration, please check our [ public document](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_media-pipelines-chime_CreateMediaLiveConnectorPipeline.html).
-```
-cd demos/serverless
-npm install
-npm run deploy -- -r us-east-1 -b <deploy-bucekt> -i af-south-1,eu-south-1 -s <my-stack-name> -a meeting
-```
 
-If you want to also use media capture in the same meeting, an S3 bucket needs to be created for each region.
-The S3 bucket will be created with a prefix specified with the -o option.
+No specific deployment parameter is needed for media live connector.
 
 ```
 cd demos/serverless
 npm install
-npm run deploy -- -r us-east-1 -b <deploy-bucket> -o <capture-bucket-prefix> -s <my-stack-name> -a meeting
+npm run deploy -- -r us-east-1 -b <deploy-bucekt> -s <my-stack-name> -a meeting
 ```
 
-When the bucket prefix is provided, an S3 bucket will be created in each AWS region that
-a meeting can be hosted in except for those that require opt-in. If you wish to use
-media capture in one of these regions, you can list them with the -i option, for example
+#### Media Capture
+If you want to use media capture in the same meeting, an S3 bucket needs to be created. The bucket name needs to be unique otherwise it will fail to create. Use `-o <media-capture-bucket>` to pass the name.
+
+The captured artifacts are using composited video configuration, and will be stored in the `media-capture-bucket`.
 
 ```
 cd demos/serverless
 npm install
-npm run deploy -- -r us-east-1 -b <deploy-bucekt> -o <capture-bucket-prefix> -i af-south-1,eu-south-1 -s <my-stack-name> -a meeting
+npm run deploy -- -r us-east-1 -b <deploy-bucket> -o <media-capture-bucket> -s <my-stack-name> -a meeting
 ```
-
-Note that you need to enable these regions if you plan to use media capture. For more information, see [Managing AWS Regions](https://docs.aws.amazon.com/general/latest/gr/rande-manage.html).
-
-
 
 ##### ChimeSDKMediaPipelines Namespace vs Chime Namespace
 The `AWS.Chime` and the `AWS.ChimeSDKMediaPipelines` are both Amazon Chime's AWS clients to help builders create Amazon Chime SDK media pipelines. `AWS.ChimeSDKMediaPipelines` is intended to replace the previous `AWS.Chime` client.

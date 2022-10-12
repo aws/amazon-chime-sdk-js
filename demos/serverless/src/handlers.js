@@ -62,7 +62,7 @@ const {
   SQS_QUEUE_ARN,
   USE_EVENT_BRIDGE,
   BROWSER_EVENT_INGESTION_LOG_GROUP_NAME,
-  CAPTURE_S3_DESTINATION_PREFIX,
+  CAPTURE_S3_DESTINATION,
   AWS_ACCOUNT_ID,
 } = process.env;
 
@@ -316,18 +316,86 @@ exports.start_capture = async (event, context) => {
   const meeting = await getMeeting(event.queryStringParameters.title);
   meetingRegion = meeting.Meeting.MediaRegion;
 
-  let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION_PREFIX}-${meetingRegion}/${meeting.Meeting.MeetingId}/`
+  let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION}/${meeting.Meeting.MeetingId}`
   const request = {
     SourceType: "ChimeSdkMeeting",
     SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
     SinkType: "S3Bucket",
     SinkArn: captureS3Destination,
+    ChimeSdkMeetingConfiguration: {
+      ArtifactsConfiguration: {
+        Audio: {
+          MuxType: "AudioWithCompositedVideo"
+        },
+        Video: {
+          State: "Disabled",
+          MuxType: "VideoOnly"
+        },
+        Content: {
+          State: "Disabled",
+          MuxType: "ContentOnly"
+        },
+        CompositedVideo: {
+          Layout: "GridView",
+          Resolution: "FHD",
+          GridViewConfiguration: {
+            ContentShareLayout: "Vertical"
+          }
+        }
+      }
+    }
   };
   console.log("Creating new media capture pipeline: ", request)
-  pipelineInfo = await getClientForMediaCapturePipelines().createMediaCapturePipeline(request).promise();
-
-  await putCapturePipeline(event.queryStringParameters.title, pipelineInfo)
+  let pipelineInfo = await getClientForMediaCapturePipelines().createMediaCapturePipeline(request).promise();
+  let pipelineArn = pipelineInfo.MediaCapturePipeline.MediaPipelineArn;
+  console.log("Media Capture Pipeline Arn: ", pipelineArn);
+  await putCapturePipeline(event.queryStringParameters.title, pipelineInfo);
   console.log("Successfully created media capture pipeline: ", pipelineInfo);
+  const concatRequest = {
+    Sinks: [
+      {
+        S3BucketSinkConfiguration: {
+          Destination: `${captureS3Destination}/concatenated`
+        },
+        Type: "S3Bucket"
+      }
+    ],
+    Sources: [
+      {
+        MediaCapturePipelineSourceConfiguration: {
+          MediaPipelineArn: pipelineArn,
+          ChimeSdkMeetingConfiguration: {
+            ArtifactsConfiguration: {
+              Audio: {
+                State: "Enabled"
+              },
+              CompositedVideo: {
+                State: "Enabled"
+              },
+              TranscriptionMessages: {
+                State: "Enabled"
+              },
+              Content: {
+                State: "Enabled"
+              },
+              MeetingEvents: {
+                State: "Enabled"
+              },
+              Video: {
+                State: "Enabled"
+              },
+              DataChannel: {
+                State: "Enabled"
+              }
+            }
+          }
+        },
+        Type: "MediaCapturePipeline"
+      }
+    ]
+  };
+  console.log("Creating new concatenation pipeline: ", concatRequest)
+  await getClientForMediaCapturePipelines().createMediaConcatenationPipeline(concatRequest).promise();
 
   return response(201, 'application/json', JSON.stringify(pipelineInfo));
 };
