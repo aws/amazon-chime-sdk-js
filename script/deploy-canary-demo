@@ -13,7 +13,7 @@ ChimeAlpha)
     echo "Deploying to alpha stage for canary"
 
     # Uses Chime Client
-    npm run deploy -- -b chime-sdk-demo-canary$canarySuffix -s chime-sdk-demo-canary$canarySuffix -o chime-sdk-demo-canary$canarySuffix -u false -i eu-south-1 -t -l --use-chime-sdk-media-pipelines false
+    npm run deploy -- -b chime-sdk-demo-canary$canarySuffix -s chime-sdk-demo-canary$canarySuffix -o chime-sdk-demo-canary$canarySuffix -u false -t -l --use-chime-sdk-media-pipelines false
     npm run deploy -- -b chime-sdk-meeting-readiness-checker-dev-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-dev-canary$canarySuffix -a meetingReadinessChecker -u false -t -l
     ;;
 
@@ -21,7 +21,7 @@ ChimeBeta)
     echo "Deploying to beta stage for canary that talks to gamma Chime client for meetings and gamma Chime client for media pipelines"
 
     # Uses Chime Client for meetings and Chime client for media pipelines
-    npm run deploy -- -b chime-sdk-demo-beta-canary$canarySuffix -s chime-sdk-demo-beta-canary$canarySuffix -o chime-sdk-demo-beta-canary$canarySuffix -i eu-south-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -u false -t -l --use-chime-sdk-media-pipelines false
+    npm run deploy -- -b chime-sdk-demo-beta-canary$canarySuffix -s chime-sdk-demo-beta-canary$canarySuffix -o chime-sdk-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -u false -t -l --use-chime-sdk-media-pipelines false
     npm run deploy -- -b chime-sdk-meeting-readiness-checker-beta-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-beta-canary$canarySuffix -a meetingReadinessChecker -c $GAMMA_CHIME_ENDPOINT -u false -t -l
     ;;
 
@@ -54,7 +54,7 @@ ChimeGamma)
     echo "Deploying to gamma stage for canary that talks to prod Chime client for meetings and prod Chime client for media pipelines"
 
     # Uses Chime Client
-    npm run deploy -- -b chime-sdk-demo-gamma-canary$canarySuffix -s chime-sdk-demo-gamma-canary$canarySuffix -o chime-sdk-demo-gamma-canary$canarySuffix -u false -i eu-south-1 -t -l --use-chime-sdk-media-pipelines false -p chime.amazonaws.com
+    npm run deploy -- -b chime-sdk-demo-gamma-canary$canarySuffix -s chime-sdk-demo-gamma-canary$canarySuffix -o chime-sdk-demo-gamma-canary$canarySuffix -u false -t -l --use-chime-sdk-media-pipelines false -p chime.amazonaws.com
     npm run deploy -- -b chime-sdk-meeting-readiness-checker-gamma-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-gamma-canary$canarySuffix -a meetingReadinessChecker -u false -t -l
     ;;
 

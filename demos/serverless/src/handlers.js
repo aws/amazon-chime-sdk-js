@@ -317,86 +317,97 @@ exports.start_capture = async (event, context) => {
   meetingRegion = meeting.Meeting.MediaRegion;
 
   let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION}/${meeting.Meeting.MeetingId}`
-  const request = {
+  let request = {
     SourceType: "ChimeSdkMeeting",
     SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
     SinkType: "S3Bucket",
-    SinkArn: captureS3Destination,
-    ChimeSdkMeetingConfiguration: {
-      ArtifactsConfiguration: {
-        Audio: {
-          MuxType: "AudioWithCompositedVideo"
-        },
-        Video: {
-          State: "Disabled",
-          MuxType: "VideoOnly"
-        },
-        Content: {
-          State: "Disabled",
-          MuxType: "ContentOnly"
-        },
-        CompositedVideo: {
-          Layout: "GridView",
-          Resolution: "FHD",
-          GridViewConfiguration: {
-            ContentShareLayout: "Vertical"
+    SinkArn: captureS3Destination
+  };
+  if (useChimeSDKMediaPipelines === 'true') {
+    console.log('Using media pipeline sdk - adding compositing parameters.');
+    request = {
+      SourceType: "ChimeSdkMeeting",
+      SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
+      SinkType: "S3Bucket",
+      SinkArn: captureS3Destination,
+      ChimeSdkMeetingConfiguration: {
+        ArtifactsConfiguration: {
+          Audio: {
+            MuxType: "AudioWithCompositedVideo"
+          },
+          Video: {
+            State: "Disabled",
+            MuxType: "VideoOnly"
+          },
+          Content: {
+            State: "Disabled",
+            MuxType: "ContentOnly"
+          },
+          CompositedVideo: {
+            Layout: "GridView",
+            Resolution: "FHD",
+            GridViewConfiguration: {
+              ContentShareLayout: "Vertical"
+            }
           }
         }
       }
-    }
-  };
+    };
+  }
   console.log("Creating new media capture pipeline: ", request)
   let pipelineInfo = await getClientForMediaCapturePipelines().createMediaCapturePipeline(request).promise();
   let pipelineArn = pipelineInfo.MediaCapturePipeline.MediaPipelineArn;
   console.log("Media Capture Pipeline Arn: ", pipelineArn);
   await putCapturePipeline(event.queryStringParameters.title, pipelineInfo);
   console.log("Successfully created media capture pipeline: ", pipelineInfo);
-  const concatRequest = {
-    Sinks: [
-      {
-        S3BucketSinkConfiguration: {
-          Destination: `${captureS3Destination}/concatenated`
-        },
-        Type: "S3Bucket"
-      }
-    ],
-    Sources: [
-      {
-        MediaCapturePipelineSourceConfiguration: {
-          MediaPipelineArn: pipelineArn,
-          ChimeSdkMeetingConfiguration: {
-            ArtifactsConfiguration: {
-              Audio: {
-                State: "Enabled"
-              },
-              CompositedVideo: {
-                State: "Enabled"
-              },
-              TranscriptionMessages: {
-                State: "Enabled"
-              },
-              Content: {
-                State: "Enabled"
-              },
-              MeetingEvents: {
-                State: "Enabled"
-              },
-              Video: {
-                State: "Enabled"
-              },
-              DataChannel: {
-                State: "Enabled"
+  if (useChimeSDKMediaPipelines) {
+    console.log('Using media pipeline SDK, calling concatenation.');
+    const concatRequest = {
+      Sinks: [
+        {
+          S3BucketSinkConfiguration: {
+            Destination: `${captureS3Destination}/concatenated`
+          },
+          Type: "S3Bucket"
+        }
+      ],
+      Sources: [
+        {
+          MediaCapturePipelineSourceConfiguration: {
+            MediaPipelineArn: pipelineArn,
+            ChimeSdkMeetingConfiguration: {
+              ArtifactsConfiguration: {
+                Audio: {
+                  State: "Enabled"
+                },
+                CompositedVideo: {
+                  State: "Enabled"
+                },
+                TranscriptionMessages: {
+                  State: "Enabled"
+                },
+                Content: {
+                  State: "Enabled"
+                },
+                MeetingEvents: {
+                  State: "Enabled"
+                },
+                Video: {
+                  State: "Enabled"
+                },
+                DataChannel: {
+                  State: "Enabled"
+                }
               }
             }
-          }
-        },
-        Type: "MediaCapturePipeline"
-      }
-    ]
-  };
-  console.log("Creating new concatenation pipeline: ", concatRequest)
-  await getClientForMediaCapturePipelines().createMediaConcatenationPipeline(concatRequest).promise();
-
+          },
+          Type: "MediaCapturePipeline"
+        }
+      ]
+    };
+    console.log("Creating new concatenation pipeline: ", concatRequest)
+    await getClientForMediaCapturePipelines().createMediaConcatenationPipeline(concatRequest).promise();
+  }
   return response(201, 'application/json', JSON.stringify(pipelineInfo));
 };
 
