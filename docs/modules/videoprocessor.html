@@ -68,8 +68,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<a href="#video-processing-apis" id="video-processing-apis" style="color: inherit; text-decoration: none;">
-							<h1>Video Processing APIs</h1>
+						<a href="#video-input-processing" id="video-input-processing" style="color: inherit; text-decoration: none;">
+							<h1>Video Input Processing</h1>
 						</a>
 					</div>
 					<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
@@ -131,15 +131,12 @@
 						<h3>VideoTransformDevice</h3>
 					</a>
 					<p><code>VideoTransformDevice</code> allows <code>VideoFrameProcessor</code>s to be applied to to a <code>Device</code> and provide a new object which can be passed into <code>meetingSession.audioVideo.startVideoInput</code>.</p>
-					<p><code>DefaultVideoTransformDevice</code> is the provided implementation of <code>VideoTransformDevice</code>. It requires four parameters: (1) <code>Logger</code> (2) <code>Device</code> (3) <code>Array&lt;VideoFrameProcessor&gt;</code>.
-					The <code>DefaultVideoTransformDevice</code> uses <code>VideoFrameProcessorPipeline</code> under the hood and hides its complexity.</p>
+					<p><code>DefaultVideoTransformDevice</code> is the provided implementation of <code>VideoTransformDevice</code>. It takes the aforementioned <code>Device</code> and array of <code>VideoFrameProcessor</code>s, then uses <code>VideoFrameProcessorPipeline</code> under the hood and hides its complexity.</p>
 					<a href="#construction-and-starting-video-processing" id="construction-and-starting-video-processing" style="color: inherit; text-decoration: none;">
 						<h4>Construction and Starting Video Processing</h4>
 					</a>
-					<p>The construction of the <code>DefaultVideoTransformDevice</code> will not start the camera or start processing. The method <code>meetingSession.audioVideo.startVideoInput</code> is needed to be called. The device controller will use the inner <code>Device</code> to acquire the source <code>MediaStream</code> and start the processing pipeline at the same frame rate.
-						&quot;Inner device&quot; in this context refers to the original video stream coming from the selected camera.
-						The parameters to <code>chooseVideoInputQuality</code> are used as constraints on the source <code>MediaStream</code>.
-					After the video input is chosen, <code>meetingSession.audioVideo.startLocalVideoTile</code> can be called to start streaming video.</p>
+					<p>The construction of the <code>DefaultVideoTransformDevice</code> will not start the camera or start processing. The method <code>meetingSession.audioVideo.startVideoInput</code> should be called just like for normal devices. The device controller will use the inner <code>Device</code> to acquire the source <code>MediaStream</code> and start the processing pipeline at the same frame rate. &quot;Inner device&quot; in this context refers to the original video stream coming from the selected camera.</p>
+					<p>The parameters to <code>chooseVideoInputQuality</code> are used as constraints on the source <code>MediaStream</code>. After the video input is chosen, <code>meetingSession.audioVideo.startLocalVideoTile</code> can be called to start streaming video.</p>
 					<a href="#switching-the-inner-device-on-videotransformdevice" id="switching-the-inner-device-on-videotransformdevice" style="color: inherit; text-decoration: none;">
 						<h4>Switching the Inner Device on VideoTransformDevice</h4>
 					</a>
@@ -148,32 +145,38 @@
 					<a href="#stopping-videotransformdevice" id="stopping-videotransformdevice" style="color: inherit; text-decoration: none;">
 						<h4>Stopping VideoTransformDevice</h4>
 					</a>
-					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.startVideoInput</code> with a different <code>DefaultVideoTransformDevice</code> or call <code>meetingSession.audioVideo.stopVideoInput</code> to
-					stop using previous <code>DefaultVideoTransformDevice</code>.</p>
+					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.startVideoInput</code> with a different <code>Device</code> (possibly another <code>DefaultVideoTransformDevice</code>) or call <code>meetingSession.audioVideo.stopVideoInput</code> to stop using previous <code>DefaultVideoTransformDevice</code>.</p>
 					<p>After stopping the video processing, the inner <code>Device</code> will be released by device controller unless the inner <code>Device</code> is a <code>MediaStream</code> provided by users where it is their responsibility of users to handle the lifecycle.</p>
-					<p>After <code>DefaultVideoTransformDevice</code> is no longer used by device controller, call <code>DefaultVideoTransformDevice.stop</code> to release the <code>VideoProcessor</code>s and underlying pipeline. After <code>stop</code> is called, users must discard the <code>DefaultVideoTransformDevice</code>.<code>DefaultVideoTransformDevice.stop</code> is necessary to release the internal resources.</p>
-					<p>Users would also need to call <code>DefaultVideoTransformDevice.stop</code> and construct a new <code>DefaultVideoTransformDevice</code> when they want to change video processors or change the video input quality.</p>
+					<p>After <code>DefaultVideoTransformDevice</code> is no longer used by device controller, call <code>DefaultVideoTransformDevice.stop</code> to release the <code>VideoProcessor</code>s and underlying pipeline. After <code>stop</code> is called, users must discard the <code>DefaultVideoTransformDevice</code> as it will not be reusable.<code>DefaultVideoTransformDevice.stop</code> is necessary to release the internal resources.</p>
+					<p>Applications will need to stop and replace <code>DefaultVideoTransformDevice</code> when they want to change video processors or change the video input quality.</p>
 					<a href="#receiving-lifecycle-notifications-with-an-observer" id="receiving-lifecycle-notifications-with-an-observer" style="color: inherit; text-decoration: none;">
 						<h4>Receiving lifecycle notifications with an observer</h4>
 					</a>
-					<p>To receive notifications of lifecycle events, <code>DefaultVideoTransformDeviceObserver</code> can be added to the <code>DefaultVideoTransformDevice</code>.
-					The full list of the callbacks:</p>
-					<ol>
-						<li><code>processingDidStart</code></li>
-					</ol>
-					<p><code>processingDidStart</code> will be called when video processing starts.</p>
-					<ol start="2">
-						<li><code>processingDidFailToStart</code></li>
-					</ol>
-					<p><code>processingDidFailToStart</code> will be called when video processing could not start due to runtime errors. In this case, developers are expected to call <code>startVideoInput</code> again with a valid <code>VideoInputDevice</code> to continue video sending.</p>
-					<ol start="3">
-						<li><code>processingDidStop</code></li>
-					</ol>
-					<p><code>processingDidStop</code> will be called when video processing is stopped <strong>expectedly</strong>.</p>
-					<ol start="4">
-						<li><code>processingLatencyTooHigh(latencyMs: number)</code></li>
-					</ol>
-					<p><code>processingLatencyTooHigh</code> will be called when the execution of processors slows the frame rate down by at least half.</p>
+					<p>To receive notifications of lifecycle events, a <code>DefaultVideoTransformDeviceObserver</code> can be added to the <code>DefaultVideoTransformDevice</code> and handlers added for the following:</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Observer</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>processingDidStart</code></td>
+								<td>Called when video processing starts.</td>
+							</tr>
+							<tr>
+								<td><code>processingDidFailToStart</code></td>
+								<td>Called when video processing could not start due to runtime errors. In this case, developers are expected to call <code>startVideoInput</code> again with a valid <code>VideoInputDevice</code> to continue video sending.</td>
+							</tr>
+							<tr>
+								<td><code>processingDidStop</code></td>
+								<td>Called when video processing is stopped <strong>expectedly</strong>.</td>
+							</tr>
+							<tr>
+								<td><code>processingDidFailToStart</code></td>
+								<td>Called when the execution of processors slows the frame rate down by at least half.</td>
+							</tr>
+					</tbody></table>
 					<a href="#videoframebuffer" id="videoframebuffer" style="color: inherit; text-decoration: none;">
 						<h3>VideoFrameBuffer</h3>
 					</a>

@@ -1,4 +1,4 @@
-# Video Processing APIs
+# Video Input Processing
 
 ## Introduction
 
@@ -14,75 +14,62 @@ A typical workflow would be:
 2. Create a `VideoTransformDevice` from a `Device` and the array of `VideoFrameProcessor`s.
 3. Call `meetingSession.audioVideo.startVideoInput` with the `VideoTransformDevice`.
 
-
 ### Browser compatibility
 
 The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari/Chrome/Firefox on iOS devices due to [Webkit Bug 181663](https://bugs.webkit.org/show_bug.cgi?id=181663).
 
-
 |Browser                                                                |Minimum supported version  
-|---                                                                    |---                        
-|Firefox                                                                |76                        
-|Chromium-based browsers and environments, including Edge and Electron  |78                                             
-|Android Chrome                                                         |78       
-|Safari on MacOS                                                        |13.0                    
+|---                                                                    |---
+|Firefox                                                                |76
+|Chromium-based browsers and environments, including Edge and Electron  |78
+|Android Chrome                                                         |78
+|Safari on MacOS                                                        |13.0
 |iOS Safari                                                             |Not supported
-|iOS Chrome                                                             |Not supported             
-|iOS Firefox                                                            |Not supported             
+|iOS Chrome                                                             |Not supported
+|iOS Firefox                                                            |Not supported
 
 ## Video Processing APIs
 
 ### VideoTransformDevice
+
 `VideoTransformDevice` allows `VideoFrameProcessor`s to be applied to to a `Device` and provide a new object which can be passed into `meetingSession.audioVideo.startVideoInput`.
 
-`DefaultVideoTransformDevice` is the provided implementation of `VideoTransformDevice`. It requires four parameters: (1) `Logger` (2) `Device` (3) `Array<VideoFrameProcessor>`. 
-The `DefaultVideoTransformDevice` uses `VideoFrameProcessorPipeline` under the hood and hides its complexity.
+`DefaultVideoTransformDevice` is the provided implementation of `VideoTransformDevice`. It takes the aforementioned `Device` and array of `VideoFrameProcessor`s, then uses `VideoFrameProcessorPipeline` under the hood and hides its complexity.
 
 #### Construction and Starting Video Processing
 
-The construction of the `DefaultVideoTransformDevice` will not start the camera or start processing. The method `meetingSession.audioVideo.startVideoInput` is needed to be called. The device controller will use the inner `Device` to acquire the source `MediaStream` and start the processing pipeline at the same frame rate.
-"Inner device" in this context refers to the original video stream coming from the selected camera.
-The parameters to `chooseVideoInputQuality` are used as constraints on the source `MediaStream`. 
-After the video input is chosen, `meetingSession.audioVideo.startLocalVideoTile` can be called to start streaming video.
+The construction of the `DefaultVideoTransformDevice` will not start the camera or start processing. The method `meetingSession.audioVideo.startVideoInput` should be called just like for normal devices. The device controller will use the inner `Device` to acquire the source `MediaStream` and start the processing pipeline at the same frame rate. "Inner device" in this context refers to the original video stream coming from the selected camera.
+
+The parameters to `chooseVideoInputQuality` are used as constraints on the source `MediaStream`. After the video input is chosen, `meetingSession.audioVideo.startLocalVideoTile` can be called to start streaming video.
 
 #### Switching the Inner Device on VideoTransformDevice
 
 To switch the inner `Device` on `DefaultVideoTransformDevice`, call `DefaultVideoTransformDevice.chooseNewInnerDevice` with a new `Device`.
-`DefaultVideoTransformDevice.chooseNewInnerDevice` returns a new `DefaultVideoTransformDevice` but preserves the state of `VideoFrameProcessor`s. Then call `meetingSession.audioVideo.startVideoInput` with the new transform device. 
+`DefaultVideoTransformDevice.chooseNewInnerDevice` returns a new `DefaultVideoTransformDevice` but preserves the state of `VideoFrameProcessor`s. Then call `meetingSession.audioVideo.startVideoInput` with the new transform device.
 
 #### Stopping VideoTransformDevice
 
-To stop video processing for the chosen `DefaultVideoTransformDevice`, call `meetingSession.audioVideo.startVideoInput` with a different `DefaultVideoTransformDevice` or call `meetingSession.audioVideo.stopVideoInput` to 
-stop using previous `DefaultVideoTransformDevice`.
+To stop video processing for the chosen `DefaultVideoTransformDevice`, call `meetingSession.audioVideo.startVideoInput` with a different `Device` (possibly another `DefaultVideoTransformDevice`) or call `meetingSession.audioVideo.stopVideoInput` to stop using previous `DefaultVideoTransformDevice`.
 
-After stopping the video processing, the inner `Device` will be released by device controller unless the inner `Device` is a `MediaStream` provided by users where it is their responsibility of users to handle the lifecycle. 
+After stopping the video processing, the inner `Device` will be released by device controller unless the inner `Device` is a `MediaStream` provided by users where it is their responsibility of users to handle the lifecycle.
 
-After `DefaultVideoTransformDevice` is no longer used by device controller, call `DefaultVideoTransformDevice.stop` to release the `VideoProcessor`s and underlying pipeline. After `stop` is called, users must discard the `DefaultVideoTransformDevice`.`DefaultVideoTransformDevice.stop` is necessary to release the internal resources.
+After `DefaultVideoTransformDevice` is no longer used by device controller, call `DefaultVideoTransformDevice.stop` to release the `VideoProcessor`s and underlying pipeline. After `stop` is called, users must discard the `DefaultVideoTransformDevice` as it will not be reusable.`DefaultVideoTransformDevice.stop` is necessary to release the internal resources.
 
-Users would also need to call `DefaultVideoTransformDevice.stop` and construct a new `DefaultVideoTransformDevice` when they want to change video processors or change the video input quality.
+Applications will need to stop and replace `DefaultVideoTransformDevice` when they want to change video processors or change the video input quality.
 
 #### Receiving lifecycle notifications with an observer
 
-To receive notifications of lifecycle events, `DefaultVideoTransformDeviceObserver` can be added to the `DefaultVideoTransformDevice`. 
-The full list of the callbacks:
+To receive notifications of lifecycle events, a `DefaultVideoTransformDeviceObserver` can be added to the `DefaultVideoTransformDevice` and handlers added for the following:
 
-1. `processingDidStart`
+| Observer                   | Description  |
+|----------------------------|--------------|
+| `processingDidStart`       | Called when video processing starts. |
+| `processingDidFailToStart` | Called when video processing could not start due to runtime errors. In this case, developers are expected to call `startVideoInput` again with a valid `VideoInputDevice` to continue video sending. |
+| `processingDidStop`        | Called when video processing is stopped **expectedly**. |
+| `processingDidFailToStart` | Called when the execution of processors slows the frame rate down by at least half.|
 
-`processingDidStart` will be called when video processing starts.
+### VideoFrameBuffer
 
-2. `processingDidFailToStart`
-
-`processingDidFailToStart` will be called when video processing could not start due to runtime errors. In this case, developers are expected to call `startVideoInput` again with a valid `VideoInputDevice` to continue video sending. 
-
-3. `processingDidStop`
-
-`processingDidStop` will be called when video processing is stopped **expectedly**.
-
-4. `processingLatencyTooHigh(latencyMs: number)` 
-
-`processingLatencyTooHigh` will be called when the execution of processors slows the frame rate down by at least half.
-
-### VideoFrameBuffer 
 `VideoFrameBuffer` is an abstract interface that can be implemented to represent images or video sources. It is required to implement `asCanvasImageSource` to return `CanvasImageSource`; optionally, developers can implement `asCanvasElement` or `asTransferable` to facilitate processing algorithm to work with [HTMLCanvasElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement)s or [Worker](https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker)s respectively.
 
 ### VideoFrameProcessor
@@ -146,6 +133,7 @@ async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
 ```
 
 ### Building an overlay processor
+
 An overlay processor can be a customized processor for loading an external image:
 
 ```typescript
@@ -189,6 +177,7 @@ class VideoLoadImageProcessor implements VideoFrameProcessor {
 ```
 
 ## Video Processing Usage
+
 ### Custom processor usage during meeting
 
 ```typescript
