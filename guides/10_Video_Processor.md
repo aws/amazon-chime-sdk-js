@@ -42,7 +42,7 @@ The construction of the `DefaultVideoTransformDevice` will not start the camera 
 
 The parameters to `chooseVideoInputQuality` are used as constraints on the source `MediaStream`. After the video input is chosen, `meetingSession.audioVideo.startLocalVideoTile` can be called to start streaming video.
 
-```typescript
+```javascript
 import {
   DefaultVideoTransformDevice
 } from 'amazon-chime-sdk-js';
@@ -65,7 +65,7 @@ meetingSession.audioVideo.startLocalVideo();
 To switch the inner `Device` on `DefaultVideoTransformDevice`, call `DefaultVideoTransformDevice.chooseNewInnerDevice` with a new `Device`.
 `DefaultVideoTransformDevice.chooseNewInnerDevice` returns a new `DefaultVideoTransformDevice` but preserves the state of `VideoFrameProcessor`s. Then call `meetingSession.audioVideo.startVideoInput` with the new transform device.
 
-```typescript
+```javascript
 const newInnerDevice = 'bar';
 if (transformDevice.getInnerDevice() !== innerDevice) {
   transformDevice = transformDevice.chooseNewInnerDevice(innerDevice);
@@ -80,7 +80,7 @@ After stopping the video processing, the inner `Device` will be released by devi
 
 After `DefaultVideoTransformDevice` is no longer used by device controller, call `DefaultVideoTransformDevice.stop` to release the `VideoProcessor`s and underlying pipeline. After `stop` is called, users must discard the `DefaultVideoTransformDevice` as it will not be reusable.`DefaultVideoTransformDevice.stop` is necessary to release the internal resources.
 
-```typescript
+```javascript
 await meetingSession.audioVideo.stopVideoInput();
 transformDevice.stop();
 ```
@@ -110,9 +110,9 @@ To receive notifications of lifecycle events, a `DefaultVideoTransformDeviceObse
 
 The following example shows how to build a basic processor to resize the video frames.  We first define an implementation of `VideoFrameProcessor`:
 
-```typescript
+```javascript
 class VideoResizeProcessor implements VideoFrameProcessor { 
-  constructor(private displayAspectRatio: number) {}
+  constructor(private displayAspectRatio) {}
 
   async process(buffers: VideoFrameBuffer[]): VideoFrameBuffer[];
   async destroy(): Promise<void>;
@@ -212,13 +212,13 @@ class VideoLoadImageProcessor implements VideoFrameProcessor {
 
 Local video post processing can be previewed before transmitting to remote clients just for a normal device.
 
-```typescript
+```javascript
 import {
   DefaultVideoTransformDevice
 } from 'amazon-chime-sdk-js';
 
 const stages = [new VideoResizeProcessor(4/3)]; // constructs  processor
-const videoElement = document.getElementById('video-preview') as HTMLVideoElement;
+const videoElement = document.getElementById('video-preview');
 const transformDevice = new DefaultVideoTransformDevice(
   logger,
   'foobar', // device id string
@@ -233,18 +233,17 @@ meetingSession.audioVideo.startVideoPreviewForVideoInput(videoElement);
 
 The API `ContentShareControllerFacade.startContentShare` does not currently support passing in a `VideoTransformDevice` or similar. But the `DefaultVideoTransformDevice` makes it straight forward to apply transforms on a given `MediaStream`, and output a new `MediaStream`.
 
-Note that for screen share usage we need to use `ContentShareMediaStreamBroker` directly rather then the helper function `ContentShareControllerFacade.startContentShareFromScreenCapture`.
+Note that for screen share usage we use [MediaDevices.getDisplayMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia) directly rather then the helper function `ContentShareControllerFacade.startContentShareFromScreenCapture`.
 
-```typescript
+```javascript
 import {
   DefaultVideoTransformDevice
 } from 'amazon-chime-sdk-js';
 
-const framerate = 30;
-var mediaStream: MediaStream = new ContentShareMediaStreamBroker(logger).acquireScreenCaptureDisplayInputStream(
-  undefined,
-  framerate
-);
+mediaStream = navigator.mediaDevices.getDisplayMedia({
+  audio: true,
+  video: true
+});
 
 const stages = [new CircularCut()]; // constructs some custom processor
 const transformDevice = new DefaultVideoTransformDevice(
@@ -254,11 +253,14 @@ const transformDevice = new DefaultVideoTransformDevice(
 );
 
 await meetingSession.audioVideo.startContentShare(await transformDevice.transformStream(mediaStream));
+
+// On completion
+transformDevice.stop();
 ```
 
 The `MediaStream` can also be from a file input or other source. Note that `DefaultVideoTransformDevice` will not forward audio tracks from the input `MediaStream`. These can be spliced back into a new combined `MediaStream`:
 
-```typescript
+```javascript
 const filePath = // ...
 mediaStream = createMediaStreamFromFile(filePath);
 transformDevice = new DefaultVideoTransformDevice(logger, undefined, stages);
