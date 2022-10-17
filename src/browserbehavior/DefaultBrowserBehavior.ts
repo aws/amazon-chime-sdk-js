@@ -61,6 +61,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return this.browser.name;
   }
 
+  os(): string {
+    return this.browser.os;
+  }
+
   hasChromiumWebRTC(): boolean {
     for (const browser of this.chromeLike) {
       if (browser === this.browser.name) {
@@ -88,7 +92,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   supportsCanvasCapturedStreamPlayback(): boolean {
-    return !this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox();
+    return (!this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox()) ||
+      (this.isIOSSafari() && this.majorVersion() > 15) ||
+      (this.isIOSChrome() && this.majorVersion() > 105) ||
+      (this.isIOSFirefox() && this.majorVersion() > 104);
   }
 
   supportsBackgroundFilter(): boolean {
