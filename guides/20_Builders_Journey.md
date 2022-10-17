@@ -111,7 +111,6 @@ The Amazon Chime SDK for JavaScript works by connecting to meeting session resou
 - Frequently Asked Questions
   - [Amazon Chime SDK FAQ](https://aws.amazon.com/chime/chime-sdk/faq/) (Web Page)
   - [Amazon Chime SDK FAQ](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html) (GitHub)
-  - [SA Internal Amazon Chime SDK FAQ](https://quip-amazon.com/2eChAFiHKcpi/Amazon-Chime-SDK-FAQ) (Internal Quip Document)
 - [Amazon Chime SDK Guides](https://github.com/aws/amazon-chime-sdk-js/tree/master/guides)(Please review each document in this list)
 - [A Builder's Guide to Amazon Chime sessions at](https://aws.amazon.com/blogs/business-productivity/a-builders-guide-to-amazon-chime-sessions-at-reinvent-2019/)[re:Invent 2019](https://aws.amazon.com/blogs/business-productivity/a-builders-guide-to-amazon-chime-sessions-at-reinvent-2019/)
 - [Serverless Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless)
