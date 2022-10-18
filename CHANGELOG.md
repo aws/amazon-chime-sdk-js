@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Add metric derived from string metric in metric report.
-- Updated a docstring in `ContentShareControllerFacade`
+- Updated `DefaultVideoFrameProcessorPipeline` to clone audio tracks to the output `MediaStream` instead of dropping them. This allows more straightforward usage of the pipeline on content sharing like file playback.
 
 ### Fixed
 * Fixed missing videos, or unnecessarily long freezes when switching simulcast streams.

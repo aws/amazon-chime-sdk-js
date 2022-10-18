@@ -259,16 +259,28 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       const outputStream2 = pipe.getActiveOutputMediaStream();
       expect(outputStream2).to.deep.equal(outputStream);
     });
-  });
 
-  describe('getter outputMediaStream', () => {
-    it('can get current output stream', async () => {
+    it('can clone audio tracks', async () => {
       const activeStream = new MediaStream();
       // @ts-ignore
       activeStream.active = true;
       domMockBehavior.createElementCaptureStream = activeStream;
+
+      const inputStream = new MediaStream();
+      const videoTrack = new MediaStreamTrack();
+      // @ts-ignore
+      videoTrack.kind = 'video';
+      inputStream.addTrack(videoTrack);
+      const audioTrack = new MediaStreamTrack();
+      // @ts-ignore
+      audioTrack.kind = 'audio';
+      inputStream.addTrack(audioTrack);
+      // @ts-ignore
+      inputStream.active = true;
+      await pipe.setInputMediaStream(inputStream);
+
       const outputStream = pipe.getActiveOutputMediaStream();
-      expect(outputStream).to.deep.equal(activeStream);
+      expect(outputStream.getAudioTracks().length).to.equal(2);
     });
   });
 

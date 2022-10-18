@@ -12,7 +12,6 @@ import {
   AudioBufferMediaStreamProvider,
   AudioGainMediaStreamProvider,
   FileMediaStreamProvider,
-  MergedMediaStreamProvider,
   ScreenShareMediaStreamProvider,
   SynthesizedStereoMediaStreamProvider,
   VideoTransformDeviceMediaStreamProvider,
@@ -40,8 +39,6 @@ export default class ContentShareManager implements ContentShareObserver {
   private paused: boolean = false;
 
   private streamProvider: MediaStreamProvider | undefined = undefined;
-  private transformedAudioStreamProvider: MediaStreamProvider | undefined = undefined;
-  private transformedVideoStreamProvider: MediaStreamProvider | undefined = undefined;
 
   private frameRate: number | undefined = undefined;
   private enableCirculeCut: boolean = false;
@@ -115,27 +112,14 @@ export default class ContentShareManager implements ContentShareObserver {
       }
     }
 
-    this.transformedAudioStreamProvider = undefined;
-    this.transformedVideoStreamProvider = undefined;
-
     if (this.enableCirculeCut && (await this.streamProvider.getMediaStream()).getVideoTracks().length !== 0) {
       const stages = [new CircularCut()];
       const videoTransformDevice = new DefaultVideoTransformDevice(this.logger, undefined, stages);
-      this.transformedVideoStreamProvider = new VideoTransformDeviceMediaStreamProvider(
-        this.streamProvider,
-        videoTransformDevice
-      );
+      this.streamProvider = new VideoTransformDeviceMediaStreamProvider(this.streamProvider, videoTransformDevice);
     }
 
     if (this.enableVolumeReduction && (await this.streamProvider.getMediaStream()).getAudioTracks().length !== 0) {
-      this.transformedAudioStreamProvider = new AudioGainMediaStreamProvider(this.streamProvider, 0.1);
-    }
-
-    if (this.transformedAudioStreamProvider || this.transformedVideoStreamProvider) {
-      this.streamProvider = new MergedMediaStreamProvider(
-        this.transformedAudioStreamProvider !== undefined ? this.transformedAudioStreamProvider : this.streamProvider,
-        this.transformedVideoStreamProvider !== undefined ? this.transformedVideoStreamProvider : this.streamProvider
-      );
+      this.streamProvider = new AudioGainMediaStreamProvider(this.streamProvider, 0.1);
     }
 
     if (this.streamProvider !== undefined) {

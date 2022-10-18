@@ -258,20 +258,4 @@ await meetingSession.audioVideo.startContentShare(await transformDevice.transfor
 transformDevice.stop();
 ```
 
-The `MediaStream` can also be from a file input or other source. Note that `DefaultVideoTransformDevice` will not forward audio tracks from the input `MediaStream`. These can be spliced back into a new combined `MediaStream`:
-
-```javascript
-const filePath = // ...
-mediaStream = createMediaStreamFromFile(filePath);
-transformDevice = new DefaultVideoTransformDevice(logger, undefined, stages);
-const transformedStream = await transformDevice.transformStream(mediaStream);
-
-const combinedStream = new MediaStream();
-for (const videoTrack of transformedStream.getVideoTracks()) {
-  combinedStream.addTrack(videoTrack.clone());
-}
-for (const audioTrack of mediaStream.getAudioTracks()) { // Note use of original `MediaStream`
-  combinedStream.addTrack(audioTrack.clone());
-}
-await meetingSession.audioVideo.startContentShare(combinedStream);
-```
+The `MediaStream` can also be from a file input or other source.

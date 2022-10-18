@@ -94,12 +94,20 @@ export class AudioGainMediaStreamProvider implements MediaStreamProvider {
   constructor(private streamProvider: MediaStreamProvider, private gain: number) {}
 
   async getMediaStream(): Promise<MediaStream> {
-    var mediaStreamSource = this.context.createMediaStreamSource(await this.streamProvider.getMediaStream());
+    const inputMediaStream = await this.streamProvider.getMediaStream();
+
+    var mediaStreamSource = this.context.createMediaStreamSource(inputMediaStream);
     var destination = this.context.createMediaStreamDestination();
     var gain = this.context.createGain();
     gain.gain.value = this.gain;
     mediaStreamSource.connect(gain);
     gain.connect(destination);
+
+    // Clone video tracks
+    for (const videoTrack of inputMediaStream.getVideoTracks()) {
+        destination.stream.addTrack(videoTrack);
+    }
+
     return destination.stream;
   }
 
