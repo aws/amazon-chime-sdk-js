@@ -64,6 +64,9 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
   });
 
   afterEach(() => {
+    pipe.stop();
+    pipe.destroy();
+
     domMockBuilder.cleanup();
   });
 
@@ -321,7 +324,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     it('can set the input processors', async () => {
       class NullProcessor implements VideoFrameProcessor {
         destroy(): Promise<void> {
-          throw new Error('Method not implemented.');
+          return Promise.resolve();
         }
         process(_buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
           return Promise.resolve(null);
@@ -347,7 +350,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
 
       class WrongProcessor implements VideoFrameProcessor {
         destroy(): Promise<void> {
-          throw new Error('Method not implemented.');
+          return Promise.resolve();
         }
         process(_buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
           throw new Error('Method not implemented.');
@@ -377,7 +380,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
 
       class WrongProcessor implements VideoFrameProcessor {
         destroy(): Promise<void> {
-          throw new Error('Method not implemented.');
+          return Promise.resolve();
         }
         async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
           await new Promise(resolve => setTimeout(resolve, (1000 / 15) * 3));
