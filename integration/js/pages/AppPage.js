@@ -24,7 +24,7 @@ function findAllElements() {
     contentShareButton: By.id('button-content-share'),
     contentShareDropButton: By.id('button-content-share-drop'),
     contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
-    contentSharePauseButton: By.id('button-pause-content-share'),
+    contentSharePauseButton: By.id('dropdown-item-content-share-pause-resume'),
 
     videoFilterDropButton: By.id('button-video-filter-drop'),
   

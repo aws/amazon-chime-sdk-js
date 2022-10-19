@@ -16,6 +16,7 @@ class ClickContentSharePauseButton extends AppTestStep {
   }
 
   async run() {
+    await this.page.clickContentShareDropButton();
     await this.page.clickContentSharePauseButton();
     const message = this.testType === 'ON' ? 'content_share_pause' : 'content_share_unpause';
     this.finished(message)

@@ -68,8 +68,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<a href="#video-processing-apis" id="video-processing-apis" style="color: inherit; text-decoration: none;">
-							<h1>Video Processing APIs</h1>
+						<a href="#video-input-processing" id="video-input-processing" style="color: inherit; text-decoration: none;">
+							<h1>Video Input Processing</h1>
 						</a>
 					</div>
 					<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
@@ -131,49 +131,76 @@
 						<h3>VideoTransformDevice</h3>
 					</a>
 					<p><code>VideoTransformDevice</code> allows <code>VideoFrameProcessor</code>s to be applied to to a <code>Device</code> and provide a new object which can be passed into <code>meetingSession.audioVideo.startVideoInput</code>.</p>
-					<p><code>DefaultVideoTransformDevice</code> is the provided implementation of <code>VideoTransformDevice</code>. It requires four parameters: (1) <code>Logger</code> (2) <code>Device</code> (3) <code>Array&lt;VideoFrameProcessor&gt;</code>.
-					The <code>DefaultVideoTransformDevice</code> uses <code>VideoFrameProcessorPipeline</code> under the hood and hides its complexity.</p>
+					<p><code>DefaultVideoTransformDevice</code> is the provided implementation of <code>VideoTransformDevice</code>. It takes the aforementioned <code>Device</code> and array of <code>VideoFrameProcessor</code>s, then uses <code>VideoFrameProcessorPipeline</code> under the hood and hides its complexity.</p>
 					<a href="#construction-and-starting-video-processing" id="construction-and-starting-video-processing" style="color: inherit; text-decoration: none;">
 						<h4>Construction and Starting Video Processing</h4>
 					</a>
-					<p>The construction of the <code>DefaultVideoTransformDevice</code> will not start the camera or start processing. The method <code>meetingSession.audioVideo.startVideoInput</code> is needed to be called. The device controller will use the inner <code>Device</code> to acquire the source <code>MediaStream</code> and start the processing pipeline at the same frame rate.
-						&quot;Inner device&quot; in this context refers to the original video stream coming from the selected camera.
-						The parameters to <code>chooseVideoInputQuality</code> are used as constraints on the source <code>MediaStream</code>.
-					After the video input is chosen, <code>meetingSession.audioVideo.startLocalVideoTile</code> can be called to start streaming video.</p>
+					<p>The construction of the <code>DefaultVideoTransformDevice</code> will not start the camera or start processing. The method <code>meetingSession.audioVideo.startVideoInput</code> should be called just like for normal devices. The device controller will use the inner <code>Device</code> to acquire the source <code>MediaStream</code> and start the processing pipeline at the same frame rate. &quot;Inner device&quot; in this context refers to the original video stream coming from the selected camera.</p>
+					<p>The parameters to <code>chooseVideoInputQuality</code> are used as constraints on the source <code>MediaStream</code>. After the video input is chosen, <code>meetingSession.audioVideo.startLocalVideoTile</code> can be called to start streaming video.</p>
+					<pre><code class="language-javascript"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">DefaultVideoTransformDevice</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">stages</span><span style="color: #000000"> = [</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoResizeProcessor</span><span style="color: #000000">(</span><span style="color: #098658">4</span><span style="color: #000000">/</span><span style="color: #098658">3</span><span style="color: #000000">)]; </span><span style="color: #008000">// constructs  processor</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">transformDevice</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultVideoTransformDevice</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #A31515">&#039;foo&#039;</span><span style="color: #000000">, </span><span style="color: #008000">// device id string</span>
+<span style="color: #000000">  </span><span style="color: #001080">stages</span>
+<span style="color: #000000">);</span>
+
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">transformDevice</span><span style="color: #000000">);</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startLocalVideo</span><span style="color: #000000">();</span>
+
+</code></pre>
 					<a href="#switching-the-inner-device-on-videotransformdevice" id="switching-the-inner-device-on-videotransformdevice" style="color: inherit; text-decoration: none;">
 						<h4>Switching the Inner Device on VideoTransformDevice</h4>
 					</a>
 					<p>To switch the inner <code>Device</code> on <code>DefaultVideoTransformDevice</code>, call <code>DefaultVideoTransformDevice.chooseNewInnerDevice</code> with a new <code>Device</code>.
 					<code>DefaultVideoTransformDevice.chooseNewInnerDevice</code> returns a new <code>DefaultVideoTransformDevice</code> but preserves the state of <code>VideoFrameProcessor</code>s. Then call <code>meetingSession.audioVideo.startVideoInput</code> with the new transform device.</p>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">newInnerDevice</span><span style="color: #000000"> = </span><span style="color: #A31515">&#039;bar&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">transformDevice</span><span style="color: #000000">.</span><span style="color: #795E26">getInnerDevice</span><span style="color: #000000">() !== </span><span style="color: #001080">innerDevice</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">transformDevice</span><span style="color: #000000"> = </span><span style="color: #001080">transformDevice</span><span style="color: #000000">.</span><span style="color: #795E26">chooseNewInnerDevice</span><span style="color: #000000">(</span><span style="color: #001080">innerDevice</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+</code></pre>
 					<a href="#stopping-videotransformdevice" id="stopping-videotransformdevice" style="color: inherit; text-decoration: none;">
 						<h4>Stopping VideoTransformDevice</h4>
 					</a>
-					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.startVideoInput</code> with a different <code>DefaultVideoTransformDevice</code> or call <code>meetingSession.audioVideo.stopVideoInput</code> to
-					stop using previous <code>DefaultVideoTransformDevice</code>.</p>
+					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.startVideoInput</code> with a different <code>Device</code> (possibly another <code>DefaultVideoTransformDevice</code>) or call <code>meetingSession.audioVideo.stopVideoInput</code> to stop using previous <code>DefaultVideoTransformDevice</code>.</p>
 					<p>After stopping the video processing, the inner <code>Device</code> will be released by device controller unless the inner <code>Device</code> is a <code>MediaStream</code> provided by users where it is their responsibility of users to handle the lifecycle.</p>
-					<p>After <code>DefaultVideoTransformDevice</code> is no longer used by device controller, call <code>DefaultVideoTransformDevice.stop</code> to release the <code>VideoProcessor</code>s and underlying pipeline. After <code>stop</code> is called, users must discard the <code>DefaultVideoTransformDevice</code>.<code>DefaultVideoTransformDevice.stop</code> is necessary to release the internal resources.</p>
-					<p>Users would also need to call <code>DefaultVideoTransformDevice.stop</code> and construct a new <code>DefaultVideoTransformDevice</code> when they want to change video processors or change the video input quality.</p>
+					<p>After <code>DefaultVideoTransformDevice</code> is no longer used by device controller, call <code>DefaultVideoTransformDevice.stop</code> to release the <code>VideoProcessor</code>s and underlying pipeline. After <code>stop</code> is called, users must discard the <code>DefaultVideoTransformDevice</code> as it will not be reusable.<code>DefaultVideoTransformDevice.stop</code> is necessary to release the internal resources.</p>
+					<pre><code class="language-javascript"><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">stopVideoInput</span><span style="color: #000000">();</span>
+<span style="color: #001080">transformDevice</span><span style="color: #000000">.</span><span style="color: #795E26">stop</span><span style="color: #000000">();</span>
+</code></pre>
+					<p>Applications will need to stop and replace <code>DefaultVideoTransformDevice</code> when they want to change video processors or change the video input quality.</p>
 					<a href="#receiving-lifecycle-notifications-with-an-observer" id="receiving-lifecycle-notifications-with-an-observer" style="color: inherit; text-decoration: none;">
 						<h4>Receiving lifecycle notifications with an observer</h4>
 					</a>
-					<p>To receive notifications of lifecycle events, <code>DefaultVideoTransformDeviceObserver</code> can be added to the <code>DefaultVideoTransformDevice</code>.
-					The full list of the callbacks:</p>
-					<ol>
-						<li><code>processingDidStart</code></li>
-					</ol>
-					<p><code>processingDidStart</code> will be called when video processing starts.</p>
-					<ol start="2">
-						<li><code>processingDidFailToStart</code></li>
-					</ol>
-					<p><code>processingDidFailToStart</code> will be called when video processing could not start due to runtime errors. In this case, developers are expected to call <code>startVideoInput</code> again with a valid <code>VideoInputDevice</code> to continue video sending.</p>
-					<ol start="3">
-						<li><code>processingDidStop</code></li>
-					</ol>
-					<p><code>processingDidStop</code> will be called when video processing is stopped <strong>expectedly</strong>.</p>
-					<ol start="4">
-						<li><code>processingLatencyTooHigh(latencyMs: number)</code></li>
-					</ol>
-					<p><code>processingLatencyTooHigh</code> will be called when the execution of processors slows the frame rate down by at least half.</p>
+					<p>To receive notifications of lifecycle events, a <code>DefaultVideoTransformDeviceObserver</code> can be added to the <code>DefaultVideoTransformDevice</code> and handlers added for the following:</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Observer</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>processingDidStart</code></td>
+								<td>Called when video processing starts.</td>
+							</tr>
+							<tr>
+								<td><code>processingDidFailToStart</code></td>
+								<td>Called when video processing could not start due to runtime errors. In this case, developers are expected to call <code>startVideoInput</code> again with a valid <code>VideoInputDevice</code> to continue video sending.</td>
+							</tr>
+							<tr>
+								<td><code>processingDidStop</code></td>
+								<td>Called when video processing is stopped <strong>expectedly</strong>.</td>
+							</tr>
+							<tr>
+								<td><code>processingDidFailToStart</code></td>
+								<td>Called when the execution of processors slows the frame rate down by at least half.</td>
+							</tr>
+					</tbody></table>
 					<a href="#videoframebuffer" id="videoframebuffer" style="color: inherit; text-decoration: none;">
 						<h3>VideoFrameBuffer</h3>
 					</a>
@@ -186,8 +213,8 @@
 						<h3>Building a simple processor</h3>
 					</a>
 					<p>The following example shows how to build a basic processor to resize the video frames.  We first define an implementation of <code>VideoFrameProcessor</code>:</p>
-					<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">VideoResizeProcessor</span><span style="color: #000000"> </span><span style="color: #0000FF">implements</span><span style="color: #000000"> </span><span style="color: #267F99">VideoFrameProcessor</span><span style="color: #000000"> { </span>
-<span style="color: #000000">  </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span><span style="color: #0000FF">private</span><span style="color: #000000"> </span><span style="color: #001080">displayAspectRatio</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000">) {}</span>
+					<pre><code class="language-javascript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">VideoResizeProcessor</span><span style="color: #000000"> </span><span style="color: #0000FF">implements</span><span style="color: #000000"> </span><span style="color: #267F99">VideoFrameProcessor</span><span style="color: #000000"> { </span>
+<span style="color: #000000">  </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span><span style="color: #0000FF">private</span><span style="color: #000000"> </span><span style="color: #001080">displayAspectRatio</span><span style="color: #000000">) {}</span>
 
 <span style="color: #000000">  </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">process</span><span style="color: #000000">(</span><span style="color: #001080">buffers</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFrameBuffer</span><span style="color: #000000">[]): </span><span style="color: #267F99">VideoFrameBuffer</span><span style="color: #000000">[];</span>
 <span style="color: #000000">  </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">destroy</span><span style="color: #000000">(): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #267F99">void</span><span style="color: #000000">&gt;;</span>
@@ -233,7 +260,7 @@
 					<a href="#building-an-overlay-processor" id="building-an-overlay-processor" style="color: inherit; text-decoration: none;">
 						<h3>Building an overlay processor</h3>
 					</a>
-					<p>An overlay processor can be a customized processor for loading an external image:</p>
+					<p>An overlay processor can be a customized processor for loading an external image. Note that this example accounts for the usage of <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (CORS)</a>:</p>
 					<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">VideoLoadImageProcessor</span><span style="color: #000000"> </span><span style="color: #0000FF">implements</span><span style="color: #000000"> </span><span style="color: #267F99">VideoFrameProcessor</span><span style="color: #000000"> { </span>
 <span style="color: #000000">  </span><span style="color: #008000">// Create a HTMLCanvasElement</span>
 <span style="color: #000000">  </span><span style="color: #0000FF">private</span><span style="color: #000000"> </span><span style="color: #001080">targetCanvas</span><span style="color: #000000">: </span><span style="color: #267F99">HTMLCanvasElement</span><span style="color: #000000"> = </span><span style="color: #001080">document</span><span style="color: #000000">.</span><span style="color: #795E26">createElement</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;canvas&#039;</span><span style="color: #000000">) </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">HTMLCanvasElement</span><span style="color: #000000">;</span>
@@ -272,18 +299,19 @@
 <span style="color: #000000">  }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-					<a href="#video-processing-usage" id="video-processing-usage" style="color: inherit; text-decoration: none;">
-						<h2>Video Processing Usage</h2>
+					<a href="#additional-video-processing-use-cases" id="additional-video-processing-use-cases" style="color: inherit; text-decoration: none;">
+						<h2>Additional Video Processing Use-Cases</h2>
 					</a>
-					<a href="#custom-processor-usage-during-meeting" id="custom-processor-usage-during-meeting" style="color: inherit; text-decoration: none;">
-						<h3>Custom processor usage during meeting</h3>
+					<a href="#custom-processor-usage-during-meeting-preview" id="custom-processor-usage-during-meeting-preview" style="color: inherit; text-decoration: none;">
+						<h3>Custom processor usage during meeting preview</h3>
 					</a>
-					<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+					<p>Local video post processing can be previewed before transmitting to remote clients just for a normal device.</p>
+					<pre><code class="language-javascript"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #001080">DefaultVideoTransformDevice</span>
 <span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">stages</span><span style="color: #000000"> = [</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoResizeProcessor</span><span style="color: #000000">(</span><span style="color: #098658">4</span><span style="color: #000000">/</span><span style="color: #098658">3</span><span style="color: #000000">)]; </span><span style="color: #008000">// constructs  processor</span>
-
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoElement</span><span style="color: #000000"> = </span><span style="color: #001080">document</span><span style="color: #000000">.</span><span style="color: #795E26">getElementById</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;video-preview&#039;</span><span style="color: #000000">);</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">transformDevice</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultVideoTransformDevice</span><span style="color: #000000">(</span>
 <span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
 <span style="color: #000000">  </span><span style="color: #A31515">&#039;foobar&#039;</span><span style="color: #000000">, </span><span style="color: #008000">// device id string</span>
@@ -291,27 +319,35 @@
 <span style="color: #000000">);</span>
 
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">transformDevice</span><span style="color: #000000">);</span>
-<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startLocalVideo</span><span style="color: #000000">();</span>
-
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoPreviewForVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">videoElement</span><span style="color: #000000">);</span>
 </code></pre>
-					<a href="#custom-processor-usage-during-meeting-preview" id="custom-processor-usage-during-meeting-preview" style="color: inherit; text-decoration: none;">
-						<h3>Custom processor usage during meeting preview</h3>
+					<a href="#custom-video-processor-usage-for-content-share" id="custom-video-processor-usage-for-content-share" style="color: inherit; text-decoration: none;">
+						<h3>Custom video processor usage for content share</h3>
 					</a>
-					<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+					<p>The API <code>ContentShareControllerFacade.startContentShare</code> does not currently support passing in a <code>VideoTransformDevice</code> or similar. But the <code>DefaultVideoTransformDevice</code> makes it straight forward to apply transforms on a given <code>MediaStream</code>, and output a new <code>MediaStream</code>.</p>
+					<p>Note that for screen share usage we use <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia">MediaDevices.getDisplayMedia</a> directly rather then the helper function <code>ContentShareControllerFacade.startContentShareFromScreenCapture</code>.</p>
+					<pre><code class="language-javascript"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #001080">DefaultVideoTransformDevice</span>
 <span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">processor</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoResizeProcessor</span><span style="color: #000000">(</span><span style="color: #098658">4</span><span style="color: #000000">/</span><span style="color: #098658">3</span><span style="color: #000000">);</span>
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoElement</span><span style="color: #000000"> = </span><span style="color: #001080">document</span><span style="color: #000000">.</span><span style="color: #795E26">getElementById</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;video-preview&#039;</span><span style="color: #000000">) </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">HTMLVideoElement</span><span style="color: #000000">;</span>
+<span style="color: #001080">mediaStream</span><span style="color: #000000"> = </span><span style="color: #001080">navigator</span><span style="color: #000000">.</span><span style="color: #001080">mediaDevices</span><span style="color: #000000">.</span><span style="color: #795E26">getDisplayMedia</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">audio:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">video:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">stages</span><span style="color: #000000"> = [</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">CircularCut</span><span style="color: #000000">()]; </span><span style="color: #008000">// constructs some custom processor</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">transformDevice</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultVideoTransformDevice</span><span style="color: #000000">(</span>
 <span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
-<span style="color: #000000">  </span><span style="color: #A31515">&#039;foobar&#039;</span><span style="color: #000000">, </span><span style="color: #008000">// device id string</span>
-<span style="color: #000000">  </span><span style="color: #001080">processor</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">undefined</span><span style="color: #000000">, </span><span style="color: #008000">// Not needed when using transform directly</span>
+<span style="color: #000000">  </span><span style="color: #001080">stages</span>
 <span style="color: #000000">);</span>
 
-<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">transformDevice</span><span style="color: #000000">);</span>
-<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoPreviewForVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">videoElement</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShare</span><span style="color: #000000">(</span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">transformDevice</span><span style="color: #000000">.</span><span style="color: #795E26">transformStream</span><span style="color: #000000">(</span><span style="color: #001080">mediaStream</span><span style="color: #000000">));</span>
+
+<span style="color: #008000">// On completion</span>
+<span style="color: #001080">transformDevice</span><span style="color: #000000">.</span><span style="color: #795E26">stop</span><span style="color: #000000">();</span>
 </code></pre>
+					<p>The <code>MediaStream</code> can also be from a file input or other source.</p>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Video%20Processor%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
