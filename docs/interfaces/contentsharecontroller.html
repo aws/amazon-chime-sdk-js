@@ -120,7 +120,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#addcontentshareobserver">addContentShareObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L59">src/contentsharecontroller/ContentShareControllerFacade.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L63">src/contentsharecontroller/ContentShareControllerFacade.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -240,13 +240,16 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#pausecontentshare">pauseContentShare</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L44">src/contentsharecontroller/ContentShareControllerFacade.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L48">src/contentsharecontroller/ContentShareControllerFacade.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Pause content sharing</p>
+									<p>Pause content sharing. This (combined with <code>unpauseContentShare</code> is a lightweight alternative to stopping and
+									starting content share which requires use of a seperate peer connection and therefore has increased latency.</p>
 								</div>
+								<p>Remote receivers will continue to subscribe to content share video but there will be nothing transmitting
+								(e.g. it may be a black frame)</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -263,7 +266,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#removecontentshareobserver">removeContentShareObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L64">src/contentsharecontroller/ContentShareControllerFacade.ts:64</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L68">src/contentsharecontroller/ContentShareControllerFacade.ts:68</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -323,7 +326,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#setcontentsharevideocodecpreferences">setContentShareVideoCodecPreferences</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L72">src/contentsharecontroller/ContentShareControllerFacade.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L76">src/contentsharecontroller/ContentShareControllerFacade.ts:76</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -414,7 +417,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#stopcontentshare">stopContentShare</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L54">src/contentsharecontroller/ContentShareControllerFacade.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L58">src/contentsharecontroller/ContentShareControllerFacade.ts:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -437,7 +440,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#unpausecontentshare">unpauseContentShare</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L49">src/contentsharecontroller/ContentShareControllerFacade.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L53">src/contentsharecontroller/ContentShareControllerFacade.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

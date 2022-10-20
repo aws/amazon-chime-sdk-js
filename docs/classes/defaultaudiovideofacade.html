@@ -975,8 +975,11 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Pause content sharing</p>
+									<p>Pause content sharing. This (combined with <code>unpauseContentShare</code> is a lightweight alternative to stopping and
+									starting content share which requires use of a seperate peer connection and therefore has increased latency.</p>
 								</div>
+								<p>Remote receivers will continue to subscribe to content share video but there will be nothing transmitting
+								(e.g. it may be a black frame)</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>

@@ -18,6 +18,7 @@ class ClickContentShareVideoTestButton extends AppTestStep {
   async run() {
     await this.page.clickContentShareDropButton();
     await this.page.clickContentShareVideoTestButton();
+    await this.page.clickContentShareButton();
     const message = this.testType === "ON" ? 'content_share_video_test_start' : 'content_share_video_test_stop';
     this.finished(message)
   }

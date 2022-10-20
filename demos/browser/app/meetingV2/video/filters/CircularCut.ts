@@ -20,6 +20,10 @@ export default class CircularCut implements VideoFrameProcessor {
   private sourceWidth: number = 0;
   private sourceHeight: number = 0;
 
+  /**
+   * Construct a circular cut processor
+   * @param radius - radius of the outputted circle in pixels
+   */
   constructor(private radius: number = 150) {}
 
   destroy(): Promise<void> {
