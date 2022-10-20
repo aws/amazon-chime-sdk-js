@@ -39,7 +39,11 @@ export default interface ContentShareControllerFacade {
   startContentShareFromScreenCapture(sourceId?: string, frameRate?: number): Promise<MediaStream>;
 
   /**
-   * Pause content sharing
+   * Pause content sharing. This (combined with `unpauseContentShare` is a lightweight alternative to stopping and
+   * starting content share which requires use of a seperate peer connection and therefore has increased latency.
+   *
+   * Remote receivers will continue to subscribe to content share video but there will be nothing transmitting
+   * (e.g. it may be a black frame)
    */
   pauseContentShare(): void;
 

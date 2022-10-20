@@ -113,11 +113,13 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
   }
 
   getActiveOutputMediaStream(): MediaStream {
-    if (this.outputMediaStream && this.outputMediaStream.active) {
+    if (this.isOutputMediaStreamActive()) {
       return this.outputMediaStream;
     }
 
-    return (this.outputMediaStream = this.canvasOutput.captureStream(this.framerate));
+    this.outputMediaStream = this.canvasOutput.captureStream(this.framerate);
+    this.cloneInputAudioTracksToOutput();
+    return this.outputMediaStream;
   }
 
   /**
@@ -154,6 +156,30 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     } catch {
       this.logger.warn('Video element play() overrided by another load().');
     }
+
+    this.cloneInputAudioTracksToOutput();
+  }
+
+  private cloneInputAudioTracksToOutput(): void {
+    if (!this.isOutputMediaStreamActive() || this.inputVideoStream === null) {
+      this.logger.info('Not cloning input audio tracks to output, do not have media streams ready');
+      return; // Just wait for `getActiveOutputMediaStream`
+    }
+
+    // Remove current audio tracks from output
+    for (const audioTrack of this.outputMediaStream.getAudioTracks()) {
+      this.logger.info(`Removing audio track ${audioTrack.id} from output stream`);
+      this.outputMediaStream.removeTrack(audioTrack);
+    }
+
+    for (const audioTrack of this.inputVideoStream.getAudioTracks()) {
+      this.logger.info(`Adding audio track ${audioTrack.id} to output stream`);
+      this.outputMediaStream.addTrack(audioTrack);
+    }
+  }
+
+  private isOutputMediaStreamActive(): boolean {
+    return this.outputMediaStream && this.outputMediaStream.active;
   }
 
   set processors(stages: VideoFrameProcessor[]) {

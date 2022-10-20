@@ -81,6 +81,8 @@ module.exports = env => {
         '/deleteAttendee': 'http://127.0.0.1:8081',
         '/end': 'http://127.0.0.1:8081',
         '/fetch_credentials': 'http://127.0.0.1:8081',
+        '/audio_file': 'http://127.0.0.1:8081',
+        '/stereo_audio_file': 'http://127.0.0.1:8081',
       }
     },
     plugins: [

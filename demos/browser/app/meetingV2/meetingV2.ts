@@ -94,6 +94,8 @@ import {
 import SyntheticVideoDeviceFactory from './video/SyntheticVideoDeviceFactory';
 import { getPOSTLogger } from './util/MeetingLogger';
 import Roster from './component/Roster';
+import ContentShareManager from './component/ContentShareManager';
+import { AudioBufferMediaStreamProvider, SynthesizedStereoMediaStreamProvider } from './util/mediastreamprovider/DemoMediaStreamProviders';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -180,11 +182,6 @@ type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Re
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
 type ButtonState = 'on' | 'off' | 'disabled';
-
-export enum ContentShareType {
-  ScreenCapture,
-  VideoFile,
-}
 
 const SimulcastLayerMapping = {
   [SimulcastLayers.Low]: 'Low',
@@ -280,6 +277,8 @@ export class DemoMeetingApp
   // eslint-disable-next-line
   roster: Roster = new Roster();
 
+  contentShare: ContentShareManager | undefined = undefined;
+
   cameraDeviceIds: string[] = [];
   microphoneDeviceIds: string[] = [];
   currentAudioInputDevice: AudioInputDevice | undefined;
@@ -289,7 +288,6 @@ export class DemoMeetingApp
     'button-camera': 'off',
     'button-speaker': 'on',
     'button-content-share': 'off',
-    'button-pause-content-share': 'off',
     'button-live-transcription': 'off',
     'button-video-stats': 'off',
     'button-promote-to-primary': 'off',
@@ -299,8 +297,6 @@ export class DemoMeetingApp
     'button-record-cloud': 'off',
     'button-live-connector': 'off',
   };
-
-  contentShareType: ContentShareType = ContentShareType.ScreenCapture;
 
   isViewOnly = false;
 
@@ -963,40 +959,6 @@ export class DemoMeetingApp
         } else {
           await this.audioVideo.stopVideoInput();
           this.toggleButton('button-camera', 'off');
-        }
-      });
-    });
-
-    const buttonPauseContentShare = document.getElementById('button-pause-content-share');
-    buttonPauseContentShare.addEventListener('click', _e => {
-      if (!this.isButtonOn('button-content-share')) {
-        return;
-      }
-      AsyncScheduler.nextTick(async () => {
-        this.toggleButton('button-pause-content-share');
-        if (this.isButtonOn('button-pause-content-share')) {
-          this.audioVideo.pauseContentShare();
-          if (this.contentShareType === ContentShareType.VideoFile) {
-            const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
-            videoFile.pause();
-          }
-        } else {
-          this.audioVideo.unpauseContentShare();
-          if (this.contentShareType === ContentShareType.VideoFile) {
-            const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
-            await videoFile.play();
-          }
-        }
-      });
-    });
-
-    const buttonContentShare = document.getElementById('button-content-share');
-    buttonContentShare.addEventListener('click', _e => {
-      AsyncScheduler.nextTick(() => {
-        if (!this.isButtonOn('button-content-share')) {
-          this.contentShareStart();
-        } else {
-          this.contentShareStop();
         }
       });
     });
@@ -1807,7 +1769,7 @@ export class DemoMeetingApp
         (document.getElementById('enable-pagination') as HTMLInputElement).checked ? DemoMeetingApp.REDUCED_REMOTE_VIDEO_PAGE_SIZE : DemoMeetingApp.REMOTE_VIDEO_PAGE_SIZE)
     this.audioVideo.addObserver(this.videoTileCollection);
 
-    this.initContentShareDropDownItems();
+    this.contentShare = new ContentShareManager(this.meetingLogger, this.audioVideo, this.usingStereoMusicAudioProfile);
   }
 
   async setupEventReporter(configuration: MeetingSessionConfiguration): Promise<EventReporter> {
@@ -1920,7 +1882,7 @@ export class DemoMeetingApp
           isContentAttendee &&
           this.isButtonOn('button-content-share')
       ) {
-        this.contentShareStop();
+        this.contentShare.stop();
       }
       const attendeeName =  externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
       this.roster.addAttendee(attendeeId, attendeeName);
@@ -2950,15 +2912,15 @@ export class DemoMeetingApp
     }
 
     if (value === 'L-500Hz R-1000Hz') {
-      return this.synthesizeStereoTones(500, 1000);
+      return new SynthesizedStereoMediaStreamProvider(500, 1000).getMediaStream();
     }
 
     if (value === 'Prerecorded Speech') {
-      return this.streamAudioFile('audio_file');
+      return new AudioBufferMediaStreamProvider('audio_file').getMediaStream();
     }
 
     if (value === 'Prerecorded Speech (Stereo)') {
-      return this.streamAudioFile('stereo_audio_file', true);
+      return new AudioBufferMediaStreamProvider('stereo_audio_file', true).getMediaStream();
     }
 
     // use the speaker output MediaStream with a 50ms delay and a 20% volume reduction as audio input
@@ -2999,54 +2961,6 @@ export class DemoMeetingApp
     }
 
     return value;
-  }
-
-  /**
-   * Generate a stereo tone by using 2 OsciallatorNode's that
-   * produce 2 different frequencies. The output of these 2
-   * nodes is passed through a ChannelMergerNode to obtain
-   * an audio stream with stereo channels where the left channel
-   * contains the samples genrated by oscillatorNodeLeft and the
-   * right channel contains samples generated by oscillatorNodeRight.
-   */
-  private async synthesizeStereoTones(toneHzLeft: number, toneHzRight: number): Promise<MediaStream> {
-    const audioContext = DefaultDeviceController.getAudioContext();
-    const outputNode = audioContext.createMediaStreamDestination();
-    const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0.1;
-    gainNode.connect(outputNode);
-    const oscillatorNodeLeft = audioContext.createOscillator();
-    oscillatorNodeLeft.frequency.value = toneHzLeft;
-    const oscillatorNodeRight = audioContext.createOscillator();
-    oscillatorNodeRight.frequency.value = toneHzRight;
-    const mergerNode = audioContext.createChannelMerger(2);
-    oscillatorNodeLeft.connect(mergerNode, 0, 0);
-    oscillatorNodeRight.connect(mergerNode, 0, 1);
-    mergerNode.connect(gainNode);
-    oscillatorNodeLeft.start();
-    oscillatorNodeRight.start();
-    return outputNode.stream;
-  }
-
-  private async streamAudioFile(audioPath: string, shouldLoop: boolean = false): Promise<MediaStream> {
-    try {
-      const resp = await fetch(audioPath);
-      const bytes = await resp.arrayBuffer();
-      const audioData = new TextDecoder('utf8').decode(bytes);
-      const audio = new Audio('data:audio/mpeg;base64,' + audioData);
-      audio.loop = shouldLoop;
-      audio.crossOrigin = 'anonymous';
-      audio.play();
-      // @ts-ignore
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const streamDestination = audioContext.createMediaStreamDestination();
-      const mediaElementSource = audioContext.createMediaElementSource(audio);
-      mediaElementSource.connect(streamDestination);
-      return streamDestination.stream;
-    } catch (e) {
-      this.log(`Error fetching audio from ${audioPath}: ${e}`);
-      return null;
-    }
   }
 
   private async getVoiceFocusDeviceTransformer(maxComplexity?: VoiceFocusModelComplexity): Promise<VoiceFocusDeviceTransformer> {
@@ -3238,183 +3152,6 @@ export class DemoMeetingApp
     return await this.videoInputSelectionWithOptionalFilter(intrinsicDevice);
   }
 
-  private initContentShareDropDownItems(): void {
-    let item = document.getElementById('dropdown-item-content-share-configuration');
-    item.addEventListener('click', () => {
-      document.getElementById(`content-simulcast-modal`).style.display = 'block';
-    });
-
-    item = document.getElementById('dropdown-item-content-share-screen-capture');
-    item.addEventListener('click', () => {
-      this.contentShareType = ContentShareType.ScreenCapture;
-      this.contentShareStart();
-    });
-
-    item = document.getElementById('dropdown-item-content-share-screen-test-video');
-    item.addEventListener('click', () => {
-      this.contentShareType = ContentShareType.VideoFile;
-      this.contentShareStart(DemoMeetingApp.testVideo);
-    });
-
-    item = document.getElementById('dropdown-item-content-share-test-mono-audio-speech');
-    item.addEventListener('click', () => {
-      this.contentShareStartAudio('audio_file');
-    });
-
-    item = document.getElementById('dropdown-item-content-share-test-stereo-audio-speech');
-    item.addEventListener('click', () => {
-      this.contentShareStartAudio('stereo_audio_file');
-    });
-    if (!this.usingStereoMusicAudioProfile) {
-      item.style.display = 'none';
-    }
-
-    item = document.getElementById('dropdown-item-content-share-test-stereo-audio-tone');
-    item.addEventListener('click', () => {
-      this.contentShareStartAudio();
-    });
-    if (!this.usingStereoMusicAudioProfile) {
-      item.style.display = 'none';
-    }
-
-    document.getElementById('content-share-item').addEventListener('change', () => {
-      const fileList = document.getElementById('content-share-item') as HTMLInputElement;
-      const file = fileList.files[0];
-      if (!file) {
-        this.log('no content share selected');
-        return;
-      }
-      const url = URL.createObjectURL(file);
-      this.log(`content share selected: ${url}`);
-      this.contentShareType = ContentShareType.VideoFile;
-      this.contentShareStart(url);
-      fileList.value = '';
-      (document.getElementById('dropdown-item-content-share-file-item') as HTMLDivElement).click();
-    });
-
-    document.getElementById('dropdown-item-content-share-stop').addEventListener('click', () => {
-      this.contentShareStop();
-    });
-
-    document.getElementById('button-content-share-modal-close').addEventListener('click', () => {
-      document.getElementById('content-simulcast-modal').style.display = 'none';
-    });
-
-    document.getElementById('button-save-content-share-configs').addEventListener('click', () => {
-      document.getElementById('content-simulcast-modal').style.display = 'none';
-      const enableSimulcastForContentShare = (document.getElementById('content-enable-simulcast') as HTMLInputElement).checked;
-      if (enableSimulcastForContentShare) {
-        const lowMaxBitratesKbps = parseInt((document.getElementById('content-simulcast-low-max-bitratekbps') as HTMLInputElement).value) || undefined;
-        const lowScaleFactor = parseInt((document.getElementById('content-simulcast-low-scale-factor') as HTMLInputElement).value) || undefined;
-        const lowMaxFramerate = parseInt((document.getElementById('content-simulcast-low-max-framerate') as HTMLInputElement).value) || undefined;
-        const highMaxBitratesKbps = parseInt((document.getElementById('content-simulcast-high-max-bitratekbps') as HTMLInputElement).value) || undefined;
-        const highScaleFactor = parseInt((document.getElementById('content-simulcast-high-scale-factor') as HTMLInputElement).value) || undefined;
-        const highMaxFramerate = parseInt((document.getElementById('content-simulcast-high-max-framerate') as HTMLInputElement).value) || undefined;
-        this.audioVideo.enableSimulcastForContentShare(true, {
-          low: {
-            maxBitrateKbps: lowMaxBitratesKbps,
-            scaleResolutionDownBy: lowScaleFactor,
-            maxFramerate: lowMaxFramerate
-          },
-          high: {
-            maxBitrateKbps: highMaxBitratesKbps,
-            scaleResolutionDownBy: highScaleFactor,
-            maxFramerate: highMaxFramerate
-          }
-        })
-      } else {
-        this.audioVideo.enableSimulcastForContentShare(false);
-      }
-    });
-  }
-
-  private async playToStream(videoFile: HTMLVideoElement): Promise<MediaStream> {
-    await videoFile.play();
-
-    if (this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
-      // @ts-ignore
-      return videoFile.mozCaptureStream();
-    }
-
-    // @ts-ignore
-    return videoFile.captureStream();
-  }
-
-  private async contentShareStart(videoUrl?: string): Promise<void> {
-    switch (this.contentShareType) {
-      case ContentShareType.ScreenCapture: {
-        try {
-          const framerate = (document.getElementById('content-capture-frame-rate') as HTMLInputElement).value;
-          await this.audioVideo.startContentShareFromScreenCapture(undefined, parseInt(framerate, 10) || undefined);
-        } catch (e) {
-          this.meetingLogger?.error(`Could not start content share: ${e}`);
-          return;
-        }
-        break;
-      }
-      case ContentShareType.VideoFile: {
-        const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
-        if (videoUrl) {
-          videoFile.src = videoUrl;
-        }
-
-        const mediaStream = await this.playToStream(videoFile);
-        try {
-          // getDisplayMedia can throw.
-          await this.audioVideo.startContentShare(mediaStream);
-        } catch (e) {
-          this.meetingLogger?.error(`Could not start content share: ${e}`);
-          return;
-        }
-        break;
-      }
-    }
-
-    this.toggleButton('button-content-share', 'on');
-    this.updateContentShareDropdown(true);
-  }
-
-  private async contentShareStartAudio(audioPath: string | null = null) {
-    let mediaStream: MediaStream = null;
-    if (!audioPath) {
-      mediaStream = await this.synthesizeStereoTones(500, 1000);
-    } else {
-      mediaStream = await this.streamAudioFile(audioPath, true);
-    }
-    try {
-      // getDisplayMedia can throw.
-      await this.audioVideo.startContentShare(mediaStream);
-    } catch (e) {
-      this.meetingLogger?.error(`Could not start content share: ${e}`);
-      return;
-    }
-    this.toggleButton('button-content-share', 'on');
-    this.updateContentShareDropdown(true);
-  }
-
-  private async contentShareStop(): Promise<void> {
-    this.audioVideo.stopContentShare();
-    this.toggleButton('button-pause-content-share', 'off');
-    this.toggleButton('button-content-share', 'off');
-    this.updateContentShareDropdown(false);
-
-    if (this.contentShareType === ContentShareType.VideoFile) {
-      const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
-      videoFile.pause();
-      videoFile.style.display = 'none';
-    }
-  }
-
-  private updateContentShareDropdown(enabled: boolean): void {
-    document.getElementById('dropdown-item-content-share-screen-capture').style.display = enabled ? 'none' : 'block';
-    document.getElementById('dropdown-item-content-share-screen-test-video').style.display = enabled ? 'none' : 'block';
-    document.getElementById('dropdown-item-content-share-test-mono-audio-speech').style.display = enabled ? 'none' : 'block';
-    document.getElementById('dropdown-item-content-share-test-stereo-audio-speech').style.display = enabled ? 'none' : this.usingStereoMusicAudioProfile ? 'block' : 'none';
-    document.getElementById('dropdown-item-content-share-test-stereo-audio-tone').style.display = enabled ? 'none' : this.usingStereoMusicAudioProfile ? 'block' : 'none';
-    document.getElementById('dropdown-item-content-share-file-item').style.display = enabled ? 'none' : 'block';
-    document.getElementById('dropdown-item-content-share-stop').style.display = enabled ? 'block' : 'none';
-  }
-
   isRecorder(): boolean {
     return new URL(window.location.href).searchParams.get('record') === 'true';
   }
@@ -3514,8 +3251,8 @@ export class DemoMeetingApp
       this.audioVideo.removeDeviceChangeObserver(this);
 
       // Stop content share and local video.
-      await this.audioVideo.stopLocalVideoTile();
-      await this.audioVideo.stopContentShare();
+      this.audioVideo.stopLocalVideoTile();
+      await this.contentShare.stop();
 
       // Drop the audio output.
       this.audioVideo.unbindAudioElement();
@@ -3573,7 +3310,6 @@ export class DemoMeetingApp
       return;
     }
   }
-
 
   audioVideoWasDemotedFromPrimaryMeeting(status: any): void {
     const message = `Was demoted from primary meeting with status ${status.toString()}`
@@ -3788,25 +3524,11 @@ export class DemoMeetingApp
   }
 
   contentShareDidStart(): void {
-    this.log('content share started.');
+    this.toggleButton('button-content-share', 'on')
   }
 
   contentShareDidStop(): void {
-    this.log('content share stopped.');
-    if (this.isButtonOn('button-content-share')) {
-      this.buttonStates['button-content-share'] = 'off';
-      this.buttonStates['button-pause-content-share'] = 'off';
-    }
-    this.displayButtonStates();
-    this.updateContentShareDropdown(false);
-  }
-
-  contentShareDidPause(): void {
-    this.log('content share paused.');
-  }
-
-  contentShareDidUnpause(): void {
-    this.log(`content share unpaused.`);
+    this.toggleButton('button-content-share', 'off')
   }
 
   encodingSimulcastLayersDidChange(simulcastLayers: SimulcastLayers): void {

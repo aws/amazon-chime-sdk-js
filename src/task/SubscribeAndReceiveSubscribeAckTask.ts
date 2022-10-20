@@ -68,6 +68,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.videoStreamIndex.integrateUplinkPolicyDecision([param]);
     }
 
+    // This will cache the current index so that we maintain the values over the course of the subscribe.
     this.context.videoStreamIndex.subscribeFrameSent();
 
     // See comment above `fixUpSubscriptionOrder`

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add metric derived from string metric in metric report.
 - Send `audioInputFailed` and `videoInputFailed` if there is error getting device labels.
+- Updated `DefaultVideoFrameProcessorPipeline` to clone audio tracks to the output `MediaStream` instead of dropping them. This allows more straightforward usage of the pipeline on content sharing like file playback.
 
 ### Fixed
 

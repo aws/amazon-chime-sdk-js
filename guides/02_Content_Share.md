@@ -113,3 +113,7 @@ Implement methods from [ContentShareObserver](https://aws.github.io/amazon-chime
 add an instance of the observer using
 [addContentShareObserver](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addcontentshareobserver)
 to receive events.
+
+#### Apply video processing to content share
+
+See [this section in the Video Processing guide for more information](https://github.com/aws/amazon-chime-sdk-js/blob/main/guides/10_Video_Processor.md#custom-video-processor-usage-for-content-share).

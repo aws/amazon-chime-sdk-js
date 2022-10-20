@@ -64,6 +64,9 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
   });
 
   afterEach(() => {
+    pipe.stop();
+    pipe.destroy();
+
     domMockBuilder.cleanup();
   });
 
@@ -259,16 +262,28 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       const outputStream2 = pipe.getActiveOutputMediaStream();
       expect(outputStream2).to.deep.equal(outputStream);
     });
-  });
 
-  describe('getter outputMediaStream', () => {
-    it('can get current output stream', async () => {
+    it('can clone audio tracks', async () => {
       const activeStream = new MediaStream();
       // @ts-ignore
       activeStream.active = true;
       domMockBehavior.createElementCaptureStream = activeStream;
+
+      const inputStream = new MediaStream();
+      const videoTrack = new MediaStreamTrack();
+      // @ts-ignore
+      videoTrack.kind = 'video';
+      inputStream.addTrack(videoTrack);
+      const audioTrack = new MediaStreamTrack();
+      // @ts-ignore
+      audioTrack.kind = 'audio';
+      inputStream.addTrack(audioTrack);
+      // @ts-ignore
+      inputStream.active = true;
+      await pipe.setInputMediaStream(inputStream);
+
       const outputStream = pipe.getActiveOutputMediaStream();
-      expect(outputStream).to.deep.equal(activeStream);
+      expect(outputStream.getAudioTracks().length).to.equal(2);
     });
   });
 
@@ -309,7 +324,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     it('can set the input processors', async () => {
       class NullProcessor implements VideoFrameProcessor {
         destroy(): Promise<void> {
-          throw new Error('Method not implemented.');
+          return Promise.resolve();
         }
         process(_buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
           return Promise.resolve(null);
@@ -335,7 +350,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
 
       class WrongProcessor implements VideoFrameProcessor {
         destroy(): Promise<void> {
-          throw new Error('Method not implemented.');
+          return Promise.resolve();
         }
         process(_buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
           throw new Error('Method not implemented.');
@@ -365,7 +380,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
 
       class WrongProcessor implements VideoFrameProcessor {
         destroy(): Promise<void> {
-          throw new Error('Method not implemented.');
+          return Promise.resolve();
         }
         async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
           await new Promise(resolve => setTimeout(resolve, (1000 / 15) * 3));
