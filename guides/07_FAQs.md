@@ -95,7 +95,32 @@ In Firefox, if access to camera or microphone has been granted to the site — e
 If the page itself is loaded via a different network interface than the one that is intended to be used by the Amazon Chime SDK to connect to Amazon Chime media resources, _e.g._, in a split-tunneling VPN where browser traffic uses the VPN interface but Amazon Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.
 
 Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.
- 
+
+## Known Build Issues
+
+### Why is my build with rollup failing after upgrading to Amazon Chime SDK for JavaScript 3.7.0?
+
+Amazon Chime SDK for JavaScript 3.7.0 included a bug fix to mitigate messaging session reconnection issue. Check [MessagingSession reconnects with refreshed endpoint and credentials if needed](https://github.com/aws/amazon-chime-sdk-js/commit/bce872c353edbb50908c5a0298f8113f1e8dcc82#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519) for more information on the fix. We added `@aws-sdk/client-chime-sdk-messaging` dependency necessary to mitigate the fix. This may further result into rollup bundling failures with certain configurations.
+
+When a builder makes use of the rollup plugin: `rollup-plugin-includepaths` they may run into build issues where node modules and their methods are not found. For example, in the following warnings / errors the Node.js built-ins and the `createHash` method from `crypto` is not found.
+
+```
+(!) Missing shims for Node.js built-ins
+Creating a browser bundle that depends on "os", "path", "url", "buffer", "http", "https", "stream", "process" and "util". You might need to include https://github.com/FredKSchott/rollup-plugin-polyfill-node
+```
+
+```
+https://rollupjs.org/guide/en/#error-name-is-not-exported-by-module
+node_modules/@aws-sdk/shared-ini-file-loader/dist-es/getSSOTokenFilepath.js (1:9)
+1: import { createHash } from "crypto";
+```
+
+This node / browser incompatibility issue happens due to bundlers not using the right `runtimeConfig` defined in AWS JS SDK client's `package.json`. Clients in AWS JS SDK have defined a runtime config alias in their `package.json` like this: [Chime SDK Messaging client package.json](https://github.com/aws/aws-sdk-js-v3/blob/main/clients/client-chime-sdk-messaging/package.json#L91). If your bundler does not follow the `runtimeConfig` alias, you can get some incompatibility errors.
+
+If the builder is using [rollup-plugin-includepaths](https://github.com/dot-build/rollup-plugin-includepaths) to use relative paths in their project. It is recommended that you use [rollup-plugin-alias](https://github.com/rollup/plugins/tree/master/packages/alias) to define an alias for relative paths. 
+
+You can find more information about this build error in GitHub issue: [3.7.0 broke build with Rollup](https://github.com/aws/amazon-chime-sdk-js/issues/2455). If you still have questions about rollup alias and plugin settings please reach out to the plugin / rollup author.
+
 ## Meetings
 
 ### How do users authenticate into a meeting?
