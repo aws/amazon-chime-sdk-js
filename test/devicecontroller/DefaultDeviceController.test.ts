@@ -323,6 +323,25 @@ describe('DefaultDeviceController', () => {
         called = true;
         throw new Error('Something went wrong');
       });
+      const handleEventSpy = sinon.spy(deviceController.eventController, 'publishEvent');
+      // Simulate the device list when no permission is granted.
+      domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo('', 'audioinput', '', '')];
+      try {
+        await deviceController.listAudioInputDevices();
+        expect(called).to.be.true;
+        expect(handleEventSpy.calledTwice).to.be.true;
+      } catch (error) {
+        throw new Error('This line should not be reached.');
+      }
+    });
+
+    it('does not fail even when the custom label device trigger throws an error without event controller', async () => {
+      let called = false;
+      deviceController = new DefaultDeviceController(logger);
+      deviceController.setDeviceLabelTrigger(async () => {
+        called = true;
+        throw new Error('Something went wrong');
+      });
       // Simulate the device list when no permission is granted.
       domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo('', 'audioinput', '', '')];
       try {

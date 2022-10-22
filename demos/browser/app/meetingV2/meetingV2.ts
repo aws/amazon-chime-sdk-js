@@ -2340,7 +2340,7 @@ export class DemoMeetingApp
       const option = document.createElement('option');
       list.appendChild(option);
       option.text = devices[i].label || `${genericName} ${i + 1}`;
-      option.value = devices[i].deviceId;
+      option.value = devices[i].label ? devices[i].deviceId : '';
     }
     if (additionalOptions.length > 0) {
       const separator = document.createElement('option');
