@@ -826,6 +826,12 @@ export default class DefaultDeviceController
         }
       } catch (err) {
         this.logger.info('unable to get media device labels');
+        this.eventController?.publishEvent('audioInputFailed', {
+          audioInputErrorMessage: this.getErrorMessage(err),
+        });
+        this.eventController?.publishEvent('videoInputFailed', {
+          videoInputErrorMessage: this.getErrorMessage(err),
+        });
       }
     }
     this.logger.debug(`Update device info cache with devices: ${JSON.stringify(devices)}`);
