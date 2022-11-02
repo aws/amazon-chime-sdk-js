@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { detect } from 'detect-browser';
+import { UAParser } from 'ua-parser-js';
 
 import BrowserBehavior from './BrowserBehavior';
 import ExtendedBrowserBehavior from './ExtendedBrowserBehavior';
 
 export default class DefaultBrowserBehavior implements BrowserBehavior, ExtendedBrowserBehavior {
   private readonly browser = detect();
+  private readonly uaParserResult =
+    navigator && navigator.userAgent ? new UAParser(navigator.userAgent).getResult() : null;
 
   private browserSupport: { [id: string]: number } = {
     chrome: 78,
@@ -48,6 +51,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   ];
 
   private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
+  private static MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK = 16;
 
   version(): string {
     return this.browser.version;
@@ -55,6 +59,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   majorVersion(): number {
     return parseInt(this.version().split('.')[0]);
+  }
+
+  osMajorVersion(): number {
+    return parseInt(this.uaParserResult.os.version.split('.')[0]);
   }
 
   name(): string {
@@ -88,7 +96,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   supportsCanvasCapturedStreamPlayback(): boolean {
-    return !this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox();
+    return (
+      (!this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox()) ||
+      this.osMajorVersion() >= DefaultBrowserBehavior.MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK
+    );
   }
 
   supportsBackgroundFilter(): boolean {

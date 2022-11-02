@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add the audio output gain and frequency to the meeting readiness checker's configuration. The readiness checker uses this value to set the "Play Tone" gain and frequency.
+- Add support for background filter starting from iOS 16 for major browsers Safari, Chrome, and Firefox (except on iPad).
 
 ### Removed
 

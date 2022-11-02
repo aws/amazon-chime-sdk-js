@@ -408,7 +408,7 @@ export class DemoMeetingApp
     }
 
     (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
-        'amazon-chime-sdk-js@' + Versioning.sdkVersion;
+      'amazon-chime-sdk-js@' + Versioning.sdkVersion;
     this.initEventListeners();
     this.initParameters();
     this.setMediaRegion();

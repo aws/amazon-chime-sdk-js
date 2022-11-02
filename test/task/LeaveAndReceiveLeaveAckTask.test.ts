@@ -33,7 +33,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
   let signalingClient: SignalingClient;
   let leaveAckBuffer: Uint8Array;
   let request: SignalingClientConnectionRequest;
-  const browser: BrowserBehavior = new DefaultBrowserBehavior();
+  let browser: BrowserBehavior;
 
   function makeLeaveAckFrame(): Uint8Array {
     const frame = SdkLeaveAckFrame.create();
@@ -50,6 +50,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
 
   beforeEach(() => {
     domMockBuilder = new DOMMockBuilder(behavior);
+    browser = new DefaultBrowserBehavior();
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.transceiverController = new DefaultTransceiverController(context.logger, browser);
