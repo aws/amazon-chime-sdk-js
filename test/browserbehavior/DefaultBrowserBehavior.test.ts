@@ -78,6 +78,17 @@ describe('DefaultBrowserBehavior', () => {
     mockBuilder.cleanup();
   });
 
+  describe('construction', () => {
+    it('can be constructed without user agent', () => {
+      const userAgent = navigator.userAgent;
+      // @ts-ignore
+      delete navigator.userAgent;
+      new DefaultBrowserBehavior();
+      // @ts-ignore
+      navigator.userAgent = userAgent;
+    });
+  });
+
   describe('platforms', () => {
     it('can detect Firefox', () => {
       setUserAgent(FIREFOX_MAC_USER_AGENT);

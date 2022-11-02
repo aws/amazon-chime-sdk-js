@@ -16,7 +16,8 @@ A typical workflow would be:
 
 ### Browser compatibility
 
-The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari/Chrome/Firefox on iOS devices due to [Webkit Bug 181663](https://bugs.webkit.org/show_bug.cgi?id=181663).
+The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers 
+(including Electron) on desktop, Android and iOS operating systems. A full compatibility table is below.
 
 |Browser                                                                |Minimum supported version  
 |---                                                                    |---
@@ -24,9 +25,11 @@ The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox
 |Chromium-based browsers and environments, including Edge and Electron  |78
 |Android Chrome                                                         |78
 |Safari on MacOS                                                        |13.0
-|iOS Safari                                                             |Not supported
-|iOS Chrome                                                             |Not supported
-|iOS Firefox                                                            |Not supported
+|iOS Safari                                                             |16
+|iOS Chrome                                                             |16
+|iOS Firefox (Except on iPad)                                           |16
+
+Note that there is a known issue with `VideoFrameProcessor` in Safari 15: see [github issue 1059](https://github.com/aws/amazon-chime-sdk-js/issues/1059). This has been fixed with Safari 16.
 
 ## Video Processing APIs
 
