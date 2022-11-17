@@ -1063,9 +1063,8 @@ const observer = {
     const sessionStatusCode = sessionStatus.statusCode();
     if (sessionStatusCode === MeetingSessionStatusCode.Left) {
       /*
-        - You called meetingSession.audioVideo.stop().
-        - When closing a browser window or page, Chime SDK attempts to leave the session.
-      */
+       * You called meetingSession.audioVideo.stop().
+       */
       console.log('You left the session');
     } else {
       console.log('Stopped with a session status code: ', sessionStatusCode);

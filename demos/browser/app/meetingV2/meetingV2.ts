@@ -3363,16 +3363,16 @@ export class DemoMeetingApp
 
     const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
     switch (chosenLogLevel) {
-      case 'INFO':
+      case 'info':
         this.logLevel = LogLevel.INFO;
         break;
-      case 'DEBUG':
+      case 'debug':
         this.logLevel = LogLevel.DEBUG;
         break;
-      case 'WARN':
+      case 'warn':
         this.logLevel = LogLevel.WARN;
         break;
-      case 'ERROR':
+      case 'error':
         this.logLevel = LogLevel.ERROR;
         break;
       default:
