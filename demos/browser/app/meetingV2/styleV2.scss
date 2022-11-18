@@ -1067,3 +1067,13 @@ a.markdown:active {
     right: 20px;
     position: absolute;
 }
+
+input[type="file"] { 
+  opacity: 0;
+  z-index: -1;
+  position: absolute;
+}
+
+input[type="file"]:focus + label {
+  outline: 2px solid;
+}

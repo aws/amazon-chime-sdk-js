@@ -8,6 +8,7 @@ import AudioVideoController from '../../src/audiovideocontroller/AudioVideoContr
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
 import Logger from '../../src/logger/Logger';
@@ -40,10 +41,10 @@ describe('CleanStoppedSessionTask', () => {
   const RECONNECT_SHORT_BACKOFF_MS = 1 * 1000;
   const RECONNECT_LONG_BACKOFF_MS = 5 * 1000;
   const behavior = new DOMMockBehavior();
-  const browserBehavior = new DefaultBrowserBehavior();
 
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder | null = null;
+  let browserBehavior: BrowserBehavior;
   let task: Task;
   let webSocketAdapter: DefaultWebSocketAdapter;
   let signalingClient: SignalingClient;
@@ -66,6 +67,7 @@ describe('CleanStoppedSessionTask', () => {
 
   beforeEach(async () => {
     domMockBuilder = new DOMMockBuilder(behavior);
+    browserBehavior = new DefaultBrowserBehavior();
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
