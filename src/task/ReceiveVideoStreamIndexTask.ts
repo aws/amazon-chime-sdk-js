@@ -218,16 +218,18 @@ export default class ReceiveVideoStreamIndexTask
     const newMeetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] = [];
     let willNeedUpdate = false;
 
-    // Interesect `this.context.videoSendCodecPreferences` with `index.supportedReceiveCodecIntersection`
+    // Intersect `this.context.videoSendCodecPreferences` with `index.supportedReceiveCodecIntersection`
     for (const capability of this.context.videoSendCodecPreferences) {
+      let codecSupported = false;
       for (const signaledCapability of index.supportedReceiveCodecIntersection) {
         if (capability.equals(VideoCodecCapability.fromSignaled(signaledCapability))) {
+          codecSupported = true;
           newMeetingSupportedVideoSendCodecPreferences.push(capability);
           break;
         }
       }
       // We need to renegotiate if we are currently sending a codec that is no longer supported in the call.
-      if (capability.equals(this.context.currentVideoSendCodec)) {
+      if (!codecSupported && capability.equals(this.context.currentVideoSendCodec)) {
         willNeedUpdate = true;
       }
     }
