@@ -107,15 +107,17 @@ export enum MeetingSessionStatusCode {
   SignalingBadRequest,
 
   /**
-   * The Chime SDK for JavaScript failed to establish a signaling connection to the Chime
-   * backend due to an internal server error. This may indicate a network issue impacting
-   * the end user, who may want to be notified of this type of error.
+   * The Chime SDK for JavaScript either failed to establish a signaling connection to the Chime
+   * backend due to an internal server error or the connection was lost mid-call. 
+   * 
+   * This may indicate an issue with the Chime service, but also often indicates a network issue impacting the end user, 
+   * who may want to be notified of their unstable network during the reconnection.
    */
   SignalingInternalServerError,
 
   /**
-   * Received unknown signaling error frame without a status. This code is unlikely and indicates
-   * an issue with the Chime service.
+   * Received unknown signaling error frame without a status. This code is nearly impossible to occur
+   * and indicates an issue with the Chime service.
    */
   SignalingRequestFailed,
 
@@ -133,8 +135,7 @@ export enum MeetingSessionStatusCode {
   ConnectionHealthReconnect,
 
   /**
-   * The [[RealtimeController]] failed in some way. This usually indicates an issue with Chime, and should
-   * be treated as fatal.
+   * The [[RealtimeController]] failed in some way. This indicates an issue with Chime service or a bug in the Amazon Chime SDK.
    */
   RealtimeApiFailed,
 
@@ -145,8 +146,9 @@ export enum MeetingSessionStatusCode {
   TaskFailed,
 
   /**
-   * Session update produces incompatible SDP. This may indicate an issue with Amazon Chime SDK, or that the end user is using an unsupported
-   * browser.
+   * There was an issue with media negotiation. This may indicate an issue with Amazon Chime SDK, or that the end user is using an unsupported
+   * browser. Please use `new DefaultBrowserBehavior().isSupported()` pre-call to check the support of end-user browsers
+   * and warn them of possible issues.
    */
   IncompatibleSDP,
 
