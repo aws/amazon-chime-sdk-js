@@ -61,19 +61,19 @@ export enum MeetingSessionStatusCode {
 
   /**
    * There was an internal server error related to audio. This may indicate some issue with the audio device, or an issue with
-   * the Chime service itself.
+   * the Amazon Chime SDK service itself.
    */
   AudioInternalServerError,
 
   /**
    * There was an internal server error related to audio. This may indicate some issue with the audio device, or an issue with
-   * the Chime service itself.
+   * the Amazon Chime SDK service itself.
    */
   AudioServiceUnavailable,
 
   /**
    * There was an internal server error related to audio. This may indicate some issue with the audio device, or an issue with
-   * the Chime service itself.
+   * the Amazon Chime SDK service itself.
    */
   AudioDisconnected,
 
@@ -97,7 +97,7 @@ export enum MeetingSessionStatusCode {
   VideoCallAtSourceCapacity,
 
   /**
-   * The Chime SDK for JavaScript failed to establish a signaling connection because
+   * The Amazon Chime SDK for JavaScript failed to establish a signaling connection because
    * you or someone else deleted the attendee using the 
    * [DeleteAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html)
    * API action in your server application. You also should not use the attendee response from
@@ -139,13 +139,13 @@ export enum MeetingSessionStatusCode {
   RealtimeApiFailed,
 
   /**
-   * A step in the connection to the Chime backends failed without a more specific reason. This may indicate end-user connection issues
+   * A step in the connection to the Amazon Chime SDK backends failed without a more specific reason. This may indicate end-user connection issues
    * and should be retried.
    */
   TaskFailed,
 
   /**
-   * Session update produces incompatible SDP. This may indicate an issue with Chime, or that the end user is using an unsupported
+   * Session update produces incompatible SDP. This may indicate an issue with Amazon Chime SDK, or that the end user is using an unsupported
    * browser.
    */
   IncompatibleSDP,
@@ -157,7 +157,7 @@ export enum MeetingSessionStatusCode {
   TURNCredentialsForbidden,
 
   /**
-   * The attendee did not show up on the roster. This may indicate an issue with the end user audio device or and issue with Chime.
+   * The attendee did not show up on the roster. This may indicate an issue with the end user audio device or and issue with Amazon Chime SDK.
    */
   NoAttendeePresent,
 
