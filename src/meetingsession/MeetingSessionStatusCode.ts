@@ -135,7 +135,7 @@ export enum MeetingSessionStatusCode {
   ConnectionHealthReconnect,
 
   /**
-   * The [[RealtimeController]] failed in some way. This indicates an issue with Chime service or a bug in the Amazon Chime SDK.
+   * The [[RealtimeController]] failed in some way. This indicates an issue with the callback function provided to RealtimeController APIs (e.g. a callback is throwing an error).
    */
   RealtimeApiFailed,
 
