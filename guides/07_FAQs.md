@@ -152,13 +152,13 @@ AWS accounts have a soft limit of [250 concurrent meetings](https://docs.aws.ama
 
 ### How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?
 
-Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and by default up to 25 video senders in a meeting. An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed. The number of video senders can be adjusted, but all clients will still be limited to only 25 received videos at a time..
+Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and by default up to 25 video senders in a meeting. An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed. The number of video senders can be adjusted, but all clients will still be limited to only 25 received videos at a time.
 
 If your use case requires more than 250 attendees, consider using [meeting replication](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html) to reach up to 10,000 participants, or a [live connector media pipeline](https://docs.aws.amazon.com/chime-sdk/latest/dg/connector-pipe-config.html) to output to RTMP.
 
 ### What happens to the subsequent participants who try to turn on the local video when the maximum number of video senders is already reached?
 
-Once the limit of video senders is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'. 
+Once the limit of video senders is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
 
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
@@ -242,13 +242,13 @@ const meetingSession = new DefaultMeetingSession(
 );
 ```
 
-### What should my application do in response to the status codes in `audioVideoDidStop`
+### What should my application do in response to the status codes in `audioVideoDidStop`?
 
-These status codes can be used for logging, debugging, and possibly notification of end users, but in most cases should not  be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the audio video controller).
+These status codes can be used for logging, debugging, and possible notification of end users, but in most cases should not  be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the audio video controller).
 
 If `MeetingSessionStatus.isTerminal` returns `true`, you should remove any meeting UX in addition to notifying the user, as the audio video controller will not be retrying the connection.
 
-See the documentation for `MeetingSessionStatusCode` for explanation of the values when used for `audioVideoDidStop`, which may be used to provide more detail when notifying end users, though more general failure messages are recommended unless otherwise noted.
+See the documentation for `MeetingSessionStatusCode` [here](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html) for explanation of the values when used for `audioVideoDidStop`, which may be used to provide more detail when notifying end users, though more general failure messages are recommended unless otherwise noted.
 
 ### What is the timeout for connect and reconnect and where can I configure the value?
 
