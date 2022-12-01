@@ -65,6 +65,25 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p><a href="meetingsessionstatuscode.html">MeetingSessionStatusCode</a> gives the underlying reason for a given <a href="../classes/meetingsessionstatus.html">MeetingSessionStatus</a>. Though some codes are used for
+							<a href="../classes/meetingsessionstatus.html">MeetingSessionStatus</a> internally, the primary use of these is in <code>AudioVideoObserver.audioVideoDidStop</code>, and their docstrings
+							will be specific to that usage. Other functions that use <a href="../classes/meetingsessionstatus.html">MeetingSessionStatus</a> (mainly
+							<code>AudioVideoControllerFacade.promoteToPrimaryMeeting</code> and <code>AudioVideoObserver.audioVideoWasDemotedFromPrimaryMeeting</code> will document
+						their usage separately).</p>
+					</div>
+					<p>These status codes can be used for logging, debugging, and notification to end users, but in most cases should not
+						be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless
+						of <code>MeetingSessionStatus.isTerminal</code>, your application should not try to immediately restart or recreate the
+						audio video controller). For error codes that indicate issues with the Chime service, please create a github issue
+					with browser logs if they occur frequently.</p>
+					<p>If <code>MeetingSessionStatus.isTerminal</code> returns <code>true</code>, you should remove any meeting UX in addition to notifying the user,
+						as the audio video controller will not be retrying the connection. When notifying users, more general failure messages are
+					recommended unless otherwise noted.</p>
+				</div>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -109,12 +128,13 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Attendee<wbr>Removed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 21</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L127">src/meetingsession/MeetingSessionStatusCode.ts:127</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L170">src/meetingsession/MeetingSessionStatusCode.ts:170</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The meeting was ended because the attendee has been removed.</p>
+							<p>The session was ended because the attendee has been removed via <code>chime::DeleteAttendee</code>. The end user may want to be notified
+							of this error.</p>
 						</div>
 					</div>
 				</section>
@@ -124,13 +144,15 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Authentication<wbr>Rejected<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 3</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L23">src/meetingsession/MeetingSessionStatusCode.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L47">src/meetingsession/MeetingSessionStatusCode.ts:47</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Authentication was rejected. The client is not allowed on this meeting.</p>
+							<p>Authentication was rejected as the attendee information in <code>MeetingSessionCredentials</code> did
+							not match that of an attendee created via <code>chime::CreateAttendee</code>.</p>
 						</div>
+						<p>This error may imply an issue with your credential providing service. The <code>Audio</code> prefix is irrelevant.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -139,12 +161,13 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Call<wbr>AtCapacity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 4</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L28">src/meetingsession/MeetingSessionStatusCode.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L53">src/meetingsession/MeetingSessionStatusCode.ts:53</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The client can not join because the meeting is at capacity.</p>
+							<p>The client can not join because the meeting is at capacity. The service supports up to 250 attendees. The
+							end user may want to be notified of this type of error. The <code>Audio</code> prefix is irrelevant.</p>
 						</div>
 					</div>
 				</section>
@@ -154,13 +177,14 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Disconnect<wbr>Audio<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 23</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L137">src/meetingsession/MeetingSessionStatusCode.ts:137</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L184">src/meetingsession/MeetingSessionStatusCode.ts:184</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Reserved.</p>
+							<p>This is only used internally and will not be provided in any <code>audioVideoDidStop</code> calls.</p>
 						</div>
+						<p>Reserved.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -169,12 +193,13 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Disconnected<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 8</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L48">src/meetingsession/MeetingSessionStatusCode.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L78">src/meetingsession/MeetingSessionStatusCode.ts:78</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The audio leg failed.</p>
+							<p>There was an internal server error related to audio. This may indicate some issue with the audio device, or an issue with
+							the Amazon Chime SDK service itself.</p>
 						</div>
 					</div>
 				</section>
@@ -184,12 +209,13 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Internal<wbr>Server<wbr>Error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 6</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L38">src/meetingsession/MeetingSessionStatusCode.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L66">src/meetingsession/MeetingSessionStatusCode.ts:66</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>There was an internal server error with the audio leg.</p>
+							<p>There was an internal server error related to audio. This may indicate some issue with the audio device, or an issue with
+							the Amazon Chime SDK service itself.</p>
 						</div>
 					</div>
 				</section>
@@ -199,13 +225,16 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Joined<wbr>From<wbr>Another<wbr>Device<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L18">src/meetingsession/MeetingSessionStatusCode.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L39">src/meetingsession/MeetingSessionStatusCode.ts:39</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The attendee joined from another device.</p>
+							<p>The attendee joined from another device (e.g. another browser window/tab or on mobile) using the
+								same credentials. <code>Audio</code> prefix is irrelevant. The end-user may want to be notified of this
+							type of error.</p>
 						</div>
+						<p>This also can occur if your application unintentionally creates two meeting sessions.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -214,12 +243,13 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Service<wbr>Unavailable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 7</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L43">src/meetingsession/MeetingSessionStatusCode.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L72">src/meetingsession/MeetingSessionStatusCode.ts:72</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Could not connect the audio leg due to the service being unavailable.</p>
+							<p>There was an internal server error related to audio. This may indicate some issue with the audio device, or an issue with
+							the Amazon Chime SDK service itself.</p>
 						</div>
 					</div>
 				</section>
@@ -229,13 +259,14 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Video<wbr>Was<wbr>Removed<wbr>From<wbr>Primary<wbr>Meeting<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 22</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L132">src/meetingsession/MeetingSessionStatusCode.ts:132</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L177">src/meetingsession/MeetingSessionStatusCode.ts:177</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The attendees Primary meeting credentials have been revoked or deleted.</p>
+							<p>This is only used in promotion functions and will not be provided in any <code>audioVideoDidStop</code> calls.</p>
 						</div>
+						<p>The attendees Primary meeting credentials have been revoked or deleted.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -244,12 +275,12 @@
 					<div class="tsd-signature tsd-kind-icon">Connection<wbr>Health<wbr>Reconnect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 15</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L97">src/meetingsession/MeetingSessionStatusCode.ts:97</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L135">src/meetingsession/MeetingSessionStatusCode.ts:135</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Due to connection health, a reconnect has been triggered.</p>
+							<p>Due to connection health as determined by <a href="../classes/connectionhealthpolicyconfiguration.html">ConnectionHealthPolicyConfiguration</a>, a reconnect has been triggered.</p>
 						</div>
 					</div>
 				</section>
@@ -259,7 +290,7 @@
 					<div class="tsd-signature tsd-kind-icon">ICEGathering<wbr>Timeout<wbr>Workaround<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 14</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L92">src/meetingsession/MeetingSessionStatusCode.ts:92</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L130">src/meetingsession/MeetingSessionStatusCode.ts:130</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -277,12 +308,14 @@
 					<div class="tsd-signature tsd-kind-icon">IncompatibleSDP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 18</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L112">src/meetingsession/MeetingSessionStatusCode.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L153">src/meetingsession/MeetingSessionStatusCode.ts:153</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Session update produces incompatible SDP.</p>
+							<p>There was an issue with media negotiation. This may indicate an issue with Amazon Chime SDK, or that the end user is using an unsupported
+								browser. Please use <code>new DefaultBrowserBehavior().isSupported()</code> pre-call to check the support of end-user browsers
+							and warn them of possible issues.</p>
 						</div>
 					</div>
 				</section>
@@ -292,12 +325,12 @@
 					<div class="tsd-signature tsd-kind-icon">Left<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L13">src/meetingsession/MeetingSessionStatusCode.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L30">src/meetingsession/MeetingSessionStatusCode.ts:30</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The attendee left the meeting normally.</p>
+							<p>The attendee left the meeting normally via <code>AudioVideoConftrollerFacade.stop</code></p>
 						</div>
 					</div>
 				</section>
@@ -307,12 +340,14 @@
 					<div class="tsd-signature tsd-kind-icon">Meeting<wbr>Ended<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 5</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L33">src/meetingsession/MeetingSessionStatusCode.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L60">src/meetingsession/MeetingSessionStatusCode.ts:60</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The attendee attempted to join a meeting that has already ended.</p>
+							<p>The attendee attempted to join a meeting that has already ended. See
+								<a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html#when-does-an-amazon-chime-sdk-meeting-end">this FAQ</a>
+							for more information. The end user may want to be notified of this type of error.</p>
 						</div>
 					</div>
 				</section>
@@ -322,12 +357,12 @@
 					<div class="tsd-signature tsd-kind-icon">No<wbr>Attendee<wbr>Present<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 20</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L122">src/meetingsession/MeetingSessionStatusCode.ts:122</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L164">src/meetingsession/MeetingSessionStatusCode.ts:164</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The attendee is not present.</p>
+							<p>The attendee did not show up on the roster. This may indicate an issue with the end user audio device or and issue with Amazon Chime SDK.</p>
 						</div>
 					</div>
 				</section>
@@ -337,12 +372,12 @@
 					<div class="tsd-signature tsd-kind-icon">OK<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L8">src/meetingsession/MeetingSessionStatusCode.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L25">src/meetingsession/MeetingSessionStatusCode.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Everything is OK so far.</p>
+							<p>There is no error. This code is used internally but will never be returned by <code>audioVideoDidStop</code></p>
 						</div>
 					</div>
 				</section>
@@ -352,12 +387,12 @@
 					<div class="tsd-signature tsd-kind-icon">Realtime<wbr>Api<wbr>Failed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 16</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L102">src/meetingsession/MeetingSessionStatusCode.ts:102</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L140">src/meetingsession/MeetingSessionStatusCode.ts:140</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The realtime API failed in some way. This indicates a fatal problem.</p>
+							<p>The <a href="../interfaces/realtimecontroller.html">RealtimeController</a> failed in some way. This indicates an issue with Chime service or a bug in the Amazon Chime SDK.</p>
 						</div>
 					</div>
 				</section>
@@ -367,17 +402,17 @@
 					<div class="tsd-signature tsd-kind-icon">Signaling<wbr>Bad<wbr>Request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 11</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L73">src/meetingsession/MeetingSessionStatusCode.ts:73</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L107">src/meetingsession/MeetingSessionStatusCode.ts:107</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The Chime SDK for JavaScript failed to establish a signaling connection because
-								you or someone else deleted the attendee using the DeleteAttendee API action
-								in your server application. You also should not use the attendee response from
+							<p>The Amazon Chime SDK for JavaScript failed to establish a signaling connection because
+								you or someone else deleted the attendee using the
+								<a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html">DeleteAttendee</a>
+								API action in your server application. You also should not use the attendee response from
 								the ended meeting that you created with the same ClientRequestToken parameter
-								before.
-							<a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html">https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html</a></p>
+							before.</p>
 						</div>
 					</div>
 				</section>
@@ -387,14 +422,16 @@
 					<div class="tsd-signature tsd-kind-icon">Signaling<wbr>Internal<wbr>Server<wbr>Error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 12</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L79">src/meetingsession/MeetingSessionStatusCode.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L116">src/meetingsession/MeetingSessionStatusCode.ts:116</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The Chime SDK for JavaScript failed to establish a signaling connection to the Chime
-							backend due to an internal server error.</p>
+							<p>The Chime SDK for JavaScript either failed to establish a signaling connection to the Chime
+							backend due to an internal server error or the connection was lost mid-call.</p>
 						</div>
+						<p>This may indicate an issue with the Chime service, but also often indicates a network issue impacting the end user,
+						who may want to be notified of their unstable network during the reconnection.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -403,12 +440,13 @@
 					<div class="tsd-signature tsd-kind-icon">Signaling<wbr>Request<wbr>Failed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 13</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L84">src/meetingsession/MeetingSessionStatusCode.ts:84</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L122">src/meetingsession/MeetingSessionStatusCode.ts:122</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Received unknown signaling error frame</p>
+							<p>Received unknown signaling error frame without a status. This code is nearly impossible to occur
+							and indicates an issue with the Chime service.</p>
 						</div>
 					</div>
 				</section>
@@ -418,12 +456,13 @@
 					<div class="tsd-signature tsd-kind-icon">TURNCredentials<wbr>Forbidden<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 19</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L117">src/meetingsession/MeetingSessionStatusCode.ts:117</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L159">src/meetingsession/MeetingSessionStatusCode.ts:159</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>This can happen when you attempt to join a meeting which has ended or attendee got removed</p>
+							<p>This can happen when you attempt to join a meeting which has ended or attendee got removed. This is analogous to <code>MeetingEnded</code> except
+							determined through the media channel rather then the signaling channel.</p>
 						</div>
 					</div>
 				</section>
@@ -433,12 +472,13 @@
 					<div class="tsd-signature tsd-kind-icon">Task<wbr>Failed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 17</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L107">src/meetingsession/MeetingSessionStatusCode.ts:107</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L146">src/meetingsession/MeetingSessionStatusCode.ts:146</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A task failed for an unknown reason.</p>
+							<p>A step in the connection to the Amazon Chime SDK backends failed without a more specific reason. This may indicate end-user connection issues
+							and should be retried.</p>
 						</div>
 					</div>
 				</section>
@@ -448,16 +488,17 @@
 					<div class="tsd-signature tsd-kind-icon">Video<wbr>Call<wbr>AtSource<wbr>Capacity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 10</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L63">src/meetingsession/MeetingSessionStatusCode.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L97">src/meetingsession/MeetingSessionStatusCode.ts:97</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>This can happen when you attempt to join a video meeting in &quot;send only&quot; mode
-								(transmitting your camera, but not receiving anything -- this isn&#39;t something
-								we ever do in practice, but it is supported on the server). It should be
-							treated as &quot;fatal&quot; and probably should not be retried (despite the 5xx nature).</p>
+							<p>This is only used internally and will not be provided in any <code>audioVideoDidStop</code> calls.</p>
 						</div>
+						<p>This can happen when you attempt to join a video meeting in &quot;send only&quot; mode
+							(transmitting your camera, but not receiving anything -- this isn&#39;t something
+							we ever do in practice, but it is supported on the server). It should be
+						treated as &quot;fatal&quot; and probably should not be retried (despite the 5xx nature).</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -466,15 +507,16 @@
 					<div class="tsd-signature tsd-kind-icon">Video<wbr>Call<wbr>Switch<wbr>ToView<wbr>Only<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 9</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L55">src/meetingsession/MeetingSessionStatusCode.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L87">src/meetingsession/MeetingSessionStatusCode.ts:87</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The client has asked to send and receive video, but it is only possible to
-								continue in view-only mode (receiving video). This should be handled by
-							explicitly switching to view-only mode.</p>
+							<p>This is only used internally and will not be provided in any <code>audioVideoDidStop</code> calls.</p>
 						</div>
+						<p>The client has asked to send and receive video, but it is only possible to
+							continue in view-only mode (receiving video). This should be handled by
+						explicitly switching to view-only mode.</p>
 					</div>
 				</section>
 			</section>

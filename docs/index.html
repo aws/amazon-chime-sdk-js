@@ -1041,9 +1041,8 @@
 <span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">sessionStatusCode</span><span style="color: #000000"> = </span><span style="color: #001080">sessionStatus</span><span style="color: #000000">.</span><span style="color: #795E26">statusCode</span><span style="color: #000000">();</span>
 <span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">sessionStatusCode</span><span style="color: #000000"> === </span><span style="color: #001080">MeetingSessionStatusCode</span><span style="color: #000000">.</span><span style="color: #001080">Left</span><span style="color: #000000">) {</span>
 <span style="color: #000000">      </span><span style="color: #008000">/*</span>
-<span style="color: #008000">        - You called meetingSession.audioVideo.stop().</span>
-<span style="color: #008000">        - When closing a browser window or page, Chime SDK attempts to leave the session.</span>
-<span style="color: #008000">      */</span>
+<span style="color: #008000">       * You called meetingSession.audioVideo.stop().</span>
+<span style="color: #008000">       */</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;You left the session&#039;</span><span style="color: #000000">);</span>
 <span style="color: #000000">    } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Stopped with a session status code: &#039;</span><span style="color: #000000">, </span><span style="color: #001080">sessionStatusCode</span><span style="color: #000000">);</span>

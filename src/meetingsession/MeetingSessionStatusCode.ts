@@ -3,19 +3,19 @@
 
 /**
  * [[MeetingSessionStatusCode]] gives the underlying reason for a given [[MeetingSessionStatus]]. Though some codes are used for
- * [[MeetingSessionStatus]] internally, the primary use of these is in `AudioVideoObserver.audioVideoDidStop`, and their docstrings 
- * will be specific to that usage. Other functions that use [[MeetingSessionStatus]] (mainly 
- * `AudioVideoControllerFacade.promoteToPrimaryMeeting` and `AudioVideoObserver.audioVideoWasDemotedFromPrimaryMeeting` will document 
+ * [[MeetingSessionStatus]] internally, the primary use of these is in `AudioVideoObserver.audioVideoDidStop`, and their docstrings
+ * will be specific to that usage. Other functions that use [[MeetingSessionStatus]] (mainly
+ * `AudioVideoControllerFacade.promoteToPrimaryMeeting` and `AudioVideoObserver.audioVideoWasDemotedFromPrimaryMeeting` will document
  * their usage separately).
- * 
- * These status codes can be used for logging, debugging, and notification to end users, but in most cases should not 
+ *
+ * These status codes can be used for logging, debugging, and notification to end users, but in most cases should not
  * be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless
- * of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the 
+ * of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the
  * audio video controller). For error codes that indicate issues with the Chime service, please create a github issue
  * with browser logs if they occur frequently.
- * 
- * If `MeetingSessionStatus.isTerminal` returns `true`, you should remove any meeting UX in addition to notifying the user, 
- * as the audio video controller will not be retrying the connection. When notifying users, more general failure messages are 
+ *
+ * If `MeetingSessionStatus.isTerminal` returns `true`, you should remove any meeting UX in addition to notifying the user,
+ * as the audio video controller will not be retrying the connection. When notifying users, more general failure messages are
  * recommended unless otherwise noted.
  */
 export enum MeetingSessionStatusCode {
@@ -30,18 +30,18 @@ export enum MeetingSessionStatusCode {
   Left,
 
   /**
-   * The attendee joined from another device (e.g. another browser window/tab or on mobile) using the 
+   * The attendee joined from another device (e.g. another browser window/tab or on mobile) using the
    * same credentials. `Audio` prefix is irrelevant. The end-user may want to be notified of this
    * type of error.
-   * 
-   * This also can occur if your application unintentionally creates two meeting sessions. 
+   *
+   * This also can occur if your application unintentionally creates two meeting sessions.
    */
   AudioJoinedFromAnotherDevice,
 
   /**
    * Authentication was rejected as the attendee information in `MeetingSessionCredentials` did
    * not match that of an attendee created via `chime::CreateAttendee`.
-   * 
+   *
    * This error may imply an issue with your credential providing service. The `Audio` prefix is irrelevant.
    */
   AudioAuthenticationRejected,
@@ -79,7 +79,7 @@ export enum MeetingSessionStatusCode {
 
   /**
    * This is only used internally and will not be provided in any `audioVideoDidStop` calls.
-   * 
+   *
    * The client has asked to send and receive video, but it is only possible to
    * continue in view-only mode (receiving video). This should be handled by
    * explicitly switching to view-only mode.
@@ -88,7 +88,7 @@ export enum MeetingSessionStatusCode {
 
   /**
    * This is only used internally and will not be provided in any `audioVideoDidStop` calls.
-   * 
+   *
    * This can happen when you attempt to join a video meeting in "send only" mode
    * (transmitting your camera, but not receiving anything -- this isn't something
    * we ever do in practice, but it is supported on the server). It should be
@@ -98,7 +98,7 @@ export enum MeetingSessionStatusCode {
 
   /**
    * The Amazon Chime SDK for JavaScript failed to establish a signaling connection because
-   * you or someone else deleted the attendee using the 
+   * you or someone else deleted the attendee using the
    * [DeleteAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html)
    * API action in your server application. You also should not use the attendee response from
    * the ended meeting that you created with the same ClientRequestToken parameter
@@ -108,9 +108,9 @@ export enum MeetingSessionStatusCode {
 
   /**
    * The Chime SDK for JavaScript either failed to establish a signaling connection to the Chime
-   * backend due to an internal server error or the connection was lost mid-call. 
-   * 
-   * This may indicate an issue with the Chime service, but also often indicates a network issue impacting the end user, 
+   * backend due to an internal server error or the connection was lost mid-call.
+   *
+   * This may indicate an issue with the Chime service, but also often indicates a network issue impacting the end user,
    * who may want to be notified of their unstable network during the reconnection.
    */
   SignalingInternalServerError,
