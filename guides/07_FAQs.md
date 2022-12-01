@@ -156,7 +156,7 @@ Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/lat
 
 If your use case requires more than 250 attendees, consider using [meeting replication](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html) to reach up to 10,000 participants, or a [live connector media pipeline](https://docs.aws.amazon.com/chime-sdk/latest/dg/connector-pipe-config.html) to output to RTMP.
 
-### What happens to the subsequent participants who try to turn on the local video when the maximum number of video senders is already reached?
+### What happens to the subsequent participants who try to turn on the local video when the maximum number (25) of video senders is already reached?
 
 Once the limit of video senders is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
 

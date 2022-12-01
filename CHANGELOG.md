@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated documentation for `MeetingSessionStatusCode` to clarify the origin and meaning of each. Included information on use of `isTerminal` flag to determine if retry will be automatically attempted.
+- Update documentation for `MeetingSessionStatusCode` to clarify the origin and meaning of each. Included information on use of `isTerminal` flag to determine if retry will be automatically attempted.
 
 ### Fixed
 
