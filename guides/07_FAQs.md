@@ -244,7 +244,7 @@ const meetingSession = new DefaultMeetingSession(
 
 ### What should my application do in response to the status codes in `audioVideoDidStop`?
 
-These status codes can be used for logging, debugging, and possible notification of end users, but in most cases should not  be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the audio video controller).
+These status codes can be used for logging, debugging, and possible notification of end users, but in most cases should not be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the audio video controller).
 
 If `MeetingSessionStatus.isTerminal` returns `true`, you should remove any meeting UX in addition to notifying the user, as the audio video controller will not be retrying the connection.
 
