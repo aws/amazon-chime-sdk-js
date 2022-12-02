@@ -152,13 +152,13 @@ AWS accounts have a soft limit of [250 concurrent meetings](https://docs.aws.ama
 
 ### How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?
 
-Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and up to 25 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed.
+Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and by default up to 25 video senders in a meeting. An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed. The number of video senders can be adjusted, but all clients will still be limited to only 25 received videos at a time.
 
-If your use case requires more than 250 attendees, consider using a [broadcasting solution](https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo).
+If your use case requires more than 250 attendees, consider using [meeting replication](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html) to reach up to 10,000 participants, or a [live connector media pipeline](https://docs.aws.amazon.com/chime-sdk/latest/dg/connector-pipe-config.html) to output to RTMP.
 
-### What happens to the subsequent participants who try to turn on the local video while 25 participants have already turned on the local video?
+### What happens to the subsequent participants who try to turn on the local video when the maximum number of video senders is already reached?
 
-Once the limit of 25 video tiles is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
+Once the limit of video senders is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
 
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
@@ -168,7 +168,7 @@ The Amazon Chime SDK does not support scheduling meetings ahead of time. The mom
 
 ### What happens when I try to re-use same attendee response to join a meeting twice?
  
-If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. Reference issue: [#1290](https://github.com/aws/amazon-chime-sdk-js/issues/1290). The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
+If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
 
 ### What does it mean when the Amazon Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`, `MeetingEnded`, or `SignalingInternalServerError` while establishing a signaling connection to the Chime servers?
 
@@ -241,6 +241,14 @@ const meetingSession = new DefaultMeetingSession(
   deviceController
 );
 ```
+
+### What should my application do in response to the status codes in `audioVideoDidStop`?
+
+These status codes can be used for logging, debugging, and possible notification of end users, but in most cases should not be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the audio video controller).
+
+If `MeetingSessionStatus.isTerminal` returns `true`, you should remove any meeting UX in addition to notifying the user, as the audio video controller will not be retrying the connection.
+
+See the documentation for `MeetingSessionStatusCode` [here](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html) for explanation of the values when used for `audioVideoDidStop`, which may be used to provide more detail when notifying end users, though more general failure messages are recommended unless otherwise noted.
 
 ### What is the timeout for connect and reconnect and where can I configure the value?
 
