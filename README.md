@@ -76,6 +76,11 @@ In addition to the below, here is a list of [all blog posts about the Amazon Chi
 - [Real-time Collaboration Using Amazon Chime SDK messaging](https://aws.amazon.com/blogs/business-productivity/real-time-collaboration-using-amazon-chime-sdk-messaging/)
 - [Building a Live Streaming Chat Application](https://aws.amazon.com/blogs/business-productivity/build-a-live-streaming-chat-application-using-amazon-ivs-and-amazon-chime-sdk)
 
+### Media Pipelines
+
+- [Capture Amazon Chime SDK Meetings Using Media Capture Pipelines](https://aws.amazon.com/blogs/business-productivity/capture-amazon-chime-sdk-meetings-using-media-capture-pipelines/)
+- [Amazon Chime SDK launches live connector for streaming](https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-launches-live-connector-for-streaming/)
+
 ### Webinars and videos
 
 - [Webinar: Creating Classroom Experiences Using the Amazon Chime SDK](https://www.youtube.com/watch?v=S8T-0xfvXJ8)
@@ -109,6 +114,7 @@ The following developer guides cover the Amazon Chime SDK more broadly.
 
 - [PSTN Audio developer guide](https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html)
 - [Messaging developer guide](https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html)
+- [Media Pipelines developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-pipelines.html)
 
 ## Examples
 
@@ -117,7 +123,7 @@ The following developer guides cover the Amazon Chime SDK more broadly.
   meeting application with a local server
 - [Serverless Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) — A self-contained serverless meeting application
 - [Single JS](https://github.com/aws-samples/amazon-chime-sdk/tree/main/utils/singlejs) — A script to bundle the SDK into a single `.js` file
-- [Recording Demo](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) — Recording the meeting's audio, video and screen share in high definition
+- [Transcription and Media Capture Demo](https://github.com/aws-samples/amazon-chime-media-capture-pipeline-demo) - A demo to demonstrate transcription and media capture capabilities
 - [Virtual Classroom](https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/) — An online classroom built with Electron and React
 - [Live Events](https://aws.amazon.com/blogs/opensource/how-to-deploy-a-live-events-solution-built-with-the-amazon-chime-sdk/) — Interactive live events solution
 - [Amazon Chime SDK Smart Video Sending Demo](https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-smart-video-sending-demo/) — Demo showcasing how to dynamically display up to 25 video tiles from a pool of up to 250 meeting attendees
