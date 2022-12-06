@@ -129,6 +129,9 @@ const getSauceLabsConfig = (capabilities) => {
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
     screenResolution: '1280x960',
+    ...((capabilities.name).includes('ContentShare') && {
+      commandTimeout: 600
+    }),
     tunnelIdentifier: process.env.JOB_ID,
     ...(capabilities.platform.toUpperCase() !== 'LINUX' && {
         extendedDebugging: true
@@ -211,7 +214,7 @@ class SaucelabsSession {
     if (timeouts.script == undefined || timeouts.script < defaultTimeout) {
       await driver.manage().setTimeouts({script: defaultTimeout})
     }
-    
+
     return new SaucelabsSession(driver, domain, appName);
   }
   constructor(inDriver, domain, appName) {
@@ -286,8 +289,8 @@ class SaucelabsSession {
       }
     }
   }
-  
- 
+
+
   async updateTestResults(passed) {
     const sessionId = await this.getSessionId();
     console.log(`Publishing test results to saucelabs for session: ${sessionId} status: ${passed ? 'passed' : 'failed'}`);
