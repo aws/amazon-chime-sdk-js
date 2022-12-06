@@ -140,6 +140,13 @@
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/real-time-collaboration-using-amazon-chime-sdk-messaging/">Real-time Collaboration Using Amazon Chime SDK messaging</a></li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/build-a-live-streaming-chat-application-using-amazon-ivs-and-amazon-chime-sdk">Building a Live Streaming Chat Application</a></li>
 				</ul>
+				<a href="#media-pipelines" id="media-pipelines" style="color: inherit; text-decoration: none;">
+					<h3>Media Pipelines</h3>
+				</a>
+				<ul>
+					<li><a href="https://aws.amazon.com/blogs/business-productivity/capture-amazon-chime-sdk-meetings-using-media-capture-pipelines/">Capture Amazon Chime SDK Meetings Using Media Capture Pipelines</a></li>
+					<li><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-launches-live-connector-for-streaming/">Amazon Chime SDK launches live connector for streaming</a></li>
+				</ul>
 				<a href="#webinars-and-videos" id="webinars-and-videos" style="color: inherit; text-decoration: none;">
 					<h3>Webinars and videos</h3>
 				</a>
@@ -179,6 +186,7 @@
 				<ul>
 					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html">PSTN Audio developer guide</a></li>
 					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html">Messaging developer guide</a></li>
+					<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/media-pipelines.html">Media Pipelines developer guide</a></li>
 				</ul>
 				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
 					<h2>Examples</h2>
@@ -189,7 +197,7 @@
 					meeting application with a local server</li>
 					<li><a href="https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless">Serverless Meeting Demo</a> — A self-contained serverless meeting application</li>
 					<li><a href="https://github.com/aws-samples/amazon-chime-sdk/tree/main/utils/singlejs">Single JS</a> — A script to bundle the SDK into a single <code>.js</code> file</li>
-					<li><a href="https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/">Recording Demo</a> — Recording the meeting&#39;s audio, video and screen share in high definition</li>
+					<li><a href="https://github.com/aws-samples/amazon-chime-media-capture-pipeline-demo">Transcription and Media Capture Demo</a> - A demo to demonstrate transcription and media capture capabilities</li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/">Virtual Classroom</a> — An online classroom built with Electron and React</li>
 					<li><a href="https://aws.amazon.com/blogs/opensource/how-to-deploy-a-live-events-solution-built-with-the-amazon-chime-sdk/">Live Events</a> — Interactive live events solution</li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-smart-video-sending-demo/">Amazon Chime SDK Smart Video Sending Demo</a> — Demo showcasing how to dynamically display up to 25 video tiles from a pool of up to 250 meeting attendees</li>
@@ -1041,9 +1049,8 @@
 <span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">sessionStatusCode</span><span style="color: #000000"> = </span><span style="color: #001080">sessionStatus</span><span style="color: #000000">.</span><span style="color: #795E26">statusCode</span><span style="color: #000000">();</span>
 <span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">sessionStatusCode</span><span style="color: #000000"> === </span><span style="color: #001080">MeetingSessionStatusCode</span><span style="color: #000000">.</span><span style="color: #001080">Left</span><span style="color: #000000">) {</span>
 <span style="color: #000000">      </span><span style="color: #008000">/*</span>
-<span style="color: #008000">        - You called meetingSession.audioVideo.stop().</span>
-<span style="color: #008000">        - When closing a browser window or page, Chime SDK attempts to leave the session.</span>
-<span style="color: #008000">      */</span>
+<span style="color: #008000">       * You called meetingSession.audioVideo.stop().</span>
+<span style="color: #008000">       */</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;You left the session&#039;</span><span style="color: #000000">);</span>
 <span style="color: #000000">    } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Stopped with a session status code: &#039;</span><span style="color: #000000">, </span><span style="color: #001080">sessionStatusCode</span><span style="color: #000000">);</span>

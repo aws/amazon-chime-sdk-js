@@ -408,7 +408,7 @@ export class DemoMeetingApp
     }
 
     (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
-        'amazon-chime-sdk-js@' + Versioning.sdkVersion;
+      'amazon-chime-sdk-js@' + Versioning.sdkVersion;
     this.initEventListeners();
     this.initParameters();
     this.setMediaRegion();
@@ -2340,7 +2340,7 @@ export class DemoMeetingApp
       const option = document.createElement('option');
       list.appendChild(option);
       option.text = devices[i].label || `${genericName} ${i + 1}`;
-      option.value = devices[i].deviceId;
+      option.value = devices[i].label ? devices[i].deviceId : '';
     }
     if (additionalOptions.length > 0) {
       const separator = document.createElement('option');
@@ -3363,16 +3363,16 @@ export class DemoMeetingApp
 
     const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
     switch (chosenLogLevel) {
-      case 'INFO':
+      case 'info':
         this.logLevel = LogLevel.INFO;
         break;
-      case 'DEBUG':
+      case 'debug':
         this.logLevel = LogLevel.DEBUG;
         break;
-      case 'WARN':
+      case 'warn':
         this.logLevel = LogLevel.WARN;
         break;
-      case 'ERROR':
+      case 'error':
         this.logLevel = LogLevel.ERROR;
         break;
       default:

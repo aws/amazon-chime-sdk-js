@@ -22,7 +22,8 @@ export default interface AudioVideoObserver {
 
   /**
    * Called when the session has stopped from a started state with the reason
-   * provided in the status.
+   * provided in the status. See documentation for [[MeetingSessionStatus]]
+   * and [[MeetingSessionStatusCode]] for more information.
    */
   audioVideoDidStop?(sessionStatus: MeetingSessionStatus): void;
 

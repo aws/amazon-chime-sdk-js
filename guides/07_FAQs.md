@@ -95,7 +95,32 @@ In Firefox, if access to camera or microphone has been granted to the site — e
 If the page itself is loaded via a different network interface than the one that is intended to be used by the Amazon Chime SDK to connect to Amazon Chime media resources, _e.g._, in a split-tunneling VPN where browser traffic uses the VPN interface but Amazon Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.
 
 Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.
- 
+
+## Known Build Issues
+
+### Why is my build with rollup failing after upgrading to Amazon Chime SDK for JavaScript 3.7.0?
+
+Amazon Chime SDK for JavaScript 3.7.0 included a bug fix to mitigate messaging session reconnection issue. Check [MessagingSession reconnects with refreshed endpoint and credentials if needed](https://github.com/aws/amazon-chime-sdk-js/commit/bce872c353edbb50908c5a0298f8113f1e8dcc82#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519) for more information on the fix. We added `@aws-sdk/client-chime-sdk-messaging` dependency necessary to mitigate the fix. This may further result into rollup bundling failures with certain configurations.
+
+When a builder makes use of the rollup plugin: `rollup-plugin-includepaths` they may run into build issues where node modules and their methods are not found. For example, in the following warnings / errors the Node.js built-ins and the `createHash` method from `crypto` is not found.
+
+```
+(!) Missing shims for Node.js built-ins
+Creating a browser bundle that depends on "os", "path", "url", "buffer", "http", "https", "stream", "process" and "util". You might need to include https://github.com/FredKSchott/rollup-plugin-polyfill-node
+```
+
+```
+https://rollupjs.org/guide/en/#error-name-is-not-exported-by-module
+node_modules/@aws-sdk/shared-ini-file-loader/dist-es/getSSOTokenFilepath.js (1:9)
+1: import { createHash } from "crypto";
+```
+
+This node / browser incompatibility issue happens due to bundlers not using the right `runtimeConfig` defined in AWS JS SDK client's `package.json`. Clients in AWS JS SDK have defined a runtime config alias in their `package.json` like this: [Chime SDK Messaging client package.json](https://github.com/aws/aws-sdk-js-v3/blob/main/clients/client-chime-sdk-messaging/package.json#L91). If your bundler does not follow the `runtimeConfig` alias, you can get some incompatibility errors.
+
+If the builder is using [rollup-plugin-includepaths](https://github.com/dot-build/rollup-plugin-includepaths) to use relative paths in their project. It is recommended that you use [rollup-plugin-alias](https://github.com/rollup/plugins/tree/master/packages/alias) to define an alias for relative paths. 
+
+You can find more information about this build error in GitHub issue: [3.7.0 broke build with Rollup](https://github.com/aws/amazon-chime-sdk-js/issues/2455). If you still have questions about rollup alias and plugin settings please reach out to the plugin / rollup author.
+
 ## Meetings
 
 ### How do users authenticate into a meeting?
@@ -127,13 +152,13 @@ AWS accounts have a soft limit of [250 concurrent meetings](https://docs.aws.ama
 
 ### How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?
 
-Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and up to 25 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed.
+Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and by default up to 25 video senders in a meeting. An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed. The number of video senders can be adjusted, but all clients will still be limited to only 25 received videos at a time.
 
-If your use case requires more than 250 attendees, consider using a [broadcasting solution](https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo).
+If your use case requires more than 250 attendees, consider using [meeting replication](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html) to reach up to 10,000 participants, or a [live connector media pipeline](https://docs.aws.amazon.com/chime-sdk/latest/dg/connector-pipe-config.html) to output to RTMP.
 
-### What happens to the subsequent participants who try to turn on the local video while 25 participants have already turned on the local video?
+### What happens to the subsequent participants who try to turn on the local video when the maximum number of video senders is already reached?
 
-Once the limit of 25 video tiles is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
+Once the limit of video senders is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
 
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
@@ -143,7 +168,7 @@ The Amazon Chime SDK does not support scheduling meetings ahead of time. The mom
 
 ### What happens when I try to re-use same attendee response to join a meeting twice?
  
-If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. Reference issue: [#1290](https://github.com/aws/amazon-chime-sdk-js/issues/1290). The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
+If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
 
 ### What does it mean when the Amazon Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`, `MeetingEnded`, or `SignalingInternalServerError` while establishing a signaling connection to the Chime servers?
 
@@ -216,6 +241,14 @@ const meetingSession = new DefaultMeetingSession(
   deviceController
 );
 ```
+
+### What should my application do in response to the status codes in `audioVideoDidStop`?
+
+These status codes can be used for logging, debugging, and possible notification of end users, but in most cases should not be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the audio video controller).
+
+If `MeetingSessionStatus.isTerminal` returns `true`, you should remove any meeting UX in addition to notifying the user, as the audio video controller will not be retrying the connection.
+
+See the documentation for `MeetingSessionStatusCode` [here](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html) for explanation of the values when used for `audioVideoDidStop`, which may be used to provide more detail when notifying end users, though more general failure messages are recommended unless otherwise noted.
 
 ### What is the timeout for connect and reconnect and where can I configure the value?
 

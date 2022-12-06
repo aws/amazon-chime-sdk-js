@@ -5,21 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.0] - 2022-11-02
+
+### Added
+
+### Removed
+
+### Changed
+
+- Update documentation for `MeetingSessionStatusCode` to clarify the origin and meaning of each. Included information on use of `isTerminal` flag to determine if retry will be automatically attempted.
+
+### Fixed
+
+- Fix codec intersection logic to avoid unnecessary renegotiations.
+
 ## [3.9.0] - 2022-09-21
 
 ### Added
 
 - Add the audio output gain and frequency to the meeting readiness checker's configuration. The readiness checker uses this value to set the "Play Tone" gain and frequency.
+- Add support for background filter starting from iOS 16 for major browsers Safari, Chrome, and Firefox (except on iPad).
 
 ### Removed
 
 ### Changed
 
 - Add metric derived from string metric in metric report.
+- Send `audioInputFailed` and `videoInputFailed` if there is error getting device labels.
 - Updated `DefaultVideoFrameProcessorPipeline` to clone audio tracks to the output `MediaStream` instead of dropping them. This allows more straightforward usage of the pipeline on content sharing like file playback.
 
 ### Fixed
-* Fixed missing videos, or unnecessarily long freezes when switching simulcast streams.
+
+-  Fixed missing videos, or unnecessarily long freezes when switching simulcast streams.
 
 ## [3.8.0] - 2022-08-18
 

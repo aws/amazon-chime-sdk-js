@@ -43,7 +43,7 @@ describe('CreatePeerConnectionTask', () => {
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder | null = null;
   let task: Task;
-  const browser: BrowserBehavior = new DefaultBrowserBehavior();
+  let browser: BrowserBehavior;
 
   function makeICEEvent(candidateStr: string | null): RTCPeerConnectionIceEvent {
     let iceCandidate: RTCIceCandidate = null;
@@ -61,6 +61,7 @@ describe('CreatePeerConnectionTask', () => {
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
+    browser = new DefaultBrowserBehavior();
 
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
