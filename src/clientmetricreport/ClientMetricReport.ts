@@ -455,6 +455,11 @@ export default class ClientMetricReport {
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },
+    videoDownstreamFramesReceived: {
+      source: 'framesReceived',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
     videoDownstreamFramesDecodedPerSecond: {
       source: 'framesDecoded',
       media: MediaType.VIDEO,
