@@ -7048,6 +7048,10 @@ $root.SdkMetric = (function() {
             case 89:
             case 90:
             case 91:
+            case 92:
+            case 93:
+            case 94:
+            case 95:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
