@@ -266,10 +266,6 @@ export default class StatsCollector {
           );
         }
       }
-	else
-	{
-		this.logger.error('Metric - type ${typeof rawMetricReport[rawMetric]} for metric ${rawMetric}');
-	}
     }
   }
 
@@ -487,19 +483,7 @@ export default class StatsCollector {
   filterRawMetricReports(rawMetricReports: RawMetricReport[]): RawMetricReport[] {
     const filteredRawMetricReports = [];
     for (const rawMetricReport of rawMetricReports) {
-        if (/*rawMetricReport.type === 'inbound-rtp' && */ rawMetricReport.kind === 'video')
-        {       
-                this.logger.debug(() => {
-                        return `raw inbound-rtp : ${JSON.stringify(rawMetricReport)}`;
-                });
-        }
       if (this.isValidRawMetricReport(rawMetricReport)) {
-	if (rawMetricReport.type === 'inbound-rtp' && rawMetricReport.kind === 'video')
-	{
-		this.logger.debug(() => {
-      			return `raw inbound-rtp : ${JSON.stringify(rawMetricReport)}`;
-    		});
-	}
         filteredRawMetricReports.push(rawMetricReport);
       }
     }
