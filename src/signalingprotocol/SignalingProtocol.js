@@ -7425,7 +7425,6 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DECODER_IS_HARDWARE=89 VIDEO_DECODER_IS_HARDWARE value
      */
     SdkMetric.Type = (function() {
-        console.log('SdkMetric.Type');
         var valuesById = {}, values = Object.create(valuesById);
         values[valuesById[1] = "VIDEO_ACTUAL_ENCODER_BITRATE"] = 1;
         values[valuesById[2] = "VIDEO_AVAILABLE_SEND_BANDWIDTH"] = 2;
