@@ -86,7 +86,7 @@ export default class ClientMetricReport {
     const sentOrReceived =
       metricReport.currentMetrics[sourceMetricName] -
       (metricReport.previousMetrics[sourceMetricName] || 0);
-    const lost = 
+    const lost =
       metricReport.currentMetrics['packetsLost'] -
       (metricReport.previousMetrics['packetsLost'] || 0);
     const total = sentOrReceived + lost;
