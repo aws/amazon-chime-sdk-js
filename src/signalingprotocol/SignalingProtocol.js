@@ -7046,6 +7046,8 @@ $root.SdkMetric = (function() {
             case 87:
             case 88:
             case 89:
+            case 90:
+            case 91:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -7295,6 +7297,30 @@ $root.SdkMetric = (function() {
         case 89:
             message.type = 89;
             break;
+        case "VIDEO_FREEZE_COUNT":
+        case 90:
+            message.type = 90;
+            break;
+        case "VIDEO_FREEZE_DURATION":
+        case 91:
+            message.type = 91;
+            break;
+        case "VIDEO_PAUSE_COUNT":
+        case 92:
+            message.type = 92;
+            break;
+        case "VIDEO_PAUSE_DURATION":
+        case 93:
+            message.type = 93;
+            break;
+        case "VIDEO_QUALITY_REASON":
+        case 94:
+            message.type = 94;
+            break;
+        case "VIDEO_PROCESSING_TIME":
+        case 95:
+            message.type = 95;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -7399,6 +7425,7 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DECODER_IS_HARDWARE=89 VIDEO_DECODER_IS_HARDWARE value
      */
     SdkMetric.Type = (function() {
+        console.log('SdkMetric.Type');
         var valuesById = {}, values = Object.create(valuesById);
         values[valuesById[1] = "VIDEO_ACTUAL_ENCODER_BITRATE"] = 1;
         values[valuesById[2] = "VIDEO_AVAILABLE_SEND_BANDWIDTH"] = 2;
@@ -7457,6 +7484,13 @@ $root.SdkMetric = (function() {
         values[valuesById[87] = "VIDEO_DECODE_WIDTH"] = 87;
         values[valuesById[88] = "VIDEO_ENCODER_IS_HARDWARE"] = 88;
         values[valuesById[89] = "VIDEO_DECODER_IS_HARDWARE"] = 89;
+        values[valuesById[90] = "VIDEO_FREEZE_COUNT"] = 90;
+        values[valuesById[91] = "VIDEO_FREEZE_DURATION"] = 91;
+        values[valuesById[92] = "VIDEO_PAUSE_COUNT"] = 92;
+        values[valuesById[93] = "VIDEO_PAUSE_DURATION"] = 93;
+        values[valuesById[94] = "VIDEO_QUALITY_REASON"] = 94;
+        values[valuesById[95] = "VIDEO_PROCESSING_TIME"] = 95;
+
         return values;
     })();
 

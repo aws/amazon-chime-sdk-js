@@ -36,6 +36,33 @@ export default class ClientMetricReport {
     return Number(metricReport.currentMetrics[metricName]);
   };
 
+  qualityReasonValue = (metricName?: string, ssrc?: number): number => {
+    const metricReport = this.streamMetricReports[ssrc];
+    const implName = String(metricReport.currentStringMetrics[metricName]);
+    switch(implName){
+    case "none" : return 0;
+    case "cpu" : return 1;
+    case "bandwidth" : return 2;
+    default: return 3;
+	}
+  };
+
+  deltaValue = (metricName?: string, ssrc?: number): number => {
+    const metricReport = this.streamMetricReports[ssrc];
+    const diff =
+      metricReport.currentMetrics[metricName] -
+      (metricReport.previousMetrics[metricName] || 0);
+    return Number(diff);
+  };
+
+  deltaValueMS = (metricName?: string, ssrc?: number): number => {
+    const metricReport = this.streamMetricReports[ssrc];
+    const diff =
+      metricReport.currentMetrics[metricName] -
+      (metricReport.previousMetrics[metricName] || 0);
+    return Number(diff * 1000);
+  };
+
   decoderLossPercent = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
     const concealedSamples =
@@ -59,7 +86,7 @@ export default class ClientMetricReport {
     const sentOrReceived =
       metricReport.currentMetrics[sourceMetricName] -
       (metricReport.previousMetrics[sourceMetricName] || 0);
-    const lost =
+    const lost = 
       metricReport.currentMetrics['packetsLost'] -
       (metricReport.previousMetrics['packetsLost'] || 0);
     const total = sentOrReceived + lost;
@@ -289,6 +316,7 @@ export default class ClientMetricReport {
       transform: this.isHardwareImplementation,
       type: SdkMetric.Type.VIDEO_ENCODER_IS_HARDWARE,
     },
+    qualityLimitationReason:  { transform: this.qualityReasonValue, type: SdkMetric.Type.VIDEO_QUALITY_REASON },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -341,6 +369,11 @@ export default class ClientMetricReport {
       transform: this.isHardwareImplementation,
       type: SdkMetric.Type.VIDEO_DECODER_IS_HARDWARE,
     },
+    freezeCount:  { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_FREEZE_COUNT },
+    totalFreezesDuration:  { transform: this.deltaValueMS, type: SdkMetric.Type.VIDEO_FREEZE_DURATION },
+    pauseCount:  { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_PAUSE_COUNT },
+    totalPausesDuration: { transform: this.deltaValueMS, type: SdkMetric.Type.VIDEO_PAUSE_DURATION },
+    totalProcessingDelay:  { transform: this.deltaValueMS, type: SdkMetric.Type.VIDEO_PROCESSING_TIME },
   };
 
   getMetricMap(
@@ -439,6 +472,36 @@ export default class ClientMetricReport {
       source: 'roundTripTime',
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
+    },
+    videoQualityReason: {
+      source: 'qualityLimitationReason',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
+    videoFreezeCount: {
+      source: 'freezeCount',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoFreezeDuration: {
+      source: 'totalFreezesDuration',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoPauseCount: {
+      source: 'pauseCount',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoPauseDuration: {
+      source: 'totalPausesDuration',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoProcessingDelay: {
+      source: 'totalProcessingDelay',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
     },
     videoDownstreamBitrate: {
       source: 'bytesReceived',
