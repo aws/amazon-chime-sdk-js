@@ -31,7 +31,7 @@ function findAllElements() {
     dataMessageSendInput: By.id('send-message'),
     sipAuthenticateButton: By.id('button-sip-authenticate'),
     roster: By.id('roster'),
-    participants: By.css('#roster>li'),
+    participants: By.css('li'),
     switchToSipFlow: By.id('to-sip-flow'),
 
     authenticationFlow: By.id('flow-authenticate'),
