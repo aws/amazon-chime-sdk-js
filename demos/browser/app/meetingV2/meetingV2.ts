@@ -97,6 +97,8 @@ import Roster from './component/Roster';
 import ContentShareManager from './component/ContentShareManager';
 import { AudioBufferMediaStreamProvider, SynthesizedStereoMediaStreamProvider } from './util/mediastreamprovider/DemoMediaStreamProviders';
 
+import { Modal } from 'bootstrap';
+
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
 })();
@@ -249,7 +251,7 @@ export class DemoMeetingApp
 
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
-  volumeIndicatorHandler:  (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
+  volumeIndicatorHandler: (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
   canUnmuteLocalAudioHandler: (undefined | ((canUnmute: boolean) => void)) = undefined;
   muteAndUnmuteLocalAudioHandler: (undefined | ((muted: boolean) => void)) = undefined;
   blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver) = undefined;
@@ -333,6 +335,7 @@ export class DemoMeetingApp
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
   joinInfo: any | undefined;
+  joinInfoOverride: any | undefined = undefined;
   deleteOwnAttendeeToLeave = false;
 
   blurProcessor: BackgroundBlurProcessor | undefined;
@@ -457,6 +460,17 @@ export class DemoMeetingApp
       (document.getElementById('inputName') as HTMLInputElement).focus();
     } else {
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
+    }
+
+    if (new URL(window.location.href).searchParams.has('join-info-override')) {
+      const joinInfoOverride = JSON.parse(new URL(window.location.href).searchParams.get('join-info-override'));
+      (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value = JSON.stringify(joinInfoOverride.JoinInfo.Attendee, null, 4);
+      (document.getElementById('get-meeting-override-input') as HTMLTextAreaElement).value = JSON.stringify(joinInfoOverride.JoinInfo.Meeting, null, 4);
+      new Modal(document.getElementById('join-info-override-modal'), {}).show();
+
+      document.getElementById('join-info-override-join-button').addEventListener('click', () => {
+        this.isViewOnly = (document.getElementById('join-view-only') as HTMLInputElement).checked;
+      });
     }
   }
 
@@ -627,6 +641,11 @@ export class DemoMeetingApp
     });
 
     document.getElementById('quick-join').addEventListener('click', e => {
+      e.preventDefault();
+      this.redirectFromAuthentication(true);
+    });
+
+    document.getElementById('join-info-override-join-button').addEventListener('click', e => {
       e.preventDefault();
       this.redirectFromAuthentication(true);
     });
@@ -1884,7 +1903,7 @@ export class DemoMeetingApp
       ) {
         this.contentShare.stop();
       }
-      const attendeeName =  externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
+      const attendeeName = externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
       this.roster.addAttendee(attendeeId, attendeeName);
 
       this.volumeIndicatorHandler = async (
@@ -3165,7 +3184,7 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
+    this.joinInfo = this.joinInfoOverride ? this.joinInfoOverride.JoinInfo : (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
     this.region = this.joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
@@ -3194,7 +3213,7 @@ export class DemoMeetingApp
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
-    if(this.behaviorAfterLeave === 'nothing') {
+    if (this.behaviorAfterLeave === 'nothing') {
       return;
     }
     this.log(`resetting stats`);
@@ -3395,6 +3414,20 @@ export class DemoMeetingApp
         break;
     }
 
+    const createAttendeeOverride = (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value;
+    const getMeetingOverride = (document.getElementById('get-meeting-override-input') as HTMLTextAreaElement).value;
+    if (createAttendeeOverride.length !== 0 && getMeetingOverride.length !== 0) {
+      this.joinInfoOverride = {
+        JoinInfo: {
+          Meeting: JSON.parse(getMeetingOverride),
+          Attendee: JSON.parse(createAttendeeOverride),
+        }
+      };
+      this.meeting = this.joinInfoOverride.JoinInfo.Meeting.Meeting.ExternalMeetingId;
+      this.name = this.joinInfoOverride.JoinInfo.Attendee.Attendee.ExternalUserId;
+      this.region = this.joinInfoOverride.JoinInfo.Meeting.Meeting.MediaRegion;
+    }
+
     AsyncScheduler.nextTick(
         async (): Promise<void> => {
           let chimeMeetingId: string = '';
@@ -3451,9 +3484,9 @@ export class DemoMeetingApp
             videoInputQuality.disabled = true;
           }
 
-          // `this.primaryExternalMeetingId` may by the join request
+          // `this.primaryExternalMeetingId` may by set by the join request. Not relevant with overriden info.
           const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');
-          if (!this.primaryExternalMeetingId) {
+          if (!this.primaryExternalMeetingId || this.joinInfoOverride !== undefined) {
             buttonPromoteToPrimary.style.display = 'none';
           } else {
             this.setButtonVisibility('button-record-cloud', false);
