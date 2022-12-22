@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add `destroy()` method to `VoiceFocus` class.
+- Add `destroyVoiceFocus` method to `VoiceFocusDeviceTransformer` class.
+- Add guide to show how to use the `destroyVoiceFocus` method in the `VoiceFocusDeviceTransformer` class.
+
 ### Removed
 
 ### Changed

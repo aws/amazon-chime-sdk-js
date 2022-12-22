@@ -100,6 +100,7 @@ class VoiceFocus {
         this.internal = {
             worker,
             nodeOptions,
+            isDestroyed: false,
         };
     }
     static isSupported(spec, options) {
@@ -255,6 +256,9 @@ class VoiceFocus {
     }
     createNode(context, options) {
         var _a;
+        if (this.internal.isDestroyed) {
+            throw new Error('Unable to create node because VoiceFocus worker has been destroyed.');
+        }
         const { voiceFocusSampleRate = (context.sampleRate === 16000 ? 16000 : 48000), enabled = true, agc = DEFAULT_AGC_SETTING, } = options || {};
         const supportFarendStream = options === null || options === void 0 ? void 0 : options.es;
         const processorOptions = {
@@ -273,6 +277,9 @@ class VoiceFocus {
     }
     applyToStream(stream, context, options) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.internal.isDestroyed) {
+                throw new Error("Unable to apply stream because VoiceFocus worker has been destroyed");
+            }
             const source = context.createMediaStreamSource(stream);
             const node = yield this.applyToSourceNode(source, context, options);
             const destination = context.createMediaStreamDestination();
@@ -291,6 +298,10 @@ class VoiceFocus {
             source.connect(node);
             return node;
         });
+    }
+    destroy() {
+        this.internal.worker?.terminate();
+        this.internal.isDestroyed = true;
     }
 }
 exports.VoiceFocus = VoiceFocus;
