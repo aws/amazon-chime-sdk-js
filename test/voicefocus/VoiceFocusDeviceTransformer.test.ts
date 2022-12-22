@@ -626,6 +626,15 @@ describe('VoiceFocusDeviceTransformer', () => {
       VoiceFocus.isSupported.restore();
     });
 
+    it('transformer can be destroyed', async () => {
+      const vf = new MockVoiceFocus();
+      init.callsFake(async () => vf);
+      configure.callsFake(async () => supportedConfig);
+      const transformer = await VoiceFocusDeviceTransformer.create({}, {});
+      await VoiceFocusDeviceTransformer.destroyVoiceFocus(transformer);
+      expect(vf.destroy.calledOnce).to.be.true;
+    });
+
     it('create can be called even without checking isSupported', async () => {
       isSupported.callsFake(async () => {
         throw new Error('oh no');
@@ -1322,6 +1331,8 @@ class MockVoiceFocus {
   ): Promise<VoiceFocusAudioWorkletNode> {
     throw new Error('Method not implemented.');
   }
+
+  destroy = spy();
 }
 
 class MockVoiceFocusNode {
