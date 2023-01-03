@@ -98,9 +98,15 @@ Customers and end users must ensure that either (a) end users do not use SDK app
 
 ## Known Build Issues
 
-### Why is my build with rollup failing after upgrading to Amazon Chime SDK for JavaScript 3.7.0?
+### Why is my build failing after upgrading to Amazon Chime SDK for JavaScript 3.7.0?
 
-Amazon Chime SDK for JavaScript 3.7.0 included a bug fix to mitigate messaging session reconnection issue. Check [MessagingSession reconnects with refreshed endpoint and credentials if needed](https://github.com/aws/amazon-chime-sdk-js/commit/bce872c353edbb50908c5a0298f8113f1e8dcc82#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519) for more information on the fix. We added `@aws-sdk/client-chime-sdk-messaging` dependency necessary to mitigate the fix. This may further result into rollup bundling failures with certain configurations.
+Amazon Chime SDK for JavaScript 3.7.0 included a bug fix to mitigate messaging session reconnection issue. Check [MessagingSession reconnects with refreshed endpoint and credentials if needed](https://github.com/aws/amazon-chime-sdk-js/commit/bce872c353edbb50908c5a0298f8113f1e8dcc82#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519) for more information on the fix. We added `@aws-sdk/client-chime-sdk-messaging` dependency necessary to mitigate the fix. `@aws-sdk/client-chime-sdk-messaging` pulls in `aws-sdk` v3 dependency and its dependencies cause the build to fail in all cases.
+
+Depending on the bundler you use, certain additional configuration changes may be required to help the build to succeed. This is actually not an issue with Amazon Chime SDK for JavaScript rather an issue on how bundlers do module resolution and what distributions `@aws-sdk/client-chime-sdk-messaging`'s dependencies provide when bundlers try to resolve the imported modules.
+
+As of now, builders have reported issues with rollup, esbuild, Nuxt2 framework and Webpack v4. In the following sections each issue is described separately and suggests certain configuration changes for the build to succeed.
+
+#### Rollup
 
 When a builder makes use of the rollup plugin: `rollup-plugin-includepaths` they may run into build issues where node modules and their methods are not found. For example, in the following warnings / errors the Node.js built-ins and the `createHash` method from `crypto` is not found.
 
@@ -120,6 +126,50 @@ This node / browser incompatibility issue happens due to bundlers not using the 
 If the builder is using [rollup-plugin-includepaths](https://github.com/dot-build/rollup-plugin-includepaths) to use relative paths in their project. It is recommended that you use [rollup-plugin-alias](https://github.com/rollup/plugins/tree/master/packages/alias) to define an alias for relative paths. 
 
 You can find more information about this build error in GitHub issue: [3.7.0 broke build with Rollup](https://github.com/aws/amazon-chime-sdk-js/issues/2455). If you still have questions about rollup alias and plugin settings please reach out to the plugin / rollup author.
+
+#### Esbuild
+
+When bundling an application using `esbuild`, it checks for dependency distributions depending on whether the imported package follows `require` that is CommonJS or `import` that is EcmaScript Module (ESM) approach. The dependency package can have its own dependencies which `esbuild` will try to resolve using the CommonJS or ESM distributions provided by the dependency package. Each package has to provide a link to the distribution path in their `package.json` using `main`, `module` or `browser` fields. In `@aws-sdk/client-chime-sdk-messaging` case, the `esbuild` runs into an issue where it cannot pick the distribution for `browser` specifially for one of the dependencies, thus, failing to build with below error:
+```
+"../node_modules/@aws-sdk/smithy-client"
+          Attempting to load "../node_modules/@aws-sdk/smithy-client/dist-es/index.js" as a file
+            Checking for file "index.js"
+            Found file "index.js"
+        Found main field "main" with path "./dist-cjs/index.js"
+          No "browser" map found in directory "../node_modules/@aws-sdk/smithy-client"
+          Attempting to load "../node_modules/@aws-sdk/smithy-client/dist-cjs/index.js" as a file
+            Checking for file "index.js"
+            Found file "index.js"
+        Resolved to "../node_modules/@aws-sdk/smithy-client/dist-cjs/index.js" because of "require"
+```
+
+To resolve this, add `--main-fields=browser,module,main` when you bundle your application using `esbuild`. For more information, check [this issue](https://github.com/evanw/esbuild/issues/2692) we reported to `esbuild`.
+
+#### Using Amazon Chime SDK for JavaScript in Nuxt2 framework
+
+You can use Amazon Chime SDK for JavaScript in Nuxt2 framework. Nuxt2 framework uses Webpack v4 bundler for bundling the application. Webpack v4 has a known issue when bundling applications that use optional chaining operator. This is resolved in Webpack v5, but, Nuxt2 has not upgraded to use Webpack v5.
+
+Thus, when bundling a Nuxt2 application which imports Amazon Chime SDK for JavaScript v3.7.0 and above, it runs into below error:
+```
+ERROR in ./node_modules/@aws-sdk/signature-v4/dist-es/getCanonicalHeaders.js 10:30
+Module parse failed: Unexpected token (10:30)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+|         const canonicalHeaderName = headerName.toLowerCase();
+|         if (canonicalHeaderName in ALWAYS_UNSIGNABLE_HEADERS ||
+>             unsignableHeaders?.has(canonicalHeaderName) ||
+|             PROXY_HEADER_PATTERN.test(canonicalHeaderName) ||
+|             SEC_HEADER_PATTERN.test(canonicalHeaderName)) {
+ @ ./node_modules/@aws-sdk/signature-v4/dist-es/index.js 2:0-60 2:0-60
+```
+
+To resolve this, you have to override the `build` configuration in `nuxt.config.js` like below:
+```
+build: {
+  transpile: ["aws-sdk"]
+}
+```
+
+Check [this issue comment](https://github.com/aws/amazon-chime-sdk-js/issues/2498#issuecomment-1362279568) for more information on the issue.
 
 ## Meetings
 
