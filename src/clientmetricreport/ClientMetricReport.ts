@@ -51,20 +51,6 @@ export default class ClientMetricReport {
     }
   };
 
-  deltaValue = (metricName?: string, ssrc?: number): number => {
-    const metricReport = this.streamMetricReports[ssrc];
-    const diff =
-      metricReport.currentMetrics[metricName] - (metricReport.previousMetrics[metricName] || 0);
-    return Number(diff);
-  };
-
-  deltaValueMS = (metricName?: string, ssrc?: number): number => {
-    const metricReport = this.streamMetricReports[ssrc];
-    const diff =
-      metricReport.currentMetrics[metricName] - (metricReport.previousMetrics[metricName] || 0);
-    return Number(diff * 1000);
-  };
-
   decoderLossPercent = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
     const concealedSamples =
@@ -374,18 +360,18 @@ export default class ClientMetricReport {
       transform: this.isHardwareImplementation,
       type: SdkMetric.Type.VIDEO_DECODER_IS_HARDWARE,
     },
-    freezeCount: { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_FREEZE_COUNT },
-    totalFreezesDuration: {
-      transform: this.deltaValueMS,
+    freezeCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FREEZE_COUNT },
+    totalFreezesDurationMs: {
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_FREEZE_DURATION,
     },
-    pauseCount: { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_PAUSE_COUNT },
-    totalPausesDuration: {
-      transform: this.deltaValueMS,
+    pauseCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PAUSE_COUNT },
+    totalPausesDurationMs: {
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_PAUSE_DURATION,
     },
-    totalProcessingDelay: {
-      transform: this.deltaValueMS,
+    totalProcessingDelayMs: {
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_PROCESSING_TIME,
     },
   };
