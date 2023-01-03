@@ -39,27 +39,29 @@ export default class ClientMetricReport {
   qualityReasonValue = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
     const implName = String(metricReport.currentStringMetrics[metricName]);
-    switch(implName){
-    case "none" : return 0;
-    case "cpu" : return 1;
-    case "bandwidth" : return 2;
-    default: return 3;
-	}
+    switch (implName) {
+      case 'none':
+        return 0;
+      case 'cpu':
+        return 1;
+      case 'bandwidth':
+        return 2;
+      default:
+        return 3;
+    }
   };
 
   deltaValue = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
     const diff =
-      metricReport.currentMetrics[metricName] -
-      (metricReport.previousMetrics[metricName] || 0);
+      metricReport.currentMetrics[metricName] - (metricReport.previousMetrics[metricName] || 0);
     return Number(diff);
   };
 
   deltaValueMS = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
     const diff =
-      metricReport.currentMetrics[metricName] -
-      (metricReport.previousMetrics[metricName] || 0);
+      metricReport.currentMetrics[metricName] - (metricReport.previousMetrics[metricName] || 0);
     return Number(diff * 1000);
   };
 
@@ -316,7 +318,10 @@ export default class ClientMetricReport {
       transform: this.isHardwareImplementation,
       type: SdkMetric.Type.VIDEO_ENCODER_IS_HARDWARE,
     },
-    qualityLimitationReason:  { transform: this.qualityReasonValue, type: SdkMetric.Type.VIDEO_QUALITY_REASON },
+    qualityLimitationReason: {
+      transform: this.qualityReasonValue,
+      type: SdkMetric.Type.VIDEO_QUALITY_REASON,
+    },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -369,11 +374,20 @@ export default class ClientMetricReport {
       transform: this.isHardwareImplementation,
       type: SdkMetric.Type.VIDEO_DECODER_IS_HARDWARE,
     },
-    freezeCount:  { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_FREEZE_COUNT },
-    totalFreezesDuration:  { transform: this.deltaValueMS, type: SdkMetric.Type.VIDEO_FREEZE_DURATION },
-    pauseCount:  { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_PAUSE_COUNT },
-    totalPausesDuration: { transform: this.deltaValueMS, type: SdkMetric.Type.VIDEO_PAUSE_DURATION },
-    totalProcessingDelay:  { transform: this.deltaValueMS, type: SdkMetric.Type.VIDEO_PROCESSING_TIME },
+    freezeCount: { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_FREEZE_COUNT },
+    totalFreezesDuration: {
+      transform: this.deltaValueMS,
+      type: SdkMetric.Type.VIDEO_FREEZE_DURATION,
+    },
+    pauseCount: { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_PAUSE_COUNT },
+    totalPausesDuration: {
+      transform: this.deltaValueMS,
+      type: SdkMetric.Type.VIDEO_PAUSE_DURATION,
+    },
+    totalProcessingDelay: {
+      transform: this.deltaValueMS,
+      type: SdkMetric.Type.VIDEO_PROCESSING_TIME,
+    },
   };
 
   getMetricMap(
