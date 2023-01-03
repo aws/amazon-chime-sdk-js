@@ -67,6 +67,7 @@ export declare class VoiceFocus {
         stream: MediaStream;
     }>;
     applyToSourceNode(source: MediaStreamAudioSourceNode, context: AudioContext, options?: NodeArguments): Promise<VoiceFocusAudioWorkletNode>;
+    destroy(): void;
 }
 export declare const createAudioContext: (contextHint?: {
     latencyHint: number;

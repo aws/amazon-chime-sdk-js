@@ -61,6 +61,7 @@ export class VoiceFocusDeviceTransformer {
   private logger: Logger;
   private vfLogger: VoiceFocusLogger;
   private preload: boolean;
+  private vf: VoiceFocus;
 
   private configuration: Promise<VoiceFocusConfig>;
   private fetchBehavior: VoiceFocusFetchBehavior;
@@ -228,6 +229,14 @@ export class VoiceFocusDeviceTransformer {
     }
   }
 
+  /**
+   * Destroy the Voice Focus instance and worker thread associated with the transformer.
+   */
+  static async destroyVoiceFocus(transformer: VoiceFocusDeviceTransformer): Promise<void> {
+    /* istanbul ignore next */
+    transformer?.vf?.destroy();
+  }
+
   private constructor(
     private spec: VoiceFocusSpec,
     {
@@ -301,8 +310,8 @@ export class VoiceFocusDeviceTransformer {
     preload: boolean
   ): Promise<[VoiceFocus, VoiceFocusTransformDeviceDelegate]> {
     const delegate = new VoiceFocusTransformDeviceDelegate();
-    const vf = await VoiceFocus.init(config, { delegate, preload, logger: this.vfLogger });
-    return [vf, delegate];
+    this.vf = await VoiceFocus.init(config, { delegate, preload, logger: this.vfLogger });
+    return [this.vf, delegate];
   }
 
   private async allocateVoiceFocus(
