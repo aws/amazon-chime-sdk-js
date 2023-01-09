@@ -204,6 +204,8 @@ import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
 import PrefetchOn from './messagingsession/PrefetchOn';
 import PrefetchSortBy from './messagingsession/PrefetchSortBy';
+import PremiumVideoStreamHandler from './premiumvideodevice/PremiumVideoStreamHandler';
+import PremiumVideoTransformDevice from './premiumvideodevice/PremiumVideoTransformDevice';
 import PromiseQueue from './utils/PromiseQueue';
 import PromoteToPrimaryMeetingTask from './task/PromoteToPrimaryMeetingTask';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
@@ -541,6 +543,8 @@ export {
   PingPongObserver,
   PrefetchOn,
   PrefetchSortBy,
+  PremiumVideoStreamHandler,
+  PremiumVideoTransformDevice,
   PromiseQueue,
   PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,

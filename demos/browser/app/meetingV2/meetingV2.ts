@@ -47,6 +47,7 @@ import {
   MultiLogger,
   NoOpEventReporter,
   NoOpVideoFrameProcessor,
+  PremiumVideoTransformDevice,
   RemovableAnalyserNode,
   ServerSideNetworkAdaption,
   SimulcastLayers,
@@ -177,9 +178,9 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'Background Replacement' | 'None';
+type VideoFilterName = 'Premium Device' | 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'Background Replacement' | 'None';
 
-const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
+const VIDEO_FILTERS: VideoFilterName[] = ['Premium Device', 'Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
 type ButtonState = 'on' | 'off' | 'disabled';
 
@@ -347,6 +348,7 @@ export class DemoMeetingApp
   liveTranscriptionDisplayables: HTMLElement[] = [];
 
   chosenVideoTransformDevice: DefaultVideoTransformDevice;
+  chosenPremiumVideoTransformDevice: PremiumVideoTransformDevice;
   chosenVideoFilter: VideoFilterName = 'None';
   selectedVideoFilterItem: VideoFilterName = 'None';
 
@@ -780,6 +782,10 @@ export class DemoMeetingApp
         if (this.chosenVideoTransformDevice) {
           await this.chosenVideoTransformDevice.stop();
           this.chosenVideoTransformDevice = null;
+        }
+        if (this.chosenPremiumVideoTransformDevice) {
+          await this.chosenPremiumVideoTransformDevice.stop();
+          this.chosenPremiumVideoTransformDevice = null;
         }
         await this.openVideoInputFromSelection(videoInput.value, true);
       } catch (err) {
@@ -1828,6 +1834,8 @@ export class DemoMeetingApp
 
     await this.chosenVideoTransformDevice?.stop();
     this.chosenVideoTransformDevice = undefined;
+    await this.chosenPremiumVideoTransformDevice?.stop();
+    this.chosenPremiumVideoTransformDevice = undefined;
     this.roster.clear();
   }
 
@@ -2472,6 +2480,7 @@ export class DemoMeetingApp
     this.chosenVideoFilter = 'None';
     this.selectedVideoFilterItem = 'None';
     this.chosenVideoTransformDevice?.stop();
+    this.chosenPremiumVideoTransformDevice?.stop();
   }
 
   private getBackgroundBlurSpec(): BackgroundFilterSpec {
@@ -3114,6 +3123,15 @@ export class DemoMeetingApp
   ): Promise<VideoInputDevice> {
     if (this.selectedVideoFilterItem === 'None') {
       return innerDevice;
+    } else if (this.selectedVideoFilterItem === 'Premium Device') {
+      if (this.chosenPremiumVideoTransformDevice) {
+        this.chosenPremiumVideoTransformDevice.stop();
+      }
+      this.chosenPremiumVideoTransformDevice = new PremiumVideoTransformDevice(
+        this.meetingLogger,
+        innerDevice,
+      );
+      return this.chosenPremiumVideoTransformDevice;
     }
 
     if (
@@ -3266,6 +3284,7 @@ export class DemoMeetingApp
 
       // Stop any video processor.
       await this.chosenVideoTransformDevice?.stop();
+      await this.chosenPremiumVideoTransformDevice?.stop();
 
       // Stop Voice Focus.
       await this.voiceFocusDevice?.stop();
