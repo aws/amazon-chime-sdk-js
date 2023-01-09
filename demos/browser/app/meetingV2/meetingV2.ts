@@ -47,9 +47,9 @@ import {
   MultiLogger,
   NoOpEventReporter,
   NoOpVideoFrameProcessor,
-  PremiumVideoEffectDriver,
-  PremiumVideoEffectConfig,
-  PremiumVideoTransformDevice,
+  MLVideoFxDriver,
+  MLVideoFxConfig,
+  MLVideoFxTransformDevice,
   RemovableAnalyserNode,
   ServerSideNetworkAdaption,
   SimulcastLayers,
@@ -180,10 +180,13 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Premium Device - Blue Shift' | 'Premium Device - Red Shift' | 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 
+// TODO(ryanajae): need to clean up the previous develpoment of type VideoFilterName. We should move to enum based so that we are 
+// no longer checking string fragments in line
+type VideoFilterName = 'MLVideoFx - Blue Shift' | 'MLVideoFx - Red Shift' | 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 
   'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'Background Replacement' | 'None';
 
-const VIDEO_FILTERS: VideoFilterName[] = ['Premium Device - Blue Shift', 'Premium Device - Red Shift', 'CircularCut', 'NoOp', 'Resize (9/16)'];
+// TODO(hunnorth): remove experimental red and blur shift features  
+const DEFAULT_VIDEO_FILTERS: VideoFilterName[] = ['MLVideoFx - Blue Shift', 'MLVideoFx - Red Shift', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
 type ButtonState = 'on' | 'off' | 'disabled';
 
@@ -350,9 +353,11 @@ export class DemoMeetingApp
 
   liveTranscriptionDisplayables: HTMLElement[] = [];
 
+  // The DefaultVideoTransformDevice will soon become deprecated in favor of the 
+  // the MLVideoFxTransformDevice
   chosenVideoTransformDevice: DefaultVideoTransformDevice;
-  chosenPremiumVideoTransformDevice: PremiumVideoTransformDevice;
-  premiumVideoEffectDriver: PremiumVideoEffectDriver;
+  chosenMLVideoFxTransformDevice: MLVideoFxTransformDevice;
+  videoFxDriver: MLVideoFxDriver;
   chosenVideoFilter: VideoFilterName = 'None';
   selectedVideoFilterItem: VideoFilterName = 'None';
 
@@ -787,10 +792,8 @@ export class DemoMeetingApp
           await this.chosenVideoTransformDevice.stop();
           this.chosenVideoTransformDevice = null;
         }
-        if (this.chosenPremiumVideoTransformDevice) {
-          await this.chosenPremiumVideoTransformDevice.stop();
-          this.chosenPremiumVideoTransformDevice = null;
-        }
+        await this.chosenMLVideoFxTransformDevice?.stop();
+        this.chosenMLVideoFxTransformDevice = null;
         await this.openVideoInputFromSelection(videoInput.value, true);
       } catch (err) {
         fatal(err);
@@ -1838,8 +1841,8 @@ export class DemoMeetingApp
 
     await this.chosenVideoTransformDevice?.stop();
     this.chosenVideoTransformDevice = undefined;
-    await this.chosenPremiumVideoTransformDevice?.stop();
-    this.chosenPremiumVideoTransformDevice = undefined;
+    await this.chosenMLVideoFxTransformDevice?.stop();
+    this.chosenMLVideoFxTransformDevice = null;
     this.roster.clear();
   }
 
@@ -2484,7 +2487,7 @@ export class DemoMeetingApp
     this.chosenVideoFilter = 'None';
     this.selectedVideoFilterItem = 'None';
     this.chosenVideoTransformDevice?.stop();
-    this.chosenPremiumVideoTransformDevice?.stop();
+    this.chosenMLVideoFxTransformDevice?.stop();
   }
 
   private getBackgroundBlurSpec(): BackgroundFilterSpec {
@@ -2500,7 +2503,7 @@ export class DemoMeetingApp
     let filters: VideoFilterName[] = ['None'];
 
     if (this.areVideoFiltersSupported()) {
-      filters = filters.concat(VIDEO_FILTERS);
+      filters = filters.concat(DEFAULT_VIDEO_FILTERS);
       if (platformCanSupportBodyPixWithoutDegradation()) {
         if (!this.loadingBodyPixDependencyPromise) {
           this.loadingBodyPixDependencyPromise = loadBodyPixDependency(this.loadingBodyPixDependencyTimeoutMs);
@@ -3122,31 +3125,14 @@ export class DemoMeetingApp
     return null;
   }
 
+  // TODO(ryanajae): fix nested forloops
   private async videoInputSelectionWithOptionalFilter(
       innerDevice: Device
   ): Promise<VideoInputDevice> {
     if (this.selectedVideoFilterItem === 'None') {
       return innerDevice;
-    } else if (this.selectedVideoFilterItem.startsWith('Premium Device')) {
-      const blueShiftEnabled = this.selectedVideoFilterItem.includes('Blue') ? true : false;
-      const redShiftEnabled = this.selectedVideoFilterItem.includes('Red') ? true : false;
-
-      if (this.chosenPremiumVideoTransformDevice) {
-        this.premiumVideoEffectDriver.setBlueShiftState(blueShiftEnabled);
-        this.premiumVideoEffectDriver.setRedShiftState(redShiftEnabled);
-        return this.chosenPremiumVideoTransformDevice;
-      } 
-      let premiumVideoEffectConfig: PremiumVideoEffectConfig = {
-        "blueShiftEnabled": blueShiftEnabled,
-        "redShiftEnabled": redShiftEnabled,
-      }
-      this.premiumVideoEffectDriver = new PremiumVideoEffectDriver(this.meetingLogger, premiumVideoEffectConfig)
-      this.chosenPremiumVideoTransformDevice = new PremiumVideoTransformDevice(
-        this.meetingLogger,
-        innerDevice,
-        this.premiumVideoEffectDriver
-      );
-      return this.chosenPremiumVideoTransformDevice;
+    } else if (this.selectedVideoFilterItem.startsWith('MLVideoFx')) {
+      return this.configureVideoFxDriver(innerDevice);
     }
 
     if (
@@ -3175,6 +3161,32 @@ export class DemoMeetingApp
         [proc]
     );
     return this.chosenVideoTransformDevice;
+  }
+
+  // TODO(ryanajae):re-write this function after we use enum for VideoFilterItems type. Maybe add a function that converts a 
+  // selectedVideoFilterItem into a videoFxConfig?
+  private async configureVideoFxDriver(
+    innerDevice: Device
+  ): Promise<VideoInputDevice> {
+    const blueShiftEnabled = this.selectedVideoFilterItem.includes('Blue') ? true : false;
+    const redShiftEnabled = this.selectedVideoFilterItem.includes('Red') ? true : false;
+
+    if (this.chosenMLVideoFxTransformDevice) {
+      this.videoFxDriver.setBlueShiftState(blueShiftEnabled);
+      this.videoFxDriver.setRedShiftState(redShiftEnabled);
+      return this.chosenMLVideoFxTransformDevice;
+    } 
+    let videoFxConfig: MLVideoFxConfig = {
+      "blueShiftEnabled": blueShiftEnabled,
+      "redShiftEnabled": redShiftEnabled,
+    }
+    this.videoFxDriver = new MLVideoFxDriver(this.meetingLogger, videoFxConfig);
+    this.chosenMLVideoFxTransformDevice = new MLVideoFxTransformDevice(
+      this.meetingLogger,
+      innerDevice,
+      this.videoFxDriver
+    );
+    return this.chosenMLVideoFxTransformDevice;
   }
 
   private async videoInputSelectionToDevice(value: string | null): Promise<VideoInputDevice> {
@@ -3299,7 +3311,7 @@ export class DemoMeetingApp
 
       // Stop any video processor.
       await this.chosenVideoTransformDevice?.stop();
-      await this.chosenPremiumVideoTransformDevice?.stop();
+      await this.chosenMLVideoFxTransformDevice?.stop();
 
       // Stop Voice Focus.
       await this.voiceFocusDevice?.stop();

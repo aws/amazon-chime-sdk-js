@@ -150,6 +150,10 @@ import ListenForVolumeIndicatorsTask from './task/ListenForVolumeIndicatorsTask'
 import Log from './logger/Log';
 import LogLevel from './logger/LogLevel';
 import Logger from './logger/Logger';
+import MLVideoFxConfig from './mlvideofx/MLVideoFxConfig';
+import MLVideoFxDriver from './mlvideofx/MLVideoFxDriver';
+import MLVideoFxStreamHandler from './mlvideofx/MLVideoFxStreamHandler';
+import MLVideoFxTransformDevice from './mlvideofx/MLVideoFxTransformDevice';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
@@ -204,10 +208,6 @@ import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
 import PrefetchOn from './messagingsession/PrefetchOn';
 import PrefetchSortBy from './messagingsession/PrefetchSortBy';
-import PremiumVideoEffectConfig from './premiumvideodevice/PremiumVideoEffectConfig';
-import PremiumVideoEffectDriver from './premiumvideodevice/PremiumVideoEffectDriver';
-import PremiumVideoStreamHandler from './premiumvideodevice/PremiumVideoStreamHandler';
-import PremiumVideoTransformDevice from './premiumvideodevice/PremiumVideoTransformDevice';
 import PromiseQueue from './utils/PromiseQueue';
 import PromoteToPrimaryMeetingTask from './task/PromoteToPrimaryMeetingTask';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
@@ -486,6 +486,10 @@ export {
   Log,
   LogLevel,
   Logger,
+  MLVideoFxConfig,
+  MLVideoFxDriver,
+  MLVideoFxStreamHandler,
+  MLVideoFxTransformDevice,
   Maybe,
   MaybeProvider,
   MediaDeviceFactory,
@@ -545,10 +549,6 @@ export {
   PingPongObserver,
   PrefetchOn,
   PrefetchSortBy,
-  PremiumVideoEffectConfig,
-  PremiumVideoEffectDriver,
-  PremiumVideoStreamHandler,
-  PremiumVideoTransformDevice,
   PromiseQueue,
   PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,
