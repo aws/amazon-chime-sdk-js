@@ -1,4 +1,5 @@
 import Logger from "../logger/Logger";
+import PremiumVideoEffectDriver from "./PremiumVideoEffectDriver";
 
 const DEFAULT_FRAMERATE = 15;
 
@@ -27,7 +28,8 @@ export default class PremiumVideoStreamHandler {
     outputMediaStream: MediaStream = new MediaStream();
 
     // Constructor just sets a logger for the object
-    constructor(private logger: Logger) {}
+    constructor(private logger: Logger,
+                private videoEffectDriver: PremiumVideoEffectDriver) {}
  
     getActiveOutputMediaStream(): MediaStream {
         if (this.isOutputMediaStreamActive()) {
@@ -99,6 +101,7 @@ export default class PremiumVideoStreamHandler {
             this.canvasInput.width, this.canvasInput.height);
 
         // Transform input data
+        let transformedImageData = await this.videoEffectDriver.apply(inputImageData);
 
         // Confirm that the output canvas is still matching video frame size
         if (this.canvasOutput.width !== this.videoInput.videoWidth && 
@@ -107,8 +110,8 @@ export default class PremiumVideoStreamHandler {
            this.canvasOutput.height = this.videoInput.videoHeight;
        }
     
-       // Place transformed data onto outp
-        this.outputCtx.putImageData(inputImageData, 0, 0);
+       // Place transformed data onto output canvas
+        this.outputCtx.putImageData(transformedImageData, 0, 0);
 
         if (!this.hasStarted) {
             this.hasStarted = true;

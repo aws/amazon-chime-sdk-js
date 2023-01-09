@@ -2,6 +2,7 @@ import Device from '../devicecontroller/Device';
 import VideoTransformDevice from '../devicecontroller/VideoTransformDevice';
 import Logger from '../logger/Logger';
 import PremiumVideoStreamHandler from './PremiumVideoStreamHandler';
+import PremiumVideoEffectDriver from "./PremiumVideoEffectDriver";
 
 export default class PremiumVideoTransformDevice implements VideoTransformDevice {
     private inputMediaStream: MediaStream;
@@ -10,9 +11,11 @@ export default class PremiumVideoTransformDevice implements VideoTransformDevice
     constructor(
         private logger: Logger,
         private device: Device,
+        private videoEffectDriver: PremiumVideoEffectDriver,
     ) {
         // initialize the stream handler
-        this.premiumVideoStreamHandler = new PremiumVideoStreamHandler(logger);
+        this.premiumVideoStreamHandler = new PremiumVideoStreamHandler(logger,
+            videoEffectDriver);
     }
 
     async stop(): Promise<void> {
@@ -56,7 +59,8 @@ export default class PremiumVideoTransformDevice implements VideoTransformDevice
     chooseNewInnerDevice(newDevice: Device): PremiumVideoTransformDevice {
         const newPremiumTransformDevice = new PremiumVideoTransformDevice(
             this.logger, 
-            newDevice
+            newDevice,
+            this.videoEffectDriver
         );
         return newPremiumTransformDevice;
     }

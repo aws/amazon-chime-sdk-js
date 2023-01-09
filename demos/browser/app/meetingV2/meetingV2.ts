@@ -47,6 +47,8 @@ import {
   MultiLogger,
   NoOpEventReporter,
   NoOpVideoFrameProcessor,
+  PremiumVideoEffectDriver,
+  PremiumVideoEffectConfig,
   PremiumVideoTransformDevice,
   RemovableAnalyserNode,
   ServerSideNetworkAdaption,
@@ -178,9 +180,10 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Premium Device' | 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'Background Replacement' | 'None';
+type VideoFilterName = 'Premium Device - Blue Shift' | 'Premium Device - Red Shift' | 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 
+  'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'Background Replacement' | 'None';
 
-const VIDEO_FILTERS: VideoFilterName[] = ['Premium Device', 'Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
+const VIDEO_FILTERS: VideoFilterName[] = ['Premium Device - Blue Shift', 'Premium Device - Red Shift', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
 type ButtonState = 'on' | 'off' | 'disabled';
 
@@ -349,6 +352,7 @@ export class DemoMeetingApp
 
   chosenVideoTransformDevice: DefaultVideoTransformDevice;
   chosenPremiumVideoTransformDevice: PremiumVideoTransformDevice;
+  premiumVideoEffectDriver: PremiumVideoEffectDriver;
   chosenVideoFilter: VideoFilterName = 'None';
   selectedVideoFilterItem: VideoFilterName = 'None';
 
@@ -3123,13 +3127,24 @@ export class DemoMeetingApp
   ): Promise<VideoInputDevice> {
     if (this.selectedVideoFilterItem === 'None') {
       return innerDevice;
-    } else if (this.selectedVideoFilterItem === 'Premium Device') {
+    } else if (this.selectedVideoFilterItem.startsWith('Premium Device')) {
+      const blueShiftEnabled = this.selectedVideoFilterItem.includes('Blue') ? true : false;
+      const redShiftEnabled = this.selectedVideoFilterItem.includes('Red') ? true : false;
+
       if (this.chosenPremiumVideoTransformDevice) {
-        this.chosenPremiumVideoTransformDevice.stop();
+        this.premiumVideoEffectDriver.setBlueShiftState(blueShiftEnabled);
+        this.premiumVideoEffectDriver.setRedShiftState(redShiftEnabled);
+        return this.chosenPremiumVideoTransformDevice;
+      } 
+      let premiumVideoEffectConfig: PremiumVideoEffectConfig = {
+        "blueShiftEnabled": blueShiftEnabled,
+        "redShiftEnabled": redShiftEnabled,
       }
+      this.premiumVideoEffectDriver = new PremiumVideoEffectDriver(this.meetingLogger, premiumVideoEffectConfig)
       this.chosenPremiumVideoTransformDevice = new PremiumVideoTransformDevice(
         this.meetingLogger,
         innerDevice,
+        this.premiumVideoEffectDriver
       );
       return this.chosenPremiumVideoTransformDevice;
     }

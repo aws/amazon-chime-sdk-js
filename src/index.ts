@@ -204,6 +204,8 @@ import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
 import PrefetchOn from './messagingsession/PrefetchOn';
 import PrefetchSortBy from './messagingsession/PrefetchSortBy';
+import PremiumVideoEffectConfig from './premiumvideodevice/PremiumVideoEffectConfig';
+import PremiumVideoEffectDriver from './premiumvideodevice/PremiumVideoEffectDriver';
 import PremiumVideoStreamHandler from './premiumvideodevice/PremiumVideoStreamHandler';
 import PremiumVideoTransformDevice from './premiumvideodevice/PremiumVideoTransformDevice';
 import PromiseQueue from './utils/PromiseQueue';
@@ -543,6 +545,8 @@ export {
   PingPongObserver,
   PrefetchOn,
   PrefetchSortBy,
+  PremiumVideoEffectConfig,
+  PremiumVideoEffectDriver,
   PremiumVideoStreamHandler,
   PremiumVideoTransformDevice,
   PromiseQueue,
