@@ -6,6 +6,7 @@ import { SdkMetric, SdkStreamDimension } from '../signalingprotocol/SignalingPro
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import Direction from './ClientMetricReportDirection';
 import MediaType from './ClientMetricReportMediaType';
+import QualityReason from './ClientMetricReportQualityReason';
 import GlobalMetricReport from './GlobalMetricReport';
 import StreamMetricReport from './StreamMetricReport';
 
@@ -41,13 +42,13 @@ export default class ClientMetricReport {
     const implName = String(metricReport.currentStringMetrics[metricName]);
     switch (implName) {
       case 'none':
-        return 0;
+        return QualityReason.NONE;
       case 'cpu':
-        return 1;
+        return QualityReason.CPU;
       case 'bandwidth':
-        return 2;
+        return QualityReason.BANDWIDTH;
       default:
-        return 3;
+        return QualityReason.OTHER;
     }
   };
 
