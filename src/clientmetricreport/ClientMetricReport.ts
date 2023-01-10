@@ -6,6 +6,7 @@ import { SdkMetric, SdkStreamDimension } from '../signalingprotocol/SignalingPro
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import Direction from './ClientMetricReportDirection';
 import MediaType from './ClientMetricReportMediaType';
+import QualityReason from './ClientMetricReportQualityReason';
 import GlobalMetricReport from './GlobalMetricReport';
 import StreamMetricReport from './StreamMetricReport';
 
@@ -41,13 +42,13 @@ export default class ClientMetricReport {
     const implName = String(metricReport.currentStringMetrics[metricName]);
     switch (implName) {
       case 'none':
-        return 0;
+        return QualityReason.NONE;
       case 'cpu':
-        return 1;
+        return QualityReason.CPU;
       case 'bandwidth':
-        return 2;
+        return QualityReason.BANDWIDTH;
       default:
-        return 3;
+        return QualityReason.OTHER;
     }
   };
 
@@ -361,18 +362,18 @@ export default class ClientMetricReport {
       type: SdkMetric.Type.VIDEO_DECODER_IS_HARDWARE,
     },
     freezeCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FREEZE_COUNT },
-    totalFreezesDurationMs: {
+    totalFreezesDuration: {
       transform: this.averageTimeSpentPerSecondInMilliseconds,
-      type: SdkMetric.Type.VIDEO_FREEZE_DURATION,
+      type: SdkMetric.Type.VIDEO_FREEZE_DURATION_MS,
     },
     pauseCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PAUSE_COUNT },
-    totalPausesDurationMs: {
+    totalPausesDuration: {
       transform: this.averageTimeSpentPerSecondInMilliseconds,
-      type: SdkMetric.Type.VIDEO_PAUSE_DURATION,
+      type: SdkMetric.Type.VIDEO_PAUSE_DURATION_MS,
     },
-    totalProcessingDelayMs: {
+    totalProcessingDelay: {
       transform: this.averageTimeSpentPerSecondInMilliseconds,
-      type: SdkMetric.Type.VIDEO_PROCESSING_TIME,
+      type: SdkMetric.Type.VIDEO_PROCESSING_TIME_MS,
     },
   };
 
