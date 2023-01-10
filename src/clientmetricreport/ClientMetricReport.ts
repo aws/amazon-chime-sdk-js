@@ -362,7 +362,7 @@ export default class ClientMetricReport {
       type: SdkMetric.Type.VIDEO_DECODER_IS_HARDWARE,
     },
     freezeCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FREEZE_COUNT },
-    totalFreezesDuration: {
+    totalFreezesDurationMs: {
       transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_FREEZE_DURATION_MS,
     },
@@ -485,7 +485,7 @@ export default class ClientMetricReport {
       dir: Direction.DOWNSTREAM,
     },
     videoFreezeDuration: {
-      source: 'totalFreezesDuration',
+      source: 'totalFreezesDurationMs',
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },
