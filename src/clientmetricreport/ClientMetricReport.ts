@@ -367,7 +367,7 @@ export default class ClientMetricReport {
       type: SdkMetric.Type.VIDEO_FREEZE_DURATION_MS,
     },
     pauseCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PAUSE_COUNT },
-    totalPausesDuration: {
+    totalPausesDurationMs: {
       transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_PAUSE_DURATION_MS,
     },
@@ -495,7 +495,7 @@ export default class ClientMetricReport {
       dir: Direction.DOWNSTREAM,
     },
     videoPauseDuration: {
-      source: 'totalPausesDuration',
+      source: 'totalPausesDurationMs',
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },
