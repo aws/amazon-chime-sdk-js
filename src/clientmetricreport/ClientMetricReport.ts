@@ -377,16 +377,16 @@ export default class ClientMetricReport {
     freezeCount: { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_FREEZE_COUNT },
     totalFreezesDuration: {
       transform: this.deltaValueMS,
-      type: SdkMetric.Type.VIDEO_FREEZE_DURATION,
+      type: SdkMetric.Type.VIDEO_FREEZE_DURATION_MS,
     },
     pauseCount: { transform: this.deltaValue, type: SdkMetric.Type.VIDEO_PAUSE_COUNT },
     totalPausesDuration: {
       transform: this.deltaValueMS,
-      type: SdkMetric.Type.VIDEO_PAUSE_DURATION,
+      type: SdkMetric.Type.VIDEO_PAUSE_DURATION_MS,
     },
     totalProcessingDelay: {
       transform: this.deltaValueMS,
-      type: SdkMetric.Type.VIDEO_PROCESSING_TIME,
+      type: SdkMetric.Type.VIDEO_PROCESSING_TIME_MS,
     },
   };
 

@@ -7305,7 +7305,7 @@ $root.SdkMetric = (function() {
         case 90:
             message.type = 90;
             break;
-        case "VIDEO_FREEZE_DURATION":
+        case "VIDEO_FREEZE_DURATION_MS":
         case 91:
             message.type = 91;
             break;
@@ -7313,7 +7313,7 @@ $root.SdkMetric = (function() {
         case 92:
             message.type = 92;
             break;
-        case "VIDEO_PAUSE_DURATION":
+        case "VIDEO_PAUSE_DURATION_MS":
         case 93:
             message.type = 93;
             break;
@@ -7321,7 +7321,7 @@ $root.SdkMetric = (function() {
         case 94:
             message.type = 94;
             break;
-        case "VIDEO_PROCESSING_TIME":
+        case "VIDEO_PROCESSING_TIME_MS":
         case 95:
             message.type = 95;
             break;

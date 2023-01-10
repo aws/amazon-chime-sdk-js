@@ -533,7 +533,7 @@ describe('ClientMetricReport', () => {
       upstreamReport.mediaType = MediaType.VIDEO;
       upstreamReport.direction = Direction.UPSTREAM;
       upstreamReport.currentMetrics['framesEncoded'] = 100;
-      upstreamReport.currentStringMetrics['qualityLimitationReason']="none";
+      upstreamReport.currentStringMetrics['qualityLimitationReason'] = 'none';
       clientMetricReport.streamMetricReports[upstreamSsrc] = upstreamReport;
       const downstreamSsrc = 2;
       const downstreamReport = new StreamMetricReport();
@@ -561,14 +561,14 @@ describe('ClientMetricReport', () => {
       upstreamReport_1.mediaType = MediaType.VIDEO;
       upstreamReport_1.direction = Direction.UPSTREAM;
       upstreamReport_1.currentMetrics['framesEncoded'] = 100;
-      upstreamReport_1.currentStringMetrics['qualityLimitationReason']="cpu";
+      upstreamReport_1.currentStringMetrics['qualityLimitationReason'] = 'cpu';
       clientMetricReport.streamMetricReports[upstreamSsrc_1] = upstreamReport_1;
       const upstreamSsrc_2 = 12;
       const upstreamReport_2 = new StreamMetricReport();
       upstreamReport_2.mediaType = MediaType.VIDEO;
       upstreamReport_2.direction = Direction.UPSTREAM;
       upstreamReport_2.currentMetrics['framesEncoded'] = 100;
-      upstreamReport_2.currentStringMetrics['qualityLimitationReason']="bandwidth";
+      upstreamReport_2.currentStringMetrics['qualityLimitationReason'] = 'bandwidth';
       clientMetricReport.streamMetricReports[upstreamSsrc_2] = upstreamReport_2;
       const downstreamSsrc = 22;
       const downstreamReport = new StreamMetricReport();
@@ -628,8 +628,12 @@ describe('ClientMetricReport', () => {
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
       expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc]).length).to.equal(2);
       expect(Object.keys(videoStreamMetrics[selfAttendeeId][upstreamSsrc]).length).to.equal(2);
-      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[0]).to.equal("videoFreezeCount");
-      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[1]).to.equal("videoFreezeDuration");
+      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[0]).to.equal(
+        'videoFreezeCount'
+      );
+      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[1]).to.equal(
+        'videoFreezeDuration'
+      );
       expect(Object.values(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[0]).to.equal(1);
       expect(Object.values(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[1]).to.equal(100000);
     });
@@ -661,8 +665,12 @@ describe('ClientMetricReport', () => {
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
       expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc]).length).to.equal(2);
       expect(Object.keys(videoStreamMetrics[selfAttendeeId][upstreamSsrc]).length).to.equal(2);
-      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[0]).to.equal("videoPauseCount");
-      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[1]).to.equal("videoPauseDuration");
+      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[0]).to.equal(
+        'videoPauseCount'
+      );
+      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[1]).to.equal(
+        'videoPauseDuration'
+      );
       expect(Object.values(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[0]).to.equal(1);
       expect(Object.values(videoStreamMetrics[selfAttendeeId][downstreamSsrc])[1]).to.equal(100000);
     });
