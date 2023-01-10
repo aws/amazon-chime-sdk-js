@@ -371,7 +371,7 @@ export default class ClientMetricReport {
       transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_PAUSE_DURATION_MS,
     },
-    totalProcessingDelay: {
+    totalProcessingDurationMs: {
       transform: this.averageTimeSpentPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_PROCESSING_TIME_MS,
     },
@@ -500,7 +500,7 @@ export default class ClientMetricReport {
       dir: Direction.DOWNSTREAM,
     },
     videoProcessingDelay: {
-      source: 'totalProcessingDelay',
+      source: 'totalProcessingDurationMs',
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },
