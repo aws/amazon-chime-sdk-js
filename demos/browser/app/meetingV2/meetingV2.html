@@ -161,10 +161,15 @@
             <option value="none">None</option>
             <option value="enable-bandwidth-probing">Enable Bandwidth Probing</option>
           </select>
-          <div class="form-check" id="enable-pagination-checkbox" style="text-align: left; display: none;">
-            <input type="checkbox" id="enable-pagination" class="form-check-input">
-            <label for="enable-pagination" class="form-check-label">Paginate displayed video tiles</label>
-          </div>
+          <label id="pagination-title" for="pagination-page-size" style="display: none; padding-top:5px">Paginate displayed video tiles</label>
+          <select id="pagination-page-size" class="form-select" style="width:100%; display: none;">
+            <option value="2">2</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25" selected>25</option>
+          </select>      
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" checked id="preconnect" class="form-check-input">
             <label for="preconnect" class="form-check-label">Open signaling connection early</label>
