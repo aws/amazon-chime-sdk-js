@@ -367,6 +367,23 @@ describe('JoinAndReceiveIndexTask', () => {
       expect(context.turnCredentials.uris).to.deep.equal(['fake-turn', 'fake-turns']);
     });
 
+    it('can run and send join with flag to disable periodic keyframe requests', async () => {
+      context.meetingSessionConfiguration.disablePeriodicKeyframeRequestOnContentSender = true;
+
+      const signalingSpy = sinon.spy(context.signalingClient, 'join');
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(signalingSpy.getCall(0).args[0].disablePeriodicKeyframeRequestOnContentSender).to.be
+        .true;
+    });
+
     it('can run and only handle SdkIndexFrame', async () => {
       await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);

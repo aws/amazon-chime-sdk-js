@@ -513,14 +513,14 @@ export interface ISdkJoinFrame {
     /** SdkJoinFrame wantsCompressedSdp */
     wantsCompressedSdp?: (boolean|null);
 
-    /** SdkJoinFrame wantsServerSideNetworkProbingOnReceiveSideEstimator */
-    wantsServerSideNetworkProbingOnReceiveSideEstimator?: (boolean|null);
-
     /** SdkJoinFrame serverSideNetworkAdaption */
     serverSideNetworkAdaption?: (SdkServerSideNetworkAdaption|null);
 
     /** SdkJoinFrame supportedServerSideNetworkAdaptions */
     supportedServerSideNetworkAdaptions?: (SdkServerSideNetworkAdaption[]|null);
+
+    /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender */
+    disablePeriodicKeyframeRequestOnContentSender?: (boolean|null);
 }
 
 /** Represents a SdkJoinFrame. */
@@ -550,14 +550,14 @@ export class SdkJoinFrame implements ISdkJoinFrame {
     /** SdkJoinFrame wantsCompressedSdp. */
     public wantsCompressedSdp: boolean;
 
-    /** SdkJoinFrame wantsServerSideNetworkProbingOnReceiveSideEstimator. */
-    public wantsServerSideNetworkProbingOnReceiveSideEstimator: boolean;
-
     /** SdkJoinFrame serverSideNetworkAdaption. */
     public serverSideNetworkAdaption: SdkServerSideNetworkAdaption;
 
     /** SdkJoinFrame supportedServerSideNetworkAdaptions. */
     public supportedServerSideNetworkAdaptions: SdkServerSideNetworkAdaption[];
+
+    /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender. */
+    public disablePeriodicKeyframeRequestOnContentSender: boolean;
 
     /**
      * Creates a new SdkJoinFrame instance using the specified properties.
