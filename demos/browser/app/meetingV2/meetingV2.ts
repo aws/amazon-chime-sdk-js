@@ -1773,7 +1773,7 @@ export class DemoMeetingApp
 
     this.contentShare = new ContentShareManager(this.meetingLogger, this.audioVideo, this.usingStereoMusicAudioProfile);
   }
-   
+
   async setupEventReporter(configuration: MeetingSessionConfiguration): Promise<EventReporter> {
     let eventReporter: EventReporter;
     const ingestionURL = configuration.urls.eventIngestionURL;
