@@ -237,12 +237,6 @@ export class DemoMeetingApp
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
 
-  // Currently this is the same as the maximum number of clients that can enable video (25)
-  // so we id the check box 'enable-pagination' rather then 'reduce-pagionation', but technically pagination is always enabled.
-  static readonly REMOTE_VIDEO_PAGE_SIZE: number = 25;
-  // Enabled on authentication screen by 'enable-pagination' checkbox.
-  static readonly REDUCED_REMOTE_VIDEO_PAGE_SIZE: number = 2;
-
   // Ideally we don't need to change this. Keep this configurable in case users have a super slow network.
   loadingBodyPixDependencyTimeoutMs: number = 10_000;
   loadingBodyPixDependencyPromise: undefined | Promise<void>;
@@ -570,12 +564,15 @@ export class DemoMeetingApp
       const priorityBasedDownlinkPolicyConfigTitle = document.getElementById(
           'priority-downlink-policy-preset-title'
       ) as HTMLElement;
-      const enablePaginationCheckbox = document.getElementById(
-          'enable-pagination-checkbox'
-      ) as HTMLSelectElement;
       const serverSideNetworkAdaption = document.getElementById(
           'server-side-network-adaption'
       ) as HTMLSelectElement;
+      const paginationPageSize = document.getElementById(
+        'pagination-page-size'
+      ) as HTMLElement;
+      const paginationTitle = document.getElementById(
+        'pagination-title'
+      ) as HTMLElement;      
       const serverSideNetworkAdaptionTitle = document.getElementById(
           'server-side-network-adaption-title'
       ) as HTMLElement;
@@ -583,14 +580,16 @@ export class DemoMeetingApp
       if (this.usePriorityBasedDownlinkPolicy) {
         priorityBasedDownlinkPolicyConfigTitle.style.display = 'block';
         priorityBasedDownlinkPolicyConfig.style.display = 'block';
-        enablePaginationCheckbox.style.display = 'block';
         serverSideNetworkAdaption.style.display = 'block';
+        paginationPageSize.style.display = 'block';
+        paginationTitle.style.display = 'block';
         serverSideNetworkAdaptionTitle.style.display = 'block';
       } else {
         priorityBasedDownlinkPolicyConfigTitle.style.display = 'none';
         priorityBasedDownlinkPolicyConfig.style.display = 'none';
-        enablePaginationCheckbox.style.display = 'none';
         serverSideNetworkAdaption.style.display = 'none';
+        paginationTitle.style.display = 'none';
+        paginationPageSize.style.display = 'none';
         serverSideNetworkAdaptionTitle.style.display = 'none';
       }
     });
@@ -1763,10 +1762,13 @@ export class DemoMeetingApp
       this.audioVideo.setVideoCodecSendPreferences(this.videoCodecPreferences);
       this.audioVideo.setContentShareVideoCodecPreferences(this.videoCodecPreferences);
     }
+
+    // The default pagination size is 25.
+    let paginationPageSize = parseInt((document.getElementById('pagination-page-size') as HTMLSelectElement).value)
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
         this.meetingLogger,
         this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
-        (document.getElementById('enable-pagination') as HTMLInputElement).checked ? DemoMeetingApp.REDUCED_REMOTE_VIDEO_PAGE_SIZE : DemoMeetingApp.REMOTE_VIDEO_PAGE_SIZE)
+        paginationPageSize)
     this.audioVideo.addObserver(this.videoTileCollection);
 
     this.contentShare = new ContentShareManager(this.meetingLogger, this.audioVideo, this.usingStereoMusicAudioProfile);
