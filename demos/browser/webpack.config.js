@@ -53,7 +53,11 @@ if (!csp['script-src'].includes("'unsafe-eval'")) {
 }
 
 // 5. Access to event ingestion gamma endpoint for testing and canaries.
-csp['connect-src'] += ' https://*.ingest.gchime.aws';
+csp['connect-src'] += ' https://*.ingest.gchime.aws ';
+
+// TODO(hunnorth): remove this after final endpoint for assets is configured
+// Temporary location where MLVideoFx assets exist
+csp['connect-src'] += 'http://d1nux75bjarwom.cloudfront.net/';
 
 module.exports = env => {
   console.info('Env:', JSON.stringify(env, null, 2));

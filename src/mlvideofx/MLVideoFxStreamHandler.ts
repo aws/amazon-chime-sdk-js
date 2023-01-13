@@ -119,7 +119,7 @@ export default class MLVideoFxStreamHandler {
       this.canvasInput.width = this.videoInput.videoWidth;
       this.canvasInput.height = this.videoInput.videoHeight;
       // Draw video onto top left (0,0) coordinate of our canvas
-      this.inputCtx.drawImage(this.videoInput, 0, 0); 
+      this.inputCtx.drawImage(this.videoInput, 0, 0);
     }
 
     // Collect out input frame data starting from the top left corner (0,0)
@@ -145,12 +145,12 @@ export default class MLVideoFxStreamHandler {
     // processVideoLatency is the amout of time it took to calculate the final transformed frame.
     // (MS_PER_SECOND / this.fr) is the total amount of ms that must pass between each
     // frame processing so that we maintain the desired framerate
-    // Therefore, after calculating the frame transformation, we must wait an additional 
+    // Therefore, after calculating the frame transformation, we must wait an additional
     // (MS_PER_SECOND / this.fr) - processVideoLatency to properly maintain the desired fps
     const processVideoLatency = performance.now() - processVideoStart;
-    const nextFrameDelay = Math.max(MIN_FRAME_DELAY, (MS_PER_SECOND / this.fr) - processVideoLatency);
+    const nextFrameDelay = Math.max(MIN_FRAME_DELAY, MS_PER_SECOND / this.fr - processVideoLatency);
 
-    // TODO(hunnorth): use requestAnimationFrame which is more organic and allows browser to 
+    // TODO(hunnorth): use requestAnimationFrame which is more organic and allows browser to
     // conserve resources by its choices.
     /* @ts-ignore */
     this.lastTimeout = setTimeout(this.process, nextFrameDelay);

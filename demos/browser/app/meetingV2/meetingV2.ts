@@ -3176,16 +3176,24 @@ export class DemoMeetingApp
       this.videoFxDriver.setRedShiftState(redShiftEnabled);
       return this.chosenMLVideoFxTransformDevice;
     } 
-    let videoFxConfig: MLVideoFxConfig = {
+    // Specfiy default configuration for the new MLVideoFxTransformDevice
+    let defaultMLVideoFxConfig: MLVideoFxConfig = {
       "blueShiftEnabled": blueShiftEnabled,
       "redShiftEnabled": redShiftEnabled,
     }
-    this.videoFxDriver = new MLVideoFxDriver(this.meetingLogger, videoFxConfig);
+    // Create the MLVideoFxDriver with default configuration
+    this.videoFxDriver = new MLVideoFxDriver(this.meetingLogger, defaultMLVideoFxConfig);
+    // Load the assets into the driver.
+    //  Once our assets have finished loading, we can then create and start our
+    //  new transform device.
+    await this.videoFxDriver.loadDefaultAssets();
+    //  Loaded assets properly, can now create transform device
     this.chosenMLVideoFxTransformDevice = new MLVideoFxTransformDevice(
       this.meetingLogger,
       innerDevice,
       this.videoFxDriver
     );
+
     return this.chosenMLVideoFxTransformDevice;
   }
 

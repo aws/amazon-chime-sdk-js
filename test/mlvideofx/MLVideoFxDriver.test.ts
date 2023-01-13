@@ -79,4 +79,5 @@ describe('MLVideoFxDriver', () => {
       driver.setBlueShiftState(false);
     });
   });
+
 });

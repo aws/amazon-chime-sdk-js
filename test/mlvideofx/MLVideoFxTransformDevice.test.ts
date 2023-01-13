@@ -63,7 +63,7 @@ describe('MLVideoFxTransformDevice', () => {
         logger,
         'test',
         // @ts-ignore
-        driver
+        driver_construct
       );
       // @ts-ignore
       assert.exists(device_construct);
@@ -143,9 +143,7 @@ describe('MLVideoFxTransformDevice', () => {
     const newInnerDeviceStr = 'newDevice';
 
     it('returns a new video transform device', async () => {
-      const newDevice = device.chooseNewInnerDevice(
-        newInnerDeviceStr
-      );
+      const newDevice = device.chooseNewInnerDevice(newInnerDeviceStr);
       expect(device).not.equal(newDevice);
 
       const newInnerDevice = newDevice.getInnerDevice();

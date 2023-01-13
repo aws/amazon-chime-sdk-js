@@ -150,6 +150,7 @@ import ListenForVolumeIndicatorsTask from './task/ListenForVolumeIndicatorsTask'
 import Log from './logger/Log';
 import LogLevel from './logger/LogLevel';
 import Logger from './logger/Logger';
+import MLVideoFxAssetReadiness from './mlvideofx/MLVideoFxAssetReadiness';
 import MLVideoFxConfig from './mlvideofx/MLVideoFxConfig';
 import MLVideoFxDriver from './mlvideofx/MLVideoFxDriver';
 import MLVideoFxStreamHandler from './mlvideofx/MLVideoFxStreamHandler';
@@ -486,6 +487,7 @@ export {
   Log,
   LogLevel,
   Logger,
+  MLVideoFxAssetReadiness,
   MLVideoFxConfig,
   MLVideoFxDriver,
   MLVideoFxStreamHandler,
