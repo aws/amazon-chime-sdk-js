@@ -1,5 +1,6 @@
 import { loadWorker } from '../../libs/voicefocus/loader';
 import Logger from '../logger/Logger';
+import DeferredPromise from './DeferredPromise';
 import MLVideoFxAssetReadiness from './MLVideoFxAssetReadiness';
 import MLVideoFxConfig from './MLVideoFxConfig';
 
@@ -20,12 +21,18 @@ const ENGINE_BASE_URL = 'http://d1nux75bjarwom.cloudfront.net/';
 export default class MLVideoFxDriver {
   private engineWorker: Worker;
   private assetReadiness: MLVideoFxAssetReadiness;
+  private engineInstantiatedPromise: DeferredPromise;
 
   constructor(private logger: Logger, private effectConfig: MLVideoFxConfig) {
     this.logger.info(
       `MLVideoFxDriver created with default config: ` + JSON.stringify(effectConfig)
     );
-    this.assetReadiness = { engineWorkerAssetsReady: false }; // only asset we are loading for now
+
+    this.engineInstantiatedPromise = new DeferredPromise();
+    this.assetReadiness = { 
+      engineWorkerAssetsReady: false, 
+      engineReady: false
+    };
   }
 
   /**
@@ -57,6 +64,28 @@ export default class MLVideoFxDriver {
    */
   async loadDefaultAssets(): Promise<void> {
     // The engine worker will always be a required asset for the MLVideoFxDriver
+    await this.loadEngineWorker();
+    // If the engine worker didn't load properly, exit because the engine
+    // worker is essential to all functionality of the MLVideoFxDriver
+    if (!this.assetReadiness.engineWorkerAssetsReady) return;
+
+    // The engine itself will always be a required asset for the MLVideoFxDriver
+    await this.instantiateEngine();
+    // If the engine didn't instantiate, exit because the engine
+    // is essential to all functionality of the MLVideoFxDriver
+    if (!this.assetReadiness.engineReady) return;
+
+    this.logger.info(
+      'Finished default loading of assets for MLVideoFxDriver. Asset Readiness: ' +
+        JSON.stringify(this.assetReadiness)
+    );
+  }
+
+  /**
+   * Fetch and then load or engine worker into a web-worker
+   */
+  async loadEngineWorker(): Promise<void> {
+    // The engine worker will always be a required asset for the MLVideoFxDriver
     try {
       // Load the worker that will communicate with our MLVideoFxEngine
       this.engineWorker = await loadWorker(
@@ -73,11 +102,25 @@ export default class MLVideoFxDriver {
       this.assetReadiness.engineWorkerAssetsReady = false;
       this.logger.error("Failed to load the MLVideoFxDriver's FX engine worker: " + error.message);
     }
+  }
 
-    this.logger.info(
-      'Finished default loading of assets for MLVideoFxDriver. Asset Readiness: ' +
-        JSON.stringify(this.assetReadiness)
-    );
+  /**
+   * Instantiate the MLVideoFxEngine (the web-assembly)
+   */
+  async instantiateEngine(): Promise<void> {
+    // Send a message via our engine worker to instantiate
+    // the engine's web assembly unit
+    this.engineWorker.postMessage({
+      msg: 'initialize',
+      payload: {
+        wasmPath: ENGINE_BASE_URL + '_cwt-wasm.wasm',
+        simdPath: ENGINE_BASE_URL + '_cwt-wasm-simd.wasm',
+      },
+    });
+    // Wait until the engine finishes instantiating
+    await this.engineInstantiatedPromise.getPromise().catch(() => {
+      this.logger.error("Failed to instantiate the MLVideoFxEngine");
+    });
   }
 
   /**
@@ -113,6 +156,7 @@ export default class MLVideoFxDriver {
   getAssetReadiness(): MLVideoFxAssetReadiness {
     return this.assetReadiness;
   }
+
   /**
    * Receives messages from the engine worker and then delegates
    * the proper response to a different function
@@ -121,11 +165,29 @@ export default class MLVideoFxDriver {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected engineWorkerReceiver(event: MessageEvent<any>): void {
     const msg = event.data;
-    // For now, we are not communicating with worker, so we just have a default message
     switch (msg.msg) {
+      case "initialize":
+        this.handleCompletedEngineInitialization(msg.payload);
+        break;
       default:
         this.logger.info(`MLVideoFx worker received unknown event msg: ${JSON.stringify(msg)}`);
         break;
+    }
+  }
+
+  /**
+   * Handle the message returned from our MLVideoFX Engine worker after it completes
+   * instantiating the MLVideoFxEngine. 
+   */
+  protected handleCompletedEngineInitialization(initSuccess: boolean) {
+    this.assetReadiness.engineReady = initSuccess;
+    // Resolve or reject our engineInstantiatedPromise depending on success
+    // of instatiation
+    if (!initSuccess) {
+      this.engineInstantiatedPromise.rejectPromise();
+    } else {
+      this.logger.info("Successfully instantiated the MLVideoFxEngine");
+      this.engineInstantiatedPromise.resolvePromise();
     }
   }
 }

@@ -8,4 +8,6 @@
 export default interface MLVideoFxAssetReadiness {
   // Marker for whether the engine worker has been loaded
   engineWorkerAssetsReady: boolean;
+  // Marker for whether the MLVideoFxEngine has been instantiated
+  engineReady: boolean;
 }

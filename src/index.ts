@@ -112,6 +112,7 @@ import DefaultVideoTransformDevice from './videoframeprocessor/DefaultVideoTrans
 import DefaultVideoTransformDeviceObserver from './videoframeprocessor/DefaultVideoTransformDeviceObserver';
 import DefaultVolumeIndicatorAdapter from './volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import DefaultWebSocketAdapter from './websocketadapter/DefaultWebSocketAdapter';
+import DeferredPromise from './mlvideofx/DeferredPromise';
 import Destroyable from './destroyable/Destroyable';
 import Device from './devicecontroller/Device';
 import DeviceChangeObserver from './devicechangeobserver/DeviceChangeObserver';
@@ -448,6 +449,7 @@ export {
   DefaultVideoTransformDeviceObserver,
   DefaultVolumeIndicatorAdapter,
   DefaultWebSocketAdapter,
+  DeferredPromise,
   Destroyable,
   Device,
   DeviceChangeObserver,
