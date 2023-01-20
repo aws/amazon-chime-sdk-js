@@ -28,7 +28,7 @@ class ContentShareOnlyAllowTwoTest extends SdkBaseTest {
     await OpenAppStep.executeStep(this, sessionInfo);
     await AuthenticateUserStep.executeStep(this, sessionInfo, attendee_id);
     await UserAuthenticationCheck.executeStep(this, sessionInfo);
-    await JoinMeetingStep.executeStep(this, sessionInfo);
+    await JoinMeetingStep.executeStep(this, sessionInfo, true);
     // await UserJoinedMeetingCheck.executeStep(this, sessionInfo, attendee_id);
   }
 
@@ -77,21 +77,6 @@ class ContentShareOnlyAllowTwoTest extends SdkBaseTest {
     await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
     await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "OFF", test_attendee_id_3));
     await test_window_3.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
-    
-    // await test_window_1.runCommands(
-    //   async () => await ContentShareVideoCheck.executeStep(this, session, 'ON', test_attendee_id_1)
-    // );
-    // await test_window_1.runCommands(
-    //   async () => await ContentShareVideoCheck.executeStep(this, session, 'ON', test_attendee_id_2)
-    // );
-    // await test_window_1.runCommands(
-    //   async () => await ContentShareVideoCheck.executeStep(this, session, 'OFF', test_attendee_id_3)
-    // );
-    // await test_window_1.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
-    // await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
-    // await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
-    // await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "OFF", test_attendee_id_3));
-    // await test_window_2.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
   }
 }
 
