@@ -18,6 +18,7 @@ type EventName =
   | 'signalingDropped'
   | 'receivingAudioDropped'
   | 'sendingAudioFailed'
-  | 'sendingAudioRecovered';
+  | 'sendingAudioRecovered'
+  | 'meetingComponentLoadTime';
 
 export default EventName;
