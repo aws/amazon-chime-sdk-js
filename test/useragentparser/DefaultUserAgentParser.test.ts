@@ -72,7 +72,7 @@ describe('DefaultUserAgentParser', () => {
       expect(data.browserName).to.eq('Chrome');
       expect(data.browserMajorVersion).to.eq('78');
       expect(data.browserVersion).to.eq('78.0.3865.75');
-      expect(data.deviceName).to.eq('Unavailable');
+      expect(data.deviceName).to.eq('Apple Macintosh');
       expect(data.osName).to.eq('Mac OS');
       expect(data.osVersion).to.eq('10.12.6');
       expect(data.sdkName).to.eq('amazon-chime-sdk-js');
