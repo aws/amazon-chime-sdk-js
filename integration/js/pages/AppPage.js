@@ -27,7 +27,7 @@ function findAllElements() {
     contentSharePauseButton: By.id('dropdown-item-content-share-pause-resume'),
 
     videoFilterDropButton: By.id('button-video-filter-drop'),
-  
+
     dataMessageSendInput: By.id('send-message'),
     sipAuthenticateButton: By.id('button-sip-authenticate'),
     roster: By.id('roster'),
@@ -151,7 +151,7 @@ class AppPage {
     }
   }
 
-  // selects echo reduction capability at the meeting level 
+  // selects echo reduction capability at the meeting level
   async chooseEchoReduction() {
     const echoReductionFeature = await this.driver.findElement(elements.echoReductionFeature);
     const echoReductionFeatureLabel = await this.driver.findElement(elements.echoReductionFeatureLabel);
@@ -179,7 +179,7 @@ class AppPage {
   async chooseEnableEventReporting() {
     const eventReportingCheck = await this.driver.findElement(elements.eventReportingCheckBox);
     const eventReportingCheckLabel = await this.driver.findElement(elements.eventReportingCheckBoxLabel);
-    
+
     // Click the label because it's on top.
     if (await eventReportingCheck.isSelected()) {
       this.logger('event reporting is enabled');
@@ -191,7 +191,7 @@ class AppPage {
   async chooseStereoMusicAudioProfile() {
     const stereoMusicProfileCheck = await this.driver.findElement(elements.stereoMusicProfileCheckBox);
     const stereoMusicProfileCheckLabel = await this.driver.findElement(elements.stereoMusicProfileCheckBoxLabel);
-    
+
     // Click the label because it's on top.
     if (await stereoMusicProfileCheck.isSelected()) {
       this.logger('stereo music audio profile is selected');
@@ -298,7 +298,7 @@ class AppPage {
 
   async clickStartAmazonVoiceFocus() {
     const startAmazonVoiceFocus = await this.driver.findElement(elements.microphoneDropDownVoiceFocusButton);
-    await startAmazonVoiceFocus.click();    
+    await startAmazonVoiceFocus.click();
   }
 
   async getNumberOfParticipantsOnRoster() {
@@ -355,7 +355,7 @@ class AppPage {
     }
     return 'failed'
   }
-  
+
   async waitForElement(element, timeout = 10000) {
     try {
       await this.driver.wait(until.elementLocated(element), timeout);
@@ -404,7 +404,11 @@ class AppPage {
   }
 
   async waitToJoinTheMeeting() {
-    return await this.waitForElement(elements.meetingFlow, 20000)
+    return await this.waitForElement(elements.meetingFlow, 20000);
+  }
+
+  async waitForContentShareButton() {
+    return await this.waitForElement(elements.contentShareButton, 20000);
   }
 
   async isLiveTranscriptionPresentInDeviceMenu() {
@@ -922,7 +926,7 @@ class AppPage {
     }
     return expectedStateFound;
   }
-  
+
   async echoAudioCheck(stepInfo, expectedState){
     let res = undefined;
     try {
