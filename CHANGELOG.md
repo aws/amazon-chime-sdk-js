@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added flag `disablePeriodicKeyframeRequestOnContentSender` to `MeetingSessionConfiguration` for applications that would like to experiment with disabling the 10 second keyframe request interval which is default on the backend.
+
 ### Removed
 
 ### Changed

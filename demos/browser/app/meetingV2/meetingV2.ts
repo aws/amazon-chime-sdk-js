@@ -328,6 +328,7 @@ export class DemoMeetingApp
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
   joinInfo: any | undefined;
   deleteOwnAttendeeToLeave = false;
+  disablePeriodicKeyframeRequestOnContentSender = false;
 
   blurProcessor: BackgroundBlurProcessor | undefined;
   replacementProcessor: BackgroundReplacementProcessor | undefined;
@@ -1716,6 +1717,7 @@ export class DemoMeetingApp
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
+    configuration.disablePeriodicKeyframeRequestOnContentSender = this.disablePeriodicKeyframeRequestOnContentSender;
 
     configuration.applicationMetadata = ApplicationMetadata.create('amazon-chime-sdk-js-demo', '2.0.0');
 
@@ -3358,6 +3360,7 @@ export class DemoMeetingApp
     this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
     this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
     this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
+    this.disablePeriodicKeyframeRequestOnContentSender = (document.getElementById('disable-content-keyframe') as HTMLInputElement).checked;
     this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
     this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
     this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;

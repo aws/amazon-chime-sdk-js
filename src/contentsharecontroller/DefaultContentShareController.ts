@@ -29,6 +29,8 @@ export default class DefaultContentShareController
     contentShareConfiguration.meetingId = configuration.meetingId;
     contentShareConfiguration.externalMeetingId = configuration.externalMeetingId;
     contentShareConfiguration.urls = configuration.urls;
+    contentShareConfiguration.disablePeriodicKeyframeRequestOnContentSender =
+      configuration.disablePeriodicKeyframeRequestOnContentSender;
     contentShareConfiguration.credentials = new MeetingSessionCredentials();
     contentShareConfiguration.credentials.attendeeId =
       configuration.credentials.attendeeId + ContentShareConstants.Modality;

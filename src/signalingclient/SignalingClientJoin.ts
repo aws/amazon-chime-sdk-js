@@ -10,6 +10,7 @@ import ServerSideNetworkAdaption from './ServerSideNetworkAdaption';
 export default class SignalingClientJoin {
   serverSideNetworkAdaption: ServerSideNetworkAdaption = ServerSideNetworkAdaption.Default;
   supportedServerSideNetworkAdaptions: ServerSideNetworkAdaption[] = [];
+  disablePeriodicKeyframeRequestOnContentSender: boolean = false;
 
   /**
    * Initializes a SignalingClientJoin with the given properties.
