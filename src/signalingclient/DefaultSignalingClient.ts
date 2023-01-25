@@ -31,9 +31,7 @@ import {
 import Versioning from '../versioning/Versioning';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
-import ServerSideNetworkAdaption, {
-  convertServerSideNetworkAdaptionEnumToSignaled,
-} from './ServerSideNetworkAdaption';
+import { convertServerSideNetworkAdaptionEnumToSignaled } from './ServerSideNetworkAdaption';
 import SignalingClient from './SignalingClient';
 import SignalingClientConnectionRequest from './SignalingClientConnectionRequest';
 import SignalingClientEvent from './SignalingClientEvent';
@@ -110,13 +108,11 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.clientDetails = SdkClientDetails.create(sdkClientDetails);
     joinFrame.audioSessionId = this.audioSessionId;
     joinFrame.wantsCompressedSdp = DefaultSignalingClient.CLIENT_SUPPORTS_COMPRESSION;
+    joinFrame.disablePeriodicKeyframeRequestOnContentSender =
+      settings.disablePeriodicKeyframeRequestOnContentSender;
     joinFrame.serverSideNetworkAdaption = convertServerSideNetworkAdaptionEnumToSignaled(
       settings.serverSideNetworkAdaption
     );
-    if (settings.serverSideNetworkAdaption === ServerSideNetworkAdaption.BandwidthProbing) {
-      // Temporarily add deprecated signaling, to be removed later once backend is consistent
-      joinFrame.wantsServerSideNetworkProbingOnReceiveSideEstimator = true;
-    }
     joinFrame.supportedServerSideNetworkAdaptions = settings.supportedServerSideNetworkAdaptions.map(
       convertServerSideNetworkAdaptionEnumToSignaled
     );

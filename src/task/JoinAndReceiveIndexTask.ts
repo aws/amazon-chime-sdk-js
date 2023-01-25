@@ -141,6 +141,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
         join.serverSideNetworkAdaption = this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption();
         join.supportedServerSideNetworkAdaptions = this.context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions();
       }
+      join.disablePeriodicKeyframeRequestOnContentSender = this.context.meetingSessionConfiguration.disablePeriodicKeyframeRequestOnContentSender;
       this.context.signalingClient.join(join);
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);

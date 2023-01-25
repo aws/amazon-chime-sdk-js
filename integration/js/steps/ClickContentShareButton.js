@@ -1,4 +1,5 @@
 const AppTestStep = require('../utils/AppTestStep');
+const {KiteTestError, Status} = require('kite-common');
 
 class ClickContentShareButton extends AppTestStep {
   constructor(kiteBaseTest, sessionInfo, testType) {
@@ -16,6 +17,10 @@ class ClickContentShareButton extends AppTestStep {
   }
 
   async run() {
+    let isButtonClickable = await this.page.waitForContentShareButton();
+    if (isButtonClickable === 'failed') {
+      throw new KiteTestError(Status.BROKEN, 'Content share button is not clickable');
+    }
     await this.page.clickContentShareButton();
     const message = this.testType === "ON" ? 'content_share_start' : 'content_share_stop';
     this.finished(message)

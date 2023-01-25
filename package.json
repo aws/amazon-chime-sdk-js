@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "3.10.0",
+  "version": "3.11.0",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -11,8 +11,8 @@
     "NOTICE"
   ],
   "engines": {
-    "node": "^12 || ^14 || ^15 || ^16 || ^18",
-    "npm": "^6 || ^7 || ^8"
+    "node": "^12 || ^14 || ^15 || ^16 || ^18 || ^19",
+    "npm": "^6 || ^7 || ^8 || ^9"
   },
   "scripts": {
     "clean": "rimraf .nyc_output build node_modules",

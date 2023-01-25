@@ -5,9 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.11.0] - 2023-01-03
+
+### Added
+
+- Added flag `disablePeriodicKeyframeRequestOnContentSender` to `MeetingSessionConfiguration` for applications that would like to experiment with disabling the 10 second keyframe request interval which is default on the backend.
+
+### Removed
+
+### Changed
+
+### Fixed
+
 ## [3.10.0] - 2022-11-02
 
 ### Added
+
+- Add `destroy()` method to `VoiceFocus` class.
+- Add `destroyVoiceFocus` method to `VoiceFocusDeviceTransformer` class.
+- Add guide to show how to use the `destroyVoiceFocus` method in the `VoiceFocusDeviceTransformer` class.
 
 ### Removed
 
