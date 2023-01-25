@@ -270,7 +270,16 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   async checkAudioConnectivity(audioInputDevice: Device): Promise<CheckAudioConnectivityFeedback> {
     let audioPresence = false;
+    const checkAudioConnectivityMetrics = {
+      audioPacketsSent: 0,
+      audioPacketsReceived: 0,
+    };
     const audioVideo = this.meetingSession.audioVideo;
+
+    const checkAudioConnectivityMetricsObserver: AudioVideoObserver = this.getCheckAudioConnectivityMetricsObserver(
+      checkAudioConnectivityMetrics
+    );
+
     const attendeePresenceHandler = (
       attendeeId: string,
       present: boolean,
@@ -293,18 +302,22 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       return CheckAudioConnectivityFeedback.AudioInputRequestFailed;
     }
     audioVideo.realtimeSubscribeToAttendeeIdPresence(attendeePresenceHandler);
+    audioVideo.addObserver(checkAudioConnectivityMetricsObserver);
+
     if (!(await this.startMeeting())) {
+      audioVideo.removeObserver(checkAudioConnectivityMetricsObserver);
       audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
       await this.meetingSession.audioVideo.stopAudioInput();
       return CheckAudioConnectivityFeedback.ConnectionFailed;
     }
     await this.executeTimeoutTask(async () => {
-      return audioPresence;
+      return this.isAudioConnectionSuccessful(audioPresence, checkAudioConnectivityMetrics);
     });
+    audioVideo.removeObserver(checkAudioConnectivityMetricsObserver);
     audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
     await this.stopMeeting();
     await this.meetingSession.audioVideo.stopAudioInput();
-    return audioPresence
+    return this.isAudioConnectionSuccessful(audioPresence, checkAudioConnectivityMetrics)
       ? CheckAudioConnectivityFeedback.Succeeded
       : CheckAudioConnectivityFeedback.AudioNotReceived;
   }
@@ -503,5 +516,34 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     );
     await timeoutTask.run();
     return isSuccess;
+  }
+
+  private getCheckAudioConnectivityMetricsObserver(checkAudioConnectivityMetrics: {
+    audioPacketsReceived: number;
+    audioPacketsSent: number;
+  }): AudioVideoObserver {
+    return {
+      metricsDidReceive(clientMetricReport: ClientMetricReport) {
+        clientMetricReport.getRTCStatsReport().forEach(report => {
+          if (report.type === 'outbound-rtp' && report.mediaType === 'audio') {
+            checkAudioConnectivityMetrics.audioPacketsSent = report.packetsSent;
+          }
+          if (report.type === 'inbound-rtp' && report.mediaType === 'audio') {
+            checkAudioConnectivityMetrics.audioPacketsReceived = report.packetsReceived;
+          }
+        });
+      },
+    };
+  }
+
+  private isAudioConnectionSuccessful(
+    audioPresence: boolean,
+    checkAudioConnectivityMetrics: { audioPacketsReceived: number; audioPacketsSent: number }
+  ): boolean {
+    return (
+      audioPresence &&
+      checkAudioConnectivityMetrics.audioPacketsSent > 0 &&
+      checkAudioConnectivityMetrics.audioPacketsReceived > 0
+    );
   }
 }

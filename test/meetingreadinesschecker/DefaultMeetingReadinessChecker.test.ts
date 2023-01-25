@@ -596,10 +596,54 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('success', async () => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports.push(
+        {
+          bytesSent: 100000,
+          packetsSent: 100,
+          kind: 'audio',
+          mediaType: 'audio',
+          type: 'outbound-rtp',
+        },
+        {
+          bytesReceived: 100000,
+          packetsReceived: 100,
+          kind: 'audio',
+          mediaType: 'audio',
+          type: 'inbound-rtp',
+        }
+      );
       const result = await meetingReadinessCheckerController.checkAudioConnectivity(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
       );
       expect(result).to.equal(CheckAudioConnectivityFeedback.Succeeded);
+    });
+
+    it('time out with no audio received packets', async () => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports.push({
+        bytesSent: 100000,
+        packetsSent: 100,
+        kind: 'audio',
+        mediaType: 'audio',
+        type: 'outbound-rtp',
+      });
+      const result = await meetingReadinessCheckerController.checkAudioConnectivity(
+        getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
+      );
+      expect(result).to.equal(CheckAudioConnectivityFeedback.AudioNotReceived);
+    });
+
+    it('time out with no audio sent packets', async () => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports.push({
+        bytesReceived: 100000,
+        packetsReceived: 100,
+        kind: 'audio',
+        mediaType: 'audio',
+        type: 'inbound-rtp',
+      });
+      const result = await meetingReadinessCheckerController.checkAudioConnectivity(
+        getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
+      );
+      expect(result).to.equal(CheckAudioConnectivityFeedback.AudioNotReceived);
     });
   });
 
@@ -635,11 +679,13 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('no outbound-rtp info', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        kind: 'audio',
-        mediaType: 'audio',
-        type: 'outbound-rtp',
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          kind: 'audio',
+          mediaType: 'audio',
+          type: 'outbound-rtp',
+        },
+      ];
       const result = await meetingReadinessCheckerController.checkVideoConnectivity(
         new MediaDeviceInfo()
       );
@@ -648,13 +694,15 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        bytesSent: 100000,
-        packetsSent: 100,
-        kind: 'video',
-        mediaType: 'video',
-        type: 'outbound-rtp',
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          bytesSent: 100000,
+          packetsSent: 100,
+          kind: 'video',
+          mediaType: 'video',
+          type: 'outbound-rtp',
+        },
+      ];
       const result = await meetingReadinessCheckerController.checkVideoConnectivity(
         new MediaDeviceInfo()
       );
@@ -676,21 +724,25 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('no candidate-pair info', async () => {
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        kind: 'audio',
-        mediaType: 'audio',
-        type: 'outbound-rtp',
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          kind: 'audio',
+          mediaType: 'audio',
+          type: 'outbound-rtp',
+        },
+      ];
       const result = await meetingReadinessCheckerController.checkNetworkTCPConnectivity();
       expect(result).to.equal(CheckNetworkTCPConnectivityFeedback.ICENegotiationFailed);
     });
 
     it('success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        state: 'succeeded',
-        type: 'candidate-pair',
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          state: 'succeeded',
+          type: 'candidate-pair',
+        },
+      ];
       const result = await meetingReadinessCheckerController.checkNetworkTCPConnectivity();
       expect(result).to.equal(CheckNetworkTCPConnectivityFeedback.Succeeded);
     });
@@ -710,21 +762,25 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('no candidate-pair info', async () => {
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        kind: 'audio',
-        mediaType: 'audio',
-        type: 'outbound-rtp',
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          kind: 'audio',
+          mediaType: 'audio',
+          type: 'outbound-rtp',
+        },
+      ];
       const result = await meetingReadinessCheckerController.checkNetworkUDPConnectivity();
       expect(result).to.equal(CheckNetworkUDPConnectivityFeedback.ICENegotiationFailed);
     });
 
     it('success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        state: 'succeeded',
-        type: 'candidate-pair',
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          state: 'succeeded',
+          type: 'candidate-pair',
+        },
+      ];
       const result = await meetingReadinessCheckerController.checkNetworkUDPConnectivity();
       expect(result).to.equal(CheckNetworkUDPConnectivityFeedback.Succeeded);
     });

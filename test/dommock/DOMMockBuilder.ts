@@ -858,19 +858,24 @@ export default class DOMMockBuilder {
       }
 
       getStats(): Promise<RawMetricReport[]> {
-        const reports = [
-          {
-            names: (): string[] => ['stat1'],
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            stat: (_name: string): any => 'stat1-value',
-            id: 'RTCInboundRTPAudioStream',
-            ssrc: 1,
-            timestamp: 1,
-            type: 'inbound-rtp',
-            kind: 'video',
-            ...mockBehavior.rtcPeerConnectionGetStatsReport,
-          },
-        ];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const reports: [{ [name: string]: any }] = [{}];
+        mockBehavior.rtcPeerConnectionGetStatsReports.forEach(
+          (rtcPeerConnectionGetStatsReport, index) => {
+            reports.push({
+              names: (): string[] => ['stat' + index],
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              stat: (_name: string): any => 'stat' + index + '-value',
+              id: 'RTCInboundRTPAudioStream',
+              ssrc: 1,
+              timestamp: 1,
+              type: 'inbound-rtp',
+              kind: 'video',
+              ...rtcPeerConnectionGetStatsReport,
+            });
+          }
+        );
+
         const error = new Error('Failed to getStats()');
 
         return new Promise((resolve, reject) => {
