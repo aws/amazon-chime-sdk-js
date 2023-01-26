@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Fix ES2015 target builds by fixing voicefocus js file.
 
 ## [3.10.0] - 2022-11-02
 
