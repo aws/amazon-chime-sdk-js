@@ -15,7 +15,7 @@ class VideoPinTest extends SdkBaseTest {
     const session = this.seleniumSessions[0];
     const useSimulcast = this.useSimulcast;
     await OpenAppStep.executeStep(this, session);
-    await AuthenticateUserStep.executeStep(this, session, attendeeId, useSimulcast);
+    await AuthenticateUserStep.executeStep(this, session, attendeeId, useSimulcast, false, false);
     await ClickStartLocalVideoButton.executeStep(this, session);
     await ClickPinVideoTileButton.executeStep(this, session, attendeeId);
     await VideoPreferenceCheck.executeStep(this, session, attendeeId, 1, 2);
