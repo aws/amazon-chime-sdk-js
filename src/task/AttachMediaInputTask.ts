@@ -46,7 +46,6 @@ export default class AttachMediaInputTask extends BaseTask {
           VideoLogEvent.InputAttached,
           this.context.videoDeviceInformation
         );
-        this.context.videoInputAttachedTimestampMs = Date.now();
       }
     } else {
       await transceiverController.setVideoInput(null);

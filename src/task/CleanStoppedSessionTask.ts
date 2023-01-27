@@ -9,6 +9,9 @@ import SignalingClientObserver from '../signalingclientobserver/SignalingClientO
 import TaskCanceler from '../taskcanceler/TaskCanceler';
 import BaseTask from './BaseTask';
 
+/*
+ * `CleanStoppedSessionTask` permenently cleans up all components of `AudioVideoControllerState` after a stop call.
+ */
 export default class CleanStoppedSessionTask extends BaseTask {
   protected taskName = 'CleanStoppedSessionTask';
   private taskCanceler: TaskCanceler | null = null;
@@ -36,36 +39,21 @@ export default class CleanStoppedSessionTask extends BaseTask {
       for (const observer of this.context.removableObservers) {
         observer.removeObserver();
       }
+      this.context.resetConnectionSpecificState();
 
       this.context.statsCollector.stop();
       this.context.statsCollector = null;
       this.context.connectionMonitor.stop();
       this.context.connectionMonitor = null;
 
-      if (this.context.peer) {
-        this.context.peer.close();
-      }
-      this.context.peer = null;
-      this.context.sdpAnswer = null;
-      this.context.sdpOfferInit = null;
-      this.context.indexFrame = null;
-      this.context.videoDownlinkBandwidthPolicy.reset();
-      if (this.context.videoUplinkBandwidthPolicy.reset) {
-        this.context.videoUplinkBandwidthPolicy.reset();
-      }
-      this.context.iceCandidateHandler = null;
-      this.context.iceCandidates = [];
-      this.context.turnCredentials = null;
-      this.context.videoSubscriptions = null;
-      this.context.transceiverController.reset();
       if (this.context.videoUplinkBandwidthPolicy.setTransceiverController) {
         this.context.videoUplinkBandwidthPolicy.setTransceiverController(undefined);
       }
-
       if (this.context.videoDownlinkBandwidthPolicy.bindToTileController) {
         this.context.videoDownlinkBandwidthPolicy.bindToTileController(undefined);
       }
 
+      // This state may be reused to join another conference, so clear out all the existing video tiles
       const tile = this.context.videoTileController.getLocalVideoTile();
       if (tile) {
         tile.bindVideoStream('', true, null, null, null, null);

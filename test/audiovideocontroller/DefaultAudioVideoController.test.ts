@@ -525,7 +525,7 @@ describe('DefaultAudioVideoController', () => {
 
       // Now it's been closed.
       // @ts-ignore
-      expect(audioVideoController.meetingSessionContext.signalingClient).to.be.null;
+      expect(audioVideoController.meetingSessionContext.signalingClient.ready()).to.be.false;
     });
 
     it('is resilient against pre-start errors', async () => {
