@@ -68,7 +68,7 @@ export default class DOMMockBehavior {
   mediaDeviceOnDeviceChangeSupported: boolean = true;
   rtcPeerConnectionGetStatsSucceeds: boolean = true;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  rtcPeerConnectionGetStatsReports: [{ [name: string]: any }] = [{}];
+  rtcPeerConnectionGetStatsReports: { [name: string]: any }[] = [{}];
   rtcPeerConnectionCreateOfferIncludesLocalHost: boolean = false;
   rtcPeerConnectionCreateOfferWithSendingSsrcChange: boolean = false;
   rtcPeerConnectionUseCustomOffer: boolean = false;

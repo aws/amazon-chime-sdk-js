@@ -9,14 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added observer for audio packets sent and audio packet received metrics inside `checkAudioConnectivity` in meeting readiness checker
-
 ### Removed
 
 ### Changed
 
-- Update `checkAudioConnectivity` logic in meeting readiness checker to check audio packets sent and audio packet received metrics in addition to attendee presence flag, as part of fast join changes
-- Modify `rtcPeerConnectionGetStatsReport` variable inside `DOMMockBehavior` class to `rtcPeerConnectionGetStatsReports` to contain multiple getStatsReports
+- To support fast join, update DefaultMeetingReadinessChecker's checkAudioConnectivity logic to check for audio packets sent and received metrics using metricsDidReceive observer in addition to attendee presence condition.
+- Modify `rtcPeerConnectionGetStatsReport` variable inside `DOMMockBehavior` class to `rtcPeerConnectionGetStatsReports` to contain multiple getStatsReports.
 
 ### Fixed
 

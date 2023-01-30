@@ -859,7 +859,7 @@ export default class DOMMockBuilder {
 
       getStats(): Promise<RawMetricReport[]> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const reports: [{ [name: string]: any }] = [{}];
+        const reports: { [name: string]: any }[] = [{}];
         mockBehavior.rtcPeerConnectionGetStatsReports.forEach(
           (rtcPeerConnectionGetStatsReport, index) => {
             reports.push({
