@@ -13,8 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- To support fast join, update DefaultMeetingReadinessChecker's checkAudioConnectivity logic to check for audio packets sent and received metrics using metricsDidReceive observer in addition to attendee presence condition.
-- Modify `rtcPeerConnectionGetStatsReport` variable inside `DOMMockBehavior` class to `rtcPeerConnectionGetStatsReports` to contain multiple getStatsReports.
+- To support use case that allows attendees with mic issue to at least join the call asap and receive conference audio, update `checkAudioConnectivity` logic inside `DefaultMeetingReadinessChecker` accordingly, to check for audio packets sent and received metrics using `metricsDidReceive` observer in addition to attendee presence condition.
 
 ### Fixed
 
