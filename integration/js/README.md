@@ -142,7 +142,7 @@ Run the test:
 $KITE_HOME/scripts/mac/path/r configs/<test_name>.config.json
 ```
 
-### Testing against a custom audio/video stream in Sauce Labs
+## Testing against a custom audio/video stream in Sauce Labs
 Some tests might require testing against a custom audio/video stream. To test, you need the media file on Sauce Labs virtual machine before running your test. For that, you can use a pre-run executable script to download media file from public storage to the virtual machine before running your tests. 
 
 For our use case, a pre-run executable script is a minimal `bash` script that will use `curl` to install the resources on the Sauce Labs VM. Pre-run executable scripts can be used for several different use cases like changing VM configurations and browser settings. See [Using Pre-Run Executables](https://docs.saucelabs.com/web-apps/automated-testing/selenium/pre-run-executables/) for more information.
