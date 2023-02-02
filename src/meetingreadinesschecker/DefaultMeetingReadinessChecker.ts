@@ -271,7 +271,6 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   async checkAudioConnectivity(audioInputDevice: Device): Promise<CheckAudioConnectivityFeedback> {
     let audioPresence = false;
     const audioConnectivityMetrics = {
-      packetsSent: 0,
       packetsReceived: 0,
     };
     const audioVideo = this.meetingSession.audioVideo;
@@ -279,9 +278,6 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     const checkAudioConnectivityMetricsObserver: AudioVideoObserver = {
       metricsDidReceive(clientMetricReport: ClientMetricReport) {
         clientMetricReport.getRTCStatsReport().forEach(report => {
-          if (report.type === 'outbound-rtp' && report.mediaType === 'audio') {
-            audioConnectivityMetrics.packetsSent = report.packetsSent;
-          }
           if (report.type === 'inbound-rtp' && report.mediaType === 'audio') {
             audioConnectivityMetrics.packetsReceived = report.packetsReceived;
           }
@@ -529,12 +525,8 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   private isAudioConnectionSuccessful(
     audioPresence: boolean,
-    checkAudioConnectivityMetrics: { packetsSent: number; packetsReceived: number }
+    audioConnectivityMetrics: { packetsReceived: number }
   ): boolean {
-    return (
-      audioPresence &&
-      checkAudioConnectivityMetrics.packetsSent > 0 &&
-      checkAudioConnectivityMetrics.packetsReceived > 0
-    );
+    return audioPresence && audioConnectivityMetrics.packetsReceived > 0;
   }
 }

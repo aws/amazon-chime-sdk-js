@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- To support use case that allows attendees with mic issue to at least join the call asap and receive conference audio, update `checkAudioConnectivity` logic inside `DefaultMeetingReadinessChecker` accordingly, to check for audio packets sent and received metrics using `metricsDidReceive` observer in addition to attendee presence condition.
+- To support future use case that allows attendees with mic issue to at least join the call asap and receive conference audio, update `checkAudioConnectivity` logic inside `DefaultMeetingReadinessChecker` accordingly, to check for audio packets received metrics using `metricsDidReceive` observer in addition to attendee presence condition. Previously the checkAudioConnectivity used to implicitly test that audio was both being sent out and being received but now it's only checking that the audio is being received successfully.
 
 ### Fixed
 
