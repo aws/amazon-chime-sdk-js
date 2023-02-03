@@ -201,8 +201,8 @@ export default class AudioVideoControllerState {
     // We don't want to mutate `videoTileController` as most video tiles will still be there on reconnect. We can remove tiles on the
     // first index we receive if they no longer exist
 
-    // `mediaStreamBroker`, `activeAudioInput`, and `activeVideoInput` are cleaned up seperately in `ReleaseMediaStreamsTask`
-    // but only on `stop` or non-reconnectable failures. They are also set to cached `DefaultAudioVideoController` members regardless.
+    // `mediaStreamBroker`, `activeAudioInput`, and `activeVideoInput` are cleaned up seperately in `DefaultAudioVideoController.cleanUpMediaStreamsAfterStop`
+    // but only on `stop` or non-reconnectable failures. They are also set to cached `DefaultAudioVideoController` members on restart.
 
     this.transceiverController.reset();
     this.indexFrame = null;
