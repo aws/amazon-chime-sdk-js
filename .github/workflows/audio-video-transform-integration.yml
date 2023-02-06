@@ -12,6 +12,7 @@
     TEST_TYPE: Github-Action
     SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
     SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+    PRE_RUN_SCRIPT_URL: ${{secrets.PRE_RUN_SCRIPT_URL}}
 
   jobs:
     integ-background-blur:

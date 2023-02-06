@@ -172,3 +172,9 @@ For our use case, a pre-run executable script is a minimal `bash` script that wi
       return capabilities.name.includes('Background Blur Test') ? 'storage:<storage_id>' : '';
     }
     ```
+
+5. Another way is hosting the pre-run-script in any open public domain and export another environment:
+```shell
+export PRE_RUN_SCRIPT_URL=<url_to_pre_run_script>
+```
+Then you can skip other steps and run the test directly on Sauce Labs
