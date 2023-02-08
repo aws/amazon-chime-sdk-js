@@ -270,7 +270,21 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   async checkAudioConnectivity(audioInputDevice: Device): Promise<CheckAudioConnectivityFeedback> {
     let audioPresence = false;
+    const audioConnectivityMetrics = {
+      packetsReceived: 0,
+    };
     const audioVideo = this.meetingSession.audioVideo;
+
+    const checkAudioConnectivityMetricsObserver: AudioVideoObserver = {
+      metricsDidReceive(clientMetricReport: ClientMetricReport) {
+        clientMetricReport.getRTCStatsReport().forEach(report => {
+          if (report.type === 'inbound-rtp' && report.mediaType === 'audio') {
+            audioConnectivityMetrics.packetsReceived = report.packetsReceived;
+          }
+        });
+      },
+    };
+
     const attendeePresenceHandler = (
       attendeeId: string,
       present: boolean,
@@ -293,18 +307,22 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       return CheckAudioConnectivityFeedback.AudioInputRequestFailed;
     }
     audioVideo.realtimeSubscribeToAttendeeIdPresence(attendeePresenceHandler);
+    audioVideo.addObserver(checkAudioConnectivityMetricsObserver);
+
     if (!(await this.startMeeting())) {
+      audioVideo.removeObserver(checkAudioConnectivityMetricsObserver);
       audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
       await this.meetingSession.audioVideo.stopAudioInput();
       return CheckAudioConnectivityFeedback.ConnectionFailed;
     }
     await this.executeTimeoutTask(async () => {
-      return audioPresence;
+      return this.isAudioConnectionSuccessful(audioPresence, audioConnectivityMetrics);
     });
+    audioVideo.removeObserver(checkAudioConnectivityMetricsObserver);
     audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
     await this.stopMeeting();
     await this.meetingSession.audioVideo.stopAudioInput();
-    return audioPresence
+    return this.isAudioConnectionSuccessful(audioPresence, audioConnectivityMetrics)
       ? CheckAudioConnectivityFeedback.Succeeded
       : CheckAudioConnectivityFeedback.AudioNotReceived;
   }
@@ -503,5 +521,12 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     );
     await timeoutTask.run();
     return isSuccess;
+  }
+
+  private isAudioConnectionSuccessful(
+    audioPresence: boolean,
+    audioConnectivityMetrics: { packetsReceived: number }
+  ): boolean {
+    return audioPresence && audioConnectivityMetrics.packetsReceived > 0;
   }
 }

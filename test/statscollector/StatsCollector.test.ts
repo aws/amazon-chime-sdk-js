@@ -430,12 +430,14 @@ describe('StatsCollector', () => {
 
   describe('protobuf packaging', () => {
     it('global metric report', done => {
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        id: 'RTCIceCandidatePair',
-        type: 'candidate-pair',
-        state: 'succeeded',
-        availableIncomingBitrate: 1000,
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCIceCandidatePair',
+          type: 'candidate-pair',
+          state: 'succeeded',
+          availableIncomingBitrate: 1000,
+        },
+      ];
 
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
       new TimeoutScheduler(interval + 5).start(() => {
@@ -445,12 +447,14 @@ describe('StatsCollector', () => {
     });
 
     it('stream metric report and videoStreamIndex has no stream', done => {
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        id: 'RTCInboundRTPVideoStream',
-        type: 'inbound-rtp',
-        kind: 'video',
-        packetsLost: 10,
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'inbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+        },
+      ];
 
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
@@ -470,14 +474,16 @@ describe('StatsCollector', () => {
           return 1;
         }
       }
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        id: 'RTCInboundRTPVideoStream',
-        type: 'inbound-rtp',
-        kind: 'video',
-        packetsLost: 10,
-        jitterBufferDelay: 100,
-        decoderImplementation: 'FFmpeg',
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'inbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          decoderImplementation: 'FFmpeg',
+        },
+      ];
 
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
 
@@ -498,14 +504,16 @@ describe('StatsCollector', () => {
         }
       }
 
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        id: 'RTCInboundRTPVideoStream',
-        type: 'inbound-rtp',
-        kind: 'video',
-        packetsLost: 10,
-        jitterBufferDelay: 100,
-        decoderImplementation: 'FFmpeg',
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'inbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          decoderImplementation: 'FFmpeg',
+        },
+      ];
 
       const streamMetricReport = new StreamMetricReport();
       streamMetricReport.streamId = 1;
@@ -538,13 +546,15 @@ describe('StatsCollector', () => {
           return 1;
         }
       }
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        id: 'RTCInboundRTPVideoStream',
-        type: 'inbound-rtp',
-        kind: 'video',
-        packetsLost: 10,
-        jitterBufferDelay: 100,
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'inbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+        },
+      ];
 
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
 
@@ -564,14 +574,16 @@ describe('StatsCollector', () => {
           return 1;
         }
       }
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        id: 'RTCInboundRTPVideoStream',
-        type: 'inbound-rtp',
-        kind: 'video',
-        packetsLost: 10,
-        jitterBufferDelay: 100,
-        decoderImplementation: null,
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'inbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          decoderImplementation: null,
+        },
+      ];
 
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
 
@@ -582,12 +594,14 @@ describe('StatsCollector', () => {
     });
 
     it('cannot add the metric frame if the type does not exist in the metric spec', done => {
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        id: 'RTCIceCandidatePair',
-        type: 'candidate-pair',
-        state: 'succeeded',
-        availableIncomingBitrate: 1000,
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCIceCandidatePair',
+          type: 'candidate-pair',
+          state: 'succeeded',
+          availableIncomingBitrate: 1000,
+        },
+      ];
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
       new TimeoutScheduler(interval + 5).start(() => {
         statsCollector.stop();
@@ -596,12 +610,14 @@ describe('StatsCollector', () => {
     });
 
     it('updates the report using the video upstream metrics map', done => {
-      domMockBehavior.rtcPeerConnectionGetStatsReport = {
-        id: 'RTCIceCandidatePair',
-        type: 'candidate-pair',
-        state: 'succeeded',
-        roundTripTime: 10,
-      };
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCIceCandidatePair',
+          type: 'candidate-pair',
+          state: 'succeeded',
+          roundTripTime: 10,
+        },
+      ];
 
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));

@@ -181,8 +181,18 @@ export class DemoMeetingApp {
     }
   }
 
-  getAudioInputDeviceID = (): string => {
+  getAudioInputDevice = (): string | MediaStream => {
     const dropdownList = document.getElementById('audio-input') as HTMLSelectElement;
+    if(dropdownList.value == 'No Audio') {
+      // An empty media stream destination without any source connected to it, so it doesn't generate any audio.
+      // This is currently only used for testing audio connectivity as part of meeting readiness checker
+      // Note: It's currently not possible to emulate 'No Audio' in Firefox, so we don't provide it
+      // as an option in the audio inputs list. Also, since waiting for attendee presence is explicitly executed inside
+      // `DefaultAudioVideoController` if `attendeePresenceTimeoutMs` is configured to larger than zero, we need to
+      // explicitly specify `attendeePresenceTimeoutMs`as zero for `No Audio` device
+      this.meetingSession.configuration.attendeePresenceTimeoutMs = 0;
+      return DefaultDeviceController.getAudioContext().createMediaStreamDestination().stream;
+    }
     return dropdownList.value;
   };
 
@@ -234,8 +244,8 @@ export class DemoMeetingApp {
 
   micTest = async (): Promise<CheckAudioInputFeedback> => {
     this.createReadinessHtml('mic-test', 'spinner-border');
-    const audioInput = this.getAudioInputDeviceID();
-    const audioInputResp = await this.meetingReadinessChecker.checkAudioInput(audioInput);
+    let audioInputDevice: string | MediaStream = this.getAudioInputDevice();
+    const audioInputResp = await this.meetingReadinessChecker.checkAudioInput(audioInputDevice);
     this.createReadinessHtml('mic-test', CheckAudioInputFeedback[audioInputResp]);
     return audioInputResp;
   };
@@ -283,9 +293,9 @@ export class DemoMeetingApp {
 
   audioConnectivityTest = async (): Promise<CheckAudioConnectivityFeedback> => {
     this.createReadinessHtml('audioconnectivity-test', 'spinner-border');
-    const audioInput = this.getAudioInputDeviceID();
+    const audioInputDevice: string | MediaStream = this.getAudioInputDevice()
     const audioConnectivityResp = await this.meetingReadinessChecker.checkAudioConnectivity(
-      audioInput
+      audioInputDevice
     );
     this.createReadinessHtml(
       'audioconnectivity-test',
@@ -487,6 +497,13 @@ export class DemoMeetingApp {
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
     const additionalDevices = ['None'];
+
+    if(!this.defaultBrowserBehaviour.hasFirefoxWebRTC()) {
+      // We don't add this in Firefox because there is no known mechanism, using MediaStream or WebAudio APIs,
+      // to *not* generate audio in Firefox. By default, everything generates silent audio packets in Firefox.
+      additionalDevices.push('No Audio')
+    }
+
     this.populateDeviceList(
       'audio-input',
       genericName,
