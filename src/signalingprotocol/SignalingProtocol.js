@@ -1556,9 +1556,9 @@ $root.SdkJoinFrame = (function() {
      * @property {ISdkClientDetails|null} [clientDetails] SdkJoinFrame clientDetails
      * @property {number|Long|null} [audioSessionId] SdkJoinFrame audioSessionId
      * @property {boolean|null} [wantsCompressedSdp] SdkJoinFrame wantsCompressedSdp
-     * @property {boolean|null} [wantsServerSideNetworkProbingOnReceiveSideEstimator] SdkJoinFrame wantsServerSideNetworkProbingOnReceiveSideEstimator
      * @property {SdkServerSideNetworkAdaption|null} [serverSideNetworkAdaption] SdkJoinFrame serverSideNetworkAdaption
      * @property {Array.<SdkServerSideNetworkAdaption>|null} [supportedServerSideNetworkAdaptions] SdkJoinFrame supportedServerSideNetworkAdaptions
+     * @property {boolean|null} [disablePeriodicKeyframeRequestOnContentSender] SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender
      */
 
     /**
@@ -1626,14 +1626,6 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.prototype.wantsCompressedSdp = false;
 
     /**
-     * SdkJoinFrame wantsServerSideNetworkProbingOnReceiveSideEstimator.
-     * @member {boolean} wantsServerSideNetworkProbingOnReceiveSideEstimator
-     * @memberof SdkJoinFrame
-     * @instance
-     */
-    SdkJoinFrame.prototype.wantsServerSideNetworkProbingOnReceiveSideEstimator = false;
-
-    /**
      * SdkJoinFrame serverSideNetworkAdaption.
      * @member {SdkServerSideNetworkAdaption} serverSideNetworkAdaption
      * @memberof SdkJoinFrame
@@ -1648,6 +1640,14 @@ $root.SdkJoinFrame = (function() {
      * @instance
      */
     SdkJoinFrame.prototype.supportedServerSideNetworkAdaptions = $util.emptyArray;
+
+    /**
+     * SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender.
+     * @member {boolean} disablePeriodicKeyframeRequestOnContentSender
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.disablePeriodicKeyframeRequestOnContentSender = false;
 
     /**
      * Creates a new SdkJoinFrame instance using the specified properties.
@@ -1685,13 +1685,13 @@ $root.SdkJoinFrame = (function() {
             writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.audioSessionId);
         if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.wantsCompressedSdp);
-        if (message.wantsServerSideNetworkProbingOnReceiveSideEstimator != null && Object.hasOwnProperty.call(message, "wantsServerSideNetworkProbingOnReceiveSideEstimator"))
-            writer.uint32(/* id 8, wireType 0 =*/64).bool(message.wantsServerSideNetworkProbingOnReceiveSideEstimator);
         if (message.serverSideNetworkAdaption != null && Object.hasOwnProperty.call(message, "serverSideNetworkAdaption"))
             writer.uint32(/* id 10, wireType 0 =*/80).int32(message.serverSideNetworkAdaption);
         if (message.supportedServerSideNetworkAdaptions != null && message.supportedServerSideNetworkAdaptions.length)
             for (var i = 0; i < message.supportedServerSideNetworkAdaptions.length; ++i)
                 writer.uint32(/* id 11, wireType 0 =*/88).int32(message.supportedServerSideNetworkAdaptions[i]);
+        if (message.disablePeriodicKeyframeRequestOnContentSender != null && Object.hasOwnProperty.call(message, "disablePeriodicKeyframeRequestOnContentSender"))
+            writer.uint32(/* id 13, wireType 0 =*/104).bool(message.disablePeriodicKeyframeRequestOnContentSender);
         return writer;
     };
 
@@ -1744,9 +1744,6 @@ $root.SdkJoinFrame = (function() {
             case 7:
                 message.wantsCompressedSdp = reader.bool();
                 break;
-            case 8:
-                message.wantsServerSideNetworkProbingOnReceiveSideEstimator = reader.bool();
-                break;
             case 10:
                 message.serverSideNetworkAdaption = reader.int32();
                 break;
@@ -1759,6 +1756,9 @@ $root.SdkJoinFrame = (function() {
                         message.supportedServerSideNetworkAdaptions.push(reader.int32());
                 } else
                     message.supportedServerSideNetworkAdaptions.push(reader.int32());
+                break;
+            case 13:
+                message.disablePeriodicKeyframeRequestOnContentSender = reader.bool();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -1815,9 +1815,6 @@ $root.SdkJoinFrame = (function() {
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             if (typeof message.wantsCompressedSdp !== "boolean")
                 return "wantsCompressedSdp: boolean expected";
-        if (message.wantsServerSideNetworkProbingOnReceiveSideEstimator != null && message.hasOwnProperty("wantsServerSideNetworkProbingOnReceiveSideEstimator"))
-            if (typeof message.wantsServerSideNetworkProbingOnReceiveSideEstimator !== "boolean")
-                return "wantsServerSideNetworkProbingOnReceiveSideEstimator: boolean expected";
         if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
             switch (message.serverSideNetworkAdaption) {
             default:
@@ -1840,6 +1837,9 @@ $root.SdkJoinFrame = (function() {
                     break;
                 }
         }
+        if (message.disablePeriodicKeyframeRequestOnContentSender != null && message.hasOwnProperty("disablePeriodicKeyframeRequestOnContentSender"))
+            if (typeof message.disablePeriodicKeyframeRequestOnContentSender !== "boolean")
+                return "disablePeriodicKeyframeRequestOnContentSender: boolean expected";
         return null;
     };
 
@@ -1877,8 +1877,6 @@ $root.SdkJoinFrame = (function() {
                 message.audioSessionId = new $util.LongBits(object.audioSessionId.low >>> 0, object.audioSessionId.high >>> 0).toNumber(true);
         if (object.wantsCompressedSdp != null)
             message.wantsCompressedSdp = Boolean(object.wantsCompressedSdp);
-        if (object.wantsServerSideNetworkProbingOnReceiveSideEstimator != null)
-            message.wantsServerSideNetworkProbingOnReceiveSideEstimator = Boolean(object.wantsServerSideNetworkProbingOnReceiveSideEstimator);
         switch (object.serverSideNetworkAdaption) {
         case "DEFAULT":
         case 1:
@@ -1914,6 +1912,8 @@ $root.SdkJoinFrame = (function() {
                     break;
                 }
         }
+        if (object.disablePeriodicKeyframeRequestOnContentSender != null)
+            message.disablePeriodicKeyframeRequestOnContentSender = Boolean(object.disablePeriodicKeyframeRequestOnContentSender);
         return message;
     };
 
@@ -1943,8 +1943,8 @@ $root.SdkJoinFrame = (function() {
             } else
                 object.audioSessionId = options.longs === String ? "0" : 0;
             object.wantsCompressedSdp = false;
-            object.wantsServerSideNetworkProbingOnReceiveSideEstimator = false;
             object.serverSideNetworkAdaption = options.enums === String ? "DEFAULT" : 1;
+            object.disablePeriodicKeyframeRequestOnContentSender = false;
         }
         if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
             object.protocolVersion = message.protocolVersion;
@@ -1961,8 +1961,6 @@ $root.SdkJoinFrame = (function() {
                 object.audioSessionId = options.longs === String ? $util.Long.prototype.toString.call(message.audioSessionId) : options.longs === Number ? new $util.LongBits(message.audioSessionId.low >>> 0, message.audioSessionId.high >>> 0).toNumber(true) : message.audioSessionId;
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             object.wantsCompressedSdp = message.wantsCompressedSdp;
-        if (message.wantsServerSideNetworkProbingOnReceiveSideEstimator != null && message.hasOwnProperty("wantsServerSideNetworkProbingOnReceiveSideEstimator"))
-            object.wantsServerSideNetworkProbingOnReceiveSideEstimator = message.wantsServerSideNetworkProbingOnReceiveSideEstimator;
         if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
             object.serverSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.serverSideNetworkAdaption] : message.serverSideNetworkAdaption;
         if (message.supportedServerSideNetworkAdaptions && message.supportedServerSideNetworkAdaptions.length) {
@@ -1970,6 +1968,8 @@ $root.SdkJoinFrame = (function() {
             for (var j = 0; j < message.supportedServerSideNetworkAdaptions.length; ++j)
                 object.supportedServerSideNetworkAdaptions[j] = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.supportedServerSideNetworkAdaptions[j]] : message.supportedServerSideNetworkAdaptions[j];
         }
+        if (message.disablePeriodicKeyframeRequestOnContentSender != null && message.hasOwnProperty("disablePeriodicKeyframeRequestOnContentSender"))
+            object.disablePeriodicKeyframeRequestOnContentSender = message.disablePeriodicKeyframeRequestOnContentSender;
         return object;
     };
 

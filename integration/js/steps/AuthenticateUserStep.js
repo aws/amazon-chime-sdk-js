@@ -8,7 +8,7 @@ class AuthenticateUserStep extends AppTestStep {
     attendee_id,
     useSimulcastFlag = false,
     useWebAudioFlag = false,
-    enableEventReporting = false,
+    enableEventReporting = true,
     region = '',
     useStereoMusicAudioProfile = false,
   ) {
@@ -27,7 +27,7 @@ class AuthenticateUserStep extends AppTestStep {
     attendee_id,
     useSimulcastFlag = false,
     useWebAudioFlag = false,
-    enableEventReporting = false,
+    enableEventReporting = true,
     region = '',
     useStereoMusicAudioProfile = false,
   ) {

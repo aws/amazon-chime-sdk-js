@@ -99,6 +99,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#connectionhealthpolicyconfiguration" class="tsd-kind-icon">connection<wbr>Health<wbr>Policy<wbr>Configuration</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#connectiontimeoutms" class="tsd-kind-icon">connection<wbr>Timeout<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#credentials" class="tsd-kind-icon">credentials</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#disableperiodickeyframerequestoncontentsender" class="tsd-kind-icon">disable<wbr>Periodic<wbr>Keyframe<wbr>Request<wbr>OnContent<wbr>Sender</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers" class="tsd-kind-icon">enable<wbr>Simulcast<wbr>For<wbr>Unified<wbr>Plan<wbr>Chromium<wbr>Based<wbr>Browsers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#externalmeetingid" class="tsd-kind-icon">external<wbr>Meeting<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#keeplastframewhenpaused" class="tsd-kind-icon">keep<wbr>Last<wbr>Frame<wbr>When<wbr>Paused</a></li>
@@ -127,7 +128,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionConfiguration.ts#L101">src/meetingsession/MeetingSessionConfiguration.ts:101</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionConfiguration.ts#L111">src/meetingsession/MeetingSessionConfiguration.ts:111</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -261,6 +262,25 @@
 						<div class="lead">
 							<p>The credentials used to authenticate the session.</p>
 						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="disableperiodickeyframerequestoncontentsender" class="tsd-anchor"></a>
+					<h3>disable<wbr>Periodic<wbr>Keyframe<wbr>Request<wbr>OnContent<wbr>Sender</h3>
+					<div class="tsd-signature tsd-kind-icon">disable<wbr>Periodic<wbr>Keyframe<wbr>Request<wbr>OnContent<wbr>Sender<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionConfiguration.ts#L111">src/meetingsession/MeetingSessionConfiguration.ts:111</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The Amazon Chime SDK media backends currently send a keyframe request to content share senders every 10 seconds to help mitigate
+							decoder issues on receivers. This flag requests the backed to disable that feature.</p>
+						</div>
+						<p>Setting this flag to true may or may not lead to issues with content received for your application, as it depends on browsers used
+							and whether they have fixed previous issues leading to the introduction of this periodic keyframe request. It will however
+						reduce CPU consumption on content senders which no longer have to generate as many expensive keyframes.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
@@ -465,6 +485,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="meetingsessionconfiguration.html#credentials" class="tsd-kind-icon">credentials</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="meetingsessionconfiguration.html#disableperiodickeyframerequestoncontentsender" class="tsd-kind-icon">disable<wbr>Periodic<wbr>Keyframe<wbr>Request<wbr>OnContent<wbr>Sender</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers" class="tsd-kind-icon">enable<wbr>Simulcast<wbr>For<wbr>Unified<wbr>Plan<wbr>Chromium<wbr>Based<wbr>Browsers</a>

@@ -300,7 +300,9 @@ class VoiceFocus {
         });
     }
     destroy() {
-        this.internal.worker?.terminate();
+        if (this.internal.worker) {
+            this.internal.worker.terminate();
+        }
         this.internal.isDestroyed = true;
     }
 }
