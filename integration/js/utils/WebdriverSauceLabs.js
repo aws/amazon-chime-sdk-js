@@ -83,6 +83,26 @@ const getChromeOptions = capabilities => {
       chromeOptions['args'].push('--use-file-for-fake-audio-capture=' + fetchMediaPath(capabilities.audio, capabilities.browserName));
     }
   }
+  
+  /**
+   * Recently, SauceLabs loads the web page in test and runs into "Your connection is not private" error.
+   * Content share test is also failing with WebSocket connection failed issues which SauceLabs says may
+   * be related.
+   * 
+   * Per SauceLabs suggestion add '--ignore-certificate-errors' to all tests and
+   * few explicit ones for content share test as most errors are on MAC platform.
+   */
+  chromeOptions.args.push('--ignore-certificate-errors');
+  if (capabilities.platform.toUpperCase() === 'MAC' && capabilities.name.includes('ContentShare')) {
+    const args = [
+      "start-maximized",
+      "disable-infobars",
+      "ignore-gpu-blacklist",
+      "test-type",
+      "disable-gpu"
+    ];
+    chromeOptions.args = [...chromeOptions.args, ...args];
+  }
   return chromeOptions;
 }
 
@@ -106,6 +126,7 @@ const getPrerunScript = (capabilities) =>{
   const repName = "Background Replacement Test";
   return (name.includes(blurName) || name.includes(repName)) ?  process.env.PRE_RUN_SCRIPT_URL : "";
 }
+
 const getChromeCapabilities = capabilities => {
   let cap = Capabilities.chrome();
   var prefs = new logging.Preferences();
