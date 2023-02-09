@@ -1,0 +1,197 @@
+#!/usr/bin/env node
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require('fs-extra');
+
+const walk = function(dir) {
+  let results = [];
+  let list = fs.readdirSync(dir);
+  list.forEach(function(file) {
+    file = dir + '/' + file;
+    let stat = fs.statSync(file);
+    if (stat && stat.isDirectory()) {
+      results = results.concat(walk(file));
+    } else {
+      results.push(file);
+    }
+  });
+  return results;
+};
+
+walk('docs')
+  .filter(fn => fn.endsWith('.html'))
+  .forEach(file => {
+    fs.readFile(file, 'utf8', (err, data) => {
+      if (err) return console.error(err);
+
+      let result = data.replace(/blob\/[0-9a-f]{5,40}\//g, 'blob/main/');
+
+      fs.writeFile(file, result, 'utf8', err => {
+        if (err) return console.error(err);
+      });
+    });
+  });
+
+fs.readFile('docs/assets/js/search.json', 'utf8', (err, data) => {
+  if (err) return console.error(err);
+
+  let result = data.replace(/["][,]["]/g, '",\n"');
+  result = result.replace(/[}][,][{]/g, '},\n{');
+  fs.writeFile('docs/assets/js/search.json', result, 'utf8', err => {
+    if (err) return console.error(err);
+  });
+});
+
+@@ -0,0 +1,102 @@
+'*"*':' '"'*"*'run::/BEGINS::/'Run::/Runs::/Runs::/run::/-Start::/Svript::/:Build::, 'build'_script'@pkg.js/'O'P'E'N'('O'P'E'N'.json')'"'
+'"''  '-'G'L'O'W7'' ':'"'':
+'":Build::'"''
+'"prerequisite/build/script/dependencies/install/init/quip/dylan.ymldata/assets/images'@pkg.js
+'":Build::'"''
+'"'A'Syn cSync'' 'Repo=:data/assets@{discussions/Help-Wanted/#54/posted/package.json/pkg.js :
+'"sets-up:rake.io
+'"$ install :Rust..yml//'ENVIROMENT.RUNTIME":,
+'":Build::'console.cache((c):; \
+'"console.func({%"var%}":,
+)":, '{ "define : OPEN("6UJSGYQWWDMGM10
+February 6, 2023
+USD 250,000.00
+Amazon Web Services
+Advance Payment Funding Request
+Request Summary
+Request Number:
+Request Date:
+AMOUNT TO BE PAID
+Email or talk to us about your AWS account, visit aws.amazon.com/contact-us/
+USD 250,000.00
+USD 250,000.00
+Account number:
+733254901807
+Customer Address:
+BITCOIN.BTC-USD BTCUSD CCC
+ATTN: ZACHRY T WOOD
+5222 BRADFORD DR
+DALLAS, TX 75235-8313, US
+This is a document for a recent funding request of your Amazon Web Services account
+Greetings from Amazon Web Services, we're writing to provide you with an electronic document for the recent
+funding request of your AWS account.
+Summary
+Amount
+Total
+Please complete your payment to Amazon Web Services:
+Following are the details for making an electronic funds transfer.
+Please ensure to reference "733254901807 - AdvPay - 6UJSGYQWWDMGM10" in the descriptive text field of your
+electronic funds transfer payment.
+If you have any questions regarding payment, please email aws-accountsreceivable@amazon.com
+Electronic funds transfer details:
+Account Name: Amazon Web Services, Inc.
+Checking Account Number: 4121350227
+Wire Routing Number: 121000248
+Bank Address: 420 Montgomery Street, San Francisco CA 94163
+Bank Name: Wells Fargo NA
+ABA Routing Number: 121000248
+SWIFT Code: WFBIUS6SXXX
+Thank you for using Amazon Web Services.
+Sincerely,
+The Amazon Web Services Team
+This message was produced and distributed by Amazon Web Services, Inc., 410 Terry Avenue North, Seattle, Washington 98109-5210. AWS will
+not be bound by, and specifically objects to, any term, condition or other provision which is different from or in addition to the provisions of the
+AWS Customer Agreement or other agreement between AWS and you governing your use of our services (whether or not it would materially alter
+such AWS Customer Agreement or other agreement) and which is submitted in any order, receipt, acceptance, confirmation, correspondence or
+otherwise, unless AWS specifically agrees to such provision in a written instrument signed by AWS.., :':Build:: : "Linter/rendeerer'.yml :lint-disable-next-line'@ActionScripts/Supra/rendeerer.yml'@eslint.rc :impute-/."{plugg=:no-var-requires'#test'' :console.func("(% "var" %}")":,:"result = result.replace(Junit/unk): ($RAKEFILE.I.U :$mk.dir:Build::/'#'-'' 'data/assets/init/-quipp/ranger.yml'@pkg.json',Return:'Run '' '"'', 'utf8', err => {'if:({ "{%"var"%}" }true.)return console.cache('(c)'+(r))'"');:Build::
+                                     6UJSGYQWWDMGM10
+February 6, 2023
+USD 250,000.00
+Amazon Web Services
+Advance Payment Funding Request
+Request Summary
+Request Number:
+Request Date:
+AMOUNT TO BE PAID
+Email or talk to us about your AWS account, visit aws.amazon.com/contact-us/
+USD 250,000.00
+USD 250,000.00
+Account number:
+733254901807
+Customer Address:
+BITCOIN.BTC-USD BTCUSD CCC
+ATTN: ZACHRY T WOOD
+5222 BRADFORD DR
+DALLAS, TX 75235-8313, US
+This is a document for a recent funding request of your Amazon Web Services account
+Greetings from Amazon Web Services, we're writing to provide you with an electronic document for the recent
+funding request of your AWS account.
+Summary
+Amount
+Total
+Please complete your payment to Amazon Web Services:
+Following are the details for making an electronic funds transfer.
+Please ensure to reference "733254901807 - AdvPay - 6UJSGYQWWDMGM10" in the descriptive text field of your
+electronic funds transfer payment.
+If you have any questions regarding payment, please email aws-accountsreceivable@amazon.com
+Electronic funds transfer details:
+Account Name: Amazon Web Services, Inc.
+Checking Account Number: 4121350227
+Wire Routing Number: 121000248
+Bank Address: 420 Montgomery Street, San Francisco CA 94163
+Bank Name: Wells Fargo NA
+ABA Routing Number: 121000248
+SWIFT Code: WFBIUS6SXXX
+Thank you for using Amazon Web Services.
+Sincerely,
+The Amazon Web Services Team
+This message was produced and distributed by Amazon Web Services, Inc., 410 Terry Avenue North, Seattle, Washington 98109-5210. AWS will
+not be bound by, and specifically objects to, any term, condition or other provision which is different from or in addition to the provisions of the
+AWS Customer Agreement or other agreement between AWS and you governing your use of our services (whether or not it would materially alter
+such AWS Customer Agreement or other agreement) and which is submitted in any order, receipt, acceptance, confirmation, correspondence or
+otherwise, unless AWS specifically agrees to such provision in a written instrument signed by AWS'.'*'"'*':":,
+ 43  
+script/update-typedoc-link.js
+@@ -1,43 +0,0 @@
+#!/usr/bin/env node	
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires	
+const fs = require('fs-extra');	
+
+const walk = function(dir) {	
+  let results = [];	
+  let list = fs.readdirSync(dir);	
+  list.forEach(function(file) {	
+    file = dir + '/' + file;	
+    let stat = fs.statSync(file);	
+    if (stat && stat.isDirectory()) {	
+      results = results.concat(walk(file));	
+    } else {	
+      results.push(file);	
+    }	
+  });	
+  return results;	
+};	
+
+walk('docs')	
+  .filter(fn => fn.endsWith('.html'))	
+  .forEach(file => {	
+    fs.readFile(file, 'utf8', (err, data) => {	
+      if (err) return console.error(err);	
+
+      let result = data.replace(/blob\/[0-9a-f]{5,40}\//g, 'blob/main/');	
+
+      fs.writeFile(file, result, 'utf8', err => {	
+        if (err) return console.error(err);	
+      });	
+    });	
+  });	
+
+fs.readFile('docs/assets/js/search.json', 'utf8', (err, data) => {	
+  if (err) return console.error(err);	
+
+  let result = data.replace(/["][,]["]/g, '",\n"');	
+  result = result.replace(/[}][,][{]/g, '},\n{');	
+  fs.writeFile('docs/assets/js/search.json', result, 'utf8', err => {	
+    '-'' '"if','' 'true'.''':return :result :
+    Return reasult 
+reasult :Response :
+    Response :403OK :true'.'-continue-on-false(e).join(r) : 
+Result :    (.cache)'.[return]'.(console)'.['.join]'.(r);	
+  });	
+});	
