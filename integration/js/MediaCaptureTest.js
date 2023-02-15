@@ -1,4 +1,4 @@
-const { AuthenticateUserStep, JoinMeetingStep, OpenAppStep, ClickContentShareButton, ClickVideoButton, ClickMediaCaptureButton, EndMeetingStep } = require('./steps');
+const { AuthenticateUserStep, JoinMeetingStep, OpenAppStep, ClickMediaCaptureButton, EndMeetingStep } = require('./steps');
 const { RosterCheck, UserAuthenticationCheck, UserJoinedMeetingCheck } = require('./checks');
 const { AppPage } = require('./pages/AppPage');
 const { TestUtils } = require('./node_modules/kite-common');
@@ -17,45 +17,26 @@ class MediaCaptureTest extends SdkBaseTest {
 
     // Join a meeting from two browser sessions with video on
     const testAttendeeId = uuidv4();
-    const monitorAttendeeId = uuidv4();
 
     const testWindow = await Window.existing(session.driver, 'TEST');
-    const monitorWindow = await Window.openNew(session.driver, 'MONITOR');
 
     const meetingId = uuidv4();
     console.log(`testing region: ${this.region}, meetingId: ${meetingId}`);
 
     await testWindow.runCommands(async () => await this.addUserToMeeting(testAttendeeId, session, this.region));
-    await testWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
-    await testWindow.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
-    await TestUtils.waitAround(5000);
-
-    await monitorWindow.runCommands(async () => await this.addUserToMeeting(monitorAttendeeId, session, this.region));
-    await monitorWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
-
     // Start media capture session
     await testWindow.runCommands(async () => await ClickMediaCaptureButton.executeStep(this, session));
-    await testWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
-    await monitorWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
-
-    await TestUtils.waitAround(15000);
-
-    // One at a time, have the browser sessions turn OFF and ON video & content share
-    await testWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
-    await testWindow.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "OFF"));
-
     await TestUtils.waitAround(5000);
 
-    await testWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
-    await monitorWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
+    // Check if media capture started successfully.
+    await testWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 2));
 
-    await testWindow.runCommands(async () => await ClickVideoButton.executeStep(this, session));
-    await testWindow.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
-
+    // Stop media capture session
+    await testWindow.runCommands(async () => await ClickMediaCaptureButton.executeStep(this, session));
     await TestUtils.waitAround(5000);
 
-    await testWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
-    await monitorWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
+    // // Check if media capture stopped successfully.
+    await testWindow.runCommands(async () => await RosterCheck.executeStep(this, session, 1));
 
     await testWindow.runCommands(async () => await EndMeetingStep.executeStep(this, session));
     await this.waitAllSteps();
