@@ -204,7 +204,9 @@ export default class AudioVideoControllerState {
     // `mediaStreamBroker`, `activeAudioInput`, and `activeVideoInput` are cleaned up seperately in `DefaultAudioVideoController.cleanUpMediaStreamsAfterStop`
     // but only on `stop` or non-reconnectable failures. They are also set to cached `DefaultAudioVideoController` members on restart.
 
-    this.transceiverController.reset();
+    if (this.transceiverController !== undefined) {
+      this.transceiverController.reset();
+    }
     this.indexFrame = null;
     this.iceCandidates = [];
     this.iceCandidateHandler = null;
