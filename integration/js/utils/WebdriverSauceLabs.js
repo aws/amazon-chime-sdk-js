@@ -83,6 +83,26 @@ const getChromeOptions = capabilities => {
       chromeOptions['args'].push('--use-file-for-fake-audio-capture=' + fetchMediaPath(capabilities.audio, capabilities.browserName));
     }
   }
+  
+  /**
+   * Recently, SauceLabs loads the web page in test and runs into "Your connection is not private" error.
+   * Content share test is also failing with WebSocket connection failed issues which SauceLabs says may
+   * be related.
+   * 
+   * Per SauceLabs suggestion add '--ignore-certificate-errors' to all tests and
+   * few explicit ones for content share test as most errors are on MAC platform.
+   */
+  chromeOptions.args.push('--ignore-certificate-errors');
+  if (capabilities.platform.toUpperCase() === 'MAC' && capabilities.name.includes('ContentShare')) {
+    const args = [
+      "start-maximized",
+      "disable-infobars",
+      "ignore-gpu-blacklist",
+      "test-type",
+      "disable-gpu"
+    ];
+    chromeOptions.args = [...chromeOptions.args, ...args];
+  }
   return chromeOptions;
 }
 
@@ -128,6 +148,9 @@ const getSauceLabsConfig = (capabilities) => {
     name: capabilities.name,
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
+    ...(!((capabilities.name).includes('ContentShare')) && {
+      screenResolution: '1280x960',
+    }),
     tunnelIdentifier: process.env.JOB_ID,
     ...((capabilities.platform.toUpperCase() !== 'LINUX' &&
       !((capabilities.name).includes('ContentShare'))) && {
@@ -203,6 +226,15 @@ class SaucelabsSession {
       .withCapabilities(cap)
       .forBrowser(capabilities.browserName)
       .build();
+
+    // Selenium is supposed to have a default timeout of 30 seconds, but on IOS Safari
+    // it is undefined. This will override the timeout in this case or any similar cases.
+    const defaultTimeout = 30000;
+    let timeouts = await driver.manage().getTimeouts()
+    if (timeouts.script == undefined || timeouts.script < defaultTimeout) {
+      await driver.manage().setTimeouts({script: defaultTimeout})
+    }
+
     return new SaucelabsSession(driver, domain, appName);
   }
   constructor(inDriver, domain, appName) {
