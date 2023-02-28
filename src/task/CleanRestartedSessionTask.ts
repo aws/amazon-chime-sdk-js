@@ -12,17 +12,6 @@ export default class CleanRestartedSessionTask extends BaseTask {
   }
 
   async run(): Promise<void> {
-    if (this.context.peer) {
-      this.context.peer.close();
-    }
-    this.context.transceiverController.reset();
-    this.context.peer = null;
-    this.context.videoDownlinkBandwidthPolicy.reset();
-    if (this.context.videoUplinkBandwidthPolicy.reset) {
-      this.context.videoUplinkBandwidthPolicy.reset();
-    }
-    this.context.iceCandidateHandler = null;
-    this.context.iceCandidates = [];
-    this.context.previousSdpOffer = null;
+    this.context.resetConnectionSpecificState();
   }
 }

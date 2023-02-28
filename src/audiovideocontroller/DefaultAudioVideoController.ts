@@ -294,7 +294,7 @@ export default class DefaultAudioVideoController
   }
 
   private uninstallPreStartObserver(): void {
-    this.meetingSessionContext.signalingClient?.removeObserver(this.preStartObserver);
+    this.meetingSessionContext.signalingClient.removeObserver(this.preStartObserver);
     this.preStartObserver = undefined;
   }
 
@@ -484,6 +484,10 @@ export default class DefaultAudioVideoController
     // We no longer need to watch for the early connection dropping; we're back where
     // we otherwise would have been had we not pre-started.
     this.uninstallPreStartObserver();
+
+    // Note that some of the assignments in this function exist to clean up previous connections.
+    // All future 'clean up' assignments should go in `AudioVideoControllerState.resetConnectionSpecificState`
+    // for consolidation purposes.
 
     this.meetingSessionContext.mediaStreamBroker = this._mediaStreamBroker;
     this.meetingSessionContext.realtimeController = this._realtimeController;
@@ -752,7 +756,6 @@ export default class DefaultAudioVideoController
     if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
       // Unfortunately, this does not return a promise.
       this.meetingSessionContext.signalingClient?.closeConnection();
-      this.meetingSessionContext.signalingClient = null; // See comment in `actionDisconnect`
       this.cleanUpMediaStreamsAfterStop();
       return Promise.resolve();
     }
@@ -813,9 +816,6 @@ export default class DefaultAudioVideoController
     }
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
-        // Do a hard reset of the signaling client in case this controller is reused;
-        // this will also cause `this.meetingSessionContext` to be reset if reused.
-        this.meetingSessionContext.signalingClient = null;
         this.notifyStop(status, error);
       }
     });

@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Refactored various state cleanup to `AudioVideoControllerState.resetConnectionSpecificState`.
+
 ## [3.11.0] - 2023-01-03
 
 ### Added
@@ -28,7 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - To support future use case of allowing users to join a meeting without the need for a microphone or empty audio stream, update `checkAudioConnectivity` logic inside `DefaultMeetingReadinessChecker` accordingly, to check for audio packets received metrics using `metricsDidReceive` observer in addition to attendee presence condition. Previously, the audio connectivity check used to implicitly test that audio was being sent out from the client and being received by the server. Now this check will include a test for attendee presence, showing that the signal connection has been established, and audio packets being received, showing that the data connection has been established.
 
 ### Fixed
+
 - Fix ES2015 target builds by fixing voicefocus js file.
+- Added missing state cleanup for various video components on reconnect to mitigate missing remote or local video.
 
 ## [3.10.0] - 2022-11-02
 
