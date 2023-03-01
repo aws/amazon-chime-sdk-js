@@ -3667,6 +3667,7 @@ export class DemoMeetingApp
     if (allowed) {
       return true;
     }
+    
     return false;
   }
 
