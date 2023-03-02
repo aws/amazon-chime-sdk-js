@@ -28,7 +28,7 @@ export default class PaginationManager<Type> {
     if (index === -1) {
       return;
     }
-    this.all.splice(index);
+    this.all.splice(index,1);
   }
 
   hasNextPage(): boolean {

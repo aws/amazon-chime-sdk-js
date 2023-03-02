@@ -229,7 +229,11 @@ export default class ReceiveVideoStreamIndexTask
         }
       }
       // We need to renegotiate if we are currently sending a codec that is no longer supported in the call.
-      if (!codecSupported && capability.equals(this.context.currentVideoSendCodec)) {
+      if (
+        this.context.currentVideoSendCodec !== undefined &&
+        !codecSupported &&
+        capability.equals(this.context.currentVideoSendCodec)
+      ) {
         willNeedUpdate = true;
       }
     }

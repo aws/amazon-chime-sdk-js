@@ -525,7 +525,7 @@ describe('DefaultAudioVideoController', () => {
 
       // Now it's been closed.
       // @ts-ignore
-      expect(audioVideoController.meetingSessionContext.signalingClient).to.be.null;
+      expect(audioVideoController.meetingSessionContext.signalingClient.ready()).to.be.false;
     });
 
     it('is resilient against pre-start errors', async () => {
@@ -953,6 +953,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.setVideoMaxBandwidthKbps(100);
       audioVideoController.handleHasBandwidthPriority(true);
       expect(spy.calledTwice).to.be.true;
+      await stop();
       spy.restore();
     });
 
@@ -1685,6 +1686,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.mayNeedRenegotiationForSimulcastLayerChange = true;
       audioVideoController.update({ needsRenegotiation: false });
+
+      await stop();
 
       // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
       expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
@@ -3916,6 +3919,7 @@ describe('DefaultAudioVideoController', () => {
         'stopLocalVideoTile'
       );
       mediaStreamBroker.triggerVideoInputChangeEvent(undefined);
+      await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay); //Wait for the replaceLocalVideo finish as it is an async function in an event
       expect(replaceVideoSpy.notCalled).to.be.true;
       expect(stopLocalVideoSpy.calledOnce).to.be.true;
