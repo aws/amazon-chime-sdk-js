@@ -18,7 +18,7 @@ Background replacement is available as part of the Amazon Chime SDK for JavaScri
 ### Browser compatibility
 
 The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers
-(including Electron) on desktop, Android and iOS operating systems. A full compatibility table is below.
+(including Electron) on desktop, Android. A full compatibility table is below.
 
 |Browser                                                                |Minimum supported version
 |---                                                                    |---
@@ -27,8 +27,9 @@ The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox
 |Android Chrome                                                         |78
 |Safari on MacOS                                                        |13.0
 |iOS Safari                                                             |16
-|iOS Chrome                                                             |16
-|iOS Firefox (Except on iPad)                                           |16
+|iOS Chrome                                                             |106
+|iOS Firefox (Except on iPad)                                           |106
+|iOS Edge                                                               |106
 
 Note that there is a known issue with `VideoFrameProcessor` in Safari 15: see [github issue 1059](https://github.com/aws/amazon-chime-sdk-js/issues/1059). This has been fixed with Safari 16.
 

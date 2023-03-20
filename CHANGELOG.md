@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Refactored various state cleanup to `AudioVideoControllerState.resetConnectionSpecificState`.
+- Update `supportsCanvasCapturedStreamPlayback` in `DefaultBrowserBehavior` to fix background blur and replacement 
+  support check failures in iPad.
 
 ## [3.11.0] - 2023-01-03
 
