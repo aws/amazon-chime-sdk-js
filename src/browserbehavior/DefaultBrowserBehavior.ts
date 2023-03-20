@@ -50,8 +50,9 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     'samsung',
   ];
 
-  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
+  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview', 'edge-ios'];
   private static MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK = 16;
+  private static MIN_IOS_NON_SAFARI_SUPPORT_CANVAS_STREAM_PLAYBACK = 106;
 
   version(): string {
     return this.browser.version;
@@ -97,8 +98,14 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   supportsCanvasCapturedStreamPlayback(): boolean {
     return (
-      (!this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox()) ||
-      this.osMajorVersion() >= DefaultBrowserBehavior.MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK
+      // Desktop browser
+      (!this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox() && !this.isIOSEdge()) ||
+      // iOS Safari (Firefox on iOS with desktop view will be identified as iOS Safari
+      (this.isIOSSafari() &&
+        this.majorVersion() >= DefaultBrowserBehavior.MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK) ||
+      // Chrome, Edge, or Firefox (mobile view) on iOS
+      this.majorVersion() >=
+        DefaultBrowserBehavior.MIN_IOS_NON_SAFARI_SUPPORT_CANVAS_STREAM_PLAYBACK
     );
   }
 
@@ -267,6 +274,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   private isEdge(): boolean {
     return this.browser.name === 'edge-chromium';
+  }
+
+  private isIOSEdge(): boolean {
+    return this.browser.name === 'edge-ios';
   }
 
   private isSamsungInternet(): boolean {

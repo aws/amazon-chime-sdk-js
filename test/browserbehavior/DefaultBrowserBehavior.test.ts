@@ -256,6 +256,11 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(OPERA_USER_AGENT);
       expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
     });
+
+    it('can detect os major version', () => {
+      setUserAgent(CHROME_IOS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().osMajorVersion()).to.equal(15);
+    });
   });
 
   describe('supportedVideoCodecs', () => {
