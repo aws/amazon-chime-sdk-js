@@ -199,6 +199,8 @@ function serve(host = '127.0.0.1:8080') {
         await client.deleteMeeting({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
         }).promise();
+        //Remove the meeting from table(so that a new meeting can be created with the same name with in a session)
+        delete meetingTable[requestUrl.query.title];
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/startCapture') {
         if (captureS3Destination) {
