@@ -60,6 +60,22 @@ const ignoredTypes = [
   // Events ingestion internal functions.
   'flattenEventAttributes',
 
+  // Constants that we dont need to export
+  'DeferredPromise',
+  'VideoFxConstants',
+  'VideoFxCanvasOpsManager',
+  'VideoFxModelSpecBuilder',
+  'VideoFxRenderer',
+  'VideoFxSegmentationRateManager',
+  'VideoFxStreamParameters',
+  'VideoFxRendereringUnit',
+  'VideoFxBackgroundBlurRenderingUnit',
+  'VideoFxBackgroundReplacementRenderingUnit',
+  'VideoFxModelSpec',
+  'VideoFxSpec',
+  'VideoFxPaths',
+  'SDKVersioningParams',
+
   // Ignore utils
   'Utils',
 ];

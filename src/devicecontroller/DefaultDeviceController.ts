@@ -13,6 +13,7 @@ import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamB
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import PromiseQueue from '../utils/PromiseQueue';
 import { Maybe } from '../utils/Types';
+import DefaultVideoTransformDevice from '../videoframeprocessor/DefaultVideoTransformDevice';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import AudioInputDevice from './AudioInputDevice';
 import AudioNodeSubgraph from './AudioNodeSubgraph';
@@ -321,6 +322,9 @@ export default class DefaultDeviceController
   }
 
   private async chooseVideoTransformInputDevice(device: VideoTransformDevice): Promise<void> {
+    if (this.eventController && device instanceof DefaultVideoTransformDevice) {
+      device.passEventControllerToProcessors(this.eventController);
+    }
     if (device === this.chosenVideoTransformDevice) {
       this.logger.info('Reselecting same VideoTransformDevice');
       return;

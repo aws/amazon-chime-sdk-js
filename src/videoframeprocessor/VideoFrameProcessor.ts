@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Destroyable from '../destroyable/Destroyable';
+import EventController from '../eventcontroller/EventController';
 import VideoFrameBuffer from './VideoFrameBuffer';
 
 /**
@@ -19,4 +20,10 @@ export default interface VideoFrameProcessor extends Destroyable {
    * Destroys the processor.
    */
   destroy(): Promise<void>;
+
+  /**
+   * Set the {@link EventController} to the VideoFrameProcessor
+   * @param eventController
+   */
+  setEventController?(eventController: EventController): void;
 }

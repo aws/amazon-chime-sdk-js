@@ -19,8 +19,14 @@ import {
   FilterCPUUtilizationHighEvent,
   FilterFrameDurationHighEvent,
 } from '../../src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
+import EventController from '../../src/eventcontroller/EventController';
 import ConsoleLogger from '../../src/logger/ConsoleLogger';
 import LogLevel from '../../src/logger/LogLevel';
+import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
+import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
+import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import CanvasVideoFrameBuffer from '../../src/videoframeprocessor/CanvasVideoFrameBuffer';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
 import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
@@ -32,12 +38,29 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('BackgroundBlurProcessor', () => {
+  const noOpLogger: NoOpDebugLogger = new NoOpDebugLogger();
+  let configuration: MeetingSessionConfiguration;
+  let eventController: EventController;
   let expect: Chai.ExpectStatic;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   const sandbox: sinon.SinonSandbox = sinon.createSandbox();
   let clock: sinon.SinonFakeTimers;
   const backgroundFilterCommon = new BackgroundFilterCommon();
+
+  function makeSessionConfiguration(): MeetingSessionConfiguration {
+    const configuration = new MeetingSessionConfiguration();
+    configuration.meetingId = 'foo-meeting';
+    configuration.urls = new MeetingSessionURLs();
+    configuration.urls.audioHostURL = 'https://audiohost.test.example.com';
+    configuration.urls.turnControlURL = 'https://turncontrol.test.example.com';
+    configuration.urls.signalingURL = 'https://signaling.test.example.com';
+    configuration.credentials = new MeetingSessionCredentials();
+    configuration.credentials.attendeeId = 'foo-attendee';
+    configuration.credentials.joinToken = 'foo-join-token';
+    configuration.attendeePresenceTimeoutMs = 5000;
+    return configuration;
+  }
 
   beforeEach(() => {
     expect = chai.expect;
@@ -882,6 +905,21 @@ describe('BackgroundBlurProcessor', () => {
         expectSegmentCount().to.be.equal(0);
         expectSegmentTotalMillis().to.be.equal(0);
       });
+    });
+
+    it('validating eventController events', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      // create processor with defaults
+      configuration = makeSessionConfiguration();
+      eventController = new DefaultEventController(configuration, noOpLogger);
+      const eventController2 = new DefaultEventController(configuration, noOpLogger);
+      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
+      // first event controller, publishEvent happens
+      bbprocessor.setEventController(eventController);
+      // second event controller, only change of controller occurs
+      bbprocessor.setEventController(eventController2);
     });
 
     it('observer is called without functions defined', async () => {

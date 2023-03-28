@@ -1291,9 +1291,9 @@ appVersion: string;
 
 ## Notice
 
-The use of Amazon Voice Focus and background blur via this SDK involves the downloading and execution of code at runtime by end users.
+The use of Amazon Voice Focus. background blur, and background replacement via this SDK involves the downloading and execution of code at runtime by end users.
 
-The use of Amazon Voice Focus and background blur runtime code is subject to additional notices. See [this Amazon Voice Focus NOTICES file](https://static.sdkassets.chime.aws/workers/NOTICES.txt), [background blur and background replacement NOTICES file](https://static.sdkassets.chime.aws/bgblur/workers/NOTICES.txt) for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus and background blur runtime code via this SDK.
+The use of Amazon Voice Focus. background blur, and background replacement runtime code is subject to additional notices. See [this Amazon Voice Focus NOTICES file](https://static.sdkassets.chime.aws/workers/NOTICES.txt), [background blur and background replacement NOTICES file](https://static.sdkassets.chime.aws/bgblur/workers/NOTICES.txt), and [background blur 2.0 and background replacement 2.0 NOTICES file](https://static.sdkassets.chime.aws/ml_media_fx/workers/NOTICES.txt)  for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus, background blur and background replacement, background blur 2.0 and background replacement 2.0, runtime code via this SDK.
 
 The browser demo applications in the [demos directory](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos) use [TensorFlow.js](https://github.com/tensorflow/tfjs) and pre-trained [TensorFlow.js models](https://github.com/tensorflow/tfjs-models) for image segmentation. Use of these third party models involves downloading and execution of code at runtime from [jsDelivr](https://www.jsdelivr.com/) by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this [link](https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net).
 

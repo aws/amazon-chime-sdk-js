@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AssetSpec } from '../../libs/voicefocus/voicefocus';
+import Versioning from '../versioning/Versioning';
+
 export function wait(waitTimeMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, waitTimeMs));
 }
@@ -35,6 +38,19 @@ export function toLowerCasePropertyNames(input: any): any {
     result[key.toLowerCase()] = newValue;
     return result;
   }, {});
+}
+
+/**
+ * Based on the SDK version, return an asset group.
+ *
+ * @returns the default asset spec, based on the SDK version.
+ */
+export function getDefaultAssetSpec(): AssetSpec {
+  const version = Versioning.sdkVersionSemVer;
+
+  return {
+    assetGroup: `sdk-${version.major}.${version.minor}`,
+  };
 }
 
 /**

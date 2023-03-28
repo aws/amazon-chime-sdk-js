@@ -6,6 +6,7 @@ import EventReporter from '../eventreporter/EventReporter';
 import AudioVideoEventAttributes from './AudioVideoEventAttributes';
 import DeviceEventAttributes from './DeviceEventAttributes';
 import EventName from './EventName';
+import VideoFXEventAttributes from './VideoFXEventAttributes';
 
 /**
  * [[EventController]] keeps track of a list of event observers and notifies them of SDK events.
@@ -33,7 +34,7 @@ export default interface EventController {
    */
   publishEvent(
     name: EventName,
-    attributes?: AudioVideoEventAttributes | DeviceEventAttributes
+    attributes?: AudioVideoEventAttributes | DeviceEventAttributes | VideoFXEventAttributes
   ): Promise<void>;
 
   /**
