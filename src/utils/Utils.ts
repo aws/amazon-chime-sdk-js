@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import moment = require('moment-timezone');
+
 export function wait(waitTimeMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, waitTimeMs));
 }
@@ -35,4 +37,8 @@ export function toLowerCasePropertyNames(input: any): any {
     result[key.toLowerCase()] = newValue;
     return result;
   }, {});
+}
+
+export function getUTCOffsetFromTimezoneIdentifier(timezone: string): string {
+  return moment.tz(timezone).format('Z');
 }

@@ -102,6 +102,7 @@
     "@aws-sdk/util-hex-encoding": "^3.47.0",
     "@types/ua-parser-js": "^0.7.35",
     "detect-browser": "^5.2.0",
+    "moment-timezone": "^0.5.42",
     "pako": "^2.0.4",
     "protobufjs": "^6.11.3",
     "resize-observer": "^1.0.0",

@@ -28,6 +28,7 @@ import {
   SdkSubscribeFrame,
   SdkVideoSubscriptionConfiguration,
 } from '../signalingprotocol/SignalingProtocol.js';
+import { getUTCOffsetFromTimezoneIdentifier } from '../utils/Utils';
 import Versioning from '../versioning/Versioning';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
@@ -94,11 +95,13 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.protocolVersion = 2;
     joinFrame.flags = SdkJoinFlags.HAS_STREAM_UPDATE;
     const browserBehavior = new DefaultBrowserBehavior();
+    const browserTimezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const sdkClientDetails: ISdkClientDetails = {
       platformName: browserBehavior.name(),
       platformVersion: browserBehavior.version(),
       clientSource: Versioning.sdkName,
       chimeSdkVersion: Versioning.sdkVersion,
+      clientUtcOffset: getUTCOffsetFromTimezoneIdentifier(browserTimezone),
     };
     if (settings.applicationMetadata) {
       const { appName, appVersion } = settings.applicationMetadata;
