@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.13.0] - 2023-03-28
 
 ### Added
+- Add Client UTC Offset inside join message which is sent over signalling channel.
 
 ### Removed
 
@@ -17,8 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.12.0] - 2023-02-14
 
-### Added
-- Add Client UTC Offset inside join message which is sent over signalling channel.  
+### Added 
 
 ### Removed
 
