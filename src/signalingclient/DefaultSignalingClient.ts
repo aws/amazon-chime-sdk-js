@@ -39,6 +39,7 @@ import SignalingClientEventType from './SignalingClientEventType';
 import SignalingClientJoin from './SignalingClientJoin';
 import SignalingClientSubscribe from './SignalingClientSubscribe';
 import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVideoSubscriptionConfiguration';
+import { getUTCOffsetFromTimezoneIdentifier } from '../utils/Utils';
 
 /**
  * [[DefaultSignalingClient]] implements the SignalingClient interface.
@@ -94,11 +95,13 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.protocolVersion = 2;
     joinFrame.flags = SdkJoinFlags.HAS_STREAM_UPDATE;
     const browserBehavior = new DefaultBrowserBehavior();
+    const browserTimezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const sdkClientDetails: ISdkClientDetails = {
       platformName: browserBehavior.name(),
       platformVersion: browserBehavior.version(),
       clientSource: Versioning.sdkName,
       chimeSdkVersion: Versioning.sdkVersion,
+      clientUtcOffset: getUTCOffsetFromTimezoneIdentifier(browserTimezone)
     };
     if (settings.applicationMetadata) {
       const { appName, appVersion } = settings.applicationMetadata;
