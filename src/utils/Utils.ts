@@ -40,5 +40,5 @@ export function toLowerCasePropertyNames(input: any): any {
 }
 
 export function getUTCOffsetFromTimezoneIdentifier(timezone: string): string {
-  return moment.tz(timezone).format("Z");
+  return moment.tz(timezone).format('Z');
 }
