@@ -28,7 +28,7 @@ import {
   SdkSubscribeFrame,
   SdkVideoSubscriptionConfiguration,
 } from '../signalingprotocol/SignalingProtocol.js';
-import { getUTCOffsetString } from '../utils/Utils';
+import { getFormattedOffset } from '../utils/Utils';
 import Versioning from '../versioning/Versioning';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
@@ -100,7 +100,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       platformVersion: browserBehavior.version(),
       clientSource: Versioning.sdkName,
       chimeSdkVersion: Versioning.sdkVersion,
-      clientUtcOffset: getUTCOffsetString(new Date().getTimezoneOffset()),
+      clientUtcOffset: getFormattedOffset(new Date().getTimezoneOffset()),
     };
     if (settings.applicationMetadata) {
       const { appName, appVersion } = settings.applicationMetadata;

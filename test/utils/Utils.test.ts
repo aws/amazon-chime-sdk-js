@@ -3,7 +3,7 @@
 
 import * as chai from 'chai';
 
-import { getUTCOffsetString, toLowerCasePropertyNames, wait } from '../../src/utils/Utils';
+import { getFormattedOffset, toLowerCasePropertyNames, wait } from '../../src/utils/Utils';
 
 describe('Utils', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -118,12 +118,12 @@ describe('Utils', () => {
       expect(output.metadata[1]).to.eq('HTTPMetadata2');
     });
 
-    it('gets correct UTC offset from timezone identifier', () => {
-      expect(getUTCOffsetString(180)).to.eq('-03:00');
-      expect(getUTCOffsetString(-330)).to.eq('+05:30');
-      expect(getUTCOffsetString(420)).to.eq('-07:00');
-      expect(getUTCOffsetString(-720)).to.eq('+12:00');
-      expect(getUTCOffsetString(-840)).to.eq('+14:00');
+    it('gets correct formatted UTC offset from integer UTC offset', () => {
+      expect(getFormattedOffset(180)).to.eq('-03:00');
+      expect(getFormattedOffset(-330)).to.eq('+05:30');
+      expect(getFormattedOffset(420)).to.eq('-07:00');
+      expect(getFormattedOffset(-720)).to.eq('+12:00');
+      expect(getFormattedOffset(-840)).to.eq('+14:00');
     });
   });
 });
