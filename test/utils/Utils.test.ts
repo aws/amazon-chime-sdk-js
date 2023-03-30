@@ -3,11 +3,7 @@
 
 import * as chai from 'chai';
 
-import {
-  getUTCOffsetFromTimezoneIdentifier,
-  toLowerCasePropertyNames,
-  wait,
-} from '../../src/utils/Utils';
+import { getUTCOffsetString, toLowerCasePropertyNames, wait } from '../../src/utils/Utils';
 
 describe('Utils', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -123,11 +119,11 @@ describe('Utils', () => {
     });
 
     it('gets correct UTC offset from timezone identifier', () => {
-      expect(getUTCOffsetFromTimezoneIdentifier('America/Argentina/Buenos_Aires')).to.eq('-03:00');
-      expect(getUTCOffsetFromTimezoneIdentifier('Asia/Calcutta')).to.eq('+05:30');
-      expect(getUTCOffsetFromTimezoneIdentifier('America/Los_Angeles')).to.eq('-07:00');
-      expect(getUTCOffsetFromTimezoneIdentifier('Asia/Anadyr')).to.eq('+12:00');
-      expect(getUTCOffsetFromTimezoneIdentifier('Etc/GMT-14')).to.eq('+14:00');
+      expect(getUTCOffsetString(180)).to.eq('-03:00');
+      expect(getUTCOffsetString(-330)).to.eq('+05:30');
+      expect(getUTCOffsetString(420)).to.eq('-07:00');
+      expect(getUTCOffsetString(-720)).to.eq('+12:00');
+      expect(getUTCOffsetString(-840)).to.eq('+14:00');
     });
   });
 });

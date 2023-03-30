@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import moment = require('moment-timezone');
-
 export function wait(waitTimeMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, waitTimeMs));
 }
@@ -39,6 +37,19 @@ export function toLowerCasePropertyNames(input: any): any {
   }, {});
 }
 
-export function getUTCOffsetFromTimezoneIdentifier(timezone: string): string {
-  return moment.tz(timezone).format('Z');
+/**
+ * Get UTC offset in (+|-)HH:mm format
+ * E.g. For Asia/Calcutta timezone, +05:30 UTC offset value is returned
+ */
+export function getUTCOffsetString(utcOffsetInteger: number): string {
+  const offset = Math.abs(utcOffsetInteger);
+  const offsetOperator = utcOffsetInteger < 0 ? '+' : '-';
+  const offsetHours = Math.floor(offset / 60)
+    .toString()
+    .padStart(2, '0');
+  const offsetMinutes = Math.floor(offset % 60)
+    .toString()
+    .padStart(2, '0');
+
+  return `${offsetOperator}${offsetHours}:${offsetMinutes}`;
 }
