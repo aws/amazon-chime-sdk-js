@@ -3,7 +3,11 @@
 
 import * as chai from 'chai';
 
-import { toLowerCasePropertyNames, wait } from '../../src/utils/Utils';
+import {
+  getUTCOffsetFromTimezoneIdentifier,
+  toLowerCasePropertyNames,
+  wait,
+} from '../../src/utils/Utils';
 
 describe('Utils', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -117,5 +121,13 @@ describe('Utils', () => {
       expect(output.metadata[0]).to.eq('HTTPMetadata1');
       expect(output.metadata[1]).to.eq('HTTPMetadata2');
     });
+
+    it('does not convert any values to lowercase', () => {
+      expect(getUTCOffsetFromTimezoneIdentifier('America/Argentina/Buenos_Aires')).to.eq("-03:00");
+      expect(getUTCOffsetFromTimezoneIdentifier('Asia/Calcutta')).to.eq("+05:30");
+      expect(getUTCOffsetFromTimezoneIdentifier('America/Los_Angeles')).to.eq("-07:00");
+      expect(getUTCOffsetFromTimezoneIdentifier('Asia/Anadyr')).to.eq("+12:00");
+      expect(getUTCOffsetFromTimezoneIdentifier('Etc/GMT-14')).to.eq("+14:00");
+    })
   });
 });

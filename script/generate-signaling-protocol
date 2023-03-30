@@ -14,8 +14,7 @@ end
   verbose "mkdir -p src/#{dir}"
 
   # workaround for https://github.com/hegemonic/requizzle/issues/5
-  verbose "brew install node@10"
-  node = "#{`brew --prefix node@10`.strip}/bin/node"
+  node = "/opt/homebrew/opt/node@14/bin/node"
 
   # workaround for https://github.com/protobufjs/protobuf.js/issues/1217
   verbose "#{node} node_modules/.bin/pbjs -t static-module -w commonjs -o src/#{dir}/#{protocol}.js ./protocol/#{protocol}.proto"

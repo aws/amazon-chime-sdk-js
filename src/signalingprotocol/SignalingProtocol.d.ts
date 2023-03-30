@@ -379,6 +379,9 @@ export interface ISdkClientDetails {
 
     /** SdkClientDetails chimeSdkVersion */
     chimeSdkVersion?: (string|null);
+
+    /** SdkClientDetails clientUtcOffset */
+    clientUtcOffset?: (string|null);
 }
 
 /** Represents a SdkClientDetails. */
@@ -413,6 +416,9 @@ export class SdkClientDetails implements ISdkClientDetails {
 
     /** SdkClientDetails chimeSdkVersion. */
     public chimeSdkVersion: string;
+
+    /** SdkClientDetails clientUtcOffset. */
+    public clientUtcOffset: string;
 
     /**
      * Creates a new SdkClientDetails instance using the specified properties.
