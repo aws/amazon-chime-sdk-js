@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.13.0] - 2023-03-28
 
 ### Added
+- Send client UTC offset with attendee JOIN frame over signalling channel.
 
 ### Removed
 
@@ -17,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.12.0] - 2023-02-14
 
-### Added
+### Added 
 
 ### Removed
 

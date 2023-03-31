@@ -72,6 +72,7 @@ message SdkClientDetails {
     optional string platform_version = 6;
     optional string client_source = 7;
     optional string chime_sdk_version = 8;
+    optional string client_utc_offset = 9;
 }
 
 enum SdkServerSideNetworkAdaption {
