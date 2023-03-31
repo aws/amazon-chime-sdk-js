@@ -1200,6 +1200,7 @@ $root.SdkClientDetails = (function() {
      * @property {string|null} [platformVersion] SdkClientDetails platformVersion
      * @property {string|null} [clientSource] SdkClientDetails clientSource
      * @property {string|null} [chimeSdkVersion] SdkClientDetails chimeSdkVersion
+     * @property {string|null} [clientUtcOffset] SdkClientDetails clientUtcOffset
      */
 
     /**
@@ -1282,6 +1283,14 @@ $root.SdkClientDetails = (function() {
     SdkClientDetails.prototype.chimeSdkVersion = "";
 
     /**
+     * SdkClientDetails clientUtcOffset.
+     * @member {string} clientUtcOffset
+     * @memberof SdkClientDetails
+     * @instance
+     */
+    SdkClientDetails.prototype.clientUtcOffset = "";
+
+    /**
      * Creates a new SdkClientDetails instance using the specified properties.
      * @function create
      * @memberof SdkClientDetails
@@ -1321,6 +1330,8 @@ $root.SdkClientDetails = (function() {
             writer.uint32(/* id 7, wireType 2 =*/58).string(message.clientSource);
         if (message.chimeSdkVersion != null && Object.hasOwnProperty.call(message, "chimeSdkVersion"))
             writer.uint32(/* id 8, wireType 2 =*/66).string(message.chimeSdkVersion);
+        if (message.clientUtcOffset != null && Object.hasOwnProperty.call(message, "clientUtcOffset"))
+            writer.uint32(/* id 9, wireType 2 =*/74).string(message.clientUtcOffset);
         return writer;
     };
 
@@ -1378,6 +1389,9 @@ $root.SdkClientDetails = (function() {
                 break;
             case 8:
                 message.chimeSdkVersion = reader.string();
+                break;
+            case 9:
+                message.clientUtcOffset = reader.string();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -1438,6 +1452,9 @@ $root.SdkClientDetails = (function() {
         if (message.chimeSdkVersion != null && message.hasOwnProperty("chimeSdkVersion"))
             if (!$util.isString(message.chimeSdkVersion))
                 return "chimeSdkVersion: string expected";
+        if (message.clientUtcOffset != null && message.hasOwnProperty("clientUtcOffset"))
+            if (!$util.isString(message.clientUtcOffset))
+                return "clientUtcOffset: string expected";
         return null;
     };
 
@@ -1469,6 +1486,8 @@ $root.SdkClientDetails = (function() {
             message.clientSource = String(object.clientSource);
         if (object.chimeSdkVersion != null)
             message.chimeSdkVersion = String(object.chimeSdkVersion);
+        if (object.clientUtcOffset != null)
+            message.clientUtcOffset = String(object.clientUtcOffset);
         return message;
     };
 
@@ -1494,6 +1513,7 @@ $root.SdkClientDetails = (function() {
             object.platformVersion = "";
             object.clientSource = "";
             object.chimeSdkVersion = "";
+            object.clientUtcOffset = "";
         }
         if (message.appName != null && message.hasOwnProperty("appName"))
             object.appName = message.appName;
@@ -1511,6 +1531,8 @@ $root.SdkClientDetails = (function() {
             object.clientSource = message.clientSource;
         if (message.chimeSdkVersion != null && message.hasOwnProperty("chimeSdkVersion"))
             object.chimeSdkVersion = message.chimeSdkVersion;
+        if (message.clientUtcOffset != null && message.hasOwnProperty("clientUtcOffset"))
+            object.clientUtcOffset = message.clientUtcOffset;
         return object;
     };
 

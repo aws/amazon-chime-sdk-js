@@ -36,3 +36,20 @@ export function toLowerCasePropertyNames(input: any): any {
     return result;
   }, {});
 }
+
+/**
+ * Get UTC offset in (+|-)HH:mm format
+ * E.g. For Asia/Calcutta timezone, +05:30 UTC offset value is returned
+ */
+export function getFormattedOffset(utcOffset: number): string {
+  const offset = Math.abs(utcOffset);
+  const offsetOperator = utcOffset < 0 ? '+' : '-';
+  const offsetHours = Math.floor(offset / 60)
+    .toString()
+    .padStart(2, '0');
+  const offsetMinutes = Math.floor(offset % 60)
+    .toString()
+    .padStart(2, '0');
+
+  return `${offsetOperator}${offsetHours}:${offsetMinutes}`;
+}
