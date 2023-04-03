@@ -202,6 +202,7 @@ exports.end = async (event, context) => {
 
   // End the meeting. All attendee connections will hang up.
   await client.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId }).promise();
+  await deleteMeeting(event.queryStringParameters.title);
   return response(200, 'application/json', JSON.stringify({}));
 };
 
@@ -543,6 +544,16 @@ async function putMeeting(title, meeting) {
       'TTL': {
         N: `${Math.floor(Date.now() / 1000) + 60 * 60 * 24}` // clean up meeting record one day from now
       }
+    }
+  }).promise();
+}
+
+// Deletes the meeting in the table using the meeting title as the key
+async function deleteMeeting(title, meeting) {
+  await ddb.deleteItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': { S: title }
     }
   }).promise();
 }
