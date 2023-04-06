@@ -129,7 +129,7 @@ export default class DefaultAudioVideoController
   private promotedToPrimaryMeeting: boolean = false;
   private hasGetRTCPeerConnectionStatsDeprecationMessageBeenSent: boolean = false;
 
-  // `connectWithPromises`, `connectWithTasks`, and `actionUpdateWithRenegotiation` all
+  // `connectWithPromises`, and `actionUpdateWithRenegotiation` all
   // contains a significant portion of asynchronous tasks, so we need to explicitly defer
   // any task operation which may be performed on the event queue that may modify
   // mutable state in `MeetingSessionContext`, as this mutable state needs to be consistent over the course of the update.
@@ -141,9 +141,6 @@ export default class DefaultAudioVideoController
   private monitorTask: MonitorTask | undefined = undefined;
 
   destroyed = false;
-
-  /** @internal */
-  usePromises: boolean = true;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -429,55 +426,6 @@ export default class DefaultAudioVideoController
     ]);
   }
 
-  private connectWithTasks(needsToWaitForAttendeePresence: boolean): Task {
-    this.receiveIndexTask = new ReceiveVideoStreamIndexTask(this.meetingSessionContext);
-    this.monitorTask = new MonitorTask(
-      this.meetingSessionContext,
-      this.configuration.connectionHealthPolicyConfiguration,
-      this.connectionHealthData
-    );
-    // See declaration (unpaused in actionFinishConnecting)
-    this.receiveIndexTask.pauseIngestion();
-    this.monitorTask.pauseResubscribeCheck();
-
-    return new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStart'), [
-      this.monitorTask,
-      new ReceiveAudioInputTask(this.meetingSessionContext),
-      new TimeoutTask(
-        this.logger,
-        new SerialGroupTask(this.logger, 'Media', [
-          new SerialGroupTask(this.logger, 'Signaling', [
-            new OpenSignalingConnectionTask(this.meetingSessionContext),
-            new ListenForVolumeIndicatorsTask(this.meetingSessionContext),
-            new SendAndReceiveDataMessagesTask(this.meetingSessionContext),
-            new JoinAndReceiveIndexTask(this.meetingSessionContext),
-            new ReceiveTURNCredentialsTask(this.meetingSessionContext),
-            this.receiveIndexTask,
-          ]),
-          new SerialGroupTask(this.logger, 'Peer', [
-            new CreatePeerConnectionTask(this.meetingSessionContext),
-            new AttachMediaInputTask(this.meetingSessionContext),
-            new CreateSDPTask(this.meetingSessionContext),
-            new SetLocalDescriptionTask(this.meetingSessionContext),
-            new FinishGatheringICECandidatesTask(this.meetingSessionContext),
-            new SubscribeAndReceiveSubscribeAckTask(this.meetingSessionContext),
-            needsToWaitForAttendeePresence
-              ? new TimeoutTask(
-                  this.logger,
-                  new ParallelGroupTask(this.logger, 'FinalizeConnection', [
-                    new WaitForAttendeePresenceTask(this.meetingSessionContext),
-                    new SetRemoteDescriptionTask(this.meetingSessionContext),
-                  ]),
-                  this.meetingSessionContext.meetingSessionConfiguration.attendeePresenceTimeoutMs
-                )
-              : /* istanbul ignore next */ new SetRemoteDescriptionTask(this.meetingSessionContext),
-          ]),
-        ]),
-        this.configuration.connectionTimeoutMs
-      ),
-    ]);
-  }
-
   private async actionConnect(reconnecting: boolean): Promise<void> {
     this.initSignalingClient();
 
@@ -656,12 +604,8 @@ export default class DefaultAudioVideoController
       this.meetingSessionContext.meetingSessionConfiguration.attendeePresenceTimeoutMs > 0;
 
     this.logger.info('Needs to wait for attendee presence? ' + needsToWaitForAttendeePresence);
-    let connect: Task;
-    if (this.usePromises) {
-      connect = this.connectWithPromises(needsToWaitForAttendeePresence);
-    } else {
-      connect = this.connectWithTasks(needsToWaitForAttendeePresence);
-    }
+
+    const connect = this.connectWithPromises(needsToWaitForAttendeePresence);
 
     // The rest.
     try {

@@ -106,6 +106,9 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="monitortask.html#audiovideodidstart" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="monitortask.html#audiovideodidstartconnecting" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Start<wbr>Connecting</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="monitortask.html#audiovideodidstop" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Stop</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="monitortask.html#cancel" class="tsd-kind-icon">cancel</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="monitortask.html#connectionhealthdidchange" class="tsd-kind-icon">connection<wbr>Health<wbr>Did<wbr>Change</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="monitortask.html#getstatus" class="tsd-kind-icon">get<wbr>Status</a></li>
@@ -138,7 +141,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="basetask.html">BaseTask</a>.<a href="basetask.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L52">src/task/MonitorTask.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L53">src/task/MonitorTask.ts:53</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -182,6 +185,89 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="audiovideodidstart" class="tsd-anchor"></a>
+					<h3>audio<wbr>Video<wbr>Did<wbr>Start</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/audiovideoobserver.html">AudioVideoObserver</a>.<a href="../interfaces/audiovideoobserver.html#audiovideodidstart">audioVideoDidStart</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L326">src/task/MonitorTask.ts:326</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the session has started.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="audiovideodidstartconnecting" class="tsd-anchor"></a>
+					<h3>audio<wbr>Video<wbr>Did<wbr>Start<wbr>Connecting</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Start<wbr>Connecting<span class="tsd-signature-symbol">(</span>reconnecting<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/audiovideoobserver.html">AudioVideoObserver</a>.<a href="../interfaces/audiovideoobserver.html#audiovideodidstartconnecting">audioVideoDidStartConnecting</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L331">src/task/MonitorTask.ts:331</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the session is connecting or reconnecting.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>reconnecting: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="audiovideodidstop" class="tsd-anchor"></a>
+					<h3>audio<wbr>Video<wbr>Did<wbr>Stop</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Stop<span class="tsd-signature-symbol">(</span>sessionStatus<span class="tsd-signature-symbol">: </span><a href="meetingsessionstatus.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingSessionStatus</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/audiovideoobserver.html">AudioVideoObserver</a>.<a href="../interfaces/audiovideoobserver.html#audiovideodidstop">audioVideoDidStop</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L337">src/task/MonitorTask.ts:337</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the session has stopped from a started state with the reason
+										provided in the status. See documentation for <a href="meetingsessionstatus.html">MeetingSessionStatus</a>
+									and <a href="../enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a> for more information.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sessionStatus: <a href="meetingsessionstatus.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingSessionStatus</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="cancel" class="tsd-anchor"></a>
 					<h3>cancel</h3>
@@ -220,7 +306,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideoobserver.html">AudioVideoObserver</a>.<a href="../interfaces/audiovideoobserver.html#connectionhealthdidchange">connectionHealthDidChange</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L271">src/task/MonitorTask.ts:271</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L272">src/task/MonitorTask.ts:272</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -267,7 +353,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/signalingclientobserver.html">SignalingClientObserver</a>.<a href="../interfaces/signalingclientobserver.html#handlesignalingclientevent">handleSignalingClientEvent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L366">src/task/MonitorTask.ts:366</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L384">src/task/MonitorTask.ts:384</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -320,7 +406,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideoobserver.html">AudioVideoObserver</a>.<a href="../interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L192">src/task/MonitorTask.ts:192</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L193">src/task/MonitorTask.ts:193</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -395,7 +481,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L106">src/task/MonitorTask.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L107">src/task/MonitorTask.ts:107</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -413,7 +499,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/removableobserver.html">RemovableObserver</a>.<a href="../interfaces/removableobserver.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L76">src/task/MonitorTask.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L77">src/task/MonitorTask.ts:77</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -435,7 +521,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L110">src/task/MonitorTask.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L111">src/task/MonitorTask.ts:111</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -453,7 +539,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="basetask.html">BaseTask</a>.<a href="basetask.html#run">run</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L90">src/task/MonitorTask.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L91">src/task/MonitorTask.ts:91</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -508,7 +594,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideoobserver.html">AudioVideoObserver</a>.<a href="../interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L124">src/task/MonitorTask.ts:124</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/task/MonitorTask.ts#L125">src/task/MonitorTask.ts:125</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -551,6 +637,15 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
 								<a href="monitortask.html#taskname" class="tsd-kind-icon">task<wbr>Name</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="monitortask.html#audiovideodidstart" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Start</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="monitortask.html#audiovideodidstartconnecting" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Start<wbr>Connecting</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="monitortask.html#audiovideodidstop" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Stop</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="monitortask.html#cancel" class="tsd-kind-icon">cancel</a>

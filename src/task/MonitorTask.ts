@@ -50,6 +50,7 @@ export default class MonitorTask
   // for explanation.
   private isResubscribeCheckPaused: boolean = false;
   private pendingMetricsReport: ClientMetricReport | undefined = undefined;
+  private isMeetingConnected: boolean = false;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -306,18 +307,35 @@ export default class MonitorTask
       }
     );
 
-    this.applyHealthPolicy(
-      this.sendingAudioFailureHealthPolicy,
-      connectionHealthData,
-      () => {
-        const attributes = this.generateBaseAudioVideoEventAttributes();
-        this.context.eventController?.publishEvent('sendingAudioFailed', attributes);
-      },
-      () => {
-        const attributes = this.generateBaseAudioVideoEventAttributes();
-        this.context.eventController?.publishEvent('sendingAudioRecovered', attributes);
-      }
-    );
+    if (this.isMeetingConnected) {
+      this.applyHealthPolicy(
+        this.sendingAudioFailureHealthPolicy,
+        connectionHealthData,
+        () => {
+          const attributes = this.generateBaseAudioVideoEventAttributes();
+          this.context.eventController?.publishEvent('sendingAudioFailed', attributes);
+        },
+        () => {
+          const attributes = this.generateBaseAudioVideoEventAttributes();
+          this.context.eventController?.publishEvent('sendingAudioRecovered', attributes);
+        }
+      );
+    }
+  }
+
+  audioVideoDidStart(): void {
+    this.isMeetingConnected = true;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  audioVideoDidStartConnecting(reconnecting: boolean): void {
+    // The expectation here is that the flag will be set to true again when audioVideoDidStart() is eventually called.
+    this.isMeetingConnected = false;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
+    this.isMeetingConnected = false;
   }
 
   private applyHealthPolicy(

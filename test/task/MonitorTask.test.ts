@@ -26,6 +26,7 @@ import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBr
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
+import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionVideoAvailability from '../../src/meetingsession/MeetingSessionVideoAvailability';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
@@ -1034,32 +1035,77 @@ describe('MonitorTask', () => {
       task.connectionHealthDidChange(connectionHealthData);
     });
 
-    it('notifies sending audio failure and recovery', done => {
-      const spy = sinon.spy(context.eventController, 'publishEvent');
-      const testConfig = new ConnectionHealthPolicyConfiguration();
-      testConfig.sendingAudioFailureSamplesToConsider = 2;
-      class TestConnectionHealthData extends ConnectionHealthData {
-        isConnectionStartRecent(_recentDurationMs: number): boolean {
-          return false;
+    describe('sending audio connection health', () => {
+      let connectionHealthData: ConnectionHealthData;
+      let testConfig: ConnectionHealthPolicyConfiguration;
+
+      beforeEach(() => {
+        testConfig = new ConnectionHealthPolicyConfiguration();
+        testConfig.sendingAudioFailureSamplesToConsider = 2;
+        class TestConnectionHealthData extends ConnectionHealthData {
+          isConnectionStartRecent(_recentDurationMs: number): boolean {
+            return false;
+          }
         }
-      }
-      const connectionHealthData = new TestConnectionHealthData();
-      connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(
-        testConfig.sendingAudioFailureSamplesToConsider
-      );
-      task.connectionHealthDidChange(connectionHealthData);
-      expect(spy.calledWith('sendingAudioFailed')).to.be.true;
+        connectionHealthData = new TestConnectionHealthData();
+        connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(
+          testConfig.sendingAudioFailureSamplesToConsider
+        );
+      });
 
-      connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(0);
-      task.connectionHealthDidChange(connectionHealthData);
-      expect(spy.calledWith('sendingAudioRecovered')).to.be.true;
+      it('does not notify sendingAudioFailed when audioVideoDidStart is not called', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        task.audioVideoDidStartConnecting(false);
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioFailed')).to.be.false;
+      });
 
-      const calls = spy.getCalls();
-      for (const call of calls) {
-        const eventAttributes = call.args[1];
-        expect(eventAttributes).to.have.all.keys(baseAudioVideoEventAttributeKeys);
-      }
-      done();
+      it('does not notify sendingAudioFailed when audioVideoDidStartConnecting is called after audioVideoDidStart', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        task.audioVideoDidStart();
+        task.audioVideoDidStartConnecting(true);
+        // audioVideoStart() not called after reconnection
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioFailed')).to.be.false;
+      });
+
+      it('does not notify sendingAudioFailed when audioVideoDidStop is called', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        task.audioVideoDidStart();
+        task.audioVideoDidStop(new MeetingSessionStatus(MeetingSessionStatusCode.Left));
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioFailed')).to.be.false;
+      });
+
+      it('does notify sendingAudioFailed and sendingAudioRecovered when audioPacketsSent dips and recovers', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        task.audioVideoDidStart();
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioFailed')).to.be.true;
+
+        connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(0);
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioRecovered')).to.be.true;
+
+        const calls = spy.getCalls();
+        for (const call of calls) {
+          const eventAttributes = call.args[1];
+          expect(eventAttributes).to.have.all.keys(baseAudioVideoEventAttributeKeys);
+        }
+      });
+
+      it('does nothing when event controller does not exist', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        context.eventController = null;
+
+        task.audioVideoDidStart();
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.called).to.be.false;
+
+        connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(0);
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.called).to.be.false;
+      });
     });
   });
 

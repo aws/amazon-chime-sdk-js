@@ -393,60 +393,6 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(obsever);
     });
 
-    // This test is a total copy of the above, making it easier to remove.
-    it('can be started using the old task approach, which we will later remove', async () => {
-      configuration.videoUplinkBandwidthPolicy = null;
-      configuration.videoDownlinkBandwidthPolicy = null;
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController
-      );
-      audioVideoController.usePromises = false;
-      let sessionStarted = false;
-      let sessionConnecting = false;
-      class TestObserver implements AudioVideoObserver {
-        audioVideoDidStart(): void {
-          // use this opportunity to verify that start is idempotent
-          audioVideoController.start();
-          sessionStarted = true;
-        }
-        audioVideoDidStartConnecting(): void {
-          sessionConnecting = true;
-        }
-      }
-      const observer = new TestObserver();
-      audioVideoController.addObserver(observer);
-      expect(audioVideoController.configuration).to.equal(configuration);
-      expect(audioVideoController.rtcPeerConnection).to.be.null;
-      await start();
-      new TimeoutScheduler(10).start(() => {
-        // use this opportunity to verify that start cannot happen while connecting
-        audioVideoController.start();
-      });
-
-      await delay(defaultDelay);
-      // use this opportunity to test signaling mute state to the server
-      audioVideoController.realtimeController.realtimeMuteLocalAudio();
-      audioVideoController.realtimeController.realtimeUnmuteLocalAudio();
-
-      await delay(defaultDelay);
-      // use this opportunity to test volume indicators
-      webSocketAdapter.send(makeJoinAckFrame());
-      await delay(defaultDelay);
-      webSocketAdapter.send(makeIndexFrame());
-      webSocketAdapter.send(makeAudioStreamIdInfoFrame());
-      webSocketAdapter.send(makeAudioMetadataFrame());
-
-      expect(sessionStarted).to.be.true;
-      expect(sessionConnecting).to.be.true;
-
-      await stop();
-      audioVideoController.removeObserver(observer);
-    });
-
     it('can be started with a pre-start', async () => {
       configuration.videoUplinkBandwidthPolicy = null;
       configuration.videoDownlinkBandwidthPolicy = null;
