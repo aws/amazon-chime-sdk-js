@@ -5,6 +5,11 @@ const assetDefinitions = [{
     path: 'audio/',
     outputPath: 'dist/',
     ext: ['mp3'],
+},
+{
+    path: 'image/',
+    outputPath: 'dist/',
+    ext: ['jpg'],
 }];
 
 assetDefinitions.forEach(assetDef => {

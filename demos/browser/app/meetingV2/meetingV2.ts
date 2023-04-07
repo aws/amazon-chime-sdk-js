@@ -43,10 +43,12 @@ import {
   MeetingSessionConfiguration,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
+  VideoFxProcessor,
   MeetingSessionVideoAvailability,
   MultiLogger,
   NoOpEventReporter,
   NoOpVideoFrameProcessor,
+  VideoFxConfig,
   RemovableAnalyserNode,
   ServerSideNetworkAdaption,
   SimulcastLayers,
@@ -76,7 +78,7 @@ import {
   DefaultEventController,
   MeetingSessionCredentials,
   POSTLogger,
-  VideoCodecCapability
+  VideoCodecCapability,
 } from 'amazon-chime-sdk-js';
 
 import TestSound from './audio/TestSound';
@@ -96,6 +98,7 @@ import { getPOSTLogger } from './util/MeetingLogger';
 import Roster from './component/Roster';
 import ContentShareManager from './component/ContentShareManager';
 import { AudioBufferMediaStreamProvider, SynthesizedStereoMediaStreamProvider } from './util/mediastreamprovider/DemoMediaStreamProviders';
+import { BackgroundImageEncoding } from './util/BackgroundImage';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -177,9 +180,35 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'Background Replacement' | 'None';
+type VideoFilterName = 'Emojify' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 
+ 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 
+ 'Background Blur 40% CPU' | 'Background Replacement' | 'None' | 'Background Blur 2.0 - Low' |
+ 'Background Blur 2.0 - Medium' | 'Background Blur 2.0 - High' | 'Background Replacement 2.0 - (Beach)' |
+ 'Background Replacement 2.0 - (Blue)' | 'Background Replacement 2.0 - (Default)';
 
-const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
+const BACKGROUND_BLUR_V1_LIST: VideoFilterName[] = [
+  'Background Blur 10% CPU',
+  'Background Blur 20% CPU',
+  'Background Blur 30% CPU',
+  'Background Blur 40% CPU',
+];
+
+const BACKGROUND_REPLACEMENT_V1_LIST: VideoFilterName[] = [
+  'Background Replacement',
+];
+
+
+const BACKGROUND_FILTER_V2_LIST: VideoFilterName[] = [
+  'Background Blur 2.0 - Low',
+  'Background Blur 2.0 - Medium',
+  'Background Blur 2.0 - High',
+  'Background Replacement 2.0 - (Beach)',
+  'Background Replacement 2.0 - (Blue)',
+  'Background Replacement 2.0 - (Default)',
+];
+
+
+const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'NoOp', 'Resize (9/16)'];
 
 type ButtonState = 'on' | 'off' | 'disabled';
 
@@ -311,6 +340,7 @@ export class DemoMeetingApp
 
   supportsBackgroundBlur = false;
   supportsBackgroundReplacement = false;
+  supportsVideoFx = false;
 
   enableLiveTranscription = false;
   noWordSeparatorForTranscription = false;
@@ -344,6 +374,20 @@ export class DemoMeetingApp
   chosenVideoTransformDevice: DefaultVideoTransformDevice;
   chosenVideoFilter: VideoFilterName = 'None';
   selectedVideoFilterItem: VideoFilterName = 'None';
+
+  DEFAULT_VIDEO_FX_CONFIG: VideoFxConfig = {
+    backgroundBlur: {
+      isEnabled: true,
+      strength: 'high',
+    },
+    backgroundReplacement: {
+      isEnabled: false,
+      backgroundImageURL: null,
+      defaultColor: 'black',
+    }
+  }
+  videoFxProcessor: VideoFxProcessor | undefined;
+  videoFxConfig: VideoFxConfig = this.DEFAULT_VIDEO_FX_CONFIG;
 
   meetingLogger: Logger | undefined = undefined;
 
@@ -494,6 +538,19 @@ export class DemoMeetingApp
     catch (e) {
       this.log(`[DEMO] Does not support background blur: ${e.message}`);
       this.supportsBackgroundBlur = false;
+    }
+  }
+  
+  /**
+   * Determine if the videoFxProcessor is supported in current environment
+   */
+  async resolveSupportsVideoFX(): Promise<void> {
+    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    try {
+      this.supportsVideoFx = await VideoFxProcessor.isSupported(logger)
+    } catch (e) {
+      this.log(`[DEMO] Does not support background blur/background replacement v2: ${e.message}`);
+      this.supportsVideoFx = false;
     }
   }
 
@@ -2515,6 +2572,11 @@ export class DemoMeetingApp
       if (this.supportsBackgroundReplacement) {
         filters.push('Background Replacement');
       }
+
+      // Add VideoFx functionality/options if the processor is supported
+      if (this.supportsVideoFx) {
+        BACKGROUND_FILTER_V2_LIST.map(effectName => filters.push(effectName));
+      }
     }
 
     this.populateFilterList(isPreviewWindow, genericName, filters);
@@ -3057,7 +3119,7 @@ export class DemoMeetingApp
     return value;
   }
 
-  private async videoFilterToProcessor(videoFilter: VideoFilterName): Promise<VideoFrameProcessor | null> {
+  private async videoFilterToProcessor(videoFilter: string): Promise<VideoFrameProcessor | null> {
     this.log(`Choosing video filter ${videoFilter}`);
 
     if (videoFilter === 'Emojify') {
@@ -3080,7 +3142,7 @@ export class DemoMeetingApp
       return new ResizeProcessor(0.5625);  // 16/9 Aspect Ratio
     }
 
-    if (videoFilter.startsWith('Background Blur')) {
+    if (BACKGROUND_BLUR_V1_LIST.includes(videoFilter as VideoFilterName)) {
       // In the event that frames start being dropped we should take some action to remove the background blur.
       this.blurObserver = {
         filterFrameDurationHigh: (event) => {
@@ -3097,7 +3159,7 @@ export class DemoMeetingApp
       return this.blurProcessor;
     }
 
-    if (videoFilter.startsWith('Background Replacement')) {
+    if (BACKGROUND_REPLACEMENT_V1_LIST.includes(videoFilter as VideoFilterName)) {
       // In the event that frames start being dropped we should take some action to remove the background replacement.
       this.replacementObserver = {
         filterFrameDurationHigh: (event) => {
@@ -3109,8 +3171,62 @@ export class DemoMeetingApp
       this.replacementProcessor.addObserver(this.replacementObserver);
       return this.replacementProcessor;
     }
-
+    
+    // Create a VideoFxProcessor
+    if (BACKGROUND_FILTER_V2_LIST.includes(videoFilter as VideoFilterName)) {
+      const defaultBudgetPerFrame: number = 50;
+      this.updateFxConfig(videoFilter);
+      try {
+        this.videoFxProcessor = await VideoFxProcessor.create(this.meetingLogger, this.videoFxConfig, defaultBudgetPerFrame);
+        return this.videoFxProcessor;
+      } catch (error) {
+        this.meetingLogger.warn(error.toString());
+        return new NoOpVideoFrameProcessor();
+      }
+    }
     return null;
+  }
+
+  /**
+   * Update this.videoFxConfig to match the corresponding configuration specified by the videoFilter.
+   * @param videoFilter 
+   */
+  private updateFxConfig(videoFilter: string): void {
+    this.videoFxConfig.backgroundBlur.isEnabled = (
+      videoFilter === 'Background Blur 2.0 - Low' ||
+      videoFilter === 'Background Blur 2.0 - Medium' ||
+      videoFilter === 'Background Blur 2.0 - High'
+    )
+
+    this.videoFxConfig.backgroundReplacement.isEnabled = (
+      videoFilter === 'Background Replacement 2.0 - (Beach)' ||
+      videoFilter === 'Background Replacement 2.0 - (Default)' ||
+      videoFilter === 'Background Replacement 2.0 - (Blue)'
+    )
+    
+    switch(videoFilter) {
+      case 'Background Blur 2.0 - Low':
+        this.videoFxConfig.backgroundBlur.strength = 'low';
+        break;
+      case 'Background Blur 2.0 - Medium':
+        this.videoFxConfig.backgroundBlur.strength = 'medium';
+        break;
+      case 'Background Blur 2.0 - High':
+        this.videoFxConfig.backgroundBlur.strength = 'high';
+        break;
+      case 'Background Replacement 2.0 - (Beach)':
+        this.videoFxConfig.backgroundReplacement.backgroundImageURL = BackgroundImageEncoding();
+        this.videoFxConfig.backgroundReplacement.defaultColor = null;
+        break;
+      case 'Background Replacement 2.0 - (Default)':
+        this.videoFxConfig.backgroundReplacement.backgroundImageURL = null;
+        this.videoFxConfig.backgroundReplacement.defaultColor = '#000000';
+        break;
+      case 'Background Replacement 2.0 - (Blue)':
+        this.videoFxConfig.backgroundReplacement.backgroundImageURL = null;
+        this.videoFxConfig.backgroundReplacement.defaultColor = '#26A4FF';
+        break;
+    }
   }
 
   private async videoInputSelectionWithOptionalFilter(
@@ -3119,25 +3235,22 @@ export class DemoMeetingApp
     if (this.selectedVideoFilterItem === 'None') {
       return innerDevice;
     }
-
-    if (
-        this.chosenVideoTransformDevice &&
-        this.selectedVideoFilterItem === this.chosenVideoFilter
-    ) {
+    // We have reselected our filter, don't need to make a new processor
+    if (this.chosenVideoTransformDevice &&
+        this.selectedVideoFilterItem === this.chosenVideoFilter) {
+      // Our input device has changed, so swap it out for the new one
       if (this.chosenVideoTransformDevice.getInnerDevice() !== innerDevice) {
-        // switching device
         this.chosenVideoTransformDevice = this.chosenVideoTransformDevice.chooseNewInnerDevice(
-            innerDevice
+          innerDevice
         );
       }
       return this.chosenVideoTransformDevice;
     }
 
-    // A different processor is selected then we need to discard old one and recreate
+    // A different filter is selected so we must modify our processor
     if (this.chosenVideoTransformDevice) {
       await this.chosenVideoTransformDevice.stop();
     }
-
     const proc = await this.videoFilterToProcessor(this.selectedVideoFilterItem);
     this.chosenVideoFilter = this.selectedVideoFilterItem;
     this.chosenVideoTransformDevice = new DefaultVideoTransformDevice(
@@ -3295,6 +3408,10 @@ export class DemoMeetingApp
       this.eventReporter = undefined;
       this.blurProcessor = undefined;
       this.replacementProcessor = undefined;
+
+      // Cleanup VideoFxProcessor
+      this.videoFxProcessor?.destroy();
+      this.videoFxProcessor = undefined;
     };
 
     const onLeftMeeting = async () => {
@@ -3444,6 +3561,7 @@ export class DemoMeetingApp
           await this.initVoiceFocus();
           await this.initBackgroundBlur();
           await this.initBackgroundReplacement();
+          await this.resolveSupportsVideoFX();
           await this.populateAllDeviceLists();
           await this.populateVideoFilterInputList(false);
           await this.populateVideoFilterInputList(true);
