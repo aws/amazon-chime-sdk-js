@@ -29,7 +29,7 @@ jobs:
         id: get-version
         run: |
           current_version=$(.github/script/get-current-version)
-          echo "::set-output name=version-number::$((${current_version%%.*} - 1))"
+          echo "version-number=$((${current_version%%.*} - 1))" >> $GITHUB_OUTPUT
 
 
   browser-compatibility-audio-previous-major-version:
