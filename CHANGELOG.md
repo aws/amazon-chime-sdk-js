@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.14.0] - 2023-04-13
 
 ### Added
-- Two new ML features are added, background blur and replacement 2.0.
+- A unified interface (videofx processor) with new implementation for ML features, namely background blur 2.0 and background replacement 2.0. This includes improvement to the underlying model for better segmentation, better image processing algorithms to blur the background, and other miscellanies bug-fixes/features.
 
 
 ## [3.13.0] - 2023-03-28

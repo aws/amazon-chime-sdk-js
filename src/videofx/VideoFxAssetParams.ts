@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * [[SDKVersioningParams]] Is an interface for the specifications
+ * [[VideoFxAssetParams]] Is an interface for the specifications
  * that define the current version of the SDK.
  */
-export interface SDKVersioningParams {
+export interface VideoFxAssetParams {
   assetGroup: string;
   revisionID: string;
   // SDK Version

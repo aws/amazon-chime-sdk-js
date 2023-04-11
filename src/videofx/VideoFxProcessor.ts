@@ -15,7 +15,7 @@ import CanvasVideoFrameBuffer from '../videoframeprocessor/CanvasVideoFrameBuffe
 import VideoFrameBuffer from '../videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from '../videoframeprocessor/VideoFrameProcessor';
 import { DeferredPromise } from './DeferredPromise';
-import { SDKVersioningParams } from './SDKVersioningParams';
+import { VideoFxAssetParams } from './VideoFxAssetParams';
 import { VideoFxCanvasOpsManager } from './VideoFxCanvasOpsManager';
 import VideoFxConfig from './VideoFxConfig';
 import {
@@ -495,11 +495,11 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
   private async loadAssets(): Promise<void> {
     this.logger.info(`Loading required assets for the VideoFxProcessor`);
     try {
-      const sdkVersioningParams = this.getSDKVersioningParams();
+      const videoFxAssetParams = this.getVideoFxAssetParams();
 
-      await this.loadEngineWorker(sdkVersioningParams);
-      await this.buildEngine(sdkVersioningParams);
-      await this.loadFxLib(sdkVersioningParams);
+      await this.loadEngineWorker(videoFxAssetParams);
+      await this.buildEngine(videoFxAssetParams);
+      await this.loadFxLib(videoFxAssetParams);
       // @ts-ignore
       this.renderer = constructRenderer(
         SEGMENTATION_MODEL.WIDTH_IN_PIXELS,
@@ -517,33 +517,33 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
 
   /**
    * Determines the current set of specifications that define the current SDK version.
-   * @returns an [[SDKVersioningParams]] object defining the parameters of the
+   * @returns an [[VideoFxAssetParams]] object defining the parameters of the
    * current SDK
    */
-  private getSDKVersioningParams(): SDKVersioningParams {
+  private getVideoFxAssetParams(): VideoFxAssetParams {
     const defaultAssetSpec = getDefaultAssetSpec();
-    const sdkVersioningParams = {
+    const videoFxAssetParams = {
       assetGroup: defaultAssetSpec.assetGroup,
       revisionID: defaultAssetSpec.revisionID,
       sdk: encodeURIComponent(Versioning.sdkVersion),
       ua: encodeURIComponent(Versioning.sdkUserAgentLowResolution),
     };
-    return sdkVersioningParams;
+    return videoFxAssetParams;
   }
 
   /**
    * Generate a final path to an asset belonging to current version of SDK.
    * @param basePath Base of the path that will be used to generate a final path
-   * @param sdkVersioningParams Parameters of the current SDK version
+   * @param videoFxAssetParams Parameters of the current SDK version
    * @returns A final path specific to an asset belonging to current SDK
    * version
    */
-  private getPathFromSDKVersioningParams(
+  private getPathFromVideoFxAssetParams(
     basePath: string,
-    sdkVersioningParams: SDKVersioningParams
+    videoFxAssetParams: VideoFxAssetParams
   ): string {
     const path = new URL(basePath);
-    for (const [key, value] of Object.entries(sdkVersioningParams)) {
+    for (const [key, value] of Object.entries(videoFxAssetParams)) {
       if (value !== undefined) {
         // Encode the key and value into uri format
         const uriEncodedKey = encodeURIComponent(key);
@@ -559,13 +559,13 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
   /**
    * Fetch and then load the engine worker into a web-worker.
    */
-  private async loadEngineWorker(sdkVersioningParams: SDKVersioningParams): Promise<void> {
+  private async loadEngineWorker(videoFxAssetParams: VideoFxAssetParams): Promise<void> {
     // The engine worker will always be a required asset for the VideoFxProcessor
     try {
       // Determine engine worker path from versioning of the SDK worker
-      const engineWorkerPath = this.getPathFromSDKVersioningParams(
+      const engineWorkerPath = this.getPathFromVideoFxAssetParams(
         CDN_BASE_PATH + WORKER_PATH,
-        sdkVersioningParams
+        videoFxAssetParams
       );
 
       // Load the worker that will communicate with the VideoFxEngine
@@ -581,9 +581,9 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
 
   /**
    * Build the videoFxEngine.
-   * @param sdkVersioningParams [[SDKVersioningParams]] defining current version of SDK
+   * @param videoFxAssetParams [[VideoFxAssetParams]] defining current version of SDK
    */
-  private async buildEngine(sdkVersioningParams: SDKVersioningParams): Promise<void> {
+  private async buildEngine(videoFxAssetParams: VideoFxAssetParams): Promise<void> {
     // Instantiate the deferred promise so we can wait for the worker to
     // return a completion message
     this.buildEnginePromise = new DeferredPromise<void>();
@@ -594,7 +594,7 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
       msg: WORKER_MSG.BUILD_ENGINE_REQUEST,
       payload: {
         cdnBasePath: CDN_BASE_PATH,
-        sdkVersioningParams: sdkVersioningParams,
+        sdkVersioningParams: videoFxAssetParams,
       },
     });
 
@@ -609,14 +609,14 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
 
   /**
    * Loads the Video Fx library to drive video post-processing, given the versioning
-   * of the SDK worker from the SDKVersioningParams interface passed as a parameter.
-   * @param sdkVersioningParams
+   * of the SDK worker from the VideoFxAssetParams interface passed as a parameter.
+   * @param videoFxAssetParams
    */
-  private async loadFxLib(sdkVersioningParams: SDKVersioningParams): Promise<void> {
+  private async loadFxLib(videoFxAssetParams: VideoFxAssetParams): Promise<void> {
     // Determine engine worker path from versioning of the SDK worker
-    const fxLibPath = this.getPathFromSDKVersioningParams(
+    const fxLibPath = this.getPathFromVideoFxAssetParams(
       CDN_BASE_PATH + FXLIB_PATH,
-      sdkVersioningParams
+      videoFxAssetParams
     );
 
     const WORKER_FETCH_OPTIONS: RequestInit = {

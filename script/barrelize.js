@@ -74,7 +74,7 @@ const ignoredTypes = [
   'VideoFxModelSpec',
   'VideoFxSpec',
   'VideoFxPaths',
-  'SDKVersioningParams',
+  'VideoFxAssetParams',
 
   // Ignore utils
   'Utils',
