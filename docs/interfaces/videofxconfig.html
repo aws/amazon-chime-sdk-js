@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SDPMediaSection | amazon-chime-sdk-js</title>
+	<title>VideoFxConfig | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
-					<a href="sdpmediasection.html">SDPMediaSection</a>
+					<a href="videofxconfig.html">VideoFxConfig</a>
 				</li>
 			</ul>
-			<h1>Class SDPMediaSection</h1>
+			<h1>Interface VideoFxConfig</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,9 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Represents parsed attributes of a media section (i.e. associated with a single m-line)</p>
+						<p><a href="videofxconfig.html">VideoFxConfig</a> describes the configuration of desired video effects that should be
+							applied to a video stream by the <a href="../classes/videofxprocessor.html">VideoFxProcessor</a>. Either backgroundBlur or backgroundReplacement
+						may be enabled, but not both.</p>
 					</div>
 				</div>
 			</section>
@@ -76,7 +78,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SDPMediaSection</span>
+						<span class="target">VideoFxConfig</span>
 					</li>
 				</ul>
 			</section>
@@ -85,70 +87,75 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="sdpmediasection.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sdpmediasection.html#direction" class="tsd-kind-icon">direction</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sdpmediasection.html#mediatype" class="tsd-kind-icon">media<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sdpmediasection.html#mid" class="tsd-kind-icon">mid</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="videofxconfig.html#backgroundblur" class="tsd-kind-icon">background<wbr>Blur</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="videofxconfig.html#backgroundreplacement" class="tsd-kind-icon">background<wbr>Replacement</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new SDPMedia<wbr>Section<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdpmediasection.html" class="tsd-signature-type" data-tsd-kind="Class">SDPMediaSection</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="sdpmediasection.html" class="tsd-signature-type" data-tsd-kind="Class">SDPMediaSection</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="direction" class="tsd-anchor"></a>
-					<h3>direction</h3>
-					<div class="tsd-signature tsd-kind-icon">direction<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RTCRtpTransceiverDirection</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="backgroundblur" class="tsd-anchor"></a>
+					<h3>background<wbr>Blur</h3>
+					<div class="tsd-signature tsd-kind-icon">background<wbr>Blur<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>isEnabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>strength<span class="tsd-signature-symbol">: </span><a href="../modules.html#videofxblurstrength" class="tsd-signature-type" data-tsd-kind="Type alias">VideoFxBlurStrength</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/sdp/SDPMediaSection.ts:10</li>
+							<li>Defined in src/videofx/VideoFxConfig.ts:16</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Configuration for background blur, either enabled or disabled. If enabled, a strength
+							value of type BlurStrength as defined above must be specified.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>is<wbr>Enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>strength<span class="tsd-signature-symbol">: </span><a href="../modules.html#videofxblurstrength" class="tsd-signature-type" data-tsd-kind="Type alias">VideoFxBlurStrength</a></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="mediatype" class="tsd-anchor"></a>
-					<h3>media<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">media<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;video&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;audio&quot;</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="backgroundreplacement" class="tsd-anchor"></a>
+					<h3>background<wbr>Replacement</h3>
+					<div class="tsd-signature tsd-kind-icon">background<wbr>Replacement<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>backgroundImageURL<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>defaultColor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>isEnabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/sdp/SDPMediaSection.ts:8</li>
+							<li>Defined in src/videofx/VideoFxConfig.ts:26</li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="mid" class="tsd-anchor"></a>
-					<h3>mid</h3>
-					<div class="tsd-signature tsd-kind-icon">mid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/sdp/SDPMediaSection.ts:9</li>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Configuration for background replacement, either enabled or disabled. If enabled, an
+								image URL may be specified for the replacement background. If backgroundImageURL is null,
+								the color specified as defaultColor is used as the replacement background. defaultColor
+							must be a valid hex value or an accepted color string for the HTML canvas fillStyle method.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>background<wbr>ImageURL<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>default<wbr>Color<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>is<wbr>Enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+							</li>
 						</ul>
-					</aside>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -164,20 +171,14 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class">
-						<a href="sdpmediasection.html" class="tsd-kind-icon">SDPMedia<wbr>Section</a>
+					<li class="current tsd-kind-interface">
+						<a href="videofxconfig.html" class="tsd-kind-icon">Video<wbr>FxConfig</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="sdpmediasection.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="videofxconfig.html#backgroundblur" class="tsd-kind-icon">background<wbr>Blur</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sdpmediasection.html#direction" class="tsd-kind-icon">direction</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sdpmediasection.html#mediatype" class="tsd-kind-icon">media<wbr>Type</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sdpmediasection.html#mid" class="tsd-kind-icon">mid</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="videofxconfig.html#backgroundreplacement" class="tsd-kind-icon">background<wbr>Replacement</a>
 							</li>
 						</ul>
 					</li>

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SDPMediaSection | amazon-chime-sdk-js</title>
+	<title>VideoFXEventAttributes | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
-					<a href="sdpmediasection.html">SDPMediaSection</a>
+					<a href="videofxeventattributes.html">VideoFXEventAttributes</a>
 				</li>
 			</ul>
-			<h1>Class SDPMediaSection</h1>
+			<h1>Interface VideoFXEventAttributes</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Represents parsed attributes of a media section (i.e. associated with a single m-line)</p>
+						<p><a href="videofxeventattributes.html">VideoFXEventAttributes</a> describes the config of video effect event.</p>
 					</div>
 				</div>
 			</section>
@@ -76,7 +76,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SDPMediaSection</span>
+						<span class="target">VideoFXEventAttributes</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="eventattributes.html" class="tsd-signature-type" data-tsd-kind="Interface">EventAttributes</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -85,68 +90,56 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="sdpmediasection.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sdpmediasection.html#direction" class="tsd-kind-icon">direction</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sdpmediasection.html#mediatype" class="tsd-kind-icon">media<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sdpmediasection.html#mid" class="tsd-kind-icon">mid</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="videofxeventattributes.html#backgroundblurenabled" class="tsd-kind-icon">background<wbr>Blur<wbr>Enabled</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="videofxeventattributes.html#backgroundblurstrength" class="tsd-kind-icon">background<wbr>Blur<wbr>Strength</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="videofxeventattributes.html#backgroundfilterversion" class="tsd-kind-icon">background<wbr>Filter<wbr>Version</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="videofxeventattributes.html#backgroundreplacementenabled" class="tsd-kind-icon">background<wbr>Replacement<wbr>Enabled</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new SDPMedia<wbr>Section<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdpmediasection.html" class="tsd-signature-type" data-tsd-kind="Class">SDPMediaSection</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="sdpmediasection.html" class="tsd-signature-type" data-tsd-kind="Class">SDPMediaSection</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="direction" class="tsd-anchor"></a>
-					<h3>direction</h3>
-					<div class="tsd-signature tsd-kind-icon">direction<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RTCRtpTransceiverDirection</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="backgroundblurenabled" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> background<wbr>Blur<wbr>Enabled</h3>
+					<div class="tsd-signature tsd-kind-icon">background<wbr>Blur<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/sdp/SDPMediaSection.ts:10</li>
+							<li>Defined in src/eventcontroller/VideoFXEventAttributes.ts:10</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="mediatype" class="tsd-anchor"></a>
-					<h3>media<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">media<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;video&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;audio&quot;</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="backgroundblurstrength" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> background<wbr>Blur<wbr>Strength</h3>
+					<div class="tsd-signature tsd-kind-icon">background<wbr>Blur<wbr>Strength<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><a href="../modules.html#videofxblurstrength" class="tsd-signature-type" data-tsd-kind="Type alias">VideoFxBlurStrength</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/sdp/SDPMediaSection.ts:8</li>
+							<li>Defined in src/eventcontroller/VideoFXEventAttributes.ts:11</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="mid" class="tsd-anchor"></a>
-					<h3>mid</h3>
-					<div class="tsd-signature tsd-kind-icon">mid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="backgroundfilterversion" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> background<wbr>Filter<wbr>Version</h3>
+					<div class="tsd-signature tsd-kind-icon">background<wbr>Filter<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/sdp/SDPMediaSection.ts:9</li>
+							<li>Defined in src/eventcontroller/VideoFXEventAttributes.ts:13</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="backgroundreplacementenabled" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> background<wbr>Replacement<wbr>Enabled</h3>
+					<div class="tsd-signature tsd-kind-icon">background<wbr>Replacement<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/eventcontroller/VideoFXEventAttributes.ts:12</li>
 						</ul>
 					</aside>
 				</section>
@@ -164,20 +157,20 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class">
-						<a href="sdpmediasection.html" class="tsd-kind-icon">SDPMedia<wbr>Section</a>
+					<li class="current tsd-kind-interface">
+						<a href="videofxeventattributes.html" class="tsd-kind-icon">VideoFXEvent<wbr>Attributes</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="sdpmediasection.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="videofxeventattributes.html#backgroundblurenabled" class="tsd-kind-icon">background<wbr>Blur<wbr>Enabled</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sdpmediasection.html#direction" class="tsd-kind-icon">direction</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="videofxeventattributes.html#backgroundblurstrength" class="tsd-kind-icon">background<wbr>Blur<wbr>Strength</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sdpmediasection.html#mediatype" class="tsd-kind-icon">media<wbr>Type</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="videofxeventattributes.html#backgroundfilterversion" class="tsd-kind-icon">background<wbr>Filter<wbr>Version</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sdpmediasection.html#mid" class="tsd-kind-icon">mid</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="videofxeventattributes.html#backgroundreplacementenabled" class="tsd-kind-icon">background<wbr>Replacement<wbr>Enabled</a>
 							</li>
 						</ul>
 					</li>
