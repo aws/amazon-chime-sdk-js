@@ -124,6 +124,7 @@ describe('Utils', () => {
       expect(getFormattedOffset(420)).to.eq('-07:00');
       expect(getFormattedOffset(-720)).to.eq('+12:00');
       expect(getFormattedOffset(-840)).to.eq('+14:00');
+      expect(getFormattedOffset(0)).to.eq('+00:00');
     });
   });
 });

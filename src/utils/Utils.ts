@@ -59,7 +59,7 @@ export function getDefaultAssetSpec(): AssetSpec {
  */
 export function getFormattedOffset(utcOffset: number): string {
   const offset = Math.abs(utcOffset);
-  const offsetOperator = utcOffset < 0 ? '+' : '-';
+  const offsetOperator = utcOffset <= 0 ? '+' : '-';
   const offsetHours = Math.floor(offset / 60)
     .toString()
     .padStart(2, '0');
