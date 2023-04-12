@@ -5,16 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.14.0] - 2023-04-13
-
-### Added
-- Add an unified interface (videofx processor) with new implementation for ML features, namely background blur 2.0 and background replacement 2.0. This includes improvement to the underlying model for better segmentation, better image processing algorithms to blur the background, and other miscellanies bug-fixes/features.
-
 
 ## [3.13.0] - 2023-03-28
 
 ### Added
 - Send client utc offset with attendee JOIN frame over signalling channel. 
+- Add an unified interface (videofx processor) with new implementation for ML features, namely background blur 2.0 and background replacement 2.0. This includes improvement to the underlying model for better segmentation, better image processing algorithms to blur the background, and other miscellanies bug-fixes/features.
 
 ### Removed
 
