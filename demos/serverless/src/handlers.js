@@ -710,7 +710,13 @@ function delay(milliseconds){
 function response(statusCode, contentType, body, isBase64Encoded = false) {
   return {
     statusCode: statusCode,
-    headers: { 'Content-Type': contentType },
+    headers: { 
+      'Content-Type': contentType,
+      // enable shared array buffer for videoFxProcessor
+      'Cross-Origin-Opener-Policy': 'same-origin', 
+      // enable shared array buffer for videoFxProcessor
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
     body: body,
     isBase64Encoded,
   };

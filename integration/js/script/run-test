@@ -125,6 +125,7 @@ case $1 in
          ;;
       background_blur)
          r configs/integrationTest/background_blur_test.config.json
+         r configs/integrationTest/videofx_background_effects_test.config.json
          ;;
       echo_reduction)
          r configs/integrationTest/echo_reduction_test.config.json
@@ -166,6 +167,7 @@ case $1 in
          ;;
       background_blur)
          r configs/browserCompatibilityTest/desktop/background_blur_test.config.json
+         r configs/browserCompatibilityTest/desktop/videofx_background_effects_test.config.json
          ;;
       voice_focus)
          r configs/browserCompatibilityTest/desktop/voice_focus_test.config.json

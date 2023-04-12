@@ -5,6 +5,7 @@ import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Device from '../devicecontroller/Device';
 import VideoTransformDevice from '../devicecontroller/VideoTransformDevice';
+import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import DefaultVideoFrameProcessorPipeline from './DefaultVideoFrameProcessorPipeline';
 import DefaultVideoTransformDeviceObserver from './DefaultVideoTransformDeviceObserver';
@@ -41,6 +42,20 @@ export default class DefaultVideoTransformDevice
    */
   get outputMediaStream(): MediaStream {
     return this.pipe.outputMediaStream;
+  }
+
+  /** @internal */
+  passEventControllerToProcessors(eventController: EventController): void {
+    /* istanbul ignore else */
+    if (this.pipe.processors) {
+      for (const processor of this.pipe.processors) {
+        // Only certain processors are configured to provide event reporting,
+        // so here will confirm that the processor has event controller capablility
+        if (typeof processor.setEventController === 'function') {
+          processor.setEventController(eventController);
+        }
+      }
+    }
   }
 
   /**

@@ -69,7 +69,9 @@ function findAllElements() {
     eventReportingCheckBox: By.id('event-reporting'),
     eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
     backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-40%-CPU'),
+    videoFxBackgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-2.0---High'),
     backgroundReplacementFilterButton: By.id('dropdown-menu-filter-Background-Replacement'),
+    videoFxBackgroundReplacementFilterButton: By.id('dropdown-menu-filter-Background-Replacement-2.0---(Blue)'),
     microphoneDropEchoButton: By.id('dropdown-menu-microphone-Echo'),
     echoReductionFeature: By.id('echo-reduction-capability'),
     echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]'),
@@ -853,6 +855,44 @@ class AppPage {
     return await this.backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax);
   }
 
+  /**
+   * Sum the pixel values of the video tile image.
+   * @param {*} attendeeId 
+   * @returns videoImgSum
+   */
+  async computeVideoSum(attendeeId) {
+    await TestUtils.waitAround(4000);
+    const videoElement = this.driver.findElement(By.xpath(`//*[contains(@class,'video-tile-nameplate') and contains(text(),'${attendeeId}')]`));
+    const videoElementId = await videoElement.getAttribute('id');
+    const separatorIndex = videoElementId.lastIndexOf("-");
+    if (separatorIndex >= -1) {
+      const tileIndex = parseInt(videoElementId.slice(separatorIndex+1))
+      if (tileIndex != NaN && tileIndex >= 0) {
+        const videoImgSum = await this.driver.executeScript(this.getVideoImageSum(tileIndex));
+        return videoImgSum;
+      }
+    }
+  }
+
+  /**
+   * Check that the background blur transformation has been applied to the video by taking the difference from the 
+   * rawVideoSum of the video before blur is applied, and the new blurredImgSum after blur is applied. The difference 
+   * is checked to be within the expected range, calculated by taking the min/max videoImgSums before/after blur for
+   * 13 runs plus/minus three standard deviations of all of the sums.
+   * @param {*} attendeeId Used to identify video tile
+   * @param {*} rawVideoSum Pixel image sum of video before Video Fx transformation
+   * @returns boolean
+   */
+  async videoFxBackgroundBlurCheck(attendeeId, rawVideoSum) {
+    const expectedDiffMin = 42;
+    const expectedDiffMax = 13000;
+    return await this.videoFxBackgroundFilterCheck(attendeeId, rawVideoSum, expectedDiffMin, expectedDiffMax);
+  }
+
+  async clickVideoFxBackgroundBlurFilterFromDropDownMenu() {
+    await this.clickBackgroundFilterFromDropDownMenu(elements.videoFxBackgroundBlurFilterButton);
+  }
+
   async clickBackgroundReplacementFilterFromDropDownMenu() {
     await this.clickBackgroundFilterFromDropDownMenu(elements.backgroundReplacementFilterButton);
   }
@@ -863,6 +903,25 @@ class AppPage {
     return await this.backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax);
   }
 
+  /**
+   * Check that the background replacement transformation has been applied to the video by taking the difference from 
+   * the rawVideoSum of the video before replacement is applied, and the new blurredImgSum after replacement is applied. 
+   * The difference is checked to be within the expected range, calculated by taking the min/max videoImgSums before/after 
+   * blur for 13 runs plus/minus three standard deviations of all of the sums.
+   * @param {*} attendeeId Used to identify video tile
+   * @param {*} rawVideoSum Pixel image sum of video before Video Fx transformation
+   * @returns boolean
+   */
+  async videoFxBackgroundReplacementCheck(attendeeId, rawVideoSum) {
+    const expectedDiffMin = 674855;
+    const expectedDiffMax = 697888;
+    return await this.videoFxBackgroundFilterCheck(attendeeId, rawVideoSum, expectedDiffMin, expectedDiffMax);
+  }
+
+  async clickVideoFxBackgroundReplacementFilterFromDropDownMenu() {
+    await this.clickBackgroundFilterFromDropDownMenu(elements.videoFxBackgroundReplacementFilterButton);
+  }
+
   async clickBackgroundFilterFromDropDownMenu(buttonID) {
     await TestUtils.waitAround(1000);
     const backgroundBlurButton = await this.driver.findElement(buttonID);
@@ -870,25 +929,40 @@ class AppPage {
   }
 
   async backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax) {
-    await TestUtils.waitAround(4000);
-    const videoElement = this.driver.findElement(By.xpath(`//*[contains(@class,'video-tile-nameplate') and contains(text(),'${attendeeId}')]`));
-    const videoElementId = await videoElement.getAttribute('id');
-    const seperatorIndex = videoElementId.lastIndexOf("-");
-    if (seperatorIndex >= -1) {
-      const tileIndex = parseInt(videoElementId.slice(seperatorIndex+1))
-      if (tileIndex != NaN && tileIndex >= 0) {
-        const videoImgSum = await this.driver.executeScript(this.getVideoImageSum(tileIndex));
-        console.log(`videoImgSum ${videoImgSum}`);
-        if(videoImgSum < expectedSumMin || videoImgSum > expectedSumMax){
-          console.log(`videoImgSum ${videoImgSum}`);
-          return false;
-        }
-      }
+    const videoImgSum = await this.computeVideoSum(attendeeId);
+    if(videoImgSum > expectedSumMin && videoImgSum < expectedSumMax){
+      return true;
     }
-    return true;
+    console.log(`videoImgSum ${videoImgSum} outside of expected range ${expectedSumMin}:${expectedSumMax}`);
+    return false;
   }
 
+  /**
+   * Performs the check that Video Fx has been applied correctly by computing the new image sum of the video
+   * tile, and taking the difference with the rawVideoSum before the Video Fx was applied. This must fall within
+   * an expected range set from expectedDiffMin:expectedDiffMax.
+   * @param {*} attendeeId Used to identify video tile
+   * @param {*} rawVideoSum Pixel image sum of video before Video Fx transformation
+   * @param {*} expectedDiffMin Minimum expected difference between transformedImgSum and rawVideoSum
+   * @param {*} expectedDiffMax Maximum expected difference between transformedImgSum and rawVideoSum
+   * @returns boolean
+   */
+  async videoFxBackgroundFilterCheck(attendeeId, rawVideoSum, expectedDiffMin, expectedDiffMax) {
+    const transformedImgSum = await this.computeVideoSum(attendeeId);
+    const checkDiff = transformedImgSum - rawVideoSum;
+    if (checkDiff > expectedDiffMin && checkDiff < expectedDiffMax) {
+      return true;
+    }
+    console.log(`videoImgSum difference ${checkDiff} outside of expected range ${expectedDiffMin}:${expectedDiffMax}`);
+    return false;
+  }
 
+  /**
+   * Quantify video tile image by summing the pixels for one third of the image, starting from the
+   * top left corner.
+   * @param {*} videoId 
+   * @returns Video image sum
+   */
   getVideoImageSum(videoId) {
     return "function getSum(total, num) {return total + num;};"
         + "const canvas = document.createElement('canvas');"

@@ -3,6 +3,8 @@
 
 import BackgroundFilterProcessor from '../backgroundfilter/BackgroundFilterProcessor';
 import BackgroundFilterSpec from '../backgroundfilter/BackgroundFilterSpec';
+import EventController from '../eventcontroller/EventController';
+import VideoFXEventAttributes from '../eventcontroller/VideoFXEventAttributes';
 import BackgroundBlurOptions from './BackgroundBlurOptions';
 import BackgroundBlurProcessor from './BackgroundBlurProcessor';
 import { BlurStrengthMapper } from './BackgroundBlurStrength';
@@ -114,5 +116,32 @@ export default class BackgroundBlurProcessorProvided
     canvas.remove();
 
     return supportsBlurFilter;
+  }
+
+  /** @internal */
+  setEventController(eventController: EventController): void {
+    /*
+    if this is a first time we set the eventController, need to publish the current BackgroundFilterConfig.
+    Otherwise, just set the eventController.
+    */
+    if (this.eventController) {
+      this.eventController = eventController;
+    } else {
+      this.eventController = eventController;
+      this.publishBackgroundFilterEvent();
+    }
+  }
+
+  private publishBackgroundFilterEvent(): void {
+    const backgroundFilterEventAttributes: VideoFXEventAttributes = {
+      backgroundBlurEnabled: 'true',
+      backgroundBlurStrength: this._blurStrength,
+      backgroundReplacementEnabled: 'false',
+      backgroundFilterVersion: 1,
+    };
+    this.eventController.publishEvent(
+      'backgroundFilterConfigSelected',
+      backgroundFilterEventAttributes
+    );
   }
 }

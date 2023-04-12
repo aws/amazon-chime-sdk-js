@@ -425,6 +425,10 @@ function respond(response, statusCode, contentType, body, skipLogging = false) {
   response.statusCode = statusCode;
   response.setHeader('Content-Type', contentType);
   response.setHeader('Access-Control-Allow-Origin', '*');
+  // enable shared array buffer for videoFxProcessor
+  response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  // enable shared array buffer for videoFxProcessor
+  response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
   response.end(body);
   if (contentType === 'application/json' && !skipLogging) {
     log(body);

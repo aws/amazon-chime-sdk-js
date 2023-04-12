@@ -284,10 +284,14 @@ import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDo
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoEncodingParameters from './videouplinkbandwidthpolicy/VideoEncodingParameters';
+import VideoFXEventAttributes from './eventcontroller/VideoFXEventAttributes';
 import VideoFrameBuffer from './videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from './videoframeprocessor/VideoFrameProcessor';
 import VideoFrameProcessorPipeline from './videoframeprocessor/VideoFrameProcessorPipeline';
 import VideoFrameProcessorPipelineObserver from './videoframeprocessor/VideoFrameProcessorPipelineObserver';
+import VideoFxBlurStrength from './videofx/VideoFxBlurStrength';
+import VideoFxConfig from './videofx/VideoFxConfig';
+import VideoFxProcessor from './videofx/VideoFxProcessor';
 import VideoInputDevice from './devicecontroller/VideoInputDevice';
 import VideoLogEvent from './statscollector/VideoLogEvent';
 import VideoOnlyTransceiverController from './transceivercontroller/VideoOnlyTransceiverController';
@@ -622,10 +626,14 @@ export {
   VideoDownlinkObserver,
   VideoElementFactory,
   VideoEncodingParameters,
+  VideoFXEventAttributes,
   VideoFrameBuffer,
   VideoFrameProcessor,
   VideoFrameProcessorPipeline,
   VideoFrameProcessorPipelineObserver,
+  VideoFxBlurStrength,
+  VideoFxConfig,
+  VideoFxProcessor,
   VideoInputDevice,
   VideoLogEvent,
   VideoOnlyTransceiverController,

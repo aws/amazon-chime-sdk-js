@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.14.0] - 2023-04-13
+
+### Added
+- Add an unified interface (videofx processor) with new implementation for ML features, namely background blur 2.0 and background replacement 2.0. This includes improvement to the underlying model for better segmentation, better image processing algorithms to blur the background, and other miscellanies bug-fixes/features.
+
+
 ## [3.13.0] - 2023-03-28
 
 ### Added
@@ -19,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.12.0] - 2023-02-14
 
-### Added 
+### Added
 
 ### Removed
 
@@ -28,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Refactored various state cleanup to `AudioVideoControllerState.resetConnectionSpecificState`.
-- Update `supportsCanvasCapturedStreamPlayback` in `DefaultBrowserBehavior` to fix background blur and replacement 
+- Update `supportsCanvasCapturedStreamPlayback` in `DefaultBrowserBehavior` to fix background blur and replacement
   support check failures in iPad.
 
 ## [3.11.0] - 2023-01-03
@@ -269,8 +275,8 @@ more information.
 ### Removed
 
 - Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13.
-- Remove [legacy (non-promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax) call in `DefaultStatsCollector`. This API was previously used to obtain WebRTC metrics only for Chromium-based browsers. Now SDK obtains WebRTC metrics for all browsers via [standardized (promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax).  
-- Remove all deprecated meeting status code.  
+- Remove [legacy (non-promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax) call in `DefaultStatsCollector`. This API was previously used to obtain WebRTC metrics only for Chromium-based browsers. Now SDK obtains WebRTC metrics for all browsers via [standardized (promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax).
+- Remove all deprecated meeting status code.
 - Remove `videoSendHealthDidChange`, `videoSendBandwidthDidChange`, `videoNotReceivingEnoughData`, and `videoReceiveBandwidthDidChange`. Use `metricsDidReceive` to obtain metrics instead.
 - Remove `estimatedDownlinkBandwidthLessThanRequired`.
 - Remove synthesize video APIs such as SMTP.
@@ -291,7 +297,7 @@ more information.
   This allows applications to join meeting without reselecting video again.
 - Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can
   set video max bandwidth kbps from `audioVideo.setVideoMaxBandwidthKbps`.
-- Extend the `DeviceController` interface to include `Destroyable`  
+- Extend the `DeviceController` interface to include `Destroyable`
 - Rename `MeetingSessionPOSTLogger` to `POSTLogger`.
 - Update `POSTLogger` to implement the `Logger` interface.
 - Remove `MeetingSessionConfiguration` dependency from `MeetingSessionPOSTLogger`.
