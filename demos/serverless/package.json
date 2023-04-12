@@ -6,7 +6,7 @@
     "deploy": "node ./deploy.js"
   },
   "dependencies": {
-    "aws-sdk": "^2.1216.0",
+    "aws-sdk": "^2.1356.0",
     "fs-extra": "^9.1.0"
   },
   "license": "Apache-2.0",
