@@ -4,7 +4,7 @@
   "description": "Amazon Chime SDK JavaScript Serverless Demos Lambda Handler",
   "dependencies": {
     "aws-embedded-metrics": "^2.0.4",
-    "aws-sdk": "^2.1216.0",
+    "aws-sdk": "^2.1356.0",
     "uuid": "^8.3.2"
   },
   "license": "Apache-2.0",
