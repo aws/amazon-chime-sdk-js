@@ -1,6 +1,5 @@
 **Note**
-For updated versions of background blur and background replacement, please use the `VideoFXProcessor`. Use the guide at [https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html)
-
+For updated versions of background blur and background replacement, please use the `VideoFXProcessor`. Use the guide at [https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html).
 
 
 # Integrating background filters into your Amazon Chime SDK for JavaScript application

@@ -73,6 +73,8 @@ The following table lists the browsers and version that support background filte
 | Chrome on iOS | 110\.0\.0\.x\.x | 
 | Firefox on iOS \(iPhone iPad\) | 16\.x | 
 
+Currently `VideoFxProcessor` does not support Android devices. For Android device support at this time, please use `BackgroundBlurVideoFrameProcessor` and `BackgroundReplacementVideoFrameProcessor`. You can find the guide at [https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html).
+
 # Using a content\-security policy<a id="content-security"></a>
 
 Modern web applications use a content security policy to protect users from certain classes of attacks\. The following items allow the Amazon Chime SDK access to resources it needs at runtime for background blur and replacement:
@@ -354,7 +356,6 @@ export const setReplacementDefaultColor = async (newHexColor: string, logger: Lo
 export const setBlurStrength = async (newStrength: number, logger: Logger) => {
     videoFxConfig.backgroundBlur.strength = VideoFxTypeConversion.useBackgroundBlurStrengthType(newStrength);
     await updateVideoFxConfig(videoFxConfig, logger);
-
 }
 
 export const updateVideoFxConfig = async (config: VideoFxConfig, logger: Logger) => {
@@ -372,4 +373,4 @@ export const turnOffEffects = () => {
     videoFxProcessor = undefined;
     await meetingSession.audioVideo.startVideoInput(innerDevice);
 }
-`**``******
+```
