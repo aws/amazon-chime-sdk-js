@@ -1,0 +1,585 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>BackgroundFilter_VideoFX_Processor | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
+				</li>
+				<li>
+					<a href="backgroundfilter_videofx_processor.html">BackgroundFilter_VideoFX_Processor</a>
+				</li>
+			</ul>
+			<h1>Namespace BackgroundFilter_VideoFX_Processor</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#integrating-background-filters-into-a-client-application" id="integrating-background-filters-into-a-client-application" style="color: inherit; text-decoration: none;">
+							<h1>Integrating background filters into a client application<a id="background-filters"></a></h1>
+						</a>
+					</div>
+					<p>This section explains how to programmatically filter video backgrounds by using background blur 2.0 and background replacement 2.0. To add a background filter to a video stream, you need to create a <code>VideoFxProcessor</code> that contains a <code>VideoFxConfig</code> object. You then insert that processor into a <code>VideoTransformDevice</code>.</p>
+					<p>The background filter processor uses a TensorFlow Lite machine learning model, JavaScript Web Workers, and WebAssembly to apply a filter to the background of each frame in the video stream. These assets are downloaded at runtime when you create a <code>VideoFxProcessor</code>.</p>
+					<p>The new background blur and replacement filters are integrated into the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/browser">browser demo application on GitHub</a>. To try it out, launch the demo with <code>npm run start</code>, join the meeting, then click the camera to enable video. From the video filter drop down, choose one of the <strong>Background Blur 2.0</strong> or <strong>Background Replacement 2.0</strong> options.</p>
+					<p><strong>Topics</strong></p>
+					<ul>
+						<li><a href="#about-using-background-filters">About using background filters</a><ul>
+								<li><a href="#cross-origin-policy">Using the cross-origin opener policy</a></li>
+								<li><a href="#simd-support">SIMD support</a></li>
+								<li><a href="#webgl2-support">WebGL2 support</a></li>
+								<li><a href="#delivery-caching-bandwidth">Content delivery and bandwidth</a></li>
+								<li><a href="#filters-browser-compat">Browser compatibility</a></li>
+							</ul>
+						</li>
+						<li><a href="#content-security">Using a content-security policy</a></li>
+						<li><a href="#add-filters">Adding background filters to your application</a><ul>
+								<li><a href="#start-video-input">Starting video input</a></li>
+								<li><a href="#support-check">Checking for support before offering a filter</a></li>
+								<li><a href="#create-videofxconfig">Creating a VideoFxConfig object</a></li>
+								<li><a href="#create-videofxprocessor">Creating a VideoFxProcessor object</a></li>
+								<li><a href="#configure-videofxprocessor">Configuring the VideoFxProcessor object</a></li>
+								<li><a href="#create-video-transform">Creating the VideoTransformDevice object</a></li>
+								<li><a href="#tuning">Tuning resource utilization</a></li>
+							</ul>
+						</li>
+						<li><a href="#example-bg-filter">Example background filter</a></li>
+					</ul>
+					<a href="#about-using-background-filters" id="about-using-background-filters" style="color: inherit; text-decoration: none;">
+						<h1>About using background filters<a id="about-using-background-filters"></a></h1>
+					</a>
+					<a href="#using-the-cross-origin-opener-policy" id="using-the-cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
+						<h2>Using the cross-origin opener policy<a id="cross-origin-policy"></a></h2>
+					</a>
+					<p>To limit memory usage, the module prefers to use a <code>SharedArrayBuffer</code> for processing. However, this requires that you carefully configure web security. You must set both of these headers when serving your application HTML:</p>
+					<pre><code><span style="color: #001080">Cross</span><span style="color: #000000">-</span><span style="color: #001080">Origin</span><span style="color: #000000">-</span><span style="color: #001080">Opener</span><span style="color: #000000">-Policy: </span><span style="color: #001080">same</span><span style="color: #000000">-</span><span style="color: #001080">origin</span>
+<span style="color: #001080">Cross</span><span style="color: #000000">-</span><span style="color: #001080">Origin</span><span style="color: #000000">-</span><span style="color: #001080">Embedder</span><span style="color: #000000">-Policy: </span><span style="color: #001080">require</span><span style="color: #000000">-</span><span style="color: #001080">corp</span>
+</code></pre>
+					<p>The server must set these because they have no meta-tag equivalents. If you don&#39;t set these headers, the background filters may use slightly more RAM.</p>
+					<p>Background filters can be CPU-intensive and GPU-intensive. Some mobile devices and lower-specification laptop or desktop computers may not have the power to run the filters along with multiple video streams.</p>
+					<a href="#simd-support" id="simd-support" style="color: inherit; text-decoration: none;">
+						<h2>SIMD support<a id="simd-support"></a></h2>
+					</a>
+					<p>Background filters are more efficient in environments that support Single Instruction, Multiple Data (SIMD). The filters use less CPU for a given complexity level when you enable SIMD. Low-powered devices running browsers without SIMD support may not run background filters.</p>
+					<a href="#webgl2-support" id="webgl2-support" style="color: inherit; text-decoration: none;">
+						<h2>WebGL2 support<a id="webgl2-support"></a></h2>
+					</a>
+					<p>The <code>VideoFxProcessor</code> object requires browsers that support WebGL2 in order to access the GPU on the client device.</p>
+					<a href="#content-delivery-and-bandwidth" id="content-delivery-and-bandwidth" style="color: inherit; text-decoration: none;">
+						<h2>Content delivery and bandwidth<a id="delivery-caching-bandwidth"></a></h2>
+					</a>
+					<p>An Amazon content delivery network loads the machine-learning-model files for background filters at runtime. This provides low-latency global distribution without the need to serve a full suite of files as part of your application. However, loading model files can add latency to parts of your application. To help mitigate that impact, browsers cache the model files indefinitely. That cache makes subsequent loads significantly faster. As a best practice, check for supported browsers, then create the background filter resources when users may not notice any latency. For example, you can download model files while users wait in a lobby, or while they use a device picker.</p>
+					<p>Your application must connect to the following:</p>
+					<ul>
+						<li>Amazon Chime SDK media services.</li>
+						<li>Amazon CloudFront via HTTPS (port 443).</li>
+					</ul>
+					<p>All requests are to subdomains of <code>sdkassets.chime.aws</code>. Applications that can&#39;t access the content delivery network or don&#39;t include the correct domain in their <a href="#content-security">content security policy</a> will fail their support checks and be unable to use the filters.</p>
+					<p>For more information about CloudFront’s IP address ranges, see <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html"> Locations and IP address ranges of CloudFront edge servers</a> in the <em>Amazon CloudFront Developer Guide</em>.</p>
+					<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
+						<h2>Browser compatibility<a id="filters-browser-compat"></a></h2>
+					</a>
+					<p>The following table lists the browsers and version that support background filters.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Browser</th>
+								<th>Minimum supported version</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>Firefox</td>
+								<td>76+</td>
+							</tr>
+							<tr>
+								<td>Chromium-based browsers and environments, including Edge and Electron</td>
+								<td>78+</td>
+							</tr>
+							<tr>
+								<td>Safari on macOS</td>
+								<td>16.3+</td>
+							</tr>
+							<tr>
+								<td>Safari on iOS (iPhone, iPad)</td>
+								<td>16.x</td>
+							</tr>
+							<tr>
+								<td>Chrome on iOS</td>
+								<td>110.0.0.x.x</td>
+							</tr>
+							<tr>
+								<td>Firefox on iOS (iPhone iPad)</td>
+								<td>16.x</td>
+							</tr>
+					</tbody></table>
+					<a href="#using-a-content-security-policy" id="using-a-content-security-policy" style="color: inherit; text-decoration: none;">
+						<h1>Using a content-security policy<a id="content-security"></a></h1>
+					</a>
+					<p>Modern web applications use a content security policy to protect users from certain classes of attacks. The following items allow the Amazon Chime SDK access to resources it needs at runtime for background blur and replacement:</p>
+					<ul>
+						<li><code>script-src: add https://*.sdkassets.chime.aws</code> to load video processing code, and <code>wasm-eval</code> and <code>wasm-unsafe-eval</code> to allow running it. For compatibility with FireFox before version 108, add <code>blob:</code>.</li>
+						<li><code>script-src-elem:</code> add <code>https://*.sdkassets.chime.aws</code> to load video processing code from the source, and <code>blob:</code> to enable running it on the client.</li>
+						<li><code>connect-src:</code> add <code>https://*.sdkassets.chime.aws</code> to load model files via fetch. Also add your image-serving domain to access background images for background replacement.</li>
+						<li><code>worker-src:</code> add <code>blob:</code> to load worker JavaScript across origins.</li>
+						<li>Safari only: <code>child-src:</code> add <code>blob:</code> to load worker JavaScript across origins.</li>
+					</ul>
+					<p>If you omit any of these entries, or if you use HTTP headers and <code>http-equiv</code> meta tags to specify a policy and inadvertently exclude any of these by intersection, then a background filter will not be able to initialize. The filter appears to be unsupported, or it creates a no-op video frame processor. You will see errors in your browser console such as:</p>
+					<pre><code><span style="color: #001080">Refused</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">connect</span><span style="color: #000000"> </span><span style="color: #001080">to</span>
+<span style="color: #A31515">&#039;https://static.sdkassets.chime.aws/bgblur/workers/worker.js…&#039;</span>
+<span style="color: #001080">because</span><span style="color: #000000"> </span><span style="color: #001080">it</span><span style="color: #000000"> </span><span style="color: #001080">violates</span><span style="color: #000000"> </span><span style="color: #001080">the</span><span style="color: #000000"> </span><span style="color: #001080">document</span><span style="color: #A31515">&#039;s content security policy</span><span style="color: #CD3131">.</span>
+</code></pre>
+					<p>The following example shows a typical content security policy. It includes the tags needed to access the resources needed to run the filters. You can adapt this example as needed.</p>
+					<pre><code><span style="color: #000000">&lt;</span><span style="color: #267F99">head</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">    &lt;</span><span style="color: #001080">meta</span><span style="color: #000000"> </span><span style="color: #001080">http</span><span style="color: #000000">-</span><span style="color: #001080">equiv</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;Content-Security-Policy&quot;</span><span style="color: #000000"> </span>
+<span style="color: #000000">        </span><span style="color: #001080">content</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;base-uri &#039;self&#039;</span><span style="color: #CD3131">;</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">default</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;unsafe-inline&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;unsafe-eval&#039;</span><span style="color: #000000"> * *.</span><span style="color: #001080">sdkassets</span><span style="color: #000000">.</span><span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #001080">aws</span><span style="color: #000000"> blob:* *.</span><span style="color: #001080">amazonaws</span><span style="color: #000000">.</span><span style="color: #001080">com</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #001080">object</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">        </span><span style="color: #A31515">&#039;none&#039;</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">        </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;unsafe-eval&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;wasm-eval&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;wasm-unsafe-eval&#039;</span><span style="color: #000000">  https:</span><span style="color: #008000">//*.sdkassets.chime.aws;</span>
+<span style="color: #000000">        </span><span style="color: #001080">style</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">         </span><span style="color: #A31515">&#039;unsafe-inline&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;unsafe-eval&#039;</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #001080">connect</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> https:</span><span style="color: #008000">//*.chime.aws wss://*.chime.aws https://*.amazonaws.com  https://*.sdkassets.chime.aws wss://*.chime.aws;</span>
+<span style="color: #000000">        </span><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">-</span><span style="color: #001080">elem</span><span style="color: #000000">   </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;unsafe-inline&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets chime.aws;</span>
+<span style="color: #000000">        </span><span style="color: #001080">worker</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">        </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob:;</span>
+<span style="color: #000000">        </span><span style="color: #001080">child</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">         </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob:</span><span style="color: #A31515">&quot;</span><span style="color: #CD3131">&gt;</span>
+<span style="color: #000000">&lt;/</span><span style="color: #001080">head</span><span style="color: #000000">&gt;</span>
+</code></pre>
+					<a href="#adding-background-filters-to-your-application" id="adding-background-filters-to-your-application" style="color: inherit; text-decoration: none;">
+						<h1>Adding background filters to your application<a id="add-filters"></a></h1>
+					</a>
+					<p>The process of adding background filters follows these broad steps:</p>
+					<ul>
+						<li>Check for supported browsers.</li>
+						<li>Create a <code>VideoFxConfig</code> object with the configuration you’d like to use.</li>
+						<li>Use the configuration object to create a <code>VideoFxProcessor</code> object.</li>
+						<li>Include the <code>VideoFxProcessor</code> object in a <code>VideoTransformDevice</code> .</li>
+						<li>Use the <code>VideoTransformDevice</code> to start the video input.</li>
+					</ul>
+					<p><strong>Note</strong>
+					To complete those steps, you must first:</p>
+					<ul>
+						<li>Create a <code>Logger</code>.</li>
+						<li>Choose a video device of class <code>MediaDeviceInfo</code>.</li>
+						<li>Successfully join a <code>MeetingSession</code>.</li>
+					</ul>
+					<p>Steps in the following sections explain how to complete the process.</p>
+					<a href="#starting-video-input" id="starting-video-input" style="color: inherit; text-decoration: none;">
+						<h2>Starting video input<a id="start-video-input"></a></h2>
+					</a>
+					<p>The following example shows how to use the <code>VideoTransformDevice</code> object to start video input.</p>
+					<pre><code><span style="color: #008000">// assuming that meetingSession has already been created</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">videoTransformDevice</span><span style="color: #000000">);</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">start</span><span style="color: #000000">();</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startLocalVideoTile</span><span style="color: #000000">();</span>
+</code></pre>
+					<a href="#checking-for-support-before-offering-a-filter" id="checking-for-support-before-offering-a-filter" style="color: inherit; text-decoration: none;">
+						<h2>Checking for support before offering a filter<a id="support-check"></a></h2>
+					</a>
+					<p>The Amazon Chime SDK provides an asynchronous static method that checks for supported browsers and attempts to download the required assets. However, it does not check for device performance. As a best practice, always ensure the users&#39; browsers and devices can support the filters before you offer the filters.</p>
+					<pre><code><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">VideoFxProcessor</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VideoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">)) {     </span>
+<span style="color: #000000">    </span><span style="color: #008000">// logger is optional for isSupported</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<a href="#creating-a-videofxconfig-object" id="creating-a-videofxconfig-object" style="color: inherit; text-decoration: none;">
+						<h2>Creating a VideoFxConfig object<a id="create-videofxconfig"></a></h2>
+					</a>
+					<p>You can define configurations for <code>backgroundBlur</code> and <code>backgroundReplacement</code> in the same object. However, you can&#39;t set <code>isEnabled</code> to <code>true</code> for both filters at the same time. That&#39;s an invalid configuration.</p>
+					<p>The <code>VideoFxConfig</code> class does no validation of its own. Validation occurs in the next step.</p>
+					<p>The following example shows a valid <code>VideoFxConfig</code>.</p>
+					<pre><code><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoFxConfig</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxConfig</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">    </span><span style="color: #001080">backgroundBlur:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">isEnabled:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">strength:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;medium&#039;</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">backgroundReplacement:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">isEnabled:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">backgroundImageURL:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;space.jpg&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">defaultColor:</span><span style="color: #000000"> </span><span style="color: #0000FF">undefined</span><span style="color: #000000">,</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<a href="#creating-a-videofxprocessor-object" id="creating-a-videofxprocessor-object" style="color: inherit; text-decoration: none;">
+						<h2>Creating a VideoFxProcessor object<a id="create-videofxprocessor"></a></h2>
+					</a>
+					<p>When creating the VideoFxProcessor object, AWS servers download the runtime assets, or a browser cache loads the assets. If network or CSP configurations prevent access to the assets, the <code>VideoFxProcessor.create</code> operation throws an exception. The resulting VideoFxProcessor is configured as a no-op processor, which won’t affect the video stream.</p>
+					<pre><code><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxProcessor</span><span style="color: #000000"> | </span><span style="color: #267F99">undefined</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VideoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">);</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">error</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">warn</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">());</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p><code>VideoFxProcessor.create</code> also attempts to load the image from <code>backgroundReplacement.backgroundImageURL</code>. If the image fails to load, the processor throws an exception. The processor also throws exceptions for other reasons, such as invalid configurations, unsupported browsers, or underpowered hardware.</p>
+					<a href="#configuring-the-videofxprocessor-object" id="configuring-the-videofxprocessor-object" style="color: inherit; text-decoration: none;">
+						<h2>Configuring the VideoFxProcessor object<a id="configure-videofxprocessor"></a></h2>
+					</a>
+					<p>The following tables list the <code>VideoFxProcessor</code> properties that you can configure. The example below the tables shows a typical runtime configuration.</p>
+					<p><strong>Background blur</strong>
+					Background blur takes the following properties:</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Property</th>
+								<th>Type</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>isEnabled</code></td>
+								<td><code>boolean</code></td>
+								<td>When <code>true</code>, the filter blurs the background.</td>
+							</tr>
+							<tr>
+								<td><code>strength</code></td>
+								<td><code>string</code></td>
+								<td>Determines the extent of blurring. Valid values: <code>low</code> | <code>medium</code> | <code>high</code>.</td>
+							</tr>
+					</tbody></table>
+					<p><strong>Background replacement</strong>
+					Background replacement takes the following parameters:</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Property</th>
+								<th>Type</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>isEnabled</code></td>
+								<td><code>boolean</code></td>
+								<td>When <code>true</code>, the filter replaces the background.</td>
+							</tr>
+							<tr>
+								<td><code>backgroundImageURL</code></td>
+								<td><code>string</code></td>
+								<td>The URL of the background image. The filter resizes the image dynamically to the dimensions of the current screen. You can use a string such as <code>https://...</code> or a data URL such as <code>data:image/jpeg;base64</code>.</td>
+							</tr>
+							<tr>
+								<td><code>defaultColor</code></td>
+								<td><code>string</code></td>
+								<td>A hex color string such as <code>000000</code> or <code>FFFFFF</code>, or a string such as <code>black</code> or <code>white</code>. If you don&#39;t specify an image URL, the processor uses the <code>defaultColor</code> as the background. If you don&#39;t specify a <code>defaultColor</code> the processor defaults to black.</td>
+							</tr>
+					</tbody></table>
+					<p><strong>Changing a configuration at runtime</strong>
+					You can change a <code>VideoFxProcessor</code> configuration at runtime by using the <code>videoFxProcessor.setEffectConfig</code> parameter. The following example shows how to enable background replacement and disable background blur.</p>
+					<p><strong>Note</strong>
+					You can only specify one type of background replacement at a time. Specify a value for <code>backgroundImageURL</code> or <code>defaultColor</code>, but not both.</p>
+					<pre><code><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundBlur</span><span style="color: #000000">.</span><span style="color: #001080">isEnabled</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">isEnabled</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">setEffectConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">);</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">())</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>If <code>setEffectConfig</code> throws an exception, the previous configuration remains in effect. <code>setEffectConfig</code> throws exceptions under conditions similar to those that cause <code>VideoFxProcessor.create</code> to throw exceptions.</p>
+					<p>The following example shows how to change a background image while the video runs.</p>
+					<pre><code><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">backgroundImageURL</span><span style="color: #000000"> = </span><span style="color: #A31515">&quot;https://my-domain.com/my-other-image.jpg&quot;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">setEffectConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">);</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">())</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<a href="#creating-the-videotransformdevice-object" id="creating-the-videotransformdevice-object" style="color: inherit; text-decoration: none;">
+						<h2>Creating the VideoTransformDevice object<a id="create-video-transform"></a></h2>
+					</a>
+					<p>The following example shows how to create a <code>VideoTransformDevice</code> object that contains the <code>VideoFxProcessor</code>.</p>
+					<pre><code><span style="color: #008000">// assuming that logger and videoInputDevice have already been set    </span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoTransformDevice</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultVideoTransformDevice</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">videoInputDevice</span><span style="color: #000000">,</span>
+<span style="color: #000000">  [</span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">]</span>
+<span style="color: #000000">);</span>
+</code></pre>
+					<a href="#tuning-resource-utilization" id="tuning-resource-utilization" style="color: inherit; text-decoration: none;">
+						<h2>Tuning resource utilization<a id="tuning"></a></h2>
+					</a>
+					<p>When creating the <code>VideoFxProcessor</code>, you can supply the optional <code>processingBudgetPerFrame</code> parameter and control the amount of CPU and GPU that the filters use.</p>
+					<pre><code><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxProcessor</span><span style="color: #000000"> | </span><span style="color: #267F99">undefined</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">processingBudgetPerFrame</span><span style="color: #000000"> = </span><span style="color: #098658">50</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VideoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">processingBudgetPerFrame</span><span style="color: #000000">);</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">error</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">warn</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">());</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>The <code>VideoFxProcessor</code> requires time to process a frame. The amount of time depends on the device, the browser, and what else is running in the browser or on the device. The processor uses the concept of a <em>budget</em> to target the amount of time used to process and render each frame.</p>
+					<p>Processing time is in milliseconds. As an example of how to use a budget, 1 second has 1000ms. Targeting 15 frames per second of video capture results in a total budget of 1000ms/15fps = 66ms. You can set a budget of 50% of that, or 33ms, by supplying the value <code>50</code> in the <code>processingBudgetPerFrame</code> parameter, as shown in the example above.</p>
+					<p>The <code>VideoFxProcessor</code> then tries to process the frames within the budget specified. If processing runs over budget, the processor reduces visual quality to stay within budget. The processor continues to reduce visual quality to a minimum, at which point it stops reducing. This processing duration is measured continually, so if more resources become available, such as another app closing and freeing up CPU, the processor raises visual quality again until it hits the budget, or maximum visual quality is achieved.</p>
+					<p>If you don&#39;t supply a value to <code>processingBudgetPerFrame</code>, the <code>VideoFxProcessor</code> defaults to <code>50</code>.</p>
+					<a href="#example-background-filter" id="example-background-filter" style="color: inherit; text-decoration: none;">
+						<h1>Example background filter<a id="example-bg-filter"></a></h1>
+					</a>
+					<p>The following example shows how to implement the filters.</p>
+					<pre><code><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">VideoFxConfig</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">VideoFxTypeConversion</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">VideoTransformDevice</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">DefaultVideoTransformDevice</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">Logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">VideoFxProcessor</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">MeetingSession</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">videoTransformDevice</span><span style="color: #000000">: </span><span style="color: #267F99">VideoTransformDevice</span><span style="color: #000000"> | </span><span style="color: #267F99">undefined</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxProcessor</span><span style="color: #000000"> | </span><span style="color: #267F99">undefined</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoFxConfig</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxConfig</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">    </span><span style="color: #001080">backgroundBlur:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">isEnabled:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">strength:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;medium&quot;</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">backgroundReplacement:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">isEnabled:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">backgroundImageURL:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;space.jpg&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">defaultColor:</span><span style="color: #000000"> </span><span style="color: #0000FF">undefined</span><span style="color: #000000">,</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">addEffectsToMeeting</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">videoInputDevice</span><span style="color: #000000">: </span><span style="color: #267F99">MediaDeviceInfo</span><span style="color: #000000">, </span><span style="color: #001080">meetingSession</span><span style="color: #000000">: </span><span style="color: #267F99">MeetingSession</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #267F99">void</span><span style="color: #000000">&gt; </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VideoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">);</span>
+<span style="color: #000000">    } </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">error</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">());</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #001080">videoTransformDevice</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultVideoTransformDevice</span><span style="color: #000000">(</span>
+<span style="color: #000000">        </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">videoInputDevice</span><span style="color: #000000">,</span>
+<span style="color: #000000">        [</span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">]</span>
+<span style="color: #000000">    );</span>
+
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">videoTransformDevice</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">enableReplacement</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundBlur</span><span style="color: #000000">.</span><span style="color: #001080">isEnabled</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">isEnabled</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">enableBlur</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">isEnabled</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundBlur</span><span style="color: #000000">.</span><span style="color: #001080">isEnabled</span><span style="color: #000000"> = </span><span style="color: #0000FF">true</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">pauseEffects</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">isEnabled</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundBlur</span><span style="color: #000000">.</span><span style="color: #001080">isEnabled</span><span style="color: #000000"> = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">setReplacementImage</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">newImageUrl</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">backgroundImageURL</span><span style="color: #000000"> = </span><span style="color: #001080">newImageUrl</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">defaultColor</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">setReplacementDefaultColor</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">newHexColor</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">defaultColor</span><span style="color: #000000"> = </span><span style="color: #001080">newHexColor</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundReplacement</span><span style="color: #000000">.</span><span style="color: #001080">backgroundImageURL</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">setBlurStrength</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">newStrength</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundBlur</span><span style="color: #000000">.</span><span style="color: #001080">strength</span><span style="color: #000000"> = </span><span style="color: #001080">VideoFxTypeConversion</span><span style="color: #000000">.</span><span style="color: #795E26">useBackgroundBlurStrengthType</span><span style="color: #000000">(</span><span style="color: #001080">newStrength</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">config</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">setEffectConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">);</span>
+<span style="color: #000000">    } </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">error</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">())</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">turnOffEffects</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">innerDevice</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">videoTransformDevice</span><span style="color: #000000">?.</span><span style="color: #795E26">intrinsicDevice</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">videoTransformDevice</span><span style="color: #000000">?.</span><span style="color: #795E26">stop</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoTransformDevice</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">innerDevice</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+<span style="color: #A31515">`**``******</span>
+<span style="color: #A31515">[Give feedback on this guide](https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Background%20Filter_VideoFX_Processor%20feedback)</span>
+</code></pre>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="backgroundfilter_videofx_processor.html">Background<wbr>Filter_<wbr><wbr>VideoFX_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="buildersjourney.html">Builders<wbr>Journey</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
