@@ -91,7 +91,6 @@
 								<li><a href="#support-check">Checking for support before offering a filter</a></li>
 								<li><a href="#create-videofxconfig">Creating a VideoFxConfig object</a></li>
 								<li><a href="#create-videofxprocessor">Creating a VideoFxProcessor object</a></li>
-								<li><a href="#configure-videofxprocessor">Configuring the VideoFxProcessor object</a></li>
 								<li><a href="#create-video-transform">Creating the VideoTransformDevice object</a></li>
 								<li><a href="#tuning">Tuning resource utilization</a></li>
 							</ul>
@@ -165,6 +164,7 @@
 								<td>16.x</td>
 							</tr>
 					</tbody></table>
+					<p>Currently <code>VideoFxProcessor</code> does not support Android devices. For Android device support at this time, please use <code>BackgroundBlurVideoFrameProcessor</code> and <code>BackgroundReplacementVideoFrameProcessor</code>. You can find the guide at <a href="https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html">https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html</a>.</p>
 					<a href="#using-a-content-security-policy" id="using-a-content-security-policy" style="color: inherit; text-decoration: none;">
 						<h1>Using a content-security policy<a id="content-security"></a></h1>
 					</a>
@@ -253,22 +253,7 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-					<a href="#creating-a-videofxprocessor-object" id="creating-a-videofxprocessor-object" style="color: inherit; text-decoration: none;">
-						<h2>Creating a VideoFxProcessor object<a id="create-videofxprocessor"></a></h2>
-					</a>
-					<p>When creating the VideoFxProcessor object, AWS servers download the runtime assets, or a browser cache loads the assets. If network or CSP configurations prevent access to the assets, the <code>VideoFxProcessor.create</code> operation throws an exception. The resulting VideoFxProcessor is configured as a no-op processor, which won’t affect the video stream.</p>
-					<pre><code><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxProcessor</span><span style="color: #000000"> | </span><span style="color: #267F99">undefined</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
-<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
-<span style="color: #000000">  </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VideoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">);</span>
-<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">error</span><span style="color: #000000">) {</span>
-<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">warn</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">());</span>
-<span style="color: #000000">}</span>
-</code></pre>
-					<p><code>VideoFxProcessor.create</code> also attempts to load the image from <code>backgroundReplacement.backgroundImageURL</code>. If the image fails to load, the processor throws an exception. The processor also throws exceptions for other reasons, such as invalid configurations, unsupported browsers, or underpowered hardware.</p>
-					<a href="#configuring-the-videofxprocessor-object" id="configuring-the-videofxprocessor-object" style="color: inherit; text-decoration: none;">
-						<h2>Configuring the VideoFxProcessor object<a id="configure-videofxprocessor"></a></h2>
-					</a>
-					<p>The following tables list the <code>VideoFxProcessor</code> properties that you can configure. The example below the tables shows a typical runtime configuration.</p>
+					<p>The following tables list the <code>VideoFxProcessor</code> properties that you can specify in the <code>VideoFxConfig</code> object.</p>
 					<p><strong>Background blur</strong>
 					Background blur takes the following properties:</p>
 					<table>
@@ -316,6 +301,18 @@
 								<td>A hex color string such as <code>000000</code> or <code>FFFFFF</code>, or a string such as <code>black</code> or <code>white</code>. If you don&#39;t specify an image URL, the processor uses the <code>defaultColor</code> as the background. If you don&#39;t specify a <code>defaultColor</code> the processor defaults to black.</td>
 							</tr>
 					</tbody></table>
+					<a href="#creating-a-videofxprocessor-object" id="creating-a-videofxprocessor-object" style="color: inherit; text-decoration: none;">
+						<h2>Creating a VideoFxProcessor object<a id="create-videofxprocessor"></a></h2>
+					</a>
+					<p>When creating the VideoFxProcessor object, AWS servers download the runtime assets, or a browser cache loads the assets. If network or CSP configurations prevent access to the assets, the <code>VideoFxProcessor.create</code> operation throws an exception. The resulting VideoFxProcessor is configured as a no-op processor, which won’t affect the video stream.</p>
+					<pre><code><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxProcessor</span><span style="color: #000000"> | </span><span style="color: #267F99">undefined</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VideoFxProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">);</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">error</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">warn</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #795E26">toString</span><span style="color: #000000">());</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p><code>VideoFxProcessor.create</code> also attempts to load the image from <code>backgroundReplacement.backgroundImageURL</code>. If the image fails to load, the processor throws an exception. The processor also throws exceptions for other reasons, such as invalid configurations, unsupported browsers, or underpowered hardware.</p>
 					<p><strong>Changing a configuration at runtime</strong>
 					You can change a <code>VideoFxProcessor</code> configuration at runtime by using the <code>videoFxProcessor.setEffectConfig</code> parameter. The following example shows how to enable background replacement and disable background blur.</p>
 					<p><strong>Note</strong>
@@ -444,7 +441,6 @@
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">setBlurStrength</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">newStrength</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">.</span><span style="color: #001080">backgroundBlur</span><span style="color: #000000">.</span><span style="color: #001080">strength</span><span style="color: #000000"> = </span><span style="color: #001080">VideoFxTypeConversion</span><span style="color: #000000">.</span><span style="color: #795E26">useBackgroundBlurStrengthType</span><span style="color: #000000">(</span><span style="color: #001080">newStrength</span><span style="color: #000000">);</span>
 <span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000">(</span><span style="color: #001080">videoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
-
 <span style="color: #000000">}</span>
 
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">updateVideoFxConfig</span><span style="color: #000000"> = </span><span style="color: #0000FF">async</span><span style="color: #000000"> (</span><span style="color: #001080">config</span><span style="color: #000000">: </span><span style="color: #267F99">VideoFxConfig</span><span style="color: #000000">, </span><span style="color: #001080">logger</span><span style="color: #000000">: </span><span style="color: #267F99">Logger</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
@@ -462,9 +458,8 @@
 <span style="color: #000000">    </span><span style="color: #001080">videoFxProcessor</span><span style="color: #000000"> = </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
 <span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startVideoInput</span><span style="color: #000000">(</span><span style="color: #001080">innerDevice</span><span style="color: #000000">);</span>
 <span style="color: #000000">}</span>
-<span style="color: #A31515">`**``******</span>
-<span style="color: #A31515">[Give feedback on this guide](https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Background%20Filter_VideoFX_Processor%20feedback)</span>
 </code></pre>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Background%20Filter_VideoFX_Processor%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>

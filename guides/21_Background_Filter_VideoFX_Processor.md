@@ -19,7 +19,6 @@ The new background blur and replacement filters are integrated into the [browser
   - [Checking for support before offering a filter](#support-check)
   - [Creating a VideoFxConfig object](#create-videofxconfig)
   - [Creating a VideoFxProcessor object](#create-videofxprocessor)
-  - [Configuring the VideoFxProcessor object](#configure-videofxprocessor)
   - [Creating the VideoTransformDevice object](#create-video-transform)
   - [Tuning resource utilization](#tuning)
 - [Example background filter](#example-bg-filter)
@@ -173,24 +172,7 @@ const videoFxConfig: VideoFxConfig = {
 }
 ```
 
-## Creating a VideoFxProcessor object<a id="create-videofxprocessor"></a>
-
-When creating the VideoFxProcessor object, AWS servers download the runtime assets, or a browser cache loads the assets\. If network or CSP configurations prevent access to the assets, the `VideoFxProcessor.create` operation throws an exception\. The resulting VideoFxProcessor is configured as a no\-op processor, which won’t affect the video stream\.
-
-```
-let videoFxProcessor: VideoFxProcessor | undefined = undefined;
-try {
-  videoFxProcessor = await VideoFxProcessor.create(logger, videoFxConfig);
-} catch (error) {
-  logger.warn(error.toString());
-}
-```
-
-`VideoFxProcessor.create` also attempts to load the image from `backgroundReplacement.backgroundImageURL`\. If the image fails to load, the processor throws an exception\. The processor also throws exceptions for other reasons, such as invalid configurations, unsupported browsers, or underpowered hardware\. 
-
-## Configuring the VideoFxProcessor object<a id="configure-videofxprocessor"></a>
-
-The following tables list the `VideoFxProcessor` properties that you can configure\. The example below the tables shows a typical runtime configuration\.
+The following tables list the `VideoFxProcessor` properties that you can specify in the `VideoFxConfig` object\.
 
 **Background blur**  
 Background blur takes the following properties:
@@ -210,6 +192,21 @@ Background replacement takes the following parameters:
 | `isEnabled` | `boolean` | When `true`, the filter replaces the background\. | 
 | `backgroundImageURL` | `string` | The URL of the background image\. The filter resizes the image dynamically to the dimensions of the current screen\. You can use a string such as `https://...` or a data URL such as `data:image/jpeg;base64`\. | 
 | `defaultColor` | `string` | A hex color string such as `000000` or `FFFFFF`, or a string such as `black` or `white`\. If you don't specify an image URL, the processor uses the `defaultColor` as the background\. If you don't specify a `defaultColor` the processor defaults to black\. | 
+
+## Creating a VideoFxProcessor object<a id="create-videofxprocessor"></a>
+
+When creating the VideoFxProcessor object, AWS servers download the runtime assets, or a browser cache loads the assets\. If network or CSP configurations prevent access to the assets, the `VideoFxProcessor.create` operation throws an exception\. The resulting VideoFxProcessor is configured as a no\-op processor, which won’t affect the video stream\.
+
+```
+let videoFxProcessor: VideoFxProcessor | undefined = undefined;
+try {
+  videoFxProcessor = await VideoFxProcessor.create(logger, videoFxConfig);
+} catch (error) {
+  logger.warn(error.toString());
+}
+```
+
+`VideoFxProcessor.create` also attempts to load the image from `backgroundReplacement.backgroundImageURL`\. If the image fails to load, the processor throws an exception\. The processor also throws exceptions for other reasons, such as invalid configurations, unsupported browsers, or underpowered hardware\. 
 
 **Changing a configuration at runtime**  
 You can change a `VideoFxProcessor` configuration at runtime by using the `videoFxProcessor.setEffectConfig` parameter\. The following example shows how to enable background replacement and disable background blur\.
