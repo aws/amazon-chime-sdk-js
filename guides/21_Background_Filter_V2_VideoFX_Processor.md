@@ -15,12 +15,13 @@ The new background blur and replacement filters are integrated into the [browser
   - [Browser compatibility](#filters-browser-compat)
 - [Using a content-security policy](#content-security)
 - [Adding background filters to your application](#add-filters)
-  - [Starting video input](#start-video-input)
   - [Checking for support before offering a filter](#support-check)
   - [Creating a VideoFxConfig object](#create-videofxconfig)
   - [Creating a VideoFxProcessor object](#create-videofxprocessor)
   - [Creating the VideoTransformDevice object](#create-video-transform)
   - [Tuning resource utilization](#tuning)
+  - [Starting video input](#start-video-input)
+  - [Stopping video input](#stop-video-input)
 - [Example background filter](#example-bg-filter)
 
 # About using background filters<a id="about-using-background-filters"></a>
@@ -124,17 +125,6 @@ To complete those steps, you must first:
 * Successfully join a `MeetingSession`\.
 
 Steps in the following sections explain how to complete the process\.
-
-## Starting video input<a id="start-video-input"></a>
-
-The following example shows how to use the `VideoTransformDevice` object to start video input\. 
-
-```
-// assuming that meetingSession has already been created
-await meetingSession.audioVideo.startVideoInput(videoTransformDevice);
-meetingSession.audioVideo.start();
-meetingSession.audioVideo.startLocalVideoTile();
-```
 
 ## Checking for support before offering a filter<a id="support-check"></a>
 
@@ -271,6 +261,25 @@ Processing time is in milliseconds\. As an example of how to use a budget, 1 sec
 The `VideoFxProcessor` then tries to process the frames within the budget specified\. If processing runs over budget, the processor reduces visual quality to stay within budget\. The processor continues to reduce visual quality to a minimum, at which point it stops reducing\. This processing duration is measured continually, so if more resources become available, such as another app closing and freeing up CPU, the processor raises visual quality again until it hits the budget, or maximum visual quality is achieved\.
 
 If you don't supply a value to `processingBudgetPerFrame`, the `VideoFxProcessor` defaults to `50`\.
+
+## Starting video input<a id="start-video-input"></a>
+
+The following example shows how to use the `VideoTransformDevice` object to start video input\. 
+
+```
+// assuming that meetingSession has already been created
+await meetingSession.audioVideo.startVideoInput(videoTransformDevice);
+meetingSession.audioVideo.start();
+meetingSession.audioVideo.startLocalVideoTile();
+```
+
+## Stopping video input<a id="stop-video-input"></a>
+
+The following example shows how to stop video input\. 
+
+```
+await meetingSession.audioVideo.stopVideoInput();
+```
 
 # Example background filter<a id="example-bg-filter"></a>
 
