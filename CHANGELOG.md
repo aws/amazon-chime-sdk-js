@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.14.0] - 2023-04-11
 
 ### Added
-* Add new guide for background blur /background replacement 2.0 (i.e. `VideoFXProcessor`).
+* Add new guide for background blur / background replacement 2.0 (i.e. `VideoFXProcessor`).
 
 ### Removed
 
