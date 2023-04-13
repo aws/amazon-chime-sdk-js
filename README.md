@@ -97,7 +97,7 @@ The following developer guides cover specific topics for a technical audience.
 - [Meeting Events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html)
 - [Integrating Amazon Voice Focus and Echo Reduction Into Your Application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
 - [Adding Frame-By-Frame Processing to an Outgoing Video Stream](https://aws.github.io/amazon-chime-sdk-js/modules/videoprocessor.html)
-- [Adding Background Filtering to an Outgoing Video Stream](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_v2_videofx_processor.html)
+- [Adding Background Filtering to an Outgoing Video Stream](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html)
 - [Adapting Video to Limited Bandwidth Using a Priority-Based Video Downlink Policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html)
 - [Client Event Ingestion](https://aws.github.io/amazon-chime-sdk-js/modules/clientevent_ingestion.html)
 - [Content Security Policy](https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html)
