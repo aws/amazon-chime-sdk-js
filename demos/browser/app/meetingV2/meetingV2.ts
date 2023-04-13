@@ -180,7 +180,7 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Emojify' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 
+type VideoFilterName = 'Emojify' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'CircularCut' |
  'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 
  'Background Blur 40% CPU' | 'Background Replacement' | 'None' | 'Background Blur 2.0 - Low' |
  'Background Blur 2.0 - Medium' | 'Background Blur 2.0 - High' | 'Background Replacement 2.0 - (Beach)' |
@@ -208,7 +208,7 @@ const BACKGROUND_FILTER_V2_LIST: VideoFilterName[] = [
 ];
 
 
-const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'NoOp', 'Resize (9/16)'];
+const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'NoOp', 'Resize (9/16)', 'CircularCut'];
 
 type ButtonState = 'on' | 'off' | 'disabled';
 
