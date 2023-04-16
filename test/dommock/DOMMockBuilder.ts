@@ -1046,6 +1046,7 @@ export default class DOMMockBuilder {
       }
     };
 
+    GlobalAny.Blob = DOMBlobMock;
     GlobalAny.matchMedia = function mockMatchMedia(_query: string): MediaQueryList {
       return new GlobalAny.MediaQueryList();
     };
