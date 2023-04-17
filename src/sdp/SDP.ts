@@ -388,7 +388,44 @@ export default class SDP {
    */
   withVideoLayersAllocationRtpHeaderExtension(previousSdp: SDP): SDP {
     const url = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
+    return this.withRtpHeaderExtension(previousSdp, url);
+  }
 
+  /**
+   * 
+   */
+    withAbsoluteCaptureTimeExtension(previousSdp: SDP): SDP {
+      const url = `http://www.webrtc.org/experiments/rtp-hdrext/abs-capture-time`;
+      return this.withRtpHeaderExtension(previousSdp, url);
+    }
+
+  /**
+   * Dependency descriptors can be used by the backend to designate spatial or temporal layers
+   * on a single encoding. Along with the video layers allocation exension this will
+   * result in the ability for remote attendees to subscribe to individual layers below the top.
+   */
+  withDependencyDescriptorRtpHeaderExtension(previousSdp: SDP): SDP {
+    const url = `https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension`;
+    return this.withRtpHeaderExtension(previousSdp, url);
+  }
+
+  /**
+   * If the send transceiver is in a state where the layers allocation extension is not matching up with
+   * the dependency descriptor extension, or we simply don't want to allow for the seperation of spatial
+   * or temporal layers, we can remove the dependency descriptor from the SDP.
+   *
+   * Note: Care should be taken when calling this function since `withDependencyDescriptorRtpHeaderExtension`
+   * if called again will require an accurate ID value. Thus it is recommended to only call `withoutDependencyDescriptorRtpHeaderExtension`
+   * after setting the local description.
+   */
+  withoutDependencyDescriptorRtpHeaderExtension(): SDP {
+    const url = `https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension`;
+    const srcLines: string[] = SDP.splitLines(this.sdp).filter(line => !line.includes(url));
+    return new SDP(srcLines.join(SDP.CRLF) + SDP.CRLF);
+  }
+
+  private withRtpHeaderExtension(previousSdp: SDP, url: string): SDP {
+    console.error(`Wtf ${url}`)
     // According to https://webrtc.googlesource.com/src/+/b62ee8ce94e5f10e0a94d6f112e715cc4d0cd9dc,
     // RTP header extension ID change would result in a hard failure. Therefore if the extension exists
     // in the previous SDP, use the same extension ID to avoid the failure. Otherwise use a new ID
@@ -411,7 +448,7 @@ export default class SDP {
 
         for (const line of srcLines) {
           dstLines.push(line);
-          if (/^a=sendrecv/.test(line.trim())) {
+          if (/^a=sendrecv/.test(line.trim()) || /^a=recvonly/.test(line.trim())) {
             const targetLine = `a=extmap:` + id + ` ` + url;
             dstLines.push(targetLine);
           }

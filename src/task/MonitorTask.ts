@@ -200,6 +200,22 @@ export default class MonitorTask
       this.context.audioVideoController.update({ needsRenegotiation: false });
     }
 
+    this.context.audioVideoController.rtcPeerConnection.getReceivers().forEach((receiver) => {
+        if (receiver.track.kind === 'audio') return;
+        const csrc = receiver.getSynchronizationSources()[0];
+        this.logger.info(`csrc ${JSON.stringify(csrc)}`);
+        const latestCaptureTimestamp = (csrc as any).captureTimeStamp;
+        const latestSenderCaptureTimeOffset = (csrc as any).senderCaptureTimeOffset;
+        const receiverTimestamp = csrc.timestamp;
+        this.logger.info(`latestCaptureTimestamp ${latestCaptureTimestamp} latestSenderCaptureTimeOffset ${latestSenderCaptureTimeOffset} receiverTimestamp ${receiverTimestamp}`);
+
+        
+        // Calculates sender-receiver clock offset from stats.
+        const stats = this.context.audioVideoController.rtcPeerConnection.getStats().then((report) => {
+            console.log(JSON.stringify(stats));
+        });
+    })
+
     if (!this.currentAvailableStreamAvgBitrates) {
       return;
     }

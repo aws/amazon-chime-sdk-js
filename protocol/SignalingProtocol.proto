@@ -92,6 +92,7 @@ message SdkJoinFrame {
     optional SdkServerSideNetworkAdaption server_side_network_adaption = 10;
     repeated SdkServerSideNetworkAdaption supported_server_side_network_adaptions = 11;
     optional bool disable_periodic_keyframe_request_on_content_sender = 13;
+    optional bool wants_negotiation_of_abs_capture_time = 15;
 }
 
 message SdkJoinAckFrame {
