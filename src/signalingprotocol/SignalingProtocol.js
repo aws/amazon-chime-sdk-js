@@ -1578,6 +1578,7 @@ $root.SdkJoinFrame = (function() {
      * @property {ISdkClientDetails|null} [clientDetails] SdkJoinFrame clientDetails
      * @property {number|Long|null} [audioSessionId] SdkJoinFrame audioSessionId
      * @property {boolean|null} [wantsCompressedSdp] SdkJoinFrame wantsCompressedSdp
+     * @property {boolean|null} [useLayersAllocationHeaderExtension] SdkJoinFrame useLayersAllocationHeaderExtension
      * @property {SdkServerSideNetworkAdaption|null} [serverSideNetworkAdaption] SdkJoinFrame serverSideNetworkAdaption
      * @property {Array.<SdkServerSideNetworkAdaption>|null} [supportedServerSideNetworkAdaptions] SdkJoinFrame supportedServerSideNetworkAdaptions
      * @property {boolean|null} [disablePeriodicKeyframeRequestOnContentSender] SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender
@@ -1648,6 +1649,14 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.prototype.wantsCompressedSdp = false;
 
     /**
+     * SdkJoinFrame useLayersAllocationHeaderExtension.
+     * @member {boolean} useLayersAllocationHeaderExtension
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.useLayersAllocationHeaderExtension = false;
+
+    /**
      * SdkJoinFrame serverSideNetworkAdaption.
      * @member {SdkServerSideNetworkAdaption} serverSideNetworkAdaption
      * @memberof SdkJoinFrame
@@ -1707,6 +1716,8 @@ $root.SdkJoinFrame = (function() {
             writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.audioSessionId);
         if (message.wantsCompressedSdp != null && Object.hasOwnProperty.call(message, "wantsCompressedSdp"))
             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.wantsCompressedSdp);
+        if (message.useLayersAllocationHeaderExtension != null && Object.hasOwnProperty.call(message, "useLayersAllocationHeaderExtension"))
+            writer.uint32(/* id 9, wireType 0 =*/72).bool(message.useLayersAllocationHeaderExtension);
         if (message.serverSideNetworkAdaption != null && Object.hasOwnProperty.call(message, "serverSideNetworkAdaption"))
             writer.uint32(/* id 10, wireType 0 =*/80).int32(message.serverSideNetworkAdaption);
         if (message.supportedServerSideNetworkAdaptions != null && message.supportedServerSideNetworkAdaptions.length)
@@ -1765,6 +1776,9 @@ $root.SdkJoinFrame = (function() {
                 break;
             case 7:
                 message.wantsCompressedSdp = reader.bool();
+                break;
+            case 9:
+                message.useLayersAllocationHeaderExtension = reader.bool();
                 break;
             case 10:
                 message.serverSideNetworkAdaption = reader.int32();
@@ -1837,6 +1851,9 @@ $root.SdkJoinFrame = (function() {
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             if (typeof message.wantsCompressedSdp !== "boolean")
                 return "wantsCompressedSdp: boolean expected";
+        if (message.useLayersAllocationHeaderExtension != null && message.hasOwnProperty("useLayersAllocationHeaderExtension"))
+            if (typeof message.useLayersAllocationHeaderExtension !== "boolean")
+                return "useLayersAllocationHeaderExtension: boolean expected";
         if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
             switch (message.serverSideNetworkAdaption) {
             default:
@@ -1899,6 +1916,8 @@ $root.SdkJoinFrame = (function() {
                 message.audioSessionId = new $util.LongBits(object.audioSessionId.low >>> 0, object.audioSessionId.high >>> 0).toNumber(true);
         if (object.wantsCompressedSdp != null)
             message.wantsCompressedSdp = Boolean(object.wantsCompressedSdp);
+        if (object.useLayersAllocationHeaderExtension != null)
+            message.useLayersAllocationHeaderExtension = Boolean(object.useLayersAllocationHeaderExtension);
         switch (object.serverSideNetworkAdaption) {
         case "DEFAULT":
         case 1:
@@ -1965,6 +1984,7 @@ $root.SdkJoinFrame = (function() {
             } else
                 object.audioSessionId = options.longs === String ? "0" : 0;
             object.wantsCompressedSdp = false;
+            object.useLayersAllocationHeaderExtension = false;
             object.serverSideNetworkAdaption = options.enums === String ? "DEFAULT" : 1;
             object.disablePeriodicKeyframeRequestOnContentSender = false;
         }
@@ -1983,6 +2003,8 @@ $root.SdkJoinFrame = (function() {
                 object.audioSessionId = options.longs === String ? $util.Long.prototype.toString.call(message.audioSessionId) : options.longs === Number ? new $util.LongBits(message.audioSessionId.low >>> 0, message.audioSessionId.high >>> 0).toNumber(true) : message.audioSessionId;
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             object.wantsCompressedSdp = message.wantsCompressedSdp;
+        if (message.useLayersAllocationHeaderExtension != null && message.hasOwnProperty("useLayersAllocationHeaderExtension"))
+            object.useLayersAllocationHeaderExtension = message.useLayersAllocationHeaderExtension;
         if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
             object.serverSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.serverSideNetworkAdaption] : message.serverSideNetworkAdaption;
         if (message.supportedServerSideNetworkAdaptions && message.supportedServerSideNetworkAdaptions.length) {
@@ -13270,5 +13292,3 @@ $root.SdkVideoCodecCapability = (function() {
 })();
 
 module.exports = $root;
-$util.Long = undefined;
-$protobuf.configure();

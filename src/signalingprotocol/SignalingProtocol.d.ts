@@ -1,4 +1,3 @@
-import * as Long from "long";
 import * as $protobuf from "protobufjs";
 /** Properties of a SdkSignalFrame. */
 export interface ISdkSignalFrame {
@@ -519,6 +518,9 @@ export interface ISdkJoinFrame {
     /** SdkJoinFrame wantsCompressedSdp */
     wantsCompressedSdp?: (boolean|null);
 
+    /** SdkJoinFrame useLayersAllocationHeaderExtension */
+    useLayersAllocationHeaderExtension?: (boolean|null);
+
     /** SdkJoinFrame serverSideNetworkAdaption */
     serverSideNetworkAdaption?: (SdkServerSideNetworkAdaption|null);
 
@@ -555,6 +557,9 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
     /** SdkJoinFrame wantsCompressedSdp. */
     public wantsCompressedSdp: boolean;
+
+    /** SdkJoinFrame useLayersAllocationHeaderExtension. */
+    public useLayersAllocationHeaderExtension: boolean;
 
     /** SdkJoinFrame serverSideNetworkAdaption. */
     public serverSideNetworkAdaption: SdkServerSideNetworkAdaption;

@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fix protobuf generate script.
+
 ## [3.13.0] - 2023-03-28
 
 ### Added
