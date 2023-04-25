@@ -13,7 +13,7 @@ The new background blur and replacement filters are integrated into the [browser
   - [WebGL2 support](#webgl2-support)
   - [Content delivery and bandwidth](#delivery-caching-bandwidth)
   - [Browser compatibility](#filters-browser-compat)
-- [Using a content-security policy](#content-security)
+- [Using a content security policy](#content-security)
 - [Adding background filters to your application](#add-filters)
   - [Checking for support before offering a filter](#support-check)
   - [Creating a VideoFxConfig object](#create-videofxconfig)
@@ -75,38 +75,34 @@ The following table lists the browsers and version that support background filte
 
 Currently `VideoFxProcessor` does not support Android devices. For Android device support at this time, please use `BackgroundBlurVideoFrameProcessor` and `BackgroundReplacementVideoFrameProcessor`. You can find the guide at [https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html).
 
-# Using a content\-security policy<a id="content-security"></a>
+# Using a Content Security Policy<a id="content-security"></a>
+Modern web applications use Content Security Policy to protect users from certain classes of attacks. An application that utilizes the `VideoFxProcessor` will need to include the following in policy directives to allow the Amazon Chime SDK access to resources it needs at runtime:
+## Required CSP Directives ##
+### Script Policy ###
+To function, the `VideoFxProcessor` class must load JavaScript classes at runtime from an Amazon\-owned CDN\. These classes implement post\-processing for video using WebGL2\. To grant an application access to fetching and running these classes, you must include the following directives:
+```
+script-src       'self' blob: https://*.sdkassets.chime.aws
+script-src-elem  'self' blob: https://*.sdkassets.chime.aws
+```
+Please note that `script-src` and `script-src-elem` directives are both required for full support on Safari and Firefox browsers\.
+### Worker Policy ###
+The `VideoFxProcessor` loads JavaScript classes as a blob to run a web worker thread, which processes video using Machine Learning (ML) models\. To grant an application access to fetching and using this worker, include:
+```
+worker-src       'self' blob: https://*.sdkassets.chime.aws
+```
+### WebAssembly Policy ###
+The `VideoFxProcessor` loads a WebAssembly (Wasm) module from the same Amazon-owned CDN\. In Chrome 95 and later, compiled Wasm modules cannot be passed across multiple module boundaries\. To allow fetching and instantiating these modules, please also include `'wasm-unsafe-eval'` to the `script-src` directive\. 
 
-Modern web applications use a content security policy to protect users from certain classes of attacks\. The following items allow the Amazon Chime SDK access to resources it needs at runtime for background blur and replacement:
-+ `script-src: add https://*.sdkassets.chime.aws` to load video processing code, and `wasm-eval` and `wasm-unsafe-eval` to allow running it\. For compatibility with FireFox before version 108, add `blob:`\.
-+ `script-src-elem:` add `https://*.sdkassets.chime.aws` to load video processing code from the source, and `blob:` to enable running it on the client\.
-+ `connect-src:` add `https://*.sdkassets.chime.aws` to load model files via fetch\. Also add your image\-serving domain to access background images for background replacement\.
-+ `worker-src:` add `blob:` to load worker JavaScript across origins\.
-+ Safari only: `child-src:` add `blob:` to load worker JavaScript across origins\.
-
-If you omit any of these entries, or if you use HTTP headers and `http-equiv` meta tags to specify a policy and inadvertently exclude any of these by intersection, then a background filter will not be able to initialize\. The filter appears to be unsupported, or it creates a no\-op video frame processor\. You will see errors in your browser console such as:
-
+One can read further on the Content Security Policy’s documentation for WebAssembly [here](https://github.com/WebAssembly/content-security-policy/blob/main/proposals/CSP.md)\.  Ideally the `wasm-eval` tag would be better used, however it yet to gain official standardization. Correspondence on the directive can be found [here](https://bugs.chromium.org/p/v8/issues/detail?id=7041)\.
+## Optional CSP Directives ##
+### Background Image Policy ###
+To use the background replacement filter with a dynamically loaded background image, `VideoFxProcessor` must be able to access the image\. Include a `connect-src` directive with the domain that hosts the image\.
+## CSP Errors ##
+If any any of the required directives are omitted then the VideoFxProcessor will not be able to properly instantiate and the processor will be unsupported\. Additionally, the following (or similar) errors will likely appear in the browser console:
 ```
 Refused to connect to
-'https://static.sdkassets.chime.aws/bgblur/workers/worker.js…'
+'https://static.sdkassets.chime.aws/ml_media_fx/otherassets/worker.js'
 because it violates the document's content security policy.
-```
-
-The following example shows a typical content security policy\. It includes the tags needed to access the resources needed to run the filters\. You can adapt this example as needed\. 
-
-```
-<head>
-    <meta http-equiv="Content-Security-Policy" 
-        content="base-uri 'self';
-        default-src       'unsafe-inline' 'unsafe-eval' * *.sdkassets.chime.aws blob:* *.amazonaws.com;
-        object-src        'none';
-        script-src        'self' 'unsafe-eval' 'wasm-eval' 'wasm-unsafe-eval'  https://*.sdkassets.chime.aws;
-        style-src         'unsafe-inline' 'self' 'unsafe-eval';
-        connect-src       'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com  https://*.sdkassets.chime.aws wss://*.chime.aws;
-        script-src-elem   'self' 'unsafe-inline' blob: https://*.sdkassets chime.aws;
-        worker-src        'self' blob:;
-        child-src         'self' blob:">
-</head>
 ```
 
 # Adding background filters to your application<a id="add-filters"></a>
