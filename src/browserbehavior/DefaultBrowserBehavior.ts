@@ -8,7 +8,13 @@ import BrowserBehavior from './BrowserBehavior';
 import ExtendedBrowserBehavior from './ExtendedBrowserBehavior';
 
 export default class DefaultBrowserBehavior implements BrowserBehavior, ExtendedBrowserBehavior {
-  private readonly browser = detect();
+  private readonly FALLBACK_BROWSER = {
+    type: 'browser',
+    name: 'unknown',
+    version: 'unknown',
+    os: 'unknown',
+  };
+  private readonly browser = detect() || this.FALLBACK_BROWSER;
   private readonly uaParserResult =
     navigator && navigator.userAgent ? new UAParser(navigator.userAgent).getResult() : null;
 
