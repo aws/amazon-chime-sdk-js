@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SdkSignalFrame } from '../signalingprotocol/SignalingProtocol.js';
+import {SdkSignalFrame} from '../signalingprotocol/SignalingProtocol.js';
 import MeetingSessionStatusCode from './MeetingSessionStatusCode';
 
 /**
@@ -30,6 +30,7 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.RealtimeApiFailed:
       case MeetingSessionStatusCode.TaskFailed:
       case MeetingSessionStatusCode.NoAttendeePresent:
+      case MeetingSessionStatusCode.WebSocketAbnormalClosed:
         return true;
       default:
         return false;
@@ -119,6 +120,8 @@ export default class MeetingSessionStatus {
         return 'The Primary meeting credentials provided are no longer valid. chime::DeleteAttendee may have been called on them.';
       case MeetingSessionStatusCode.AudioDisconnectAudio:
         return 'The audio connection failed.';
+      case MeetingSessionStatusCode.WebSocketAbnormalClosed:
+        return 'The web socket connection is closed abnormally.'
       /* istanbul ignore next */
       default: {
         // You get a compile-time error if you do not handle any status code.

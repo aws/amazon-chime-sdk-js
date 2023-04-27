@@ -182,6 +182,11 @@ export enum MeetingSessionStatusCode {
    * Reserved.
    */
   AudioDisconnectAudio,
+
+  /**
+   * In case web socket is closed abnormally from client side
+   */
+  WebSocketAbnormalClosed,
 }
 
 export default MeetingSessionStatusCode;

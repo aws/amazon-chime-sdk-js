@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MeetingSessionCredentials } from '..';
+import {MeetingSessionCredentials} from '..';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import TimeoutScheduler from '../scheduler/TimeoutScheduler';
@@ -28,11 +28,11 @@ import {
   SdkSubscribeFrame,
   SdkVideoSubscriptionConfiguration,
 } from '../signalingprotocol/SignalingProtocol.js';
-import { getFormattedOffset } from '../utils/Utils';
+import {getFormattedOffset} from '../utils/Utils';
 import Versioning from '../versioning/Versioning';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
-import { convertServerSideNetworkAdaptionEnumToSignaled } from './ServerSideNetworkAdaption';
+import {convertServerSideNetworkAdaptionEnumToSignaled} from './ServerSideNetworkAdaption';
 import SignalingClient from './SignalingClient';
 import SignalingClientConnectionRequest from './SignalingClientConnectionRequest';
 import SignalingClientEvent from './SignalingClientEvent';
@@ -391,6 +391,12 @@ export default class DefaultSignalingClient implements SignalingClient {
             `notifying event: ${SignalingClientEventType[event.type]}, websocket state=${
               WebSocketReadyState[this.webSocket.readyState()]
             }`
+        );
+        break;
+      case SignalingClientEventType.WebSocketClosed:
+        this.logger.info(
+          `notifying event: ${SignalingClientEventType[event.type]}, 
+          code: ${event.closeCode} reason: ${event.closeReason}`
         );
         break;
       default:

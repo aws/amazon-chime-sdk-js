@@ -172,6 +172,8 @@ export default class AudioVideoControllerState {
 
   startTimeMs: number | null = null;
 
+  isSessionConnected: boolean = false;
+
   /*
    * Reset state corresponding to state that is dependent on a individual connection
    * and may not be valid for others, e.g. on a reconnection.

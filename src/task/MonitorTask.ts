@@ -50,7 +50,6 @@ export default class MonitorTask
   // for explanation.
   private isResubscribeCheckPaused: boolean = false;
   private pendingMetricsReport: ClientMetricReport | undefined = undefined;
-  private isMeetingConnected: boolean = false;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -307,7 +306,7 @@ export default class MonitorTask
       }
     );
 
-    if (this.isMeetingConnected) {
+    if (this.context.isSessionConnected) {
       this.applyHealthPolicy(
         this.sendingAudioFailureHealthPolicy,
         connectionHealthData,
@@ -321,21 +320,6 @@ export default class MonitorTask
         }
       );
     }
-  }
-
-  audioVideoDidStart(): void {
-    this.isMeetingConnected = true;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  audioVideoDidStartConnecting(reconnecting: boolean): void {
-    // The expectation here is that the flag will be set to true again when audioVideoDidStart() is eventually called.
-    this.isMeetingConnected = false;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
-    this.isMeetingConnected = false;
   }
 
   private applyHealthPolicy(
@@ -385,7 +369,7 @@ export default class MonitorTask
     // Don't add two or more consecutive "signalingDropped" states.
     if (
       (event.type === SignalingClientEventType.WebSocketClosed &&
-        (event.closeCode === 4410 || (event.closeCode >= 4500 && event.closeCode < 4600))) ||
+        (event.closeCode === 1006 || (event.closeCode >= 4500 && event.closeCode < 4600))) ||
       event.type === SignalingClientEventType.WebSocketError ||
       event.type === SignalingClientEventType.WebSocketFailed
     ) {
@@ -393,6 +377,14 @@ export default class MonitorTask
         const attributes = this.generateAudioVideoEventAttributesForReceivingAudioDropped();
         this.context.eventController?.publishEvent('signalingDropped', attributes);
         this.hasSignalingError = true;
+      }
+
+      if (this.context.isSessionConnected) {
+        let statusCode = MeetingSessionStatusCode.WebSocketAbnormalClosed;
+        if (event.closeCode >= 4500 && event.closeCode < 4600) {
+          statusCode = MeetingSessionStatusCode.SignalingInternalServerError;
+        }
+        this.context.audioVideoController.handleMeetingSessionStatus(new MeetingSessionStatus(statusCode), null);
       }
     } else if (event.type === SignalingClientEventType.WebSocketOpen) {
       this.hasSignalingError = false;

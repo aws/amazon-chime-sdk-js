@@ -582,6 +582,7 @@ export default class DefaultAudioVideoController
       this.totalRetryCount = 0;
       this._reconnectController.reset();
       this.startAudioVideoTimestamp = Date.now();
+      this.meetingSessionContext.isSessionConnected = false;
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(false));
       });
@@ -682,6 +683,7 @@ export default class DefaultAudioVideoController
         );
       }
     }
+    this.meetingSessionContext.isSessionConnected = true;
     this.forEachObserver(observer => {
       Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
     });
@@ -732,6 +734,7 @@ export default class DefaultAudioVideoController
     reconnecting: boolean,
     error: Error | null
   ): Promise<void> {
+    this.meetingSessionContext.isSessionConnected = false;
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStop'), [
         new TimeoutTask(
@@ -1062,6 +1065,7 @@ export default class DefaultAudioVideoController
   }
 
   private notifyStop(status: MeetingSessionStatus, error: Error | null): void {
+    this.meetingSessionContext.isSessionConnected = false;
     this.forEachObserver(observer => {
       Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
     });
@@ -1163,6 +1167,7 @@ export default class DefaultAudioVideoController
   private async actionReconnect(status: MeetingSessionStatus): Promise<void> {
     if (!this._reconnectController.hasStartedConnectionAttempt()) {
       this._reconnectController.startedConnectionAttempt(false);
+      this.meetingSessionContext.isSessionConnected = false;
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(true));
       });
