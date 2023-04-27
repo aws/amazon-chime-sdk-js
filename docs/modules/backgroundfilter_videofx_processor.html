@@ -199,6 +199,18 @@
 						<h3>Background Image Policy</h3>
 					</a>
 					<p>To use the background replacement filter with a dynamically loaded background image, <code>VideoFxProcessor</code> must be able to access the image. Include a <code>connect-src</code> directive with the domain that hosts the image.</p>
+					<a href="#example-csp-declaration" id="example-csp-declaration" style="color: inherit; text-decoration: none;">
+						<h2>Example CSP Declaration</h2>
+					</a>
+					<p>Here is an example csp declaration to permit the use of the <code>VideoFxProcessor</code>. Please note that the definitions in the <code>connect-src</code> tag are not <code>VideoFxProcessor</code> specfic but are related to video/audio in Chime meetings.</p>
+					<pre><code><span style="color: #000000">&lt;</span><span style="color: #001080">meta</span><span style="color: #000000"> </span><span style="color: #001080">http</span><span style="color: #000000">-</span><span style="color: #001080">equiv</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;Content-Security-Policy&quot;</span><span style="color: #000000"> </span>
+<span style="color: #000000">  </span><span style="color: #001080">content</span><span style="color: #000000">= </span><span style="color: #A31515">&quot;base-uri         &#039;self&#039;</span><span style="color: #CD3131">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">connect</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">      </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> https:</span><span style="color: #008000">//*.chime.aws wss://*.chime.aws https://*.amazonaws.com wss://*.chime.aws https://*.ingest.chime.aws;</span>
+<span style="color: #000000">  </span><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: </span><span style="color: #A31515">&#039;wasm-unsafe-eval&#039;</span><span style="color: #000000"> https:</span><span style="color: #008000">//*.sdkassets.chime.aws;</span>
+<span style="color: #000000">  </span><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">-</span><span style="color: #001080">elem</span><span style="color: #000000">  </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets.chime.aws;</span>
+<span style="color: #000000">  </span><span style="color: #001080">worker</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets.chime.aws;</span>
+<span style="color: #A31515">&quot;</span><span style="color: #CD3131">&gt;</span>
+</code></pre>
 					<a href="#csp-errors" id="csp-errors" style="color: inherit; text-decoration: none;">
 						<h2>CSP Errors</h2>
 					</a>

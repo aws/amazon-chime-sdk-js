@@ -97,6 +97,17 @@ One can read further on the Content Security Policy’s documentation for WebAss
 ## Optional CSP Directives ##
 ### Background Image Policy ###
 To use the background replacement filter with a dynamically loaded background image, `VideoFxProcessor` must be able to access the image\. Include a `connect-src` directive with the domain that hosts the image\.
+## Example CSP Declaration ##
+Here is an example csp declaration to permit the use of the `VideoFxProcessor`\. Please note that the definitions in the `connect-src` tag are not `VideoFxProcessor` specfic but are related to video/audio in Chime meetings.
+```
+<meta http-equiv="Content-Security-Policy" 
+  content= "base-uri         'self';
+  connect-src      'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com wss://*.chime.aws https://*.ingest.chime.aws;
+  script-src       'self' blob: 'wasm-unsafe-eval' https://*.sdkassets.chime.aws;
+  script-src-elem  'self' blob: https://*.sdkassets.chime.aws;
+  worker-src       'self' blob: https://*.sdkassets.chime.aws;
+">
+```
 ## CSP Errors ##
 If any any of the required directives are omitted then the VideoFxProcessor will not be able to properly instantiate and the processor will be unsupported\. Additionally, the following (or similar) errors will likely appear in the browser console:
 ```
