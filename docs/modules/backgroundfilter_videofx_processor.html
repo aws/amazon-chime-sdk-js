@@ -85,7 +85,7 @@
 								<li><a href="#filters-browser-compat">Browser compatibility</a></li>
 							</ul>
 						</li>
-						<li><a href="#content-security">Using a content-security policy</a></li>
+						<li><a href="#content-security">Using a content security policy</a></li>
 						<li><a href="#add-filters">Adding background filters to your application</a><ul>
 								<li><a href="#support-check">Checking for support before offering a filter</a></li>
 								<li><a href="#create-videofxconfig">Creating a VideoFxConfig object</a></li>
@@ -167,34 +167,57 @@
 					</tbody></table>
 					<p>Currently <code>VideoFxProcessor</code> does not support Android devices. For Android device support at this time, please use <code>BackgroundBlurVideoFrameProcessor</code> and <code>BackgroundReplacementVideoFrameProcessor</code>. You can find the guide at <a href="https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html">https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html</a>.</p>
 					<a href="#using-a-content-security-policy" id="using-a-content-security-policy" style="color: inherit; text-decoration: none;">
-						<h1>Using a content-security policy<a id="content-security"></a></h1>
+						<h1>Using a Content Security Policy<a id="content-security"></a></h1>
 					</a>
-					<p>Modern web applications use a content security policy to protect users from certain classes of attacks. The following items allow the Amazon Chime SDK access to resources it needs at runtime for background blur and replacement:</p>
-					<ul>
-						<li><code>script-src: add https://*.sdkassets.chime.aws</code> to load video processing code, and <code>wasm-eval</code> and <code>wasm-unsafe-eval</code> to allow running it. For compatibility with FireFox before version 108, add <code>blob:</code>.</li>
-						<li><code>script-src-elem:</code> add <code>https://*.sdkassets.chime.aws</code> to load video processing code from the source, and <code>blob:</code> to enable running it on the client.</li>
-						<li><code>connect-src:</code> add <code>https://*.sdkassets.chime.aws</code> to load model files via fetch. Also add your image-serving domain to access background images for background replacement.</li>
-						<li><code>worker-src:</code> add <code>blob:</code> to load worker JavaScript across origins.</li>
-						<li>Safari only: <code>child-src:</code> add <code>blob:</code> to load worker JavaScript across origins.</li>
-					</ul>
-					<p>If you omit any of these entries, or if you use HTTP headers and <code>http-equiv</code> meta tags to specify a policy and inadvertently exclude any of these by intersection, then a background filter will not be able to initialize. The filter appears to be unsupported, or it creates a no-op video frame processor. You will see errors in your browser console such as:</p>
-					<pre><code><span style="color: #001080">Refused</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">connect</span><span style="color: #000000"> </span><span style="color: #001080">to</span>
-<span style="color: #A31515">&#039;https://static.sdkassets.chime.aws/bgblur/workers/worker.js…&#039;</span>
-<span style="color: #001080">because</span><span style="color: #000000"> </span><span style="color: #001080">it</span><span style="color: #000000"> </span><span style="color: #001080">violates</span><span style="color: #000000"> </span><span style="color: #001080">the</span><span style="color: #000000"> </span><span style="color: #001080">document</span><span style="color: #A31515">&#039;s content security policy</span><span style="color: #CD3131">.</span>
+					<p>Modern web applications use Content Security Policy to protect users from certain classes of attacks. An application that utilizes the <code>VideoFxProcessor</code> will need to include the following in policy directives to allow the Amazon Chime SDK access to resources it needs at runtime:</p>
+					<a href="#required-csp-directives" id="required-csp-directives" style="color: inherit; text-decoration: none;">
+						<h2>Required CSP Directives</h2>
+					</a>
+					<a href="#script-policy" id="script-policy" style="color: inherit; text-decoration: none;">
+						<h3>Script Policy</h3>
+					</a>
+					<p>To function, the <code>VideoFxProcessor</code> class must load JavaScript classes at runtime from an Amazon-owned CDN. These classes implement post-processing for video using WebGL2. To grant an application access to fetching and running these classes, you must include the following directives:</p>
+					<pre><code><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets.chime.aws</span>
+<span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">-</span><span style="color: #001080">elem</span><span style="color: #000000">  </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets.chime.aws</span>
 </code></pre>
-					<p>The following example shows a typical content security policy. It includes the tags needed to access the resources needed to run the filters. You can adapt this example as needed.</p>
-					<pre><code><span style="color: #000000">&lt;</span><span style="color: #267F99">head</span><span style="color: #000000">&gt;</span>
-<span style="color: #000000">    &lt;</span><span style="color: #001080">meta</span><span style="color: #000000"> </span><span style="color: #001080">http</span><span style="color: #000000">-</span><span style="color: #001080">equiv</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;Content-Security-Policy&quot;</span><span style="color: #000000"> </span>
-<span style="color: #000000">        </span><span style="color: #001080">content</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;base-uri &#039;self&#039;</span><span style="color: #CD3131">;</span>
-<span style="color: #000000">        </span><span style="color: #AF00DB">default</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;unsafe-inline&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;unsafe-eval&#039;</span><span style="color: #000000"> * *.</span><span style="color: #001080">sdkassets</span><span style="color: #000000">.</span><span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #001080">aws</span><span style="color: #000000"> blob:* *.</span><span style="color: #001080">amazonaws</span><span style="color: #000000">.</span><span style="color: #001080">com</span><span style="color: #000000">;</span>
-<span style="color: #000000">        </span><span style="color: #001080">object</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">        </span><span style="color: #A31515">&#039;none&#039;</span><span style="color: #000000">;</span>
-<span style="color: #000000">        </span><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">        </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;unsafe-eval&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;wasm-eval&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;wasm-unsafe-eval&#039;</span><span style="color: #000000">  https:</span><span style="color: #008000">//*.sdkassets.chime.aws;</span>
-<span style="color: #000000">        </span><span style="color: #001080">style</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">         </span><span style="color: #A31515">&#039;unsafe-inline&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;unsafe-eval&#039;</span><span style="color: #000000">;</span>
-<span style="color: #000000">        </span><span style="color: #001080">connect</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> https:</span><span style="color: #008000">//*.chime.aws wss://*.chime.aws https://*.amazonaws.com  https://*.sdkassets.chime.aws wss://*.chime.aws;</span>
-<span style="color: #000000">        </span><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">-</span><span style="color: #001080">elem</span><span style="color: #000000">   </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;unsafe-inline&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets chime.aws;</span>
-<span style="color: #000000">        </span><span style="color: #001080">worker</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">        </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob:;</span>
-<span style="color: #000000">        </span><span style="color: #001080">child</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">         </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob:</span><span style="color: #A31515">&quot;</span><span style="color: #CD3131">&gt;</span>
-<span style="color: #000000">&lt;/</span><span style="color: #001080">head</span><span style="color: #000000">&gt;</span>
+					<p>Please note that <code>script-src</code> and <code>script-src-elem</code> directives are both required for full support on Safari and Firefox browsers.</p>
+					<a href="#worker-policy" id="worker-policy" style="color: inherit; text-decoration: none;">
+						<h3>Worker Policy</h3>
+					</a>
+					<p>The <code>VideoFxProcessor</code> loads JavaScript classes as a blob to run a web worker thread, which processes video using Machine Learning (ML) models. To grant an application access to fetching and using this worker, include:</p>
+					<pre><code><span style="color: #001080">worker</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets.chime.aws</span>
+</code></pre>
+					<a href="#webassembly-policy" id="webassembly-policy" style="color: inherit; text-decoration: none;">
+						<h3>WebAssembly Policy</h3>
+					</a>
+					<p>The <code>VideoFxProcessor</code> loads a WebAssembly (Wasm) module from the same Amazon-owned CDN. In Chrome 95 and later, compiled Wasm modules cannot be passed across multiple module boundaries. To allow fetching and instantiating these modules, please also include <code>&#39;wasm-unsafe-eval&#39;</code> to the <code>script-src</code> directive.</p>
+					<p>One can read further on the Content Security Policy’s documentation for WebAssembly <a href="https://github.com/WebAssembly/content-security-policy/blob/main/proposals/CSP.md">here</a>.  Ideally the <code>wasm-eval</code> tag would be better used, however it yet to gain official standardization. Correspondence on the directive can be found <a href="https://bugs.chromium.org/p/v8/issues/detail?id=7041">here</a>.</p>
+					<a href="#optional-csp-directives" id="optional-csp-directives" style="color: inherit; text-decoration: none;">
+						<h2>Optional CSP Directives</h2>
+					</a>
+					<a href="#background-image-policy" id="background-image-policy" style="color: inherit; text-decoration: none;">
+						<h3>Background Image Policy</h3>
+					</a>
+					<p>To use the background replacement filter with a dynamically loaded background image, <code>VideoFxProcessor</code> must be able to access the image. Include a <code>connect-src</code> directive with the domain that hosts the image.</p>
+					<a href="#example-csp-declaration" id="example-csp-declaration" style="color: inherit; text-decoration: none;">
+						<h2>Example CSP Declaration</h2>
+					</a>
+					<p>Here is an example csp declaration to permit the use of the <code>VideoFxProcessor</code>. Please note that the definitions in the <code>connect-src</code> tag are not <code>VideoFxProcessor</code> specfic but are related to video/audio in Chime meetings.</p>
+					<pre><code><span style="color: #000000">&lt;</span><span style="color: #001080">meta</span><span style="color: #000000"> </span><span style="color: #001080">http</span><span style="color: #000000">-</span><span style="color: #001080">equiv</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;Content-Security-Policy&quot;</span><span style="color: #000000"> </span>
+<span style="color: #000000">  </span><span style="color: #001080">content</span><span style="color: #000000">= </span><span style="color: #A31515">&quot;base-uri         &#039;self&#039;</span><span style="color: #CD3131">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">connect</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">      </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> https:</span><span style="color: #008000">//*.chime.aws wss://*.chime.aws https://*.amazonaws.com wss://*.chime.aws https://*.ingest.chime.aws;</span>
+<span style="color: #000000">  </span><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: </span><span style="color: #A31515">&#039;wasm-unsafe-eval&#039;</span><span style="color: #000000"> https:</span><span style="color: #008000">//*.sdkassets.chime.aws;</span>
+<span style="color: #000000">  </span><span style="color: #001080">script</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">-</span><span style="color: #001080">elem</span><span style="color: #000000">  </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets.chime.aws;</span>
+<span style="color: #000000">  </span><span style="color: #001080">worker</span><span style="color: #000000">-</span><span style="color: #001080">src</span><span style="color: #000000">       </span><span style="color: #A31515">&#039;self&#039;</span><span style="color: #000000"> blob: https:</span><span style="color: #008000">//*.sdkassets.chime.aws;</span>
+<span style="color: #A31515">&quot;</span><span style="color: #CD3131">&gt;</span>
+</code></pre>
+					<a href="#csp-errors" id="csp-errors" style="color: inherit; text-decoration: none;">
+						<h2>CSP Errors</h2>
+					</a>
+					<p>If any any of the required directives are omitted then the VideoFxProcessor will not be able to properly instantiate and the processor will be unsupported. Additionally, the following (or similar) errors will likely appear in the browser console:</p>
+					<pre><code><span style="color: #001080">Refused</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">connect</span><span style="color: #000000"> </span><span style="color: #001080">to</span>
+<span style="color: #A31515">&#039;https://static.sdkassets.chime.aws/ml_media_fx/otherassets/worker.js&#039;</span>
+<span style="color: #001080">because</span><span style="color: #000000"> </span><span style="color: #001080">it</span><span style="color: #000000"> </span><span style="color: #001080">violates</span><span style="color: #000000"> </span><span style="color: #001080">the</span><span style="color: #000000"> </span><span style="color: #001080">document</span><span style="color: #A31515">&#039;s content security policy</span><span style="color: #CD3131">.</span>
 </code></pre>
 					<a href="#adding-background-filters-to-your-application" id="adding-background-filters-to-your-application" style="color: inherit; text-decoration: none;">
 						<h1>Adding background filters to your application<a id="add-filters"></a></h1>
