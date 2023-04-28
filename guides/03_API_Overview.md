@@ -328,7 +328,8 @@ To get a video tile, call meetingSession.audioVideo.[getVideoTile(tileId)](https
 
 You can share any [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream), such as from a screen capture or media file, as the content share for an attendee. When a content share is started, another attendee with the attendee ID `<attendee-id>#content` joins the meeting. The content audio and video appears like a regular attendee. You can subscribe to its volume indicator to show it in the roster and bind its video tile to a video element the same as you would for a regular attendee.
 
-Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares. Content share does not count towards the max video tile limit. There may be up to two content shares irrespective of how many attendees are sharing their camera.
+Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares. Content share does not count towards the max video tile limit for both publishing and subscription. There may be up to two content shares irrespective of how many attendees are sharing their camera. Refer to [Amazon Chime SDK service quotas
+](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-limits) for details.
 
 ### 8a. Start and stop the content share
 

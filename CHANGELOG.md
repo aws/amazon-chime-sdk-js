@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Add fallback value for `DefaultBrowserBehavior.browser` when `detect()` can not parse browser UserAgent.
+- Add fallback value for `DefaultBrowserBehavior.browser` when `detect()` can not parse browser UserAgent.
+- Clarify quotas for content-sharing publishing and subscriptions in API Overview.
 
 ### Fixed
 
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+
 - Evaluate `SendingAudioFailureConnectionHealthPolicy` only after getting connected i.e. after `audioVideoDidStart()` is called. This avoids false positive triggers of `sendingAudioFailed` at the start of a meeting session.
 
 ### Fixed
