@@ -68,12 +68,11 @@ The following table lists the browsers and version that support background filte
 | --- | --- | 
 | Firefox | 76\+ | 
 | Chromium\-based browsers and environments, including Edge and Electron | 78\+ | 
+| Android Chrome | 110\+ | 
 | Safari on macOS | 16\.3\+ | 
 | Safari on iOS \(iPhone, iPad\) | 16\.x | 
 | Chrome on iOS | 110\.0\.0\.x\.x | 
 | Firefox on iOS \(iPhone iPad\) | 111\.0\+ | 
-
-Currently `VideoFxProcessor` does not support Android devices. For Android device support at this time, please use `BackgroundBlurVideoFrameProcessor` and `BackgroundReplacementVideoFrameProcessor`. You can find the guide at [https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html).
 
 # Using a Content Security Policy<a id="content-security"></a>
 Modern web applications use Content Security Policy to protect users from certain classes of attacks. An application that utilizes the `VideoFxProcessor` will need to include the following in policy directives to allow the Amazon Chime SDK access to resources it needs at runtime:

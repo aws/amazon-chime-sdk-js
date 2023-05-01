@@ -246,24 +246,6 @@ describe('VideoFxProcessor', () => {
       const isSupported = await VideoFxProcessor.isSupported(logger);
       assert.equal(isSupported, false);
     });
-
-    const setUserAgent = (userAgent: string): void => {
-      // @ts-ignore
-      navigator.userAgent = userAgent;
-    };
-
-    it('is not supported on android', async () => {
-      setUserAgent('Mozilla/5.0 (Android 10; Mobile; rv:68.0) Gecko/75.0 Firefox/75.0');
-      mockFxLib.stubSuccess();
-      // Env supports all
-      sandbox.stub(environmentSupport, 'supportsWorker').returns(true);
-      sandbox.stub(environmentSupport, 'supportsWASM').returns(true);
-      // Env has access to load all assets
-      mockEngineWorker.stubAllAssetsLoad();
-      // Check support is false
-      const isSupported = await VideoFxProcessor.isSupported(logger);
-      assert.equal(isSupported, false);
-    });
   });
 
   describe('asset loading', () => {
