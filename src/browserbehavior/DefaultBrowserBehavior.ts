@@ -248,15 +248,9 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   /**
    * Check if the current browser supports the [[VideoFxProcessor]].
-   * The videoFxProcessor is not supported on android.
    * @returns boolean representing if browser supports [[VideoFxProcessor]].
    */
   isVideoFxSupportedBrowser(): boolean {
-    // Not supported on android
-    if (this.isAndroid()) {
-      return false;
-    }
-
     // Not supported on safari 15 and on environments without canvas capture playback
     return this.supportsBackgroundFilter();
   }
