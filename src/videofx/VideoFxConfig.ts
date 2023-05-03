@@ -25,8 +25,8 @@ export interface VideoFxConfig {
    */
   backgroundReplacement: {
     isEnabled: boolean;
-    backgroundImageURL: string;
-    defaultColor: string;
+    backgroundImageURL: string | undefined;
+    defaultColor: string | undefined;
   };
 }
 
