@@ -4,6 +4,7 @@ const axios = require('axios');
 const Base64 = require('js-base64').Base64;
 const { AppPage, MeetingReadinessCheckerPage, MessagingSessionPage, TestAppPage } = require('../pages');
 
+const SAUCE_LAB_DOMAIN = 'us-west-1.saucelabs.com';
 const getPlatformName = capabilities => {
   const { browserName, version, platform } = capabilities;
   switch (platform) {
@@ -15,7 +16,7 @@ const getPlatformName = capabilities => {
     case 'WINDOWS':
       return 'Windows 10';
     case 'LINUX':
-      return 'Linux';
+      return 'Linux Beta';
     case 'IOS':
       return 'iOS';
     case 'ANDROID':
@@ -85,6 +86,7 @@ const getChromeOptions = capabilities => {
   }
   return chromeOptions;
 }
+  
 
 const fetchMediaPath = function(media, browserName) {
   let extension;
@@ -135,14 +137,6 @@ const getSauceLabsConfig = (capabilities) => {
       }),
       prerun : prerunScript
   }
-};
-
-const getSauceLabsDomain = (platform)  => {
-  const platformUpperCase = platform.toUpperCase();
-  if (platformUpperCase === 'LINUX') {
-    return 'us-east-1.saucelabs.com';
-  }
-  return 'us-west-1.saucelabs.com';
 };
 
 const getSafariIOSConfig = (capabilities) => {
@@ -197,7 +191,7 @@ class SaucelabsSession {
         cap = getSafariCapabilities(capabilities);
       }
     }
-    const domain = getSauceLabsDomain(capabilities.platform);
+    const domain = SAUCE_LAB_DOMAIN;
     const driver = await new Builder()
       .usingServer(getSauceLabsUrl(domain))
       .withCapabilities(cap)
