@@ -249,6 +249,8 @@ interface TranscriptionStreamParams {
   identifyLanguage?: boolean;
   languageOptions?: string;
   preferredLanguage?: string;
+  vocabularyNames?: string;
+  vocabularyFilterNames?: string;
 }
 
 export class DemoMeetingApp
@@ -1079,6 +1081,8 @@ export class DemoMeetingApp
       (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = languageIdentificationCb.checked;
       (document.getElementById('language-options').classList.toggle('hidden', !languageIdentificationCb.checked));
       (document.getElementById('preferred-language').classList.toggle('hidden', !languageIdentificationCb.checked));
+      (document.getElementById('vocabulary-names').classList.toggle('hidden', !languageIdentificationCb.checked));
+      (document.getElementById('vocabulary-filter-names').classList.toggle('hidden', !languageIdentificationCb.checked));
       (document.getElementById('transcribe-language') as HTMLInputElement).disabled = languageIdentificationCb.checked;
       (document.getElementById('content-identification-checkbox') as HTMLInputElement).disabled = languageIdentificationCb.checked;
       (document.getElementById('content-redaction-checkbox') as HTMLInputElement).disabled = languageIdentificationCb.checked;
@@ -1150,14 +1154,24 @@ export class DemoMeetingApp
 
         if (isChecked('identify-language-checkbox')) {
           transcriptionStreamParams.identifyLanguage = true;
-          let languageOptionsSelected = getSelectedValues('#language-options');
+          const languageOptionsSelected = getSelectedValues('#language-options');
           if (languageOptionsSelected !== '') {
             transcriptionStreamParams.languageOptions = languageOptionsSelected;
           }
 
-          let preferredLanguageSelected = (document.getElementById('preferred-language-selection') as HTMLInputElement).value;
+          const preferredLanguageSelected = (document.getElementById('preferred-language-selection') as HTMLInputElement).value;
           if (preferredLanguageSelected) {
             transcriptionStreamParams.preferredLanguage = preferredLanguageSelected;
+          }
+
+          const vocabularyNames = (document.getElementById('vocabulary-names-input-text') as HTMLInputElement).value;
+          if (vocabularyNames) {
+            transcriptionStreamParams.vocabularyNames = vocabularyNames;
+          }
+
+          const vocabularyFilterNames = (document.getElementById('vocabulary-filter-names-input-text') as HTMLInputElement).value;
+          if (vocabularyFilterNames) {
+            transcriptionStreamParams.vocabularyFilterNames = vocabularyFilterNames;
           }
         }
 
@@ -1212,6 +1226,11 @@ export class DemoMeetingApp
       let languageGroupSet = new Set();
       document.getElementById('language-options-error-message').innerHTML = '';
       const languageOptionsSelected = document.querySelectorAll('#language-options option:checked');
+
+      const languageOptionsPreviewSpan = document.getElementById("language-options-selected-options");
+      const languageString = languageOptionsSelected.length === 0 ? "None" : Array.from(languageOptionsSelected).map((node: HTMLSelectElement) => node.value).join(",").trim();
+      languageOptionsPreviewSpan.innerText = languageString;
+
       let preferredLanguageDropDown = document.getElementById('preferred-language-selection');
       if (preferredLanguageDropDown.hasChildNodes) {
         let options = (preferredLanguageDropDown as HTMLSelectElement).options;
@@ -1236,7 +1255,7 @@ export class DemoMeetingApp
         document.getElementById('preferred-language-selection').appendChild(option);
       }
 
-      if (languageOptionsSelected.length == 1) {
+      if (languageOptionsSelected.length < 2) {
         createErrorSpan('Please select at least 2 language options');
         return false;
       } else if (languageOptionsSelected.length >= 2) {
@@ -2258,7 +2277,8 @@ export class DemoMeetingApp
     const statusDiv = document.createElement('div') as HTMLDivElement;
     statusDiv.innerText = '(Live Transcription ' + status.type + ' at '
         + new Date(status.eventTimeMs).toLocaleTimeString() + ' in ' + status.transcriptionRegion
-        + ' with configuration: ' + status.transcriptionConfiguration + ')';
+        + ' with configuration: ' + status.transcriptionConfiguration
+        + (status.message ? ' due to "' + status.message + '".': '') + ')';
     this.transcriptContainerDiv.appendChild(statusDiv);
   };
 
