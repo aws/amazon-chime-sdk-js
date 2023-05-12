@@ -313,8 +313,6 @@ function serve(host = '127.0.0.1:8080') {
         if (requestUrl.query.transcriptionStreamParams) {
           transcriptionStreamParams = JSON.parse(requestUrl.query.transcriptionStreamParams);
         }
-        const contentIdentification = requestUrl.query.contentIdentification;
-        const piiEntityTypes = requestUrl.query.piiEntityTypes;
         if (requestUrl.query.engine === 'transcribe') {
           transcriptionConfiguration = {
             EngineTranscribeSettings: {}
@@ -351,6 +349,12 @@ function serve(host = '127.0.0.1:8080') {
           }
           if (transcriptionStreamParams.hasOwnProperty('preferredLanguage')) {
             transcriptionConfiguration.EngineTranscribeSettings.PreferredLanguage = transcriptionStreamParams.preferredLanguage;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('vocabularyNames')) {
+            transcriptionConfiguration.EngineTranscribeSettings.VocabularyNames = transcriptionStreamParams.vocabularyNames;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('vocabularyFilterNames')) {
+            transcriptionConfiguration.EngineTranscribeSettings.VocabularyFilterNames = transcriptionStreamParams.vocabularyFilterNames;
           }
         } else if (requestUrl.query.engine === 'transcribe_medical') {
           transcriptionConfiguration = {

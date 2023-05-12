@@ -271,6 +271,12 @@ exports.start_transcription = async (event, context) => {
     if (transcriptionStreamParams.hasOwnProperty('preferredLanguage')) {
       transcriptionConfiguration.EngineTranscribeSettings.PreferredLanguage = transcriptionStreamParams.preferredLanguage;
     }
+    if (transcriptionStreamParams.hasOwnProperty('vocabularyNames')) {
+      transcriptionConfiguration.EngineTranscribeSettings.VocabularyNames = transcriptionStreamParams.vocabularyNames;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('vocabularyFilterNames')) {
+      transcriptionConfiguration.EngineTranscribeSettings.VocabularyFilterNames = transcriptionStreamParams.vocabularyFilterNames;
+    }
   } else if (event.queryStringParameters.engine === 'transcribe_medical') {
     transcriptionConfiguration = {
       EngineTranscribeMedicalSettings: {
