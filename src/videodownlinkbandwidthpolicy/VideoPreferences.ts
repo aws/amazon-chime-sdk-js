@@ -1,9 +1,50 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import SignalingClientVideoSubscriptionConfiguration from '../signalingclient/SignalingClientVideoSubscriptionConfiguration';
 import type { Eq, PartialOrd } from '../utils/Types';
 import VideoPreference from './VideoPreference';
 
+export function convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
+  context: AudioVideoControllerState,
+  receiveGroupIds: number[],
+  preferences: VideoPreferences
+): SignalingClientVideoSubscriptionConfiguration[] {
+  if (context.transceiverController.getMidForGroupId === undefined || preferences === undefined) {
+    return [];
+  }
+
+  const configurations = new Array<SignalingClientVideoSubscriptionConfiguration>();
+  const attendeeIdToMid = new Map<string, string>();
+  const attendeeIdToGroupId = new Map<string, number>();
+  for (const groupId of receiveGroupIds) {
+    // The local description will have been set by the time this task is running, so all
+    // of the transceivers should have `mid` set by now (see comment above `getMidForStreamId`)
+    const mid = context.transceiverController.getMidForGroupId(groupId);
+    if (mid === undefined) {
+      continue;
+    }
+    const attendeeId = context.videoStreamIndex.attendeeIdForGroupId(groupId);
+    attendeeIdToMid.set(attendeeId, mid);
+    attendeeIdToGroupId.set(attendeeId, groupId);
+  }
+  for (const preference of preferences) {
+    const configuration = new SignalingClientVideoSubscriptionConfiguration();
+    const mid = attendeeIdToMid.get(preference.attendeeId);
+    if (mid === undefined) {
+      continue;
+    }
+    configuration.mid = mid;
+    configuration.attendeeId = preference.attendeeId;
+    configuration.groupId = attendeeIdToGroupId.get(preference.attendeeId);
+    // The signaling protocol expects 'higher' values for 'higher' priorities
+    configuration.priority = Number.MAX_SAFE_INTEGER - preference.priority;
+    configuration.targetBitrateKbps = preference.targetSizeToBitrateKbps(preference.targetSize);
+    configurations.push(configuration);
+  }
+  return configurations;
+}
 class ObjectSet<T extends Eq & PartialOrd> implements Iterable<T> {
   constructor(private items: T[] = []) {}
 

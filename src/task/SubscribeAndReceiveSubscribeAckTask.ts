@@ -6,12 +6,11 @@ import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import SDP from '../sdp/SDP';
 import ZLIBTextCompressor from '../sdp/ZLIBTextCompressor';
-import ServerSideNetworkAdaption from '../signalingclient/ServerSideNetworkAdaption';
+import { serverSideNetworkAdaptionIsNoneOrDefault } from '../signalingclient/ServerSideNetworkAdaption';
 import SignalingClient from '../signalingclient/SignalingClient';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientSubscribe from '../signalingclient/SignalingClientSubscribe';
-import SignalingClientVideoSubscriptionConfiguration from '../signalingclient/SignalingClientVideoSubscriptionConfiguration';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
   SdkSignalFrame,
@@ -19,7 +18,7 @@ import {
   SdkSubscribeAckFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
 import TaskCanceler from '../taskcanceler/TaskCanceler';
-import VideoPreferences from '../videodownlinkbandwidthpolicy/VideoPreferences';
+import { convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration } from '../videodownlinkbandwidthpolicy/VideoPreferences';
 import BaseTask from './BaseTask';
 
 /**
@@ -112,13 +111,17 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
     if (
       this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption !== undefined &&
-      this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption() !==
-        ServerSideNetworkAdaption.None &&
+      !serverSideNetworkAdaptionIsNoneOrDefault(
+        this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption()
+      ) &&
       this.context.videoDownlinkBandwidthPolicy.getVideoPreferences !== undefined
     ) {
       // Set initial configuration for the receive streams indicated by the rest of the subscribe
-      subscribe.videoSubscriptionConfiguration = this.convertVideoPreferencesToVideoSubscriptionConfiguration(
-        videoSubscriptions,
+      subscribe.videoSubscriptionConfiguration = convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
+        this.context,
+        videoSubscriptions.map((streamId: number) => {
+          return streamId === 0 ? 0 : this.context.videoStreamIndex.groupIdForStreamId(streamId);
+        }),
         this.context.videoDownlinkBandwidthPolicy.getVideoPreferences()
       );
     }
@@ -207,58 +210,6 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       )} (may be same))}`
     );
     return newSubscriptions;
-  }
-
-  private convertVideoPreferencesToVideoSubscriptionConfiguration(
-    receiveStreamIds: number[],
-    preferences: VideoPreferences
-  ): SignalingClientVideoSubscriptionConfiguration[] {
-    if (
-      this.context.transceiverController.getMidForStreamId === undefined ||
-      preferences === undefined
-    ) {
-      return [];
-    }
-
-    const configurations = new Array<SignalingClientVideoSubscriptionConfiguration>();
-    const attendeeIdToMid = new Map<string, string>();
-    const attendeeIdToGroupId = new Map<string, number>();
-    for (const streamId of receiveStreamIds) {
-      // The local description will have been set by the time this task is running, so all
-      // of the transceivers should have `mid` set by now (see comment above `getMidForStreamId`)
-      const mid = this.context.transceiverController.getMidForStreamId(streamId);
-      if (mid === undefined) {
-        // Likely imposible to hit the next `if` given use of `fixUpSubscriptionOrder`
-        /* istanbul ignore if */
-        if (streamId !== 0) {
-          // Send section or inactive section
-          this.context.logger.warn(`Could not find MID for stream ID: ${streamId}`);
-        }
-        continue;
-      }
-      const attendeeId = this.context.videoStreamIndex.attendeeIdForStreamId(streamId);
-      attendeeIdToMid.set(attendeeId, mid);
-      attendeeIdToGroupId.set(
-        attendeeId,
-        this.context.videoStreamIndex.groupIdForStreamId(streamId)
-      );
-    }
-    for (const preference of preferences) {
-      const configuration = new SignalingClientVideoSubscriptionConfiguration();
-      const mid = attendeeIdToMid.get(preference.attendeeId);
-      if (mid === undefined) {
-        this.context.logger.warn(`Could not find MID for attendee ID: ${preference.attendeeId}`);
-        continue;
-      }
-      configuration.mid = mid;
-      configuration.attendeeId = preference.attendeeId;
-      configuration.groupId = attendeeIdToGroupId.get(preference.attendeeId);
-      // The signaling protocol expects 'higher' values for 'higher' priorities
-      configuration.priority = Number.MAX_SAFE_INTEGER - preference.priority;
-      configuration.targetBitrateKbps = preference.targetSizeToBitrateKbps(preference.targetSize);
-      configurations.push(configuration);
-    }
-    return configurations;
   }
 
   private receiveSubscribeAck(): Promise<SdkSubscribeAckFrame> {

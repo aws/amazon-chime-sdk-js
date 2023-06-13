@@ -149,6 +149,8 @@ describe('MonitorTask', () => {
       return false;
     }
     stop(): void {}
+
+    overrideObservableMetric(): void {}
   }
 
   class TestConnectionMonitor implements ConnectionMonitor {
@@ -174,7 +176,6 @@ describe('MonitorTask', () => {
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
-    context.statsCollector = new StatsCollector(context.audioVideoController, logger);
     context.reconnectController = new DefaultReconnectController(
       RECONNECT_TIMEOUT_MS,
       new FullJitterBackoff(
@@ -360,30 +361,6 @@ describe('MonitorTask', () => {
   });
 
   describe('metricsDidReceive', () => {
-    it('can only handle ClientMetricReport with StreamMetricReport', () => {
-      context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
-      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
-
-      class TestClientMetricReport extends ClientMetricReport {
-        getObservableMetrics(): { [id: string]: number } {
-          return;
-        }
-
-        getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } } {
-          return;
-        }
-      }
-      task.metricsDidReceive(undefined);
-      const clientMetricReport = new TestClientMetricReport(logger);
-      clientMetricReport.streamMetricReports = undefined;
-      task.metricsDidReceive(clientMetricReport);
-
-      const defaultClientMetricReport = new ClientMetricReport(logger);
-      const ssrc = 6789;
-      defaultClientMetricReport.streamMetricReports[ssrc] = new StreamMetricReport();
-      task.metricsDidReceive(defaultClientMetricReport);
-    });
-
     it('no-op if there is no SdkBitrateFrame ever received', () => {
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
@@ -425,37 +402,6 @@ describe('MonitorTask', () => {
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);
-    });
-
-    it('handles clientMetricReport and logs message if receiving video falls short', () => {
-      const spy = sinon.spy(logger, 'info');
-      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
-        attendeeIdForStreamId(streamId: number): string {
-          return 'attendeeId' + streamId.toString();
-        }
-      }
-      context.videoStreamIndex = new TestVideoStreamIndex(logger);
-      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
-      const metric = 'bytesReceived';
-      const streamMetricReport = new StreamMetricReport();
-      streamMetricReport.previousMetrics[metric] = 30 * 1000;
-      streamMetricReport.currentMetrics[metric] = 40 * 1000;
-      streamMetricReport.streamId = 1;
-      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
-      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
-
-      const streamMetricReportAudio = new StreamMetricReport();
-      streamMetricReportAudio.previousMetrics[metric] = 10 * 1000;
-      streamMetricReportAudio.currentMetrics[metric] = 40 * 1000;
-      streamMetricReportAudio.streamId = 0;
-      streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
-      streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
-
-      const clientMetricReport = new ClientMetricReport(logger);
-      clientMetricReport.streamMetricReports[1] = streamMetricReport;
-      clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
-      task.metricsDidReceive(clientMetricReport);
-      expect(spy.calledOnce).to.be.true;
     });
 
     it('handles clientMetricReport in no attendee id case', () => {
@@ -1111,10 +1057,27 @@ describe('MonitorTask', () => {
 
   describe('handleSignalingClientEvent', () => {
     it('handles SdkBitrateFrame', () => {
+      let called = false;
+      class TestStatsCollector extends StatsCollector {
+        constructor(audioVideoController: AudioVideoController, logger: Logger) {
+          super(audioVideoController, logger);
+        }
+        start(): boolean {
+          return false;
+        }
+        stop(): void {}
+        overrideObservableMetric(name: string, value: number): void {
+          called = true;
+          expect(name).to.eq('availableIncomingBitrate');
+          expect(value).to.eq(100000);
+        }
+      }
+
       const avgBitrateTestValue = 35000 * 1000;
       const streamIdTestValue = 1;
       context.videosToReceive = new DefaultVideoStreamIdSet([streamIdTestValue]);
       context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
+      context.statsCollector = new TestStatsCollector(context.audioVideoController, context.logger);
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();
       message.bitrates = SdkBitrateFrame.create();
@@ -1122,6 +1085,7 @@ describe('MonitorTask', () => {
       bitrate.sourceStreamId = streamIdTestValue;
       bitrate.avgBitrateBps = avgBitrateTestValue;
       message.bitrates.bitrates.push(bitrate);
+      message.bitrates.serverAvailableOutgoingBitrate = 100;
       task.handleSignalingClientEvent(
         new SignalingClientEvent(
           new DefaultSignalingClient(webSocketAdapter, logger),
@@ -1129,6 +1093,7 @@ describe('MonitorTask', () => {
           message
         )
       );
+      expect(called).to.be.true;
     });
 
     it('handles SdkBitrate for no video subscription case', () => {

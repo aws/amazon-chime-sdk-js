@@ -288,6 +288,16 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         }
       }
 
+      class TestTransceiverController extends DefaultTransceiverController {
+        getMidForStreamId(streamId: number): string | undefined {
+          return streamId.toString();
+        }
+
+        getMidForGroupId(groupId: number): string {
+          return groupId.toString();
+        }
+      }
+
       const sources: SdkStreamDescriptor[] = [];
       sources.push(
         new SdkStreamDescriptor({
@@ -310,6 +320,10 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       const index = new DefaultVideoStreamIndex(context.logger);
       index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
       context.videoStreamIndex = index;
+      context.transceiverController = new TestTransceiverController(
+        context.logger,
+        new DefaultBrowserBehavior()
+      );
 
       const description: RTCSessionDescriptionInit = {
         type: 'offer',
@@ -331,14 +345,14 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       const first = new SignalingClientVideoSubscriptionConfiguration();
       first.attendeeId = 'attendee-1';
       first.groupId = 2;
-      first.mid = '1';
+      first.mid = '2';
       first.priority = Number.MAX_SAFE_INTEGER - 1;
-      first.targetBitrateKbps = 1200;
+      first.targetBitrateKbps = 1400;
       expected.push(first);
       const second = new SignalingClientVideoSubscriptionConfiguration();
       second.attendeeId = 'attendee-2';
       second.groupId = 3;
-      second.mid = '2';
+      second.mid = '3';
       second.priority = Number.MAX_SAFE_INTEGER - 2;
       second.targetBitrateKbps = 300;
       expected.push(second);

@@ -21,6 +21,8 @@ export default class ClientMetricReport {
   previousTimestampMs: number = 0;
   currentSsrcs: { [id: number]: number } = {};
 
+  private overriddenObservableMetrics: Map<string, number> = new Map();
+
   constructor(
     private logger: Logger,
     private videoStreamIndex?: VideoStreamIndex,
@@ -558,6 +560,10 @@ export default class ClientMetricReport {
    * Returns the value of the specific metric in observableMetricSpec.
    */
   getObservableMetricValue(metricName: string): number {
+    if (this.overriddenObservableMetrics.has(metricName)) {
+      return this.overriddenObservableMetrics.get(metricName);
+    }
+
     const observableMetricSpec = this.observableMetricSpec[metricName];
     const metricMap = this.getMetricMap(observableMetricSpec.media, observableMetricSpec.dir);
     const metricSpec = metricMap[observableMetricSpec.source];
@@ -633,9 +639,9 @@ export default class ClientMetricReport {
             }
           }
         }
-        const streamId = this.streamMetricReports[ssrc].streamId;
-        const attendeeId = streamId
-          ? this.videoStreamIndex.attendeeIdForStreamId(streamId)
+        const groupId = this.streamMetricReports[ssrc].groupId;
+        const attendeeId = groupId
+          ? this.videoStreamIndex.attendeeIdForGroupId(groupId)
           : this.selfAttendeeId;
         videoStreamMetrics[attendeeId] = videoStreamMetrics[attendeeId]
           ? videoStreamMetrics[attendeeId]
@@ -663,6 +669,7 @@ export default class ClientMetricReport {
     cloned.rtcStatsReport = this.rtcStatsReport;
     cloned.currentTimestampMs = this.currentTimestampMs;
     cloned.previousTimestampMs = this.previousTimestampMs;
+    cloned.overriddenObservableMetrics = this.overriddenObservableMetrics;
     return cloned;
   }
 
@@ -690,5 +697,12 @@ export default class ClientMetricReport {
         delete this.streamMetricReports[ssrc];
       }
     }
+  }
+
+  /**
+   * Overrides a specific observable metric value (e.g. with one that didn't come from the WebRTC report)
+   */
+  overrideObservableMetric(name: string, value: number): void {
+    this.overriddenObservableMetrics.set(name, value);
   }
 }

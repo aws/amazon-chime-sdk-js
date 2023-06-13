@@ -90,6 +90,11 @@ export default interface VideoStreamIndex {
   attendeeIdForStreamId(streamId: number): string;
 
   /**
+   * Returns attendee id for a group id
+   */
+  attendeeIdForGroupId(groupId: number): string;
+
+  /**
    * Returns group id for a stream id
    */
   groupIdForStreamId(streamId: number): number;
@@ -114,6 +119,11 @@ export default interface VideoStreamIndex {
    * locally (i.e. without the need for a subscribe ACK message)
    */
   overrideStreamIdMappings?(previous: number, current: number): void;
+
+  /**
+   * Returns a group id for an SSRC
+   */
+  groupIdForSSRC(ssrcId: number): number;
 
   /**
    * Returns the set of streams which are paused at source.

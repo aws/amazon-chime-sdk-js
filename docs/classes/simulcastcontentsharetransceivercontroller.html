@@ -95,6 +95,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastcontentsharetransceivercontroller.html#_localcameratransceiver" class="tsd-kind-icon">_local<wbr>Camera<wbr>Transceiver</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastcontentsharetransceivercontroller.html#browserbehavior" class="tsd-kind-icon">browser<wbr>Behavior</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastcontentsharetransceivercontroller.html#defaultmediastream" class="tsd-kind-icon">default<wbr>Media<wbr>Stream</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastcontentsharetransceivercontroller.html#groupidtotransceiver" class="tsd-kind-icon">group<wbr>IdTo<wbr>Transceiver</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastcontentsharetransceivercontroller.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastcontentsharetransceivercontroller.html#peer" class="tsd-kind-icon">peer</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastcontentsharetransceivercontroller.html#streamidtotransceiver" class="tsd-kind-icon">stream<wbr>IdTo<wbr>Transceiver</a></li>
@@ -111,6 +112,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastcontentsharetransceivercontroller.html#copyencodingparams" class="tsd-kind-icon">copy<wbr>Encoding<wbr>Params</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="simulcastcontentsharetransceivercontroller.html#getmidforgroupid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Group<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="simulcastcontentsharetransceivercontroller.html#getmidforstreamid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Stream<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="simulcastcontentsharetransceivercontroller.html#hasvideoinput" class="tsd-kind-icon">has<wbr>Video<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="simulcastcontentsharetransceivercontroller.html#localaudiotransceiver" class="tsd-kind-icon">local<wbr>Audio<wbr>Transceiver</a></li>
@@ -204,6 +206,17 @@
 						<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#defaultmediastream">defaultMediaStream</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L14">src/transceivercontroller/DefaultTransceiverController.ts:14</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="groupidtotransceiver" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> group<wbr>IdTo<wbr>Transceiver</h3>
+					<div class="tsd-signature tsd-kind-icon">group<wbr>IdTo<wbr>Transceiver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RTCRtpTransceiver</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#groupidtotransceiver">groupIdToTransceiver</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L17">src/transceivercontroller/DefaultTransceiverController.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -345,6 +358,35 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="getmidforgroupid" class="tsd-anchor"></a>
+					<h3>get<wbr>Mid<wbr>For<wbr>Group<wbr>Id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Group<wbr>Id<span class="tsd-signature-symbol">(</span>groupId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#getmidforgroupid">getMidForGroupId</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L362">src/transceivercontroller/DefaultTransceiverController.ts:362</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get the associated MID for a given group ID, set during <code>updateVideoTransceivers</code></p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>groupId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="getmidforstreamid" class="tsd-anchor"></a>
 					<h3>get<wbr>Mid<wbr>For<wbr>Stream<wbr>Id</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
@@ -355,12 +397,12 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#getmidforstreamid">getMidForStreamId</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L343">src/transceivercontroller/DefaultTransceiverController.ts:343</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L348">src/transceivercontroller/DefaultTransceiverController.ts:348</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Get the associated MID for a given stream ID, either set via <code>updateVideoTranceivers</code>
+									<p>Get the associated MID for a given stream ID, either set via <code>updateVideoTransceivers</code>
 									or overriden through <code>setStreamIdForMid</code>.</p>
 								</div>
 								<p>Note: According to <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/mid">https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/mid</a>
@@ -390,7 +432,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#hasvideoinput">hasVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L104">src/transceivercontroller/DefaultTransceiverController.ts:104</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L105">src/transceivercontroller/DefaultTransceiverController.ts:105</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -413,7 +455,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#localaudiotransceiver">localAudioTransceiver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L62">src/transceivercontroller/DefaultTransceiverController.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L63">src/transceivercontroller/DefaultTransceiverController.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -436,7 +478,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#localvideotransceiver">localVideoTransceiver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L66">src/transceivercontroller/DefaultTransceiverController.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L67">src/transceivercontroller/DefaultTransceiverController.ts:67</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -477,7 +519,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#replaceaudiotrack">replaceAudioTrack</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L145">src/transceivercontroller/DefaultTransceiverController.ts:145</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L146">src/transceivercontroller/DefaultTransceiverController.ts:146</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -506,7 +548,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#reset">reset</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L92">src/transceivercontroller/DefaultTransceiverController.ts:92</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L93">src/transceivercontroller/DefaultTransceiverController.ts:93</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -529,7 +571,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#setaudioinput">setAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L154">src/transceivercontroller/DefaultTransceiverController.ts:154</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L155">src/transceivercontroller/DefaultTransceiverController.ts:155</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -595,7 +637,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#setpeer">setPeer</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L88">src/transceivercontroller/DefaultTransceiverController.ts:88</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L89">src/transceivercontroller/DefaultTransceiverController.ts:89</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -624,7 +666,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#setstreamidformid">setStreamIdForMid</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L347">src/transceivercontroller/DefaultTransceiverController.ts:347</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L352">src/transceivercontroller/DefaultTransceiverController.ts:352</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -656,7 +698,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#setvideoinput">setVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L159">src/transceivercontroller/DefaultTransceiverController.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L160">src/transceivercontroller/DefaultTransceiverController.ts:160</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -737,7 +779,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#trackisvideoinput">trackIsVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L111">src/transceivercontroller/DefaultTransceiverController.ts:111</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L112">src/transceivercontroller/DefaultTransceiverController.ts:112</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -766,7 +808,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#transceiverisvideo">transceiverIsVideo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L357">src/transceivercontroller/DefaultTransceiverController.ts:357</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L366">src/transceivercontroller/DefaultTransceiverController.ts:366</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -790,7 +832,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#updatevideotransceivers">updateVideoTransceivers</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L164">src/transceivercontroller/DefaultTransceiverController.ts:164</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L165">src/transceivercontroller/DefaultTransceiverController.ts:165</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -822,7 +864,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="simulcasttransceivercontroller.html">SimulcastTransceiverController</a>.<a href="simulcasttransceivercontroller.html#usetransceivers">useTransceivers</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L100">src/transceivercontroller/DefaultTransceiverController.ts:100</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/DefaultTransceiverController.ts#L101">src/transceivercontroller/DefaultTransceiverController.ts:101</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -867,6 +909,9 @@
 								<a href="simulcastcontentsharetransceivercontroller.html#defaultmediastream" class="tsd-kind-icon">default<wbr>Media<wbr>Stream</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="simulcastcontentsharetransceivercontroller.html#groupidtotransceiver" class="tsd-kind-icon">group<wbr>IdTo<wbr>Transceiver</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 								<a href="simulcastcontentsharetransceivercontroller.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
@@ -898,6 +943,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 								<a href="simulcastcontentsharetransceivercontroller.html#copyencodingparams" class="tsd-kind-icon">copy<wbr>Encoding<wbr>Params</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="simulcastcontentsharetransceivercontroller.html#getmidforgroupid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Group<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="simulcastcontentsharetransceivercontroller.html#getmidforstreamid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Stream<wbr>Id</a>

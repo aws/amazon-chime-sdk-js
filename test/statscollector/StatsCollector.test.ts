@@ -305,6 +305,20 @@ describe('StatsCollector', () => {
         statsCollector = new StatsCollector(audioVideoController, logger, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
       });
+
+      it('can have metric overriden', done => {
+        class TestObserver implements AudioVideoObserver {
+          metricsDidReceive(clientMetricReport: ClientMetricReport): void {
+            statsCollector.stop();
+            expect(clientMetricReport.getObservableMetricValue('test')).to.eq(10);
+            done();
+          }
+        }
+        audioVideoController.addObserver(new TestObserver());
+        statsCollector = new StatsCollector(audioVideoController, logger, interval);
+        statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+        statsCollector.overrideObservableMetric('test', 10);
+      });
     });
   });
 

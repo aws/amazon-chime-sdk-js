@@ -213,6 +213,7 @@ import RealtimeState from './realtimecontroller/RealtimeState';
 import RealtimeSubscribeToAttendeeIdPresenceCallback from './realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback';
 import RealtimeVolumeIndicator from './realtimecontroller/RealtimeVolumeIndicator';
 import ReceiveAudioInputTask from './task/ReceiveAudioInputTask';
+import ReceiveRemoteVideoPauseResumeTask from './task/ReceiveRemoteVideoPauseResumeTask';
 import ReceiveTURNCredentialsTask from './task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
@@ -554,6 +555,7 @@ export {
   RealtimeSubscribeToAttendeeIdPresenceCallback,
   RealtimeVolumeIndicator,
   ReceiveAudioInputTask,
+  ReceiveRemoteVideoPauseResumeTask,
   ReceiveTURNCredentialsTask,
   ReceiveVideoInputTask,
   ReceiveVideoStreamIndexTask,
