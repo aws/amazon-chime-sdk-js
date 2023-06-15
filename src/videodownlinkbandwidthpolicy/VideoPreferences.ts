@@ -11,7 +11,11 @@ export function convertVideoPreferencesToSignalingClientVideoSubscriptionConfigu
   receiveGroupIds: number[],
   preferences: VideoPreferences
 ): SignalingClientVideoSubscriptionConfiguration[] {
-  if (context.transceiverController.getMidForGroupId === undefined || preferences === undefined) {
+  if (
+    context.transceiverController.getMidForGroupId === undefined ||
+    context.videoStreamIndex.attendeeIdForGroupId === undefined ||
+    preferences === undefined
+  ) {
     return [];
   }
 

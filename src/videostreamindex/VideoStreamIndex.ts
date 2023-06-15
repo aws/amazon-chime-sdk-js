@@ -92,7 +92,7 @@ export default interface VideoStreamIndex {
   /**
    * Returns attendee id for a group id
    */
-  attendeeIdForGroupId(groupId: number): string;
+  attendeeIdForGroupId?(groupId: number): string;
 
   /**
    * Returns group id for a stream id
@@ -123,7 +123,7 @@ export default interface VideoStreamIndex {
   /**
    * Returns a group id for an SSRC
    */
-  groupIdForSSRC(ssrcId: number): number;
+  groupIdForSSRC?(ssrcId: number): number;
 
   /**
    * Returns the set of streams which are paused at source.

@@ -640,9 +640,25 @@ export default class ClientMetricReport {
           }
         }
         const groupId = this.streamMetricReports[ssrc].groupId;
-        const attendeeId = groupId
-          ? this.videoStreamIndex.attendeeIdForGroupId(groupId)
-          : this.selfAttendeeId;
+        const streamId = this.streamMetricReports[ssrc].streamId;
+        let attendeeId = '';
+        /* istanbul ignore else */
+        if (this.videoStreamIndex.attendeeIdForGroupId !== undefined) {
+          attendeeId = groupId
+            ? this.videoStreamIndex.attendeeIdForGroupId(groupId)
+            : this.selfAttendeeId;
+        } else {
+          // This usage may be inaccurate if server side network adaptation (SSNA) is enabled,
+          // and a simulcast sender has dropped their originally highest stream.
+          //
+          // We are ok with this given the unlikeliness of someone reimplmententing the entire
+          // audio video controller (no way otherwise to inject your own index impl.), implementing
+          // both simulcast and SSNA, but reusing this class :) .
+          attendeeId = streamId
+            ? this.videoStreamIndex.attendeeIdForStreamId(streamId)
+            : this.selfAttendeeId;
+        }
+
         videoStreamMetrics[attendeeId] = videoStreamMetrics[attendeeId]
           ? videoStreamMetrics[attendeeId]
           : {};

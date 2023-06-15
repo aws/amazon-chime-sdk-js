@@ -57,7 +57,8 @@ export default class ReceiveRemoteVideoPauseResume
     if (
       !pauseResumeFrame ||
       this.context.videoTileController.getVideoTileForAttendeeId === undefined ||
-      this.context.videoDownlinkBandwidthPolicy.forEachObserver === undefined
+      this.context.videoDownlinkBandwidthPolicy.forEachObserver === undefined ||
+      this.context.videoStreamIndex.attendeeIdForGroupId === undefined
     ) {
       return;
     }
