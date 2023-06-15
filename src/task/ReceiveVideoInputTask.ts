@@ -74,6 +74,28 @@ export default class ReceiveVideoInputTask extends BaseTask {
         DefaultModality.MODALITY_CONTENT
       );
       const trackSettings = videoTracks[0].getSettings();
+
+      // apply video track constraints for content share
+      if (isContentAttendee) {
+        const constraint = {
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 30 },
+        };
+        this.context.logger.info(
+          `Video track (content = ${isContentAttendee}) with constraint: ${JSON.stringify(
+            constraint
+          )}, trackSettings: ${JSON.stringify(trackSettings)}`
+        );
+        try {
+          await videoTracks[0].applyConstraints(constraint);
+        } catch (error) {
+          this.context.logger.info(
+            'Could not apply constraint for video track (content = ${isContentAttendee})'
+          );
+        }
+      }
+
       // For video, we currently enforce 720p for simulcast. This logic should be removed in the future.
       if (this.context.enableSimulcast && !isContentAttendee) {
         const constraint = this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();

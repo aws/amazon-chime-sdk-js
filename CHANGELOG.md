@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Set max bitrate to 1500kbps
+* Add resolution constraint to content share (1080p@30fps)
+
 ### Removed
 
 ### Changed
