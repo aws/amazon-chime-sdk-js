@@ -408,6 +408,8 @@
             <option value="ja-JP">Japanese (ja-JP)</option>
             <option value="ko-KR">Korean (ko-KR)</option>
             <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
+            <option value="hi-IN">Hindi, Indian (hi-IN)</option>
+            <option value="th-TH">Thai (th-TH)</option>
           </select>
         </div>
         <div id="engine-transcribe-medical-language" class="hidden">
@@ -496,7 +498,14 @@
             <optgroup id="group9" label="Korean">
               <option value="ko-KR">Korean (ko-KR)</option>
             </optgroup>
+            <optgroup id="group10" label="Hindi">
+              <option value="hi-IN">Hindi, Indian (hi-IN)</option>
+            </optgroup>
+            <optgroup id="group11" label="Thai">
+              <option value="th-TH">Thai (th-TH)</option>
+            </optgroup>
           </select>
+          <div id="language-options-selected-options-container"><i><small>Selected: <span id="language-options-selected-options">None</span></small></i></div>
           <div id="language-options-error-message"></div>
         </div>
         <div id="preferred-language" class="hidden" style="margin-top: 10px">
@@ -507,6 +516,15 @@
           <select id="preferred-language-selection" class="form-select" style="width:100%">
             <option value="" selected> -- Optional -- </option>
           </select>
+
+        </div>
+        <div id="vocabulary-names" class="hidden" style="margin-top: 10px">
+          <small>Vocabulary Names</small>
+          <input type="text" id="vocabulary-names-input-text" style="text-align: left; width:100%">
+        </div>
+        <div id="vocabulary-filter-names" class="hidden" style="margin-top: 10px">
+          <small>Vocabulary Filter Names</small>
+          <input type="text" id="vocabulary-filter-names-input-text" style="text-align: left; width:100%">
         </div>
       </div>
       <div id="engine-transcribe-custom-language-model">
