@@ -48,7 +48,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private numberOfPublishedVideoSources: number | undefined = 0;
   private optimalParameters: DefaultVideoAndEncodeParameter;
   private parametersInEffect: DefaultVideoAndEncodeParameter;
-  private idealMaxBandwidthKbps = 1400;
+  private idealMaxBandwidthKbps = 1500;
   private hasBandwidthPriority: boolean = false;
   private encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
   private transceiverController: TransceiverController;

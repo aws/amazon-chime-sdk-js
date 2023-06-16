@@ -832,7 +832,7 @@ export class DemoMeetingApp
           break;
         case '720p':
           this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
-          this.audioVideo.setVideoMaxBandwidthKbps(1400);
+          this.audioVideo.setVideoMaxBandwidthKbps(1500);
           break;
       }
       try {
