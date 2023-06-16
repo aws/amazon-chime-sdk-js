@@ -7,6 +7,7 @@ import { expect } from 'chai';
 import {
   AudioVideoControllerState,
   DefaultTransceiverController,
+  DefaultVideoStreamIndex,
   MutableVideoPreferences as MutableVideoPreferencesFromSrc,
   TargetDisplaySize,
 } from '../../src';
@@ -233,6 +234,7 @@ describe('VideoPreferences', () => {
     it('will return empty list if preferences is undefined', () => {
       const context = new AudioVideoControllerState();
       context.transceiverController = new DefaultTransceiverController(undefined, undefined);
+      context.videoStreamIndex = new DefaultVideoStreamIndex(undefined);
       expect(
         convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
           context,
