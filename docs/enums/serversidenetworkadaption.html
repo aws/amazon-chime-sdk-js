@@ -80,6 +80,7 @@
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#bandwidthprobing" class="tsd-kind-icon">Bandwidth<wbr>Probing</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#bandwidthprobingandremotevideoqualityadaption" class="tsd-kind-icon">Bandwidth<wbr>Probing<wbr>And<wbr>Remote<wbr>Video<wbr>Quality<wbr>Adaption</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#default" class="tsd-kind-icon">Default</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversidenetworkadaption.html#none" class="tsd-kind-icon">None</a></li>
 							</ul>
@@ -95,24 +96,47 @@
 					<div class="tsd-signature tsd-kind-icon">Bandwidth<wbr>Probing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L36">src/signalingclient/ServerSideNetworkAdaption.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L39">src/signalingclient/ServerSideNetworkAdaption.ts:39</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Disable the existing client side bandwidth probing methods of waiting and unpausing,
-								or waiting and upgrading simulcast streams (which can be large increases of bitrates
-								and may lead to periodic oversubscription over network capacity
-								and resulting video freezes) and replace it with more gradual server
-								side probing of increasing amounts padding packets until the
-								bandwidth estimate safely reaches the value needed to resume the
-							next video source, or upgrade to the next higher simulcast stream.</p>
+							<p>Note: This value is deprecated and will be mapped to &#39;BandwidthProbingAndRemoteVideoQualityAdaption&#39;
+							in a later release.</p>
 						</div>
+						<p>Disable the existing client side bandwidth probing methods of waiting and unpausing,
+							or waiting and upgrading simulcast streams (which can be large increases of bitrates
+							and may lead to periodic oversubscription over network capacity
+							and resulting video freezes) and replace it with more gradual server
+							side probing of increasing amounts padding packets until the
+							bandwidth estimate safely reaches the value needed to resume the
+						next video source, or upgrade to the next higher simulcast stream.</p>
 						<p>When this is enabled, any policy &#39;probing&#39; for bandwidth headroom
 							should be disabled. This may also enable pacing of some media packets from the server
 						side, and may also enable packet burst probing.</p>
 						<p>End users should overall see reduced video freezes, reduced broken audio,
 						and reduced packet loss.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="bandwidthprobingandremotevideoqualityadaption" class="tsd-anchor"></a>
+					<h3>Bandwidth<wbr>Probing<wbr>And<wbr>Remote<wbr>Video<wbr>Quality<wbr>Adaption</h3>
+					<div class="tsd-signature tsd-kind-icon">Bandwidth<wbr>Probing<wbr>And<wbr>Remote<wbr>Video<wbr>Quality<wbr>Adaption<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 3</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L51">src/signalingclient/ServerSideNetworkAdaption.ts:51</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Disable internal policy behavior and proxy priorities to server to automatically
+								switch, pause, or resume streams based on server calculated network constraints. This will
+								significantly improve response times when network constraints occur. This will also support the
+							features covered in <code>BandwidthProbing</code> though possibly with different implementation details.</p>
+						</div>
+						<p>End users should overall see reduced video freezes, reduced broken audio, and reduced packet loss.
+							The value impacts response to network events and may lead to remote video pauses/downgrades
+						that did not occur before.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -164,6 +188,9 @@
 						<ul>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 								<a href="serversidenetworkadaption.html#bandwidthprobing" class="tsd-kind-icon">Bandwidth<wbr>Probing</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serversidenetworkadaption.html#bandwidthprobingandremotevideoqualityadaption" class="tsd-kind-icon">Bandwidth<wbr>Probing<wbr>And<wbr>Remote<wbr>Video<wbr>Quality<wbr>Adaption</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 								<a href="serversidenetworkadaption.html#default" class="tsd-kind-icon">Default</a>

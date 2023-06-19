@@ -1557,12 +1557,14 @@ $root.SdkClientDetails = (function() {
  * @property {number} DEFAULT=1 DEFAULT value
  * @property {number} NONE=2 NONE value
  * @property {number} BANDWIDTH_PROBING=3 BANDWIDTH_PROBING value
+ * @property {number} BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION=4 BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION value
  */
 $root.SdkServerSideNetworkAdaption = (function() {
     var valuesById = {}, values = Object.create(valuesById);
     values[valuesById[1] = "DEFAULT"] = 1;
     values[valuesById[2] = "NONE"] = 2;
     values[valuesById[3] = "BANDWIDTH_PROBING"] = 3;
+    values[valuesById[4] = "BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION"] = 4;
     return values;
 })();
 
@@ -1844,6 +1846,7 @@ $root.SdkJoinFrame = (function() {
             case 1:
             case 2:
             case 3:
+            case 4:
                 break;
             }
         if (message.supportedServerSideNetworkAdaptions != null && message.hasOwnProperty("supportedServerSideNetworkAdaptions")) {
@@ -1856,6 +1859,7 @@ $root.SdkJoinFrame = (function() {
                 case 1:
                 case 2:
                 case 3:
+                case 4:
                     break;
                 }
         }
@@ -1912,6 +1916,10 @@ $root.SdkJoinFrame = (function() {
         case 3:
             message.serverSideNetworkAdaption = 3;
             break;
+        case "BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION":
+        case 4:
+            message.serverSideNetworkAdaption = 4;
+            break;
         }
         if (object.supportedServerSideNetworkAdaptions) {
             if (!Array.isArray(object.supportedServerSideNetworkAdaptions))
@@ -1931,6 +1939,10 @@ $root.SdkJoinFrame = (function() {
                 case "BANDWIDTH_PROBING":
                 case 3:
                     message.supportedServerSideNetworkAdaptions[i] = 3;
+                    break;
+                case "BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION":
+                case 4:
+                    message.supportedServerSideNetworkAdaptions[i] = 4;
                     break;
                 }
         }
@@ -2199,6 +2211,7 @@ $root.SdkJoinAckFrame = (function() {
             case 1:
             case 2:
             case 3:
+            case 4:
                 break;
             }
         return null;
@@ -2237,6 +2250,10 @@ $root.SdkJoinAckFrame = (function() {
         case "BANDWIDTH_PROBING":
         case 3:
             message.defaultServerSideNetworkAdaption = 3;
+            break;
+        case "BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION":
+        case 4:
+            message.defaultServerSideNetworkAdaption = 4;
             break;
         }
         return message;
@@ -4054,6 +4071,7 @@ $root.SdkBitrateFrame = (function() {
      * @exports ISdkBitrateFrame
      * @interface ISdkBitrateFrame
      * @property {Array.<ISdkBitrate>|null} [bitrates] SdkBitrateFrame bitrates
+     * @property {number|null} [serverAvailableOutgoingBitrate] SdkBitrateFrame serverAvailableOutgoingBitrate
      */
 
     /**
@@ -4079,6 +4097,14 @@ $root.SdkBitrateFrame = (function() {
      * @instance
      */
     SdkBitrateFrame.prototype.bitrates = $util.emptyArray;
+
+    /**
+     * SdkBitrateFrame serverAvailableOutgoingBitrate.
+     * @member {number} serverAvailableOutgoingBitrate
+     * @memberof SdkBitrateFrame
+     * @instance
+     */
+    SdkBitrateFrame.prototype.serverAvailableOutgoingBitrate = 0;
 
     /**
      * Creates a new SdkBitrateFrame instance using the specified properties.
@@ -4107,6 +4133,8 @@ $root.SdkBitrateFrame = (function() {
         if (message.bitrates != null && message.bitrates.length)
             for (var i = 0; i < message.bitrates.length; ++i)
                 $root.SdkBitrate.encode(message.bitrates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.serverAvailableOutgoingBitrate != null && Object.hasOwnProperty.call(message, "serverAvailableOutgoingBitrate"))
+            writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.serverAvailableOutgoingBitrate);
         return writer;
     };
 
@@ -4145,6 +4173,9 @@ $root.SdkBitrateFrame = (function() {
                 if (!(message.bitrates && message.bitrates.length))
                     message.bitrates = [];
                 message.bitrates.push($root.SdkBitrate.decode(reader, reader.uint32()));
+                break;
+            case 2:
+                message.serverAvailableOutgoingBitrate = reader.uint32();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -4190,6 +4221,9 @@ $root.SdkBitrateFrame = (function() {
                     return "bitrates." + error;
             }
         }
+        if (message.serverAvailableOutgoingBitrate != null && message.hasOwnProperty("serverAvailableOutgoingBitrate"))
+            if (!$util.isInteger(message.serverAvailableOutgoingBitrate))
+                return "serverAvailableOutgoingBitrate: integer expected";
         return null;
     };
 
@@ -4215,6 +4249,8 @@ $root.SdkBitrateFrame = (function() {
                 message.bitrates[i] = $root.SdkBitrate.fromObject(object.bitrates[i]);
             }
         }
+        if (object.serverAvailableOutgoingBitrate != null)
+            message.serverAvailableOutgoingBitrate = object.serverAvailableOutgoingBitrate >>> 0;
         return message;
     };
 
@@ -4233,11 +4269,15 @@ $root.SdkBitrateFrame = (function() {
         var object = {};
         if (options.arrays || options.defaults)
             object.bitrates = [];
+        if (options.defaults)
+            object.serverAvailableOutgoingBitrate = 0;
         if (message.bitrates && message.bitrates.length) {
             object.bitrates = [];
             for (var j = 0; j < message.bitrates.length; ++j)
                 object.bitrates[j] = $root.SdkBitrate.toObject(message.bitrates[j], options);
         }
+        if (message.serverAvailableOutgoingBitrate != null && message.hasOwnProperty("serverAvailableOutgoingBitrate"))
+            object.serverAvailableOutgoingBitrate = message.serverAvailableOutgoingBitrate;
         return object;
     };
 

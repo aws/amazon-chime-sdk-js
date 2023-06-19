@@ -1,13 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import Attendee from '../attendee/Attendee';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
 import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import Logger from '../logger/Logger';
 import { LogLevel } from '../logger/LogLevel';
-import ServerSideNetworkAdaption from '../signalingclient/ServerSideNetworkAdaption';
+import ServerSideNetworkAdaption, {
+  serverSideNetworkAdaptionIsNoneOrDefault,
+} from '../signalingclient/ServerSideNetworkAdaption';
+import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
@@ -15,6 +19,7 @@ import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
+import AllHighestVideoBandwidthPolicy from './AllHighestVideoBandwidthPolicy';
 import TargetDisplaySize from './TargetDisplaySize';
 import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './VideoDownlinkObserver';
@@ -109,7 +114,16 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   private timeBeforeAllowProbeMs: number;
   private lastProbeTimestamp: number;
   private probeFailed: boolean;
+  // When server side video adaption is enabled, We simply use `AllHighestVideoBandwidthPolicy` to populate stream IDs which
+  // are still needed for the subscribe. It does not imply that we are overriding
+  // the server side logic, as it will immediately be overwritten by the
+  // values provided by `getVideoPreferences`
+  private allHighestPolicy: AllHighestVideoBandwidthPolicy;
   private serverSideNetworkAdaption: ServerSideNetworkAdaption;
+  // After video preference is updated, track if we acted accordingly (resubscribe or pass perefernce to server).
+  // Required if enabled server side bandwith probing (w/ or w/o quality adaption).
+  private pendingActionAfterUpdatedPreferences: boolean;
+  private wantsResubscribeObserver: (() => void) | undefined = undefined;
 
   constructor(
     protected logger: Logger,
@@ -119,6 +133,10 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   }
 
   reset(): void {
+    // Self-attendee is not actually necessary in 'AllHighestVideoBandwidthPolicy' since it just passes it to
+    // `highestQualityStreamFromEachGroupExcludingSelf` which itself doesn't need it as self attendees are not in the
+    // index
+    this.allHighestPolicy = new AllHighestVideoBandwidthPolicy('');
     this.optimalReceiveSet = new DefaultVideoStreamIdSet();
     this.optimalReceiveStreams = [];
     this.optimalNonPausedReceiveStreams = [];
@@ -143,11 +161,16 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.prevDownlinkStats = new LinkMediaStats();
     this.probeFailed = false;
     this.serverSideNetworkAdaption = this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption;
+    this.pendingActionAfterUpdatedPreferences = false;
   }
 
   bindToTileController(tileController: VideoTileController): void {
     this.tileController = tileController;
     this.logger.info('tileController bound');
+  }
+
+  setWantsResubscribeObserver?(observer: () => void): void {
+    this.wantsResubscribeObserver = observer;
   }
 
   // This function allows setting preferences without the need to inherit from this class
@@ -158,6 +181,27 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       return;
     }
     this.videoPreferences = preferences?.clone();
+    if (!serverSideNetworkAdaptionIsNoneOrDefault(this.serverSideNetworkAdaption)) {
+      this.pendingActionAfterUpdatedPreferences = true;
+      if (this.wantsResubscribeObserver !== undefined) {
+        this.wantsResubscribeObserver();
+        this.pendingActionAfterUpdatedPreferences = false;
+      }
+      if (
+        this.serverSideNetworkAdaption ===
+        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
+      ) {
+        const desiredVideoSources = new Array<VideoSource>();
+        for (const preference of this.videoPreferences) {
+          const source = new VideoSource();
+          source.attendee = new Attendee();
+          source.attendee.attendeeId = preference.attendeeId;
+          desiredVideoSources.push(source);
+        }
+        this.allHighestPolicy.chooseRemoteVideoSources(desiredVideoSources);
+        return;
+      }
+    }
     this.videoPreferencesUpdated = true;
     this.logger.info(
       `bwe: setVideoPreferences bwe: new preferences: ${JSON.stringify(preferences)}`
@@ -167,6 +211,12 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   updateIndex(videoIndex: VideoStreamIndex): void {
     this.videoIndex = videoIndex;
+    if (
+      this.serverSideNetworkAdaption ===
+      ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
+    ) {
+      this.allHighestPolicy.updateIndex(videoIndex);
+    }
     if (!this.videoPreferences) {
       this.updateDefaultVideoPreferences();
     }
@@ -228,11 +278,31 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   }
 
   wantsResubscribe(): boolean {
+    let wants = false;
+    if (!serverSideNetworkAdaptionIsNoneOrDefault(this.serverSideNetworkAdaption)) {
+      wants ||= this.pendingActionAfterUpdatedPreferences;
+      if (
+        this.serverSideNetworkAdaption ===
+        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
+      ) {
+        return wants || this.allHighestPolicy.wantsResubscribe();
+      }
+    }
     this.calculateOptimalReceiveSet();
-    return !this.subscribedReceiveSet.equal(this.optimalReceiveSet);
+    wants ||= !this.subscribedReceiveSet.equal(this.optimalReceiveSet);
+    return wants;
   }
 
   chooseSubscriptions(): VideoStreamIdSet {
+    if (!serverSideNetworkAdaptionIsNoneOrDefault(this.serverSideNetworkAdaption)) {
+      this.pendingActionAfterUpdatedPreferences = false;
+      if (
+        this.serverSideNetworkAdaption ===
+        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
+      ) {
+        return this.allHighestPolicy.chooseSubscriptions();
+      }
+    }
     if (!this.subscribedReceiveSet.equal(this.optimalReceiveSet)) {
       this.lastSubscribeTimestamp = Date.now();
     }
@@ -335,9 +405,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       chosenStreams
     );
 
-    const skipProbe =
-      this.serverSideNetworkAdaption !== ServerSideNetworkAdaption.None &&
-      this.serverSideNetworkAdaption !== ServerSideNetworkAdaption.Default;
+    const skipProbe = !serverSideNetworkAdaptionIsNoneOrDefault(this.serverSideNetworkAdaption);
     let subscriptionChoice = UseReceiveSet.NewOptimal;
     // Look for probing or override opportunities
     if (!skipProbe && !this.startupPeriod && sameStreamChoices) {
@@ -1075,7 +1143,11 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   }
 
   supportedServerSideNetworkAdaptions(): ServerSideNetworkAdaption[] {
-    return [ServerSideNetworkAdaption.None, ServerSideNetworkAdaption.BandwidthProbing];
+    return [
+      ServerSideNetworkAdaption.None,
+      ServerSideNetworkAdaption.BandwidthProbing,
+      ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption,
+    ];
   }
 
   getVideoPreferences(): VideoPreferences {

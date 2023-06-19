@@ -608,7 +608,8 @@ export class DemoMeetingApp
       (document.getElementById('content-simulcast-config')).style.display = 'none';
     }
     if (!this.defaultBrowserBehavior.supportDownlinkBandwidthEstimation()) {
-      (document.getElementById('priority-downlink-policy') as HTMLInputElement).disabled = true;
+      (document.getElementById('priority-downlink-policy-preset') as HTMLSelectElement).disabled = true;
+      (document.getElementById('server-side-network-adaption') as HTMLSelectElement).disabled = true;
     }
 
     document.getElementById('join-view-only').addEventListener('change', () => {
@@ -1787,6 +1788,9 @@ export class DemoMeetingApp
           break;
         case 'enable-bandwidth-probing':
           this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbing;
+          break;
+        case 'enable-bandwidth-probing-and-video-adaption':
+          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
           break;
       }
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);

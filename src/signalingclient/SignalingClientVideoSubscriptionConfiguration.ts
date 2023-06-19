@@ -3,7 +3,7 @@
 
 /**
  * [[SignalingClientVideoSubscriptionConfiguration]] is an internal representation of
- * `SignalingProtocol.VideoSubscriptionConfiguration`
+ * `SignalingProtocol.videoSubscriptionConfiguration`
  */
 export default class SignalingClientVideoSubscriptionConfiguration {
   mid?: string;
@@ -12,4 +12,16 @@ export default class SignalingClientVideoSubscriptionConfiguration {
   groupId?: number;
   priority?: number;
   targetBitrateKbps?: number;
+
+  equals(other: this): boolean {
+    return (
+      other !== undefined &&
+      this.mid === other.mid &&
+      this.attendeeId === other.attendeeId &&
+      this.streamId === other.streamId &&
+      this.groupId === other.groupId &&
+      this.priority === other.priority &&
+      this.targetBitrateKbps === other.targetBitrateKbps
+    );
+  }
 }

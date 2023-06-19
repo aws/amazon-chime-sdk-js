@@ -116,28 +116,23 @@ The following presets are provided:
 
 ### Enabling Server Side Network Adaption Features <span id="server-side-network-adaption"><span>
 
-`VideoPriorityBasedPolicy` has support for configuring additional features on the backend. These features are currently opt-in but may become defaults in the future. To enable pacing and probing on the existing receive side estimator, and disable the policy based stream probing which can often oversubscribe over network constraints and lead to video freezes, set the following on `VideoPriorityBasedPolicyConfig` before injecting:
+`VideoPriorityBasedPolicy` has support for enabling additional features on the backend related to network adaptation. These features lead to the following improvements relative to the default policy:
+
+* Faster network constraint response time, e.g. compared to default it will downgrade and pause videos faster to prioritize audio.
+* Avoidance of video upgrades that cause network overuse. The server side adaptation uses pacing and probing to determine headroom before upgrading videos.
+* Stable video quality selections under constraint due to a backend calculated bandwidth estimation utilizing transport wide congestion control.
+* Faster recovery time due to use of pacing and probing on backend.
+
+These features are currently opt-in but may become defaults in the future. To enable these features, set the following on `VideoPriorityBasedPolicyConfig` before injecting:
 
 ```ts
 const config = 
   VideoPriorityBasedPolicyConfig.Default;
 config.serverSideNetworkAdaption = 
-    ServerSideNetworkAdaption.BandwidthProbing;
+    ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
 let priorityBasedDownlinkPolicy = 
     new VideoPriorityBasedPolicy(this.meetingLogger, config);
 ```
-
-The server may override the value if left to default. If you do not want the server to update the value, set it explicitly to `ServerSideNetworkAdaption.None` 
-
-#### Impact of `ServerSideNetworkAdaption.BandwidthProbing`
-
-An occasional issue with the `VideoPriorityBasedPolicy` is that in recovery, it will periodically try to upgrade quality of its remote videos (or unpause), regardless of the size of the jump in bitrate. If the jump in bitrate hits the network constraint, it will immediately overuse the link, encountering packet loss, and possibly leading to a further dip in the bandwidth estimation.
-
-For example, say an end-user's policy is picking between a 300 and 1200 kbps stream and suddenly their network is restricted to 400 kbps. Eventually the policy as is, should switch to the 300 kbps stream. The client side policy cannot know whether the link has recovered to anywhere between 300 and 1200 kbps because its only option is eventually try to upgrade to the 1200 stream. If the constraint is still anywhere under 1200 this will overuse the network as mentioned above. 
-
-As an alternative, we can instead mirror a traditional WebRTC 1-1 call, and gradually increase the bitrate using padding or pre-emptive retransmissions from the backend which will allow us to gracefully discover network constraints. This is what occurs when `ServerSideNetworkAdaption.BandwidthProbing` is set. In addition, setting that value will *disable all client side probing* as it is no longer necessary. 
-
-In the example above, the bitrate would gradually increase to 400kbps, at which it would ‘discover’ the network constraint, and stabilize there. The rate at which the backend will send padding is dependent on the receive estimate, which it receives via REMB. The change also incorporates libwebrtc based pacing (https://chromium.googlesource.com/external/webrtc/+/master/modules/pacing/g3doc/index.md) for video to better stabilize the bandwidth estimation on the receive side, and the occasional sending of probe clusters for more rapid attempts of boosting bandwidth estimation.
 
 ## Builder Code Sample
 

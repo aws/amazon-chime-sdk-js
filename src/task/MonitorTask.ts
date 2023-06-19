@@ -6,7 +6,6 @@ import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../clientmetricreport/ClientMetricReportMediaType';
-import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
 import StreamMetricReport from '../clientmetricreport/StreamMetricReport';
 import ConnectionHealthPolicy from '../connectionhealthpolicy/BaseConnectionHealthPolicy';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
@@ -39,9 +38,6 @@ export default class MonitorTask
   private unusableAudioWarningHealthPolicy: UnusableAudioWarningConnectionHealthPolicy;
   private sendingAudioFailureHealthPolicy: SendingAudioFailureConnectionHealthPolicy;
   private prevSignalStrength: number = 1;
-  private static DEFAULT_DOWNLINK_CALLRATE_OVERSHOOT_FACTOR: number = 2.0;
-  private static DEFAULT_DOWNLINK_CALLRATE_UNDERSHOOT_FACTOR: number = 0.2;
-  private currentVideoDownlinkBandwidthEstimationKbps: number = 10000;
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
   private hasSignalingError: boolean = false;
   private presenceHandlerCalled: boolean = false;
@@ -141,10 +137,6 @@ export default class MonitorTask
     }
 
     const metricReport = clientMetricReport.getObservableMetrics();
-    if (!metricReport) {
-      return false;
-    }
-
     const availableSendBandwidth = metricReport.availableOutgoingBitrate;
     const nackCountPerSecond = metricReport.nackCountReceivedPerSecond;
 
@@ -191,11 +183,6 @@ export default class MonitorTask
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
-    const defaultClientMetricReport = clientMetricReport as ClientMetricReport;
-    if (!defaultClientMetricReport) {
-      return;
-    }
-
     if (this.checkResubscribe(clientMetricReport)) {
       this.context.audioVideoController.update({ needsRenegotiation: false });
     }
@@ -204,20 +191,11 @@ export default class MonitorTask
       return;
     }
 
-    const streamMetricReport = defaultClientMetricReport.streamMetricReports;
-    if (!streamMetricReport) {
-      return;
-    }
-
-    const metricReport = clientMetricReport.getObservableMetrics();
-
-    this.currentVideoDownlinkBandwidthEstimationKbps = metricReport.availableIncomingBitrate;
-
+    const streamMetricReport = clientMetricReport.streamMetricReports;
     const downlinkVideoStream: Map<number, StreamMetricReport> = new Map<
       number,
       StreamMetricReport
     >();
-    const videoReceivingBitrateMap = new Map<string, ClientVideoStreamReceivingReport>();
 
     // TODO: move those logic to stats collector.
     for (const ssrc in streamMetricReport) {
@@ -227,45 +205,6 @@ export default class MonitorTask
       ) {
         downlinkVideoStream.set(streamMetricReport[ssrc].streamId, streamMetricReport[ssrc]);
       }
-    }
-
-    let fireCallback = false;
-    for (const bitrate of this.currentAvailableStreamAvgBitrates.bitrates) {
-      if (downlinkVideoStream.has(bitrate.sourceStreamId)) {
-        const report = downlinkVideoStream.get(bitrate.sourceStreamId);
-        const attendeeId = this.context.videoStreamIndex.attendeeIdForStreamId(
-          bitrate.sourceStreamId
-        );
-        if (!attendeeId) {
-          continue;
-        }
-        const newReport = new ClientVideoStreamReceivingReport();
-        const prevBytesReceived = report.previousMetrics['bytesReceived'];
-        const currBytesReceived = report.currentMetrics['bytesReceived'];
-        if (!prevBytesReceived || !currBytesReceived) {
-          continue;
-        }
-
-        const receivedBitrate = ((currBytesReceived - prevBytesReceived) * 8) / 1000;
-
-        newReport.expectedAverageBitrateKbps = bitrate.avgBitrateBps / 1000;
-        newReport.receivedAverageBitrateKbps = receivedBitrate;
-        newReport.attendeeId = attendeeId;
-        if (
-          receivedBitrate <
-          (bitrate.avgBitrateBps / 1000) * MonitorTask.DEFAULT_DOWNLINK_CALLRATE_UNDERSHOOT_FACTOR
-        ) {
-          fireCallback = true;
-        }
-        videoReceivingBitrateMap.set(attendeeId, newReport);
-      }
-    }
-    if (fireCallback) {
-      this.logger.info(
-        `One or more video streams are not receiving expected amounts of data ${JSON.stringify(
-          Array.from(videoReceivingBitrateMap.values())
-        )}`
-      );
     }
   }
 
@@ -357,26 +296,19 @@ export default class MonitorTask
   }
 
   private handleBitrateFrame(bitrates: ISdkBitrateFrame): void {
-    let requiredBandwidthKbps = 0;
     this.currentAvailableStreamAvgBitrates = bitrates;
 
-    this.logger.debug(() => {
-      return `simulcast: bitrates from server ${JSON.stringify(bitrates)}`;
-    });
-    for (const bitrate of bitrates.bitrates) {
-      if (this.context.videosToReceive.contain(bitrate.sourceStreamId)) {
-        requiredBandwidthKbps += bitrate.avgBitrateBps;
-      }
-    }
-    requiredBandwidthKbps /= 1000;
-
-    if (
-      this.currentVideoDownlinkBandwidthEstimationKbps *
-        MonitorTask.DEFAULT_DOWNLINK_CALLRATE_OVERSHOOT_FACTOR <
-      requiredBandwidthKbps
-    ) {
+    if (bitrates.serverAvailableOutgoingBitrate > 0) {
       this.logger.info(
-        `Downlink bandwidth pressure is high: estimated bandwidth ${this.currentVideoDownlinkBandwidthEstimationKbps}Kbps, required bandwidth ${requiredBandwidthKbps}Kbps`
+        `Received server side estimation of available incoming bitrate ${bitrates.serverAvailableOutgoingBitrate}kbps`
+      );
+      // This value will be included in the 'Bitrates' signaling message if we are using
+      // server side remote video quality adaption, since if that is the case we will
+      // be using TWCC and will therefore not likely have an estimate on the client
+      // for available incoming bitrate
+      this.context.statsCollector.overrideObservableMetric(
+        'availableIncomingBitrate',
+        bitrates.serverAvailableOutgoingBitrate * 1000
       );
     }
   }

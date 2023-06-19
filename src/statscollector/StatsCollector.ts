@@ -289,6 +289,12 @@ export default class StatsCollector {
             streamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
               Number(rawMetricReport.ssrc)
             );
+            /* istanbul ignore else */
+            if (this.videoStreamIndex.groupIdForSSRC !== undefined) {
+              streamMetricReport.groupId = this.videoStreamIndex.groupIdForSSRC(
+                Number(rawMetricReport.ssrc)
+              );
+            }
           }
           this.clientMetricReport.streamMetricReports[
             Number(rawMetricReport.ssrc)
@@ -529,5 +535,9 @@ export default class StatsCollector {
     } catch (error) {
       this.logger.error(error.message);
     }
+  }
+
+  overrideObservableMetric(name: string, value: number): void {
+    this.clientMetricReport.overrideObservableMetric(name, value);
   }
 }

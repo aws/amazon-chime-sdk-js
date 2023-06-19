@@ -4,7 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
-import { VideoPriorityBasedPolicyConfig } from '../../src';
+import { ServerSideNetworkAdaption, VideoPriorityBasedPolicyConfig } from '../../src';
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
@@ -251,6 +251,46 @@ describe('VideoPriorityBasedPolicy', () => {
       expect(received.array()).to.deep.equal([1, 3, 5, 7, 9, 11, 13, 15, 17, 19]);
     });
 
+    it('use default preference with bandwidth probing', () => {
+      const policy = new VideoPriorityBasedPolicy(logger);
+      policy.setServerSideNetworkAdaption(ServerSideNetworkAdaption.BandwidthProbing);
+
+      updateIndexFrame(videoStreamIndex, 1, 0, 1200);
+      policy.updateIndex(videoStreamIndex);
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+
+      // After startup period which is 6000 ms
+      incrementTime(6100);
+      const metricReport = new ClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3000 * 1000;
+      policy.updateMetrics(metricReport);
+
+      updateIndexFrame(videoStreamIndex, 2, 300, 1200);
+      policy.updateIndex(videoStreamIndex);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4]);
+
+      updateIndexFrame(videoStreamIndex, 6, 300, 1200);
+      policy.updateIndex(videoStreamIndex);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1, 3, 5, 7, 9, 11]);
+
+      updateIndexFrame(videoStreamIndex, 10, 300, 1200);
+      policy.updateIndex(videoStreamIndex);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1, 3, 5, 7, 9, 11, 13, 15, 17, 19]);
+    });
+
     it('pause tiles if not enough bandwidth for default preference', () => {
       const policy = new VideoPriorityBasedPolicy(logger);
       policy.bindToTileController(tileController);
@@ -365,6 +405,119 @@ describe('VideoPriorityBasedPolicy', () => {
       } catch (error) {}
 
       policy.removeObserver(observer);
+    });
+
+    it('proactively trigger server side network adaption when video preferences are updated and video observer fully implemented bandwidth probing', async () => {
+      let called = false;
+      policy.setWantsResubscribeObserver(() => {
+        called = true;
+      });
+
+      policy.setServerSideNetworkAdaption(ServerSideNetworkAdaption.BandwidthProbing);
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference('attendee-1', 5, TargetDisplaySize.High);
+      preferences.add(p1);
+      const p2 = new VideoPreference('attendee-2', 5, TargetDisplaySize.Medium);
+      preferences.add(p2);
+      const p3 = new VideoPreference('attendee-3', 5, TargetDisplaySize.Medium);
+      preferences.add(p3);
+
+      policy.chooseRemoteVideoSources(preferences.build());
+
+      // @ts-ignore
+      expect(called).to.be.true;
+    });
+
+    it('proactively trigger server side network adaption when video preferences are updated and video observer fully implemented', async () => {
+      let called = false;
+      policy.setWantsResubscribeObserver(() => {
+        called = true;
+      });
+
+      policy.setServerSideNetworkAdaption(
+        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
+      );
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference('attendee-1', 5, TargetDisplaySize.High);
+      preferences.add(p1);
+      const p2 = new VideoPreference('attendee-2', 5, TargetDisplaySize.Medium);
+      preferences.add(p2);
+      const p3 = new VideoPreference('attendee-3', 5, TargetDisplaySize.Medium);
+      preferences.add(p3);
+
+      policy.chooseRemoteVideoSources(preferences.build());
+
+      // @ts-ignore
+      expect(called).to.be.true;
+    });
+
+    it('not trigger server side network adaption when video preferences are updated and video observer partially implemented', async () => {
+      class MockObserver implements VideoDownlinkObserver {
+        tileWillBePausedByDownlinkPolicy = sinon.stub();
+        tileWillBeUnpausedByDownlinkPolicy = sinon.stub();
+      }
+      const observer = new MockObserver();
+      policy.addObserver(observer);
+
+      policy.setServerSideNetworkAdaption(ServerSideNetworkAdaption.BandwidthProbing);
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference('attendee-1', 5, TargetDisplaySize.High);
+      preferences.add(p1);
+      const p2 = new VideoPreference('attendee-2', 5, TargetDisplaySize.Medium);
+      preferences.add(p2);
+      const p3 = new VideoPreference('attendee-3', 5, TargetDisplaySize.Medium);
+      preferences.add(p3);
+
+      policy.chooseRemoteVideoSources(preferences.build());
+
+      // @ts-ignore
+      expect(policy.pendingActionAfterUpdatedPreferences).to.be.true;
+
+      policy.removeObserver(observer);
+    });
+
+    it('populates stream ids using allHighestPolicy when server side video adaption is enabled', async () => {
+      policy.setServerSideNetworkAdaption(
+        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
+      );
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference('attendee-1', 5, TargetDisplaySize.High);
+      preferences.add(p1);
+      const p2 = new VideoPreference('attendee-2', 5, TargetDisplaySize.High);
+      preferences.add(p2);
+      const p3 = new VideoPreference('attendee-3', 5, TargetDisplaySize.Medium);
+      preferences.add(p3);
+      policy.chooseRemoteVideoSources(preferences.build());
+
+      // @ts-ignore
+      expect(policy.videoPreferencesUpdated).to.be.false;
+
+      updateIndexFrame(videoStreamIndex, 3, 0, 600);
+      policy.updateIndex(videoStreamIndex);
+
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      const received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 6]);
+    });
+  });
+
+  describe('getVideoPreferences', () => {
+    it('Initially returns dummy preferences', () => {
+      const mutablePreferences = VideoPreferences.prepare();
+      const preferences = mutablePreferences.build();
+      expect(policy.getVideoPreferences().equals(preferences)).to.be.true;
+    });
+
+    it('Will have up to date preferences', () => {
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference('attendee-1', 5, TargetDisplaySize.High);
+      preferences.add(p1);
+      const p2 = new VideoPreference('attendee-2', 5, TargetDisplaySize.High);
+      preferences.add(p2);
+      policy.chooseRemoteVideoSources(preferences.build());
+
+      expect(policy.getVideoPreferences().equals(preferences.build())).to.be.true;
     });
   });
 

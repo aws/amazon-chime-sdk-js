@@ -21,6 +21,8 @@ export default class ClientMetricReport {
   previousTimestampMs: number = 0;
   currentSsrcs: { [id: number]: number } = {};
 
+  private overriddenObservableMetrics: Map<string, number> = new Map();
+
   constructor(
     private logger: Logger,
     private videoStreamIndex?: VideoStreamIndex,
@@ -558,6 +560,10 @@ export default class ClientMetricReport {
    * Returns the value of the specific metric in observableMetricSpec.
    */
   getObservableMetricValue(metricName: string): number {
+    if (this.overriddenObservableMetrics.has(metricName)) {
+      return this.overriddenObservableMetrics.get(metricName);
+    }
+
     const observableMetricSpec = this.observableMetricSpec[metricName];
     const metricMap = this.getMetricMap(observableMetricSpec.media, observableMetricSpec.dir);
     const metricSpec = metricMap[observableMetricSpec.source];
@@ -633,10 +639,26 @@ export default class ClientMetricReport {
             }
           }
         }
+        const groupId = this.streamMetricReports[ssrc].groupId;
         const streamId = this.streamMetricReports[ssrc].streamId;
-        const attendeeId = streamId
-          ? this.videoStreamIndex.attendeeIdForStreamId(streamId)
-          : this.selfAttendeeId;
+        let attendeeId = '';
+        /* istanbul ignore else */
+        if (this.videoStreamIndex.attendeeIdForGroupId !== undefined) {
+          attendeeId = groupId
+            ? this.videoStreamIndex.attendeeIdForGroupId(groupId)
+            : this.selfAttendeeId;
+        } else {
+          // This usage may be inaccurate if server side network adaptation (SSNA) is enabled,
+          // and a simulcast sender has dropped their originally highest stream.
+          //
+          // We are ok with this given the unlikeliness of someone reimplmententing the entire
+          // audio video controller (no way otherwise to inject your own index impl.), implementing
+          // both simulcast and SSNA, but reusing this class :) .
+          attendeeId = streamId
+            ? this.videoStreamIndex.attendeeIdForStreamId(streamId)
+            : this.selfAttendeeId;
+        }
+
         videoStreamMetrics[attendeeId] = videoStreamMetrics[attendeeId]
           ? videoStreamMetrics[attendeeId]
           : {};
@@ -663,6 +685,7 @@ export default class ClientMetricReport {
     cloned.rtcStatsReport = this.rtcStatsReport;
     cloned.currentTimestampMs = this.currentTimestampMs;
     cloned.previousTimestampMs = this.previousTimestampMs;
+    cloned.overriddenObservableMetrics = this.overriddenObservableMetrics;
     return cloned;
   }
 
@@ -690,5 +713,12 @@ export default class ClientMetricReport {
         delete this.streamMetricReports[ssrc];
       }
     }
+  }
+
+  /**
+   * Overrides a specific observable metric value (e.g. with one that didn't come from the WebRTC report)
+   */
+  overrideObservableMetric(name: string, value: number): void {
+    this.overriddenObservableMetrics.set(name, value);
   }
 }

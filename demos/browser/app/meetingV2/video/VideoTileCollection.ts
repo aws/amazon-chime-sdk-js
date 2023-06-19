@@ -16,18 +16,20 @@ import { DemoVideoTile } from './VideoTile'; DemoVideoTile; // Make sure this fi
 
 // We use the same config options for multiple settings when configuring
 // video tiles, regardless of what they map to internally
-type ConfigLevel = 'low' | 'medium' | 'high';
+type ConfigLevel = 'low' | 'medium' | 'high' | 'max';
 
 const ConfigLevelToVideoPriority: { [Key in ConfigLevel]: number } = {
-  low: 10,
-  medium: 5,
-  high: 1,
+  low: 200,
+  medium: 100,
+  high: 10,
+  max: 1,
 };
 
 const ConfigLevelToTargetDisplaySize: { [Key in ConfigLevel]: TargetDisplaySize } = {
   low: TargetDisplaySize.Low,
   medium: TargetDisplaySize.Medium,
   high: TargetDisplaySize.High,
+  max: TargetDisplaySize.Maximum,
 };
 
 const VideoUpstreamMetricsKeyStats: { [key: string]: string } = {
@@ -83,7 +85,6 @@ class TileOrganizer {
   }
 }
 
-// TODO: Implement this as Custom HTML element
 export default class VideoTileCollection implements AudioVideoObserver {
   // We reserve the last tile index for local video
   static readonly LocalVideoTileIndex: number = TileOrganizer.MaxTiles;

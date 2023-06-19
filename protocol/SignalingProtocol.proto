@@ -79,6 +79,7 @@ enum SdkServerSideNetworkAdaption {
     DEFAULT = 1;
     NONE = 2;
     BANDWIDTH_PROBING = 3;
+    BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION = 4;
 };
 
 message SdkJoinFrame {
@@ -151,6 +152,7 @@ message SdkPauseResumeFrame {
 
 message SdkBitrateFrame {
     repeated SdkBitrate bitrates = 1;
+    optional uint32 server_available_outgoing_bitrate = 2;
 }
 
 message SdkStreamDescriptor {
