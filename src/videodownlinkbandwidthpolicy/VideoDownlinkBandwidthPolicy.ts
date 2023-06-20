@@ -42,7 +42,7 @@ export default interface VideoDownlinkBandwidthPolicy {
    * to the maximum subscription limit of the call.
    *
    * When a policy is passed into a meeting session, this will be called
-   * once every two seconds to check if the subscriptions have changed.
+   * once every second to check if the subscriptions have changed.
    */
   chooseSubscriptions(): VideoStreamIdSet;
 
@@ -55,6 +55,18 @@ export default interface VideoDownlinkBandwidthPolicy {
    * (Optional) Removes the VideoDownlinkObserver.
    */
   removeObserver?(observer: VideoDownlinkObserver): void;
+
+  /**
+   * (Optional) Call and observer function on all added `VideoDownlinkObserver`. Can be used to notify observers
+   * of video tile pauses.
+   */
+  forEachObserver?(observerFunc: (observer: VideoDownlinkObserver) => void): void;
+
+  /**
+   * (Optional) Add observer that allows policy to immediately request an update based off current choices. Only
+   * one observer can be set at a time.
+   */
+  setWantsResubscribeObserver?(observer: () => void): void;
 
   /**
    * (Optional) Bind the video tile controller to the policy to allow it to control the video tiles such as pause

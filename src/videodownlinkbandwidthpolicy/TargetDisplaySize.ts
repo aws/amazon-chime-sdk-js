@@ -20,6 +20,11 @@ export enum TargetDisplaySize {
    * High resolution video stream.
    */
   High,
+
+  /**
+   * Maximum resolution video stream.
+   */
+  Maximum,
 }
 
 export default TargetDisplaySize;

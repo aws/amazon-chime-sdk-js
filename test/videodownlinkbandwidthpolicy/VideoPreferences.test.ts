@@ -4,9 +4,16 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 
-import { MutableVideoPreferences as MutableVideoPreferencesFromSrc } from '../../src';
+import {
+  AudioVideoControllerState,
+  DefaultTransceiverController,
+  DefaultVideoStreamIndex,
+  MutableVideoPreferences as MutableVideoPreferencesFromSrc,
+  TargetDisplaySize,
+} from '../../src';
 import VideoPreference from '../../src/videodownlinkbandwidthpolicy/VideoPreference';
 import {
+  convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration,
   MutableVideoPreferences,
   VideoPreferences,
 } from '../../src/videodownlinkbandwidthpolicy/VideoPreferences';
@@ -219,6 +226,46 @@ describe('VideoPreferences', () => {
 
   describe('re-export', () => {
     expect(MutableVideoPreferencesFromSrc);
+  });
+
+  describe('convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration', () => {
+    const expect: Chai.ExpectStatic = chai.expect;
+
+    it('will return empty list if preferences is undefined', () => {
+      const context = new AudioVideoControllerState();
+      context.transceiverController = new DefaultTransceiverController(undefined, undefined);
+      context.videoStreamIndex = new DefaultVideoStreamIndex(undefined);
+      expect(
+        convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
+          context,
+          [],
+          undefined
+        ).length
+      ).to.equal(0);
+    });
+
+    it('will return empty list if function is is undefined', () => {
+      const context = new AudioVideoControllerState();
+      context.transceiverController = new DefaultTransceiverController(undefined, undefined);
+      context.transceiverController.getMidForGroupId = undefined;
+      expect(
+        convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
+          context,
+          [],
+          undefined
+        ).length
+      ).to.equal(0);
+    });
+  });
+
+  describe('targetSizeToBitrateKbps', () => {
+    const expect: Chai.ExpectStatic = chai.expect;
+
+    it('will return expected value', () => {
+      expect(
+        new VideoPreference('', 1).targetSizeToBitrateKbps(TargetDisplaySize.Maximum)
+      ).to.equal(10000);
+    });
   });
 });
 

@@ -14,6 +14,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   protected defaultMediaStream: MediaStream | null = null;
   protected peer: RTCPeerConnection | null = null;
   protected streamIdToTransceiver: Map<number, RTCRtpTransceiver> = new Map();
+  protected groupIdToTransceiver: Map<number, RTCRtpTransceiver> = new Map();
 
   constructor(protected logger: Logger, protected browserBehavior: BrowserBehavior) {}
 
@@ -206,6 +207,7 @@ export default class DefaultTransceiverController implements TransceiverControll
         streams: [new MediaStream()],
       });
       this.streamIdToTransceiver.set(index, transceiver);
+      this.groupIdToTransceiver.set(videoStreamIndex.groupIdForStreamId(index), transceiver);
       this.videoSubscriptions.push(index);
       this.logger.info(
         `adding transceiver mid: ${transceiver.mid} subscription: ${index} direction: recvonly`
@@ -269,6 +271,7 @@ export default class DefaultTransceiverController implements TransceiverControll
         for (const [streamId, previousTransceiver] of this.streamIdToTransceiver.entries()) {
           if (transceiver.mid === previousTransceiver.mid) {
             this.streamIdToTransceiver.delete(streamId);
+            this.groupIdToTransceiver.delete(videoStreamIndex.groupIdForStreamId(streamId));
           }
         }
       }
@@ -325,6 +328,7 @@ export default class DefaultTransceiverController implements TransceiverControll
         const streamId = videosRemaining.shift();
         this.videoSubscriptions[n] = streamId;
         this.streamIdToTransceiver.set(streamId, transceiver);
+        this.groupIdToTransceiver.set(videoStreamIndex.groupIdForStreamId(streamId), transceiver);
       } else {
         // Remove if no longer subscribed
         if (this.videoSubscriptions[n] === 0) {
@@ -332,6 +336,7 @@ export default class DefaultTransceiverController implements TransceiverControll
           for (const [streamId, previousTransceiver] of this.streamIdToTransceiver.entries()) {
             if (transceiver === previousTransceiver) {
               this.streamIdToTransceiver.delete(streamId);
+              this.groupIdToTransceiver.delete(videoStreamIndex.groupIdForStreamId(streamId));
             }
           }
         }
@@ -352,6 +357,10 @@ export default class DefaultTransceiverController implements TransceiverControll
         return;
       }
     }
+  }
+
+  getMidForGroupId(groupId: number): string | undefined {
+    return this.groupIdToTransceiver.get(groupId)?.mid;
   }
 
   protected transceiverIsVideo(transceiver: RTCRtpTransceiver): boolean {

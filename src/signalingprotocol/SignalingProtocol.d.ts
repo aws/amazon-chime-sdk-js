@@ -495,7 +495,8 @@ export class SdkClientDetails implements ISdkClientDetails {
 export enum SdkServerSideNetworkAdaption {
     DEFAULT = 1,
     NONE = 2,
-    BANDWIDTH_PROBING = 3
+    BANDWIDTH_PROBING = 3,
+    BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION = 4
 }
 
 /** Properties of a SdkJoinFrame. */
@@ -1392,6 +1393,9 @@ export interface ISdkBitrateFrame {
 
     /** SdkBitrateFrame bitrates */
     bitrates?: (ISdkBitrate[]|null);
+
+    /** SdkBitrateFrame serverAvailableOutgoingBitrate */
+    serverAvailableOutgoingBitrate?: (number|null);
 }
 
 /** Represents a SdkBitrateFrame. */
@@ -1405,6 +1409,9 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
 
     /** SdkBitrateFrame bitrates. */
     public bitrates: ISdkBitrate[];
+
+    /** SdkBitrateFrame serverAvailableOutgoingBitrate. */
+    public serverAvailableOutgoingBitrate: number;
 
     /**
      * Creates a new SdkBitrateFrame instance using the specified properties.

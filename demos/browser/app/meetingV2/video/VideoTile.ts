@@ -15,20 +15,24 @@ export class DemoVideoTile extends HTMLElement {
       <h6 class="dropdown-header target-resolution-header">Target Resolution</h6>
       <form class="btn-group video-tile-config-toggle target-resolution-toggle" role="group">
         <input type="radio" class="btn-check" name="level" value="low" id="resolution-low">
-        <label class="btn btn-secondary" id="resolution-low-label" for="low">Low</label>
+        <label class="btn btn-secondary" id="resolution-low-label" title="low" for="low">Low</label>
         <input type="radio" class="btn-check" name="level" value="medium" id="resolution-medium">
-        <label class="btn btn-secondary" id="resolution-medium-label" for="medium">Medium</label>
+        <label class="btn btn-secondary" id="resolution-medium-label" title="medium" for="medium">Medium</label>
         <input type="radio" class="btn-check" name="level" value="high" id="resolution-high" checked>
-        <label class="btn btn-secondary" id="resolution-high-label" for="high">High</label>
+        <label class="btn btn-secondary" id="resolution-high-label" title="high" for="high">High</label>
+        <input type="radio" class="btn-check" name="level" value="max" id="resolution-max" checked>
+        <label class="btn btn-secondary" id="resolution-max-label" title="max" for="max">Max</label>
       </form>
       <h6 class="dropdown-header video-priority-header">Video Priority</h6>
       <form class="btn-group video-tile-config-toggle video-priority-toggle">
         <input type="radio" class="btn-check" name="level" value="low" id="priority-low">
-        <label class="btn btn-secondary" id="priority-low-label" for="low">Low</label>
+        <label class="btn btn-secondary" id="priority-low-label" title="low" for="low">Low</label>
         <input type="radio" class="btn-check" name="level" value="medium" id="priority-medium" checked>
-        <label class="btn btn-secondary" id="priority-medium-label" for="medium">Medium</label>
+        <label class="btn btn-secondary" id="priority-medium-label" title="medium" for="medium">Medium</label>
         <input type="radio" class="btn-check" name="level" value="high" id="priority-high">
-        <label class="btn btn-secondary" id="priority-high-label" for="high">High</label>
+        <label class="btn btn-secondary" id="priority-high-label" title="high" for="high">High</label>
+        <input type="radio" class="btn-check" name="level" value="max" id="priority-max">
+        <label class="btn btn-secondary" id="priority-max-label" title="max" for="max">Max</label>
       </form>
     </div>
   </div>
@@ -44,7 +48,7 @@ export class DemoVideoTile extends HTMLElement {
     // (putting the input within the label doesn't work in Bootstrap 5), so we manually update these IDs to make them
     // unique
     const nonUniqueInputAndLabelIdPrefixes = [
-      'priority-low', 'priority-medium', 'priority-high', 'resolution-low', 'resolution-medium', 'resolution-high'];
+      'priority-low', 'priority-medium', 'priority-high', 'priority-max', 'resolution-low', 'resolution-medium', 'resolution-high', 'resolution-max'];
     for (const prefix of nonUniqueInputAndLabelIdPrefixes) {
       this.querySelector(`#${prefix}`).id = `${prefix}-${tileIndex}`;
       this.querySelector(`#${prefix}-label`).setAttribute('for', `${prefix}-${tileIndex}`);

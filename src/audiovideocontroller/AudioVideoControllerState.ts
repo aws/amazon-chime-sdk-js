@@ -18,6 +18,7 @@ import RemovableObserver from '../removableobserver/RemovableObserver';
 import SDP from '../sdp/SDP';
 import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import SignalingClient from '../signalingclient/SignalingClient';
+import SignalingClientVideoSubscriptionConfiguration from '../signalingclient/SignalingClientVideoSubscriptionConfiguration';
 import { SdkIndexFrame, SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import StatsCollector from '../statscollector/StatsCollector';
 import TransceiverController from '../transceivercontroller/TransceiverController';
@@ -108,6 +109,16 @@ export default class AudioVideoControllerState {
   // An ordered list corresponding to `videosToReceive` where the order
   // itself correspond to transceivers; 0 in this list corresponds to an inactive tranceiver.
   videoSubscriptions: number[] | null = null;
+
+  // The last calculated list of subscription configuration used to send a remote video
+  // update (i.e. not necessarily related to what is in subscribe). This is used to make the remote
+  // video update a differential message (i.e. only sending changes)
+  //
+  // This is stored as a map keyed by group ID for convenience
+  lastVideoSubscriptionConfiguration: Map<
+    number,
+    SignalingClientVideoSubscriptionConfiguration
+  > = new Map();
 
   // The video subscription limit is set by the backend and is subject to change in future.
   // This value is set in the `JoinAndReceiveIndexTask` when we process the `SdkJoinAckFrame`
@@ -219,6 +230,7 @@ export default class AudioVideoControllerState {
     }
 
     this.lastVideosToReceive = null;
+    this.lastVideoSubscriptionConfiguration = new Map();
     this.videoSubscriptions = null;
     this.videoSubscriptionLimit = DEFAULT_VIDEO_SUBSCRIPTION_LIMIT;
     this.previousSdpAnswerAsString = '';

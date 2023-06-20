@@ -9,13 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Set max bitrate to 1500kbps
-* Add resolution constraint to content share (1080p@30fps)
+- Set max bitrate to 1500kbps.
+- Add resolution constraint to content share (1080p@30fps).
+- Added opt-in server side network adaption enablement flag `ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption`. See [this section in the guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#server-side-network-adaption) for more details.
 
 ### Removed
 
 ### Changed
-- Update chime sdk messaging client version 
+- Update chime sdk messaging client version.
+- Clarify quotas for content-sharing publishing and subscriptions in API Overview. 
 
 ### Fixed
 
@@ -23,15 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add new guide for `VideoFXProcessor`.
-* Add Android Chrome support for `VideoFXProcessor`.
+- Add new guide for `VideoFXProcessor`.
+- Add Android Chrome support for `VideoFXProcessor`.
 
 ### Removed
 
 ### Changed
 
 - Add fallback value for `DefaultBrowserBehavior.browser` when `detect()` can not parse browser UserAgent.
-- Clarify quotas for content-sharing publishing and subscriptions in API Overview.
 
 ### Fixed
 

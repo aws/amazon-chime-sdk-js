@@ -6,6 +6,7 @@ import MediaType from './ClientMetricReportMediaType';
 
 export default class StreamMetricReport {
   streamId: number;
+  groupId: number;
   mediaType: MediaType;
   direction: Direction;
   previousMetrics: { [id: string]: number } = {};

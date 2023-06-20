@@ -28,9 +28,11 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   protected subscribeStreamToAttendeeMap: Map<number, string> | null = null;
   protected subscribeStreamToExternalUserIdMap: Map<number, string> | null = null;
   protected subscribeSsrcToStreamMap: Map<number, number> | null = null;
+  protected subscribeSsrcToGroupMap: Map<number, number> | null = null;
 
   // These are based on the most up to date index
   protected streamToAttendeeMap: Map<number, string> | null = null;
+  protected groupIdToAttendeeMap: Map<number, string> | null = null;
   protected streamToExternalUserIdMap: Map<number, string> | null = null;
 
   private videoStreamDescription = new VideoStreamDescription();
@@ -82,6 +84,10 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   integrateIndexFrame(indexFrame: SdkIndexFrame): void {
     this.currentIndex = indexFrame;
 
+    if (!indexFrame) {
+      return;
+    }
+
     // In the Amazon Chime SDKs, we assume a one to one mapping of group ID to profile ID when creating
     // video tiles (multiple video sources are supported through applying a `Modality` to a given profile/session token)
     //
@@ -118,6 +124,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
 
     // Null out cached maps, these will be recreated on demand
     this.streamToAttendeeMap = null;
+    this.groupIdToAttendeeMap = null;
     this.streamToExternalUserIdMap = null;
   }
 
@@ -132,6 +139,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     // These are valid until the next Subscribe Ack even if the index is updated
     this.subscribeTrackToStreamMap = this.buildTrackToStreamMap(this.currentSubscribeAck);
     this.subscribeSsrcToStreamMap = this.buildSSRCToStreamMap(this.currentSubscribeAck);
+    this.subscribeSsrcToGroupMap = this.buildSSRCToGroupMap(this.currentSubscribeAck);
     this.subscribeStreamToAttendeeMap = this.buildStreamToAttendeeMap(this.indexForSubscribe);
     this.subscribeStreamToExternalUserIdMap = this.buildStreamExternalUserIdMap(
       this.indexForSubscribe
@@ -311,7 +319,23 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     }
     const attendeeId: string = this.streamToAttendeeMap.get(streamId);
     if (!attendeeId) {
-      this.logger.info(`stream ${streamId}) does not correspond to a known attendee`);
+      this.logger.info(`stream ID ${streamId} does not correspond to a known attendee`);
+      return '';
+    }
+    return attendeeId;
+  }
+
+  attendeeIdForGroupId(groupId: number): string {
+    if (!this.groupIdToAttendeeMap) {
+      if (this.currentIndex) {
+        this.groupIdToAttendeeMap = this.buildGroupIdToAttendeeMap(this.currentIndex);
+      } else {
+        return '';
+      }
+    }
+    const attendeeId: string = this.groupIdToAttendeeMap.get(groupId);
+    if (!attendeeId) {
+      this.logger.info(`group ID ${groupId} does not correspond to a known attendee`);
       return '';
     }
     return attendeeId;
@@ -380,6 +404,13 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     }
   }
 
+  groupIdForSSRC(ssrcId: number): number {
+    if (!this.subscribeSsrcToGroupMap) {
+      return undefined;
+    }
+    return this.subscribeSsrcToGroupMap.get(ssrcId);
+  }
+
   streamsPausedAtSource(): DefaultVideoStreamIdSet {
     const paused = new DefaultVideoStreamIdSet();
     if (this.currentIndex) {
@@ -412,12 +443,30 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     return map;
   }
 
+  private buildSSRCToGroupMap(subscribeAck: SdkSubscribeAckFrame): Map<number, number> {
+    const map = new Map<number, number>();
+    for (const trackMapping of subscribeAck.tracks) {
+      if (trackMapping.trackLabel.length > 0 && trackMapping.streamId > 0) {
+        map.set(trackMapping.ssrc, this.groupIdForStreamId(trackMapping.streamId));
+      }
+    }
+    return map;
+  }
+
   private buildStreamToAttendeeMap(indexFrame: SdkIndexFrame): Map<number, string> {
     const map = new Map<number, string>();
     if (indexFrame) {
       for (const source of indexFrame.sources) {
         map.set(source.streamId, source.attendeeId);
       }
+    }
+    return map;
+  }
+
+  private buildGroupIdToAttendeeMap(indexFrame: SdkIndexFrame): Map<number, string> {
+    const map = new Map<number, string>();
+    for (const source of indexFrame.sources) {
+      map.set(source.groupId, source.attendeeId);
     }
     return map;
   }
