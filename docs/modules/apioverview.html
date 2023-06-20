@@ -337,7 +337,8 @@
 						<h2>8. Share screen and other content (optional)</h2>
 					</a>
 					<p>You can share any <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a>, such as from a screen capture or media file, as the content share for an attendee. When a content share is started, another attendee with the attendee ID <code>&lt;attendee-id&gt;#content</code> joins the meeting. The content audio and video appears like a regular attendee. You can subscribe to its volume indicator to show it in the roster and bind its video tile to a video element the same as you would for a regular attendee.</p>
-					<p>Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares. Content share does not count towards the max video tile limit. There may be up to two content shares irrespective of how many attendees are sharing their camera.</p>
+					<p>Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares. Content share does not count towards the max video tile limit for both publishing and subscription. There may be up to two content shares irrespective of how many attendees are sharing their camera. Refer to <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-limits">Amazon Chime SDK service quotas
+					</a> for details.</p>
 					<a href="#8a-start-and-stop-the-content-share" id="8a-start-and-stop-the-content-share" style="color: inherit; text-decoration: none;">
 						<h3>8a. Start and stop the content share</h3>
 					</a>
