@@ -628,6 +628,7 @@ export default class DOMMockBuilder {
     USER_AGENTS.set('samsung', SAMSUNG_INTERNET_USERAGENT);
 
     GlobalAny.navigator = {
+      product: mockBehavior.navigatorProduct,
       mediaDevices: mockBehavior.mediaDevicesSupported ? new mediaDevicesMaker() : undefined,
       userAgent: USER_AGENTS.get(mockBehavior.browserName),
       sendBeacon(
@@ -1065,22 +1066,26 @@ export default class DOMMockBuilder {
       delete GlobalAny.HTMLAudioElement.prototype.setSinkId;
     }
 
-    GlobalAny.document = {
-      createElement(_tagName: string): HTMLElement {
-        switch (_tagName) {
-          case 'video': {
-            return new GlobalAny.HTMLVideoElement();
+    if (mockBehavior.undefinedDocument) {
+      GlobalAny.document = undefined;
+    } else {
+      GlobalAny.document = {
+        createElement(_tagName: string): HTMLElement {
+          switch (_tagName) {
+            case 'video': {
+              return new GlobalAny.HTMLVideoElement();
+            }
+            case 'canvas': {
+              return new GlobalAny.HTMLCanvasElement();
+            }
+            case 'script': {
+              return new GlobalAny.HTMLScriptElement();
+            }
           }
-          case 'canvas': {
-            return new GlobalAny.HTMLCanvasElement();
-          }
-          case 'script': {
-            return new GlobalAny.HTMLScriptElement();
-          }
-        }
-      },
-      visibilityState: mockBehavior.documentVisibilityState,
-    };
+        },
+        visibilityState: mockBehavior.documentVisibilityState,
+      };
+    }
 
     GlobalAny.ImageData = class MockImageData {
       constructor(public data: Uint8ClampedArray, public width: number, public height: number) {}

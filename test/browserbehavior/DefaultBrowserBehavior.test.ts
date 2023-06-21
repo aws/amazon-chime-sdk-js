@@ -252,6 +252,15 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
     });
 
+    it('can test ReactNative', () => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.navigatorProduct = 'ReactNative';
+      domMockBehavior.undefinedDocument = true;
+      mockBuilder = new DOMMockBuilder(domMockBehavior);
+      expect(new DefaultBrowserBehavior().name()).to.eq('react-native');
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(-1);
+    });
+
     it('can handle an unknown user agent', () => {
       setUserAgent(OPERA_USER_AGENT);
       expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
