@@ -90,6 +90,18 @@ describe('DefaultBrowserBehavior', () => {
   });
 
   describe('platforms', () => {
+    it('can detect ReactNative', () => {
+      // Set ReactNative Environment. https://github.com/DamonOehlman/detect-browser/blob/546e6f1348375d8a486f21da07b20717267f6c49/src/index.ts#L216-L222
+      // @ts-ignore
+      navigator.product = 'ReactNative';
+      document = undefined;
+
+      expect(new DefaultBrowserBehavior().name()).to.eq('react-native');
+      expect(new DefaultBrowserBehavior().version()).to.eq(null);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(null);
+      expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
+    });
+
     it('can detect Firefox', () => {
       setUserAgent(FIREFOX_MAC_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
