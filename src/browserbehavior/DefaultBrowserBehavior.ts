@@ -65,7 +65,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   majorVersion(): number {
-    return parseInt(this.version().split('.')[0]);
+    return this.version() !== null ? parseInt(this.version().split('.')[0]) : -1;
   }
 
   osMajorVersion(): number {

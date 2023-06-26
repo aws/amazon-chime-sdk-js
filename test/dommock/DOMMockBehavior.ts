@@ -22,6 +22,8 @@ export default class DOMMockBehavior {
   iceConnectionStates: string[] = ['completed'];
   setSinkIdSucceeds: boolean = true;
   setSinkIdSupported: boolean = true;
+  navigatorProduct: string = '';
+  undefinedDocument: boolean = false;
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   FakeTURNCredentialsBody: Promise<object> = new Promise((resolve, _reject) => {
