@@ -211,7 +211,7 @@
 					<a href="#adjust-local-video-quality" id="adjust-local-video-quality" style="color: inherit; text-decoration: none;">
 						<h4>Adjust local video quality</h4>
 					</a>
-					<p>You can choose a video quality of up to 1280x720 (720p) at 30 fps and 2500 Kbps using <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality">chooseVideoInputQuality(width, height, frameRate)</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps">setVideoMaxBandwidthKbps(maxBandwidthKbps)</a> APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.</p>
+					<p>You can choose a video quality of up to 1280x720 (720p) at 30 fps using <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality">chooseVideoInputQuality(width, height, frameRate)</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps">setVideoMaxBandwidthKbps(maxBandwidthKbps)</a> APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.</p>
 					<p>Example:</p>
 					<pre><code class="language-js"><span style="color: #008000">// 360p</span>
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">chooseVideoInputQuality</span><span style="color: #000000">(</span><span style="color: #098658">640</span><span style="color: #000000">, </span><span style="color: #098658">360</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000">);</span>
@@ -226,45 +226,39 @@
 <span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">setVideoMaxBandwidthKbps</span><span style="color: #000000">(</span><span style="color: #098658">1400</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>The default resolution in the SDK is 540p at 15 fps and 1400 Kbps. Lower resolutions can be set if you anticipate a low bandwidth situation. Browser and codec support for very low resolutions may vary.</p>
-					<p>The value <code>maxBandwidthKbps</code> is a recommendation you make to WebRTC to use as the upper limit for upstream sending bandwidth. The Chime SDK default is 1400 Kbps for this value. The following table provides recommendations of minimum and maximum bandwidth value per resolution for typical video-conferencing scenarios. Note that when low values are selected the video can be appear pixelated. Using 15 fps instead of 30 fps will substantially decrease the required bit rate and may be acceptable for low-motion content.</p>
+					<p>The value <code>maxBandwidthKbps</code> is a recommendation you make to WebRTC to use as the upper limit for upstream sending bandwidth. The Chime SDK default is 1400 Kbps for this value. The following table provides recommendations of minimum bandwidth value per resolution for typical video-conferencing scenarios. Note that when low values are selected the video can be appear pixelated. Using 15 fps instead of 30 fps will substantially decrease the required bit rate and may be acceptable for low-motion content.</p>
 					<table>
 						<thead>
 							<tr>
 								<th>Resolution</th>
 								<th>Frame Rate Per Sec</th>
 								<th>Min Kbps</th>
-								<th>Max Kbps</th>
 							</tr>
 						</thead>
 						<tbody><tr>
 								<td>180p</td>
 								<td>30</td>
 								<td>100</td>
-								<td>250</td>
 							</tr>
 							<tr>
 								<td>360p</td>
 								<td>30</td>
 								<td>250</td>
-								<td>800</td>
 							</tr>
 							<tr>
 								<td>480p</td>
 								<td>30</td>
 								<td>400</td>
-								<td>1500</td>
 							</tr>
 							<tr>
 								<td>540p</td>
 								<td>30</td>
 								<td>500</td>
-								<td>2000</td>
 							</tr>
 							<tr>
 								<td>720p</td>
 								<td>30</td>
 								<td>1400</td>
-								<td>2500</td>
 							</tr>
 					</tbody></table>
 					<p>Setting a frame rate below 15 is not recommend and will cause the video to appear jerky and will not significantly improve the bandwidth consumed since key frames will still be sent occasionally. It would be better to adjust the resolution than set a very low frame rate.</p>

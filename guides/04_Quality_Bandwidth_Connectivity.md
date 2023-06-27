@@ -92,7 +92,7 @@ In the absence of packet loss, keep in mind that the sender uplink and receiver 
 
 ####  Adjust local video quality
 
-You can choose a video quality of up to 1280x720 (720p) at 30 fps and 2500 Kbps using [chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) and [setVideoMaxBandwidthKbps(maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.
+You can choose a video quality of up to 1280x720 (720p) at 30 fps using [chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) and [setVideoMaxBandwidthKbps(maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.
 
 Example:
 ```js
@@ -111,15 +111,15 @@ meetingSession.audioVideo.setVideoMaxBandwidthKbps(1400);
 
 The default resolution in the SDK is 540p at 15 fps and 1400 Kbps. Lower resolutions can be set if you anticipate a low bandwidth situation. Browser and codec support for very low resolutions may vary.
 
-The value `maxBandwidthKbps` is a recommendation you make to WebRTC to use as the upper limit for upstream sending bandwidth. The Chime SDK default is 1400 Kbps for this value. The following table provides recommendations of minimum and maximum bandwidth value per resolution for typical video-conferencing scenarios. Note that when low values are selected the video can be appear pixelated. Using 15 fps instead of 30 fps will substantially decrease the required bit rate and may be acceptable for low-motion content.
+The value `maxBandwidthKbps` is a recommendation you make to WebRTC to use as the upper limit for upstream sending bandwidth. The Chime SDK default is 1400 Kbps for this value. The following table provides recommendations of minimum bandwidth value per resolution for typical video-conferencing scenarios. Note that when low values are selected the video can be appear pixelated. Using 15 fps instead of 30 fps will substantially decrease the required bit rate and may be acceptable for low-motion content.
 
-| Resolution | Frame Rate Per Sec | Min Kbps | Max Kbps |
-| ------------ | ------------- | ------------- | ------------- |
-| 180p | 30 | 100 | 250 |
-| 360p | 30 | 250 | 800 |
-| 480p | 30 | 400 | 1500 |
-| 540p | 30 | 500 | 2000 |
-| 720p | 30 | 1400 | 2500 |
+| Resolution | Frame Rate Per Sec | Min Kbps |
+| ------------ | ------------- | ------------- |
+| 180p | 30 | 100 |
+| 360p | 30 | 250 |
+| 480p | 30 | 400 |
+| 540p | 30 | 500 |
+| 720p | 30 | 1400 |
 
 Setting a frame rate below 15 is not recommend and will cause the video to appear jerky and will not significantly improve the bandwidth consumed since key frames will still be sent occasionally. It would be better to adjust the resolution than set a very low frame rate.
 
