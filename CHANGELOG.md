@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set max bitrate to 1500kbps.
 - Add resolution constraint to content share (1080p@30fps).
 - Added opt-in server side network adaption enablement flag `ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption`. See [this section in the guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#server-side-network-adaption) for more details.
+- Content share issue with above change
 
 ### Removed
 
