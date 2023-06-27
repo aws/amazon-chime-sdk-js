@@ -45,7 +45,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     180,
   ];
 
-  private numberOfPublishedVideoSources: number | undefined = 0;
+  private numberOfPublishedVideoSources: number | undefined = undefined;
   private optimalParameters: DefaultVideoAndEncodeParameter;
   private parametersInEffect: DefaultVideoAndEncodeParameter;
   private idealMaxBandwidthKbps = 1500;
@@ -64,7 +64,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
 
   reset(): void {
     // Don't reset `idealMaxBandwidthKbps` or `hasBandwidthPriority` which are set via builder API paths
-    this.numberOfPublishedVideoSources = 0;
+    this.numberOfPublishedVideoSources = undefined;
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, {
