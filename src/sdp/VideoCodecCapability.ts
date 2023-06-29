@@ -52,7 +52,7 @@ export default class VideoCodecCapability implements Eq {
    * Returns the configuration of H.264 recommended by the SDK
    */
   static h264(): VideoCodecCapability {
-    return this.h264ConstrainedBaselineProfile();
+    return VideoCodecCapability.h264ConstrainedBaselineProfile();
   }
 
   /**
@@ -61,9 +61,9 @@ export default class VideoCodecCapability implements Eq {
   static fromSignaled(capability: SdkVideoCodecCapability): VideoCodecCapability | undefined {
     switch (capability) {
       case SdkVideoCodecCapability.VP8:
-        return this.vp8();
+        return VideoCodecCapability.vp8();
       case SdkVideoCodecCapability.H264_CONSTRAINED_BASELINE_PROFILE:
-        return this.h264ConstrainedBaselineProfile();
+        return VideoCodecCapability.h264ConstrainedBaselineProfile();
       default:
         return undefined;
     }
