@@ -32,9 +32,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update chime sdk messaging client version.
 - Clarify quotas for content-sharing publishing and subscriptions in API Overview.
 - Fallback `majorVersion()` to `-1` if `version` is `null` in `DefaultBrowserBehavior`.
+
+### Fixed
+
+## [3.14.1] - 2023-05-26
+
+### Added
+
+### Removed
+
+### Changed
+- Update chime sdk messaging client version 
 
 ### Fixed
 
