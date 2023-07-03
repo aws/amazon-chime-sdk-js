@@ -144,7 +144,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/ExtendedBrowserBehavior.ts#L24">src/browserbehavior/ExtendedBrowserBehavior.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/ExtendedBrowserBehavior.ts#L33">src/browserbehavior/ExtendedBrowserBehavior.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -436,7 +436,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/ExtendedBrowserBehavior.ts#L28">src/browserbehavior/ExtendedBrowserBehavior.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/ExtendedBrowserBehavior.ts#L37">src/browserbehavior/ExtendedBrowserBehavior.ts:37</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -484,9 +484,22 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/ExtendedBrowserBehavior.ts#L22">src/browserbehavior/ExtendedBrowserBehavior.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/ExtendedBrowserBehavior.ts#L31">src/browserbehavior/ExtendedBrowserBehavior.ts:31</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether the browser will emit the metric &#39;availableIncomingBandwidth&#39; or similar.</p>
+								</div>
+								<p>This was previously meant to be used to avoid using a downlink policy dependent on that metric which may have unintended consequences,
+									however with server side network adaptation this is no longer relevant. This function is deprecated and may be removed in a later
+								release.</p>
+								<dl class="tsd-comment-tags">
+									<dt>deprecated</dt>
+									<dd><p>Please set <code>VideoPriorityBasedPolicyConfig.serverSideNetworkAdaption</code> to <code>ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption</code></p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -610,7 +623,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/ExtendedBrowserBehavior.ts#L23">src/browserbehavior/ExtendedBrowserBehavior.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/ExtendedBrowserBehavior.ts#L32">src/browserbehavior/ExtendedBrowserBehavior.ts:32</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>

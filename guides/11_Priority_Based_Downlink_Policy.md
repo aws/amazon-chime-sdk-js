@@ -6,15 +6,13 @@ Amazon Chime SDK for JavaScript allows builders to choose a downlink policy on e
 
 Amazon Chime SDK for JavaScript defines `VideoPriorityBasedPolicy` as the central class providing the ability to request remote video sources to receive and set their respective priorities. The policy ensures bandwidth is reserved for video sources with higher priorities. This policy can be used in conjunction with clients sending simulcast renditions of sources, as well as single stream or mixed environments.
 
-Since this policy uses webRTC's available downlink bandwidth estimation, which has not been supported in Firefox yet,
-the policy should be only used in Chrome and Safari.
+All new users should enable [server side network adaptation features](#server-side-network-adaption) for vastly improved behavior. When server side network adapatation is used, all browsers are supported. Otherwise since previously the policy uses WebRTC's available downlink bandwidth estimation, which is not supported Firefox, it should not be used there.
 
 The existing `AllHighestVideoBandwidthPolicy` and `AdaptiveProbePolicy` both subscribe to a fixed number of available remote video sources. Builders listen to `videoTileDidUpdate` when a new remote video source becomes available and call `pauseVideoTile` if they don’t want it to be seen, otherwise video sources will be consumed automatically. `VideoPriorityBasedPolicy` relies on builders subscribing to `AudioVideoObserver.remoteVideoSourcesDidChange` to receive updates on available remote sources, and then calling `chooseRemoteVideoSources` to set which video sources to receive and their related preferences. Note that when using `VideoPriorityBasePolicy`, if builders do not call `chooseRemoteVideoSources`, no videos will be subscribed to. `videoTileDidUpdate` will then be called if we are able to successfully subscribe to the stream.
 
 Under constrained networks where simulcast is in use, `VideoPriorityBasedPolicy` may lower the resolution of remote video sources, starting with the lowest priority sources. All video sources are separeted into multiple groups by different priorities. If all video sources within same priority group are at the lowest resolution possible, or simulcast is not being used, the policy may further pause video tiles until the network has recovered. Same operations will be repeated group by group, from priority lowest to highest.
 
-Video might be paused or unpaused if a network event occurs or recovers. To configure the network event delays, refer to [Configure network event delays](#configure-network-event-delays). If you want to keep the last frame of the 
-video stream when paused due to insufficient bandwidth, please set `MeetingSessionConfiguration.keepLastFrameWhenPaused` to true. 
+If you want to keep the last frame of the video stream when paused due to insufficient bandwidth, please set `MeetingSessionConfiguration.keepLastFrameWhenPaused` to true.
 
 A typical workflow to use this policy would be:
 
@@ -72,48 +70,6 @@ Be aware of the following when calling this function:
 
 If a remote video source is paused due to insufficient bandwidth, then the application will be notified through `tileWillBePausedByDownlinkPolicy` by  `VideoDownlinkObserver` and the `VideoTileState` will be set to `paused`.
 
-### Configure network event delays <span id="configure-network-event-delays"><span>
-
-The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser's internal estimation of bandwidth.  If you would like to modify these delays to better fit your application's use case, we have exposed control with a simple to use API. Builders can pass in `VideoPriorityBasedPolicyConfig` either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:
-
-```ts
-// Method 1: Initialize with a preset
-const config = 
-  VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
-// Method 2: Initialize with networkIssueResponseDelayFactor and networkIssueRecoveryDelayFactor
-config = new VideoPriorityBasedPolicyConfig(
-  0.5, // networkIssueResponseDelayFactor
-  0.5 // networkIssueRecoveryDelayFactor
-);
-// Use the config and policy in the meeting
-this.meetingSessionConfiguration.videoDownlinkBandwidthPolicy 
-    = new VideoPriorityBasedPolicy(logger, config);
-```
-
-When constructing explicitly, the parameters should be a floating numbers  between **_0 to 1_**. The closer to 0 the value is, the smaller the delay is, and vice versa. Modifying these values effects the tradeoff between the amount of pauses and the ability to quickly respond to network downturns or recoveries.
-
-The first parameter `networkIssueResponseDelayFactor` will be used to control:
-
-* the delays before reducing the bitrate from remote video streams through pauses or simulcast stream downgrades.
-
-The latter parameter `networkIssueRecoveryDelayFactor` is to control:
-
-* the delays before starting to increase bitrates of remote video streams after a network event had downgrading them (e.g. the first unpause of simulcast stream upgrade)
-
-* the delays between futher unpauses or simulcast stream upgrades.
-
-Builders can also use the following setter to change the config dynamically. A possible usage is to listen and count `videoTileDidUpdate`, and then change to a slower speed if video tile pauses are frequent (implying poor network conditions):
-
-```ts
-setVideoPriorityBasedPolicyConfigs(config: VideoPriorityBasedPolicyConfig): void
-```
-
-The following presets are provided:
-
-* *Default Preset*: `VideoPriorityBasedPolicyConfig.DefaultPreset` balances the tradeoffs mentioned above to attempt to fit most use cases. It is used when a `VideoPriorityBasedPolicyConfig` is not given during the initialization of `VideoPriorityBasedPolicy`.
-* *Unstable Network Preset*: `VideoPriorityBasedPolicyConfig.UnstableNetworkPreset` configures quick network issue response delay and slow recovery delay. If expecting a lot of mobile usage, builders can choose unstable network preset. It has less confidence in the network so it takes longer wait when network is recovered in case the network is inconsistent.
-* *Stable Network Preset*: `VideoPriorityBasedPolicyConfig.StableNetworkPreset` configures slow network issue response delay and quick recovery delay. Select stable network preset when the network is expected to stay stable, for example in unified communications client or Ethernet connections. It will try to 'wait-out' network downturns in case they are a temporary spike.
-
 ### Enabling Server Side Network Adaption Features <span id="server-side-network-adaption"><span>
 
 `VideoPriorityBasedPolicy` has support for enabling additional features on the backend related to network adaptation. These features lead to the following improvements relative to the default policy:
@@ -126,8 +82,7 @@ The following presets are provided:
 These features are currently opt-in but may become defaults in the future. To enable these features, set the following on `VideoPriorityBasedPolicyConfig` before injecting:
 
 ```ts
-const config = 
-  VideoPriorityBasedPolicyConfig.Default;
+const config = new VideoPriorityBasedPolicyConfig;
 config.serverSideNetworkAdaption = 
     ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
 let priorityBasedDownlinkPolicy = 

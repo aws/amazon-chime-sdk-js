@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Added recommendations to use server side network adaptation, and clarified support on all browsers. Removed demo features and information on network adaptation configuration that is not used when server side network adaptation is used.
+
 ### Fixed
 
 - Fixed usage of `this` in `VideoCodecCapability` constructors.

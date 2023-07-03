@@ -149,18 +149,12 @@
             <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
               Policy</label>
           </div>
-          <lable id="priority-downlink-policy-preset-title" for="priority-downlink-policy-preset" style="display: none; padding-top:5px">Policy Preset</lable>
-          <select id="priority-downlink-policy-preset" class="form-select" style="width:100%; display: none;">
-            <option value="default" selected>Default</option>
-            <option value="stable">Stable Network</option>
-            <option value="unstable">Unstable Network</option>
-          </select>
           <lable id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</lable>
           <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
-            <option value="default" selected>Default</option>
-            <option value="none">None</option>
-            <option value="enable-bandwidth-probing">Enable Bandwidth Probing</option>
-            <option value="enable-bandwidth-probing-and-video-adaption">Enable Bandwidth Probing and Video Quality Adaption</option>
+            <option value="default">Default</option>
+            <option value="none">None (Deprecated)</option>
+            <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
+            <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video Quality Adaption</option>
           </select>
           <label id="pagination-title" for="pagination-page-size" style="display: none; padding-top:5px">Paginate displayed video tiles</label>
           <select id="pagination-page-size" class="form-select" style="width:100%; display: none;">
