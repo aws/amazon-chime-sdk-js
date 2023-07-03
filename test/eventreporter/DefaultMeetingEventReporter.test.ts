@@ -83,6 +83,7 @@ describe('DefaultMeetingEventReporter', () => {
         meetingStatus: 'TaskFailed',
         signalingOpenDurationMs: 108,
         iceGatheringDurationMs: 113,
+        sdpExchangeDurationMs: 243,
         attendeePresenceDurationMs: 731,
         poorConnectionCount: 1,
         meetingStartDurationMs: 564,

@@ -99,6 +99,7 @@ describe('MonitorTask', () => {
     'meetingDurationMs',
     'signalingOpenDurationMs',
     'iceGatheringDurationMs',
+    'sdpExchangeDurationMs',
     'attendeePresenceDurationMs',
   ];
   const receivingAudioDroppedAudioVideoEventAttributeKeys = [

@@ -64,6 +64,10 @@ export default class SetRemoteDescriptionTask extends BaseTask {
     } catch (err) {
       throw err;
     }
+
+    if (this.context.sdpOfferInitTimestampMs) {
+      this.context.sdpExchangeDurationMs = Math.round(Date.now() - this.context.sdpOfferInitTimestampMs);
+    }
   }
 
   private createICEConnectionCompletedPromise(

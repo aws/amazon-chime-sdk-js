@@ -62,6 +62,7 @@ export default class CreateSDPTask extends BaseTask {
 
       try {
         this.context.sdpOfferInit = await this.context.peer.createOffer(offerOptions);
+        this.context.sdpOfferInitTimestampMs = Date.now();
         this.context.logger.info('peer connection created offer');
         if (this.context.previousSdpOffer) {
           if (

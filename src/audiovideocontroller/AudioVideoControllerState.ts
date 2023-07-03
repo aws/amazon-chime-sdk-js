@@ -54,6 +54,8 @@ export default class AudioVideoControllerState {
 
   sdpOfferInit: RTCSessionDescriptionInit | null = null;
 
+  sdpOfferInitTimestampMs: number | null = null;
+
   audioVideoController: AudioVideoController | null = null;
 
   realtimeController: RealtimeController | null = null;
@@ -171,6 +173,8 @@ export default class AudioVideoControllerState {
 
   iceGatheringDurationMs: number | null = null;
 
+  sdpExchangeDurationMs: number | null = null;
+
   startAudioVideoTimestamp: number | null = null;
 
   attendeePresenceDurationMs: number | null = null;
@@ -191,7 +195,7 @@ export default class AudioVideoControllerState {
     // For auditing reasons, we will comment on the state that we do not touch here. Note that `DefaultAudioVideoController.actionConnect`
     // also resets certain state, some to cached members:
     // Reset to empty/null/new state: `browserBehavior`, `transceiverController`, `volumeIndicatorAdapter`, `enableSimulcast`
-    //                                `signalingOpenDurationMs`, `iceGatheringDurationMs`, `startAudioVideoTimestamp`, `attendeePresenceDurationMs`
+    //                                `signalingOpenDurationMs`, `iceGatheringDurationMs`, `sdpExchangeDurationMs`, `startAudioVideoTimestamp`, `attendeePresenceDurationMs`
     //                                `meetingStartDurationMs`, `startTimeMs`, `lastKnownVideoAvailability`, `videoCaptureAndEncodeParameter`, `videosToReceive`
     //                                `videosPaused`, `videoStreamIndex`, `statsCollector`, `connectionMonitor`
     // Reset to existing/cached values: `logger`, `meetingSessionConfiguration`, `realtimeController`, `mediaStreamBroker`,
@@ -205,7 +209,7 @@ export default class AudioVideoControllerState {
     this.peer = null;
     this.previousSdpOffer = null;
     this.sdpOfferInit = null;
-
+    this.sdpOfferInitTimestampMs = null;
     // `audioVideoController` members should either be reusable, or moved to `AudioVideoControllerState` and
     // cleaned up here.
 

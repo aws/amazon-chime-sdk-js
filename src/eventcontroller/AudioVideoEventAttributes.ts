@@ -15,4 +15,5 @@ export default interface AudioVideoEventAttributes {
   poorConnectionCount?: number;
   retryCount?: number;
   signalingOpenDurationMs?: number;
+  sdpExchangeDurationMs?: number;
 }

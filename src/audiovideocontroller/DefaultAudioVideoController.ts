@@ -638,6 +638,7 @@ export default class DefaultAudioVideoController
             signalingOpenDurationMs: this.meetingSessionContext.signalingOpenDurationMs,
             iceGatheringDurationMs: this.meetingSessionContext.iceGatheringDurationMs,
             meetingStartDurationMs: this.meetingSessionContext.meetingStartDurationMs,
+            sdpExchangeDurationMs: this.meetingSessionContext.sdpExchangeDurationMs
           });
         }
         this.meetingSessionContext.startTimeMs = Date.now();
@@ -1256,6 +1257,7 @@ export default class DefaultAudioVideoController
         iceGatheringDurationMs,
         attendeePresenceDurationMs,
         meetingStartDurationMs,
+        sdpExchangeDurationMs,
       } = this.meetingSessionContext;
       const attributes: AudioVideoEventAttributes = {
         maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
@@ -1263,6 +1265,7 @@ export default class DefaultAudioVideoController
         meetingStatus: MeetingSessionStatusCode[status.statusCode()],
         signalingOpenDurationMs,
         iceGatheringDurationMs,
+        sdpExchangeDurationMs,
         attendeePresenceDurationMs,
         poorConnectionCount,
         meetingStartDurationMs,
@@ -1381,6 +1384,7 @@ export default class DefaultAudioVideoController
             iceGatheringDurationMs,
             attendeePresenceDurationMs,
             meetingStartDurationMs,
+            sdpExchangeDurationMs
           } = this.meetingSessionContext;
           const attributes: AudioVideoEventAttributes = {
             maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
@@ -1388,6 +1392,7 @@ export default class DefaultAudioVideoController
             meetingStatus: MeetingSessionStatusCode[status.statusCode()],
             signalingOpenDurationMs,
             iceGatheringDurationMs,
+            sdpExchangeDurationMs,
             attendeePresenceDurationMs,
             poorConnectionCount,
             meetingStartDurationMs,

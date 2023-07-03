@@ -116,6 +116,7 @@ describe('InMemoryJSONEventBuffer', () => {
         meetingStatus: 'TaskFailed',
         signalingOpenDurationMs: 108,
         iceGatheringDurationMs: 113,
+        sdpExchangeDurationMs: 243,
         attendeePresenceDurationMs: 731,
         poorConnectionCount: 1,
         meetingStartDurationMs: 564,
@@ -130,7 +131,7 @@ describe('InMemoryJSONEventBuffer', () => {
         await buffer.addItem(argument);
       } catch (error) {
         expect(error.message).to.eq(
-          'Event Reporting - Item to be added has size 4176 bytes. Item cannot exceed max item size allowed of 3000 bytes.'
+          'Event Reporting - Item to be added has size 4226 bytes. Item cannot exceed max item size allowed of 3000 bytes.'
         );
         err = true;
       }
@@ -324,6 +325,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,
@@ -350,6 +352,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,
@@ -380,6 +383,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,
@@ -409,6 +413,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,
@@ -438,6 +443,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,
@@ -468,6 +474,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,
@@ -496,6 +503,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,
@@ -524,6 +532,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,
@@ -554,6 +563,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingStatus: 'TaskFailed',
           signalingOpenDurationMs: 108,
           iceGatheringDurationMs: 113,
+          sdpExchangeDurationMs: 243,
           attendeePresenceDurationMs: 731,
           poorConnectionCount: 1,
           meetingStartDurationMs: 564,

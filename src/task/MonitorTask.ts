@@ -396,6 +396,7 @@ export default class MonitorTask
       iceGatheringDurationMs,
       attendeePresenceDurationMs,
       meetingStartDurationMs,
+      sdpExchangeDurationMs
     } = this.context;
     return {
       meetingDurationMs: startTimeMs === null ? 0 : Math.round(Date.now() - startTimeMs),
@@ -403,6 +404,7 @@ export default class MonitorTask
       iceGatheringDurationMs,
       attendeePresenceDurationMs,
       meetingStartDurationMs,
+      sdpExchangeDurationMs
     };
   };
 
