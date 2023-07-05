@@ -86,7 +86,8 @@ describe('DefaultContentShareController', () => {
       this.audioProfile = audioProfile;
     }
 
-    start(): void {
+    async start(): Promise<void> {
+      await delay(1);
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
       });
@@ -260,6 +261,28 @@ describe('DefaultContentShareController', () => {
       expect(audioVideoSpy.calledOnce).to.be.true;
       expect(videoTileSpy.notCalled).to.be.true;
       await delay(defaultDelay);
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(selfVideoTileSpy.notCalled).to.be.true;
+    });
+
+    it('startContentShare does not error out if media stream is deleted', async () => {
+      // @ts-ignore
+      mediaStream.addTrack(new MediaStreamTrack('video-track-id', 'video'));
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
+      const videoTileSpy = sinon.spy(
+        contentAudioVideoController.videoTileController,
+        'startLocalVideoTile'
+      );
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
+      );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
+      contentShareController.startContentShare(mediaStream);
+      contentShareMediaStreamBroker.mediaStream = null;
+      await delay(defaultDelay);
+      expect(audioVideoSpy.calledOnce).to.be.true;
+      expect(videoTileSpy.notCalled).to.be.true;
       expect(contentShareObserverSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.notCalled).to.be.true;
     });

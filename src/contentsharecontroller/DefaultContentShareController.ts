@@ -157,7 +157,7 @@ export default class DefaultContentShareController
   }
 
   audioVideoDidStart(): void {
-    if (this.mediaStreamBroker.mediaStream.getVideoTracks().length > 0) {
+    if (this.mediaStreamBroker.mediaStream?.getVideoTracks().length > 0) {
       this.contentAudioVideo.videoTileController.startLocalVideoTile();
     }
   }

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed usage of `this` in `VideoCodecCapability` constructors.
+- Fixed a race condition error if calling `startContentShare` then `stopContentShare` right after. 
 
 ## [3.15.0] - 2023-05-01
 
