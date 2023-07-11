@@ -231,7 +231,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     const prefs = VideoPreferences.prepare();
 
     const numAttendees = attendeeIds.size;
-    let targetDisplaySize = TargetDisplaySize.High;
+    let targetDisplaySize = TargetDisplaySize.Maximum;
 
     if (numAttendees > 8) {
       targetDisplaySize = TargetDisplaySize.Low;

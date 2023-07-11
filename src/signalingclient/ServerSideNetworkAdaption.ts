@@ -8,33 +8,17 @@ import { SdkServerSideNetworkAdaption } from '../signalingprotocol/SignalingProt
  */
 export enum ServerSideNetworkAdaption {
   /**
-   * No features enabled, but can be overriden from server side values.
+   * No features enabled, but this value may switch to 'BandwidthProbingAndRemoteVideoQualityAdaption' in a later release.
    */
   Default,
 
   /**
-   * No features enabled. Will not be override from server side choice.
+   * @deprecated: Please switch to 'BandwidthProbingAndRemoteVideoQualityAdaption'
    */
   None,
 
   /**
-   * Note: This value is deprecated and will be mapped to 'BandwidthProbingAndRemoteVideoQualityAdaption'
-   * in a later release.
-   *
-   * Disable the existing client side bandwidth probing methods of waiting and unpausing,
-   * or waiting and upgrading simulcast streams (which can be large increases of bitrates
-   * and may lead to periodic oversubscription over network capacity
-   * and resulting video freezes) and replace it with more gradual server
-   * side probing of increasing amounts padding packets until the
-   * bandwidth estimate safely reaches the value needed to resume the
-   * next video source, or upgrade to the next higher simulcast stream.
-   *
-   * When this is enabled, any policy 'probing' for bandwidth headroom
-   * should be disabled. This may also enable pacing of some media packets from the server
-   * side, and may also enable packet burst probing.
-   *
-   * End users should overall see reduced video freezes, reduced broken audio,
-   * and reduced packet loss.
+   * @deprecated: Please switch to 'BandwidthProbingAndRemoteVideoQualityAdaption'.
    */
   BandwidthProbing,
 

@@ -331,7 +331,7 @@ export class DemoMeetingApp
   videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
-  videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
+  videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig;
   enablePin = false;
   echoReductionCapability = false;
   usingStereoMusicAudioProfile = false;
@@ -607,11 +607,6 @@ export class DemoMeetingApp
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('content-simulcast-config')).style.display = 'none';
     }
-    if (!this.defaultBrowserBehavior.supportDownlinkBandwidthEstimation()) {
-      (document.getElementById('priority-downlink-policy-preset') as HTMLSelectElement).disabled = true;
-      (document.getElementById('server-side-network-adaption') as HTMLSelectElement).disabled = true;
-    }
-
     document.getElementById('join-view-only').addEventListener('change', () => {
       this.isViewOnly = (document.getElementById('join-view-only') as HTMLInputElement).checked;
     });
@@ -619,12 +614,6 @@ export class DemoMeetingApp
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
 
-      const priorityBasedDownlinkPolicyConfig = document.getElementById(
-          'priority-downlink-policy-preset'
-      ) as HTMLSelectElement;
-      const priorityBasedDownlinkPolicyConfigTitle = document.getElementById(
-          'priority-downlink-policy-preset-title'
-      ) as HTMLElement;
       const serverSideNetworkAdaption = document.getElementById(
           'server-side-network-adaption'
       ) as HTMLSelectElement;
@@ -639,15 +628,11 @@ export class DemoMeetingApp
       ) as HTMLElement;
 
       if (this.usePriorityBasedDownlinkPolicy) {
-        priorityBasedDownlinkPolicyConfigTitle.style.display = 'block';
-        priorityBasedDownlinkPolicyConfig.style.display = 'block';
         serverSideNetworkAdaption.style.display = 'block';
         paginationPageSize.style.display = 'block';
         paginationTitle.style.display = 'block';
         serverSideNetworkAdaptionTitle.style.display = 'block';
       } else {
-        priorityBasedDownlinkPolicyConfigTitle.style.display = 'none';
-        priorityBasedDownlinkPolicyConfig.style.display = 'none';
         serverSideNetworkAdaption.style.display = 'none';
         paginationTitle.style.display = 'none';
         paginationPageSize.style.display = 'none';
@@ -663,22 +648,6 @@ export class DemoMeetingApp
       } else {
         echoReductionCheckbox.style.display = 'none';
       }
-    });
-
-    const presetDropDown = document.getElementById('priority-downlink-policy-preset') as HTMLSelectElement;
-    presetDropDown.addEventListener('change', async e => {
-      switch (presetDropDown.value) {
-        case 'stable':
-          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
-          break;
-        case 'unstable':
-          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
-          break;
-        case 'default':
-          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
-          break;
-      }
-      this.log('priority-downlink-policy-preset is changed: ' + presetDropDown.value);
     });
 
     const replicaMeetingInput = document.getElementById('replica-meeting-input');

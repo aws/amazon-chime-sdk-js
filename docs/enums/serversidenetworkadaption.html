@@ -96,26 +96,15 @@
 					<div class="tsd-signature tsd-kind-icon">Bandwidth<wbr>Probing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L39">src/signalingclient/ServerSideNetworkAdaption.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L23">src/signalingclient/ServerSideNetworkAdaption.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Note: This value is deprecated and will be mapped to &#39;BandwidthProbingAndRemoteVideoQualityAdaption&#39;
-							in a later release.</p>
-						</div>
-						<p>Disable the existing client side bandwidth probing methods of waiting and unpausing,
-							or waiting and upgrading simulcast streams (which can be large increases of bitrates
-							and may lead to periodic oversubscription over network capacity
-							and resulting video freezes) and replace it with more gradual server
-							side probing of increasing amounts padding packets until the
-							bandwidth estimate safely reaches the value needed to resume the
-						next video source, or upgrade to the next higher simulcast stream.</p>
-						<p>When this is enabled, any policy &#39;probing&#39; for bandwidth headroom
-							should be disabled. This may also enable pacing of some media packets from the server
-						side, and may also enable packet burst probing.</p>
-						<p>End users should overall see reduced video freezes, reduced broken audio,
-						and reduced packet loss.</p>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated:</dt>
+							<dd><p>Please switch to &#39;BandwidthProbingAndRemoteVideoQualityAdaption&#39;.</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -124,7 +113,7 @@
 					<div class="tsd-signature tsd-kind-icon">Bandwidth<wbr>Probing<wbr>And<wbr>Remote<wbr>Video<wbr>Quality<wbr>Adaption<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 3</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L51">src/signalingclient/ServerSideNetworkAdaption.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/ServerSideNetworkAdaption.ts#L35">src/signalingclient/ServerSideNetworkAdaption.ts:35</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -150,7 +139,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>No features enabled, but can be overriden from server side values.</p>
+							<p>No features enabled, but this value may switch to &#39;BandwidthProbingAndRemoteVideoQualityAdaption&#39; in a later release.</p>
 						</div>
 					</div>
 				</section>
@@ -164,9 +153,11 @@
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>No features enabled. Will not be override from server side choice.</p>
-						</div>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated:</dt>
+							<dd><p>Please switch to &#39;BandwidthProbingAndRemoteVideoQualityAdaption&#39;</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 			</section>
