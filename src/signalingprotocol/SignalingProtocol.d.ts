@@ -1,4 +1,4 @@
-import * as Long from "long";
+import Long from "long";
 import * as $protobuf from "protobufjs";
 /** Properties of a SdkSignalFrame. */
 export interface ISdkSignalFrame {

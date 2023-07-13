@@ -14,6 +14,7 @@
     "noUnusedLocals": true,
     "sourceMap": true,
     "stripInternal": true,
-    "target": "ES2015"
+    "target": "ES2015",
+    "esModuleInterop": true
   }
 }

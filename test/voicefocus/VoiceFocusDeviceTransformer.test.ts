@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
+import chaiAsPromised from 'chai-as-promised';
 import type { MockRequest } from 'fetch-mock';
-import * as fetchMock from 'fetch-mock';
+import fetchMock from 'fetch-mock';
 import { SinonStub, spy, stub } from 'sinon';
 
 // For mocking.

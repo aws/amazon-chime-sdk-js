@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
+import chaiAsPromised from 'chai-as-promised';
 
 import { isAudioTransformDevice } from '../../src/devicecontroller/AudioTransformDevice';
 import SingleNodeAudioTransformDevice from '../../src/devicecontroller/SingleNodeAudioTransformDevice';
