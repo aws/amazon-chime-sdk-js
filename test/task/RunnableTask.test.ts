@@ -3,7 +3,7 @@
 
 import { Substitute } from '@fluffy-spoon/substitute';
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
+import chaiAsPromised from 'chai-as-promised';
 
 import Logger from '../../src/logger/Logger';
 import RunnableTask from '../../src/task/RunnableTask';

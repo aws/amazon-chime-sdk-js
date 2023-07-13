@@ -16,11 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Added recommendations to use server side network adaptation, and clarified support on all browsers. Removed demo features and information on network adaptation configuration that is not used when server side network adaptation is used.
+- Set `esModuleInterop` to `true` in tsconfig.json, and update several import statements.
 
 ### Fixed
 
+- Bump protobufjs from 6.11.3 to 7.2.4.
 - Fixed usage of `this` in `VideoCodecCapability` constructors.
-- Fixed a race condition error if calling `startContentShare` then `stopContentShare` right after. 
+- Fixed a race condition error if calling `startContentShare` then `stopContentShare` right after.
 
 ## [3.15.0] - 2023-05-01
 
@@ -47,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
-- Update chime sdk messaging client version 
+
+- Update chime sdk messaging client version.
 
 ### Fixed
 
@@ -147,7 +150,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
--  Fixed missing videos, or unnecessarily long freezes when switching simulcast streams.
+- Fixed missing videos, or unnecessarily long freezes when switching simulcast streams.
 
 ## [3.8.0] - 2022-08-18
 
@@ -165,7 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `MessagingSession` reconnect loop did not break on error past reconnect deadline. Infinite reconnect loop was caused due to `firstConnectionAttemptTimestamp` not being set as `startedConnectionAttempt` was not invoked. Check https://github.com/aws/amazon-chime-sdk-js/issues/2372 for details.
+- `MessagingSession` reconnect loop did not break on error past reconnect deadline. Infinite reconnect loop was caused due to `firstConnectionAttemptTimestamp` not being set as `startedConnectionAttempt` was not invoked. Check <https://github.com/aws/amazon-chime-sdk-js/issues/2372> for details.
 - `MessagingSession` `getMessagingSessionEndpoint` call is now backwards compatible with AWS JS SDK v2.
 - Use a default "playback" `latencyHint` when creating the `AudioContext` on Windows. Also adds a `setDefaultLatencyHint` API to `DefaultDeviceController` to allow for overriding.
 - Fix behavior of websocket disconnects before a session is connected. Session.start() promise shall fail in the scenario.
@@ -208,13 +211,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
 - Fix issue closing a web worker in Amazon Voice Focus's inline worklet.
 
 ## [3.5.0] - 2022-06-02
 
 ### Added
 
-- Add a workaround for https://bugs.webkit.org/show_bug.cgi?id=241152 to play a paused video element in Safari.
+- Add a workaround for <https://bugs.webkit.org/show_bug.cgi?id=241152> to play a paused video element in Safari.
 
 ### Removed
 
@@ -255,6 +259,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.3.0] - 2022-05-12
 
 ### Added
+
 - Add support for hosting meetings in US GovCloud regions.
 - Add support for starting live transcription in US GovCloud regions.
 
