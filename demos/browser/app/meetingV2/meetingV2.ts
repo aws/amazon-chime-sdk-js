@@ -338,6 +338,7 @@ export class DemoMeetingApp
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
+  joinMuted = false;
   voiceFocusIsActive = false;
 
   supportsBackgroundBlur = false;
@@ -603,6 +604,18 @@ export class DemoMeetingApp
   }
 
   initEventListeners(): void {
+    (document.getElementById('join-muted') as HTMLInputElement).addEventListener(
+      'change',
+      e => {
+        this.joinMuted = (e.target as HTMLInputElement).checked;
+        if (this.joinMuted) {
+          this.buttonStates['button-microphone'] = 'off';
+        } else {
+          this.buttonStates['button-microphone'] = 'on';
+        }
+      }
+    );
+
     if (!this.defaultBrowserBehavior.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('content-simulcast-config')).style.display = 'none';
@@ -1866,6 +1879,9 @@ export class DemoMeetingApp
     window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
       this.log(event.reason);
     });
+    if (this.joinMuted) {
+      this.audioVideo.realtimeMuteLocalAudio();
+    }
     this.audioVideo.start();
   }
 
@@ -3597,6 +3613,9 @@ export class DemoMeetingApp
           // Open the signaling connection while the user is checking their input devices.
           const preconnect = document.getElementById('preconnect') as HTMLInputElement;
           if (preconnect.checked) {
+            if (this.joinMuted) {
+              this.audioVideo.realtimeMuteLocalAudio();
+            }
             this.audioVideo.start({ signalingOnly: true });
           }
         }
