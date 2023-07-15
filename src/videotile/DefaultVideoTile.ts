@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
@@ -58,17 +59,35 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
 
     if (videoElement.srcObject !== videoStream) {
       videoElement.srcObject = videoStream;
+
+      // In Safari, a hidden video element can show a black screen.
+      // See https://bugs.webkit.org/show_bug.cgi?id=241152 for more information.
+      if (new DefaultBrowserBehavior().requiresVideoPlayWorkaround() && videoElement.paused) {
+        const promise = videoElement.play();
+        // See https://bugs.webkit.org/show_bug.cgi?id=243519 for more information.
+        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
+        /* istanbul ignore else */
+        if (promise !== undefined) {
+          promise
+            .catch(error => {
+              console.warn('Error playing video in Safari', error);
+            })
+            .then(() => {
+              // `then` block is needed, without it we run into black tile issue even though we catch the error.
+              console.debug('Video played successfully in Safari');
+            });
+        }
+      }
     }
   }
 
   /**
-   * Disconnect a video stream to a video element by clearing the srcObject of the video element.
-   * This will also stop all the tracks of the current stream in the srcObject.
+   * Disconnect a video stream from a video element by setting `HTMLVideoElement.srcObject` to `null`.
    * @param videoElement The video element input.
    * @param dueToPause A flag to indicate whether this function is called due to pausing video tile.
-   *  If true, then we will not stop the stream's tracks and just clearing out the srcObject.
-   * @param keepLastFrameWhenPaused If true and dueToPause is also true, then we will not clear out the srcObject of the
-   * video element when it is paused and therefore, the last frame of the stream will be shown.
+   * Based on `keepLastFrameWhenPaused`, it sets `HTMLVideoElement.srcObject` to `null`.
+   * @param keepLastFrameWhenPaused If `true` and `dueToPause` is also `true`, then we will not set `HTMLVideoElement.srcObject` of the
+   * video element to `null` when it is paused and therefore, the last frame of the stream will be shown.
    */
   static disconnectVideoStreamFromVideoElement(
     videoElement: HTMLVideoElement | null,
@@ -93,15 +112,6 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
 
       DefaultVideoTile.setVideoElementFlag(videoElement, 'disablePictureInPicture', false);
       DefaultVideoTile.setVideoElementFlag(videoElement, 'disableRemotePlayback', false);
-
-      // We must remove all the tracks from the MediaStream before
-      // clearing the `srcObject` to prevent Safari from crashing.
-      const mediaStream = videoElement.srcObject as MediaStream;
-      const tracks = mediaStream.getTracks();
-      for (const track of tracks) {
-        track.stop();
-        mediaStream.removeTrack(track);
-      }
 
       videoElement.srcObject = null;
     }

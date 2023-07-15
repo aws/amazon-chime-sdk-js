@@ -3,13 +3,20 @@
 
 import * as chai from 'chai';
 
-import { SignalingClientVideoSubscriptionConfiguration } from '../../src';
+import {
+  ServerSideNetworkAdaption,
+  SignalingClientVideoSubscriptionConfiguration,
+} from '../../src';
 import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
+import {
+  convertServerSideNetworkAdaptionEnumFromSignaled,
+  convertServerSideNetworkAdaptionEnumToSignaled,
+} from '../../src/signalingclient/ServerSideNetworkAdaption';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
 import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
@@ -24,6 +31,7 @@ import {
   SdkJoinFlags,
   SdkPingPongFrame,
   SdkPingPongType,
+  SdkServerSideNetworkAdaption,
   SdkSignalFrame,
   SdkStreamMediaType,
   SdkStreamServiceType,
@@ -252,6 +260,41 @@ describe('DefaultSignalingClient', () => {
     });
   });
 
+  describe('server side network adaption enum', () => {
+    it('will convert between enum and signaling', () => {
+      expect(
+        convertServerSideNetworkAdaptionEnumFromSignaled(SdkServerSideNetworkAdaption.DEFAULT)
+      ).to.equal(ServerSideNetworkAdaption.Default);
+      expect(
+        convertServerSideNetworkAdaptionEnumFromSignaled(SdkServerSideNetworkAdaption.NONE)
+      ).to.equal(ServerSideNetworkAdaption.None);
+      expect(
+        convertServerSideNetworkAdaptionEnumFromSignaled(
+          SdkServerSideNetworkAdaption.BANDWIDTH_PROBING
+        )
+      ).to.equal(ServerSideNetworkAdaption.BandwidthProbing);
+      expect(
+        convertServerSideNetworkAdaptionEnumFromSignaled(
+          SdkServerSideNetworkAdaption.BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION
+        )
+      ).to.equal(ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption);
+      expect(
+        convertServerSideNetworkAdaptionEnumToSignaled(ServerSideNetworkAdaption.Default)
+      ).to.equal(SdkServerSideNetworkAdaption.DEFAULT);
+      expect(
+        convertServerSideNetworkAdaptionEnumToSignaled(ServerSideNetworkAdaption.None)
+      ).to.equal(SdkServerSideNetworkAdaption.NONE);
+      expect(
+        convertServerSideNetworkAdaptionEnumToSignaled(ServerSideNetworkAdaption.BandwidthProbing)
+      ).to.equal(SdkServerSideNetworkAdaption.BANDWIDTH_PROBING);
+      expect(
+        convertServerSideNetworkAdaptionEnumToSignaled(
+          ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
+        )
+      ).to.equal(SdkServerSideNetworkAdaption.BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION);
+    });
+  });
+
   describe('join', () => {
     it('will send a join', done => {
       const testObjects = createTestObjects();
@@ -266,6 +309,9 @@ describe('DefaultSignalingClient', () => {
               expect(frame.join.maxNumOfVideos).to.equal(0);
               expect(frame.join.protocolVersion).to.equal(2);
               expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
+              expect(frame.join.serverSideNetworkAdaption).to.eq(
+                SdkServerSideNetworkAdaption.DEFAULT
+              );
               done();
             });
             event.client.join(new SignalingClientJoin());
@@ -298,6 +344,61 @@ describe('DefaultSignalingClient', () => {
               '1.0.0'
             );
             const signalingClientJoin = new SignalingClientJoin(applicationMetadata);
+            event.client.join(signalingClientJoin);
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a join with server side network adaption disabled if provided', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
+              expect(frame.join.maxNumOfVideos).to.equal(0);
+              expect(frame.join.protocolVersion).to.equal(2);
+              expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
+              expect(frame.join.serverSideNetworkAdaption).to.eq(SdkServerSideNetworkAdaption.NONE);
+              done();
+            });
+            const signalingClientJoin = new SignalingClientJoin();
+            signalingClientJoin.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
+            event.client.join(signalingClientJoin);
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a join with server side network adaption bandwidth probing if provided', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
+              expect(frame.join.maxNumOfVideos).to.equal(0);
+              expect(frame.join.protocolVersion).to.equal(2);
+              expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
+              expect(frame.join.serverSideNetworkAdaption).to.eq(
+                SdkServerSideNetworkAdaption.BANDWIDTH_PROBING
+              );
+              done();
+            });
+            const signalingClientJoin = new SignalingClientJoin();
+            signalingClientJoin.serverSideNetworkAdaption =
+              ServerSideNetworkAdaption.BandwidthProbing;
             event.client.join(signalingClientJoin);
           }
         }
@@ -469,6 +570,78 @@ describe('DefaultSignalingClient', () => {
 
   describe('remoteVideoUpdate', () => {
     it('will send a remoteVideoUpdate frame', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.REMOTE_VIDEO_UPDATE);
+              expect(frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].streamId).to.equal(
+                1
+              );
+              expect(
+                frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].attendeeId
+              ).to.equal('attendeeId');
+              expect(frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].mid).to.equal(
+                'midToAdd'
+              );
+              expect(frame.remoteVideoUpdate.removedVideoSubscriptionMids[0]).to.equal(
+                'midToRemove'
+              );
+              done();
+            });
+            const addedConfig = new SignalingClientVideoSubscriptionConfiguration();
+            addedConfig.mid = 'midToAdd';
+            addedConfig.attendeeId = 'attendeeId';
+            addedConfig.streamId = 1;
+            event.client.remoteVideoUpdate([addedConfig], ['midToRemove']);
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a remoteVideoUpdate frame with maintain framerate adaption preferences', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.REMOTE_VIDEO_UPDATE);
+              expect(frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].streamId).to.equal(
+                1
+              );
+              expect(
+                frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].attendeeId
+              ).to.equal('attendeeId');
+              expect(frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].mid).to.equal(
+                'midToAdd'
+              );
+              expect(frame.remoteVideoUpdate.removedVideoSubscriptionMids[0]).to.equal(
+                'midToRemove'
+              );
+              done();
+            });
+            const addedConfig = new SignalingClientVideoSubscriptionConfiguration();
+            addedConfig.mid = 'midToAdd';
+            addedConfig.attendeeId = 'attendeeId';
+            addedConfig.streamId = 1;
+            event.client.remoteVideoUpdate([addedConfig], ['midToRemove']);
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a remoteVideoUpdate frame with maintain resolution adaption preferences', done => {
       const testObjects = createTestObjects();
       class TestObserver implements SignalingClientObserver {
         handleSignalingClientEvent(event: SignalingClientEvent): void {

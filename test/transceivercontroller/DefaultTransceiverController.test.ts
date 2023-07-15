@@ -488,7 +488,7 @@ describe('DefaultTransceiverController', () => {
       verifyTransceiverDirections(['inactive', 'inactive', 'recvonly', 'recvonly']);
     });
 
-    it('will track the mapping of stream id to mid', () => {
+    it('will track the mapping of stream id and group id to mid', () => {
       const videoStreamIndex = prepareIndex([1, 4]);
       const videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([1]);
       const videoSubscriptions: number[] = tc.updateVideoTransceivers(
@@ -503,6 +503,8 @@ describe('DefaultTransceiverController', () => {
       configureTransceivers(videosToReceive);
 
       expect(tc.getMidForStreamId(1)).to.equal('1');
+      expect(tc.getMidForGroupId(3)).to.equal(undefined);
+      expect(tc.getMidForGroupId(1)).to.equal('1');
     });
 
     it('will allow overriding the mapping of stream id to mid', () => {

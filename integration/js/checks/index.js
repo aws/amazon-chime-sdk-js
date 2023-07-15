@@ -29,4 +29,6 @@ exports.TranscriptionStartedCheck = require('./TranscriptionStartedCheck');
 exports.TranscriptionStoppedCheck = require('./TranscriptionStoppedCheck');
 exports.TranscriptsReceivedCheck = require('./TranscriptsReceivedCheck');
 exports.VideoBackgroundBlurCheck = require('./VideoBackgroundBlurCheck');
+exports.VideoFxBackgroundCheck = require('./VideoFxBackgroundCheck');
 exports.EchoAudioCheck = require('./EchoAudioCheck');
+exports.SendingAudioFailureAndRecoveryCheck = require('./SendingAudioFailureAndRecoveryCheck');

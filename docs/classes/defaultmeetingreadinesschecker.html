@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="defaultmeetingreadinesschecker.html">DefaultMeetingReadinessChecker</a>
@@ -77,7 +76,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/meetingreadinesschecker.html" class="tsd-signature-type">MeetingReadinessChecker</a></li>
+					<li><a href="../interfaces/meetingreadinesschecker.html" class="tsd-signature-type" data-tsd-kind="Interface">MeetingReadinessChecker</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -113,28 +112,28 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Meeting<wbr>Readiness<wbr>Checker<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, meetingSession<span class="tsd-signature-symbol">: </span><a href="../interfaces/meetingsession.html" class="tsd-signature-type">MeetingSession</a>, configuration<span class="tsd-signature-symbol">?: </span><a href="meetingreadinesscheckerconfiguration.html" class="tsd-signature-type">MeetingReadinessCheckerConfiguration</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultmeetingreadinesschecker.html" class="tsd-signature-type">DefaultMeetingReadinessChecker</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Meeting<wbr>Readiness<wbr>Checker<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a>, meetingSession<span class="tsd-signature-symbol">: </span><a href="../interfaces/meetingsession.html" class="tsd-signature-type" data-tsd-kind="Interface">MeetingSession</a>, configuration<span class="tsd-signature-symbol">?: </span><a href="meetingreadinesscheckerconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingReadinessCheckerConfiguration</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultmeetingreadinesschecker.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultMeetingReadinessChecker</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L39">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L40">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:40</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
+									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a></h5>
 								</li>
 								<li>
-									<h5>meetingSession: <a href="../interfaces/meetingsession.html" class="tsd-signature-type">MeetingSession</a></h5>
+									<h5>meetingSession: <a href="../interfaces/meetingsession.html" class="tsd-signature-type" data-tsd-kind="Interface">MeetingSession</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> configuration: <a href="meetingreadinesscheckerconfiguration.html" class="tsd-signature-type">MeetingReadinessCheckerConfiguration</a><span class="tsd-signature-symbol"> = new MeetingReadinessCheckerConfiguration()</span></h5>
+									<h5>configuration: <a href="meetingreadinesscheckerconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingReadinessCheckerConfiguration</a><span class="tsd-signature-symbol"> = ...</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="defaultmeetingreadinesschecker.html" class="tsd-signature-type">DefaultMeetingReadinessChecker</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="defaultmeetingreadinesschecker.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultMeetingReadinessChecker</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -145,23 +144,28 @@
 					<a name="checkaudioconnectivity" class="tsd-anchor"></a>
 					<h3>check<wbr>Audio<wbr>Connectivity</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>Audio<wbr>Connectivity<span class="tsd-signature-symbol">(</span>audioInputDevice<span class="tsd-signature-symbol">: </span><a href="../globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudioconnectivityfeedback.html" class="tsd-signature-type">CheckAudioConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Audio<wbr>Connectivity<span class="tsd-signature-symbol">(</span>audioInputDevice<span class="tsd-signature-symbol">: </span><a href="../modules.html#device" class="tsd-signature-type" data-tsd-kind="Type alias">Device</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudioconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckAudioConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkaudioconnectivity">checkAudioConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L266">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:266</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L271">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:271</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tests audio connection</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>audioInputDevice: <a href="../globals.html#device" class="tsd-signature-type">Device</a></h5>
+									<h5>audioInputDevice: <a href="../modules.html#device" class="tsd-signature-type" data-tsd-kind="Type alias">Device</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudioconnectivityfeedback.html" class="tsd-signature-type">CheckAudioConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudioconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckAudioConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -169,23 +173,28 @@
 					<a name="checkaudioinput" class="tsd-anchor"></a>
 					<h3>check<wbr>Audio<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span>audioInputDevice<span class="tsd-signature-symbol">: </span><a href="../globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudioinputfeedback.html" class="tsd-signature-type">CheckAudioInputFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span>audioInputDevice<span class="tsd-signature-symbol">: </span><a href="../modules.html#device" class="tsd-signature-type" data-tsd-kind="Type alias">Device</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudioinputfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckAudioInputFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkaudioinput">checkAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L47">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L48">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:48</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tests microphone (audio input) locally</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>audioInputDevice: <a href="../globals.html#device" class="tsd-signature-type">Device</a></h5>
+									<h5>audioInputDevice: <a href="../modules.html#device" class="tsd-signature-type" data-tsd-kind="Type alias">Device</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudioinputfeedback.html" class="tsd-signature-type">CheckAudioInputFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudioinputfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckAudioInputFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -193,19 +202,25 @@
 					<a name="checkaudiooutput" class="tsd-anchor"></a>
 					<h3>check<wbr>Audio<wbr>Output</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>Audio<wbr>Output<span class="tsd-signature-symbol">(</span>audioOutputDeviceInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, audioOutputVerificationCallback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span>, audioElement<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">HTMLAudioElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudiooutputfeedback.html" class="tsd-signature-type">CheckAudioOutputFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Audio<wbr>Output<span class="tsd-signature-symbol">(</span>audioOutputDeviceInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaDeviceInfo</span>, audioOutputVerificationCallback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span>, audioElement<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">HTMLAudioElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudiooutputfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckAudioOutputFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkaudiooutput">checkAudioOutput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L61">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L62">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:62</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tests speaker (audio output) locally</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>audioOutputDeviceInfo: <span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+									<h5>audioOutputDeviceInfo: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaDeviceInfo</span></h5>
 								</li>
 								<li>
 									<h5>audioOutputVerificationCallback: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h5>
@@ -223,10 +238,10 @@
 									</ul>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> audioElement: <span class="tsd-signature-type">HTMLAudioElement</span><span class="tsd-signature-symbol"> = null</span></h5>
+									<h5>audioElement: <span class="tsd-signature-type">HTMLAudioElement</span><span class="tsd-signature-symbol"> = null</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudiooutputfeedback.html" class="tsd-signature-type">CheckAudioOutputFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkaudiooutputfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckAudioOutputFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -234,20 +249,25 @@
 					<a name="checkcameraresolution" class="tsd-anchor"></a>
 					<h3>check<wbr>Camera<wbr>Resolution</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>Camera<wbr>Resolution<span class="tsd-signature-symbol">(</span>videoInputDevice<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, width<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, height<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkcameraresolutionfeedback.html" class="tsd-signature-type">CheckCameraResolutionFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Camera<wbr>Resolution<span class="tsd-signature-symbol">(</span>videoInputDevice<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaDeviceInfo</span>, width<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, height<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkcameraresolutionfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckCameraResolutionFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkcameraresolution">checkCameraResolution</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L163">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:163</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L168">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:168</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tests supported camera resolution locally</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>videoInputDevice: <span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+									<h5>videoInputDevice: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaDeviceInfo</span></h5>
 								</li>
 								<li>
 									<h5>width: <span class="tsd-signature-type">number</span></h5>
@@ -256,7 +276,7 @@
 									<h5>height: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkcameraresolutionfeedback.html" class="tsd-signature-type">CheckCameraResolutionFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkcameraresolutionfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckCameraResolutionFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -264,23 +284,29 @@
 					<a name="checkcontentshareconnectivity" class="tsd-anchor"></a>
 					<h3>check<wbr>Content<wbr>Share<wbr>Connectivity</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>Content<wbr>Share<wbr>Connectivity<span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkcontentshareconnectivityfeedback.html" class="tsd-signature-type">CheckContentShareConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Content<wbr>Share<wbr>Connectivity<span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkcontentshareconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckContentShareConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkcontentshareconnectivity">checkContentShareConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L217">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:217</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L222">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:222</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>/*
+									Tests content share connectivity</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> sourceId: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkcontentshareconnectivityfeedback.html" class="tsd-signature-type">CheckContentShareConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkcontentshareconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckContentShareConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -288,17 +314,22 @@
 					<a name="checknetworktcpconnectivity" class="tsd-anchor"></a>
 					<h3>check<wbr>NetworkTCPConnectivity</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>NetworkTCPConnectivity<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworktcpconnectivityfeedback.html" class="tsd-signature-type">CheckNetworkTCPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>NetworkTCPConnectivity<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworktcpconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckNetworkTCPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checknetworktcpconnectivity">checkNetworkTCPConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L397">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:397</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L417">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:417</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworktcpconnectivityfeedback.html" class="tsd-signature-type">CheckNetworkTCPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tests for TCP network connectivity</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworktcpconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckNetworkTCPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -306,17 +337,22 @@
 					<a name="checknetworkudpconnectivity" class="tsd-anchor"></a>
 					<h3>check<wbr>NetworkUDPConnectivity</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>NetworkUDPConnectivity<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworkudpconnectivityfeedback.html" class="tsd-signature-type">CheckNetworkUDPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>NetworkUDPConnectivity<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworkudpconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckNetworkUDPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checknetworkudpconnectivity">checkNetworkUDPConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L355">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:355</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L373">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:373</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworkudpconnectivityfeedback.html" class="tsd-signature-type">CheckNetworkUDPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tests for UDP network connectivity</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworkudpconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckNetworkUDPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -324,23 +360,28 @@
 					<a name="checkvideoconnectivity" class="tsd-anchor"></a>
 					<h3>check<wbr>Video<wbr>Connectivity</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>Video<wbr>Connectivity<span class="tsd-signature-symbol">(</span>videoInputDevice<span class="tsd-signature-symbol">: </span><a href="../globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkvideoconnectivityfeedback.html" class="tsd-signature-type">CheckVideoConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Video<wbr>Connectivity<span class="tsd-signature-symbol">(</span>videoInputDevice<span class="tsd-signature-symbol">: </span><a href="../modules.html#device" class="tsd-signature-type" data-tsd-kind="Type alias">Device</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkvideoconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckVideoConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkvideoconnectivity">checkVideoConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L315">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:315</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L330">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:330</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Test video connection</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>videoInputDevice: <a href="../globals.html#device" class="tsd-signature-type">Device</a></h5>
+									<h5>videoInputDevice: <a href="../modules.html#device" class="tsd-signature-type" data-tsd-kind="Type alias">Device</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkvideoconnectivityfeedback.html" class="tsd-signature-type">CheckVideoConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkvideoconnectivityfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckVideoConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -348,23 +389,28 @@
 					<a name="checkvideoinput" class="tsd-anchor"></a>
 					<h3>check<wbr>Video<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>Video<wbr>Input<span class="tsd-signature-symbol">(</span>videoInputDevice<span class="tsd-signature-symbol">: </span><a href="../globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkvideoinputfeedback.html" class="tsd-signature-type">CheckVideoInputFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Video<wbr>Input<span class="tsd-signature-symbol">(</span>videoInputDevice<span class="tsd-signature-symbol">: </span><a href="../modules.html#device" class="tsd-signature-type" data-tsd-kind="Type alias">Device</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkvideoinputfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckVideoInputFeedback</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkvideoinput">checkVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L149">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:149</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L154">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:154</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tests camera (video input) locally</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>videoInputDevice: <a href="../globals.html#device" class="tsd-signature-type">Device</a></h5>
+									<h5>videoInputDevice: <a href="../modules.html#device" class="tsd-signature-type" data-tsd-kind="Type alias">Device</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkvideoinputfeedback.html" class="tsd-signature-type">CheckVideoInputFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checkvideoinputfeedback.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CheckVideoInputFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -373,8 +419,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

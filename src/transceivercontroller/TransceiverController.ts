@@ -63,7 +63,7 @@ export default interface TransceiverController {
   ): number[];
 
   /**
-   * Get the associated MID for a given stream ID, either set via `updateVideoTranceivers`
+   * Get the associated MID for a given stream ID, either set via `updateVideoTransceivers`
    * or overriden through `setStreamIdForMid`.
    *
    * Note: According to https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/mid
@@ -78,6 +78,11 @@ export default interface TransceiverController {
    * Override or set an internal mapping of stream ID to MID.
    */
   setStreamIdForMid?(mid: string, streamId: number): void;
+
+  /**
+   * Get the associated MID for a given group ID, set during `updateVideoTransceivers`
+   */
+  getMidForGroupId?(groupId: number): string | undefined;
 
   /**
    * Sets video sending bitrate in Kilo-bit-per-second

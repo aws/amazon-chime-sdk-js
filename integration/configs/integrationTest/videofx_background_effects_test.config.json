@@ -1,0 +1,46 @@
+{
+  "`": 1,
+  "name": "videofx_background_effects_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Video Fx Background Blur Test %ts",
+      "description": "Video Fx Background Blur Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "VideoFxBackgroundBlurTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    },
+    {
+      "name": "Video Fx Background Replacement Test %ts",
+      "description": "Video Fx Background Replacement Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "VideoFxBackgroundReplacementTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC",
+      "video": {
+        "type": "Video",
+        "directory": "/Users/chef/",
+        "filename": "test_video"
+      },
+      "audio": {
+        "type": "Audio",
+        "directory": "/Users/chef/",
+        "filename": "test_video"
+      }
+    }
+  ]
+}

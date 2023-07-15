@@ -18,7 +18,7 @@ export default class UnusableAudioWarningConnectionHealthPolicy
   private lastWarnTimestampMs: number;
 
   constructor(configuration: ConnectionHealthPolicyConfiguration, data: ConnectionHealthData) {
-    super(configuration, data);
+    super(configuration, data, 'Unusable Audio Warning');
     this.coolDownTimeMs = configuration.cooldownTimeMs;
     this.pastSamplesToConsider = configuration.pastSamplesToConsider;
     this.fractionalLoss = configuration.fractionalLoss;

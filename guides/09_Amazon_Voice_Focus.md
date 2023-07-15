@@ -248,11 +248,11 @@ const vfDevice = await transformer.createTransformDevice(chosenAudioInput);
 
 If the transformer returned that Amazon Voice Focus/Echo Reduction is not supported, or it failed to initialize, this method returns `undefined`. In that case, fall back to the user's chosen audio input and indicate to the user that noise suppression is not enabled.
 
-The returned `VoiceFocusTransformDevice` can be supplied to a `chooseAudioInputDevice` call in the usual way:
+The returned `VoiceFocusTransformDevice` can be supplied to a `startAudioInput` call in the usual way:
 
 ```typescript
 const deviceToUse = vfDevice || chosenAudioInput;
-await deviceController.chooseAudioInputDevice(deviceToUse);
+await deviceController.startAudioInput(deviceToUse);
 if (vfDevice) {
   console.log('Amazon Voice Focus enabled');
 }
@@ -331,7 +331,7 @@ const spec: VoiceFocusSpec = {
 };
 
 // Create the Voice Focus device
-const transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, joinInfo);
+const transformer = await VoiceFocusDeviceTransformer.create(spec, { logger }, joinInfo);
 
 this.audioVideo = this.meetingSession.audioVideo;
 const vfDevice = await transformer.createTransformDevice(chosenAudioInput);
@@ -342,19 +342,19 @@ await vfDevice.observeMeetingAudio(this.audioVideo);
 
 ## Disabling Amazon Voice Focus and Echo Reduction and switching devices
 
-In some cases you might wish to temporarily or permanently disable  noise suppression and echo reduction during a call: perhaps to reduce CPU utilization or to allow background noise to be heard.
+In some cases you might wish to temporarily or permanently disable noise suppression and echo reduction during a call: perhaps to reduce CPU utilization or to allow background noise to be heard.
 
 You can do so by simply selecting the inner device without Amazon Voice Focus, which will fall back to the browser’s own simple noise suppressor:
 
 ```typescript
-await deviceController.chooseAudioInputDevice(chosenAudioInput);
+await deviceController.startAudioInput(chosenAudioInput);
 console.log('Amazon Voice Focus disabled');
 ```
 
 You can re-enable Amazon Voice Focus and Echo Reduction again by reselecting the transform device:
 
 ```typescript
-await deviceController.chooseAudioInputDevice(vfDevice);
+await deviceController.startAudioInput(vfDevice);
 console.log('Amazon Voice Focus re-enabled');
 ```
 
@@ -365,9 +365,22 @@ this.voiceFocusDevice = await transformer.createTransformDevice(chosenAudioInput
 …
 // New device selected. Swap it out.
 this.voiceFocusDevice = await this.voiceFocusDevice.chooseNewInnerDevice(newDevice);
-await deviceController.chooseAudioInputDevice(this.voiceFocusDevice);
+await deviceController.startAudioInput(this.voiceFocusDevice);
 console.log('Amazon Voice Focus switched to new device', newDevice);
 ```
+
+## Destroying Amazon Voice Focus worker thread from your application
+
+In some cases, you might want to completely stop the worker thread that runs the `VoiceFocusDeviceTransformer`. In that case, you can use the `destroyVoiceFocus` method to completely remove the Voice Focus worker thread. After destroying the `VoiceFocusDeviceTransformer`, you'd now have to create a new one. This might be useful if you intend to completely remove Voice Focus from your application at some point. If there was a `VoiceFocusTransformerDevice` associated with the destroyed transformer, that `VoiceFocusTransformerDevice` will stop working, as the transformer has been destroyed. You can also call `VoiceFocusTransformerDevice.stop()` to stop the worker thread, but that assumes that you've already created a `VoiceFocusTransformerDevice`. If you haven't created a `VoiceFocusTransformerDevice` already, you should use `VoiceFocusDeviceTransformer.destroyVoiceFocus` to destroy the Voice Focus worker thread.
+
+```typescript
+const transformer = await VoiceFocusDeviceTransformer.create(spec, { logger });
+
+await VoiceFocusDeviceTransformer.destroyVoiceFocus(transformer);
+console.log('Amazon Voice Focus stopped');
+```
+
+If you're concerned about having a worker thread running in the background even while not using Voice Focus, consider using the `preload=false` option as shown above, rather than destroying the `VoiceFocusDeviceTransformer`.
 
 ## Disabling Echo Reduction from your application
 
@@ -428,7 +441,7 @@ const spec: VoiceFocusSpec = {
   simd: 'force',
 };
 
-const transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+const transformer = await VoiceFocusDeviceTransformer.create(spec, { logger });
 ```
 
 or to force the use of the highest quality model, which typically requires offload to a Web Worker:
@@ -440,7 +453,7 @@ const spec: VoiceFocusSpec = {
   simd: 'force',
 };
 
-const transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+const transformer = await VoiceFocusDeviceTransformer.create(spec, { logger });
 ```
 
 We recommend that you allow estimation to adapt to the runtime environment: it is difficult to predict in advance the correct execution preference and model complexity, and choosing a too-complex model or the wrong execution approach can result in audio glitches or high CPU utilization that affects the rest of the application.

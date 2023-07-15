@@ -12,7 +12,6 @@ import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
-import ClientVideoStreamReceivingReport from '../../src/clientmetricreport/ClientVideoStreamReceivingReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
@@ -27,6 +26,7 @@ import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBr
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
+import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionVideoAvailability from '../../src/meetingsession/MeetingSessionVideoAvailability';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
@@ -43,16 +43,17 @@ import {
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import AudioLogEvent from '../../src/statscollector/AudioLogEvent';
 import StatsCollector from '../../src/statscollector/StatsCollector';
-import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import MonitorTask from '../../src/task/MonitorTask';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
+import VideoStreamIdSet from '../../src/videostreamidset/VideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
+import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -93,6 +94,18 @@ describe('MonitorTask', () => {
   const RECONNECT_FIXED_WAIT_MS = 0;
   const RECONNECT_SHORT_BACKOFF_MS = 1 * 1000;
   const RECONNECT_LONG_BACKOFF_MS = 5 * 1000;
+  const baseAudioVideoEventAttributeKeys = [
+    'meetingStartDurationMs',
+    'meetingDurationMs',
+    'signalingOpenDurationMs',
+    'iceGatheringDurationMs',
+    'attendeePresenceDurationMs',
+  ];
+  const receivingAudioDroppedAudioVideoEventAttributeKeys = [
+    ...baseAudioVideoEventAttributeKeys,
+    'maxVideoTileCount',
+    'poorConnectionCount',
+  ];
 
   class TestAudioVideoController extends NoOpAudioVideoController {
     private testObserverQueue: Set<AudioVideoObserver> = new Set<AudioVideoObserver>();
@@ -136,6 +149,8 @@ describe('MonitorTask', () => {
       return false;
     }
     stop(): void {}
+
+    overrideObservableMetric(): void {}
   }
 
   class TestConnectionMonitor implements ConnectionMonitor {
@@ -161,7 +176,6 @@ describe('MonitorTask', () => {
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
-    context.statsCollector = new StatsCollector(context.audioVideoController, logger);
     context.reconnectController = new DefaultReconnectController(
       RECONNECT_TIMEOUT_MS,
       new FullJitterBackoff(
@@ -208,20 +222,15 @@ describe('MonitorTask', () => {
     });
 
     it('registers an observer', async () => {
-      const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
-      const spy2 = sinon.spy(task, 'connectionHealthDidChange');
+      const spy = sinon.spy(task, 'connectionHealthDidChange');
       const connectionHealthData = new ConnectionHealthData();
-      const oldBandwidthKbps = 512;
-      const newBandwidthKbps = 1024;
 
       await task.run();
       context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
         observer.connectionHealthDidChange(connectionHealthData);
       });
 
-      expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
-      expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
+      expect(spy.calledOnceWith(connectionHealthData)).to.be.true;
     });
 
     it('publish a meeting event when an attendeeId is present', async () => {
@@ -264,20 +273,15 @@ describe('MonitorTask', () => {
     });
 
     it('registers an observer', async () => {
-      const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
-      const spy2 = sinon.spy(task, 'connectionHealthDidChange');
+      const spy = sinon.spy(task, 'connectionHealthDidChange');
       const connectionHealthData = new ConnectionHealthData();
-      const oldBandwidthKbps = 512;
-      const newBandwidthKbps = 1024;
 
       await task.run();
       context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
         observer.connectionHealthDidChange(connectionHealthData);
       });
 
-      expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
-      expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
+      expect(spy.calledOnceWith(connectionHealthData)).to.be.true;
     });
 
     it('publish a meeting event when an attendeeId is present', async () => {
@@ -346,44 +350,17 @@ describe('MonitorTask', () => {
 
   describe('cancel', () => {
     it('can cancel using the context', async () => {
-      const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
-      const spy2 = sinon.spy(task, 'connectionHealthDidChange');
+      const spy = sinon.spy(task, 'connectionHealthDidChange');
       await task.run();
       context.removableObservers[0].removeObserver();
       context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        observer.videoReceiveBandwidthDidChange(10, 20);
         observer.connectionHealthDidChange(new ConnectionHealthData());
       });
-      expect(spy1.called).to.be.false;
-      expect(spy2.called).to.be.false;
+      expect(spy.called).to.be.false;
     });
   });
 
   describe('metricsDidReceive', () => {
-    it('can only handle ClientMetricReport with StreamMetricReport', () => {
-      context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
-      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
-
-      class TestClientMetricReport extends ClientMetricReport {
-        getObservableMetrics(): { [id: string]: number } {
-          return;
-        }
-
-        getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } } {
-          return;
-        }
-      }
-      task.metricsDidReceive(undefined);
-      const clientMetricReport = new TestClientMetricReport(logger);
-      clientMetricReport.streamMetricReports = undefined;
-      task.metricsDidReceive(clientMetricReport);
-
-      const defaultClientMetricReport = new ClientMetricReport(logger);
-      const ssrc = 6789;
-      defaultClientMetricReport.streamMetricReports[ssrc] = new StreamMetricReport();
-      task.metricsDidReceive(defaultClientMetricReport);
-    });
-
     it('no-op if there is no SdkBitrateFrame ever received', () => {
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
@@ -410,45 +387,6 @@ describe('MonitorTask', () => {
       const streamMetricReport = new StreamMetricReport();
       streamMetricReport.previousMetrics[metric] = 100 * 1000;
       streamMetricReport.currentMetrics[metric] = 200 * 1000;
-      streamMetricReport.streamId = 1;
-      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
-      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
-
-      const streamMetricReportAudio = new StreamMetricReport();
-      streamMetricReportAudio.previousMetrics[metric] = 10 * 1000;
-      streamMetricReportAudio.currentMetrics[metric] = 100 * 1000;
-      streamMetricReportAudio.streamId = 0;
-      streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
-      streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
-
-      const clientMetricReport = new ClientMetricReport(logger);
-      clientMetricReport.streamMetricReports[1] = streamMetricReport;
-      clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
-      task.metricsDidReceive(clientMetricReport);
-    });
-
-    it('handles clientMetricReport and fires callback if receiving video falls short', done => {
-      class TestObserver implements AudioVideoObserver {
-        videoNotReceivingEnoughData?(receivingDataMap: ClientVideoStreamReceivingReport[]): void {
-          for (const report of receivingDataMap) {
-            if (report.attendeeId === 'attendeeId1') {
-              done();
-            }
-          }
-        }
-      }
-      context.audioVideoController.addObserver(new TestObserver());
-      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
-        attendeeIdForStreamId(streamId: number): string {
-          return 'attendeeId' + streamId.toString();
-        }
-      }
-      context.videoStreamIndex = new TestVideoStreamIndex(logger);
-      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
-      const metric = 'bytesReceived';
-      const streamMetricReport = new StreamMetricReport();
-      streamMetricReport.previousMetrics[metric] = 30 * 1000;
-      streamMetricReport.currentMetrics[metric] = 80 * 1000;
       streamMetricReport.streamId = 1;
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
@@ -779,61 +717,37 @@ describe('MonitorTask', () => {
     });
   });
 
-  describe('videoSendHealthDidChange', () => {
-    beforeEach(() => {
-      context.videoInputAttachedTimestampMs = Date.now() - 5000;
-      context.videoTileController.startLocalVideoTile();
-      context.lastKnownVideoAvailability.canStartLocalVideo = true;
-      context.videoDeviceInformation = {};
-      context.activeVideoInput = new MediaStream();
+  it('could trigger resubscription', done => {
+    // eslint-disable-next-line
+    class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
+      updateMetrics(_metricReport: ClientMetricReport): void {
+        return;
+      }
+
+      chooseSubscriptions(): VideoStreamIdSet {
+        return new DefaultVideoStreamIdSet([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      }
+
+      wantsResubscribe(): boolean {
+        return true;
+      }
+    }
+
+    context.videoSubscriptionLimit = 5;
+    context.videoTileController.startLocalVideoTile();
+    context.videoStreamIndex = new SimulcastVideoStreamIndex(logger);
+    context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
+    context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger);
+    const spy = sinon.spy(context.audioVideoController, 'update');
+
+    const clientMetricReport = new ClientMetricReport(logger);
+    task.metricsDidReceive(clientMetricReport);
+
+    new TimeoutScheduler(100).start(() => {
       // @ts-ignore
-      const videoTrack = new MediaStreamTrack('attach-media-input-task-video-track-id', 'video');
-      context.activeVideoInput.addTrack(videoTrack);
-    });
-
-    it('logs success when the bitrate is greater than 0', () => {
-      const spy = sinon.spy(context.statsCollector, 'logVideoEvent');
-      task.videoSendHealthDidChange(1024, 0);
-      expect(spy.calledOnceWith(VideoLogEvent.SendingSuccess, context.videoDeviceInformation)).to.be
-        .true;
-    });
-
-    it('logs success when the number of sending packets per second is greater than 0', () => {
-      const spy = sinon.spy(context.statsCollector, 'logVideoEvent');
-      task.videoSendHealthDidChange(0, 5);
-      expect(spy.calledOnceWith(VideoLogEvent.SendingSuccess, context.videoDeviceInformation)).to.be
-        .true;
-    });
-
-    it('logs failure if the bitrate and the number of sending packets are 0 with the timeout', () => {
-      context.videoInputAttachedTimestampMs = Date.now() - 50000;
-
-      const spy = sinon.spy(context.statsCollector, 'logVideoEvent');
-      task.videoSendHealthDidChange(0, 0);
-      expect(spy.calledOnceWith(VideoLogEvent.SendingFailed, context.videoDeviceInformation)).to.be
-        .true;
-    });
-
-    it('does not log if the bitrate and the number of sending packets are 0', () => {
-      const spy = sinon.spy(context.statsCollector, 'logVideoEvent');
-      task.videoSendHealthDidChange(0, 0);
-      expect(spy.called).to.be.false;
-    });
-
-    it('does not log if videoInputAttachedTimestampMs has not been updated', () => {
-      context.videoInputAttachedTimestampMs = 0;
-
-      const spy = sinon.spy(context.statsCollector, 'logVideoEvent');
-      task.videoSendHealthDidChange(1024, 5);
-      expect(spy.called).to.be.false;
-    });
-
-    it('does not log if the active video input is not available', () => {
-      context.activeVideoInput = undefined;
-
-      const spy = sinon.spy(context.statsCollector, 'logVideoEvent');
-      task.videoSendHealthDidChange(1024, 5);
-      expect(spy.called).to.be.false;
+      expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet([1, 2, 3, 4, 5])));
+      expect(spy.called).to.be.true;
+      done();
     });
   });
 
@@ -882,6 +796,9 @@ describe('MonitorTask', () => {
           const additionalArgs = <AudioVideoEventAttributes>args[1];
           assert.equal(args[0], 'receivingAudioDropped');
           assert.equal(additionalArgs.poorConnectionCount, 1);
+          expect(additionalArgs).to.have.all.keys(
+            receivingAudioDroppedAudioVideoEventAttributeKeys
+          );
           done();
         }
       }
@@ -1063,21 +980,104 @@ describe('MonitorTask', () => {
       ];
       task.connectionHealthDidChange(connectionHealthData);
     });
+
+    describe('sending audio connection health', () => {
+      let connectionHealthData: ConnectionHealthData;
+      let testConfig: ConnectionHealthPolicyConfiguration;
+
+      beforeEach(() => {
+        testConfig = new ConnectionHealthPolicyConfiguration();
+        testConfig.sendingAudioFailureSamplesToConsider = 2;
+        class TestConnectionHealthData extends ConnectionHealthData {
+          isConnectionStartRecent(_recentDurationMs: number): boolean {
+            return false;
+          }
+        }
+        connectionHealthData = new TestConnectionHealthData();
+        connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(
+          testConfig.sendingAudioFailureSamplesToConsider
+        );
+      });
+
+      it('does not notify sendingAudioFailed when audioVideoDidStart is not called', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        task.audioVideoDidStartConnecting(false);
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioFailed')).to.be.false;
+      });
+
+      it('does not notify sendingAudioFailed when audioVideoDidStartConnecting is called after audioVideoDidStart', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        task.audioVideoDidStart();
+        task.audioVideoDidStartConnecting(true);
+        // audioVideoStart() not called after reconnection
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioFailed')).to.be.false;
+      });
+
+      it('does not notify sendingAudioFailed when audioVideoDidStop is called', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        task.audioVideoDidStart();
+        task.audioVideoDidStop(new MeetingSessionStatus(MeetingSessionStatusCode.Left));
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioFailed')).to.be.false;
+      });
+
+      it('does notify sendingAudioFailed and sendingAudioRecovered when audioPacketsSent dips and recovers', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        task.audioVideoDidStart();
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioFailed')).to.be.true;
+
+        connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(0);
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.calledWith('sendingAudioRecovered')).to.be.true;
+
+        const calls = spy.getCalls();
+        for (const call of calls) {
+          const eventAttributes = call.args[1];
+          expect(eventAttributes).to.have.all.keys(baseAudioVideoEventAttributeKeys);
+        }
+      });
+
+      it('does nothing when event controller does not exist', () => {
+        const spy = sinon.spy(context.eventController, 'publishEvent');
+        context.eventController = null;
+
+        task.audioVideoDidStart();
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.called).to.be.false;
+
+        connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(0);
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(spy.called).to.be.false;
+      });
+    });
   });
 
   describe('handleSignalingClientEvent', () => {
-    it('handles SdkBitrateFrame', done => {
-      const avgBitrateTestValue = 35000 * 1000;
-      const streamIdTestValue = 1;
-      class TestObserver implements AudioVideoObserver {
-        estimatedDownlinkBandwidthLessThanRequired(_estimation: number, _required: number): void {
-          expect(_required).to.equal(avgBitrateTestValue / 1000);
-          done();
+    it('handles SdkBitrateFrame', () => {
+      let called = false;
+      class TestStatsCollector extends StatsCollector {
+        constructor(audioVideoController: AudioVideoController, logger: Logger) {
+          super(audioVideoController, logger);
+        }
+        start(): boolean {
+          return false;
+        }
+        stop(): void {}
+        overrideObservableMetric(name: string, value: number): void {
+          called = true;
+          expect(name).to.eq('availableIncomingBitrate');
+          expect(value).to.eq(100000);
         }
       }
+
+      const avgBitrateTestValue = 35000 * 1000;
+      const streamIdTestValue = 1;
       context.videosToReceive = new DefaultVideoStreamIdSet([streamIdTestValue]);
       context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
-      context.audioVideoController.addObserver(new TestObserver());
+      context.statsCollector = new TestStatsCollector(context.audioVideoController, context.logger);
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();
       message.bitrates = SdkBitrateFrame.create();
@@ -1085,6 +1085,7 @@ describe('MonitorTask', () => {
       bitrate.sourceStreamId = streamIdTestValue;
       bitrate.avgBitrateBps = avgBitrateTestValue;
       message.bitrates.bitrates.push(bitrate);
+      message.bitrates.serverAvailableOutgoingBitrate = 100;
       task.handleSignalingClientEvent(
         new SignalingClientEvent(
           new DefaultSignalingClient(webSocketAdapter, logger),
@@ -1092,17 +1093,12 @@ describe('MonitorTask', () => {
           message
         )
       );
+      expect(called).to.be.true;
     });
 
     it('handles SdkBitrate for no video subscription case', () => {
-      class TestObserver implements AudioVideoObserver {
-        estimatedDownlinkBandwidthLessThanRequired(_estimation: number, _required: number): void {
-          assert.fail();
-        }
-      }
       context.videoSubscriptions = [];
       context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
-      context.audioVideoController.addObserver(new TestObserver());
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();
       message.bitrates = SdkBitrateFrame.create();

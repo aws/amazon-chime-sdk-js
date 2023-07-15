@@ -1,3 +1,7 @@
+**Note**
+For updated versions of background blur and background replacement, please use the `VideoFXProcessor`. Use the guide at [https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html).
+
+
 # Integrating background filters into your Amazon Chime SDK for JavaScript application
 
 ## What is a background filter?
@@ -17,9 +21,21 @@ Background replacement is available as part of the Amazon Chime SDK for JavaScri
 
 ### Browser compatibility
 
-A background filter in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and Safari 14.1 and later on macOS. 
+The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers
+(including Electron) on desktop, Android. A full compatibility table is below.
 
-There is a known issue with `VideoFrameProcessor` in Safari 15: see [github issue 1059](https://github.com/aws/amazon-chime-sdk-js/issues/1059)
+|Browser                                                                |Minimum supported version
+|---                                                                    |---
+|Firefox                                                                |76
+|Chromium-based browsers and environments, including Edge and Electron  |78
+|Android Chrome                                                         |78
+|Safari on MacOS                                                        |13.0
+|iOS Safari                                                             |16
+|iOS Chrome                                                             |106
+|iOS Firefox (Except on iPad)                                           |106
+|iOS Edge                                                               |106
+
+Note that there is a known issue with `VideoFrameProcessor` in Safari 15: see [github issue 1059](https://github.com/aws/amazon-chime-sdk-js/issues/1059). This has been fixed with Safari 16.
 
 A background filter can be CPU-intensive and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use a background filter while also supporting multiple video streams and rich application functionality.
 

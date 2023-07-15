@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="signalingclientsubscribe.html">SignalingClientSubscribe</a>
@@ -104,6 +103,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#receivestreamids" class="tsd-kind-icon">receive<wbr>Stream<wbr>Ids</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#sdpoffer" class="tsd-kind-icon">sdp<wbr>Offer</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#videostreamdescriptions" class="tsd-kind-icon">video<wbr>Stream<wbr>Descriptions</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#videosubscriptionconfiguration" class="tsd-kind-icon">video<wbr>Subscription<wbr>Configuration</a></li>
 							</ul>
 						</section>
 					</div>
@@ -115,13 +115,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>Client<wbr>Subscribe<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, sdpOffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, audioHost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, audioMuted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, audioCheckin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, receiveStreamIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, localVideoEnabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, videoStreamDescriptions<span class="tsd-signature-symbol">: </span><a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span>, connectionTypeHasVideo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, compressedSdpOffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingclientsubscribe.html" class="tsd-signature-type">SignalingClientSubscribe</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>Client<wbr>Subscribe<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, sdpOffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, audioHost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, audioMuted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, audioCheckin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, receiveStreamIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, localVideoEnabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, videoStreamDescriptions<span class="tsd-signature-symbol">: </span><a href="videostreamdescription.html" class="tsd-signature-type" data-tsd-kind="Class">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span>, connectionTypeHasVideo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, compressedSdpOffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingclientsubscribe.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientSubscribe</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L9">src/signalingclient/SignalingClientSubscribe.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L11">src/signalingclient/SignalingClientSubscribe.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -134,80 +134,62 @@
 								<li>
 									<h5>attendeeId: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Attendee ID of the client</p>
-										</div>
+										<p>Attendee ID of the client</p>
 									</div>
 								</li>
 								<li>
 									<h5>sdpOffer: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>SDP offer created by WebRTC</p>
-										</div>
+										<p>SDP offer created by WebRTC</p>
 									</div>
 								</li>
 								<li>
 									<h5>audioHost: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>host</p>
-										</div>
+										<p>host</p>
 									</div>
 								</li>
 								<li>
 									<h5>audioMuted: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Whether audio from client is muted</p>
-										</div>
+										<p>Whether audio from client is muted</p>
 									</div>
 								</li>
 								<li>
 									<h5>audioCheckin: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Whether audio is in checked-in state</p>
-										</div>
+										<p>Whether audio is in checked-in state</p>
 									</div>
 								</li>
 								<li>
 									<h5>receiveStreamIds: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Which video streams to receive</p>
-										</div>
+										<p>Which video streams to receive</p>
 									</div>
 								</li>
 								<li>
 									<h5>localVideoEnabled: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Whether to send a video stream for the local camera</p>
-										</div>
+										<p>Whether to send a video stream for the local camera</p>
 									</div>
 								</li>
 								<li>
-									<h5>videoStreamDescriptions: <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>videoStreamDescriptions: <a href="videostreamdescription.html" class="tsd-signature-type" data-tsd-kind="Class">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 								<li>
 									<h5>connectionTypeHasVideo: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Whether connection type has video</p>
-										</div>
+										<p>Whether connection type has video</p>
 									</div>
 								</li>
 								<li>
 									<h5>compressedSdpOffer: <span class="tsd-signature-type">Uint8Array</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Compressed version of the SDP offer which was created by WebRTC</p>
-										</div>
+										<p>Compressed version of the SDP offer which was created by WebRTC</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="signalingclientsubscribe.html" class="tsd-signature-type">SignalingClientSubscribe</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="signalingclientsubscribe.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientSubscribe</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -219,143 +201,78 @@
 					<h3>attendee<wbr>Id</h3>
 					<div class="tsd-signature tsd-kind-icon">attendee<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L24">src/signalingclient/SignalingClientSubscribe.ts:24</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Attendee ID of the client</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="audiocheckin" class="tsd-anchor"></a>
 					<h3>audio<wbr>Checkin</h3>
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Checkin<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L28">src/signalingclient/SignalingClientSubscribe.ts:28</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether audio is in checked-in state</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="audiohost" class="tsd-anchor"></a>
 					<h3>audio<wbr>Host</h3>
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Host<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L26">src/signalingclient/SignalingClientSubscribe.ts:26</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>host</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="audiomuted" class="tsd-anchor"></a>
 					<h3>audio<wbr>Muted</h3>
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Muted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L27">src/signalingclient/SignalingClientSubscribe.ts:27</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether audio from client is muted</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="compressedsdpoffer" class="tsd-anchor"></a>
 					<h3>compressed<wbr>Sdp<wbr>Offer</h3>
 					<div class="tsd-signature tsd-kind-icon">compressed<wbr>Sdp<wbr>Offer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L33">src/signalingclient/SignalingClientSubscribe.ts:33</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Compressed version of the SDP offer which was created by WebRTC</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="connectiontypehasvideo" class="tsd-anchor"></a>
 					<h3>connection<wbr>Type<wbr>Has<wbr>Video</h3>
 					<div class="tsd-signature tsd-kind-icon">connection<wbr>Type<wbr>Has<wbr>Video<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L32">src/signalingclient/SignalingClientSubscribe.ts:32</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether connection type has video</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="localvideoenabled" class="tsd-anchor"></a>
 					<h3>local<wbr>Video<wbr>Enabled</h3>
 					<div class="tsd-signature tsd-kind-icon">local<wbr>Video<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L30">src/signalingclient/SignalingClientSubscribe.ts:30</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether to send a video stream for the local camera</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="receivestreamids" class="tsd-anchor"></a>
 					<h3>receive<wbr>Stream<wbr>Ids</h3>
 					<div class="tsd-signature tsd-kind-icon">receive<wbr>Stream<wbr>Ids<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L29">src/signalingclient/SignalingClientSubscribe.ts:29</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Which video streams to receive</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="sdpoffer" class="tsd-anchor"></a>
 					<h3>sdp<wbr>Offer</h3>
 					<div class="tsd-signature tsd-kind-icon">sdp<wbr>Offer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L25">src/signalingclient/SignalingClientSubscribe.ts:25</a></li>
-						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>SDP offer created by WebRTC</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="videostreamdescriptions" class="tsd-anchor"></a>
 					<h3>video<wbr>Stream<wbr>Descriptions</h3>
-					<div class="tsd-signature tsd-kind-icon">video<wbr>Stream<wbr>Descriptions<span class="tsd-signature-symbol">:</span> <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">video<wbr>Stream<wbr>Descriptions<span class="tsd-signature-symbol">:</span> <a href="videostreamdescription.html" class="tsd-signature-type" data-tsd-kind="Class">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="videosubscriptionconfiguration" class="tsd-anchor"></a>
+					<h3>video<wbr>Subscription<wbr>Configuration</h3>
+					<div class="tsd-signature tsd-kind-icon">video<wbr>Subscription<wbr>Configuration<span class="tsd-signature-symbol">:</span> <a href="signalingclientvideosubscriptionconfiguration.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientVideoSubscriptionConfiguration</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L31">src/signalingclient/SignalingClientSubscribe.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientSubscribe.ts#L11">src/signalingclient/SignalingClientSubscribe.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -364,8 +281,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -408,6 +325,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="signalingclientsubscribe.html#videostreamdescriptions" class="tsd-kind-icon">video<wbr>Stream<wbr>Descriptions</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="signalingclientsubscribe.html#videosubscriptionconfiguration" class="tsd-kind-icon">video<wbr>Subscription<wbr>Configuration</a>
 							</li>
 						</ul>
 					</li>

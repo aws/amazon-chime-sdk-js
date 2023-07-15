@@ -11,7 +11,9 @@ import DefaultMediaDeviceFactory from '../mediadevicefactory/DefaultMediaDeviceF
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import PromiseQueue from '../utils/PromiseQueue';
 import { Maybe } from '../utils/Types';
+import DefaultVideoTransformDevice from '../videoframeprocessor/DefaultVideoTransformDevice';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import AudioInputDevice from './AudioInputDevice';
 import AudioNodeSubgraph from './AudioNodeSubgraph';
@@ -40,6 +42,7 @@ export default class DefaultDeviceController
   private static defaultSampleRate = 48000;
   private static defaultSampleSize = 16;
   private static defaultChannelCount = 1;
+  private static defaultLatencyHint?: AudioContextLatencyCategory | number;
   private static audioContext: AudioContext | null = null;
 
   private deviceInfoCache: MediaDeviceInfo[] | null = null;
@@ -71,8 +74,10 @@ export default class DefaultDeviceController
   private readonly useWebAudio: boolean = false;
   private readonly useMediaConstraintsFallback: boolean = true;
 
-  private isStartAudioInputInProgress: boolean = false;
-  private isStartVideoInputInProgress: boolean = false;
+  private audioInputTaskQueue: PromiseQueue = new PromiseQueue();
+  private videoInputTaskQueue: PromiseQueue = new PromiseQueue();
+
+  private muted: boolean = false;
 
   // This handles the dispatch of `mute` and `unmute` events from audio tracks.
   // There's a bit of a semantic mismatch here if input streams allow individual component tracks to be muted,
@@ -216,18 +221,18 @@ export default class DefaultDeviceController
   }
 
   async startAudioInput(device: AudioInputDevice): Promise<MediaStream | undefined> {
+    return await this.audioInputTaskQueue.add(() => this.startAudioInputTask(device));
+  }
+
+  private async startAudioInputTask(device: AudioInputDevice): Promise<MediaStream | undefined> {
     if (device === undefined) {
       this.logger.error('Audio input device cannot be undefined');
       return undefined;
     }
-    if (this.isStartAudioInputInProgress) {
-      throw new Error('Another start audio input is in progress');
-    }
-    this.isStartAudioInputInProgress = true;
 
     try {
       if (isAudioTransformDevice(device)) {
-        // N.B., do not JSON.stringify here — for some kinds of devices this
+        // N.B., do not JSON.stringify here — for some kinds of devices this
         // will cause a cyclic object reference error.
         this.logger.info(`Choosing transform input device ${device}`);
 
@@ -242,6 +247,7 @@ export default class DefaultDeviceController
       if (this.useWebAudio) {
         this.attachAudioInputStreamToAudioContext(this.activeDevices['audio'].stream);
         this.pushAudioMeetingStateForPermissions(this.getMediaStreamDestinationNode().stream);
+        await this.transform?.device.mute(this.muted);
         return this.getMediaStreamDestinationNode().stream;
       } else {
         this.publishAudioInputDidChangeEvent(this.activeDevices['audio'].stream);
@@ -249,15 +255,14 @@ export default class DefaultDeviceController
       }
     } catch (error) {
       throw error;
-    } finally {
-      this.isStartAudioInputInProgress = false;
     }
   }
 
   async stopAudioInput(): Promise<void> {
-    if (this.isStartAudioInputInProgress) {
-      throw new Error('An audio input is starting');
-    }
+    return this.audioInputTaskQueue.add(() => this.stopAudioInputTask());
+  }
+
+  private async stopAudioInputTask(): Promise<void> {
     try {
       if (this.useWebAudio) {
         this.releaseAudioTransformStream();
@@ -317,6 +322,9 @@ export default class DefaultDeviceController
   }
 
   private async chooseVideoTransformInputDevice(device: VideoTransformDevice): Promise<void> {
+    if (this.eventController && device instanceof DefaultVideoTransformDevice) {
+      device.passEventControllerToProcessors(this.eventController);
+    }
     if (device === this.chosenVideoTransformDevice) {
       this.logger.info('Reselecting same VideoTransformDevice');
       return;
@@ -356,17 +364,7 @@ export default class DefaultDeviceController
 
     // Update device and stream
     this.chosenVideoTransformDevice = device;
-    const newMediaStream = this.activeDevices['video'].stream;
     this.logger.info('video transform device uses previous stream');
-
-    // Input is not a MediaStream. Update constraints
-    if (!(inner as MediaStream).id) {
-      const constraint = inner as MediaTrackConstraints;
-      constraint.width = constraint.width || this.videoInputQualitySettings.videoWidth;
-      constraint.height = constraint.height || this.videoInputQualitySettings.videoHeight;
-      constraint.frameRate = constraint.frameRate || this.videoInputQualitySettings.videoFrameRate;
-      await newMediaStream.getVideoTracks()[0].applyConstraints(constraint);
-    }
 
     // `transformStream` will start processing.
     this.logger.info('apply processors to transform');
@@ -374,15 +372,14 @@ export default class DefaultDeviceController
   }
 
   async startVideoInput(device: VideoInputDevice): Promise<MediaStream | undefined> {
+    return await this.videoInputTaskQueue.add(() => this.startVideoInputTask(device));
+  }
+
+  private async startVideoInputTask(device: VideoInputDevice): Promise<MediaStream | undefined> {
     if (!device) {
       this.logger.error('Invalid video input device');
       return undefined;
     }
-
-    if (this.isStartVideoInputInProgress) {
-      throw new Error('Another start video input is in progress');
-    }
-    this.isStartVideoInputInProgress = true;
 
     try {
       if (isVideoTransformDevice(device)) {
@@ -406,15 +403,14 @@ export default class DefaultDeviceController
       return this.activeDevices['video'].stream;
     } catch (error) {
       throw error;
-    } finally {
-      this.isStartVideoInputInProgress = false;
     }
   }
 
   async stopVideoInput(): Promise<void> {
-    if (this.isStartVideoInputInProgress) {
-      throw new Error('A video input is starting');
-    }
+    return this.videoInputTaskQueue.add(() => this.stopVideoInputTask());
+  }
+
+  private async stopVideoInputTask(): Promise<void> {
     try {
       if (this.chosenVideoInputIsTransformDevice()) {
         this.releaseVideoTransformStream();
@@ -565,12 +561,27 @@ export default class DefaultDeviceController
     return this.videoInputQualitySettings;
   }
 
-  acquireAudioInputStream(): Promise<MediaStream> {
-    return this.acquireInputStream('audio');
+  async acquireAudioInputStream(): Promise<MediaStream> {
+    if (!this.activeDevices['audio']) {
+      this.logger.info(`No audio device chosen, creating empty audio device`);
+      await this.startAudioInput(null);
+    }
+
+    if (this.useWebAudio) {
+      const dest = this.getMediaStreamDestinationNode();
+      return dest.stream;
+    }
+    return this.activeDevices['audio'].stream;
   }
 
-  acquireVideoInputStream(): Promise<MediaStream> {
-    return this.acquireInputStream('video');
+  async acquireVideoInputStream(): Promise<MediaStream> {
+    if (!this.activeDevices['video']) {
+      throw new Error(`No video device chosen`);
+    }
+    if (this.chosenVideoInputIsTransformDevice()) {
+      return this.chosenVideoTransformDevice.outputMediaStream;
+    }
+    return this.activeDevices['video'].stream;
   }
 
   async acquireDisplayInputStream(
@@ -680,29 +691,30 @@ export default class DefaultDeviceController
   }
 
   private toggleLocalAudioInputStream(enabled: boolean): void {
-    if (!this.activeDevices['audio']) {
+    let audioDevice: MediaStreamAudioDestinationNode | DeviceSelection = this.activeDevices[
+      'audio'
+    ];
+    if (this.useWebAudio) {
+      audioDevice = this.getMediaStreamDestinationNode();
+    }
+    if (!audioDevice) {
       return;
     }
-    let isChanged = false;
-    for (const track of this.activeDevices['audio'].stream.getTracks()) {
+    for (const track of audioDevice.stream.getTracks()) {
       if (track.enabled === enabled) {
         continue;
       }
       track.enabled = enabled;
-      isChanged = true;
     }
-    if (isChanged) {
-      this.transform?.device.mute(!enabled);
+    if (this.muted !== !enabled) {
+      this.muted = !enabled;
+      this.transform?.device.mute(this.muted);
     }
   }
 
-  static getIntrinsicDeviceId(device: Device): string | string[] | null {
-    if (device === undefined) {
+  static getIntrinsicDeviceId(device: Device | null): string | string[] | undefined {
+    if (!device) {
       return undefined;
-    }
-
-    if (device === null) {
-      return null;
     }
 
     if (typeof device === 'string') {
@@ -715,12 +727,8 @@ export default class DefaultDeviceController
 
     const constraints: MediaTrackConstraints = device as MediaTrackConstraints;
     const deviceIdConstraints = constraints.deviceId;
-    if (deviceIdConstraints === undefined) {
+    if (!deviceIdConstraints) {
       return undefined;
-    }
-
-    if (deviceIdConstraints === null) {
-      return null;
     }
 
     if (typeof deviceIdConstraints === 'string' || Array.isArray(deviceIdConstraints)) {
@@ -822,6 +830,12 @@ export default class DefaultDeviceController
         }
       } catch (err) {
         this.logger.info('unable to get media device labels');
+        this.eventController?.publishEvent('audioInputFailed', {
+          audioInputErrorMessage: this.getErrorMessage(err),
+        });
+        this.eventController?.publishEvent('videoInputFailed', {
+          videoInputErrorMessage: this.getErrorMessage(err),
+        });
       }
     }
     this.logger.debug(`Update device info cache with devices: ${JSON.stringify(devices)}`);
@@ -876,8 +890,14 @@ export default class DefaultDeviceController
   private async handleDeviceStreamEnded(kind: 'audio' | 'video', deviceId: string): Promise<void> {
     try {
       if (kind === 'audio') {
+        this.logger.warn(
+          `Audio input device which was active is no longer available, resetting to null device`
+        );
         await this.startAudioInput(null); //Need to switch to empty audio device
       } else {
+        this.logger.warn(
+          `Video input device which was active is no longer available, stopping video`
+        );
         await this.stopVideoInput();
       }
     } catch (e) {
@@ -1046,7 +1066,10 @@ export default class DefaultDeviceController
     return false;
   }
 
-  private async chooseInputIntrinsicDevice(kind: 'audio' | 'video', device: Device): Promise<void> {
+  private async chooseInputIntrinsicDevice(
+    kind: 'audio' | 'video',
+    device: Device | null
+  ): Promise<void> {
     // N.B.,: the input device might already have augmented constraints supplied
     // by an `AudioTransformDevice`. `getMediaStreamConstraints` will respect
     // settings supplied by the device.
@@ -1191,9 +1214,6 @@ export default class DefaultDeviceController
         // Hard to test, but the safety check is worthwhile.
         /* istanbul ignore else */
         if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
-          this.logger.warn(
-            `${kind} input device which was active is no longer available, resetting to null device`
-          );
           this.handleDeviceStreamEnded(kind, newDeviceId);
           delete newDevice.endedCallback;
         }
@@ -1360,31 +1380,6 @@ export default class DefaultDeviceController
     return null;
   }
 
-  private async acquireInputStream(kind: string): Promise<MediaStream> {
-    if (kind === 'audio') {
-      if (this.useWebAudio) {
-        const dest = this.getMediaStreamDestinationNode();
-        return dest.stream;
-      }
-    }
-
-    // mirrors `this.useWebAudio`
-    if (kind === 'video') {
-      if (this.chosenVideoInputIsTransformDevice()) {
-        return this.chosenVideoTransformDevice.outputMediaStream;
-      }
-    }
-    if (!this.activeDevices[kind]) {
-      if (kind === 'audio') {
-        this.logger.info(`no ${kind} device chosen, creating empty ${kind} device`);
-        await this.startAudioInput(null);
-      } else {
-        throw new Error(`no ${kind} device chosen`);
-      }
-    }
-    return this.activeDevices[kind].stream;
-  }
-
   hasAppliedTransform(): boolean {
     return !!this.transform;
   }
@@ -1480,16 +1475,38 @@ export default class DefaultDeviceController
     return this.transform?.nodes?.start || this.getMediaStreamDestinationNode();
   }
 
+  /**
+   * Overrides the default latency hint used by the user agent when creating the `AudioContext`. By default,
+   * user agents will choose "interactive" which opts for the smallest possible audio buffer. This can
+   * cause choppy audio in some cases on Windows. Therefore, "playback" will be chosen on Windows unless
+   * this value is overridden with this function.
+   * @param latencyHint The latency hint to be used when creating the Web Audio `AudioContext`
+   */
+  static setDefaultLatencyHint(latencyHint?: AudioContextLatencyCategory | number): void {
+    DefaultDeviceController.defaultLatencyHint = latencyHint;
+  }
+
+  /**
+   * Returns the Web Audio `AudioContext` used by the {@link DefaultDeviceController}. The `AudioContext`
+   * is created lazily the first time this function is called.
+   * @returns a Web Audio `AudioContext`
+   */
   static getAudioContext(): AudioContext {
     if (!DefaultDeviceController.audioContext) {
       const options: AudioContextOptions = {};
       if (navigator.mediaDevices.getSupportedConstraints().sampleRate) {
         options.sampleRate = DefaultDeviceController.defaultSampleRate;
       }
-      // @ts-ignore
-      DefaultDeviceController.audioContext = new (window.AudioContext || window.webkitAudioContext)(
-        options
-      );
+      const browserBehavior = new DefaultBrowserBehavior();
+      if (browserBehavior.requiresPlaybackLatencyHintForAudioContext()) {
+        options.latencyHint = 'playback'; // 'playback' is equivalent to 0.02s (20ms) on Windows
+      }
+      if (DefaultDeviceController.defaultLatencyHint) {
+        options.latencyHint = DefaultDeviceController.defaultLatencyHint;
+      }
+      DefaultDeviceController.audioContext = new (window.AudioContext ||
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).webkitAudioContext)(options);
     }
     return DefaultDeviceController.audioContext;
   }

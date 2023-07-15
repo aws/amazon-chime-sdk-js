@@ -9,6 +9,11 @@ import MediaType from '../../src/clientmetricreport/ClientMetricReportMediaType'
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import {
+  SdkIndexFrame,
+  SdkStreamDescriptor,
+  SdkStreamMediaType,
+} from '../../src/signalingprotocol/SignalingProtocol';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 
 describe('ClientMetricReport', () => {
@@ -16,12 +21,32 @@ describe('ClientMetricReport', () => {
   let clientMetricReport: ClientMetricReport;
   const selfAttendeeId = 'attendee-1';
 
-  beforeEach(() => {
-    clientMetricReport = new ClientMetricReport(
-      new NoOpDebugLogger(),
-      new DefaultVideoStreamIndex(new NoOpDebugLogger()),
-      selfAttendeeId
+  function prepareIndex(streamIds: number[]): DefaultVideoStreamIndex {
+    const index: DefaultVideoStreamIndex = new DefaultVideoStreamIndex(new NoOpDebugLogger());
+    const sources: SdkStreamDescriptor[] = [];
+    for (const id of streamIds) {
+      sources.push(
+        new SdkStreamDescriptor({
+          streamId: id,
+          groupId: id,
+          maxBitrateKbps: 100,
+          mediaType: SdkStreamMediaType.VIDEO,
+          attendeeId: `attendee-${id}`,
+        })
+      );
+    }
+    index.integrateIndexFrame(
+      new SdkIndexFrame({
+        atCapacity: false,
+        sources: sources,
+      })
     );
+    return index;
+  }
+
+  beforeEach(() => {
+    const index = prepareIndex([1, 2]);
+    clientMetricReport = new ClientMetricReport(new NoOpDebugLogger(), index, selfAttendeeId);
   });
 
   describe('identityValue', () => {
@@ -54,30 +79,24 @@ describe('ClientMetricReport', () => {
     const metricName = 'this-name-is-ignored';
 
     it('returns 0 if received samples is 0', () => {
-      const report = new GlobalMetricReport();
+      const ssrc = 1;
+      const report = new StreamMetricReport();
       report.currentMetrics['concealedSamples'] = 0;
       report.currentMetrics['totalSamplesReceived'] = 0;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal(0);
     });
 
     it('returns 0 if decoder abnormal is 0', () => {
-      const report = new GlobalMetricReport();
+      const ssrc = 1;
+      const report = new StreamMetricReport();
       report.currentMetrics['concealedSamples'] = 1;
       report.currentMetrics['totalSamplesReceived'] = 1;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal(0);
     });
 
     it('returns the loss percent', () => {
-      const report = new GlobalMetricReport();
-      report.currentMetrics['concealedSamples'] = 1;
-      report.currentMetrics['totalSamplesReceived'] = 2;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.decoderLossPercent(metricName)).to.equal((1 * 100) / 2);
-    });
-
-    it('returns the loss percent from the stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.currentMetrics['concealedSamples'] = 1;
@@ -91,30 +110,24 @@ describe('ClientMetricReport', () => {
     const metricName = 'metric-name';
 
     it('returns 0 if the total number of sent/received and lost is 0', () => {
-      const report = new GlobalMetricReport();
+      const ssrc = 1;
+      const report = new StreamMetricReport();
       report.currentMetrics[metricName] = 0;
       report.currentMetrics['packetsLost'] = 0;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.packetLossPercent(metricName)).to.equal(0);
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.packetLossPercent(metricName, ssrc)).to.equal(0);
     });
 
     it('returns 0 if the lost count is 0', () => {
-      const report = new GlobalMetricReport();
+      const ssrc = 1;
+      const report = new StreamMetricReport();
       report.currentMetrics[metricName] = 10;
       report.currentMetrics['packetsLost'] = 0;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.packetLossPercent(metricName)).to.equal(0);
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.packetLossPercent(metricName, ssrc)).to.equal(0);
     });
 
     it('returns the loss percent', () => {
-      const report = new GlobalMetricReport();
-      report.currentMetrics[metricName] = 10;
-      report.currentMetrics['packetsLost'] = 5;
-      clientMetricReport.globalMetricReport = report;
-      expect(clientMetricReport.packetLossPercent(metricName)).to.equal((5 * 100) / 15);
-    });
-
-    it('returns the loss percent from the stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.currentMetrics[metricName] = 10;
@@ -260,6 +273,109 @@ describe('ClientMetricReport', () => {
     });
   });
 
+  describe('averageTimeSpentPerSecondInMilliseconds', () => {
+    const metricName = 'metric-name';
+
+    it('returns 0 if the interval is 0', () => {
+      const report = new GlobalMetricReport();
+      clientMetricReport.globalMetricReport = report;
+      clientMetricReport.currentTimestampMs = 0;
+      clientMetricReport.previousTimestampMs = 0;
+      expect(clientMetricReport.averageTimeSpentPerSecondInMilliseconds(metricName)).to.equal(0);
+    });
+
+    it('returns 0 if the diff is 0', () => {
+      const report = new GlobalMetricReport();
+      report.currentMetrics[metricName] = 0;
+      clientMetricReport.globalMetricReport = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 0;
+      expect(clientMetricReport.averageTimeSpentPerSecondInMilliseconds(metricName)).to.equal(0);
+    });
+
+    it('interval is 1 second if pervious timestamp is 0', () => {
+      const report = new GlobalMetricReport();
+      report.currentMetrics[metricName] = 0.1;
+      clientMetricReport.globalMetricReport = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 0;
+      expect(clientMetricReport.averageTimeSpentPerSecondInMilliseconds(metricName)).to.equal(100);
+    });
+
+    it('returns the count from the stream metric reports', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentMetrics[metricName] = 0.1;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      expect(clientMetricReport.averageTimeSpentPerSecondInMilliseconds(metricName, ssrc)).to.equal(
+        100
+      );
+    });
+  });
+
+  describe('isHardwareImplementation', () => {
+    const metricName = 'metric-name';
+
+    it('return 0 for software implementation FFmpeg', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentStringMetrics[metricName] = 'FFmpeg';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+
+    it('return 0 for software implementation OpenH264', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentStringMetrics[metricName] = 'OpenH264';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+
+    it('return 0 for software implementation libvpx', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentStringMetrics[metricName] = 'libvpx';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+
+    it('return 1 for hardware implementation with ExternalDecoder', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentStringMetrics[metricName] = 'ExternalDecoder (VDAVideoDecoder)';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(1);
+    });
+
+    it('return 1 for hardware implementation with ExternalEncoder', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentStringMetrics[metricName] = 'ExternalEncoder';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(1);
+    });
+
+    it('return 1 for hardware implementation with HardwareAccelerator', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentStringMetrics[metricName] = 'MediaFoundationVideoEncodeAccelerator';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(1);
+    });
+
+    it('return 0 for implementation fallback from hardware', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.currentStringMetrics[metricName] =
+        'FFmpeg (fallback from: ExternalDecoder (VDAVideoDecoder)';
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(clientMetricReport.isHardwareImplementation(metricName, ssrc)).to.equal(0);
+    });
+  });
+
   describe('getMetricMap', () => {
     it('returns the global metric map if not passing the media type and the direction', () => {
       expect(clientMetricReport.getMetricMap()).to.equal(clientMetricReport.globalMetricMap);
@@ -347,6 +463,20 @@ describe('ClientMetricReport', () => {
           clientMetricReport.getObservableMetricValue('audioPacketsReceivedFractionLoss')
         ).to.equal(clientMetricReport.packetLossPercent('packetsReceived', ssrc));
       });
+
+      it('returns the overriden metric using the source in the map', () => {
+        const ssrc = 1;
+        const report = new StreamMetricReport();
+        report.mediaType = MediaType.AUDIO;
+        report.direction = Direction.DOWNSTREAM;
+        report.currentMetrics['packetsReceived'] = 10;
+        report.currentMetrics['packetsLost'] = 10;
+        clientMetricReport.streamMetricReports[ssrc] = report;
+        clientMetricReport.overrideObservableMetric('audioPacketsReceivedFractionLoss', 10);
+        expect(
+          clientMetricReport.getObservableMetricValue('audioPacketsReceivedFractionLoss')
+        ).to.equal(10);
+      });
     });
   });
 
@@ -387,7 +517,7 @@ describe('ClientMetricReport', () => {
   describe('getObservableMetrics', () => {
     it('returns the observable metrics as a JS object', () => {
       const metrics = clientMetricReport.getObservableMetrics();
-      expect(Object.keys(metrics).length).to.equal(11);
+      expect(Object.keys(metrics).length).to.equal(15);
     });
   });
 
@@ -403,6 +533,7 @@ describe('ClientMetricReport', () => {
       const downstreamReport = new StreamMetricReport();
       downstreamReport.mediaType = MediaType.VIDEO;
       downstreamReport.direction = Direction.DOWNSTREAM;
+      downstreamReport.groupId = 1;
       clientMetricReport.streamMetricReports[downstreamSsrc] = downstreamReport;
       clientMetricReport.currentTimestampMs = 100;
       clientMetricReport.previousTimestampMs = 0;
@@ -413,7 +544,7 @@ describe('ClientMetricReport', () => {
       audioUpstreamReport.currentMetrics['packetsSent'] = 100;
       clientMetricReport.streamMetricReports[audioUpstreamSsrc] = audioUpstreamReport;
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics[selfAttendeeId][downstreamSsrc]).length).to.equal(0);
+      expect(Object.keys(videoStreamMetrics['attendee-1'][downstreamSsrc]).length).to.equal(0);
       expect(Object.keys(videoStreamMetrics[selfAttendeeId][upstreamSsrc]).length).to.equal(1);
     });
 
@@ -439,7 +570,6 @@ describe('ClientMetricReport', () => {
       clientMetricReport.currentTimestampMs = 100;
       clientMetricReport.previousTimestampMs = 0;
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(0);
       expect(Object.keys(videoStreamMetrics[selfAttendeeId][upstreamSsrc_1]).length).to.equal(1);
       expect(Object.keys(videoStreamMetrics[selfAttendeeId][upstreamSsrc_2]).length).to.equal(1);
     });

@@ -7,6 +7,11 @@ import ConnectionHealthData from './ConnectionHealthData';
    object into a single number between a min and max range.*/
 export default interface ConnectionHealthPolicy {
   /**
+   * A unique readable name for the purpose of logging
+   */
+  readonly name?: string;
+
+  /**
    * The minimum possible value.
    */
   minimumHealth(): number;

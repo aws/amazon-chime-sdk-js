@@ -22,17 +22,22 @@ import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfigu
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
+import DefaultModality from '../modality/DefaultModality';
 import DefaultPingPong from '../pingpong/DefaultPingPong';
 import DefaultRealtimeController from '../realtimecontroller/DefaultRealtimeController';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import DefaultSessionStateController from '../sessionstatecontroller/DefaultSessionStateController';
 import SessionStateController from '../sessionstatecontroller/SessionStateController';
 import SessionStateControllerAction from '../sessionstatecontroller/SessionStateControllerAction';
 import SessionStateControllerState from '../sessionstatecontroller/SessionStateControllerState';
 import SessionStateControllerTransitionResult from '../sessionstatecontroller/SessionStateControllerTransitionResult';
 import DefaultSignalingClient from '../signalingclient/DefaultSignalingClient';
+import ServerSideNetworkAdaption, {
+  serverSideNetworkAdaptionIsNoneOrDefault,
+} from '../signalingclient/ServerSideNetworkAdaption';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientVideoSubscriptionConfiguration from '../signalingclient/SignalingClientVideoSubscriptionConfiguration';
@@ -54,6 +59,7 @@ import OpenSignalingConnectionTask from '../task/OpenSignalingConnectionTask';
 import ParallelGroupTask from '../task/ParallelGroupTask';
 import PromoteToPrimaryMeetingTask from '../task/PromoteToPrimaryMeetingTask';
 import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
+import ReceiveRemoteVideoPauseResume from '../task/ReceiveRemoteVideoPauseResumeTask';
 import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from '../task/ReceiveVideoStreamIndexTask';
@@ -66,12 +72,14 @@ import Task from '../task/Task';
 import TimeoutTask from '../task/TimeoutTask';
 import WaitForAttendeePresenceTask from '../task/WaitForAttendeePresenceTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
+import SimulcastContentShareTransceiverController from '../transceivercontroller/SimulcastContentShareTransceiverController';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
 import VideoOnlyTransceiverController from '../transceivercontroller/VideoOnlyTransceiverController';
 import { Maybe } from '../utils/Types';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
+import { convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration } from '../videodownlinkbandwidthpolicy/VideoPreferences';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
@@ -97,7 +105,7 @@ export default class DefaultAudioVideoController
   private _videoTileController: VideoTileController;
   private _mediaStreamBroker: MediaStreamBroker;
   private _reconnectController: ReconnectController;
-  private _audioMixController: AudioMixController;
+  private _audioMixController: DefaultAudioMixController;
   private _eventController: EventController;
   private _audioProfile: AudioProfile = new AudioProfile();
 
@@ -118,6 +126,7 @@ export default class DefaultAudioVideoController
   private preStartObserver: SignalingClientObserver | undefined;
   private mayNeedRenegotiationForSimulcastLayerChange: boolean = false;
   private maxUplinkBandwidthKbps: number;
+  private videoSendCodecPreferences: VideoCodecCapability[];
   // Stored solely to trigger demotion callback on disconnection (expected behavior).
   //
   // We otherwise intentionally do not use this for any other behavior to avoid the complexity
@@ -125,7 +134,7 @@ export default class DefaultAudioVideoController
   private promotedToPrimaryMeeting: boolean = false;
   private hasGetRTCPeerConnectionStatsDeprecationMessageBeenSent: boolean = false;
 
-  // `connectWithPromises`, `connectWithTasks`, and `actionUpdateWithRenegotiation` all
+  // `connectWithPromises`, and `actionUpdateWithRenegotiation` all
   // contains a significant portion of asynchronous tasks, so we need to explicitly defer
   // any task operation which may be performed on the event queue that may modify
   // mutable state in `MeetingSessionContext`, as this mutable state needs to be consistent over the course of the update.
@@ -138,9 +147,6 @@ export default class DefaultAudioVideoController
 
   destroyed = false;
 
-  /** @internal */
-  usePromises: boolean = true;
-
   constructor(
     configuration: MeetingSessionConfiguration,
     logger: Logger,
@@ -152,9 +158,6 @@ export default class DefaultAudioVideoController
     this._logger = logger;
     this.sessionStateController = new DefaultSessionStateController(this._logger);
     this._configuration = configuration;
-    this.enableSimulcast =
-      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
-      new DefaultBrowserBehavior().hasChromiumWebRTC();
 
     this._webSocketAdapter = webSocketAdapter;
     this._realtimeController = new DefaultRealtimeController(mediaStreamBroker);
@@ -171,12 +174,14 @@ export default class DefaultAudioVideoController
       this._logger
     );
     this._audioMixController = new DefaultAudioMixController(this._logger);
+    this._mediaStreamBroker.addMediaStreamBrokerObserver(this._audioMixController);
     this.meetingSessionContext.logger = this._logger;
     this._eventController = eventController;
   }
 
   async destroy(): Promise<void> {
     this.observerQueue.clear();
+    this._mediaStreamBroker.removeMediaStreamBrokerObserver(this._audioMixController);
     this.destroyed = true;
   }
 
@@ -272,15 +277,16 @@ export default class DefaultAudioVideoController
   }
 
   private initSignalingClient(): void {
+    this.connectionHealthData.reset();
     if (this.meetingSessionContext.signalingClient) {
       return;
     }
 
-    this.connectionHealthData.reset();
     this.meetingSessionContext = new AudioVideoControllerState();
     this.meetingSessionContext.logger = this.logger;
     this.meetingSessionContext.eventController = this.eventController;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
+    this.meetingSessionContext.videoSendCodecPreferences = this.videoSendCodecPreferences;
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
@@ -399,6 +405,7 @@ export default class DefaultAudioVideoController
     const setLocalDescription = new SetLocalDescriptionTask(context).once(createSDP);
     const ice = new FinishGatheringICECandidatesTask(context).once(setLocalDescription);
     const subscribeAck = new SubscribeAndReceiveSubscribeAckTask(context).once(ice);
+    const receivePauseResume = new ReceiveRemoteVideoPauseResume(context).once(subscribeAck);
 
     // The ending is a delicate time: we need the connection as a whole to have a timeout,
     // and for the attendee presence timer to not start ticking until after the subscribe/ack.
@@ -410,6 +417,7 @@ export default class DefaultAudioVideoController
           // The order of these two matters. If canceled, the first one that's still running
           // will contribute any special rejection, and we don't want that to be "attendee not found"!
           subscribeAck,
+          receivePauseResume,
           needsToWaitForAttendeePresence
             ? new TimeoutTask(
                 this.logger,
@@ -425,55 +433,6 @@ export default class DefaultAudioVideoController
     ]);
   }
 
-  private connectWithTasks(needsToWaitForAttendeePresence: boolean): Task {
-    this.receiveIndexTask = new ReceiveVideoStreamIndexTask(this.meetingSessionContext);
-    this.monitorTask = new MonitorTask(
-      this.meetingSessionContext,
-      this.configuration.connectionHealthPolicyConfiguration,
-      this.connectionHealthData
-    );
-    // See declaration (unpaused in actionFinishConnecting)
-    this.receiveIndexTask.pauseIngestion();
-    this.monitorTask.pauseResubscribeCheck();
-
-    return new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStart'), [
-      this.monitorTask,
-      new ReceiveAudioInputTask(this.meetingSessionContext),
-      new TimeoutTask(
-        this.logger,
-        new SerialGroupTask(this.logger, 'Media', [
-          new SerialGroupTask(this.logger, 'Signaling', [
-            new OpenSignalingConnectionTask(this.meetingSessionContext),
-            new ListenForVolumeIndicatorsTask(this.meetingSessionContext),
-            new SendAndReceiveDataMessagesTask(this.meetingSessionContext),
-            new JoinAndReceiveIndexTask(this.meetingSessionContext),
-            new ReceiveTURNCredentialsTask(this.meetingSessionContext),
-            this.receiveIndexTask,
-          ]),
-          new SerialGroupTask(this.logger, 'Peer', [
-            new CreatePeerConnectionTask(this.meetingSessionContext),
-            new AttachMediaInputTask(this.meetingSessionContext),
-            new CreateSDPTask(this.meetingSessionContext),
-            new SetLocalDescriptionTask(this.meetingSessionContext),
-            new FinishGatheringICECandidatesTask(this.meetingSessionContext),
-            new SubscribeAndReceiveSubscribeAckTask(this.meetingSessionContext),
-            needsToWaitForAttendeePresence
-              ? new TimeoutTask(
-                  this.logger,
-                  new ParallelGroupTask(this.logger, 'FinalizeConnection', [
-                    new WaitForAttendeePresenceTask(this.meetingSessionContext),
-                    new SetRemoteDescriptionTask(this.meetingSessionContext),
-                  ]),
-                  this.meetingSessionContext.meetingSessionConfiguration.attendeePresenceTimeoutMs
-                )
-              : /* istanbul ignore next */ new SetRemoteDescriptionTask(this.meetingSessionContext),
-          ]),
-        ]),
-        this.configuration.connectionTimeoutMs
-      ),
-    ]);
-  }
-
   private async actionConnect(reconnecting: boolean): Promise<void> {
     this.initSignalingClient();
 
@@ -481,10 +440,18 @@ export default class DefaultAudioVideoController
     // we otherwise would have been had we not pre-started.
     this.uninstallPreStartObserver();
 
+    // Note that some of the assignments in this function exist to clean up previous connections.
+    // All future 'clean up' assignments should go in `AudioVideoControllerState.resetConnectionSpecificState`
+    // for consolidation purposes.
+
     this.meetingSessionContext.mediaStreamBroker = this._mediaStreamBroker;
     this.meetingSessionContext.realtimeController = this._realtimeController;
     this.meetingSessionContext.audioMixController = this._audioMixController;
     this.meetingSessionContext.audioVideoController = this;
+
+    this.enableSimulcast =
+      this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
+      new DefaultBrowserBehavior().hasChromiumWebRTC();
 
     const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
 
@@ -496,10 +463,21 @@ export default class DefaultAudioVideoController
       );
     } else if (this.enableSimulcast) {
       this.logger.info(`Using transceiver controller with simulcast support`);
-      this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
-        this.logger,
-        this.meetingSessionContext.browserBehavior
-      );
+      if (
+        new DefaultModality(this.configuration.credentials.attendeeId).hasModality(
+          DefaultModality.MODALITY_CONTENT
+        )
+      ) {
+        this.meetingSessionContext.transceiverController = new SimulcastContentShareTransceiverController(
+          this.logger,
+          this.meetingSessionContext.browserBehavior
+        );
+      } else {
+        this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
+          this.logger,
+          this.meetingSessionContext.browserBehavior
+        );
+      }
     } else {
       this.logger.info(`Using default transceiver controller`);
       this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
@@ -582,6 +560,12 @@ export default class DefaultAudioVideoController
       );
     }
 
+    if (this.meetingSessionContext.videoDownlinkBandwidthPolicy.setWantsResubscribeObserver) {
+      this.meetingSessionContext.videoDownlinkBandwidthPolicy.setWantsResubscribeObserver(() =>
+        this.update({ needsRenegotiation: false })
+      );
+    }
+
     this.meetingSessionContext.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
     this.meetingSessionContext.videoCaptureAndEncodeParameter = new DefaultVideoCaptureAndEncodeParameter(
       0,
@@ -596,7 +580,6 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
       this._realtimeController,
-      this._videoTileController,
       this.connectionHealthData,
       new DefaultPingPong(
         this.meetingSessionContext.signalingClient,
@@ -615,7 +598,6 @@ export default class DefaultAudioVideoController
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(false));
       });
-      this._mediaStreamBroker.addMediaStreamBrokerObserver(this);
       this.eventController?.publishEvent('meetingStartRequested');
     }
 
@@ -635,18 +617,15 @@ export default class DefaultAudioVideoController
       this.meetingSessionContext.meetingSessionConfiguration.attendeePresenceTimeoutMs > 0;
 
     this.logger.info('Needs to wait for attendee presence? ' + needsToWaitForAttendeePresence);
-    let connect: Task;
-    if (this.usePromises) {
-      connect = this.connectWithPromises(needsToWaitForAttendeePresence);
-    } else {
-      connect = this.connectWithTasks(needsToWaitForAttendeePresence);
-    }
+
+    const connect = this.connectWithPromises(needsToWaitForAttendeePresence);
 
     // The rest.
     try {
       await connect.run();
 
       this.connectionHealthData.setConnectionStartTime();
+      this._mediaStreamBroker.addMediaStreamBrokerObserver(this);
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
         if (this.eventController) {
@@ -786,7 +765,7 @@ export default class DefaultAudioVideoController
           this.configuration.connectionTimeoutMs
         ),
       ];
-
+      this.cleanUpMediaStreamsAfterStop();
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), subtasks).run();
     } catch (cleanError) {
       /* istanbul ignore next */
@@ -805,8 +784,7 @@ export default class DefaultAudioVideoController
     // Check in case this function has been called before peer connection is set up
     // since that is necessary to try to update remote videos without the full resubscribe path
     needsRenegotiation ||= this.meetingSessionContext.peer === undefined;
-    // If updating local or remote video without negotiation fails, fall back to renegotiation
-    needsRenegotiation ||= !this.updateRemoteVideosFromLastVideosToReceive();
+    needsRenegotiation ||= !this.updateRemoteVideosFromPolicy();
     needsRenegotiation ||= !this.updateLocalVideoFromPolicy();
     // `MeetingSessionContext.lastVideosToReceive` needs to be updated regardless
     this.meetingSessionContext.lastVideosToReceive = this.meetingSessionContext.videosToReceive;
@@ -827,19 +805,118 @@ export default class DefaultAudioVideoController
     );
   }
 
-  // This function will try to use the diff between `this.meetingSessionContext.lastVideosToReceive`
-  // and `this.meetingSessionContext.videosToReceive` to determine if the changes can be accomplished
-  // through `SignalingClient.remoteVideoUpdate` rather then the full subscribe.
+  // Depending on if using server-side bandwidth probing and if using server-side quality adaption,
+  // decide if needs to send necessary updates, and if send through full renegotiaton.
+  // It returns true if downlink policy took care of everything and no renegotiation needed.
+  private updateRemoteVideosFromPolicy(): boolean {
+    if (
+      this.meetingSessionContext.videoDownlinkBandwidthPolicy &&
+      this.meetingSessionContext.videoDownlinkBandwidthPolicy.getVideoPreferences !== undefined &&
+      this.meetingSessionContext.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption !==
+        undefined &&
+      !serverSideNetworkAdaptionIsNoneOrDefault(
+        this.meetingSessionContext.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption()
+      )
+    ) {
+      // Send up-to-date video preferences to server. This is fine if it includes remote sources/MIDs we need a full renegotiation for (i.e.
+      // ones that were added or removed). We will re-include these updates in the subscribe.
+      /* istanbul ignore if: Extremely unlikely that `videosToReceive` is null */
+      if (!this.sendRemoteVideoUpdate()) {
+        return false;
+      }
+
+      if (
+        this.meetingSessionContext.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption() ===
+        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
+      ) {
+        // If using server side remote video quality adaption (i.e. server is picking the encoding to send), we don't need
+        // to do anything after sending the update, as long as we are not adding or removing streams, in which case
+        // we need to complete a full renegotiation.
+        return this.isNotAddingOrRemovingStreams();
+      }
+    }
+    // If using client-side network adaptation, try skipping renegotitaiton if only simulcast stream swicth.
+    return this.updateRemoteVideosIfNotAddingOrRemovingStreams();
+  }
+
+  // When `ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption` has been signalled,
+  // trigger server side video quality adaption logic through `SignalingClient.remoteVideoUpdate` and skip full subscribe.
+  //
+  // This function also tries to use the diff between `this.meetingSessionContext.lastVideosToReceive`
+  // and `this.meetingSessionContext.videosToReceive` to determine if update is only simulcast stream switch,
+  // which is accomplished through `SignalingClient.remoteVideoUpdate` rather than the full subscribe.
   //
   // It requires the caller to manage `this.meetingSessionContext.lastVideosToReceive`
   // and `this.meetingSessionContext.videosToReceive` so that `this.meetingSessionContext.lastVideosToReceive`
   // contains the stream IDs from either last time a subscribe was set, or last time this function was set.
   //
-  // It will return true if succesful, if false the caller must fall back to a full renegotiation
-  private updateRemoteVideosFromLastVideosToReceive(): boolean {
-    const context = this.meetingSessionContext;
-    if (context.videosToReceive?.empty() || context.lastVideosToReceive?.empty()) {
+  // It will return true if successful, if false the caller must fall back to a full renegotiation
+  private updateRemoteVideosIfNotAddingOrRemovingStreams(): boolean {
+    const streamChanges = this.detectChangesInVideosToReceive();
+    /* istanbul ignore if: Extremely unlikely that `videosToReceive` is null or missing requisite functions and made it this far */
+    if (streamChanges === undefined) {
       return false;
+    }
+
+    const added: number[] = streamChanges.added;
+    const simulcastStreamUpdates: Map<number, number> = streamChanges.simulcastStreamUpdates;
+    const removed: number[] = streamChanges.removed;
+
+    const context = this.meetingSessionContext;
+    const updatedVideoSubscriptionConfigurations: SignalingClientVideoSubscriptionConfiguration[] = [];
+    for (const [previousId, currentId] of simulcastStreamUpdates.entries()) {
+      const updatedConfig = new SignalingClientVideoSubscriptionConfiguration();
+      updatedConfig.streamId = currentId;
+      updatedConfig.attendeeId = context.videoStreamIndex.attendeeIdForStreamId(currentId);
+      updatedConfig.mid = context.transceiverController.getMidForStreamId(previousId);
+      if (updatedConfig.mid === undefined) {
+        this.logger.info(
+          `No MID found for stream ID ${previousId}, cannot update stream without renegotiation`
+        );
+        return false;
+      }
+      updatedVideoSubscriptionConfigurations.push(updatedConfig);
+      // We need to override some other components dependent on the subscribe paths for certain functionality
+      context.transceiverController.setStreamIdForMid(updatedConfig.mid, currentId);
+      context.videoStreamIndex.overrideStreamIdMappings(previousId, currentId);
+      if (context.videoTileController.haveVideoTileForAttendeeId(updatedConfig.attendeeId)) {
+        const tile = context.videoTileController.getVideoTileForAttendeeId(
+          updatedConfig.attendeeId
+        );
+        if (!tile.setStreamId) {
+          // Required function
+          return false;
+        }
+        tile.setStreamId(currentId);
+      }
+    }
+    // accomplish simulcast stream switches by sending removeVideoUpdate signaling frame instead of full renegotiation
+    if (updatedVideoSubscriptionConfigurations.length !== 0) {
+      context.signalingClient.remoteVideoUpdate(updatedVideoSubscriptionConfigurations, []);
+    }
+
+    // but cannot skip renegotiation if there are more changes than simulcast stream switch (i.e. add/remove/source switches)
+    if (added.length !== 0 || removed.length !== 0) {
+      return false;
+    }
+    // `updateRemoteVideosFromLastVideosToReceive` does not actually send a subscribe but it uses
+    // `subscribeFrameSent` to cache the previous index so that we are able to do switches (not add/removes)
+    // for simulcast stream layer changes. See `subscribeFrameSent` for more details.
+    context.videoStreamIndex.subscribeFrameSent();
+    return true;
+  }
+
+  private detectChangesInVideosToReceive():
+    | {
+        added: number[];
+        removed: number[];
+        simulcastStreamUpdates: Map<number, number>;
+      }
+    | undefined {
+    const context = this.meetingSessionContext;
+    /* istanbul ignore next: Extremely unlikely that `videosToReceive` is null */
+    if (context.videosToReceive === null) {
+      return undefined;
     }
 
     // Check existence of all required dependencies and requisite functions
@@ -851,7 +928,7 @@ export default class DefaultAudioVideoController
       !context.signalingClient.remoteVideoUpdate ||
       !context.videoStreamIndex.overrideStreamIdMappings
     ) {
-      return false;
+      return undefined;
     }
 
     let added: number[] = [];
@@ -895,41 +972,104 @@ export default class DefaultAudioVideoController
       ]}, removed: ${removed}`
     );
 
-    const updatedVideoSubscriptionConfigurations: SignalingClientVideoSubscriptionConfiguration[] = [];
-    for (const [previousId, currentId] of simulcastStreamUpdates.entries()) {
-      const updatedConfig = new SignalingClientVideoSubscriptionConfiguration();
-      updatedConfig.streamId = currentId;
-      updatedConfig.attendeeId = context.videoStreamIndex.attendeeIdForStreamId(currentId);
-      updatedConfig.mid = context.transceiverController.getMidForStreamId(previousId);
-      if (updatedConfig.mid === undefined) {
-        this.logger.info(
-          `No MID found for stream ID ${previousId}, cannot update stream without renegotiation`
-        );
-        return false;
-      }
-      updatedVideoSubscriptionConfigurations.push(updatedConfig);
-      // We need to override some other components dependent on the subscribe paths for certain functionality
-      context.transceiverController.setStreamIdForMid(updatedConfig.mid, currentId);
-      context.videoStreamIndex.overrideStreamIdMappings(previousId, currentId);
-      if (context.videoTileController.haveVideoTileForAttendeeId(updatedConfig.attendeeId)) {
-        const tile = context.videoTileController.getVideoTileForAttendeeId(
-          updatedConfig.attendeeId
-        );
-        if (!tile.setStreamId) {
-          // Required function
-          return false;
-        }
-        tile.setStreamId(currentId);
-      }
-    }
-    if (updatedVideoSubscriptionConfigurations.length !== 0) {
-      context.signalingClient.remoteVideoUpdate(updatedVideoSubscriptionConfigurations, []);
-    }
+    return {
+      added,
+      removed,
+      simulcastStreamUpdates,
+    };
+  }
 
-    // Only simulcast stream switches (i.e. not add/remove/source switches) are possible currently
+  private isNotAddingOrRemovingStreams(): boolean {
+    const streamChanges = this.detectChangesInVideosToReceive();
+    /* istanbul ignore if: Extremely unlikely that `videosToReceive` is null or missing requisite functions and made it this far */
+    if (streamChanges === undefined) {
+      return false;
+    }
+    const added: number[] = streamChanges.added;
+    const removed: number[] = streamChanges.removed;
+    // but cannot skip renegotiation if there are more changes than simulcast stream switch (i.e. add/remove/source switches)
     if (added.length !== 0 || removed.length !== 0) {
       return false;
     }
+
+    return true;
+  }
+
+  // This funtion should be called only when any server side network adaption feature is enabled.
+  // It sends `RemoteVideoUpdate` frame to server to update remote video preferences, which is needed for server side bandwidth probing.
+  // The `RemoteVideoUpdate` signaling frame maybe also trigger server side video quality adaption if such feature has been signalled.
+  //
+  // It requires the caller to manage `this.meetingSessionContext.lastVideosToReceive`
+  // and `this.meetingSessionContext.videosToReceive` so that `this.meetingSessionContext.lastVideosToReceive`
+  // contains the stream IDs from either last time a subscribe was set, or last time this function was set.
+  //
+  // It will return false if not receiving any remote videos or found new video sources with MID not set yet.
+  // It will return true if sent current preferences to server. It maybe also triggered server side quality adaption..
+  private sendRemoteVideoUpdate(): boolean {
+    const context = this.meetingSessionContext;
+    /* istanbul ignore next: Extremely unlikely that `videosToReceive` is null */
+    if (context.videosToReceive === null) {
+      return false;
+    }
+
+    const groupIdsToReceive = context.videosToReceive.array().map((streamId: number) => {
+      return context.videoStreamIndex.groupIdForStreamId(streamId);
+    });
+
+    const currentConfigs = convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
+      context,
+      groupIdsToReceive,
+      context.videoDownlinkBandwidthPolicy.getVideoPreferences()
+    );
+
+    const newVideoSubscriptionConfigurationsMap: Map<
+      number,
+      SignalingClientVideoSubscriptionConfiguration
+    > = new Map();
+    const addedOrUpdated: SignalingClientVideoSubscriptionConfiguration[] = [];
+    for (const config of currentConfigs) {
+      let shouldIncludeInUpdate = false;
+      if (!context.lastVideoSubscriptionConfiguration.has(config.groupId)) {
+        shouldIncludeInUpdate = true;
+      } else {
+        const lastConfig = context.lastVideoSubscriptionConfiguration.get(config.groupId);
+        if (!config.equals(lastConfig)) {
+          this.logger.debug(
+            `${JSON.stringify(config)} does not equal ${JSON.stringify(lastConfig)}, sending update`
+          );
+          shouldIncludeInUpdate = true;
+        }
+      }
+
+      newVideoSubscriptionConfigurationsMap.set(config.groupId, config);
+      if (shouldIncludeInUpdate) {
+        addedOrUpdated.push(config);
+      }
+    }
+    context.lastVideoSubscriptionConfiguration = newVideoSubscriptionConfigurationsMap;
+
+    const removedMids: string[] = [];
+    if (context.lastVideosToReceive !== null) {
+      const groupIdsToReceiveSet = new Set(groupIdsToReceive);
+      for (const streamId of context.lastVideosToReceive.array()) {
+        const groupId = context.videoStreamIndex.groupIdForStreamId(streamId);
+        if (!groupIdsToReceiveSet.has(groupId)) {
+          const mid = context.transceiverController.getMidForGroupId(groupId);
+          if (mid === undefined) {
+            context.logger.warn(`Could not find MID for group ID to remove: ${groupId}`);
+            continue;
+          }
+          removedMids.push(mid);
+        }
+      }
+    }
+
+    // pass updated preference configurations to server for server-side bandwdith padding/probing
+    // additionally, trigger server-side video quality adaption if enabed
+    if (addedOrUpdated.length !== 0 || removedMids.length !== 0) {
+      context.signalingClient.remoteVideoUpdate(addedOrUpdated, removedMids);
+    }
+
     return true;
   }
 
@@ -1144,8 +1284,6 @@ export default class DefaultAudioVideoController
         this.eventController.publishEvent('meetingEnded', attributes);
       }
     }
-
-    this.cleanUpMediaStreamsAfterStop();
   }
 
   private actionFinishUpdating(): void {
@@ -1413,6 +1551,12 @@ export default class DefaultAudioVideoController
     }
   }
 
+  setVideoCodecSendPreferences(preferences: VideoCodecCapability[]): void {
+    this.videoSendCodecPreferences = preferences; // In case we haven't called `initSignalingClient` yet
+    this.meetingSessionContext.videoSendCodecPreferences = preferences;
+    this.update({ needsRenegotiation: true });
+  }
+
   getRemoteVideoSources(): VideoSource[] {
     const { videoStreamIndex } = this.meetingSessionContext;
     if (!videoStreamIndex) {
@@ -1503,10 +1647,5 @@ export default class DefaultAudioVideoController
       }
     }
     await this.replaceLocalAudio(audioStream);
-  }
-
-  async audioOutputDidChange(device: MediaDeviceInfo | null): Promise<void> {
-    this.logger.info('Receive an audio output change event');
-    return this.audioMixController.bindAudioDevice(device);
   }
 }

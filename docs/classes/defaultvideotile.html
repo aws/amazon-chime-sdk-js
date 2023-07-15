@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="defaultvideotile.html">DefaultVideoTile</a>
@@ -77,8 +76,8 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/devicepixelratioobserver.html" class="tsd-signature-type">DevicePixelRatioObserver</a></li>
-					<li><a href="../interfaces/videotile.html" class="tsd-signature-type">VideoTile</a></li>
+					<li><a href="../interfaces/devicepixelratioobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">DevicePixelRatioObserver</a></li>
+					<li><a href="../interfaces/videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -120,13 +119,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, localTile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, tileController<span class="tsd-signature-symbol">: </span><a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a>, devicePixelRatioMonitor<span class="tsd-signature-symbol">: </span><a href="../interfaces/devicepixelratiomonitor.html" class="tsd-signature-type">DevicePixelRatioMonitor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultvideotile.html" class="tsd-signature-type">DefaultVideoTile</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Video<wbr>Tile<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, localTile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, tileController<span class="tsd-signature-symbol">: </span><a href="../interfaces/videotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTileController</a>, devicePixelRatioMonitor<span class="tsd-signature-symbol">: </span><a href="../interfaces/devicepixelratiomonitor.html" class="tsd-signature-type" data-tsd-kind="Interface">DevicePixelRatioMonitor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultvideotile.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultVideoTile</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L108">src/videotile/DefaultVideoTile.ts:108</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L118">src/videotile/DefaultVideoTile.ts:118</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -138,13 +137,13 @@
 									<h5>localTile: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 								<li>
-									<h5>tileController: <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a></h5>
+									<h5>tileController: <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTileController</a></h5>
 								</li>
 								<li>
-									<h5>devicePixelRatioMonitor: <a href="../interfaces/devicepixelratiomonitor.html" class="tsd-signature-type">DevicePixelRatioMonitor</a></h5>
+									<h5>devicePixelRatioMonitor: <a href="../interfaces/devicepixelratiomonitor.html" class="tsd-signature-type" data-tsd-kind="Interface">DevicePixelRatioMonitor</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="defaultvideotile.html" class="tsd-signature-type">DefaultVideoTile</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="defaultvideotile.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultVideoTile</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -155,20 +154,28 @@
 					<a name="bindvideoelement" class="tsd-anchor"></a>
 					<h3>bind<wbr>Video<wbr>Element</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Element<span class="tsd-signature-symbol">(</span>videoElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Element<span class="tsd-signature-symbol">(</span>videoElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#bindvideoelement">bindVideoElement</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L198">src/videotile/DefaultVideoTile.ts:198</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L208">src/videotile/DefaultVideoTile.ts:208</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds the video element to the tile and sends out updates. This must also be called
+										anytime the display of the video element changes,
+										for example, when changing its dimensions or hiding it. To unbind
+									the video element from the tile pass null.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>videoElement: <span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>videoElement: <span class="tsd-signature-type">HTMLVideoElement</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -179,16 +186,23 @@
 					<a name="bindvideostream" class="tsd-anchor"></a>
 					<h3>bind<wbr>Video<wbr>Stream</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Stream<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, localTile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, mediaStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, contentWidth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, contentHeight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, streamId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Stream<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, localTile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, mediaStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span>, contentWidth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, contentHeight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, streamId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#bindvideostream">bindVideoStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L152">src/videotile/DefaultVideoTile.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L162">src/videotile/DefaultVideoTile.ts:162</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Updates current video tile’s state with the provided arguments.
+										If the tile state is updated, the new tile state is sent to the meeting session&#39;s
+									AudioVideoObserver&#39;s <a href="../interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -198,16 +212,16 @@
 									<h5>localTile: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 								<li>
-									<h5>mediaStream: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>mediaStream: <span class="tsd-signature-type">MediaStream</span></h5>
 								</li>
 								<li>
-									<h5>contentWidth: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>contentWidth: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>contentHeight: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>contentHeight: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>streamId: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>streamId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> externalUserId: <span class="tsd-signature-type">string</span></h5>
@@ -221,17 +235,23 @@
 					<a name="capture" class="tsd-anchor"></a>
 					<h3>capture</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">capture<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">capture<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ImageData</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#capture">capture</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L254">src/videotile/DefaultVideoTile.ts:254</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L264">src/videotile/DefaultVideoTile.ts:264</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Captures a snapshot image from the tile, or null if the tile is not
+									active right now.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -246,9 +266,15 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#destroy">destroy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L121">src/videotile/DefaultVideoTile.ts:121</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L131">src/videotile/DefaultVideoTile.ts:131</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Cleans up resources associated with the tile. The tile may not be used
+									after destroy is called.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -264,9 +290,16 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicepixelratioobserver.html">DevicePixelRatioObserver</a>.<a href="../interfaces/devicepixelratioobserver.html#devicepixelratiochanged">devicePixelRatioChanged</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L135">src/videotile/DefaultVideoTile.ts:135</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L145">src/videotile/DefaultVideoTile.ts:145</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the device pixel ratio monitor detects a change in the
+										HTML window&#39;s device pixel ratio. This can happen if the window is dragged
+									to a monitor with a different hi-dpi characteristics.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -288,9 +321,14 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#id">id</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L140">src/videotile/DefaultVideoTile.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L150">src/videotile/DefaultVideoTile.ts:150</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the tile id for this tile.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
@@ -306,9 +344,16 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#markpoorconnection">markPoorConnection</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L236">src/videotile/DefaultVideoTile.ts:236</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L246">src/videotile/DefaultVideoTile.ts:246</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Marks the tile as having poor connection returning whether it was previously unmarked.
+										The updated video tile state is sent to the meeting session’s
+									AudioVideoObserver&#39;s <a href="../interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -324,9 +369,18 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#pause">pause</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L222">src/videotile/DefaultVideoTile.ts:222</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L232">src/videotile/DefaultVideoTile.ts:232</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Pauses the tile if it is not paused. When paused, the tile moves to an inactive state.
+										The updated video tile state is sent to the meeting session’s
+										AudioVideoObserver&#39;s <a href="../interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.
+										This API is intended to be called on the remote videos. If called on a local video tile,
+									then the tile will no longer be updated, but the local video source will continue to be sent into the meeting.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -342,9 +396,15 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#setstreamid">setStreamId</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L267">src/videotile/DefaultVideoTile.ts:267</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L277">src/videotile/DefaultVideoTile.ts:277</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Override the internal stream ID.  Needed as some logic around pause state has been
+									coupled to the stream ID in the <code>VideoTileState</code> struct.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -359,17 +419,22 @@
 					<a name="state" class="tsd-anchor"></a>
 					<h3>state</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotilestate.html" class="tsd-signature-type">VideoTileState</a></li>
+						<li class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#state">state</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L144">src/videotile/DefaultVideoTile.ts:144</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L154">src/videotile/DefaultVideoTile.ts:154</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="videotilestate.html" class="tsd-signature-type">VideoTileState</a></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a <a href="videotilestate.html">VideoTileState</a> representing a copy of the state of the tile.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -377,17 +442,22 @@
 					<a name="stateref" class="tsd-anchor"></a>
 					<h3>state<wbr>Ref</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">state<wbr>Ref<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotilestate.html" class="tsd-signature-type">VideoTileState</a></li>
+						<li class="tsd-signature tsd-kind-icon">state<wbr>Ref<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#stateref">stateRef</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L148">src/videotile/DefaultVideoTile.ts:148</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L158">src/videotile/DefaultVideoTile.ts:158</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="videotilestate.html" class="tsd-signature-type">VideoTileState</a></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a <a href="videotilestate.html">VideoTileState</a>] representing a mutable reference to the state of the tile.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videotilestate.html" class="tsd-signature-type" data-tsd-kind="Class">VideoTileState</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -402,9 +472,16 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#unmarkpoorconnection">unmarkPoorConnection</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L245">src/videotile/DefaultVideoTile.ts:245</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L255">src/videotile/DefaultVideoTile.ts:255</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unmarks the tile as having a poor connection returning whether it was previously marked.
+										The updated video tile state is sent to the meeting session’s
+									AudioVideoObserver&#39;s <a href="../interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -420,9 +497,18 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotile.html">VideoTile</a>.<a href="../interfaces/videotile.html#unpause">unpause</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L229">src/videotile/DefaultVideoTile.ts:229</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L239">src/videotile/DefaultVideoTile.ts:239</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unpauses the tile if it was paused. When unpaused, the tile moves to the active state.
+										The updated video tile state is sent to the meeting session’s
+										AudioVideoObserver&#39;s <a href="../interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.
+										This API is intended to be called on the remote videos and has no effect on the local video.
+									When called on a remote video, the remote video source will start getting the updates if paused earlier.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -437,7 +523,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L20">src/videotile/DefaultVideoTile.ts:20</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L21">src/videotile/DefaultVideoTile.ts:21</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -474,25 +560,24 @@
 					<a name="disconnectvideostreamfromvideoelement" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> disconnect<wbr>Video<wbr>Stream<wbr>From<wbr>Video<wbr>Element</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">disconnect<wbr>Video<wbr>Stream<wbr>From<wbr>Video<wbr>Element<span class="tsd-signature-symbol">(</span>videoElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, dueToPause<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, keepLastFrameWhenPaused<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">disconnect<wbr>Video<wbr>Stream<wbr>From<wbr>Video<wbr>Element<span class="tsd-signature-symbol">(</span>videoElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLVideoElement</span>, dueToPause<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, keepLastFrameWhenPaused<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L73">src/videotile/DefaultVideoTile.ts:73</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/DefaultVideoTile.ts#L92">src/videotile/DefaultVideoTile.ts:92</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Disconnect a video stream to a video element by clearing the srcObject of the video element.
-									This will also stop all the tracks of the current stream in the srcObject.</p>
+									<p>Disconnect a video stream from a video element by setting <code>HTMLVideoElement.srcObject</code> to <code>null</code>.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>videoElement: <span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>videoElement: <span class="tsd-signature-type">HTMLVideoElement</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The video element input.</p>
 									</div>
@@ -501,14 +586,14 @@
 									<h5>dueToPause: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>A flag to indicate whether this function is called due to pausing video tile.
-										If true, then we will not stop the stream&#39;s tracks and just clearing out the srcObject.</p>
+										Based on <code>keepLastFrameWhenPaused</code>, it sets <code>HTMLVideoElement.srcObject</code> to <code>null</code>.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> keepLastFrameWhenPaused: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<h5>keepLastFrameWhenPaused: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>If true and dueToPause is also true, then we will not clear out the srcObject of the
-										video element when it is paused and therefore, the last frame of the stream will be shown.</p>
+										<p>If <code>true</code> and <code>dueToPause</code> is also <code>true</code>, then we will not set <code>HTMLVideoElement.srcObject</code> of the
+										video element to <code>null</code> when it is paused and therefore, the last frame of the stream will be shown.</p>
 									</div>
 								</li>
 							</ul>
@@ -521,8 +606,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

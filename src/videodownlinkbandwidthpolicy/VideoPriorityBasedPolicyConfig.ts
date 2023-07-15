@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import ServerSideNetworkAdaption from '../signalingclient/ServerSideNetworkAdaption';
+
 /** @internal */
 const enum NetworkEvent {
   Stable,
@@ -15,7 +17,6 @@ export default class VideoPriorityBasedPolicyConfig {
   private static readonly MINIMUM_DELAY_MS = 2000;
   private static readonly MAXIMUM_DELAY_MS = 8000;
 
-  // presets
   static readonly Default = new VideoPriorityBasedPolicyConfig(0, 0);
   static readonly UnstableNetworkPreset = new VideoPriorityBasedPolicyConfig(0, 1);
   static readonly StableNetworkPreset = new VideoPriorityBasedPolicyConfig(1, 0);
@@ -24,7 +25,17 @@ export default class VideoPriorityBasedPolicyConfig {
   private bandwidthDecreaseTimestamp: number = 0; // the last time bandwidth decreases
   private referenceBitrate: number = 0;
 
+  /**
+   * Additional server side features to be enabled for network adaption. This
+   * may be overridden by the server. The default may be changed in future releases.
+   */
+  serverSideNetworkAdaption = ServerSideNetworkAdaption.Default;
+
   /** Initializes a [[VideoPriorityBasedPolicyConfig]] with the network event delays.
+   *
+   * @deprecated These values are not used when server side network adaptation is used, which will
+   * become the default in the future. Therefore these constructors
+   * will be deprecated and removed in a later releases.
    *
    * @param networkIssueResponseDelayFactor Delays before reducing subscribed video bitrate. Input should be a value between 0 and 1.
    * @param networkIssueRecoveryDelayFactor Delays before starting to increase bitrates after a network event and

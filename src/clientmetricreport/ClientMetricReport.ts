@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
-import { SdkMetric } from '../signalingprotocol/SignalingProtocol.js';
+import { SdkMetric, SdkStreamDimension } from '../signalingprotocol/SignalingProtocol.js';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import Direction from './ClientMetricReportDirection';
 import MediaType from './ClientMetricReportMediaType';
@@ -21,6 +21,8 @@ export default class ClientMetricReport {
   previousTimestampMs: number = 0;
   currentSsrcs: { [id: number]: number } = {};
 
+  private overriddenObservableMetrics: Map<string, number> = new Map();
+
   constructor(
     private logger: Logger,
     private videoStreamIndex?: VideoStreamIndex,
@@ -37,7 +39,7 @@ export default class ClientMetricReport {
   };
 
   decoderLossPercent = (metricName?: string, ssrc?: number): number => {
-    const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
+    const metricReport = this.streamMetricReports[ssrc];
     const concealedSamples =
       metricReport.currentMetrics['concealedSamples'] -
       (metricReport.previousMetrics['concealedSamples'] || 0);
@@ -55,7 +57,7 @@ export default class ClientMetricReport {
   };
 
   packetLossPercent = (sourceMetricName?: string, ssrc?: number): number => {
-    const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
+    const metricReport = this.streamMetricReports[ssrc];
     const sentOrReceived =
       metricReport.currentMetrics[sourceMetricName] -
       (metricReport.previousMetrics[sourceMetricName] || 0);
@@ -126,6 +128,35 @@ export default class ClientMetricReport {
     return Number(metricReport.currentMetrics[metricName] * 1000);
   };
 
+  averageTimeSpentPerSecondInMilliseconds = (metricName?: string, ssrc?: number): number => {
+    const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
+    let intervalSeconds = (this.currentTimestampMs - this.previousTimestampMs) / 1000;
+    if (intervalSeconds <= 0) {
+      return 0;
+    }
+    if (this.previousTimestampMs <= 0) {
+      intervalSeconds = 1;
+    }
+    const diff =
+      metricReport.currentMetrics[metricName] - (metricReport.previousMetrics[metricName] || 0);
+    if (diff <= 0) {
+      return 0;
+    }
+    return (diff * 1000) / intervalSeconds;
+  };
+
+  isHardwareImplementation = (metricName?: string, ssrc?: number): number => {
+    const metricReport = this.streamMetricReports[ssrc];
+    const implName = String(metricReport.currentStringMetrics[metricName]);
+    const hasHwName =
+      implName.includes('ExternalDecoder') ||
+      implName.includes('ExternalEncoder') ||
+      implName.includes('EncodeAccelerator') ||
+      implName.includes('DecodeAccelerator');
+    const isFallback = implName.includes('fallback from');
+    return hasHwName && !isFallback ? 1 : 0;
+  };
+
   /**
    *  Canonical and derived metric maps
    */
@@ -162,7 +193,10 @@ export default class ClientMetricReport {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_AVAILABLE_SEND_BANDWIDTH,
     },
-    currentRoundTripTime: { transform: this.identityValue, type: SdkMetric.Type.STUN_RTT_MS },
+    currentRoundTripTime: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.STUN_RTT_MS,
+    },
   };
 
   readonly audioUpstreamMetricMap: {
@@ -175,7 +209,7 @@ export default class ClientMetricReport {
     jitter: { transform: this.secondsToMilliseconds, type: SdkMetric.Type.RTC_MIC_JITTER_MS },
     packetsSent: { transform: this.countPerSecond, type: SdkMetric.Type.RTC_MIC_PPS },
     bytesSent: { transform: this.bitsPerSecond, type: SdkMetric.Type.RTC_MIC_BITRATE },
-    roundTripTime: { transform: this.identityValue, type: SdkMetric.Type.RTC_MIC_RTT_MS },
+    roundTripTime: { transform: this.secondsToMilliseconds, type: SdkMetric.Type.RTC_MIC_RTT_MS },
     packetsLost: {
       transform: this.packetLossPercent,
       type: SdkMetric.Type.RTC_MIC_FRACTION_PACKET_LOST_PERCENT,
@@ -227,7 +261,10 @@ export default class ClientMetricReport {
       source?: string;
     };
   } = {
-    roundTripTime: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_SENT_RTT_MS },
+    roundTripTime: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.VIDEO_SENT_RTT_MS,
+    },
     nackCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_NACKS_RECEIVED },
     pliCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PLIS_RECEIVED },
     firCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FIRS_RECEIVED },
@@ -243,6 +280,17 @@ export default class ClientMetricReport {
     qpSum: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_SENT_QP_SUM },
     frameHeight: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_ENCODE_HEIGHT },
     frameWidth: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_ENCODE_WIDTH },
+    jitter: {
+      transform: this.secondsToMilliseconds,
+    },
+    totalEncodeTime: {
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
+      type: SdkMetric.Type.VIDEO_ENCODE_MS,
+    },
+    encoderImplementation: {
+      transform: this.isHardwareImplementation,
+      type: SdkMetric.Type.VIDEO_ENCODER_IS_HARDWARE,
+    },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -252,7 +300,6 @@ export default class ClientMetricReport {
       source?: string;
     };
   } = {
-    totalDecodeTime: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_MS },
     packetsReceived: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_RECEIVED_PPS },
     packetsLost: {
       transform: this.packetLossPercent,
@@ -288,6 +335,14 @@ export default class ClientMetricReport {
     },
     frameHeight: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_HEIGHT },
     frameWidth: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_WIDTH },
+    totalDecodeTime: {
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
+      type: SdkMetric.Type.VIDEO_DECODE_MS,
+    },
+    decoderImplementation: {
+      transform: this.isHardwareImplementation,
+      type: SdkMetric.Type.VIDEO_DECODER_IS_HARDWARE,
+    },
   };
 
   getMetricMap(
@@ -318,6 +373,22 @@ export default class ClientMetricReport {
       default:
         return this.globalMetricMap;
     }
+  }
+
+  /**
+   *  Dimensions derived from metric
+   */
+  readonly streamDimensionMap: {
+    [id: string]: SdkStreamDimension.Type;
+  } = {
+    encoderImplementation: SdkStreamDimension.Type.VIDEO_ENCODER_NAME,
+    decoderImplementation: SdkStreamDimension.Type.VIDEO_DECODER_NAME,
+  };
+
+  getStreamDimensionMap(): {
+    [id: string]: SdkStreamDimension.Type;
+  } {
+    return this.streamDimensionMap;
   }
 
   /**
@@ -361,6 +432,16 @@ export default class ClientMetricReport {
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
+    videoUpstreamJitterMs: {
+      source: 'jitter',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
+    videoUpstreamRoundTripTimeMs: {
+      source: 'roundTripTime',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
     videoDownstreamBitrate: {
       source: 'bytesReceived',
       media: MediaType.VIDEO,
@@ -388,6 +469,16 @@ export default class ClientMetricReport {
     },
     videoDownstreamFrameWidth: {
       source: 'frameWidth',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoDownstreamJitterMs: {
+      source: 'jitter',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoDownstreamDelayMs: {
+      source: 'jitterBufferMs',
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },
@@ -429,6 +520,11 @@ export default class ClientMetricReport {
       media: MediaType.AUDIO,
       dir: Direction.UPSTREAM,
     },
+    audioUpstreamRoundTripTimeMs: {
+      source: 'roundTripTime',
+      media: MediaType.AUDIO,
+      dir: Direction.UPSTREAM,
+    },
     videoUpstreamBitrate: { source: 'bytesSent', media: MediaType.VIDEO, dir: Direction.UPSTREAM },
     videoPacketSentPerSecond: {
       source: 'packetsSent',
@@ -440,29 +536,42 @@ export default class ClientMetricReport {
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
-    availableOutgoingBitrate: { source: 'availableOutgoingBitrate' },
-    availableIncomingBitrate: { source: 'availableIncomingBitrate' },
+    audioUpstreamJitterMs: {
+      source: 'jitter',
+      media: MediaType.AUDIO,
+      dir: Direction.UPSTREAM,
+    },
+    audioDownstreamJitterMs: {
+      source: 'jitter',
+      media: MediaType.AUDIO,
+      dir: Direction.DOWNSTREAM,
+    },
     nackCountReceivedPerSecond: {
       source: 'nackCount',
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
+    availableOutgoingBitrate: { source: 'availableOutgoingBitrate' },
+    availableIncomingBitrate: { source: 'availableIncomingBitrate' },
+    currentRoundTripTimeMs: { source: 'currentRoundTripTime' },
   };
 
   /**
    * Returns the value of the specific metric in observableMetricSpec.
    */
   getObservableMetricValue(metricName: string): number {
+    if (this.overriddenObservableMetrics.has(metricName)) {
+      return this.overriddenObservableMetrics.get(metricName);
+    }
+
     const observableMetricSpec = this.observableMetricSpec[metricName];
     const metricMap = this.getMetricMap(observableMetricSpec.media, observableMetricSpec.dir);
     const metricSpec = metricMap[observableMetricSpec.source];
-    const transform = metricSpec.transform;
-    const source = metricSpec.source;
+    const { transform, source } = metricSpec;
     if (observableMetricSpec.hasOwnProperty('media')) {
       for (const ssrc in this.streamMetricReports) {
         const streamMetricReport = this.streamMetricReports[ssrc];
         if (
-          observableMetricSpec.source in streamMetricReport.currentMetrics &&
           streamMetricReport.direction === observableMetricSpec.dir &&
           streamMetricReport.mediaType === observableMetricSpec.media
         ) {
@@ -487,19 +596,11 @@ export default class ClientMetricReport {
       observableVideoMetricSpec.dir
     );
     const metricSpec = metricMap[observableVideoMetricSpec.source];
-    const transform = metricSpec.transform;
-    const source = metricSpec.source;
-    const streamMetricReport = this.streamMetricReports[ssrcNum];
-    if (
-      streamMetricReport &&
-      observableVideoMetricSpec.source in streamMetricReport.currentMetrics
-    ) {
-      return source
-        ? transform(source, ssrcNum)
-        : transform(observableVideoMetricSpec.source, ssrcNum);
-    } else {
-      return source ? transform(source) : transform(observableVideoMetricSpec.source);
-    }
+    const { transform, source } = metricSpec;
+
+    return source
+      ? transform(source, ssrcNum)
+      : transform(observableVideoMetricSpec.source, ssrcNum);
   }
 
   /**
@@ -538,10 +639,26 @@ export default class ClientMetricReport {
             }
           }
         }
+        const groupId = this.streamMetricReports[ssrc].groupId;
         const streamId = this.streamMetricReports[ssrc].streamId;
-        const attendeeId = streamId
-          ? this.videoStreamIndex.attendeeIdForStreamId(streamId)
-          : this.selfAttendeeId;
+        let attendeeId = '';
+        /* istanbul ignore else */
+        if (this.videoStreamIndex.attendeeIdForGroupId !== undefined) {
+          attendeeId = groupId
+            ? this.videoStreamIndex.attendeeIdForGroupId(groupId)
+            : this.selfAttendeeId;
+        } else {
+          // This usage may be inaccurate if server side network adaptation (SSNA) is enabled,
+          // and a simulcast sender has dropped their originally highest stream.
+          //
+          // We are ok with this given the unlikeliness of someone reimplmententing the entire
+          // audio video controller (no way otherwise to inject your own index impl.), implementing
+          // both simulcast and SSNA, but reusing this class :) .
+          attendeeId = streamId
+            ? this.videoStreamIndex.attendeeIdForStreamId(streamId)
+            : this.selfAttendeeId;
+        }
+
         videoStreamMetrics[attendeeId] = videoStreamMetrics[attendeeId]
           ? videoStreamMetrics[attendeeId]
           : {};
@@ -568,6 +685,7 @@ export default class ClientMetricReport {
     cloned.rtcStatsReport = this.rtcStatsReport;
     cloned.currentTimestampMs = this.currentTimestampMs;
     cloned.previousTimestampMs = this.previousTimestampMs;
+    cloned.overriddenObservableMetrics = this.overriddenObservableMetrics;
     return cloned;
   }
 
@@ -595,5 +713,12 @@ export default class ClientMetricReport {
         delete this.streamMetricReports[ssrc];
       }
     }
+  }
+
+  /**
+   * Overrides a specific observable metric value (e.g. with one that didn't come from the WebRTC report)
+   */
+  overrideObservableMetric(name: string, value: number): void {
+    this.overriddenObservableMetrics.set(name, value);
   }
 }

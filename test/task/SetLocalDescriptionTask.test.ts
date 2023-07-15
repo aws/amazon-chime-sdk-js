@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
+import chaiAsPromised from 'chai-as-promised';
 
-import { DefaultBrowserBehavior } from '../../src';
+import { DefaultBrowserBehavior, SDP, VideoCodecCapability } from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -13,6 +13,7 @@ import SetLocalDescriptionTask from '../../src/task/SetLocalDescriptionTask';
 import Task from '../../src/task/Task';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import SDPMock from '../sdp/SDPMock';
 
 chai.use(chaiAsPromised);
 chai.should();
@@ -101,6 +102,30 @@ describe('SetLocalDescriptionTask', () => {
       await task.run();
       const peerLocalSDP = context.peer.localDescription.sdp;
       expect(peerLocalSDP).to.be.equal(sdpOffer.sdp);
+    });
+
+    it('will update sdp with send codec preferences', async () => {
+      context.videoSendCodecPreferences = [VideoCodecCapability.h264(), VideoCodecCapability.vp8()];
+      context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
+      await task.run();
+      const peerLocalSDP = context.peer.localDescription.sdp;
+      expect(
+        new SDP(peerLocalSDP).highestPriorityVideoSendCodec().equals(VideoCodecCapability.h264())
+      ).to.be.be.true;
+    });
+
+    it('will update sdp with meeting intersection codec preferences if they exist', async () => {
+      context.videoSendCodecPreferences = [VideoCodecCapability.vp8(), VideoCodecCapability.h264()];
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.h264(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
+      await task.run();
+      const peerLocalSDP = context.peer.localDescription.sdp;
+      expect(
+        new SDP(peerLocalSDP).highestPriorityVideoSendCodec().equals(VideoCodecCapability.h264())
+      ).to.be.be.true;
     });
   });
 

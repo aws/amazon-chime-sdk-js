@@ -170,25 +170,21 @@ To remove an AudioVideoObserver, call meetingSession.audioVideo.[removeObserver(
 
 You should implement the following key observer callbacks:
 
-* [audioVideoDidStart](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart): occurs when the audio-video session finishes connecting
-* [audioVideoDidStartConnecting](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting): occurs when the audio-video session is in the process of connecting or reconnecting
+* [audioVideoDidStart](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart): occurs when the audio-video session finishes connecting.
+* [audioVideoDidStartConnecting](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting): occurs when the audio-video session is in the process of connecting or reconnecting.
 * [audioVideoDidStop](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstop): occurs when the audio-video session has disconnected. Use the provided [MeetingSessionStatus](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html) to determine why the session disconnected.
 * [videoTileDidUpdate](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate): occurs when either a video stream is started or updated. Use the provided VideoTileState to determine the tile ID and the attendee ID of the video stream.
-* [videoTileWasRemoved](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved): occurs when a video stream stops and the reference to the tile (the tile ID) is deleted
+* [videoTileWasRemoved](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved): occurs when a video stream stops and the reference to the tile (the tile ID) is deleted.
 * [videoAvailabilityDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoavailabilitydidchange): occurs video availability state has changed such as whether the attendee can start local video or whether remote video is available. See [MeetingSessionVideoAvailability](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionvideoavailability.html) for more information.
-* [videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable): occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video
+* [videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable): occurs when attendee tries to start video but the maximum video limit of 25 tiles has already been reached by other attendees sharing their video.
 
 You may optionally listen to the following callbacks to monitor aspects of connection health:
 
 * [connectionDidBecomePoor](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor): occurs when the connection has been poor for a while
 * [connectionDidSuggestStopVideo](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo): occurs when the connection has been poor while using video. You can use this to prompt the attendee to turn off video.
-* [connectionHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange): occurs when connection health has changed
-* [estimatedDownlinkBandwidthLessThanRequired](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired): occurs when the total downlink video bandwidth estimation is less than the required video bitrate
-* [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive): occurs periodically when WebRTC media stats are available
-* [videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata): occurs when one or more remote video streams do not meet the expected average bitrate
-* [videoReceiveBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange): occurs when the available video receive bandwidth changed
-* [videoSendBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange): occurs when available video send bandwidth changed
-* [videoSendHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange): occurs when the actual video send bitrate or packets-per-second changes
+* [connectionHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange): occurs when connection health has changed.
+* [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive): occurs periodically when WebRTC media stats are available.
+
 
 ## 4. Start and stop the session
 
@@ -304,7 +300,7 @@ To stop sharing video with others, call meetingSession.audioVideo.[stopLocalVide
 
 You are responsible for maintaining HTMLVideoElement objects in the DOM and arranging their layout within the web page. To display a video, you must handle the [videoTileDidUpdate](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate) and [videoTileWasRemoved](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved) callbacks in an [AudioVideoObserver](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html). In the implementation of [videoTileDidUpdate](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate), bind the tile ID from the provided VideoTileState with the HTMLVideoElement in your DOM by calling meetingSession.audioVideo.[bindVideoElement(tileId, videoElement)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#bindvideoelement).
 
-To unbind a tile, call meetingSession.audioVideo.[unbindVideoElement(tileId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unbindvideoelement).
+To unbind a tile, call meetingSession.audioVideo.[unbindVideoElement(tileId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unbindvideoelement). Note that this will also set `HTMLVideoElement.srcObject` to `null`. Call `unbindVideoElement(tileId, false)` to avoid the video element clean up. Check [this PR](https://github.com/aws/amazon-chime-sdk-js/pull/2217) description for more details.
 
 A `tileId` is a unique identifier representing a video stream. When you stop and start, it generates a new `tileId`. You can have tileIds exceeding 25; they merely identify a particular stream uniquely. When you start video it consumes a video publishing slot, when you stop video it releases that video publishing slot. Pausing does not affect video publishing slots; it allows a remote to choose to not receive a video stream (and thus not consume bandwidth and CPU for that stream).
 
@@ -332,7 +328,8 @@ To get a video tile, call meetingSession.audioVideo.[getVideoTile(tileId)](https
 
 You can share any [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream), such as from a screen capture or media file, as the content share for an attendee. When a content share is started, another attendee with the attendee ID `<attendee-id>#content` joins the meeting. The content audio and video appears like a regular attendee. You can subscribe to its volume indicator to show it in the roster and bind its video tile to a video element the same as you would for a regular attendee.
 
-Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares. Content share does not count towards the max video tile limit. There may be up to two content shares irrespective of how many attendees are sharing their camera.
+Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares. Content share does not count towards the max video tile limit for both publishing and subscription. There may be up to two content shares irrespective of how many attendees are sharing their camera. Refer to [Amazon Chime SDK service quotas
+](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-limits) for details.
 
 ### 8a. Start and stop the content share
 

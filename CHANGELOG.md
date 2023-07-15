@@ -5,6 +5,375 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.16.0] - 2023-06-26
+
+### Added
+
+### Removed
+
+- Remove max video bandwidth in guide.
+
+### Changed
+
+- Added recommendations to use server side network adaptation, and clarified support on all browsers. Removed demo features and information on network adaptation configuration that is not used when server side network adaptation is used.
+- Set `esModuleInterop` to `true` in tsconfig.json, and update several import statements.
+
+### Fixed
+
+- Bump protobufjs from 6.11.3 to 7.2.4.
+- Fixed usage of `this` in `VideoCodecCapability` constructors.
+- Fixed a race condition error if calling `startContentShare` then `stopContentShare` right after.
+
+## [3.15.0] - 2023-05-01
+
+### Added
+
+- Set max bitrate to 1500kbps.
+- Add resolution constraint to content share (1080p@30fps).
+- Added opt-in server side network adaption enablement flag `ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption`. See [this section in the guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#server-side-network-adaption) for more details.
+- Content share issue with above change
+
+### Removed
+
+### Changed
+
+- Clarify quotas for content-sharing publishing and subscriptions in API Overview.
+- Fallback `majorVersion()` to `-1` if `version` is `null` in `DefaultBrowserBehavior`.
+
+### Fixed
+
+## [3.14.1] - 2023-05-26
+
+### Added
+
+### Removed
+
+### Changed
+
+- Update chime sdk messaging client version.
+
+### Fixed
+
+## [3.14.0] - 2023-04-11
+
+### Added
+
+- Add new guide for `VideoFXProcessor`.
+- Add Android Chrome support for `VideoFXProcessor`.
+
+### Removed
+
+### Changed
+
+- Add fallback value for `DefaultBrowserBehavior.browser` when `detect()` can not parse browser UserAgent.
+
+### Fixed
+
+## [3.13.0] - 2023-03-28
+
+### Added
+
+- Send client utc offset with attendee JOIN frame over signalling channel.
+- Add an unified interface (videofx processor) with new implementation for ML features, namely background blur 2.0 and background replacement 2.0. This includes improvement to the underlying model for better segmentation, better image processing algorithms to blur the background, and other miscellanies bug-fixes/features.
+
+### Removed
+
+### Changed
+
+- Evaluate `SendingAudioFailureConnectionHealthPolicy` only after getting connected i.e. after `audioVideoDidStart()` is called. This avoids false positive triggers of `sendingAudioFailed` at the start of a meeting session.
+
+### Fixed
+
+## [3.12.0] - 2023-02-14
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+- Refactored various state cleanup to `AudioVideoControllerState.resetConnectionSpecificState`.
+- Update `supportsCanvasCapturedStreamPlayback` in `DefaultBrowserBehavior` to fix background blur and replacement
+  support check failures in iPad.
+
+## [3.11.0] - 2023-01-03
+
+### Added
+
+- Added flag `disablePeriodicKeyframeRequestOnContentSender` to `MeetingSessionConfiguration` for applications that would like to experiment with disabling the 10 second keyframe request interval which is default on the backend.
+
+### Removed
+
+### Changed
+
+- To support future use case of allowing users to join a meeting without the need for a microphone or empty audio stream, update `checkAudioConnectivity` logic inside `DefaultMeetingReadinessChecker` accordingly, to check for audio packets received metrics using `metricsDidReceive` observer in addition to attendee presence condition. Previously, the audio connectivity check used to implicitly test that audio was being sent out from the client and being received by the server. Now this check will include a test for attendee presence, showing that the signal connection has been established, and audio packets being received, showing that the data connection has been established.
+
+### Fixed
+
+- Fix ES2015 target builds by fixing voicefocus js file.
+- Added missing state cleanup for various video components on reconnect to mitigate missing remote or local video.
+
+## [3.10.0] - 2022-11-02
+
+### Added
+
+- Add `destroy()` method to `VoiceFocus` class.
+- Add `destroyVoiceFocus` method to `VoiceFocusDeviceTransformer` class.
+- Add guide to show how to use the `destroyVoiceFocus` method in the `VoiceFocusDeviceTransformer` class.
+
+### Removed
+
+### Changed
+
+- Update documentation for `MeetingSessionStatusCode` to clarify the origin and meaning of each. Included information on use of `isTerminal` flag to determine if retry will be automatically attempted.
+
+### Fixed
+
+- Fix codec intersection logic to avoid unnecessary renegotiations.
+
+## [3.9.0] - 2022-09-21
+
+### Added
+
+- Add the audio output gain and frequency to the meeting readiness checker's configuration. The readiness checker uses this value to set the "Play Tone" gain and frequency.
+- Add support for background filter starting from iOS 16 for major browsers Safari, Chrome, and Firefox (except on iPad).
+
+### Removed
+
+### Changed
+
+- Add metric derived from string metric in metric report.
+- Send `audioInputFailed` and `videoInputFailed` if there is error getting device labels.
+- Updated `DefaultVideoFrameProcessorPipeline` to clone audio tracks to the output `MediaStream` instead of dropping them. This allows more straightforward usage of the pipeline on content sharing like file playback.
+
+### Fixed
+
+- Fixed missing videos, or unnecessarily long freezes when switching simulcast streams.
+
+## [3.8.0] - 2022-08-18
+
+### Added
+
+- Add encoder/decoder is in hardware metric and stream dimension to signaling protocol
+- Report encode/decode time and if encoder/decoder is in hardware, and add encoder/decoder name as a metric dimension
+
+### Removed
+
+### Changed
+
+- Fix a confusing function name from `millisecondsPerSecond` to `averageTimeSpentPerSecondInMilliseconds`.
+- Move `requiresPlaybackLatencyHintForAudioContext` to `ExtendedBrowserBehavior`.
+
+### Fixed
+
+- `MessagingSession` reconnect loop did not break on error past reconnect deadline. Infinite reconnect loop was caused due to `firstConnectionAttemptTimestamp` not being set as `startedConnectionAttempt` was not invoked. Check <https://github.com/aws/amazon-chime-sdk-js/issues/2372> for details.
+- `MessagingSession` `getMessagingSessionEndpoint` call is now backwards compatible with AWS JS SDK v2.
+- Use a default "playback" `latencyHint` when creating the `AudioContext` on Windows. Also adds a `setDefaultLatencyHint` API to `DefaultDeviceController` to allow for overriding.
+- Fix behavior of websocket disconnects before a session is connected. Session.start() promise shall fail in the scenario.
+- Queue messages before a messaging session is established to avoid dropping them.
+
+## [3.7.0] - 2022-07-05
+
+### Added
+
+- Add support in `MessagingSession` to allow websocket connection for messaging service to select sort by for Prefetch.
+- Added two new meeting events: `sendingAudioFailed` to indicate a failure in sending audio packets out and `sendingAudioRecovered` to indicate recovery after a `sendingAudioFailed` event.
+- Added a new `ConnectionHealthPolicy` named `SendingAudioFailureConnectionHealthPolicy` to evaluate and trigger the above events. Also, added `sendingAudioFailureSamplesToConsider` and `sendingAudioFailureInitialWaitTimeMs` to `ConnectionHealthPolicyConfiguration` fields for configuring the new health policy.
+- Added a new field `consecutiveStatsWithNoAudioPacketsSent` in `ConnectionHealthData` for evaluating the `SendingAudioFailureConnectionHealthPolicy`.
+
+### Removed
+
+### Changed
+
+- Update package.json to include Node 18.
+- Refactored `connectionHealthDidChange()` in `MonitorTask` by creating a new `applyHealthPolicy()` method to reduce redundancy in the health policy evaluation.
+- Modified `SignalingAndMetricsConnectionMonitor` to update `consecutiveStatsWithNoAudioPacketsSent`.
+- Reset `connectionHealthData` on every connect (as opposed to doing it only when `signalingClient` is not initialized). This allows us to honor the cool-down time in both `SendingAudioFailureConnectionHealthPolicy` and `UnusableAudioWarningConnectionHealthPolicy` in case when the connection is failing due to an error like "no ice candidates were gathered".
+
+### Fixed
+
+- Fix `AbortError` when turning video ON in Safari.
+- `MessagingSession` reconnects with refreshed endpoint and credentials if needed.  `EndpointUrl` on `MessagingSessionConfiguration` is deprecated as it is resolved by calling `getMessagingSessionEndpoint` internally.
+
+## [3.6.0] - 2022-06-23
+
+### Added
+
+- Add a new API `enableSimulcastForContentShare` to enable simulcast for content share so that content share could be shown in network constrained clients. The lower quality layer has 300 kbps max bitrate, resolution scale factor of 2, and 5 max framerate.
+- Add APIs `setVideoCodecSendPreferences` and `setContentShareVideoCodecPreferences` to allow configuration of codec being used to send. See the [JS SDK guide](https://aws.github.io/amazon-chime-sdk-js/modules/videocodecs.html) for more details.
+- Added tracer logs to missing subscribe and unsubscribe methods.
+- Added opt-in server side network adaption enablement flag `ServerSideNetworkAdaption.EnableBandwidthProbing`. See [this section in the guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#server-side-network-adaption) for more details.
+
+### Removed
+
+### Changed
+
+### Fixed
+
+- Fix issue closing a web worker in Amazon Voice Focus's inline worklet.
+
+## [3.5.0] - 2022-06-02
+
+### Added
+
+- Add a workaround for <https://bugs.webkit.org/show_bug.cgi?id=241152> to play a paused video element in Safari.
+
+### Removed
+
+- Removed deprecated WebRTC constraints `googCpuOveruseDetection` and `googCombinedAudioVideoBwe` which were [being removed or were already no-ops](https://groups.google.com/g/discuss-webrtc/c/85e-f_siCws)
+
+### Changed
+
+- Bump `protobufjs` from 6.8.8 to 6.11.3.
+- Update `DOMBlobMock` to accommodate `@types/node` changes.
+
+### Fixed
+
+- Fix issue where Amazon Voice Focus stops working after changing device while muted.
+- Remove the `isChanged` flag as it breaks some old muting funtionality causing Amazon Voice Focus to stop working.
+- Fix issue where Amazon Voice Focus could stop working after changing the mute state of a null device or changing the device shortly after.
+- Fix an issue for mute local when there is no audio input.
+- Fix trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
+- Fix protobuf generation script for upgrade.
+- Optional chain signaling client observer removal to fix [issue](https://github.com/aws/amazon-chime-sdk-js/issues/2265) if  `audioVideo.stop()` is called before `audioVideo.start()`.
+
+## [3.4.0] - 2022-05-24
+
+### Added
+
+- Add the reserved status code AudioDisconnectAudio.
+- Add support in `MessagingSession` to allow websocket connection for messaging service to enable Prefetch feature.
+
+### Removed
+
+### Changed
+
+- Add reset function to uplink policy interface, and ignore indexes in nscale policy if the number of published videos did not change.
+
+### Fixed
+
+- Rate limited CPU warnings to at most once a minute in Voice Focus library, so that builder logs are not flooded.
+
+## [3.3.0] - 2022-05-12
+
+### Added
+
+- Add support for hosting meetings in US GovCloud regions.
+- Add support for starting live transcription in US GovCloud regions.
+
+### Removed
+
+### Changed
+
+- Assume SDP section is sendrecv if no direction is present. This should have no impact on media negotiation.
+
+### Fixed
+
+- Replace `startVideoInput(null)` and `startAudioInput(null)` with`stopVideoInput` and `stopAudioInput` for video, audio test in meeting readiness checker to stop video, audio input.
+- Replace the deprecated API `getRTCPeerConnectionStats` with `metricsDidReceive` in meeting readiness checker.
+- Prevent `realtimeUnsubscribeFromVolumeIndicator` from causing a fatal error when there are no subscriptions for the `attendeeId`.
+- Subscribe to `audioOutputDidChange` in audio mix controller to fix the issue where the audio output is not updated before meeting start.
+
+## [3.2.0] - 2022-04-27
+
+### Added
+
+- Add browser support information to content share guide.
+- Readd layers allocation negotiation in Chromium based browsers to avoid resubscribing to preemptively turn off simulcast streams or to switch layers. Avoid duplicate RTP header extension and changing extension id.
+
+### Removed
+
+### Changed
+
+- Clean up the HTML video element bounded to `VideoTileState` using `unbindVideoElement` API to fix Safari memory leak. If you do not intend to clean the video element, call `unbindVideoElement` API with `cleanUpVideoElement` set to `false`. Check [PR#2217](https://github.com/aws/amazon-chime-sdk-js/pull/2217) for detailed information.
+
+### Fixed
+
+- Fix issue where video resolution and framerate changes when toggle video transform.
+
+## [3.1.0] - 2022-04-07
+
+### Added
+
+- Add `audioUpstreamRoundTripTimeMs`, `audioUpstreamJitterMs`, and `audioDownstreamJitterMs` to `observableMetricSpec`.
+- Add `videoUpstreamRoundTripTimeMs`, `videoUpstreamJitterMs`, and `videoDownstreamJitterMs`, and `videoDownstreamDelayMs` to `observableVideoMetricSpec`.
+
+### Removed
+
+- No longer stop video stream when calling `stopLocalVideoTile`. This was added as a workaround to prevent crash in old Safari versions but no longer needed.
+
+### Changed
+
+- Subscribe and unsubscribe to `MediaStreamBrokerObserver` in `AudioVideoController` at the end of every connection and disconnection to avoid trying to replace local audio and video during connection.
+- Update `getMediaType` method to check the property `kind` instead of `mediaType` of a `RawMetricReport`.
+
+### Fixed
+
+- Fixed state not being reset if an `AudioVideoController` is reused after `stop`.
+
+- Fix a bug that `remote-inbound-rtp` `RTCStatsReport` and `remote-outbound-rtp` `RTCStatsReport` of "video" `kind` are accidentally filtered.
+- Fix the incorrect calculation of aggregation WebRTC metric spec (`audioSpeakerDelayMs`, `decoderLoss`).
+
+## [3.0.0] - 2022-03-30
+
+Amazon Chime SDK for JavaScript v3 is here !! 🎉🎉🎉
+
+Amazon Chime SDK for JavaScript v3 includes major improvements for device management, WebRTC metrics, and the
+messaging session.
+
+- **Device management:** Decouple audio and video device management from the meeting sessions. For example, a user can select their preferred devices on a video preview page and continue using the same devices to join the session. After joining the session, a user can instantly switch devices without interrupting the ongoing meeting session.
+- **WebRTC metrics:** Publish the standardized WebRTC metrics for all supported browsers.
+- **Messaging session:** Add support for AWS SDK for JavaScript v3 for messaging session.
+- **Dropping support:** Deprecate Safari 12 support and Plan B in Session Description Protocol (SDP) negotiations.
+
+Below is a list of all changes in the Chime SDK for JavaScript v3. Please refer to the [Migraton guide from v2 to v3](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_3_0.html) for
+more information.
+
+### Added
+
+- Add `rtcStatsReport` property to `ClientMetricReport` to store raw [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport) and expose it via `metricsDidReceive` event.
+
+### Removed
+
+- Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13.
+- Remove [legacy (non-promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#obsolete_syntax) call in `DefaultStatsCollector`. This API was previously used to obtain WebRTC metrics only for Chromium-based browsers. Now SDK obtains WebRTC metrics for all browsers via [standardized (promise-based) `getStats` API](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats#syntax).
+- Remove all deprecated meeting status code.
+- Remove `videoSendHealthDidChange`, `videoSendBandwidthDidChange`, `videoNotReceivingEnoughData`, and `videoReceiveBandwidthDidChange`. Use `metricsDidReceive` to obtain metrics instead.
+- Remove `estimatedDownlinkBandwidthLessThanRequired`.
+- Remove synthesize video APIs such as SMTP.
+- Removed SDP interface.
+- Remove `StatsCollector` interface.
+- Remove `ClientMetricReport` interface.
+
+### Changed
+
+- Rename `DefaultStatsCollector` to `StatsCollector`.
+- Rename `DefaultClientMetricReport` to `ClientMetricReport`.
+- Change `chooseAudioInputDevice` to explicit APIs `startAudioInput` and `stopAudioInput`. Application will need to
+  call `stopVideoInput` at the end of the call to explicitly stop active audio stream.
+- Change `chooseVideoInputDevice` to explicit APIs `startVideoInput` and `stopVideoInput`. Application will need to
+  call `stopVideoInput` now to explicitly stop active video stream.
+- Minor name change to `chooseAudioOutputDevice` to `chooseAudioOutput`.
+- `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream.
+  This allows applications to join meeting without reselecting video again.
+- Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can
+  set video max bandwidth kbps from `audioVideo.setVideoMaxBandwidthKbps`.
+- Extend the `DeviceController` interface to include `Destroyable`
+- Rename `MeetingSessionPOSTLogger` to `POSTLogger`.
+- Update `POSTLogger` to implement the `Logger` interface.
+- Remove `MeetingSessionConfiguration` dependency from `MeetingSessionPOSTLogger`.
+  Builders need to add `metadata` to `POSTLogger` if they want to include information such as `appName`, `meetingId` and so on with the HTTP POST request made by `POSTLogger` when sending logs to builder provided URL.
+  Please check 3.0 migration guide for more information.
+- Decoupled `EventController` from `AudioVideo` and `MeetingSession`.
+
+### Fixed
+
+- Fix a bug where joining without selecting any audio device failed when Web Audio is enabled.
+- Fix a minor log info for video input ended event where we say resetting to null device when we just stop the video
+  input.
+
 ## [3.0.0-beta.2] - 2022-03-09
 
 ### Added
@@ -24,13 +393,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename `DefaultClientMetricReport` to `ClientMetricReport`.
 - Change `chooseAudioInputDevice` to explicit APIs `startAudioInput` and `stopAudioInput`. Application will need to
   call `stopVideoInput` at the end of the call to explicitly stop active audio stream.
-- Change `chooseVideoInputDevice` to explicit APIs `startVideoInput` and `stopVideoInput`. Application will need to 
+- Change `chooseVideoInputDevice` to explicit APIs `startVideoInput` and `stopVideoInput`. Application will need to
   call `stopVideoInput` now to explicitly stop active video stream.
 - Minor name change to `chooseAudioOutputDevice` to `chooseAudioOutput`.
-- `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream. 
+- `startVideoPreviewForVideoInput` and `stopVideoPreviewForVideoInput` will no longer turn on and off video stream.
   This allows applications to join meeting without reselecting video again.
-- Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can 
+- Remove max bandwidth kbps parameter in `chooseVideoInputQuality` as it is not related to device. Applications can
   set video max bandwidth kbps from `audioVideo.setVideoMaxBandwidthKbps`.
+- Rename `MeetingSessionPOSTLogger` to `POSTLogger`.
+- Update `POSTLogger` to implement the `Logger` interface.
+- Remove `MeetingSessionConfiguration` dependency from `MeetingSessionPOSTLogger`.
+  Builders need to add `metadata` to `POSTLogger` if they want to include information such as `appName`, `meetingId` and so on with the HTTP POST request made by `POSTLogger` when sending logs to builder provided URL.
+  Please check 3.0 migration guide for more information.
 
 ### Fixed
 
@@ -65,7 +439,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13. Also clean up all plan-B code path.
-- Remove all deprecated meeting status code.  
+- Remove all deprecated meeting status code.
 
 ### Changed
 
@@ -102,7 +476,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Made `SimulcastUplinkObserver.encodingSimulcastLayersDidChange` (*not* `AudioVideoObserver.encodingSimulcastLayersDidChange`) synchronous.
+- Made `SimulcastUplinkObserver.encodingSimulcastLayersDidChange` (_not_ `AudioVideoObserver.encodingSimulcastLayersDidChange`) synchronous.
 
 ### Fixed
 
@@ -231,7 +605,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Ignore `enableUnifiedPlanForChromiumBasedBrowsers` value (i.e. treat as always equaling the current default value of `true`) in `MeetingSesstionConfiguration`.  Chrome is [in the processing](https://groups.google.com/g/discuss-webrtc/c/UBtZfawdIAA/m/m-4wnVHXBgAJ) of deprecating and removing Plan-B which would cause breakage in applications still trying to use it.  This will have no effect on SDK behavior` and has been the default since 1.17.0.
+- Ignore `enableUnifiedPlanForChromiumBasedBrowsers` value (i.e. treat as always equaling the current default value of `true`) in `MeetingSesstionConfiguration`. Chrome is [in the processing](https://groups.google.com/g/discuss-webrtc/c/UBtZfawdIAA/m/m-4wnVHXBgAJ) of deprecating and removing Plan-B which would cause breakage in applications still trying to use it. This will have no effect on SDK behavior` and has been the default since 1.17.0.
 - Change `appVersionName` and `appVersionCode` fields to `appName` and `appVersion` respectively.
 - Update similar log messages in `DefaultMessagingSession` and `DefaultSignalingClient`.
 
@@ -261,7 +635,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `bindToTileController` optional method to `VideoDownlinkBandwidthPolicy`.
 - Add [Content Security Policy](https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html) setup guide for customers who want to secure their application and add CSP headers.
 - Add `securitypolicyviolation` event listener to listen for CSP violations. If customers have set up CSP for their app, the event listener will detect violations and print warnings.
-  
+
 ### Removed
 
 - Remove Getting Started documentation guide and use [API overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html) to cover the development in more details.
@@ -290,13 +664,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor some types to avoid a circular dependency (#1565).
 - Update package.json to include npm 8.
 - Update mocha to version 9.
-  
+
 ## [2.18.0] - 2021-09-22
 
 ### Added
 
 - Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events. Currently, these events were only included in the meeting history attribute when a meeting event is published.
-- Added support for skipping full SDP renegotiations when switching simulcast streams.  This will result in less freezing when switching between layers in response to a network event as done in `VideoPriorityBasedPolicy`.  This will have no impact if not using simulcast.
+- Added support for skipping full SDP renegotiations when switching simulcast streams. This will result in less freezing when switching between layers in response to a network event as done in `VideoPriorityBasedPolicy`. This will have no impact if not using simulcast.
 - Add link to SIP Media Application examples in README.
 
 ### Removed
@@ -320,8 +694,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `audioInputMuteStateChanged` to the `DeviceChangeObserver` interface. This is called whenever the device is changed or is muted or unmuted, allowing applications to adapt to OS-level mute state for input devices.
 - Added Android WebView Sample UI test to workflow.
 - Add a new optional API `getVideoTileForAttendeeId` in `VideoTileController` and raise the `tileWillBePausedByDownlinkPolicy` event for empty video tiles.
-- Amazon Voice Focus will now trigger the `onCPUWarning` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (*e.g.*, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (*e.g.*, thermal throttling) cause the worklet to take too long for each audio render quantum.
-- Amazon Voice Focus will now trigger the `voiceFocusInsufficientResources` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (*e.g.*, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (*e.g.*, thermal throttling) cause the worklet to take too long for each audio render quantum.
+- Amazon Voice Focus will now trigger the `onCPUWarning` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
+- Amazon Voice Focus will now trigger the `voiceFocusInsufficientResources` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
 - Add retry logic in FAQs.
 - The Amazon Voice Focus support check, `VoiceFocusDeviceTransformer.isSupported`, now warns to the logger when run in an iframe, and can be configured to fail in that case.
 - Add documentation in Video Processing APIs on how to add filters in the preview window.
@@ -363,7 +737,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update the default behavior of NScale video uplink bandwidth policy to scale down resolution based on the number
-of videos.
+  of videos.
 
 ### Removed
 
@@ -474,7 +848,7 @@ of videos.
 - Bind tileController during the initialization of DefaultAudioVideoController for VideoPriorityBasedPolicy.
 - Add more debug logging for choose input device.
 - Add the meeting and device error sections in the meeting-event guide.
-- Add a `forceUpdate` parameter to use when listing devices. In some cases, builders need to delay the triggering of permission dialogs, *e.g.*, when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels. This parameter allows cached device labels to be forcibly discarded and recomputed after the device label trigger is run.
+- Add a `forceUpdate` parameter to use when listing devices. In some cases, builders need to delay the triggering of permission dialogs, _e.g._, when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels. This parameter allows cached device labels to be forcibly discarded and recomputed after the device label trigger is run.
 
 ### Changed
 
@@ -550,10 +924,10 @@ of videos.
 ### Added
 
 - Added new downlink policy `VideoPriorityBasedPolicy`, providing the ability
-  to explicitly request remote video sources to receive and set their respective priorities.  See
+  to explicitly request remote video sources to receive and set their respective priorities. See
   [this guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html)
   for more details and a code walkthrough of using the new policy.
-  *(Note that the exact internal behavior of this policy may slightly change in future releases.)*
+  _(Note that the exact internal behavior of this policy may slightly change in future releases.)_
 - Add optional header parameter to the `MeetingSessionPOSTLogger`.
 - Add extra logging for synthesizing an audio stream.
 - Add logging for `attendeePresenceReceived`.

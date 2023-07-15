@@ -21,6 +21,7 @@ import EventController from './EventController';
 import EventName from './EventName';
 import flattenEventAttributes from './flattenEventAttributes';
 import MeetingHistoryState from './MeetingHistoryState';
+import VideoFXEventAttributes from './VideoFXEventAttributes';
 
 export default class DefaultEventController implements EventController, Destroyable {
   private static readonly UNAVAILABLE = 'Unavailable';
@@ -90,7 +91,7 @@ export default class DefaultEventController implements EventController, Destroya
 
   async publishEvent(
     name: EventName,
-    attributes?: AudioVideoEventAttributes | DeviceEventAttributes
+    attributes?: AudioVideoEventAttributes | DeviceEventAttributes | VideoFXEventAttributes
   ): Promise<void> {
     const timestampMs = Date.now();
     this.meetingHistoryStates.push({
@@ -113,7 +114,7 @@ export default class DefaultEventController implements EventController, Destroya
   private async reportEvent(
     name: MeetingHistoryState,
     timestampMs: number,
-    attributes?: AudioVideoEventAttributes | DeviceEventAttributes
+    attributes?: AudioVideoEventAttributes | DeviceEventAttributes | VideoFXEventAttributes
   ): Promise<void> {
     let flattenedAttributes;
     try {

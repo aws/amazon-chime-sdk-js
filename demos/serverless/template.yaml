@@ -32,8 +32,29 @@ Parameters:
     Description: Prefix of S3 bucket to write capture artifacts.  The bucket name will be suffixed with the region.
     Default: ""
     Type: String
+  UseFetchCredentialLambda:
+    Description: Set to true to deploy a lambda to return AWS credentials with limited privileges. This should be disabled in most demo.
+    Default: false
+    Type: String
+    AllowedValues: [ true, false ]
+  MediaPipelinesControlRegion:
+    Description: The AWS SDK Chime Media Pipelines control REGION
+    Default: "us-east-1"
+    Type: String
+  ChimeSDKMediaPipelinesEndpoint:
+    Description: The AWS Chime SDK Media Pipelines endpoint
+    Default: "https://media-pipelines-chime.us-east-1.amazonaws.com"
+    Type: String
+  UseChimeSDKMediaPipelines:
+    Description: Use boolean to switch between Chime and ChimeSDKMediaPipelines Client
+    Default: true
+    Type: String
+    AllowedValues: [ true, false ]
+
+
 Conditions:
   ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
+  ShouldDeployFetchCredentialLambda: !Equals [true, !Ref UseFetchCredentialLambda]
 Globals:
   Function:
     Runtime: nodejs14.x
@@ -49,6 +70,9 @@ Globals:
         REGION: !Ref Region
         USE_CHIME_SDK_MEETINGS: !Ref UseChimeSDKMeetings
         CHIME_SDK_MEETINGS_ENDPOINT: !Ref ChimeSDKMeetingsEndpoint
+        MEDIA_PIPELINES_CONTROL_REGION: !Ref MediaPipelinesControlRegion
+        USE_CHIME_SDK_MEDIA_PIPELINES: !Ref UseChimeSDKMediaPipelines
+        CHIME_SDK_MEDIA_PIPELINES_ENDPOINT: !Ref ChimeSDKMediaPipelinesEndpoint
         BROWSER_EVENT_INGESTION_LOG_GROUP_NAME: !Ref ChimeBrowserEventIngestionLogs
         CAPTURE_S3_DESTINATION_PREFIX: !Ref ChimeMediaCaptureS3BucketPrefix
         AWS_ACCOUNT_ID: !Sub "${AWS::AccountId}"
@@ -78,6 +102,10 @@ Resources:
               - 'chime:StopMeetingTranscription'
               - 'chime:CreateMediaCapturePipeline'
               - 'chime:DeleteMediaCapturePipeline'
+              - 'chime:CreateMediaLiveConnectorPipeline'
+              - 'chime:DeleteMediaPipeline'
+              - 'ivs:CreateChannel'
+              - 'ivs:DeleteChannel'
               - 's3:GetBucketPolicy'
               - 's3:GetBucketLocation'
             Resource: '*'
@@ -89,8 +117,11 @@ Resources:
         - Ref: ChimeSdkStopTranscriptionLambdaRole
         - Ref: ChimeSdkStartCaptureLambdaRole
         - Ref: ChimeSdkEndCaptureLambdaRole
+        - Ref: ChimeSdkStartLiveConnectorLambdaRole
+        - Ref: ChimeSdkEndLiveConnectorLambdaRole
   ChimeMessagingAccessPolicy:
     Type: AWS::IAM::Policy
+    Condition: ShouldDeployFetchCredentialLambda
     Properties:
       PolicyName: ChimeMeetingsAccess
       PolicyDocument:
@@ -154,20 +185,20 @@ Resources:
       KeyPolicy:
         Version: '2012-10-17'
         Statement:
-        - Sid: Allow access for Chime Service
-          Effect: Allow
-          Principal:
-            Service: !Ref ChimeServicePrincipal
-          Action:
-            - kms:GenerateDataKey
-            - kms:Decrypt
-          Resource: '*'
-        - Sid: Enable IAM User Permissions
-          Effect: Allow
-          Principal:
-            AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
-          Action: kms:*
-          Resource: '*'
+          - Sid: Allow access for Chime Service
+            Effect: Allow
+            Principal:
+              Service: !Ref ChimeServicePrincipal
+            Action:
+              - kms:GenerateDataKey
+              - kms:Decrypt
+            Resource: '*'
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action: kms:*
+            Resource: '*'
   ChimeKMSAlias:
     Type: AWS::KMS::Alias
     Properties:
@@ -289,6 +320,39 @@ Resources:
           Properties:
             Path: /endCapture
             Method: POST
+
+  ChimeSdkStartLiveConnectorLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.start_live_connector
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Environment:
+        Variables:
+          USE_EVENT_BRIDGE: !Ref UseEventBridge
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /startLiveConnector
+            Method: POST
+  ChimeSdkEndLiveConnectorLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.end_live_connector
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /endLiveConnector
+            Method: POST
+
   ChimeSQSQueueLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -302,11 +366,11 @@ Resources:
             BatchSize: 10
       Policies:
         - Statement:
-          - Sid: ChimeSQSQueueLambdaPolicy
-            Effect: Allow
-            Action:
-              - kms:Decrypt
-            Resource: '*'
+            - Sid: ChimeSQSQueueLambdaPolicy
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource: '*'
   ChimeEventBridgeLambda:
     Type: AWS::Serverless::Function
     Condition: ShouldUseEventBridge
@@ -418,6 +482,7 @@ Resources:
             Method: POST
   ChimeSdkBrowserFetchCredentialsLambda:
     Type: AWS::Serverless::Function
+    Condition: ShouldDeployFetchCredentialLambda
     Properties:
       Handler: handlers.fetch_credentials
       CodeUri: src/

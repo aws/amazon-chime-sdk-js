@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="videoframeprocessor.html">VideoFrameProcessor</a>
@@ -79,16 +78,16 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="destroyable.html" class="tsd-signature-type">Destroyable</a>
+						<a href="destroyable.html" class="tsd-signature-type" data-tsd-kind="Interface">Destroyable</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">VideoFrameProcessor</span>
 								<ul class="tsd-hierarchy">
 									<li>
-										<a href="backgroundblurprocessor.html" class="tsd-signature-type">BackgroundBlurProcessor</a>
+										<a href="backgroundblurprocessor.html" class="tsd-signature-type" data-tsd-kind="Interface">BackgroundBlurProcessor</a>
 									</li>
 									<li>
-										<a href="backgroundreplacementprocessor.html" class="tsd-signature-type">BackgroundReplacementProcessor</a>
+										<a href="backgroundreplacementprocessor.html" class="tsd-signature-type" data-tsd-kind="Interface">BackgroundReplacementProcessor</a>
 									</li>
 								</ul>
 							</li>
@@ -99,7 +98,8 @@
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/noopvideoframeprocessor.html" class="tsd-signature-type">NoOpVideoFrameProcessor</a></li>
+					<li><a href="../classes/noopvideoframeprocessor.html" class="tsd-signature-type" data-tsd-kind="Class">NoOpVideoFrameProcessor</a></li>
+					<li><a href="../classes/videofxprocessor.html" class="tsd-signature-type" data-tsd-kind="Class">VideoFxProcessor</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -111,6 +111,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="videoframeprocessor.html#destroy" class="tsd-kind-icon">destroy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoframeprocessor.html#process" class="tsd-kind-icon">process</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoframeprocessor.html#seteventcontroller" class="tsd-kind-icon">set<wbr>Event<wbr>Controller</a></li>
 							</ul>
 						</section>
 					</div>
@@ -129,7 +130,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="destroyable.html">Destroyable</a>.<a href="destroyable.html#destroy">destroy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videoframeprocessor/VideoFrameProcessor.ts#L21">src/videoframeprocessor/VideoFrameProcessor.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videoframeprocessor/VideoFrameProcessor.ts#L22">src/videoframeprocessor/VideoFrameProcessor.ts:22</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -145,13 +146,13 @@
 					<a name="process" class="tsd-anchor"></a>
 					<h3>process</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">process<span class="tsd-signature-symbol">(</span>buffers<span class="tsd-signature-symbol">: </span><a href="videoframebuffer.html" class="tsd-signature-type">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="videoframebuffer.html" class="tsd-signature-type">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">process<span class="tsd-signature-symbol">(</span>buffers<span class="tsd-signature-symbol">: </span><a href="videoframebuffer.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="videoframebuffer.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videoframeprocessor/VideoFrameProcessor.ts#L16">src/videoframeprocessor/VideoFrameProcessor.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videoframeprocessor/VideoFrameProcessor.ts#L17">src/videoframeprocessor/VideoFrameProcessor.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -162,10 +163,40 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>buffers: <a href="videoframebuffer.html" class="tsd-signature-type">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>buffers: <a href="videoframebuffer.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="videoframebuffer.html" class="tsd-signature-type">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="videoframebuffer.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="seteventcontroller" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> set<wbr>Event<wbr>Controller</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Event<wbr>Controller<span class="tsd-signature-symbol">(</span>eventController<span class="tsd-signature-symbol">: </span><a href="eventcontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">EventController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videoframeprocessor/VideoFrameProcessor.ts#L28">src/videoframeprocessor/VideoFrameProcessor.ts:28</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set the <a href="eventcontroller.html">EventController</a> to the VideoFrameProcessor</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventController: <a href="eventcontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">EventController</a></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -174,8 +205,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -191,6 +222,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videoframeprocessor.html#process" class="tsd-kind-icon">process</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videoframeprocessor.html#seteventcontroller" class="tsd-kind-icon">set<wbr>Event<wbr>Controller</a>
 							</li>
 						</ul>
 					</li>

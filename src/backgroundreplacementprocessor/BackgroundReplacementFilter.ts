@@ -3,6 +3,8 @@
 
 import BackgroundFilterProcessor from '../backgroundfilter/BackgroundFilterProcessor';
 import BackgroundFilterSpec from '../backgroundfilter/BackgroundFilterSpec';
+import EventController from '../eventcontroller/EventController';
+import VideoFXEventAttributes from '../eventcontroller/VideoFXEventAttributes';
 import BackgroundReplacementOptions from './BackgroundReplacementOptions';
 import BackgroundReplacementProcessor from './BackgroundReplacementProcessor';
 import BackgroundReplacementVideoFrameProcessorDelegate from './BackgroundReplacementVideoFrameProcessorDelegate';
@@ -154,5 +156,32 @@ export default class BackgroundReplacementFilter
   async destroy(): Promise<void> {
     super.destroy();
     this.revokeReplacementObjectUrl();
+  }
+
+  /** @internal */
+  setEventController(eventController: EventController): void {
+    /*
+    if this is a first time we set the eventController, need to publish the current BackgroundFilterConfig.
+    Otherwise, just set the eventController.
+    */
+    if (this.eventController) {
+      this.eventController = eventController;
+    } else {
+      this.eventController = eventController;
+      this.publishBackgroundFilterEvent();
+    }
+  }
+
+  private publishBackgroundFilterEvent(): void {
+    const backgroundFilterEventAttributes: VideoFXEventAttributes = {
+      backgroundBlurEnabled: 'false',
+      backgroundBlurStrength: 'low',
+      backgroundReplacementEnabled: 'true',
+      backgroundFilterVersion: 1,
+    };
+    this.eventController.publishEvent(
+      'backgroundFilterConfigSelected',
+      backgroundFilterEventAttributes
+    );
   }
 }

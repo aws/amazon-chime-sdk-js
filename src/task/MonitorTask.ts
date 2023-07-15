@@ -6,11 +6,12 @@ import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../clientmetricreport/ClientMetricReportMediaType';
-import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
 import StreamMetricReport from '../clientmetricreport/StreamMetricReport';
+import ConnectionHealthPolicy from '../connectionhealthpolicy/BaseConnectionHealthPolicy';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ReconnectionHealthPolicy from '../connectionhealthpolicy/ReconnectionHealthPolicy';
+import SendingAudioFailureConnectionHealthPolicy from '../connectionhealthpolicy/SendingAudioFailureConnectionHealthPolicy';
 import UnusableAudioWarningConnectionHealthPolicy from '../connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
@@ -21,7 +22,6 @@ import SignalingClientEventType from '../signalingclient/SignalingClientEventTyp
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import { ISdkBitrateFrame, SdkSignalFrame } from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
-import VideoLogEvent from '../statscollector/VideoLogEvent';
 import { Maybe } from '../utils/Types';
 import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
@@ -36,11 +36,8 @@ export default class MonitorTask
 
   private reconnectionHealthPolicy: ReconnectionHealthPolicy;
   private unusableAudioWarningHealthPolicy: UnusableAudioWarningConnectionHealthPolicy;
+  private sendingAudioFailureHealthPolicy: SendingAudioFailureConnectionHealthPolicy;
   private prevSignalStrength: number = 1;
-  private static DEFAULT_TIMEOUT_FOR_START_SENDING_VIDEO_MS: number = 30000;
-  private static DEFAULT_DOWNLINK_CALLRATE_OVERSHOOT_FACTOR: number = 1.5;
-  private static DEFAULT_DOWNLINK_CALLRATE_UNDERSHOOT_FACTOR: number = 0.5;
-  private currentVideoDownlinkBandwidthEstimationKbps: number = 10000;
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
   private hasSignalingError: boolean = false;
   private presenceHandlerCalled: boolean = false;
@@ -49,6 +46,7 @@ export default class MonitorTask
   // for explanation.
   private isResubscribeCheckPaused: boolean = false;
   private pendingMetricsReport: ClientMetricReport | undefined = undefined;
+  private isMeetingConnected: boolean = false;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -62,6 +60,11 @@ export default class MonitorTask
       this.initialConnectionHealthData.clone()
     );
     this.unusableAudioWarningHealthPolicy = new UnusableAudioWarningConnectionHealthPolicy(
+      { ...connectionHealthPolicyConfiguration },
+      this.initialConnectionHealthData.clone()
+    );
+    this.sendingAudioFailureHealthPolicy = new SendingAudioFailureConnectionHealthPolicy(
+      context.logger,
       { ...connectionHealthPolicyConfiguration },
       this.initialConnectionHealthData.clone()
     );
@@ -122,50 +125,6 @@ export default class MonitorTask
     );
   }
 
-  videoSendHealthDidChange(bitrateKbps: number, packetsPerSecond: number): void {
-    if (
-      this.context.videoInputAttachedTimestampMs === 0 ||
-      !this.context.videoTileController.hasStartedLocalVideoTile() ||
-      !this.context.lastKnownVideoAvailability.canStartLocalVideo
-    ) {
-      return;
-    }
-
-    const tracks = this.context.activeVideoInput
-      ? this.context.activeVideoInput.getTracks()
-      : undefined;
-    if (!tracks || !tracks[0]) {
-      return;
-    }
-
-    const durationMs = Date.now() - this.context.videoInputAttachedTimestampMs;
-    if (packetsPerSecond > 0 || bitrateKbps > 0) {
-      this.context.statsCollector.logVideoEvent(
-        VideoLogEvent.SendingSuccess,
-        this.context.videoDeviceInformation
-      );
-      this.context.statsCollector.logLatency(
-        'video_start_sending',
-        durationMs,
-        this.context.videoDeviceInformation
-      );
-      this.context.videoInputAttachedTimestampMs = 0;
-    } else if (durationMs > MonitorTask.DEFAULT_TIMEOUT_FOR_START_SENDING_VIDEO_MS) {
-      this.context.statsCollector.logVideoEvent(
-        VideoLogEvent.SendingFailed,
-        this.context.videoDeviceInformation
-      );
-      this.context.videoInputAttachedTimestampMs = 0;
-    }
-  }
-
-  videoReceiveBandwidthDidChange(newBandwidthKbps: number, oldBandwidthKbps: number): void {
-    this.logger.debug(() => {
-      return `receiving bandwidth changed from prev=${oldBandwidthKbps} Kbps to curr=${newBandwidthKbps} Kbps`;
-    });
-    this.currentVideoDownlinkBandwidthEstimationKbps = newBandwidthKbps;
-  }
-
   private checkResubscribe(clientMetricReport: ClientMetricReport): boolean {
     if (this.isResubscribeCheckPaused) {
       this.context.logger.info(
@@ -178,10 +137,6 @@ export default class MonitorTask
     }
 
     const metricReport = clientMetricReport.getObservableMetrics();
-    if (!metricReport) {
-      return false;
-    }
-
     const availableSendBandwidth = metricReport.availableOutgoingBitrate;
     const nackCountPerSecond = metricReport.nackCountReceivedPerSecond;
 
@@ -191,7 +146,18 @@ export default class MonitorTask
     const resubscribeForDownlink = this.context.videoDownlinkBandwidthPolicy.wantsResubscribe();
     needResubscribe = needResubscribe || resubscribeForDownlink;
     if (resubscribeForDownlink) {
-      this.context.videosToReceive = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+      const videoSubscriptionIdSet = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+      // Same logic as in `ReceiveVideoStreamIndexTask`, immediately truncating rather then truncating on subscribe
+      // avoids any issues with components (e.g. transceiver controller) along the way.
+      this.context.videosToReceive = videoSubscriptionIdSet.truncate(
+        this.context.videoSubscriptionLimit
+      );
+
+      if (videoSubscriptionIdSet.size() > this.context.videosToReceive.size()) {
+        this.logger.warn(
+          `Video receive limit exceeded. Limiting the videos to ${this.context.videosToReceive.size()}. Please consider using AllHighestVideoBandwidthPolicy or VideoPriorityBasedPolicy along with chooseRemoteVideoSources api to select the video sources to be displayed.`
+        );
+      }
       this.logger.info(
         `trigger resubscribe for down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}]`
       );
@@ -217,11 +183,6 @@ export default class MonitorTask
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
-    const defaultClientMetricReport = clientMetricReport as ClientMetricReport;
-    if (!defaultClientMetricReport) {
-      return;
-    }
-
     if (this.checkResubscribe(clientMetricReport)) {
       this.context.audioVideoController.update({ needsRenegotiation: false });
     }
@@ -230,16 +191,11 @@ export default class MonitorTask
       return;
     }
 
-    const streamMetricReport = defaultClientMetricReport.streamMetricReports;
-    if (!streamMetricReport) {
-      return;
-    }
-
+    const streamMetricReport = clientMetricReport.streamMetricReports;
     const downlinkVideoStream: Map<number, StreamMetricReport> = new Map<
       number,
       StreamMetricReport
     >();
-    const videoReceivingBitrateMap = new Map<string, ClientVideoStreamReceivingReport>();
 
     // TODO: move those logic to stats collector.
     for (const ssrc in streamMetricReport) {
@@ -250,48 +206,6 @@ export default class MonitorTask
         downlinkVideoStream.set(streamMetricReport[ssrc].streamId, streamMetricReport[ssrc]);
       }
     }
-
-    let fireCallback = false;
-    for (const bitrate of this.currentAvailableStreamAvgBitrates.bitrates) {
-      if (downlinkVideoStream.has(bitrate.sourceStreamId)) {
-        const report = downlinkVideoStream.get(bitrate.sourceStreamId);
-        const attendeeId = this.context.videoStreamIndex.attendeeIdForStreamId(
-          bitrate.sourceStreamId
-        );
-        if (!attendeeId) {
-          continue;
-        }
-        const newReport = new ClientVideoStreamReceivingReport();
-        const prevBytesReceived = report.previousMetrics['bytesReceived'];
-        const currBytesReceived = report.currentMetrics['bytesReceived'];
-        if (!prevBytesReceived || !currBytesReceived) {
-          continue;
-        }
-
-        const receivedBitrate = ((currBytesReceived - prevBytesReceived) * 8) / 1000;
-
-        newReport.expectedAverageBitrateKbps = bitrate.avgBitrateBps / 1000;
-        newReport.receivedAverageBitrateKbps = receivedBitrate;
-        newReport.attendeeId = attendeeId;
-        if (
-          receivedBitrate <
-          (bitrate.avgBitrateBps / 1000) * MonitorTask.DEFAULT_DOWNLINK_CALLRATE_UNDERSHOOT_FACTOR
-        ) {
-          fireCallback = true;
-        }
-        videoReceivingBitrateMap.set(attendeeId, newReport);
-      }
-    }
-    if (fireCallback) {
-      this.logger.debug(() => {
-        return `Downlink video streams are not receiving enough data`;
-      });
-      this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        Maybe.of(observer.videoNotReceivingEnoughData).map(f =>
-          f.bind(observer)(Array.from(videoReceivingBitrateMap.values()))
-        );
-      });
-    }
   }
 
   connectionHealthDidChange(connectionHealthData: ConnectionHealthData): void {
@@ -301,25 +215,19 @@ export default class MonitorTask
       }
     }
 
-    this.reconnectionHealthPolicy.update(connectionHealthData);
-    const reconnectionValue = this.reconnectionHealthPolicy.healthIfChanged();
-    if (reconnectionValue !== null) {
-      this.logger.info(`reconnection health is now: ${reconnectionValue}`);
-      if (reconnectionValue === 0) {
-        this.context.audioVideoController.handleMeetingSessionStatus(
-          new MeetingSessionStatus(MeetingSessionStatusCode.ConnectionHealthReconnect),
-          null
-        );
-      }
-    }
+    this.applyHealthPolicy(this.reconnectionHealthPolicy, connectionHealthData, () => {
+      this.context.audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.ConnectionHealthReconnect),
+        null
+      );
+    });
 
-    this.unusableAudioWarningHealthPolicy.update(connectionHealthData);
-    const unusableAudioWarningValue = this.unusableAudioWarningHealthPolicy.healthIfChanged();
-    if (unusableAudioWarningValue !== null) {
-      this.logger.info(`unusable audio warning is now: ${unusableAudioWarningValue}`);
-      if (unusableAudioWarningValue === 0) {
+    this.applyHealthPolicy(
+      this.unusableAudioWarningHealthPolicy,
+      connectionHealthData,
+      () => {
         this.context.poorConnectionCount += 1;
-        const attributes = this.generateAudioVideoEventAttributes();
+        const attributes = this.generateAudioVideoEventAttributesForReceivingAudioDropped();
         this.context.eventController?.publishEvent('receivingAudioDropped', attributes);
         if (this.context.videoTileController.haveVideoTilesWithStreams()) {
           this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
@@ -330,41 +238,78 @@ export default class MonitorTask
             Maybe.of(observer.connectionDidBecomePoor).map(f => f.bind(observer)());
           });
         }
-      } else {
+      },
+      () => {
         this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
           Maybe.of(observer.connectionDidBecomeGood).map(f => f.bind(observer)());
         });
+      }
+    );
+
+    if (this.isMeetingConnected) {
+      this.applyHealthPolicy(
+        this.sendingAudioFailureHealthPolicy,
+        connectionHealthData,
+        () => {
+          const attributes = this.generateBaseAudioVideoEventAttributes();
+          this.context.eventController?.publishEvent('sendingAudioFailed', attributes);
+        },
+        () => {
+          const attributes = this.generateBaseAudioVideoEventAttributes();
+          this.context.eventController?.publishEvent('sendingAudioRecovered', attributes);
+        }
+      );
+    }
+  }
+
+  audioVideoDidStart(): void {
+    this.isMeetingConnected = true;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  audioVideoDidStartConnecting(reconnecting: boolean): void {
+    // The expectation here is that the flag will be set to true again when audioVideoDidStart() is eventually called.
+    this.isMeetingConnected = false;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
+    this.isMeetingConnected = false;
+  }
+
+  private applyHealthPolicy(
+    healthPolicy: ConnectionHealthPolicy,
+    connectionHealthData: ConnectionHealthData,
+    unhealthyCallback?: () => void,
+    healthyCallback?: () => void
+  ): void {
+    healthPolicy.update(connectionHealthData);
+    const healthValue = healthPolicy.healthIfChanged();
+    if (healthValue !== null) {
+      this.logger.info(`${healthPolicy.name} value is now ${healthValue}`);
+      if (healthValue <= healthPolicy.minimumHealth()) {
+        Maybe.of(unhealthyCallback).map(f => f.bind(this)());
+      } else {
+        Maybe.of(healthyCallback).map(f => f.bind(this)());
       }
     }
   }
 
   private handleBitrateFrame(bitrates: ISdkBitrateFrame): void {
-    let requiredBandwidthKbps = 0;
     this.currentAvailableStreamAvgBitrates = bitrates;
 
-    this.logger.debug(() => {
-      return `simulcast: bitrates from server ${JSON.stringify(bitrates)}`;
-    });
-    for (const bitrate of bitrates.bitrates) {
-      if (this.context.videosToReceive.contain(bitrate.sourceStreamId)) {
-        requiredBandwidthKbps += bitrate.avgBitrateBps;
-      }
-    }
-    requiredBandwidthKbps /= 1000;
-
-    if (
-      this.currentVideoDownlinkBandwidthEstimationKbps *
-        MonitorTask.DEFAULT_DOWNLINK_CALLRATE_OVERSHOOT_FACTOR <
-      requiredBandwidthKbps
-    ) {
+    if (bitrates.serverAvailableOutgoingBitrate > 0) {
       this.logger.info(
-        `Downlink bandwidth pressure is high: estimated bandwidth ${this.currentVideoDownlinkBandwidthEstimationKbps}Kbps, required bandwidth ${requiredBandwidthKbps}Kbps`
+        `Received server side estimation of available incoming bitrate ${bitrates.serverAvailableOutgoingBitrate}kbps`
       );
-      this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        Maybe.of(observer.estimatedDownlinkBandwidthLessThanRequired).map(f =>
-          f.bind(observer)(this.currentVideoDownlinkBandwidthEstimationKbps, requiredBandwidthKbps)
-        );
-      });
+      // This value will be included in the 'Bitrates' signaling message if we are using
+      // server side remote video quality adaption, since if that is the case we will
+      // be using TWCC and will therefore not likely have an estimate on the client
+      // for available incoming bitrate
+      this.context.statsCollector.overrideObservableMetric(
+        'availableIncomingBitrate',
+        bitrates.serverAvailableOutgoingBitrate * 1000
+      );
     }
   }
 
@@ -377,7 +322,7 @@ export default class MonitorTask
       event.type === SignalingClientEventType.WebSocketFailed
     ) {
       if (!this.hasSignalingError) {
-        const attributes = this.generateAudioVideoEventAttributes();
+        const attributes = this.generateAudioVideoEventAttributesForReceivingAudioDropped();
         this.context.eventController?.publishEvent('signalingDropped', attributes);
         this.hasSignalingError = true;
       }
@@ -444,24 +389,29 @@ export default class MonitorTask
     }
   };
 
-  private generateAudioVideoEventAttributes = (): AudioVideoEventAttributes => {
+  private generateBaseAudioVideoEventAttributes = (): AudioVideoEventAttributes => {
     const {
       signalingOpenDurationMs,
-      poorConnectionCount,
       startTimeMs,
       iceGatheringDurationMs,
       attendeePresenceDurationMs,
       meetingStartDurationMs,
     } = this.context;
-    const attributes: AudioVideoEventAttributes = {
-      maxVideoTileCount: this.context.maxVideoTileCount,
+    return {
       meetingDurationMs: startTimeMs === null ? 0 : Math.round(Date.now() - startTimeMs),
       signalingOpenDurationMs,
       iceGatheringDurationMs,
       attendeePresenceDurationMs,
-      poorConnectionCount,
       meetingStartDurationMs,
     };
-    return attributes;
+  };
+
+  private generateAudioVideoEventAttributesForReceivingAudioDropped = (): AudioVideoEventAttributes => {
+    const baseAttributes = this.generateBaseAudioVideoEventAttributes();
+    return {
+      ...baseAttributes,
+      maxVideoTileCount: this.context.maxVideoTileCount,
+      poorConnectionCount: this.context.poorConnectionCount,
+    };
   };
 }

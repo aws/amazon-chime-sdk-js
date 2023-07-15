@@ -99,7 +99,6 @@ Then set up to run:
 cd integration
 export SELENIUM_GRID_PROVIDER=local
 ```
-
 ### Running tests
 
 Start your demo server in a shell:
@@ -142,6 +141,7 @@ Run the test:
 ```shell
 $KITE_HOME/scripts/mac/path/r configs/<test_name>.config.json
 ```
+
 ## Testing against a custom audio/video stream in Sauce Labs
 Some tests might require testing against a custom audio/video stream. To test, you need the media file on Sauce Labs virtual machine before running your test. For that, you can use a pre-run executable script to download media file from public storage to the virtual machine before running your tests. 
 
@@ -172,3 +172,9 @@ For our use case, a pre-run executable script is a minimal `bash` script that wi
       return capabilities.name.includes('Background Blur Test') ? 'storage:<storage_id>' : '';
     }
     ```
+
+5. Another way is hosting the pre-run-script in any open public domain and export another environment:
+```shell
+export PRE_RUN_SCRIPT_URL=<url_to_pre_run_script>
+```
+Then you can skip other steps and run the test directly on Sauce Labs

@@ -19,6 +19,20 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
   supportsBackgroundFilter(): boolean;
   disableResolutionScaleDown(): boolean;
   requiresDisablingH264Encoding(): boolean;
+  /**
+   * Returns whether the browser will emit the metric 'availableIncomingBandwidth' or similar.
+   *
+   * This was previously meant to be used to avoid using a downlink policy dependent on that metric which may have unintended consequences,
+   * however with server side network adaptation this is no longer relevant. This function is deprecated and may be removed in a later
+   * release.
+   *
+   * @deprecated Please set `VideoPriorityBasedPolicyConfig.serverSideNetworkAdaption` to `ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption`
+   */
   supportDownlinkBandwidthEstimation(): boolean;
+  supportsVideoLayersAllocationRtpHeaderExtension(): boolean;
   disable480pResolutionScaleDown(): boolean;
+  /**
+   * Returns whether the browser requires the "playback" latency hint for Web Audio.
+   */
+  requiresPlaybackLatencyHintForAudioContext(): boolean;
 }

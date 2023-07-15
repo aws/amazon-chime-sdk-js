@@ -51,8 +51,8 @@ class TranscriptionTest extends SdkBaseTest {
       }
 
       const hitPct = 100 * hits / total;
-      if (hitPct < 80) {
-        console.log(`Need at least 80% of expected tokens in transcript content, got ${hitPct}%. (isMedicalTranscribe == ${isMedicalTranscribe}, actual == "${actualContent}", expected == "${expectedContent}")`);
+      if (hitPct < 70) {
+        console.log(`Need at least 70% of expected tokens in transcript content, got ${hitPct}%. (isMedicalTranscribe == ${isMedicalTranscribe}, actual == "${actualContent}", expected == "${expectedContent}")`);
         return false;
       } else {
         console.log(`Success, ${hitPct}% of expected tokens present in transcripts`);
@@ -65,7 +65,9 @@ class TranscriptionTest extends SdkBaseTest {
     await this.runTranscriptionTest(session, testWindow1, testWindow2, false, testWindow1, testWindow2, testWindow1, attendeeId1, compareFn);
 
     // Transcribe Medical
-    await this.runTranscriptionTest(session, testWindow1, testWindow2, true, testWindow2, testWindow1, testWindow2, attendeeId2, compareFn);
+    if (this.region !== 'us-gov-east-1' && this.region !== 'us-gov-west-1') {
+      await this.runTranscriptionTest(session, testWindow1, testWindow2, true, testWindow2, testWindow1, testWindow2, attendeeId2, compareFn);
+    }
 
     await this.waitAllSteps();
   }

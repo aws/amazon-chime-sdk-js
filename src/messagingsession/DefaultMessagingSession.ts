@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
+
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Logger from '../logger/Logger';
@@ -16,11 +18,15 @@ import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
 import MessagingSession from './MessagingSession';
 import MessagingSessionConfiguration from './MessagingSessionConfiguration';
+import PrefetchOn from './PrefetchOn';
 
 export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
   private isClosing: boolean;
   private isSessionEstablished: boolean;
+  private bootstrapResolved: (value: PromiseLike<void> | void) => void; // Variable to determine that a session bootstrap was successful, resolves the StartSession promise
+  private bootstrapRejected: (reason?: CloseEvent) => void; // Variable to determine that a session disconnection was before bootstrap, rejects the StartSession promise
+  private preBootstrapMessages: Message[];
 
   constructor(
     private configuration: MessagingSessionConfiguration,
@@ -48,6 +54,7 @@ export default class DefaultMessagingSession implements MessagingSession {
 
     CSPMonitor.addLogger(this.logger);
     CSPMonitor.register();
+    this.preBootstrapMessages = [];
   }
 
   addObserver(observer: MessagingSessionObserver): void {
@@ -104,7 +111,64 @@ export default class DefaultMessagingSession implements MessagingSession {
   }
 
   private async startConnecting(reconnecting: boolean): Promise<void> {
-    const signedUrl = await this.prepareWebSocketUrl();
+    await this.startConnectingInternal(reconnecting);
+    return await new Promise<void>((resolve, reject) => {
+      this.bootstrapResolved = resolve;
+      this.bootstrapRejected = reject;
+    });
+  }
+
+  private async startConnectingInternal(reconnecting: boolean): Promise<void> {
+    let endpointUrl = this.configuration.endpointUrl;
+
+    // Moving this reconnect logic can potentially result into an infinite reconnect loop on errors.
+    // Check https://github.com/aws/amazon-chime-sdk-js/issues/2372 for details.
+    if (!reconnecting) {
+      this.reconnectController.reset();
+    }
+    if (this.reconnectController.hasStartedConnectionAttempt()) {
+      this.reconnectController.startedConnectionAttempt(false);
+    } else {
+      this.reconnectController.startedConnectionAttempt(true);
+    }
+    // reconnect needs to re-resolve endpoint url, which will also refresh credentials on client if they are expired
+    if (reconnecting || endpointUrl === undefined) {
+      try {
+        if (this.configuration.chimeClient.getMessagingSessionEndpoint instanceof Function) {
+          const response = await this.configuration.chimeClient.getMessagingSessionEndpoint();
+          // Check for aws sdk v3 with v2 style compatibility first
+          if (response.Endpoint?.Url) {
+            endpointUrl = response.Endpoint.Url;
+          } else {
+            // Make aws sdk v2 call
+            const endpoint = await this.configuration.chimeClient
+              .getMessagingSessionEndpoint()
+              .promise();
+            endpointUrl = endpoint.Endpoint.Url;
+          }
+        } else {
+          endpointUrl = (
+            await this.configuration.chimeClient.send(new GetMessagingSessionEndpointCommand({}))
+          ).Endpoint.Url;
+        }
+        this.logger.debug(`Messaging endpoint resolved to: ${endpointUrl}`);
+      } catch (e) {
+        // send artificial close code event so the
+        // re-connect logic of underlying websocket client is
+        // triggered in the close handler
+        this.logger.error(`Messaging Session failed to resolve endpoint: ${e}`);
+        const closeEvent = new CloseEvent('close', {
+          wasClean: false,
+          code: 4999,
+          reason: 'Failed to get messaging session endpoint URL',
+          bubbles: false,
+        });
+        this.closeEventHandler(closeEvent);
+        return;
+      }
+    }
+
+    const signedUrl = await this.prepareWebSocketUrl(endpointUrl);
     this.logger.info(`opening connection to ${signedUrl}`);
     if (!reconnecting) {
       this.reconnectController.reset();
@@ -123,15 +187,21 @@ export default class DefaultMessagingSession implements MessagingSession {
     this.setUpEventListeners();
   }
 
-  private async prepareWebSocketUrl(): Promise<string> {
+  private async prepareWebSocketUrl(endpointUrl: string): Promise<string> {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);
+    if (this.configuration.prefetchOn === PrefetchOn.Connect) {
+      queryParams.set('prefetch-on', [PrefetchOn.Connect]);
+    }
+    if (this.configuration.prefetchSortBy) {
+      queryParams.set('prefetch-sort-by', [this.configuration.prefetchSortBy]);
+    }
     return await this.sigV4.signURL(
       'GET',
       'wss',
       'chime',
-      this.configuration.endpointUrl,
+      endpointUrl,
       '/connect',
       '',
       queryParams
@@ -166,34 +236,51 @@ export default class DefaultMessagingSession implements MessagingSession {
             observer.messagingSessionDidStart();
           }
         });
+        this.bootstrapResolved();
         this.isSessionEstablished = true;
+
+        // Send message and flush the queue.
+        const preBootstrapMessageLength = this.preBootstrapMessages.length;
+        for (let iter = 0; iter < preBootstrapMessageLength; iter++) {
+          const preBootstrapMessage = this.preBootstrapMessages.shift();
+          this.forEachObserver(observer => {
+            this.sendMessageToObserver(observer, preBootstrapMessage);
+          });
+        }
       } else if (!this.isSessionEstablished) {
         // SESSION_ESTABLISHED is not guaranteed to be the first message, and in rare conditions a message or event from
         // a channel the member is a member of might arrive prior to SESSION_ESTABLISHED.  Because SESSION_ESTABLISHED indicates
-        // it is safe to bootstrap the user application with out any race conditions in losing events we opt to drop messages prior
-        // to SESSION_ESTABLISHED being received
+        // it is safe to bootstrap the user application without any race conditions in losing events we opt to store messages prior
+        // to SESSION_ESTABLISHED being received and send when once SESSION_ESTABLISHED.
+        this.preBootstrapMessages.push(message);
         return;
       }
       this.forEachObserver(observer => {
-        if (observer.messagingSessionDidReceiveMessage) {
-          observer.messagingSessionDidReceiveMessage(message);
-        }
+        this.sendMessageToObserver(observer, message);
       });
     } catch (error) {
       this.logger.error(`Messaging parsing failed: ${error}`);
     }
   }
 
+  private sendMessageToObserver(observer: MessagingSessionObserver, message: Message): void {
+    if (observer.messagingSessionDidReceiveMessage) {
+      observer.messagingSessionDidReceiveMessage(message);
+    }
+  }
+
+  private retryConnection(): boolean {
+    return this.reconnectController.retryWithBackoff(async () => {
+      await this.startConnecting(true);
+    }, null);
+  }
+
   private closeEventHandler(event: CloseEvent): void {
     this.logger.info(`WebSocket close: ${event.code} ${event.reason}`);
-    this.webSocket.destroy();
-    if (
-      !this.isClosing &&
-      this.canReconnect(event.code) &&
-      this.reconnectController.retryWithBackoff(async () => {
-        this.startConnecting(true);
-      }, null)
-    ) {
+    if (event.code !== 4999) {
+      this.webSocket.destroy();
+    }
+    if (!this.isClosing && this.canReconnect(event.code) && this.retryConnection()) {
       return;
     }
     this.isClosing = false;
@@ -203,6 +290,8 @@ export default class DefaultMessagingSession implements MessagingSession {
           observer.messagingSessionDidStop(event);
         }
       });
+    } else {
+      this.bootstrapRejected(event);
     }
   }
 

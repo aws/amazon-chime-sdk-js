@@ -28,9 +28,11 @@ import {
   SdkSubscribeFrame,
   SdkVideoSubscriptionConfiguration,
 } from '../signalingprotocol/SignalingProtocol.js';
+import { getFormattedOffset } from '../utils/Utils';
 import Versioning from '../versioning/Versioning';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
+import { convertServerSideNetworkAdaptionEnumToSignaled } from './ServerSideNetworkAdaption';
 import SignalingClient from './SignalingClient';
 import SignalingClientConnectionRequest from './SignalingClientConnectionRequest';
 import SignalingClientEvent from './SignalingClientEvent';
@@ -98,6 +100,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       platformVersion: browserBehavior.version(),
       clientSource: Versioning.sdkName,
       chimeSdkVersion: Versioning.sdkVersion,
+      clientUtcOffset: getFormattedOffset(new Date().getTimezoneOffset()),
     };
     if (settings.applicationMetadata) {
       const { appName, appVersion } = settings.applicationMetadata;
@@ -107,7 +110,14 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.clientDetails = SdkClientDetails.create(sdkClientDetails);
     joinFrame.audioSessionId = this.audioSessionId;
     joinFrame.wantsCompressedSdp = DefaultSignalingClient.CLIENT_SUPPORTS_COMPRESSION;
-
+    joinFrame.disablePeriodicKeyframeRequestOnContentSender =
+      settings.disablePeriodicKeyframeRequestOnContentSender;
+    joinFrame.serverSideNetworkAdaption = convertServerSideNetworkAdaptionEnumToSignaled(
+      settings.serverSideNetworkAdaption
+    );
+    joinFrame.supportedServerSideNetworkAdaptions = settings.supportedServerSideNetworkAdaptions.map(
+      convertServerSideNetworkAdaptionEnumToSignaled
+    );
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
     message.join = joinFrame;
@@ -152,6 +162,12 @@ export default class DefaultSignalingClient implements SignalingClient {
         subscribeFrame.sendStreams.push(streamDescription.toStreamDescriptor());
       }
     }
+
+    if (settings.videoSubscriptionConfiguration.length > 0) {
+      subscribeFrame.videoSubscriptionConfiguration = settings.videoSubscriptionConfiguration.map(
+        this.convertSignalingClientVideoSubscriptionConfiguration
+      );
+    }
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.SUBSCRIBE;
     message.sub = subscribeFrame;
@@ -164,7 +180,7 @@ export default class DefaultSignalingClient implements SignalingClient {
   ): void {
     const remoteVideoUpdate = SdkRemoteVideoUpdateFrame.create();
     remoteVideoUpdate.addedOrUpdatedVideoSubscriptions = addedOrUpdated.map(
-      this.convertVideoSubscriptionConfiguration
+      this.convertSignalingClientVideoSubscriptionConfiguration
     );
     remoteVideoUpdate.removedVideoSubscriptionMids = removed;
 
@@ -174,13 +190,16 @@ export default class DefaultSignalingClient implements SignalingClient {
     this.sendMessage(message);
   }
 
-  private convertVideoSubscriptionConfiguration(
+  private convertSignalingClientVideoSubscriptionConfiguration(
     config: SignalingClientVideoSubscriptionConfiguration
   ): SdkVideoSubscriptionConfiguration {
     const signalConfig = new SdkVideoSubscriptionConfiguration();
     signalConfig.mid = config.mid;
     signalConfig.attendeeId = config.attendeeId;
     signalConfig.streamId = config.streamId;
+    signalConfig.groupId = config.groupId;
+    signalConfig.priority = config.priority;
+    signalConfig.targetBitrateKbps = config.targetBitrateKbps;
     return signalConfig;
   }
 
@@ -431,7 +450,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const GlobalAny = global as any;
     GlobalAny['window'] &&
-      GlobalAny['window']['addEventListener'] &&
+      GlobalAny['window']['removeEventListener'] &&
       window.removeEventListener('unload', this.unloadHandler);
     this.unloadHandler = null;
   }

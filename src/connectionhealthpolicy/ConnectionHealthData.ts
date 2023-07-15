@@ -4,6 +4,7 @@
 export default class ConnectionHealthData {
   connectionStartTimestampMs = 0;
   consecutiveStatsWithNoPackets = 0;
+  consecutiveStatsWithNoAudioPacketsSent = 0;
   lastPacketLossInboundTimestampMs = 0;
   lastGoodSignalTimestampMs = 0;
   lastWeakSignalTimestampMs = 0;
@@ -29,6 +30,7 @@ export default class ConnectionHealthData {
   reset(): void {
     this.connectionStartTimestampMs = 0;
     this.consecutiveStatsWithNoPackets = 0;
+    this.consecutiveStatsWithNoAudioPacketsSent = 0;
     this.lastPacketLossInboundTimestampMs = 0;
     this.lastGoodSignalTimestampMs = 0;
     this.lastWeakSignalTimestampMs = 0;
@@ -66,6 +68,7 @@ export default class ConnectionHealthData {
     const cloned = new ConnectionHealthData();
     cloned.connectionStartTimestampMs = this.connectionStartTimestampMs;
     cloned.consecutiveStatsWithNoPackets = this.consecutiveStatsWithNoPackets;
+    cloned.consecutiveStatsWithNoAudioPacketsSent = this.consecutiveStatsWithNoAudioPacketsSent;
     cloned.lastPacketLossInboundTimestampMs = this.lastPacketLossInboundTimestampMs;
     cloned.lastGoodSignalTimestampMs = this.lastGoodSignalTimestampMs;
     cloned.lastWeakSignalTimestampMs = this.lastWeakSignalTimestampMs;
@@ -83,6 +86,9 @@ export default class ConnectionHealthData {
   }
   setConsecutiveStatsWithNoPackets(stats: number): void {
     this.consecutiveStatsWithNoPackets = stats;
+  }
+  setConsecutiveStatsWithNoAudioPacketsSent(stats: number): void {
+    this.consecutiveStatsWithNoAudioPacketsSent = stats;
   }
   setLastPacketLossInboundTimestampMs(timeStamp: number): void {
     this.lastPacketLossInboundTimestampMs = timeStamp;

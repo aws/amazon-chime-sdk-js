@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="backgroundfilter_video_processor.html">BackgroundFilter_Video_Processor</a>
@@ -69,10 +68,12 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<a href="#integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application" id="integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application" style="color: inherit; text-decoration: none;">
-							<h1>Integrating background filters into your Amazon Chime SDK for JavaScript application</h1>
-						</a>
+						<p><strong>Note</strong>
+						For updated versions of background blur and background replacement, please use the <code>VideoFXProcessor</code>. Use the guide at <a href="https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html">https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_videofx_processor.html</a>.</p>
 					</div>
+					<a href="#integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application" id="integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application" style="color: inherit; text-decoration: none;">
+						<h1>Integrating background filters into your Amazon Chime SDK for JavaScript application</h1>
+					</a>
 					<a href="#what-is-a-background-filter" id="what-is-a-background-filter" style="color: inherit; text-decoration: none;">
 						<h2>What is a background filter?</h2>
 					</a>
@@ -90,8 +91,49 @@
 					<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
 						<h3>Browser compatibility</h3>
 					</a>
-					<p>A background filter in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and Safari 14.1 and later on macOS.</p>
-					<p>There is a known issue with <code>VideoFrameProcessor</code> in Safari 15: see <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059">github issue 1059</a></p>
+					<p>The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers
+					(including Electron) on desktop, Android. A full compatibility table is below.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Browser</th>
+								<th>Minimum supported version</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>Firefox</td>
+								<td>76</td>
+							</tr>
+							<tr>
+								<td>Chromium-based browsers and environments, including Edge and Electron</td>
+								<td>78</td>
+							</tr>
+							<tr>
+								<td>Android Chrome</td>
+								<td>78</td>
+							</tr>
+							<tr>
+								<td>Safari on MacOS</td>
+								<td>13.0</td>
+							</tr>
+							<tr>
+								<td>iOS Safari</td>
+								<td>16</td>
+							</tr>
+							<tr>
+								<td>iOS Chrome</td>
+								<td>106</td>
+							</tr>
+							<tr>
+								<td>iOS Firefox (Except on iPad)</td>
+								<td>106</td>
+							</tr>
+							<tr>
+								<td>iOS Edge</td>
+								<td>106</td>
+							</tr>
+					</tbody></table>
+					<p>Note that there is a known issue with <code>VideoFrameProcessor</code> in Safari 15: see <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059">github issue 1059</a>. This has been fixed with Safari 16.</p>
 					<p>A background filter can be CPU-intensive and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use a background filter while also supporting multiple video streams and rich application functionality.</p>
 					<p>See the sections “<a href="#checking-for-support-before-offering-a-background-filter">Checking for support before offering a background filter</a>” for more details about checking for support.</p>
 					<a href="#simd-support" id="simd-support" style="color: inherit; text-decoration: none;">
@@ -120,17 +162,17 @@
 						<li><code>child-src</code>: add <code>blob:</code> to load worker JavaScript across origins (only in Safari).</li>
 					</ul>
 					<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then a background filter will not be able to initialize, and will either appear to be unsupported or will create a no-op video frame processor. You will see errors in your browser console like:</p>
-					<pre><code>Refused <span class="hljs-built_in">to</span> connect <span class="hljs-built_in">to</span>
-<span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/bgblur/workers/worker.js…&#x27;</span>
-because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> document<span class="hljs-string">&#x27;s Content Security Policy.</span>
+					<pre><code><span style="color: #001080">Refused</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">connect</span><span style="color: #000000"> </span><span style="color: #001080">to</span>
+<span style="color: #A31515">&#039;https://static.sdkassets.chime.aws/bgblur/workers/worker.js…&#039;</span>
+<span style="color: #001080">because</span><span style="color: #000000"> </span><span style="color: #001080">it</span><span style="color: #000000"> </span><span style="color: #001080">violates</span><span style="color: #000000"> </span><span style="color: #001080">the</span><span style="color: #000000"> </span><span style="color: #001080">document</span><span style="color: #A31515">&#039;s Content Security Policy</span><span style="color: #CD3131">.</span>
 </code></pre>
 					<p>If you need guidance with correct CSP configuration to use a background filter, contact AWS Support.</p>
 					<a href="#cross-origin-opener-policy" id="cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
 						<h3>Cross-Origin Opener Policy</h3>
 					</a>
 					<p>Some execution modes require careful configuration of web security, including less common headers like <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy"><code>Cross-Origin-Opener-Policy</code></a>. To opt in to these execution modes, send</p>
-					<pre><code><span class="hljs-keyword">Cross</span>-Origin-Opener-<span class="hljs-keyword">Policy</span>: same-origin
-<span class="hljs-keyword">Cross</span>-Origin-Embedder-<span class="hljs-keyword">Policy</span>: require-corp
+					<pre><code><span style="color: #001080">Cross</span><span style="color: #000000">-</span><span style="color: #001080">Origin</span><span style="color: #000000">-</span><span style="color: #001080">Opener</span><span style="color: #000000">-Policy: </span><span style="color: #001080">same</span><span style="color: #000000">-</span><span style="color: #001080">origin</span>
+<span style="color: #001080">Cross</span><span style="color: #000000">-</span><span style="color: #001080">Origin</span><span style="color: #000000">-</span><span style="color: #001080">Embedder</span><span style="color: #000000">-Policy: </span><span style="color: #001080">require</span><span style="color: #000000">-</span><span style="color: #001080">corp</span>
 </code></pre>
 					<p>when serving your application HTML. These headers are optional but advised: they improve web security, as well as allowing the browser to support technologies like <code>SharedArrayBuffer</code>.</p>
 					<a href="#checking-for-support-before-offering-a-background-filter" id="checking-for-support-before-offering-a-background-filter" style="color: inherit; text-decoration: none;">
@@ -138,28 +180,28 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					</a>
 					<p>Some browsers support the Amazon Chime SDK but do not support a background filter. Additionally, some devices are not fast enough to keep up with real-time video while filtering the background.</p>
 					<p>The SDK provides an async static method to allow you to cheaply check for the required browser features:</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
-<span class="hljs-keyword">import</span> { BackgroundBlurVideoFrameProcessor } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
-<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported();
+					<pre><code class="language-typescript"><span style="color: #008000">// Background Blur</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">BackgroundBlurVideoFrameProcessor</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundBlurVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">();</span>
 
-<span class="hljs-comment">// Background Replacement</span>
-<span class="hljs-keyword">import</span> { BackgroundReplacementVideoFrameProcessor } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
-<span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.isSupported();
+<span style="color: #008000">// Background Replacement</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">BackgroundReplacementVideoFrameProcessor</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundReplacementVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">();</span>
 </code></pre>
 					<p>If <code>isSupported</code> resolves to <code>true</code>, instantiate the background filter video frame processor.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
-<span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported()) {
-    <span class="hljs-keyword">const</span> blurProcessor = <span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.create();
-    processors.push(blurProcessor);
-}
+					<pre><code class="language-typescript"><span style="color: #008000">// Background Blur</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">processors</span><span style="color: #000000"> = [];</span>
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundBlurVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">()) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">blurProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundBlurVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #001080">processors</span><span style="color: #000000">.</span><span style="color: #795E26">push</span><span style="color: #000000">(</span><span style="color: #001080">blurProcessor</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
 </code></pre>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Replacement</span>
-<span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.isSupported()) {
-    <span class="hljs-keyword">const</span> replacementProcessor = <span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.create();
-    processors.push(replacementProcessor);
-}
+					<pre><code class="language-typescript"><span style="color: #008000">// Background Replacement</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">processors</span><span style="color: #000000"> = [];</span>
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundReplacementVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">()) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">replacementProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundReplacementVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #001080">processors</span><span style="color: #000000">.</span><span style="color: #795E26">push</span><span style="color: #000000">(</span><span style="color: #001080">replacementProcessor</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<p>The create method will pre-load the model file and prepare a background filter for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. In the event that the builder creates the processor and it is not supported a no-op video frame processor will be returned and a background filter will not be applied. In order to reduce the time to start a meeting, it is recommended that the background filter is created prior to starting the meeting.</p>
 					<a href="#adding-a-background-filter-to-your-application" id="adding-a-background-filter-to-your-application" style="color: inherit; text-decoration: none;">
@@ -167,34 +209,34 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					</a>
 					<p>A background filter integrates with the SDK by providing a new implementation of the <code>VideoFrameProcessor</code></p>
 					<p>Once you have checked for support and created a background processor, you add the processor to the transform device.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
-<span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported()) {
-    <span class="hljs-keyword">const</span> blurProcessor = <span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.create();
-    processors.push(blurProcessor);
-}
-<span class="hljs-keyword">let</span> transformDevice = <span class="hljs-keyword">new</span> DefaultVideoTransformDevice(logger, device, processors);
+					<pre><code class="language-typescript"><span style="color: #008000">// Background Blur</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">processors</span><span style="color: #000000"> = [];</span>
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundBlurVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">()) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">blurProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundBlurVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #001080">processors</span><span style="color: #000000">.</span><span style="color: #795E26">push</span><span style="color: #000000">(</span><span style="color: #001080">blurProcessor</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">transformDevice</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultVideoTransformDevice</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">device</span><span style="color: #000000">, </span><span style="color: #001080">processors</span><span style="color: #000000">);</span>
 </code></pre>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Replacement</span>
-<span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.isSupported()) {
-    <span class="hljs-keyword">const</span> image = <span class="hljs-keyword">await</span> fetch(<span class="hljs-string">&#x27;https://pathtoimage.jpeg&#x27;</span>);
-    <span class="hljs-keyword">const</span> imageBlob = <span class="hljs-keyword">await</span> image.blob();
-    <span class="hljs-keyword">const</span> options = { imageBlob };
-    <span class="hljs-keyword">const</span> replacementProcessor = <span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.create(<span class="hljs-literal">null</span>, options);
-    processors.push(replacementProcessor);
-}
-<span class="hljs-keyword">let</span> transformDevice = <span class="hljs-keyword">new</span> DefaultVideoTransformDevice(logger, device, processors);
+					<pre><code class="language-typescript"><span style="color: #008000">// Background Replacement</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">processors</span><span style="color: #000000"> = [];</span>
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundReplacementVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">()) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">image</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">fetch</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;https://pathtoimage.jpeg&#039;</span><span style="color: #000000">); </span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">imageBlob</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">image</span><span style="color: #000000">.</span><span style="color: #795E26">blob</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">options</span><span style="color: #000000"> = { </span><span style="color: #001080">imageBlob</span><span style="color: #000000"> };</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">replacementProcessor</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">BackgroundReplacementVideoFrameProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">(</span><span style="color: #0000FF">null</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">); </span>
+<span style="color: #000000">    </span><span style="color: #001080">processors</span><span style="color: #000000">.</span><span style="color: #795E26">push</span><span style="color: #000000">(</span><span style="color: #001080">replacementProcessor</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">transformDevice</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultVideoTransformDevice</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">, </span><span style="color: #001080">device</span><span style="color: #000000">, </span><span style="color: #001080">processors</span><span style="color: #000000">);</span>
 </code></pre>
 					<a href="#replacing-the-background-image-for-a-backgroundreplacementprocessor-mid-stream" id="replacing-the-background-image-for-a-backgroundreplacementprocessor-mid-stream" style="color: inherit; text-decoration: none;">
 						<h3>Replacing the background image for a BackgroundReplacementProcessor mid stream</h3>
 					</a>
 					<p>Store a reference to the background replacement processor object. Use BackgroundReplacementProcessor&#39;s <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundreplacementprocessor/BackgroundReplacementProcessor.ts#L28"><code>setImageBlob</code></a> to update the existing background image within the BackgroundReplacementProcessor anytime after initialization.</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">changeBackgroundImage</span>(<span class="hljs-params">backgroundReplacementProcessor: BackgroundReplacementProcessor</span>) </span>{
-    <span class="hljs-keyword">const</span> newImage = <span class="hljs-keyword">await</span> fetch(<span class="hljs-string">&#x27;https://pathtoimage.jpeg&#x27;</span>);
-    <span class="hljs-keyword">const</span> newImageBlob = <span class="hljs-keyword">await</span> newImage.blob();
-    <span class="hljs-keyword">await</span> backgroundReplacementProcessor.setImageBlob(newImageBlob);
-}
+					<pre><code class="language-typescript"><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">changeBackgroundImage</span><span style="color: #000000">(</span><span style="color: #001080">backgroundReplacementProcessor</span><span style="color: #000000">: </span><span style="color: #267F99">BackgroundReplacementProcessor</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">newImage</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">fetch</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;https://pathtoimage.jpeg&#039;</span><span style="color: #000000">); </span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">newImageBlob</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">newImage</span><span style="color: #000000">.</span><span style="color: #795E26">blob</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">backgroundReplacementProcessor</span><span style="color: #000000">.</span><span style="color: #795E26">setImageBlob</span><span style="color: #000000">(</span><span style="color: #001080">newImageBlob</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
 						<h2>Configuration</h2>
@@ -202,12 +244,12 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>BackgroundFilterSpec</code> and <code>BackgroundBlurOptions</code> or <code>BackgroundReplacementOptions</code> structures — as input. The <code>BackgroundFilterSpec</code> allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code> allow you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.</p>
 					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints.</p>
 					<p><strong>BackgroundBlurOptions</strong></p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> BackgroundBlurOptions {
-  logger?: Logger;
-  reportingPeriodMillis?: <span class="hljs-built_in">number</span>;
-  filterCPUUtilization?: <span class="hljs-built_in">number</span>;
-  blurStrength?: <span class="hljs-built_in">number</span>;
-}
+					<pre><code class="language-typescript"><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">BackgroundBlurOptions</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">?: </span><span style="color: #267F99">Logger</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">reportingPeriodMillis</span><span style="color: #000000">?: </span><span style="color: #267F99">number</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">filterCPUUtilization</span><span style="color: #000000">?: </span><span style="color: #267F99">number</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">blurStrength</span><span style="color: #000000">?: </span><span style="color: #267F99">number</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<ul>
 						<li>logger: A logger to which log output will be written.</li>
@@ -216,12 +258,12 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 						<li>filterCPUUtilization: The threshold CPU utilization to trigger skipping background filter updates which will reduce the amount of CPU used by a background filter. For example, If the reporting period is set to 1000 ms and 500 ms was dedicated to processing the background filter, then the CPU utilization for that reporting period is 50%. If <code>filterCPUUtilization</code> is set to 50 it will cause a <code>filterCPUUtilizationHigh</code> event to be fired from the <code>BackgroundBlurVideoFrameProcessorObserver</code>.</li>
 					</ul>
 					<p><strong>BackgroundReplacementOptions</strong></p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> BackgroundReplacementOptions {
-  logger?: Logger;
-  reportingPeriodMillis?: <span class="hljs-built_in">number</span>;
-  filterCPUUtilization?: <span class="hljs-built_in">number</span>;
-  imageBlob?: Blob;
-}
+					<pre><code class="language-typescript"><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">BackgroundReplacementOptions</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">?: </span><span style="color: #267F99">Logger</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">reportingPeriodMillis</span><span style="color: #000000">?: </span><span style="color: #267F99">number</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">filterCPUUtilization</span><span style="color: #000000">?: </span><span style="color: #267F99">number</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">imageBlob</span><span style="color: #000000">?: </span><span style="color: #267F99">Blob</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
 </code></pre>
 					<p>The logger, reportingPeriodMillis, and filterCPUUtilization work in the exact same way as with <code>BackgroundBlurOptions</code>.</p>
 					<ul>
@@ -239,39 +281,39 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 						<li><code>filterFrameDurationHigh</code>:  This event occurs when the amount of time it takes to apply the background filter is longer than expected. The measurement is taken from the time the process method starts to when it returns. For example, if the video is running at 15 frames per seconds and we are averaging more than 67 ms (1000 ms reporting period / 15 fps) to apply a background filter, then a very large portion of each frame&#39;s maximum processing time is taken up by processing a background filter.</li>
 						<li><code>filterCPUUtilizationHigh</code>: This event occurs when the CPU utilization of a background filter exceeds the <code>filterCPUUtilization</code> defined in the <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code>. This can be used as a trigger to disable a background filter if CPU utilization is too high.</li>
 					</ul>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
-<span class="hljs-comment">// create a reference to the blur observer</span>
-<span class="hljs-keyword">const</span> blurObserver: BackgroundBlurVideoFrameProcessorObserver = {
-  <span class="hljs-attr">filterFrameDurationHigh</span>: <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter duration high: framed dropped - <span class="hljs-subst">${event.framesDropped}</span>, avg - <span class="hljs-subst">${event.avgFilterDurationMillis}</span> ms, frame rate - <span class="hljs-subst">${event.framerate}</span>, period - <span class="hljs-subst">${event.periodMillis}</span> ms`</span>);
-  },
-  <span class="hljs-attr">filterCPUUtilizationHigh</span>:<span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter CPU high: CPU utilization is high <span class="hljs-subst">${event.cpuUtilization}</span>`</span>);
-  },
-}
+					<pre><code class="language-typescript"><span style="color: #008000">// Background Blur</span>
+<span style="color: #008000">// create a reference to the blur observer</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">blurObserver</span><span style="color: #000000">: </span><span style="color: #267F99">BackgroundBlurVideoFrameProcessorObserver</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #795E26">filterFrameDurationHigh</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">event</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`background filter duration high: framed dropped - </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">framesDropped</span><span style="color: #0000FF">}</span><span style="color: #A31515">, avg - </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">avgFilterDurationMillis</span><span style="color: #0000FF">}</span><span style="color: #A31515"> ms, frame rate - </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">framerate</span><span style="color: #0000FF">}</span><span style="color: #A31515">, period - </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">periodMillis</span><span style="color: #0000FF">}</span><span style="color: #A31515"> ms`</span><span style="color: #000000">);</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  </span><span style="color: #795E26">filterCPUUtilizationHigh</span><span style="color: #001080">:</span><span style="color: #000000">(</span><span style="color: #001080">event</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`background filter CPU high: CPU utilization is high </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">cpuUtilization</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }, </span>
+<span style="color: #000000">}</span>
 
-<span class="hljs-comment">// add the observer to the processor</span>
-processor.addObserver(blurObserver);
+<span style="color: #008000">// add the observer to the processor</span>
+<span style="color: #001080">processor</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">blurObserver</span><span style="color: #000000">);</span>
 
-<span class="hljs-comment">// remove the observer using the reference. for e.g, on meeting leave or turning the bgblur feature/filter off.</span>
-processor.removeObserver(blurObserver);
+<span style="color: #008000">// remove the observer using the reference. for e.g, on meeting leave or turning the bgblur feature/filter off.</span>
+<span style="color: #001080">processor</span><span style="color: #000000">.</span><span style="color: #795E26">removeObserver</span><span style="color: #000000">(</span><span style="color: #001080">blurObserver</span><span style="color: #000000">);</span>
 </code></pre>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Background Replacement</span>
-<span class="hljs-comment">// create a reference to the replacement observer</span>
-<span class="hljs-keyword">const</span> replacementObserver: BackgroundReplacementVideoFrameProcessorObserver = {
-  <span class="hljs-attr">filterFrameDurationHigh</span>: <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter duration high: framed dropped - <span class="hljs-subst">${event.framesDropped}</span>, avg - <span class="hljs-subst">${event.avgFilterDurationMillis}</span> ms, frame rate - <span class="hljs-subst">${event.framerate}</span>, period - <span class="hljs-subst">${event.periodMillis}</span> ms`</span>);
-  },
-  <span class="hljs-attr">filterCPUUtilizationHigh</span>:<span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter CPU high: CPU utilization is high <span class="hljs-subst">${event.cpuUtilization}</span>`</span>);
-  },
-}
+					<pre><code class="language-typescript"><span style="color: #008000">// Background Replacement</span>
+<span style="color: #008000">// create a reference to the replacement observer</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">replacementObserver</span><span style="color: #000000">: </span><span style="color: #267F99">BackgroundReplacementVideoFrameProcessorObserver</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #795E26">filterFrameDurationHigh</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">event</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`background filter duration high: framed dropped - </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">framesDropped</span><span style="color: #0000FF">}</span><span style="color: #A31515">, avg - </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">avgFilterDurationMillis</span><span style="color: #0000FF">}</span><span style="color: #A31515"> ms, frame rate - </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">framerate</span><span style="color: #0000FF">}</span><span style="color: #A31515">, period - </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">periodMillis</span><span style="color: #0000FF">}</span><span style="color: #A31515"> ms`</span><span style="color: #000000">);</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  </span><span style="color: #795E26">filterCPUUtilizationHigh</span><span style="color: #001080">:</span><span style="color: #000000">(</span><span style="color: #001080">event</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`background filter CPU high: CPU utilization is high </span><span style="color: #0000FF">${</span><span style="color: #001080">event</span><span style="color: #000000FF">.</span><span style="color: #001080">cpuUtilization</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }, </span>
+<span style="color: #000000">}</span>
 
-<span class="hljs-comment">// add the observer to the processor</span>
-processor.addObserver(replacementObserver);
+<span style="color: #008000">// add the observer to the processor</span>
+<span style="color: #001080">processor</span><span style="color: #000000">.</span><span style="color: #795E26">addObserver</span><span style="color: #000000">(</span><span style="color: #001080">replacementObserver</span><span style="color: #000000">);</span>
 
-<span class="hljs-comment">// remove the observer using the reference. for e.g, on meeting leave or turning the bg replacement feature/filter off.</span>
-processor.removeObserver(replacementObserver);
+<span style="color: #008000">// remove the observer using the reference. for e.g, on meeting leave or turning the bg replacement feature/filter off.</span>
+<span style="color: #001080">processor</span><span style="color: #000000">.</span><span style="color: #795E26">removeObserver</span><span style="color: #000000">(</span><span style="color: #001080">replacementObserver</span><span style="color: #000000">);</span>
 </code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Background%20Filter_Video_Processor%20feedback">Give feedback on this guide</a></p>
 				</div>
@@ -280,8 +322,71 @@ processor.removeObserver(replacementObserver);
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_videofx_processor.html">Background<wbr>Filter_<wbr><wbr>VideoFX_<wbr><wbr>Processor</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="buildersjourney.html">Builders<wbr>Journey</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>

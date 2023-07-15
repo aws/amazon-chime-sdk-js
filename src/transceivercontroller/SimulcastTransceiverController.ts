@@ -11,7 +11,7 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
   static readonly HIGH_LEVEL_NAME: string = 'hi';
   static readonly NAME_ARR_ASCENDING = ['low', 'mid', 'hi'];
   static readonly BITRATE_ARR_ASCENDING = [200, 400, 1100];
-  private videoQualityControlParameterMap: Map<string, RTCRtpEncodingParameters> = new Map<
+  protected videoQualityControlParameterMap: Map<string, RTCRtpEncodingParameters> = new Map<
     string,
     RTCRtpEncodingParameters
   >();
@@ -50,37 +50,22 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     } else {
       for (let i = 0; i < oldParam.encodings.length; i++) {
         if (oldParam.encodings[i].rid === SimulcastTransceiverController.LOW_LEVEL_NAME) {
-          oldParam.encodings[i].maxBitrate = encodingParamMap.get(
-            SimulcastTransceiverController.LOW_LEVEL_NAME
-          ).maxBitrate;
-          oldParam.encodings[i].active = encodingParamMap.get(
-            SimulcastTransceiverController.LOW_LEVEL_NAME
-          ).active;
-          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
-            SimulcastTransceiverController.LOW_LEVEL_NAME
-          ).scaleResolutionDownBy;
+          this.copyEncodingParams(
+            encodingParamMap.get(SimulcastTransceiverController.LOW_LEVEL_NAME),
+            oldParam.encodings[i]
+          );
         }
         if (oldParam.encodings[i].rid === SimulcastTransceiverController.MID_LEVEL_NAME) {
-          oldParam.encodings[i].maxBitrate = encodingParamMap.get(
-            SimulcastTransceiverController.MID_LEVEL_NAME
-          ).maxBitrate;
-          oldParam.encodings[i].active = encodingParamMap.get(
-            SimulcastTransceiverController.MID_LEVEL_NAME
-          ).active;
-          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
-            SimulcastTransceiverController.MID_LEVEL_NAME
-          ).scaleResolutionDownBy;
+          this.copyEncodingParams(
+            encodingParamMap.get(SimulcastTransceiverController.MID_LEVEL_NAME),
+            oldParam.encodings[i]
+          );
         }
         if (oldParam.encodings[i].rid === SimulcastTransceiverController.HIGH_LEVEL_NAME) {
-          oldParam.encodings[i].maxBitrate = encodingParamMap.get(
-            SimulcastTransceiverController.HIGH_LEVEL_NAME
-          ).maxBitrate;
-          oldParam.encodings[i].active = encodingParamMap.get(
-            SimulcastTransceiverController.HIGH_LEVEL_NAME
-          ).active;
-          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
-            SimulcastTransceiverController.HIGH_LEVEL_NAME
-          ).scaleResolutionDownBy;
+          this.copyEncodingParams(
+            encodingParamMap.get(SimulcastTransceiverController.HIGH_LEVEL_NAME),
+            oldParam.encodings[i]
+          );
         }
       }
     }
@@ -120,13 +105,23 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     }
   }
 
-  private logVideoTransceiverParameters(): void {
+  protected logVideoTransceiverParameters(): void {
     const params = this._localCameraTransceiver.sender.getParameters();
     const encodings = params.encodings;
     let msg = 'simulcast: current encoding parameters \n';
     for (const encodingParam of encodings) {
-      msg += `rid=${encodingParam.rid} maxBitrate=${encodingParam.maxBitrate} active=${encodingParam.active} scaleDownBy=${encodingParam.scaleResolutionDownBy} \n`;
+      msg += `rid=${encodingParam.rid} maxBitrate=${encodingParam.maxBitrate} active=${encodingParam.active} scaleDownBy=${encodingParam.scaleResolutionDownBy} maxFrameRate = ${encodingParam.maxFramerate} \n`;
     }
     this.logger.info(msg);
+  }
+
+  protected copyEncodingParams(
+    fromEncodingParams: RTCRtpEncodingParameters,
+    toEncodingParams: RTCRtpEncodingParameters
+  ): void {
+    toEncodingParams.active = fromEncodingParams.active;
+    toEncodingParams.maxBitrate = fromEncodingParams.maxBitrate;
+    toEncodingParams.scaleResolutionDownBy = fromEncodingParams.scaleResolutionDownBy;
+    toEncodingParams.maxFramerate = fromEncodingParams.maxFramerate;
   }
 }

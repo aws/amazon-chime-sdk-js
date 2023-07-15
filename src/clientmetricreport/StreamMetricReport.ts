@@ -6,8 +6,11 @@ import MediaType from './ClientMetricReportMediaType';
 
 export default class StreamMetricReport {
   streamId: number;
+  groupId: number;
   mediaType: MediaType;
   direction: Direction;
   previousMetrics: { [id: string]: number } = {};
   currentMetrics: { [id: string]: number } = {};
+  // As metric values do not necessarily be number, this is a workaround in case metric value is string
+  currentStringMetrics: { [id: string]: string } = {};
 }

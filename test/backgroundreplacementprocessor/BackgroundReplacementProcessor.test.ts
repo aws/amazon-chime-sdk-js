@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
+import chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import { BackgroundFilterSpec, BackgroundReplacementOptions } from '../../src';
@@ -11,8 +11,14 @@ import { FilterFrameDurationHighEvent } from '../../src/backgroundfilter/Backgro
 import BackgroundReplacementFilter from '../../src/backgroundreplacementprocessor/BackgroundReplacementFilter';
 import BackgroundReplacementVideoFrameProcessor from '../../src/backgroundreplacementprocessor/BackgroundReplacementVideoFrameProcessor';
 import BackgroundReplacementVideoFrameProcessorObserver from '../../src/backgroundreplacementprocessor/BackgroundReplacementVideoFrameProcessorObserver';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
+import EventController from '../../src/eventcontroller/EventController';
 import ConsoleLogger from '../../src/logger/ConsoleLogger';
 import LogLevel from '../../src/logger/LogLevel';
+import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
+import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
+import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import CanvasVideoFrameBuffer from '../../src/videoframeprocessor/CanvasVideoFrameBuffer';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
 import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
@@ -25,12 +31,29 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('BackgroundReplacementProcessor', () => {
+  const noOpLogger: NoOpDebugLogger = new NoOpDebugLogger();
+  let configuration: MeetingSessionConfiguration;
+  let eventController: EventController;
   let expect: Chai.ExpectStatic;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   const sandbox: sinon.SinonSandbox = sinon.createSandbox();
   let clock: sinon.SinonFakeTimers;
   const backgroundFilterCommon = new BackgroundFilterCommon();
+
+  function makeSessionConfiguration(): MeetingSessionConfiguration {
+    const configuration = new MeetingSessionConfiguration();
+    configuration.meetingId = 'foo-meeting';
+    configuration.urls = new MeetingSessionURLs();
+    configuration.urls.audioHostURL = 'https://audiohost.test.example.com';
+    configuration.urls.turnControlURL = 'https://turncontrol.test.example.com';
+    configuration.urls.signalingURL = 'https://signaling.test.example.com';
+    configuration.credentials = new MeetingSessionCredentials();
+    configuration.credentials.attendeeId = 'foo-attendee';
+    configuration.credentials.joinToken = 'foo-join-token';
+    configuration.attendeePresenceTimeoutMs = 5000;
+    return configuration;
+  }
 
   beforeEach(() => {
     expect = chai.expect;
@@ -94,6 +117,40 @@ describe('BackgroundReplacementProcessor', () => {
 
         // create processor with default
         let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        await brprocessor.destroy();
+        brprocessor = (await BackgroundReplacementVideoFrameProcessor.create(
+          null,
+          optionWithImagePath
+        )) as BackgroundReplacementFilter;
+        await brprocessor.destroy();
+      });
+      it('can be created with eventController', async () => {
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+        stubSupported(true);
+
+        // create processor with default configuration
+        configuration = makeSessionConfiguration();
+        eventController = new DefaultEventController(configuration, noOpLogger);
+        let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        brprocessor.setEventController(eventController);
+        await brprocessor.destroy();
+        brprocessor = (await BackgroundReplacementVideoFrameProcessor.create(
+          null,
+          optionWithImagePath
+        )) as BackgroundReplacementFilter;
+        await brprocessor.destroy();
+      });
+      it('can be created with eventController replacement', async () => {
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+        stubSupported(true);
+
+        // create processor with default configuration
+        configuration = makeSessionConfiguration();
+        eventController = new DefaultEventController(configuration, noOpLogger);
+        const eventController2 = new DefaultEventController(configuration, noOpLogger);
+        let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        brprocessor.setEventController(eventController);
+        brprocessor.setEventController(eventController2);
         await brprocessor.destroy();
         brprocessor = (await BackgroundReplacementVideoFrameProcessor.create(
           null,

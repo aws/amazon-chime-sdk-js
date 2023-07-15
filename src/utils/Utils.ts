@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AssetSpec } from '../../libs/voicefocus/voicefocus';
+import Versioning from '../versioning/Versioning';
+
 export function wait(waitTimeMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, waitTimeMs));
 }
@@ -35,4 +38,34 @@ export function toLowerCasePropertyNames(input: any): any {
     result[key.toLowerCase()] = newValue;
     return result;
   }, {});
+}
+
+/**
+ * Based on the SDK version, return an asset group.
+ *
+ * @returns the default asset spec, based on the SDK version.
+ */
+export function getDefaultAssetSpec(): AssetSpec {
+  const version = Versioning.sdkVersionSemVer;
+
+  return {
+    assetGroup: `sdk-${version.major}.${version.minor}`,
+  };
+}
+
+/**
+ * Get UTC offset in (+|-)HH:mm format
+ * E.g. For Asia/Calcutta timezone, +05:30 UTC offset value is returned
+ */
+export function getFormattedOffset(utcOffset: number): string {
+  const offset = Math.abs(utcOffset);
+  const offsetOperator = utcOffset <= 0 ? '+' : '-';
+  const offsetHours = Math.floor(offset / 60)
+    .toString()
+    .padStart(2, '0');
+  const offsetMinutes = Math.floor(offset % 60)
+    .toString()
+    .padStart(2, '0');
+
+  return `${offsetOperator}${offsetHours}:${offsetMinutes}`;
 }

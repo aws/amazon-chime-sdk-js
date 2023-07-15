@@ -6,6 +6,7 @@ import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import SDP from '../sdp/SDP';
 import ZLIBTextCompressor from '../sdp/ZLIBTextCompressor';
+import { serverSideNetworkAdaptionIsNoneOrDefault } from '../signalingclient/ServerSideNetworkAdaption';
 import SignalingClient from '../signalingclient/SignalingClient';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
@@ -17,6 +18,7 @@ import {
   SdkSubscribeAckFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
 import TaskCanceler from '../taskcanceler/TaskCanceler';
+import { convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration } from '../videodownlinkbandwidthpolicy/VideoPreferences';
 import BaseTask from './BaseTask';
 
 /**
@@ -65,6 +67,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.videoStreamIndex.integrateUplinkPolicyDecision([param]);
     }
 
+    // This will cache the current index so that we maintain the values over the course of the subscribe.
     this.context.videoStreamIndex.subscribeFrameSent();
 
     // See comment above `fixUpSubscriptionOrder`
@@ -105,6 +108,23 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       true,
       compressedSDPOffer
     );
+
+    if (
+      this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption !== undefined &&
+      !serverSideNetworkAdaptionIsNoneOrDefault(
+        this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption()
+      ) &&
+      this.context.videoDownlinkBandwidthPolicy.getVideoPreferences !== undefined
+    ) {
+      // Set initial configuration for the receive streams indicated by the rest of the subscribe
+      subscribe.videoSubscriptionConfiguration = convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
+        this.context,
+        videoSubscriptions.map((streamId: number) => {
+          return streamId === 0 ? 0 : this.context.videoStreamIndex.groupIdForStreamId(streamId);
+        }),
+        this.context.videoDownlinkBandwidthPolicy.getVideoPreferences()
+      );
+    }
     this.context.logger.info(`sending subscribe: ${JSON.stringify(subscribe)}`);
     this.context.signalingClient.subscribe(subscribe);
 
@@ -159,7 +179,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       if (mid === undefined) {
         if (streamId !== 0) {
           // Send section or inactive section
-          this.context.logger.warn(`Could not find MID for stream ID: ${streamId}`);
+          this.logger.warn(`Could not find MID for stream ID: ${streamId}`);
         }
         continue;
       }
@@ -176,7 +196,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       if (section.direction === 'recvonly') {
         const streamId = midsToStreamIds.get(section.mid);
         if (streamId === undefined) {
-          this.context.logger.warn(`Could not find stream ID for MID: ${section.mid}`);
+          this.logger.warn(`Could not find stream ID for MID: ${section.mid}`);
           continue;
         }
         newSubscriptions.push(streamId);
@@ -184,7 +204,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
         newSubscriptions.push(0);
       }
     }
-    this.context.logger.info(
+    this.logger.info(
       `Fixed up ${JSON.stringify(videoSubscriptions)} to ${JSON.stringify(
         newSubscriptions
       )} (may be same))}`

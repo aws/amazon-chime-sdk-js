@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
+import chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import * as loader from '../../libs/voicefocus/loader';
@@ -19,8 +19,14 @@ import {
   FilterCPUUtilizationHighEvent,
   FilterFrameDurationHighEvent,
 } from '../../src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
+import EventController from '../../src/eventcontroller/EventController';
 import ConsoleLogger from '../../src/logger/ConsoleLogger';
 import LogLevel from '../../src/logger/LogLevel';
+import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
+import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
+import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import CanvasVideoFrameBuffer from '../../src/videoframeprocessor/CanvasVideoFrameBuffer';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
 import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
@@ -32,12 +38,29 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('BackgroundBlurProcessor', () => {
+  const noOpLogger: NoOpDebugLogger = new NoOpDebugLogger();
+  let configuration: MeetingSessionConfiguration;
+  let eventController: EventController;
   let expect: Chai.ExpectStatic;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   const sandbox: sinon.SinonSandbox = sinon.createSandbox();
   let clock: sinon.SinonFakeTimers;
   const backgroundFilterCommon = new BackgroundFilterCommon();
+
+  function makeSessionConfiguration(): MeetingSessionConfiguration {
+    const configuration = new MeetingSessionConfiguration();
+    configuration.meetingId = 'foo-meeting';
+    configuration.urls = new MeetingSessionURLs();
+    configuration.urls.audioHostURL = 'https://audiohost.test.example.com';
+    configuration.urls.turnControlURL = 'https://turncontrol.test.example.com';
+    configuration.urls.signalingURL = 'https://signaling.test.example.com';
+    configuration.credentials = new MeetingSessionCredentials();
+    configuration.credentials.attendeeId = 'foo-attendee';
+    configuration.credentials.joinToken = 'foo-join-token';
+    configuration.attendeePresenceTimeoutMs = 5000;
+    return configuration;
+  }
 
   beforeEach(() => {
     expect = chai.expect;
@@ -690,6 +713,10 @@ describe('BackgroundBlurProcessor', () => {
         const supportedUserAgents = [
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36',
           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15',
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/107.0.5304.66 Mobile/15E148 Safari/604.1',
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/106.0 Mobile/15E148 Safari/605.1.15',
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/111 Version/13.0.3 Safari/605.1.15',
         ];
         for (const supportedUserAgent of supportedUserAgents) {
           setUserAgent(supportedUserAgent);
@@ -702,7 +729,6 @@ describe('BackgroundBlurProcessor', () => {
           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1.2 Safari/605.1.15',
           'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/88.0.4324.152 Mobile/14E5239e Safari/602.1',
           'Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/29.1.0 Mobile/16B91 Safari/605.1.15',
-          'Mozilla/5.0 (iPhone; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
         ];
         for (const notSupportedUserAgent of notSupportedUserAgents) {
           setUserAgent(notSupportedUserAgent);
@@ -879,6 +905,21 @@ describe('BackgroundBlurProcessor', () => {
         expectSegmentCount().to.be.equal(0);
         expectSegmentTotalMillis().to.be.equal(0);
       });
+    });
+
+    it('validating eventController events', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      // create processor with defaults
+      configuration = makeSessionConfiguration();
+      eventController = new DefaultEventController(configuration, noOpLogger);
+      const eventController2 = new DefaultEventController(configuration, noOpLogger);
+      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
+      // first event controller, publishEvent happens
+      bbprocessor.setEventController(eventController);
+      // second event controller, only change of controller occurs
+      bbprocessor.setEventController(eventController2);
     });
 
     it('observer is called without functions defined', async () => {

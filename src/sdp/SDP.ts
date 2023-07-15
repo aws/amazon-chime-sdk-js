@@ -3,6 +3,7 @@
 
 import SDPCandidateType from './SDPCandidateType';
 import SDPMediaSection from './SDPMediaSection';
+import VideoCodecCapability from './VideoCodecCapability';
 
 /**
  * [[SDP]] includes a few helper functions for parsing sdp string.
@@ -134,7 +135,15 @@ export default class SDP {
     let hasCamera = false;
     for (const sec of sections) {
       if (/^m=video/.test(sec)) {
-        if (sec.indexOf('sendrecv') > -1) {
+        if (
+          sec.indexOf('sendrecv') > -1 ||
+          // RFC 4566: If none of the attributes "sendonly", "recvonly", "inactive",
+          // and "sendrecv" is present, "sendrecv" SHOULD be assumed as the
+          // default for sessions
+          (sec.indexOf('sendonly') === -1 &&
+            sec.indexOf('recvonly') === -1 &&
+            sec.indexOf('inactive') === -1)
+        ) {
           hasCamera = true;
           break;
         }
@@ -353,7 +362,9 @@ export default class SDP {
       if (/^a=extmap:/.test(line.trim())) {
         const headerExtension = line.split('a=extmap:')[1].split(' ');
         const id = +headerExtension[0];
-        headerExtensionIds.push(id);
+        if (!headerExtensionIds.includes(id)) {
+          headerExtensionIds.push(id);
+        }
       }
     }
 
@@ -375,17 +386,25 @@ export default class SDP {
    * negotiate with the back end to determine whether to use layers allocation header extension
    * this will not add the packet overhead unless negotiated to avoid waste
    */
-  withVideoLayersAllocationRtpHeaderExtension(): SDP {
-    const sections = SDP.splitSections(this.sdp);
+  withVideoLayersAllocationRtpHeaderExtension(previousSdp: SDP): SDP {
+    const url = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
 
+    // According to https://webrtc.googlesource.com/src/+/b62ee8ce94e5f10e0a94d6f112e715cc4d0cd9dc,
+    // RTP header extension ID change would result in a hard failure. Therefore if the extension exists
+    // in the previous SDP, use the same extension ID to avoid the failure. Otherwise use a new ID
+    const previousId = previousSdp ? previousSdp.getRtpHeaderExtensionId(url) : -1;
+    const id =
+      previousId === -1 ? this.getUniqueRtpHeaderExtensionId(SDP.splitLines(this.sdp)) : previousId;
+
+    const sections = SDP.splitSections(this.sdp);
     const newSections = [];
     for (let section of sections) {
-      if (/^m=video/.test(section)) {
+      if (/^m=video/.test(section) && SDP.getRtpHeaderExtensionIdInSection(section, url) === -1) {
+        // Add RTP header extension when it does not already exist
         const srcLines: string[] = SDP.splitLines(section);
         const dstLines: string[] = [];
-        const id = this.getUniqueRtpHeaderExtensionId(srcLines);
-        if (id === -1) {
-          // if all ids are used, we won't add new line to it
+        if (id === -1 || this.hasRtpHeaderExtensionId(id)) {
+          // if all ids are used or the id is already used, we won't add new line to it
           newSections.push(section);
           continue;
         }
@@ -393,12 +412,32 @@ export default class SDP {
         for (const line of srcLines) {
           dstLines.push(line);
           if (/^a=sendrecv/.test(line.trim())) {
-            const targetLine =
-              `a=extmap:` +
-              id +
-              ` http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
+            const targetLine = `a=extmap:` + id + ` ` + url;
             dstLines.push(targetLine);
           }
+        }
+        section = dstLines.join(SDP.CRLF) + SDP.CRLF;
+      } else if (
+        previousId !== -1 &&
+        /^m=video/.test(section) &&
+        SDP.getRtpHeaderExtensionIdInSection(section, url) !== previousId
+      ) {
+        // Override extension ID if it does not match previous SDP
+        const srcLines: string[] = SDP.splitLines(section);
+        const dstLines: string[] = [];
+        for (const line of srcLines) {
+          if (/^a=extmap:/.test(line.trim())) {
+            const headerExtension = line.split('a=extmap:')[1].split(' ');
+            if (headerExtension[1] === url) {
+              if (!this.hasRtpHeaderExtensionId(previousId)) {
+                // If previous ID is used by another extension, remove it from this SDP
+                const targetLine = `a=extmap:` + previousId + ` ` + url;
+                dstLines.push(targetLine);
+              }
+              continue;
+            }
+          }
+          dstLines.push(line);
         }
         section = dstLines.join(SDP.CRLF) + SDP.CRLF;
       }
@@ -567,5 +606,228 @@ export default class SDP {
       parsedMediaSections.push(section);
     }
     return parsedMediaSections;
+  }
+
+  /**
+   * Return RTP header extension ID if the extension exists in section. Return -1 otherwise
+   */
+  static getRtpHeaderExtensionIdInSection(section: string, url: string): number {
+    const lines: string[] = SDP.splitLines(section);
+    for (const line of lines) {
+      if (/^a=extmap:/.test(line.trim())) {
+        const headerExtension = line.split('a=extmap:')[1].split(' ');
+        const id = +headerExtension[0];
+        if (headerExtension[1] === url) {
+          return id;
+        }
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Return RTP header extension ID if the extension exists in SDP. Return -1 otherwise
+   */
+  getRtpHeaderExtensionId(url: string): number {
+    const sections = SDP.splitSections(this.sdp);
+
+    for (const section of sections) {
+      if (/^m=video/.test(section)) {
+        const id = SDP.getRtpHeaderExtensionIdInSection(section, url);
+        if (id !== -1) {
+          return id;
+        }
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Return if extension ID exists in the SDP
+   */
+  hasRtpHeaderExtensionId(targetId: number): boolean {
+    const lines = SDP.splitLines(this.sdp);
+
+    for (const line of lines) {
+      if (/^a=extmap:/.test(line.trim())) {
+        const headerExtension = line.split('a=extmap:')[1].split(' ');
+        const id = +headerExtension[0];
+        if (id === targetId) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Based off the provided preferences, this function will reorder the payload types listed in the `m=video` line.
+   *
+   * This will be applied to the `a=sendrecv` section so it can be applied on either local or remote SDPs. It can be used to
+   * 'polyfill' `RTCRtpSender.setCodecPreferences' on the offer, but it can also be used on remote SDPs to force the
+   * codec actually being send, since the send codec is currently dependent on the remote answer (i.e. `setCodecPreferences` doesn't actually
+   * have any impact unless the remote side respects the order of codecs).
+   */
+  withVideoSendCodecPreferences(preferences: VideoCodecCapability[]): SDP {
+    const srcSDP: string = this.sdp;
+    const sections = SDP.splitSections(srcSDP);
+    // Note `findActiveCameraSection` looks for `sendrecv` video sections so it
+    // works on both local and remote SDPs.
+    const cameraLineIndex: number = SDP.findActiveCameraSection(sections);
+    if (cameraLineIndex === -1) {
+      return new SDP(this.sdp);
+    }
+    sections[cameraLineIndex] = this.sectionWithCodecPreferences(
+      sections[cameraLineIndex],
+      preferences
+    );
+    const newSDP = sections.join('');
+    return new SDP(newSDP);
+  }
+
+  // Based off the provided preferences, this function will reorder the payload types listed in the `m=video` line.
+  private sectionWithCodecPreferences(
+    section: string,
+    preferences: VideoCodecCapability[]
+  ): string {
+    const codecNamesToPayloadTypes: Map<string, string> = new Map();
+    const lines = SDP.splitLines(section);
+
+    // First we get the payload types and their respective `a=rtpmap` lines for our provided preferences
+    lines.forEach(line => {
+      if (!/^a=rtpmap:/.test(line)) {
+        return;
+      }
+      for (const preference of preferences) {
+        // Check if theres a match for the encoding name and clock rate as defined in 'RFC 4566 Section 6':
+        // a=rtpmap:<payload type> <encoding name>/<clock rate> [/<encoding parameters>]
+        // E.g. 'a=rtpmap:125 H264/90000'
+        if (!line.includes(`${preference.codecName}/${preference.codecCapability.clockRate}`)) {
+          continue;
+        }
+        const payloadMatch = /^a=rtpmap:([0-9]+)\s/.exec(line); // Get the payload type
+
+        // We may need to check other parameters (e.g. fmtp line) in addition to the codec name
+        let codecMatches = false;
+        if (preference.codecCapability.sdpFmtpLine !== undefined) {
+          // Check the fmtp line
+          for (const prospectiveFmtpLine of lines) {
+            if (
+              prospectiveFmtpLine.startsWith(
+                `a=fmtp:${payloadMatch[1]} ${preference.codecCapability.sdpFmtpLine}`
+              )
+            ) {
+              codecMatches = true;
+              break;
+            }
+          }
+        } else {
+          // No 'fmtp' line, nothing else to check
+          codecMatches = true;
+        }
+
+        if (codecMatches) {
+          codecNamesToPayloadTypes.set(preference.codecName, payloadMatch[1]);
+          break;
+        }
+      }
+    });
+
+    // RFC 4566 5.14
+    // When a list of payload type numbers is given, this implies that all of these
+    // payload formats MAY be used in the session, but the first of these
+    // formats SHOULD be used as the default format for the session.
+
+    const payloadTypesToRemove: Set<string> = new Set(codecNamesToPayloadTypes.values());
+    // Remove payloads from the media line. m=video 9 UDP/+++ <payload> <payload> <payload> ...
+    const mline = lines[0].split(' ').filter((text: string) => !payloadTypesToRemove.has(text));
+    // Then splice them back in, in preferred order at the start of the list
+    const orderedPreferedPayloadTypes = Array.from(codecNamesToPayloadTypes.values()).sort(
+      (name1: string, name2: string) => {
+        const priority1 = preferences.findIndex(capability => {
+          return codecNamesToPayloadTypes.get(capability.codecName) === name1;
+        });
+        const priority2 = preferences.findIndex(capability => {
+          return codecNamesToPayloadTypes.get(capability.codecName) === name2;
+        });
+        return priority1 - priority2;
+      }
+    );
+    // Start from 3 to skip `m=video 9 UDP/+++`
+    mline.splice(3, 0, ...orderedPreferedPayloadTypes.values());
+    lines[0] = mline.join(' ');
+
+    // Note that nothing in the RFCs require `a=rtpmap` lines to be reordered
+
+    return lines.join(SDP.CRLF) + SDP.CRLF;
+  }
+
+  /**
+   * Returns the `VideoCodecCapability` which corresponds to the first payload type in the
+   * m-line (e.g. `m=video 9 UDP/+++ <highest priority payload type> <payload type> <payload type> ...`),
+   * parsing the rest of the SDP for relevant information to construct it.
+   *
+   * Returns undefined if there is no video send section or no codecs in the send section
+   */
+  highestPriorityVideoSendCodec(): VideoCodecCapability | undefined {
+    const srcSDP: string = this.sdp;
+    const sections = SDP.splitSections(srcSDP);
+    // Note `findActiveCameraSection` looks for `sendrecv` video sections so it
+    // works on both local and remote SDPs.
+    const cameraLineIndex: number = SDP.findActiveCameraSection(sections);
+    if (cameraLineIndex === -1) {
+      return undefined;
+    }
+
+    const lines = SDP.splitLines(sections[cameraLineIndex]);
+
+    // m=video 9 UDP/+++ <payload> <payload> <payload> ...
+    const mlineTokens = lines[0].split(' ');
+    if (mlineTokens.length < 4) {
+      return undefined;
+    }
+    // Start from 3 to skip `m=video 9 UDP/+++`
+    const highestPriorityPayloadType = mlineTokens[3];
+    let highestPriorityCodecName: string = undefined;
+    let highestPriorityClockRate: string = undefined;
+    let highestPriorityFmtpLine: string = undefined;
+    for (const line of lines) {
+      // E.g. 'a=rtpmap:125 H264/90000'
+      const payloadMatch = /^a=rtpmap:([0-9]+)\s/.exec(line); // Get the payload type
+      if (
+        payloadMatch === null ||
+        payloadMatch.length < 2 ||
+        payloadMatch[1] !== highestPriorityPayloadType
+      ) {
+        continue;
+      }
+      const lineTokens = line.split(' '); // Previous check guarantees this to be valid
+      const nameAndClockRate = lineTokens[1].split('/');
+      if (nameAndClockRate === undefined || nameAndClockRate.length < 2) {
+        continue;
+      }
+      highestPriorityCodecName = nameAndClockRate[0];
+      highestPriorityClockRate = nameAndClockRate[1];
+
+      for (const prospectiveFmtpLine of lines) {
+        if (prospectiveFmtpLine.startsWith(`a=fmtp:${highestPriorityPayloadType}`)) {
+          const fmtpLineTokens = prospectiveFmtpLine.split(' ');
+          if (fmtpLineTokens === undefined || fmtpLineTokens.length < 2) {
+            return undefined; // Bail out of broken SDP
+          }
+          highestPriorityFmtpLine = fmtpLineTokens[1];
+          continue;
+        }
+      }
+      break;
+    }
+    if (highestPriorityCodecName !== undefined) {
+      return new VideoCodecCapability(highestPriorityCodecName, {
+        clockRate: parseInt(highestPriorityClockRate),
+        mimeType: `video/${highestPriorityCodecName}`,
+        sdpFmtpLine: highestPriorityFmtpLine,
+      });
+    }
+    return undefined;
   }
 }

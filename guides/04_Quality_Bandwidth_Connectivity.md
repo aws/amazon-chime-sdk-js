@@ -25,13 +25,6 @@ The Amazon Chime SDK for JavaScript produces several kinds of events on the [Aud
 
 *For the browser support columns below, "All" refers to the browsers officially supported by the Chime SDK.*
 
-### Events for monitoring local attendee uplink
-
-|Event | Notes | Browsers |
-|------------ | ------------- | ------------- |
-|[videoSendHealthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange) | Indicates the current average upstream video bitrate being utilized| Chromium-based |
-|[videoSendBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange) | Indicates the estimated amount of upstream bandwidth| Chromium-based |
-
 ### Events for monitoring local attendee downlink
 
 |Event | Notes | Browsers |
@@ -39,9 +32,6 @@ The Amazon Chime SDK for JavaScript produces several kinds of events on the [Aud
 |[connectionDidSuggestStopVideo](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo) | Indicates that the audio connection is experiencing packet loss. Stopping local video and pausing remote video tiles may help the connection recover by reducing CPU usage and network consumption. | All |
 |[connectionDidBecomeGood](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomegood) | Indicates that the audio connection has improved. | All |
 |[connectionDidBecomePoor](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor) | Similar to the previous metric, but is fired when local video is already turned off. | All |
-|[videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata) | Called when one or more remote attendee video streams do not meet the expected average bitrate which may be due to downlink packet loss. | All |
-|[estimatedDownlinkBandwidthLessThanRequired](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired) | Aggregated across all attendees, this event fires when more bandwidth is requested than what the WebRTC estimated downlink bandwidth supports. It is recommended to use this event over [videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata). | Chromium-based |
-|[videoReceiveBandwidthDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange) | This is the estimated amount of downstream bandwidth | Chromium-based |
 
 ### Events for monitoring remote attendee uplink
 
@@ -59,9 +49,11 @@ The Amazon Chime SDK for JavaScript produces several kinds of events on the [Aud
 >
 > You get the following WebRTC stats in the video stats widget:
 >
-> Upstream video information: Frame height, Frame width, Bitrate (bps), Packets Sent, Frame Rate (fps).
+> Upstream video information: Frame height, Frame width, Bitrate (bps), Packets Sent, Frame Rate (fps), Audio Jitter.
 >
 > Downstream video information: Frame height, Frame width, Bitrate (bps), Packet Loss (%), Frame Rate (fps).
+>
+> You can also use this event to get the raw [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport) through `clientMetricReport.getRTCStatsReport()`
 >
 > You can check the implementation in the [demo app](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts) to build your own custom widget
 > (look for `getObservableVideoMetrics` method in the demo). This video stats widget is built using the [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics) and the [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive) APIs. Through the information provided in these stats, the application can monitor key attributes and take action. For instance if the bitrate or resolution falls below a certain threshold, the user could be notified in some manner, or diagnostic reporting could take place.
@@ -88,7 +80,7 @@ When possible, profile on devices that have similar performance characteristics 
 
 #### Choose a lower local video quality
 
-Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call [chooseVideoInputQuality](https://aws.github.io/amazon-chime-sdk-js/interfaces/devicecontroller.html#choosevideoinputquality)(width, height, frameRate, maxBandwidthKbps) and lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for `chooseVideoInputQuality`.
+Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call [chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) and [setVideoMaxBandwidthKbps(maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) to lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for `chooseVideoInputQuality`.
 
 #### Pause remote videos
 
@@ -100,19 +92,34 @@ In the absence of packet loss, keep in mind that the sender uplink and receiver 
 
 ####  Adjust local video quality
 
-You can choose a video quality of up to 1280x720 (720p) at 30 fps and 2500 Kbps using [chooseVideoInputQuality](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) (width, height, frameRate, maxBandwidthKbps) API before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.
+You can choose a video quality of up to 1280x720 (720p) at 30 fps using [chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) and [setVideoMaxBandwidthKbps(maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.
+
+Example:
+```js
+// 360p
+meetingSession.audioVideo.chooseVideoInputQuality(640, 360, 15);
+meetingSession.audioVideo.setVideoMaxBandwidthKbps(600);
+
+// 540p
+meetingSession.audioVideo.chooseVideoInputQuality(960, 540, 15);
+meetingSession.audioVideo.setVideoMaxBandwidthKbps(1400);
+
+// 720p
+meetingSession.audioVideo.chooseVideoInputQuality(1280, 720, 15);
+meetingSession.audioVideo.setVideoMaxBandwidthKbps(1400);
+```
 
 The default resolution in the SDK is 540p at 15 fps and 1400 Kbps. Lower resolutions can be set if you anticipate a low bandwidth situation. Browser and codec support for very low resolutions may vary.
 
-The value `maxBandwidthKbps` is a recommendation you make to WebRTC to use as the upper limit for upstream sending bandwidth. The Chime SDK default is 1400 Kbps for this value. The following table provides recommendations of minimum and maximum bandwidth value per resolution for typical video-conferencing scenarios. Note that when low values are selected the video can be appear pixelated. Using 15 fps instead of 30 fps will substantially decrease the required bit rate and may be acceptable for low-motion content.
+The value `maxBandwidthKbps` is a recommendation you make to WebRTC to use as the upper limit for upstream sending bandwidth. The Chime SDK default is 1400 Kbps for this value. The following table provides recommendations of minimum bandwidth value per resolution for typical video-conferencing scenarios. Note that when low values are selected the video can be appear pixelated. Using 15 fps instead of 30 fps will substantially decrease the required bit rate and may be acceptable for low-motion content.
 
-| Resolution | Frame Rate Per Sec | Min Kbps | Max Kbps |
-| ------------ | ------------- | ------------- | ------------- |
-| 180p | 30 | 100 | 250 |
-| 360p | 30 | 250 | 800 |
-| 480p | 30 | 400 | 1500 |
-| 540p | 30 | 500 | 2000 |
-| 720p | 30 | 1400 | 2500 |
+| Resolution | Frame Rate Per Sec | Min Kbps |
+| ------------ | ------------- | ------------- |
+| 180p | 30 | 100 |
+| 360p | 30 | 250 |
+| 480p | 30 | 400 |
+| 540p | 30 | 500 |
+| 720p | 30 | 1400 |
 
 Setting a frame rate below 15 is not recommend and will cause the video to appear jerky and will not significantly improve the bandwidth consumed since key frames will still be sent occasionally. It would be better to adjust the resolution than set a very low frame rate.
 

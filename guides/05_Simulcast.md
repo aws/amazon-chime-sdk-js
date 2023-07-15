@@ -56,7 +56,7 @@ Applications will receive notifications of remote video being added or removed t
 
 If the application pauses a remote video by calling [pauseVideoTile](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile), then this policy will not include that remote video in the list of available streams and therefore will not automatically subscribe or unsubscribe from it while it is in the paused state.
 
-When using the policy it is recommended that applications do not take action on the downlink monitoring events such as [videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata) or [estimatedDownlinkBandwidthLessThanRequired](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired) since it may conflict with decisions being made within the policy.
+When using the policy it is recommended that applications do not take action on the downlink monitoring metrics from [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive) since it may conflict with decisions being made within the policy.
 
 The VideoAdaptiveProbePolicy can be used with or without simulcast.  To enable it without simulcast set the [MeetingSessionConfiguration.videoDownlinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) to [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html).  If simulcast is not active, then the policy will only be able to add or remove remote videos.
 
@@ -150,3 +150,44 @@ if (browserBehavior.isSimulcastSupported()) {
   meetingConfiguration.videoUplinkBandwidthPolicy = new MySimulcastUplinkPolicy();
 }
 ```
+
+### Enable Simulcast For Content Share
+You can use `enableSimulcastForContentShare` to toggle simulcast on/off for content share. Note that you don't have 
+to set `enableSimulcastForUnifiedPlanChromiumBasedBrowsers` yourself as this configuration will be set automatically 
+for content share attendee as part of `enableSimulcastForContentShare`.
+
+```js
+// Enable simulcast
+await meetingSession.audioVideo.enableSimulcastForContentShare(true);
+await meetingSession.audioVideo.startContentShareFromScreenCapture();
+
+// Disable simulcast
+await meetingSession.audioVideo.enableSimulcastForContentShare(false);
+await meetingSession.audioVideo.startContentShareFromScreenCapture();
+```
+Below is the default simulcast encoding parameters:
+
+| Encoding Parameters      | Simulcast stream 1 | Simulcast stream 2 |
+|:------------------------:|:------------------:|:------------------:|
+| Max bitrate              |      1200 kbps     |      300 kbps      |
+| Scale resolution down by |         1          |         2          |
+| Max framerate            |  Same as capture framerate (default is 15fps) |   5   |
+
+You can override the encoding parameters to tailor to the type of content. 
+For example, for motion content, you may want to scale resolution down more but keep a high framerate for the low 
+quality layer but for static content, you may want to only reduce the framerate and keep a high resolution.
+
+```js
+// Enable simulcast and override the low layer encoding parameters
+await meetingSession.audioVideo.enableSimulcastForContentShare(true, {
+  low: {
+    maxBitrateKbps: 350,
+    scaleResolutionDownBy: 4,
+    maxFramerate: 10,
+  }
+});
+await meetingSession.audioVideo.startContentShareFromScreenCapture();
+```
+
+
+

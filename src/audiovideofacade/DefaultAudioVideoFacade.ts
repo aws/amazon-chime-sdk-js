@@ -21,10 +21,12 @@ import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import { isVideoTransformDevice } from '../devicecontroller/VideoTransformDevice';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import type VolumeIndicatorCallback from '../realtimecontroller/VolumeIndicatorCallback';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import TranscriptionController from '../transcript/TranscriptionController';
 import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
+import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 
 export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioVideoObserver {
   constructor(
@@ -105,9 +107,9 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
     this.trace('bindVideoElement', { tileId: tileId, videoElementId: videoElement.id });
   }
 
-  unbindVideoElement(tileId: number): void {
-    this.videoTileController.unbindVideoElement(tileId);
-    this.trace('unbindVideoElement', tileId);
+  unbindVideoElement(tileId: number, cleanUpVideoElement: boolean = true): void {
+    this.videoTileController.unbindVideoElement(tileId, cleanUpVideoElement);
+    this.trace('unbindVideoElement', { tileId: tileId, cleanUpVideoElement: cleanUpVideoElement });
   }
 
   startLocalVideoTile(): number {
@@ -230,6 +232,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
 
   realtimeUnsubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void {
     this.realtimeController.realtimeUnsubscribeToSetCanUnmuteLocalAudio(callback);
+    this.trace('realtimeUnsubscribeToSetCanUnmuteLocalAudio');
   }
 
   realtimeCanUnmuteLocalAudio(): boolean {
@@ -256,6 +259,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
 
   realtimeUnsubscribeToMuteAndUnmuteLocalAudio(callback: (muted: boolean) => void): void {
     this.realtimeController.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(callback);
+    this.trace('realtimeUnsubscribeToMuteAndUnmuteLocalAudio');
   }
 
   realtimeIsLocalAudioMuted(): boolean {
@@ -311,10 +315,12 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
 
   realtimeSubscribeToFatalError(callback: (error: Error) => void): void {
     this.realtimeController.realtimeSubscribeToFatalError(callback);
+    this.trace('realtimeSubscribeToFatalError');
   }
 
   realtimeUnsubscribeToFatalError(callback: (error: Error) => void): void {
     this.realtimeController.realtimeUnsubscribeToFatalError(callback);
+    this.trace('realtimeUnsubscribeToFatalError');
   }
 
   subscribeToActiveSpeakerDetector(
@@ -437,6 +443,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
     this.trace('setVideoMaxBandwidthKbps', maxBandwidthKbps);
   }
 
+  setVideoCodecSendPreferences(preferences: VideoCodecCapability[]): void {
+    this.audioVideoController.setVideoCodecSendPreferences(preferences);
+    this.trace('setVideoCodecSendPreferences', preferences);
+  }
+
   getVideoInputQualitySettings(): VideoQualitySettings | null {
     const result = this.deviceController.getVideoInputQualitySettings();
     this.trace('getVideoInputQualitySettings');
@@ -446,6 +457,14 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
   setContentAudioProfile(audioProfile: AudioProfile): void {
     this.trace('setContentAudioProfile', audioProfile);
     this.contentShareController.setContentAudioProfile(audioProfile);
+  }
+
+  enableSimulcastForContentShare(
+    enable: boolean,
+    encodingParams?: ContentShareSimulcastEncodingParameters
+  ): void {
+    this.trace('enableSimulcastForContentShare');
+    this.contentShareController.enableSimulcastForContentShare(enable, encodingParams);
   }
 
   startContentShare(stream: MediaStream): Promise<void> {
@@ -486,6 +505,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
   removeContentShareObserver(observer: ContentShareObserver): void {
     this.contentShareController.removeContentShareObserver(observer);
     this.trace('removeContentShareObserver');
+  }
+
+  setContentShareVideoCodecPreferences(preferences: VideoCodecCapability[]): void {
+    this.contentShareController.setContentShareVideoCodecPreferences(preferences);
+    this.trace('setContentShareVideoCodecPreferences');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -23,12 +26,12 @@ const DEFAULT_AGC_DISABLED_SETTING = {
 };
 const DEFAULT_AGC_SETTING = DEFAULT_AGC_DISABLED_SETTING;
 const DEFAULT_ASSET_GROUP = 'stable-v1';
-const DEFAULT_CDN = 'https://static.sdkassets.chime.aws/';
+const DEFAULT_CDN = 'https://static.sdkassets.chime.aws';
 const DEFAULT_PATHS = {
-    processors: `${DEFAULT_CDN}processors/`,
-    workers: `${DEFAULT_CDN}workers/`,
-    wasm: `${DEFAULT_CDN}wasm/`,
-    models: `${DEFAULT_CDN}wasm/`,
+    processors: `${DEFAULT_CDN}/processors/`,
+    workers: `${DEFAULT_CDN}/workers/`,
+    wasm: `${DEFAULT_CDN}/wasm/`,
+    models: `${DEFAULT_CDN}/wasm/`,
 };
 const DEFAULT_CONTEXT_HINT = {
     latencyHint: 0,
@@ -97,6 +100,7 @@ class VoiceFocus {
         this.internal = {
             worker,
             nodeOptions,
+            isDestroyed: false,
         };
     }
     static isSupported(spec, options) {
@@ -252,6 +256,9 @@ class VoiceFocus {
     }
     createNode(context, options) {
         var _a;
+        if (this.internal.isDestroyed) {
+            throw new Error('Unable to create node because VoiceFocus worker has been destroyed.');
+        }
         const { voiceFocusSampleRate = (context.sampleRate === 16000 ? 16000 : 48000), enabled = true, agc = DEFAULT_AGC_SETTING, } = options || {};
         const supportFarendStream = options === null || options === void 0 ? void 0 : options.es;
         const processorOptions = {
@@ -270,6 +277,9 @@ class VoiceFocus {
     }
     applyToStream(stream, context, options) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.internal.isDestroyed) {
+                throw new Error("Unable to apply stream because VoiceFocus worker has been destroyed");
+            }
             const source = context.createMediaStreamSource(stream);
             const node = yield this.applyToSourceNode(source, context, options);
             const destination = context.createMediaStreamDestination();
@@ -288,6 +298,12 @@ class VoiceFocus {
             source.connect(node);
             return node;
         });
+    }
+    destroy() {
+        if (this.internal.worker) {
+            this.internal.worker.terminate();
+        }
+        this.internal.isDestroyed = true;
     }
 }
 exports.VoiceFocus = VoiceFocus;

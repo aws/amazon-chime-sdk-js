@@ -38,10 +38,13 @@ export default class VideoPreference implements Eq, PartialOrd {
 
   private static readonly LOW_BITRATE_KBPS = 300;
   private static readonly MID_BITRATE_KBPS = 600;
-  private static readonly HIGH_BITRATE_KBPS = 1200;
+  private static readonly HIGH_BITRATE_KBPS = 1400;
+  private static readonly MAXIMUM_BITRATE_KBPS = 10000;
 
   targetSizeToBitrateKbps(targetSize: TargetDisplaySize): number {
     switch (targetSize) {
+      case TargetDisplaySize.Maximum:
+        return VideoPreference.MAXIMUM_BITRATE_KBPS;
       case TargetDisplaySize.High:
         return VideoPreference.HIGH_BITRATE_KBPS;
       case TargetDisplaySize.Medium:

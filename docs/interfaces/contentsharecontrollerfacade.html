@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>
@@ -73,10 +72,10 @@
 						<span class="target">ContentShareControllerFacade</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<a href="audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a>
+								<a href="audiovideofacade.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioVideoFacade</a>
 							</li>
 							<li>
-								<a href="contentsharecontroller.html" class="tsd-signature-type">ContentShareController</a>
+								<a href="contentsharecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">ContentShareController</a>
 							</li>
 						</ul>
 					</li>
@@ -90,9 +89,11 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#addcontentshareobserver" class="tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#enablesimulcastforcontentshare" class="tsd-kind-icon">enable<wbr>Simulcast<wbr>For<wbr>Content<wbr>Share</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#pausecontentshare" class="tsd-kind-icon">pause<wbr>Content<wbr>Share</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#removecontentshareobserver" class="tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#setcontentaudioprofile" class="tsd-kind-icon">set<wbr>Content<wbr>Audio<wbr>Profile</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#setcontentsharevideocodecpreferences" class="tsd-kind-icon">set<wbr>Content<wbr>Share<wbr>Video<wbr>Codec<wbr>Preferences</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#startcontentshare" class="tsd-kind-icon">start<wbr>Content<wbr>Share</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#startcontentsharefromscreencapture" class="tsd-kind-icon">start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontrollerfacade.html#stopcontentshare" class="tsd-kind-icon">stop<wbr>Content<wbr>Share</a></li>
@@ -108,13 +109,13 @@
 					<a name="addcontentshareobserver" class="tsd-anchor"></a>
 					<h3>add<wbr>Content<wbr>Share<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="contentshareobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L43">src/contentsharecontroller/ContentShareControllerFacade.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L63">src/contentsharecontroller/ContentShareControllerFacade.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -125,7 +126,50 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observer: <a href="contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a></h5>
+									<h5>observer: <a href="contentshareobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">ContentShareObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="enablesimulcastforcontentshare" class="tsd-anchor"></a>
+					<h3>enable<wbr>Simulcast<wbr>For<wbr>Content<wbr>Share</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">enable<wbr>Simulcast<wbr>For<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span>enable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, encodingParams<span class="tsd-signature-symbol">?: </span><a href="../modules.html#contentsharesimulcastencodingparameters" class="tsd-signature-type" data-tsd-kind="Type alias">ContentShareSimulcastEncodingParameters</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L26">src/contentsharecontroller/ContentShareControllerFacade.ts:26</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Toggle simulcast for content share. This should be called before calling <code>startContentShare</code> or
+									<code>startContentShareFromScreenCapture</code>. The default encoding parameters are:</p>
+									<ul>
+										<li>High layer: 1200 kbps max bitrate</li>
+										<li>Low layer: 300 kbps max bitrate, scale down resolution by 2, and 5 fps max frame rate.</li>
+									</ul>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>enable: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Enable/disable simulcast</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> encodingParams: <a href="../modules.html#contentsharesimulcastencodingparameters" class="tsd-signature-type" data-tsd-kind="Type alias">ContentShareSimulcastEncodingParameters</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Overide the default encoding params for either layer in max bitrate, scale resolution
+										down by, or max frame rate.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -142,13 +186,16 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L28">src/contentsharecontroller/ContentShareControllerFacade.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L48">src/contentsharecontroller/ContentShareControllerFacade.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Pause content sharing</p>
+									<p>Pause content sharing. This (combined with <code>unpauseContentShare</code> is a lightweight alternative to stopping and
+									starting content share which requires use of a seperate peer connection and therefore has increased latency.</p>
 								</div>
+								<p>Remote receivers will continue to subscribe to content share video but there will be nothing transmitting
+								(e.g. it may be a black frame)</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -158,13 +205,13 @@
 					<a name="removecontentshareobserver" class="tsd-anchor"></a>
 					<h3>remove<wbr>Content<wbr>Share<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="contentshareobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L48">src/contentsharecontroller/ContentShareControllerFacade.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L68">src/contentsharecontroller/ContentShareControllerFacade.ts:68</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -175,7 +222,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observer: <a href="contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a></h5>
+									<h5>observer: <a href="contentshareobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">ContentShareObserver</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -186,13 +233,13 @@
 					<a name="setcontentaudioprofile" class="tsd-anchor"></a>
 					<h3>set<wbr>Content<wbr>Audio<wbr>Profile</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Content<wbr>Audio<wbr>Profile<span class="tsd-signature-symbol">(</span>audioProfile<span class="tsd-signature-symbol">: </span><a href="../classes/audioprofile.html" class="tsd-signature-type">AudioProfile</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Content<wbr>Audio<wbr>Profile<span class="tsd-signature-symbol">(</span>audioProfile<span class="tsd-signature-symbol">: </span><a href="../classes/audioprofile.html" class="tsd-signature-type" data-tsd-kind="Class">AudioProfile</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L13">src/contentsharecontroller/ContentShareControllerFacade.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L15">src/contentsharecontroller/ContentShareControllerFacade.ts:15</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -205,7 +252,36 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>audioProfile: <a href="../classes/audioprofile.html" class="tsd-signature-type">AudioProfile</a></h5>
+									<h5>audioProfile: <a href="../classes/audioprofile.html" class="tsd-signature-type" data-tsd-kind="Class">AudioProfile</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="setcontentsharevideocodecpreferences" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> set<wbr>Content<wbr>Share<wbr>Video<wbr>Codec<wbr>Preferences</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Content<wbr>Share<wbr>Video<wbr>Codec<wbr>Preferences<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">: </span><a href="../classes/videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L76">src/contentsharecontroller/ContentShareControllerFacade.ts:76</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set codec preferences for this content send stream. See <code>AudioVideoControllerFacade.setVideoCodecSendPreferences</code>
+									for more information.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>preferences: <a href="../classes/videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -222,7 +298,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L18">src/contentsharecontroller/ContentShareControllerFacade.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L34">src/contentsharecontroller/ContentShareControllerFacade.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -250,7 +326,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L23">src/contentsharecontroller/ContentShareControllerFacade.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L39">src/contentsharecontroller/ContentShareControllerFacade.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -281,7 +357,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L38">src/contentsharecontroller/ContentShareControllerFacade.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L58">src/contentsharecontroller/ContentShareControllerFacade.ts:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -303,7 +379,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L33">src/contentsharecontroller/ContentShareControllerFacade.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/contentsharecontroller/ContentShareControllerFacade.ts#L53">src/contentsharecontroller/ContentShareControllerFacade.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -320,8 +396,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -336,6 +412,9 @@
 								<a href="contentsharecontrollerfacade.html#addcontentshareobserver" class="tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="contentsharecontrollerfacade.html#enablesimulcastforcontentshare" class="tsd-kind-icon">enable<wbr>Simulcast<wbr>For<wbr>Content<wbr>Share</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="contentsharecontrollerfacade.html#pausecontentshare" class="tsd-kind-icon">pause<wbr>Content<wbr>Share</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
@@ -343,6 +422,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="contentsharecontrollerfacade.html#setcontentaudioprofile" class="tsd-kind-icon">set<wbr>Content<wbr>Audio<wbr>Profile</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="contentsharecontrollerfacade.html#setcontentsharevideocodecpreferences" class="tsd-kind-icon">set<wbr>Content<wbr>Share<wbr>Video<wbr>Codec<wbr>Preferences</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="contentsharecontrollerfacade.html#startcontentshare" class="tsd-kind-icon">start<wbr>Content<wbr>Share</a>

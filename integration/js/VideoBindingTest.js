@@ -15,7 +15,7 @@ class VideoBindingTest extends SdkBaseTest {
     const session = this.seleniumSessions[0];
     const useSimulcast = this.useSimulcast;
     await OpenAppStep.executeStep(this, session);
-    await AuthenticateUserStep.executeStep(this, session, attendeeID, useSimulcast);
+    await AuthenticateUserStep.executeStep(this, session, attendeeID, useSimulcast, false, false);
     await ClickStartLocalVideoButton.executeStep(this, session);
     await ClickBindVideoElementButton.executeStep(this, session, '1', 'video-0');
     await TileStateCheck.executeStep(this, session, 'tile-1-state', 'boundVideoElementId', 'video-0');

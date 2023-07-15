@@ -14,17 +14,19 @@ const endpoint = process.env.CHIME_ENDPOINT;
 const currentRegion = process.env.REGION;
 const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS;
 const chimeSDKMeetingsEndpoint = process.env.CHIME_SDK_MEETINGS_ENDPOINT;
-
+const mediaPipelinesControlRegion = process.env.MEDIA_PIPELINES_CONTROL_REGION;
+const useChimeSDKMediaPipelines = process.env.USE_CHIME_SDK_MEDIA_PIPELINES;
+const chimeSDKMediaPipelinesEndpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT;
 // Create an AWS SDK Chime object.
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
-
+const ivs = new AWS.IVS({ apiVersion: '2020-07-14' });
 // Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
 chime.endpoint = new AWS.Endpoint(endpoint);
 
-const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
-if(chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true'){
+const chimeSDKMeetings = new AWS.ChimeSDKMeetings({region: currentRegion});
+if (chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true'){
   chimeSDKMeetings.endpoint = new AWS.Endpoint(chimeSDKMeetingsEndpoint);
 }
 
@@ -35,6 +37,19 @@ function getClientForMeeting(meeting) {
   }
   if (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE') {
     return chimeSDKMeetings;
+  }
+  return chime;
+}
+
+// Create an AWS SDK Media Pipelines object.
+const chimeSdkMediaPipelines = new AWS.ChimeSDKMediaPipelines({ region: mediaPipelinesControlRegion });
+if (useChimeSDKMediaPipelines === 'true') {
+  chimeSdkMediaPipelines.endpoint = new AWS.Endpoint(chimeSDKMediaPipelinesEndpoint);
+}
+
+function getClientForMediaCapturePipelines() {
+  if (useChimeSDKMediaPipelines === 'true') {
+    return chimeSdkMediaPipelines;
   }
   return chime;
 }
@@ -59,12 +74,13 @@ exports.index = async (event, context, callback) => {
 };
 
 exports.join = async (event, context) => {
+  const meetingIdFormat = /^[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/
   const query = event.queryStringParameters;
   if (!query.title || !query.name) {
     return response(400, 'application/json', JSON.stringify({ error: 'Need parameters: title, name' }));
   }
 
-  // Look up the meeting by its title. If it does not exist, create the meeting.
+  // Look up the meeting by its title
   let meeting = await getMeeting(query.title);
 
   let client = getClientForMeeting(meeting);
@@ -72,9 +88,23 @@ exports.join = async (event, context) => {
   let primaryMeeting = undefined
   if (query.primaryExternalMeetingId) {
     primaryMeeting = await getMeeting(query.primaryExternalMeetingId)
-    if (primaryMeeting !== undefined) {
+    if (primaryMeeting) {
       console.info(`Retrieved primary meeting ID ${primaryMeeting.Meeting.MeetingId} for external meeting ID ${query.primaryExternalMeetingId}`)
-    } else {
+    } else if (meetingIdFormat.test(query.primaryExternalMeetingId)) {
+      // Just in case, check if we were passed a regular meeting ID instead of an external ID
+      try {
+        primaryMeeting = await client.getMeeting({
+          MeetingId: query.primaryExternalMeetingId
+        }).promise();
+        if (primaryMeeting !== undefined) {
+          console.info(`Retrieved primary meeting id ${primaryMeeting.Meeting.MeetingId}`);
+          await putMeeting(query.primaryExternalMeetingId, primaryMeeting);
+        }
+      } catch (error) {
+        console.info("Meeting ID doesnt' exist as a conference ID: " + error);
+      }
+    }
+    if (!primaryMeeting) {
       return response(400, 'application/json', JSON.stringify({ error: 'Primary meeting has not been created' }));
     }
   }
@@ -83,40 +113,54 @@ exports.join = async (event, context) => {
     if (!query.region) {
       return response(400, 'application/json', JSON.stringify({ error: 'Need region parameter set if meeting has not yet been created' }));
     }
-    let request = {
-      // Use a UUID for the client request token to ensure that any request retries
-      // do not create multiple meetings.
-      ClientRequestToken: uuidv4(),
-
-      // Specify the media region (where the meeting is hosted).
-      // In this case, we use the region selected by the user.
-      MediaRegion: query.region,
-
-      // Set up SQS notifications if being used
-      NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? { SqsQueueArn: SQS_QUEUE_ARN } : {},
-
-      // Any meeting ID you wish to associate with the meeting.
-      // For simplicity here, we use the meeting title.
-      ExternalMeetingId: query.title.substring(0, 64),
-    };
-    if (primaryMeeting !== undefined) {
-      request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
+    // If the meeting does not exist, check if we were passed in a meeting ID instead of an external meeting ID.  If so, use that one
+    try {
+      if (meetingIdFormat.test(query.title)) {
+        meeting = await client.getMeeting({
+          MeetingId: query.title
+        }).promise();
+      }
+    } catch (error) {
+      console.info("Meeting ID doesn't exist as a conference ID: " + error);
     }
-    if (query.ns_es === 'true') {
-      client = chimeSDKMeetings;
-      request.MeetingFeatures = {
-        Audio: {
-          // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
-          EchoReduction: 'AVAILABLE'
-        }
+
+    // If still no meeting, create one
+    if (!meeting) {
+      let request = {
+        // Use a UUID for the client request token to ensure that any request retries
+        // do not create multiple meetings.
+        ClientRequestToken: uuidv4(),
+
+        // Specify the media region (where the meeting is hosted).
+        // In this case, we use the region selected by the user.
+        MediaRegion: query.region,
+
+        // Set up SQS notifications if being used
+        NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? { SqsQueueArn: SQS_QUEUE_ARN } : {},
+
+        // Any meeting ID you wish to associate with the meeting.
+        // For simplicity here, we use the meeting title.
+        ExternalMeetingId: query.title.substring(0, 64),
       };
-    }
-    console.info('Creating new meeting: ' + JSON.stringify(request));
-    meeting = await client.createMeeting(request).promise();
+      if (primaryMeeting !== undefined) {
+        request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
+      }
+      if (query.ns_es === 'true') {
+        client = chimeSDKMeetings;
+        request.MeetingFeatures = {
+          Audio: {
+            // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+            EchoReduction: 'AVAILABLE'
+          }
+        };
+      }
+      console.info('Creating new meeting: ' + JSON.stringify(request));
+      meeting = await client.createMeeting(request).promise();
 
-    // Extend meeting with primary external meeting ID if it exists
-    if (primaryMeeting !== undefined) {
-      meeting.Meeting.PrimaryExternalMeetingId = primaryMeeting.Meeting.ExternalMeetingId;
+      // Extend meeting with primary external meeting ID if it exists
+      if (primaryMeeting !== undefined) {
+        meeting.Meeting.PrimaryExternalMeetingId = primaryMeeting.Meeting.ExternalMeetingId;
+      }
     }
 
     // Store the meeting in the table using the meeting title as the key.
@@ -227,6 +271,12 @@ exports.start_transcription = async (event, context) => {
     if (transcriptionStreamParams.hasOwnProperty('preferredLanguage')) {
       transcriptionConfiguration.EngineTranscribeSettings.PreferredLanguage = transcriptionStreamParams.preferredLanguage;
     }
+    if (transcriptionStreamParams.hasOwnProperty('vocabularyNames')) {
+      transcriptionConfiguration.EngineTranscribeSettings.VocabularyNames = transcriptionStreamParams.vocabularyNames;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('vocabularyFilterNames')) {
+      transcriptionConfiguration.EngineTranscribeSettings.VocabularyFilterNames = transcriptionStreamParams.vocabularyFilterNames;
+    }
   } else if (event.queryStringParameters.engine === 'transcribe_medical') {
     transcriptionConfiguration = {
       EngineTranscribeMedicalSettings: {
@@ -273,13 +323,17 @@ exports.start_capture = async (event, context) => {
   meetingRegion = meeting.Meeting.MediaRegion;
 
   let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION_PREFIX}-${meetingRegion}/${meeting.Meeting.MeetingId}/`
-  pipelineInfo = await chime.createMediaCapturePipeline({
+  const request = {
     SourceType: "ChimeSdkMeeting",
     SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
     SinkType: "S3Bucket",
     SinkArn: captureS3Destination,
-  }).promise();
+  };
+  console.log("Creating new media capture pipeline: ", request)
+  pipelineInfo = await getClientForMediaCapturePipelines().createMediaCapturePipeline(request).promise();
+
   await putCapturePipeline(event.queryStringParameters.title, pipelineInfo)
+  console.log("Successfully created media capture pipeline: ", pipelineInfo);
 
   return response(201, 'application/json', JSON.stringify(pipelineInfo));
 };
@@ -288,9 +342,90 @@ exports.end_capture = async (event, context) => {
   // Fetch the capture info by title
   const pipelineInfo = await getCapturePipeline(event.queryStringParameters.title);
   if (pipelineInfo) {
-    await chime.deleteMediaCapturePipeline({
+    await getClientForMediaCapturePipelines().deleteMediaCapturePipeline({
       MediaPipelineId: pipelineInfo.MediaCapturePipeline.MediaPipelineId
     }).promise();
+    return response(200, 'application/json', JSON.stringify({}));
+  } else {
+    return response(500, 'application/json', JSON.stringify({ msg: "No pipeline to stop for this meeting" }))
+  }
+};
+
+
+exports.start_live_connector = async (event, context) => {
+  // Fetch the meeting by title
+  const meeting = await getMeeting(event.queryStringParameters.title);
+  meetingRegion = meeting.Meeting.MediaRegion;
+  const ivsChannelNamePrefix = "liveConnector"
+  const ivsChannelName = `${ivsChannelNamePrefix}-${meetingRegion}`;
+  ivsEndpoint = ''
+  rtmpURL = ''
+  ivsPlaybackUrl = ''
+  ivsChannelArn = ''
+  const params = {
+    name: ivsChannelName,
+  };
+  const ivsCreateChannelResponse = await ivs.createChannel(params).promise();
+  ivsPlaybackUrl = ivsCreateChannelResponse.channel.playbackUrl
+  ivsEndpoint = ivsCreateChannelResponse.channel.ingestEndpoint
+  ivsStreamKey = ivsCreateChannelResponse.streamKey.value
+  ivsChannelArn = ivsCreateChannelResponse.channel.arn
+  rtmpURL = "rtmps://" + ivsEndpoint + ":443/app/" + ivsStreamKey
+  console.log("Successfully created ivs channel: ", ivsCreateChannelResponse)
+  const request =
+      {
+        Sinks: [
+          {
+            RTMPConfiguration: {
+              AudioChannels: "Stereo",
+              AudioSampleRate: "48000",
+              Url: rtmpURL
+            },
+            SinkType: "RTMP"
+          }
+        ],
+        Sources: [
+          {
+            ChimeSdkMeetingLiveConnectorConfiguration: {
+              Arn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
+              CompositedVideo: {
+                GridViewConfiguration: {
+                  ContentShareLayout: "Vertical",
+                },
+                Layout: "GridView",
+                Resolution: "FHD",
+              },
+              MuxType: "AudioWithCompositedVideo"
+            },
+            SourceType: "ChimeSdkMeeting"
+          }
+        ]
+      };
+  console.log("Creating new media live connector pipeline: ", request)
+  liveConnectorPipelineInfo = await chimeSdkMediaPipelines.createMediaLiveConnectorPipeline(request).promise();
+  await putLiveConnectorPipeline(event.queryStringParameters.title, liveConnectorPipelineInfo)
+  await putIvsArn(event.queryStringParameters.title, ivsChannelArn)
+  console.log("Successfully created media live connector pipeline: ", liveConnectorPipelineInfo)
+  liveConnectorPipelineInfo["playBackUrl"] = ivsPlaybackUrl
+  return response(201, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
+};
+
+exports.end_live_connector = async (event, context) => {
+  // Fetch the live connector pipeline info by title
+  const liveConnectorPipelineInfo = await getLiveConnectorPipeline(event.queryStringParameters.title);
+  if (liveConnectorPipelineInfo) {
+    const ivsChannelArn = await getIvsArn(event.queryStringParameters.title)
+    await getClientForMediaCapturePipelines().deleteMediaPipeline({
+      MediaPipelineId: liveConnectorPipelineInfo.MediaLiveConnectorPipeline.MediaPipelineId
+    }).promise();
+
+    try {
+      await delay(3000);
+      await ivs.deleteChannel({arn: ivsChannelArn}).promise()
+    }
+    catch (e) {
+      console.log("error deleting ivs :" + e)
+    }
     return response(200, 'application/json', JSON.stringify({}));
   } else {
     return response(500, 'application/json', JSON.stringify({ msg: "No pipeline to stop for this meeting" }))
@@ -323,7 +458,7 @@ exports.logs = async (event, context) => {
       const timestamp = new Date(log.timestampMs).toISOString();
       const message = `${timestamp} [${log.sequenceNumber}] [${log.logLevel}] [meeting: ${meetingId}] [attendee: ${attendeeId}]: ${log.message}`;
       logEvents.push({
-        message: log.message,
+        message,
         timestamp: log.timestampMs
       });
     }
@@ -445,6 +580,61 @@ async function putCapturePipeline(title, capture) {
   }).promise()
 }
 
+// Retrieves live connector data for a meeting by title
+async function getLiveConnectorPipeline(title) {
+  const result = await ddb.getItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {
+        S: title
+      }
+    }
+  }).promise();
+  return result.Item && result.Item.LiveConnectorData ? JSON.parse(result.Item.LiveConnectorData.S) : null;
+}
+
+// Adds meeting live connector data to the meeting table
+async function putLiveConnectorPipeline(title, liveConnector) {
+  await ddb.updateItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {S: title}
+    },
+    UpdateExpression: "SET LiveConnectorData = :liveConnector",
+    ExpressionAttributeValues: {
+      ":liveConnector": {S: JSON.stringify(liveConnector)}
+    }
+  }).promise()
+}
+
+// Retrieves live connector data for a meeting by title
+async function getIvsArn(title) {
+  const result = await ddb.getItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {
+        S: title
+      }
+    }
+  }).promise();
+  return result.Item && result.Item.IvsArnData ? JSON.parse(result.Item.IvsArnData.S) : null;
+}
+
+// Adds meeting live connector data to the meeting table
+async function putIvsArn(title, ivsArn) {
+  await ddb.updateItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {S: title}
+    },
+    UpdateExpression: "SET IvsArnData = :ivsArn",
+    ExpressionAttributeValues: {
+      ":ivsArn": {S: JSON.stringify(ivsArn)}
+    }
+  }).promise()
+}
+
+
 async function putLogEvents(event, logGroupName, createLogEvents) {
   const body = JSON.parse(event.body);
   if (!body.logs || !body.meetingId || !body.attendeeId || !body.appName) {
@@ -516,10 +706,23 @@ function createLogStreamName(meetingId, attendeeId) {
   return `ChimeSDKMeeting_${meetingId}_${attendeeId}`;
 }
 
+function delay(milliseconds){
+  return new Promise(resolve => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+
 function response(statusCode, contentType, body, isBase64Encoded = false) {
   return {
     statusCode: statusCode,
-    headers: { 'Content-Type': contentType },
+    headers: { 
+      'Content-Type': contentType,
+      // enable shared array buffer for videoFxProcessor
+      'Cross-Origin-Opener-Policy': 'same-origin', 
+      // enable shared array buffer for videoFxProcessor
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
     body: body,
     isBase64Encoded,
   };
@@ -529,11 +732,11 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
   const logMsgJson = JSON.parse(logMsg);
   const metricList = ['signalingOpenDurationMs', 'iceGatheringDurationMs', 'attendeePresenceDurationMs', 'meetingStartDurationMs'];
   const putMetric =
-    metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
-      metrics.setProperty('MeetingId', meetingId);
-      metrics.setProperty('AttendeeId', attendeeId);
-      metrics.putMetric(metricName, metricValue);
-    });
+      metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
+        metrics.setProperty('MeetingId', meetingId);
+        metrics.setProperty('AttendeeId', attendeeId);
+        metrics.putMetric(metricName, metricValue);
+      });
   for (let metricIndex = 0; metricIndex <= metricList.length; metricIndex += 1) {
     const metricName = metricList[metricIndex];
     if (logMsgJson.attributes.hasOwnProperty(metricName)) {
@@ -546,11 +749,11 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
 
 function addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId) {
   const putMetric =
-    metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
-      metrics.setProperty('MeetingId', meetingId);
-      metrics.setProperty('AttendeeId', attendeeId);
-      metrics.putMetric(metricName, metricValue);
-    });
+      metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
+        metrics.setProperty('MeetingId', meetingId);
+        metrics.setProperty('AttendeeId', attendeeId);
+        metrics.putMetric(metricName, metricValue);
+      });
   const { logLevel, message } = log;
   let errorMetricValue = 0;
   let retryMetricValue = 0;

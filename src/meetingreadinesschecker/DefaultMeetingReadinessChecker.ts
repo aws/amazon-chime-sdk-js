@@ -4,6 +4,7 @@
 import DefaultAudioMixController from '../audiomixcontroller/DefaultAudioMixController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import DefaultDeviceController from '../devicecontroller/DefaultDeviceController';
 import Device from '../devicecontroller/Device';
@@ -47,7 +48,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   async checkAudioInput(audioInputDevice: Device): Promise<CheckAudioInputFeedback> {
     try {
       await this.meetingSession.audioVideo.startAudioInput(audioInputDevice);
-      await this.meetingSession.audioVideo.startAudioInput(null);
+      await this.meetingSession.audioVideo.stopAudioInput();
       return CheckAudioInputFeedback.Succeeded;
     } catch (error) {
       this.logger.error(`MeetingReadinessChecker: Audio input check failed with error ${error}`);
@@ -67,7 +68,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       const audioOutputDeviceId = audioOutputDeviceInfo
         ? (DefaultDeviceController.getIntrinsicDeviceId(audioOutputDeviceInfo) as string)
         : '';
-      await this.playTone(audioOutputDeviceId, 440, audioElement);
+      await this.playTone(
+        audioOutputDeviceId,
+        this.configuration.audioOutputFrequency,
+        audioElement
+      );
       const userFeedback = await audioOutputVerificationCallback();
       if (userFeedback) {
         return CheckAudioOutputFeedback.Succeeded;
@@ -87,7 +92,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     audioElement: HTMLAudioElement | null
   ): Promise<void> {
     const rampSec = 0.1;
-    const maxGainValue = 0.1;
+    const maxGainValue = this.configuration.audioOutputGain;
 
     if (this.oscillatorNode) {
       this.stopTone();
@@ -134,7 +139,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     }
     const durationSec = 1;
     const rampSec = 0.1;
-    const maxGainValue = 0.1;
+    const maxGainValue = this.configuration.audioOutputGain;
     const currentTime = this.audioContext.currentTime;
     this.gainNode.gain.linearRampToValueAtTime(maxGainValue, currentTime + rampSec + durationSec);
     this.gainNode.gain.linearRampToValueAtTime(0, currentTime + rampSec * 2 + durationSec);
@@ -149,7 +154,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   async checkVideoInput(videoInputDevice: Device): Promise<CheckVideoInputFeedback> {
     try {
       await this.meetingSession.audioVideo.startVideoInput(videoInputDevice);
-      await this.meetingSession.audioVideo.startVideoInput(null);
+      await this.meetingSession.audioVideo.stopVideoInput();
       return CheckVideoInputFeedback.Succeeded;
     } catch (error) {
       this.logger.error(`MeetingReadinessChecker: Video check failed with error ${error}`);
@@ -265,7 +270,21 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   async checkAudioConnectivity(audioInputDevice: Device): Promise<CheckAudioConnectivityFeedback> {
     let audioPresence = false;
+    const audioConnectivityMetrics = {
+      packetsReceived: 0,
+    };
     const audioVideo = this.meetingSession.audioVideo;
+
+    const checkAudioConnectivityMetricsObserver: AudioVideoObserver = {
+      metricsDidReceive(clientMetricReport: ClientMetricReport) {
+        clientMetricReport.getRTCStatsReport().forEach(report => {
+          if (report.type === 'inbound-rtp' && report.mediaType === 'audio') {
+            audioConnectivityMetrics.packetsReceived = report.packetsReceived;
+          }
+        });
+      },
+    };
+
     const attendeePresenceHandler = (
       attendeeId: string,
       present: boolean,
@@ -288,33 +307,39 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       return CheckAudioConnectivityFeedback.AudioInputRequestFailed;
     }
     audioVideo.realtimeSubscribeToAttendeeIdPresence(attendeePresenceHandler);
+    audioVideo.addObserver(checkAudioConnectivityMetricsObserver);
+
     if (!(await this.startMeeting())) {
+      audioVideo.removeObserver(checkAudioConnectivityMetricsObserver);
       audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
-      try {
-        await this.meetingSession.audioVideo.startAudioInput(null);
-      } catch (e) {
-        this.logger.error(`MeetingReadinessChecker: Failed to choose null device with error ${e}`);
-      }
+      await this.meetingSession.audioVideo.stopAudioInput();
       return CheckAudioConnectivityFeedback.ConnectionFailed;
     }
     await this.executeTimeoutTask(async () => {
-      return audioPresence;
+      return this.isAudioConnectionSuccessful(audioPresence, audioConnectivityMetrics);
     });
+    audioVideo.removeObserver(checkAudioConnectivityMetricsObserver);
     audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
     await this.stopMeeting();
-    try {
-      await this.meetingSession.audioVideo.startAudioInput(null);
-    } catch (e) {
-      this.logger.error(`MeetingReadinessChecker: Failed to choose null device with error ${e}`);
-    }
-    return audioPresence
+    await this.meetingSession.audioVideo.stopAudioInput();
+    return this.isAudioConnectionSuccessful(audioPresence, audioConnectivityMetrics)
       ? CheckAudioConnectivityFeedback.Succeeded
       : CheckAudioConnectivityFeedback.AudioNotReceived;
   }
 
   async checkVideoConnectivity(videoInputDevice: Device): Promise<CheckVideoConnectivityFeedback> {
     const audioVideo = this.meetingSession.audioVideo;
-
+    let packetsSent = 0;
+    const observer: AudioVideoObserver = {
+      metricsDidReceive(clientMetricReport: ClientMetricReport) {
+        const rawStats = clientMetricReport.getRTCStatsReport();
+        rawStats.forEach(report => {
+          if (report.type === 'outbound-rtp' && report.mediaType === 'video') {
+            packetsSent = report.packetsSent;
+          }
+        });
+      },
+    };
     try {
       await audioVideo.startVideoInput(videoInputDevice);
     } catch (error) {
@@ -327,25 +352,18 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       return CheckVideoConnectivityFeedback.VideoInputRequestFailed;
     }
 
+    audioVideo.addObserver(observer);
     if (!(await this.startMeeting())) {
       return CheckVideoConnectivityFeedback.ConnectionFailed;
     }
 
-    let packetsSent = 0;
     audioVideo.startLocalVideoTile();
     await this.executeTimeoutTask(async () => {
-      const rawStats = await audioVideo.getRTCPeerConnectionStats();
-      if (rawStats) {
-        rawStats.forEach(report => {
-          if (report.type === 'outbound-rtp' && report.mediaType === 'video') {
-            packetsSent = report.packetsSent;
-          }
-        });
-      }
       return packetsSent > 0;
     });
-    audioVideo.stopLocalVideoTile();
+    await audioVideo.stopVideoInput();
     await this.stopMeeting();
+    audioVideo.removeObserver(observer);
     if (packetsSent <= 0) {
       return CheckVideoConnectivityFeedback.VideoNotSent;
     }
@@ -353,6 +371,17 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   }
 
   async checkNetworkUDPConnectivity(): Promise<CheckNetworkUDPConnectivityFeedback> {
+    let candidatePairSucceed = false;
+    const observer: AudioVideoObserver = {
+      metricsDidReceive(clientMetricReport: ClientMetricReport) {
+        const rawStats = clientMetricReport.getRTCStatsReport();
+        rawStats.forEach(report => {
+          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+            candidatePairSucceed = true;
+          }
+        });
+      },
+    };
     try {
       this.originalURLRewriter = this.meetingSession.configuration.urls.urlRewriter;
     } catch (error) {
@@ -368,26 +397,17 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     };
 
     const audioVideo = this.meetingSession.audioVideo;
+    audioVideo.addObserver(observer);
     if (!(await this.startMeeting())) {
       this.meetingSession.configuration.urls.urlRewriter = this.originalURLRewriter;
       return CheckNetworkUDPConnectivityFeedback.ConnectionFailed;
     }
-
-    let candidatePairSucceed = false;
     await this.executeTimeoutTask(async () => {
-      const rawStats = await audioVideo.getRTCPeerConnectionStats();
-      if (rawStats) {
-        rawStats.forEach(report => {
-          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
-            candidatePairSucceed = true;
-          }
-        });
-      }
       return candidatePairSucceed;
     });
-
     this.meetingSession.configuration.urls.urlRewriter = this.originalURLRewriter;
     await this.stopMeeting();
+    audioVideo.removeObserver(observer);
     if (!candidatePairSucceed) {
       return CheckNetworkUDPConnectivityFeedback.ICENegotiationFailed;
     }
@@ -395,6 +415,17 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   }
 
   async checkNetworkTCPConnectivity(): Promise<CheckNetworkTCPConnectivityFeedback> {
+    let candidatePairSucceed = false;
+    const observer: AudioVideoObserver = {
+      metricsDidReceive(clientMetricReport: ClientMetricReport) {
+        const rawStats = clientMetricReport.getRTCStatsReport();
+        rawStats.forEach(report => {
+          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+            candidatePairSucceed = true;
+          }
+        });
+      },
+    };
     try {
       this.originalURLRewriter = this.meetingSession.configuration.urls.urlRewriter;
     } catch (error) {
@@ -411,27 +442,17 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     };
 
     const audioVideo = this.meetingSession.audioVideo;
-
+    audioVideo.addObserver(observer);
     if (!(await this.startMeeting())) {
       this.meetingSession.configuration.urls.urlRewriter = this.originalURLRewriter;
       return CheckNetworkTCPConnectivityFeedback.ConnectionFailed;
     }
-
-    let candidatePairSucceed = false;
     await this.executeTimeoutTask(async () => {
-      const rawStats = await audioVideo.getRTCPeerConnectionStats();
-      if (rawStats) {
-        rawStats.forEach(report => {
-          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
-            candidatePairSucceed = true;
-          }
-        });
-      }
       return candidatePairSucceed;
     });
-
     this.meetingSession.configuration.urls.urlRewriter = this.originalURLRewriter;
     await this.stopMeeting();
+    audioVideo.removeObserver(observer);
     if (!candidatePairSucceed) {
       return CheckNetworkTCPConnectivityFeedback.ICENegotiationFailed;
     }
@@ -500,5 +521,12 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     );
     await timeoutTask.run();
     return isSuccess;
+  }
+
+  private isAudioConnectionSuccessful(
+    audioPresence: boolean,
+    audioConnectivityMetrics: { packetsReceived: number }
+  ): boolean {
+    return audioPresence && audioConnectivityMetrics.packetsReceived > 0;
   }
 }

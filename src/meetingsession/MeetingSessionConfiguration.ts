@@ -101,6 +101,16 @@ export default class MeetingSessionConfiguration {
   keepLastFrameWhenPaused: boolean = false;
 
   /**
+   * The Amazon Chime SDK media backends currently send a keyframe request to content share senders every 10 seconds to help mitigate
+   * decoder issues on receivers. This flag requests the backed to disable that feature.
+   *
+   * Setting this flag to true may or may not lead to issues with content received for your application, as it depends on browsers used
+   * and whether they have fixed previous issues leading to the introduction of this periodic keyframe request. It will however
+   * reduce CPU consumption on content senders which no longer have to generate as many expensive keyframes.
+   */
+  disablePeriodicKeyframeRequestOnContentSender: boolean = false;
+
+  /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
    * chime:CreateAttendee response. You can pass in either a JSON object containing the
    * responses, or a JSON object containing the information in the Meeting and Attendee

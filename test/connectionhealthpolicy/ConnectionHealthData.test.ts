@@ -18,6 +18,7 @@ describe('ConnectionHealthData', () => {
     connectionHealthData.lastNoSignalTimestampMs = 0;
     connectionHealthData.lastWeakSignalTimestampMs = 0;
     connectionHealthData.lastGoodSignalTimestampMs = 0;
+    connectionHealthData.consecutiveStatsWithNoAudioPacketsSent = 0;
   });
   it('can be constructed', () => {
     connectionHealthData = new ConnectionHealthData();
@@ -107,5 +108,10 @@ describe('ConnectionHealthData', () => {
     connectionHealthData = new ConnectionHealthData();
     connectionHealthData.setLastGoodSignalTimestampMs(1);
     expect(connectionHealthData.lastGoodSignalTimestampMs).to.equal(1);
+  });
+  it('can set consecutive stats with no audio packets sent', () => {
+    connectionHealthData = new ConnectionHealthData();
+    connectionHealthData.setConsecutiveStatsWithNoAudioPacketsSent(1);
+    expect(connectionHealthData.consecutiveStatsWithNoAudioPacketsSent).to.equal(1);
   });
 });

@@ -17,15 +17,15 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
  * This is exactly what we document in the CSP guide.
  */
 const csp = {
-  'connect-src': "'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com",
+  'connect-src': "'self' data: https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com",
 
   // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+.
   // Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless
   // 'unsafe-eval' is also present.
-  'script-src': "'self' 'unsafe-eval' 'wasm-eval' 'wasm-unsafe-eval'",
+  'script-src': "'self' 'unsafe-eval' blob: 'wasm-eval' 'wasm-unsafe-eval'",
 
   // Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.
-  'script-src-elem': "'self' 'unsafe-inline'",
+  'script-src-elem': "'self' 'unsafe-inline' blob:",
   'worker-src': "'self' blob:",
   'child-src': "'self' blob:",
 };
@@ -53,7 +53,7 @@ if (!csp['script-src'].includes("'unsafe-eval'")) {
 }
 
 // 5. Access to event ingestion gamma endpoint for testing and canaries.
-csp['connect-src'] += ' https://*.ingest.gchime.aws';
+csp['connect-src'] += ' https://*.ingest.gchime.aws ';
 
 module.exports = env => {
   console.info('Env:', JSON.stringify(env, null, 2));
@@ -81,6 +81,8 @@ module.exports = env => {
         '/deleteAttendee': 'http://127.0.0.1:8081',
         '/end': 'http://127.0.0.1:8081',
         '/fetch_credentials': 'http://127.0.0.1:8081',
+        '/audio_file': 'http://127.0.0.1:8081',
+        '/stereo_audio_file': 'http://127.0.0.1:8081',
       }
     },
     plugins: [

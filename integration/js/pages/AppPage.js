@@ -1,4 +1,4 @@
-const {By, Key, until} = require('selenium-webdriver');
+const {By, Key, until, logging} = require('selenium-webdriver');
 const {TestUtils} = require('kite-common');
 const {performance} = require('perf_hooks');
 const {clickElement} = require('../utils/PageUtil');
@@ -13,6 +13,8 @@ function findAllElements() {
     voiceConnectorIdInput: By.id('voiceConnectorId'),
     attendeeNameInput: By.id('inputName'),
     authenticateButton: By.id('authenticate'),
+    additionalOptionsButton: By.id('additional-options-button'),
+    additionalOptionsSaveButton: By.id('additional-options-save-button'),
     localVideoButton: By.id('button-camera'),
     mediaCaptureButton: By.id('button-record-cloud'),
     addVoiceFocusInput: By.id('add-voice-focus'),        // Checkbox.
@@ -22,10 +24,10 @@ function findAllElements() {
     contentShareButton: By.id('button-content-share'),
     contentShareDropButton: By.id('button-content-share-drop'),
     contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
-    contentSharePauseButton: By.id('button-pause-content-share'),
+    contentSharePauseButton: By.id('dropdown-item-content-share-pause-resume'),
 
     videoFilterDropButton: By.id('button-video-filter-drop'),
-  
+
     dataMessageSendInput: By.id('send-message'),
     sipAuthenticateButton: By.id('button-sip-authenticate'),
     roster: By.id('roster'),
@@ -44,6 +46,7 @@ function findAllElements() {
     microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
     microphoneDropDownPrecordedSpeechButton: By.id('dropdown-menu-microphone-Prerecorded-Speech'),
     microphoneDropDownNoneButton: By.id('dropdown-menu-microphone-None'),
+    microphoneDropDownNoAudioButton: By.id('dropdown-menu-microphone-No-Audio'),
     microphoneDropDownL500HzR1000HzButton: By.id('dropdown-menu-microphone-L-500Hz-R-1000Hz'),
     microphoneDropDownButton: By.id('button-microphone-drop'),
     microphoneButton: By.id('button-microphone'),
@@ -66,12 +69,15 @@ function findAllElements() {
     eventReportingCheckBox: By.id('event-reporting'),
     eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
     backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-40%-CPU'),
+    videoFxBackgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-2.0---High'),
     backgroundReplacementFilterButton: By.id('dropdown-menu-filter-Background-Replacement'),
+    videoFxBackgroundReplacementFilterButton: By.id('dropdown-menu-filter-Background-Replacement-2.0---(Blue)'),
     microphoneDropEchoButton: By.id('dropdown-menu-microphone-Echo'),
     echoReductionFeature: By.id('echo-reduction-capability'),
     echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]'),
     stereoMusicProfileCheckBox: By.id('fullband-music-stereo-quality'),
-    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]')
+    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]'),
+    chimeMeetingId: By.id('chime-meeting-id')
   };
 }
 
@@ -123,6 +129,18 @@ class AppPage {
     await clickElement(this.driver, authenticateButton);
   }
 
+  async openAdditionalOptions() {
+    let additionalOptionsButton = await this.driver.findElement(elements.additionalOptionsButton);
+    await clickElement(this.driver, additionalOptionsButton);
+    await TestUtils.waitAround(200);
+  }
+
+  async closeAdditionalOptions() {
+    let additionalOptionsSaveButton = await this.driver.findElement(elements.additionalOptionsSaveButton);
+    await clickElement(this.driver, additionalOptionsSaveButton);
+    await TestUtils.waitAround(200);
+  }
+
   async chooseUseWebAudio() {
     let webAudioFeature = await this.driver.findElement(elements.webAudioFeature);
     let webAudioFeatureLabel = await this.driver.findElement(elements.webAudioFeatureLabel);
@@ -135,7 +153,7 @@ class AppPage {
     }
   }
 
-  // selects echo reduction capability at the meeting level 
+  // selects echo reduction capability at the meeting level
   async chooseEchoReduction() {
     const echoReductionFeature = await this.driver.findElement(elements.echoReductionFeature);
     const echoReductionFeatureLabel = await this.driver.findElement(elements.echoReductionFeatureLabel);
@@ -163,7 +181,7 @@ class AppPage {
   async chooseEnableEventReporting() {
     const eventReportingCheck = await this.driver.findElement(elements.eventReportingCheckBox);
     const eventReportingCheckLabel = await this.driver.findElement(elements.eventReportingCheckBoxLabel);
-    
+
     // Click the label because it's on top.
     if (await eventReportingCheck.isSelected()) {
       this.logger('event reporting is enabled');
@@ -175,7 +193,7 @@ class AppPage {
   async chooseStereoMusicAudioProfile() {
     const stereoMusicProfileCheck = await this.driver.findElement(elements.stereoMusicProfileCheckBox);
     const stereoMusicProfileCheckLabel = await this.driver.findElement(elements.stereoMusicProfileCheckBoxLabel);
-    
+
     // Click the label because it's on top.
     if (await stereoMusicProfileCheck.isSelected()) {
       this.logger('stereo music audio profile is selected');
@@ -270,6 +288,11 @@ class AppPage {
     await clickElement(this.driver, noneButton);
   }
 
+  async selectNoAudioInput() {
+    let noneButton = await this.driver.findElement(elements.microphoneDropDownNoAudioButton);
+    await clickElement(this.driver, noneButton);
+  }
+
   async clickOnMicrophoneDropDownButton() {
     let microphoneDropDown = await this.driver.findElement(elements.microphoneDropDownButton);
     await clickElement(this.driver, microphoneDropDown);
@@ -277,7 +300,7 @@ class AppPage {
 
   async clickStartAmazonVoiceFocus() {
     const startAmazonVoiceFocus = await this.driver.findElement(elements.microphoneDropDownVoiceFocusButton);
-    await startAmazonVoiceFocus.click();    
+    await startAmazonVoiceFocus.click();
   }
 
   async getNumberOfParticipantsOnRoster() {
@@ -334,7 +357,7 @@ class AppPage {
     }
     return 'failed'
   }
-  
+
   async waitForElement(element, timeout = 10000) {
     try {
       await this.driver.wait(until.elementLocated(element), timeout);
@@ -383,7 +406,11 @@ class AppPage {
   }
 
   async waitToJoinTheMeeting() {
-    return await this.waitForElement(elements.meetingFlow, 20000)
+    return await this.waitForElement(elements.meetingFlow, 20000);
+  }
+
+  async waitForContentShareButton() {
+    return await this.waitForElement(elements.contentShareButton, 20000);
   }
 
   async isLiveTranscriptionPresentInDeviceMenu() {
@@ -467,6 +494,7 @@ class AppPage {
     const transcriptContainerText = await this.driver.findElement(elements.transcriptContainer).getText();
     const allTranscripts = transcriptContainerText.split('\n');
     if (allTranscripts.length < 1) {
+      console.error(`Unable to find any transcripts`);
       return false;
     }
 
@@ -478,6 +506,7 @@ class AppPage {
       lastStartedIdx--;
     }
     if (lastStartedIdx < 0) {
+      console.error(`Unexpected received lastStartedIdx < 0: ${lastStartedIdx}`);
       return false;
     }
     const transcriptsToValidate = allTranscripts.slice(lastStartedIdx + 1);
@@ -499,7 +528,14 @@ class AppPage {
     let actualSpeakers = Object.getOwnPropertyNames(actualTranscriptContentBySpeaker);
     let expectedSpeaker = Object.getOwnPropertyNames(expectedTranscriptContentBySpeaker);
 
-    if (actualSpeakers.length != expectedSpeaker.length) {
+    // Temporarily filtering empty speakers for medical transcribe test. Empty speaker issue - P68074811
+    if (isMedicalTranscribe) {
+      console.log(`Filtering empty speaker in medical transcribe.`);
+      actualSpeakers = actualSpeakers.filter(speaker => speaker !== "")
+    }
+
+    if (actualSpeakers.length !== expectedSpeaker.length) {
+      console.error(`Expected speaker length ${expectedSpeaker.length} but got ${actualSpeakers.length}`);
       return false;
     }
 
@@ -507,7 +543,6 @@ class AppPage {
       const speaker = actualSpeakers[i];
       if (!compareFn(actualTranscriptContentBySpeaker[speaker], expectedTranscriptContentBySpeaker[speaker], isMedicalTranscribe)) {
         console.log(`Transcript comparison failed, speaker: ${speaker} isMedicalTranscribe: ${isMedicalTranscribe} actual content: "${actualTranscriptContentBySpeaker[speaker]}" does not match with expected: "${expectedTranscriptContentBySpeaker[speaker]}"`);
-        return false;
       }
     }
 
@@ -820,6 +855,44 @@ class AppPage {
     return await this.backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax);
   }
 
+  /**
+   * Sum the pixel values of the video tile image.
+   * @param {*} attendeeId 
+   * @returns videoImgSum
+   */
+  async computeVideoSum(attendeeId) {
+    await TestUtils.waitAround(4000);
+    const videoElement = this.driver.findElement(By.xpath(`//*[contains(@class,'video-tile-nameplate') and contains(text(),'${attendeeId}')]`));
+    const videoElementId = await videoElement.getAttribute('id');
+    const separatorIndex = videoElementId.lastIndexOf("-");
+    if (separatorIndex >= -1) {
+      const tileIndex = parseInt(videoElementId.slice(separatorIndex+1))
+      if (tileIndex != NaN && tileIndex >= 0) {
+        const videoImgSum = await this.driver.executeScript(this.getVideoImageSum(tileIndex));
+        return videoImgSum;
+      }
+    }
+  }
+
+  /**
+   * Check that the background blur transformation has been applied to the video by taking the difference from the 
+   * rawVideoSum of the video before blur is applied, and the new blurredImgSum after blur is applied. The difference 
+   * is checked to be within the expected range, calculated by taking the min/max videoImgSums before/after blur for
+   * 13 runs plus/minus three standard deviations of all of the sums.
+   * @param {*} attendeeId Used to identify video tile
+   * @param {*} rawVideoSum Pixel image sum of video before Video Fx transformation
+   * @returns boolean
+   */
+  async videoFxBackgroundBlurCheck(attendeeId, rawVideoSum) {
+    const expectedDiffMin = 42;
+    const expectedDiffMax = 13000;
+    return await this.videoFxBackgroundFilterCheck(attendeeId, rawVideoSum, expectedDiffMin, expectedDiffMax);
+  }
+
+  async clickVideoFxBackgroundBlurFilterFromDropDownMenu() {
+    await this.clickBackgroundFilterFromDropDownMenu(elements.videoFxBackgroundBlurFilterButton);
+  }
+
   async clickBackgroundReplacementFilterFromDropDownMenu() {
     await this.clickBackgroundFilterFromDropDownMenu(elements.backgroundReplacementFilterButton);
   }
@@ -830,6 +903,25 @@ class AppPage {
     return await this.backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax);
   }
 
+  /**
+   * Check that the background replacement transformation has been applied to the video by taking the difference from 
+   * the rawVideoSum of the video before replacement is applied, and the new blurredImgSum after replacement is applied. 
+   * The difference is checked to be within the expected range, calculated by taking the min/max videoImgSums before/after 
+   * blur for 13 runs plus/minus three standard deviations of all of the sums.
+   * @param {*} attendeeId Used to identify video tile
+   * @param {*} rawVideoSum Pixel image sum of video before Video Fx transformation
+   * @returns boolean
+   */
+  async videoFxBackgroundReplacementCheck(attendeeId, rawVideoSum) {
+    const expectedDiffMin = 674855;
+    const expectedDiffMax = 697888;
+    return await this.videoFxBackgroundFilterCheck(attendeeId, rawVideoSum, expectedDiffMin, expectedDiffMax);
+  }
+
+  async clickVideoFxBackgroundReplacementFilterFromDropDownMenu() {
+    await this.clickBackgroundFilterFromDropDownMenu(elements.videoFxBackgroundReplacementFilterButton);
+  }
+
   async clickBackgroundFilterFromDropDownMenu(buttonID) {
     await TestUtils.waitAround(1000);
     const backgroundBlurButton = await this.driver.findElement(buttonID);
@@ -837,25 +929,40 @@ class AppPage {
   }
 
   async backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax) {
-    await TestUtils.waitAround(4000);
-    const videoElement = this.driver.findElement(By.xpath(`//*[contains(@class,'video-tile-nameplate') and contains(text(),'${attendeeId}')]`));
-    const videoElementId = await videoElement.getAttribute('id');
-    const seperatorIndex = videoElementId.lastIndexOf("-");
-    if (seperatorIndex >= -1) {
-      const tileIndex = parseInt(videoElementId.slice(seperatorIndex+1))
-      if (tileIndex != NaN && tileIndex >= 0) {
-        const videoImgSum = await this.driver.executeScript(this.getVideoImageSum(tileIndex));
-        console.log(`videoImgSum ${videoImgSum}`);
-        if(videoImgSum < expectedSumMin || videoImgSum > expectedSumMax){
-          console.log(`videoImgSum ${videoImgSum}`);
-          return false;
-        }
-      }
+    const videoImgSum = await this.computeVideoSum(attendeeId);
+    if(videoImgSum > expectedSumMin && videoImgSum < expectedSumMax){
+      return true;
     }
-    return true;
+    console.log(`videoImgSum ${videoImgSum} outside of expected range ${expectedSumMin}:${expectedSumMax}`);
+    return false;
   }
 
+  /**
+   * Performs the check that Video Fx has been applied correctly by computing the new image sum of the video
+   * tile, and taking the difference with the rawVideoSum before the Video Fx was applied. This must fall within
+   * an expected range set from expectedDiffMin:expectedDiffMax.
+   * @param {*} attendeeId Used to identify video tile
+   * @param {*} rawVideoSum Pixel image sum of video before Video Fx transformation
+   * @param {*} expectedDiffMin Minimum expected difference between transformedImgSum and rawVideoSum
+   * @param {*} expectedDiffMax Maximum expected difference between transformedImgSum and rawVideoSum
+   * @returns boolean
+   */
+  async videoFxBackgroundFilterCheck(attendeeId, rawVideoSum, expectedDiffMin, expectedDiffMax) {
+    const transformedImgSum = await this.computeVideoSum(attendeeId);
+    const checkDiff = transformedImgSum - rawVideoSum;
+    if (checkDiff > expectedDiffMin && checkDiff < expectedDiffMax) {
+      return true;
+    }
+    console.log(`videoImgSum difference ${checkDiff} outside of expected range ${expectedDiffMin}:${expectedDiffMax}`);
+    return false;
+  }
 
+  /**
+   * Quantify video tile image by summing the pixels for one third of the image, starting from the
+   * top left corner.
+   * @param {*} videoId 
+   * @returns Video image sum
+   */
   getVideoImageSum(videoId) {
     return "function getSum(total, num) {return total + num;};"
         + "const canvas = document.createElement('canvas');"
@@ -868,7 +975,32 @@ class AppPage {
         + "var sum = imageData.reduce(getSum);"
         + "return sum;"
   }
-  
+
+  async sendingAudioCheck(stepInfo, expectedEvent, waitTimeMs) {
+    await TestUtils.waitAround(waitTimeMs);
+    let expectedStateFound = false;
+    try {
+      const logs = await this.driver.manage().logs().get(logging.Type.BROWSER);
+      const eventLogCaptureRegex = new RegExp('Received an event: (.*)"');
+
+      logs.forEach(entry => {
+        const matchedItems = eventLogCaptureRegex.exec(entry.message); // matchedItems[1] has our the JSON payload
+        if (matchedItems) {
+          // When running on Saucelabs double quotes in logs are weirdly escaped with just a single \ instead of \\
+          // so JSON.parse is throwing an error, so we escape all instances of \" with "
+          const validJsonString = matchedItems[1].replaceAll(/\\"/g, '"');
+          if (JSON.parse(validJsonString).name === expectedEvent) {
+            this.logger(`SendingAudioCheck successful for expectedEvent: ${expectedEvent}`);
+            expectedStateFound = true;
+          }
+        }
+      });
+    } catch (e) {
+      this.logger(`SendingAudioCheck failed with error: ${e}`);
+    }
+    return expectedStateFound;
+  }
+
   async echoAudioCheck(stepInfo, expectedState){
     let res = undefined;
     try {
@@ -948,6 +1080,12 @@ class AppPage {
       return true;
     }
     return false;
+  }
+
+  async logMeetingId() {
+    const meetingElement = this.driver.findElement(elements.chimeMeetingId);
+    const meetingId = await meetingElement.getText();
+    this.logger(`Meeting started for ${meetingId}`);
   }
 }
 

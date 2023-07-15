@@ -78,6 +78,17 @@ describe('DefaultBrowserBehavior', () => {
     mockBuilder.cleanup();
   });
 
+  describe('construction', () => {
+    it('can be constructed without user agent', () => {
+      const userAgent = navigator.userAgent;
+      // @ts-ignore
+      delete navigator.userAgent;
+      new DefaultBrowserBehavior();
+      // @ts-ignore
+      navigator.userAgent = userAgent;
+    });
+  });
+
   describe('platforms', () => {
     it('can detect Firefox', () => {
       setUserAgent(FIREFOX_MAC_USER_AGENT);
@@ -88,6 +99,8 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
       expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.false;
+      expect(new DefaultBrowserBehavior().supportsVideoLayersAllocationRtpHeaderExtension()).to.be
+        .false;
     });
 
     it('can detect Firefox on Android', () => {
@@ -109,6 +122,8 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
       expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.true;
+      expect(new DefaultBrowserBehavior().supportsVideoLayersAllocationRtpHeaderExtension()).to.be
+        .true;
     });
 
     it('can detect Edge Chromium', () => {
@@ -226,20 +241,34 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
     });
 
-    it('can test Safari version 11', () => {
+    it('can test Safari version 15', () => {
       domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.browserName = 'safari11';
+      domMockBehavior.browserName = 'safari15';
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
-      expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
-      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(11);
+      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(15);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
+    });
+
+    it('can test ReactNative', () => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.navigatorProduct = 'ReactNative';
+      domMockBehavior.undefinedDocument = true;
+      mockBuilder = new DOMMockBuilder(domMockBehavior);
+      expect(new DefaultBrowserBehavior().name()).to.eq('react-native');
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(-1);
     });
 
     it('can handle an unknown user agent', () => {
       setUserAgent(OPERA_USER_AGENT);
       expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
+    });
+
+    it('can detect os major version', () => {
+      setUserAgent(CHROME_IOS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().osMajorVersion()).to.equal(15);
     });
   });
 
@@ -291,6 +320,18 @@ describe('DefaultBrowserBehavior', () => {
     it('Does not support for non-Chrome browsers', () => {
       setUserAgent(FIREFOX_MAC_USER_AGENT);
       expect(new DefaultBrowserBehavior().isSimulcastSupported()).to.be.false;
+    });
+  });
+
+  describe('latency hint', () => {
+    it('Detects browsers not requiring "playback" latency hint', () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresPlaybackLatencyHintForAudioContext()).to.be.false;
+    });
+
+    it('Detects browsers requiring "playback" latency hint', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresPlaybackLatencyHintForAudioContext()).to.be.true;
     });
   });
 });

@@ -83,6 +83,7 @@ case $1 in
          r configs/integrationTest/audio_test.config.json
          r configs/integrationTest/app_quit_audio_test.config.json
          r configs/integrationTest/meeting_leave_audio_test.config.json
+         r configs/integrationTest/sending_audio_events_test.config.json
          ;;
       video)
          r configs/integrationTest/video_test.config.json
@@ -124,6 +125,7 @@ case $1 in
          ;;
       background_blur)
          r configs/integrationTest/background_blur_test.config.json
+         r configs/integrationTest/videofx_background_effects_test.config.json
          ;;
       echo_reduction)
          r configs/integrationTest/echo_reduction_test.config.json
@@ -155,11 +157,7 @@ case $1 in
          ;;
       content_share)
          r configs/browserCompatibilityTest/desktop/content_share_screen_capture_test.config.json
-         r configs/browserCompatibilityTest/desktop/meeting_leave_content_share_test.config.json
          r configs/browserCompatibilityTest/desktop/content_share_video_test.config.json
-         r configs/browserCompatibilityTest/desktop/content_share_only_allow_two_test.config.json
-         r configs/browserCompatibilityTest/desktop/content_share_join_later_test.config.json
-         r configs/browserCompatibilityTest/desktop/app_quit_content_share_test.config.json
          ;;
       data_message)
          r configs/browserCompatibilityTest/desktop/data_message_test.config.json
@@ -169,6 +167,7 @@ case $1 in
          ;;
       background_blur)
          r configs/browserCompatibilityTest/desktop/background_blur_test.config.json
+         r configs/browserCompatibilityTest/desktop/videofx_background_effects_test.config.json
          ;;
       voice_focus)
          r configs/browserCompatibilityTest/desktop/voice_focus_test.config.json
@@ -180,9 +179,8 @@ case $1 in
          r configs/browserCompatibilityTest/desktop/linux/video_test.config.json
          ;;
       linux_content_share)
-         r configs/browserCompatibilityTest/desktop/linux/content_share_join_later_test.config.json
-         r configs/browserCompatibilityTest/desktop/linux/content_share_only_allow_two_test.config.json
          r configs/browserCompatibilityTest/desktop/linux/content_share_screen_capture_test.config.json
+         r configs/browserCompatibilityTest/desktop/linux/content_share_video_test.config.json
          ;;
       linux_other)
          r configs/browserCompatibilityTest/desktop/linux/data_message_test.config.json

@@ -4,13 +4,23 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { CanvasVideoFrameBuffer, VideoFrameBuffer } from '../../src';
 import VideoTransformDevice from '../../src/devicecontroller/VideoTransformDevice';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
+import EventController from '../../src/eventcontroller/EventController';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
+import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
+import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import DefaultVideoTransformDeviceObserver from '../../src/videoframeprocessor/DefaultVideoTransformDeviceObserver';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
-import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from '../../src/videoframeprocessor/VideoFrameProcessor';
+import VideoFxConfig from '../../src/videofx/VideoFxConfig';
+import { DEFAULT_STREAM_PARAMETERS, SEGMENTATION_MODEL } from '../../src/videofx/VideoFxConstants';
+import VideoFxProcessor from '../../src/videofx/VideoFxProcessor';
+import MockEngineWorker from '../../test/videofx/MockEngineWorker';
+import MockFxLib from '../../test/videofx/MockFxLib';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -43,6 +53,20 @@ describe('DefaultVideoTransformDevice', () => {
       }),
       timeoutPromise(timeout),
     ]);
+  }
+
+  function makeSessionConfiguration(): MeetingSessionConfiguration {
+    const configuration = new MeetingSessionConfiguration();
+    configuration.meetingId = 'foo-meeting';
+    configuration.urls = new MeetingSessionURLs();
+    configuration.urls.audioHostURL = 'https://audiohost.test.example.com';
+    configuration.urls.turnControlURL = 'https://turncontrol.test.example.com';
+    configuration.urls.signalingURL = 'https://signaling.test.example.com';
+    configuration.credentials = new MeetingSessionCredentials();
+    configuration.credentials.attendeeId = 'foo-attendee';
+    configuration.credentials.joinToken = 'foo-join-token';
+    configuration.attendeePresenceTimeoutMs = 5000;
+    return configuration;
   }
 
   beforeEach(() => {
@@ -184,31 +208,7 @@ describe('DefaultVideoTransformDevice', () => {
     it('returns the intrinsicDevice', async () => {
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test', [processor]);
-      expect(await device.intrinsicDevice()).to.deep.equal({ deviceId: { exact: 'test' } });
-    });
-
-    it('returns the correct intrinsicDevice', async () => {
-      const device = new DefaultVideoTransformDevice(logger, null, []);
-      expect(await device.intrinsicDevice()).to.deep.equal({});
-    });
-
-    it('returns the correct intrinsicDevice for browsers with no exact deviceId', async () => {
-      domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.browserName = 'samsung';
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      const processor = new NoOpVideoFrameProcessor();
-      const device = new DefaultVideoTransformDevice(logger, 'test', [processor]);
-      expect(await device.intrinsicDevice()).to.deep.equal({ deviceId: 'test' });
-    });
-
-    it('returns the correct intrinsicDevice', async () => {
-      const device = new DefaultVideoTransformDevice(logger, mockVideoStream, []);
-      expect(await device.intrinsicDevice()).to.deep.equal(mockVideoStream);
-    });
-
-    it('returns the correct intrinsicDevice', async () => {
-      const device = new DefaultVideoTransformDevice(logger, { width: 1280 }, []);
-      expect(await device.intrinsicDevice()).to.deep.equal({ width: 1280 });
+      expect(await device.intrinsicDevice()).to.equal('test');
     });
   });
 
@@ -278,6 +278,85 @@ describe('DefaultVideoTransformDevice', () => {
       transformDevice = new DefaultVideoTransformDevice(logger, streamAsDevice, [processor]);
       await transformDevice.transformStream(streamAsDevice);
       transformDevice.onOutputStreamDisconnect();
+    });
+  });
+
+  describe('passEventControllerToProcessors', () => {
+    // Set mock videofx environment
+    const sandbox: sinon.SinonSandbox = sinon.createSandbox();
+    const mockEngineWorker = new MockEngineWorker();
+    const mockFxLib = new MockFxLib();
+
+    let fxConfig: VideoFxConfig;
+    let domMockBehaviorProcessor: DOMMockBehavior;
+    let domMockBuilderProcessor: DOMMockBuilder;
+    let buffers: VideoFrameBuffer[];
+    let eventController: EventController;
+
+    beforeEach(() => {
+      fxConfig = {
+        backgroundBlur: {
+          isEnabled: false,
+          strength: 'low',
+        },
+        backgroundReplacement: {
+          isEnabled: false,
+          backgroundImageURL: null,
+          defaultColor: 'black',
+        },
+      };
+
+      domMockBehaviorProcessor = new DOMMockBehavior();
+      domMockBuilderProcessor = new DOMMockBuilder(domMockBehaviorProcessor);
+
+      mockEngineWorker.setSandbox(sandbox);
+      mockFxLib.setSandbox(sandbox);
+      mockFxLib.setDomBehavior(domMockBehaviorProcessor);
+      mockFxLib.stubSuccess();
+
+      // Configure mock canvas to be processed
+      const canvas = document.createElement('canvas');
+      canvas.height = DEFAULT_STREAM_PARAMETERS.HEIGHT_IN_PIXEL;
+      canvas.width = DEFAULT_STREAM_PARAMETERS.WIDTH_IN_PIXEL;
+      buffers = [new CanvasVideoFrameBuffer(canvas)];
+
+      // Set up eventController
+      const configuration = makeSessionConfiguration();
+      eventController = new DefaultEventController(configuration, logger);
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+      domMockBuilderProcessor.cleanup();
+    });
+
+    it('setEventController validation', async () => {
+      // Set up processor
+      VideoFxProcessor['isSharedArrayBufferSupported'] = false;
+      mockEngineWorker.stubAllAssetsLoad();
+      const processor: VideoFxProcessor = await VideoFxProcessor.create(logger, fxConfig);
+
+      // Mock segmentation successfully
+      sandbox.stub(processor['segmentationRequestPromise'], 'getPromise').callsFake(
+        (): Promise<ImageData> => {
+          return Promise.resolve(
+            new ImageData(SEGMENTATION_MODEL.WIDTH_IN_PIXELS, SEGMENTATION_MODEL.HEIGHT_IN_PIXELS)
+          );
+        }
+      );
+
+      // Set up video transform device
+      const transformDevice = new DefaultVideoTransformDevice(logger, 'test', [processor]);
+      domMockBehavior.createElementCaptureStream = mockVideoStream;
+      transformDevice.passEventControllerToProcessors(eventController);
+
+      // Check to make sure processor is working
+      const outputBuffers: VideoFrameBuffer[] = await processor.process(buffers);
+      assert.exists(outputBuffers);
+
+      // Clean up resources
+      processor.destroy();
+      transformDevice.stop();
     });
   });
 

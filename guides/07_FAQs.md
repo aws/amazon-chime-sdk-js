@@ -95,7 +95,82 @@ In Firefox, if access to camera or microphone has been granted to the site — e
 If the page itself is loaded via a different network interface than the one that is intended to be used by the Amazon Chime SDK to connect to Amazon Chime media resources, _e.g._, in a split-tunneling VPN where browser traffic uses the VPN interface but Amazon Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.
 
 Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.
- 
+
+## Known Build Issues
+
+### Why is my build failing after upgrading to Amazon Chime SDK for JavaScript 3.7.0?
+
+Amazon Chime SDK for JavaScript 3.7.0 included a bug fix to mitigate messaging session reconnection issue. Check [MessagingSession reconnects with refreshed endpoint and credentials if needed](https://github.com/aws/amazon-chime-sdk-js/commit/bce872c353edbb50908c5a0298f8113f1e8dcc82#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519) for more information on the fix. We added `@aws-sdk/client-chime-sdk-messaging` dependency necessary to mitigate the fix. `@aws-sdk/client-chime-sdk-messaging` pulls in `aws-sdk` v3 dependency and its dependencies cause the build to fail in all cases.
+
+Depending on the bundler you use, certain additional configuration changes may be required to help the build to succeed. This is actually not an issue with Amazon Chime SDK for JavaScript rather an issue on how bundlers do module resolution and what distributions `@aws-sdk/client-chime-sdk-messaging`'s dependencies provide when bundlers try to resolve the imported modules.
+
+As of now, builders have reported issues with rollup, esbuild, Nuxt2 framework and Webpack v4. In the following sections each issue is described separately and suggests certain configuration changes for the build to succeed.
+
+#### Rollup
+
+When a builder makes use of the rollup plugin: `rollup-plugin-includepaths` they may run into build issues where node modules and their methods are not found. For example, in the following warnings / errors the Node.js built-ins and the `createHash` method from `crypto` is not found.
+
+```
+(!) Missing shims for Node.js built-ins
+Creating a browser bundle that depends on "os", "path", "url", "buffer", "http", "https", "stream", "process" and "util". You might need to include https://github.com/FredKSchott/rollup-plugin-polyfill-node
+```
+
+```
+https://rollupjs.org/guide/en/#error-name-is-not-exported-by-module
+node_modules/@aws-sdk/shared-ini-file-loader/dist-es/getSSOTokenFilepath.js (1:9)
+1: import { createHash } from "crypto";
+```
+
+This node / browser incompatibility issue happens due to bundlers not using the right `runtimeConfig` defined in AWS JS SDK client's `package.json`. Clients in AWS JS SDK have defined a runtime config alias in their `package.json` like this: [Chime SDK Messaging client package.json](https://github.com/aws/aws-sdk-js-v3/blob/main/clients/client-chime-sdk-messaging/package.json#L91). If your bundler does not follow the `runtimeConfig` alias, you can get some incompatibility errors.
+
+If the builder is using [rollup-plugin-includepaths](https://github.com/dot-build/rollup-plugin-includepaths) to use relative paths in their project. It is recommended that you use [rollup-plugin-alias](https://github.com/rollup/plugins/tree/master/packages/alias) to define an alias for relative paths. 
+
+You can find more information about this build error in GitHub issue: [3.7.0 broke build with Rollup](https://github.com/aws/amazon-chime-sdk-js/issues/2455). If you still have questions about rollup alias and plugin settings please reach out to the plugin / rollup author.
+
+#### Esbuild
+
+When bundling an application using `esbuild`, it checks for dependency distributions depending on whether the imported package follows `require` that is CommonJS or `import` that is EcmaScript Module (ESM) approach. The dependency package can have its own dependencies which `esbuild` will try to resolve using the CommonJS or ESM distributions provided by the dependency package. Each package has to provide a link to the distribution path in their `package.json` using `main`, `module` or `browser` fields. In `@aws-sdk/client-chime-sdk-messaging` case, the `esbuild` runs into an issue where it cannot pick the distribution for `browser` specifially for one of the dependencies, thus, failing to build with below error:
+```
+"../node_modules/@aws-sdk/smithy-client"
+          Attempting to load "../node_modules/@aws-sdk/smithy-client/dist-es/index.js" as a file
+            Checking for file "index.js"
+            Found file "index.js"
+        Found main field "main" with path "./dist-cjs/index.js"
+          No "browser" map found in directory "../node_modules/@aws-sdk/smithy-client"
+          Attempting to load "../node_modules/@aws-sdk/smithy-client/dist-cjs/index.js" as a file
+            Checking for file "index.js"
+            Found file "index.js"
+        Resolved to "../node_modules/@aws-sdk/smithy-client/dist-cjs/index.js" because of "require"
+```
+
+To resolve this, add `--main-fields=browser,module,main` when you bundle your application using `esbuild`. For more information, check [this issue](https://github.com/evanw/esbuild/issues/2692) we reported to `esbuild`.
+
+#### Using Amazon Chime SDK for JavaScript in Nuxt2 framework
+
+You can use Amazon Chime SDK for JavaScript in Nuxt2 framework. Nuxt2 framework uses Webpack v4 bundler for bundling the application. Webpack v4 has a known issue when bundling applications that use optional chaining operator. This is resolved in Webpack v5, but, Nuxt2 has not upgraded to use Webpack v5.
+
+Thus, when bundling a Nuxt2 application which imports Amazon Chime SDK for JavaScript v3.7.0 and above, it runs into below error:
+```
+ERROR in ./node_modules/@aws-sdk/signature-v4/dist-es/getCanonicalHeaders.js 10:30
+Module parse failed: Unexpected token (10:30)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+|         const canonicalHeaderName = headerName.toLowerCase();
+|         if (canonicalHeaderName in ALWAYS_UNSIGNABLE_HEADERS ||
+>             unsignableHeaders?.has(canonicalHeaderName) ||
+|             PROXY_HEADER_PATTERN.test(canonicalHeaderName) ||
+|             SEC_HEADER_PATTERN.test(canonicalHeaderName)) {
+ @ ./node_modules/@aws-sdk/signature-v4/dist-es/index.js 2:0-60 2:0-60
+```
+
+To resolve this, you have to override the `build` configuration in `nuxt.config.js` like below:
+```
+build: {
+  transpile: ["aws-sdk"]
+}
+```
+
+Check [this issue comment](https://github.com/aws/amazon-chime-sdk-js/issues/2498#issuecomment-1362279568) for more information on the issue.
+
 ## Meetings
 
 ### How do users authenticate into a meeting?
@@ -104,11 +179,22 @@ The Amazon Chime SDK uses join tokens to control access to meetings. These token
 
 ### When does an Amazon Chime SDK meeting end?
 
-An Amazon Chime SDK meeting ends when you invoke the [DeleteMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html) API action. Also, a meeting automatically ends after a period of inactivity, based on the following rules:
+An Amazon Chime SDK meeting ends when you invoke the [DeleteMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html) API action.
+
+Also, a meeting automatically ends after a period of inactivity, based on the following rules:
+
+For [Amazon Chime SDK](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace:
+
+* No audio connections are present in the meeting for more than five minutes.
+* 24 hours have elapsed since the meeting was created.
+
+For [Amazon Chime](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime.html) namespace:
 
 * No audio connections are present in the meeting for more than five minutes.
 * Only one audio connection is present in the meeting for more than 30 minutes.
 * 24 hours have elapsed since the meeting was created.
+
+Learn more about [Amazon Chime SDK](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace and [Amazon Chime](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime.html) namespace in [Migrating to the Amazon Chime SDK Meetings namespace](https://docs.aws.amazon.com/chime-sdk/latest/dg/meeting-namespace-migration.html).
 
 ### How many simultaneous meetings can be hosted in an account? Can this limit be raised?
 
@@ -116,13 +202,13 @@ AWS accounts have a soft limit of [250 concurrent meetings](https://docs.aws.ama
 
 ### How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?
 
-Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and up to 25 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed.
+Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and by default up to 25 video senders in a meeting. An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed. The number of video senders can be adjusted, but all clients will still be limited to only 25 received videos at a time.
 
-If your use case requires more than 250 attendees, consider using a [broadcasting solution](https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo).
+If your use case requires more than 250 attendees, consider using [meeting replication](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html) to reach up to 10,000 participants, or a [live connector media pipeline](https://docs.aws.amazon.com/chime-sdk/latest/dg/connector-pipe-config.html) to output to RTMP.
 
-### What happens to the subsequent participants who try to turn on the local video while 25 participants have already turned on the local video?
+### What happens to the subsequent participants who try to turn on the local video when the maximum number of video senders is already reached?
 
-Once the limit of 25 video tiles is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
+Once the limit of video senders is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
 
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
@@ -132,7 +218,7 @@ The Amazon Chime SDK does not support scheduling meetings ahead of time. The mom
 
 ### What happens when I try to re-use same attendee response to join a meeting twice?
  
-If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. Reference issue: [#1290](https://github.com/aws/amazon-chime-sdk-js/issues/1290). The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
+If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
 
 ### What does it mean when the Amazon Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`, `MeetingEnded`, or `SignalingInternalServerError` while establishing a signaling connection to the Chime servers?
 
@@ -206,6 +292,14 @@ const meetingSession = new DefaultMeetingSession(
 );
 ```
 
+### What should my application do in response to the status codes in `audioVideoDidStop`?
+
+These status codes can be used for logging, debugging, and possible notification of end users, but in most cases should not be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless of `MeetingSessionStatus.isTerminal`, your application should not try to immediately restart or recreate the audio video controller).
+
+If `MeetingSessionStatus.isTerminal` returns `true`, you should remove any meeting UX in addition to notifying the user, as the audio video controller will not be retrying the connection.
+
+See the documentation for `MeetingSessionStatusCode` [here](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html) for explanation of the values when used for `audioVideoDidStop`, which may be used to provide more detail when notifying end users, though more general failure messages are recommended unless otherwise noted.
+
 ### What is the timeout for connect and reconnect and where can I configure the value?
 
 The maximum amount of time to allow for connecting is 15 seconds, which can be configurable in [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html). The [reconnectTimeout](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#reconnecttimeoutms) is configurable for how long you want to timeout the reconnection. The default value is 2 minutes.
@@ -221,7 +315,7 @@ parameter to [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReferen
 
 ### How do I choose video resolution, frame rate and bitrate?
 
-Applications built with the Amazon Chime SDK for JavaScript can adjust video parameters before a meeting begins by using the [chooseVideoInputQuality](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html#adjust-local-video-quality) API.
+Applications built with the Amazon Chime SDK for JavaScript can adjust video parameters before a meeting begins by using the [chooseVideoInputQuality and setVideoMaxBandwidthKbps](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html#adjust-local-video-quality) APIs.
 
 ### How can I stream music or video into a meeting?
 
@@ -298,7 +392,7 @@ Yes. You can [record to Amazon S3 using media capture pipelines](https://docs.aw
 
 ### How can I get Amazon Chime SDK logs for debugging?
 
-Applications can get logs from Chime SDK by passing instances of `Logger` when instantiating [the MeetingSession object](https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html). Amazon Chime SDK has some default implementations of logger that your application can use, such as [ConsoleLogger](https://aws.github.io/amazon-chime-sdk-js/classes/consolelogger.html) which logs into the browser console, [MeetingSessionPOSTLogger](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionpostlogger.html) which logs in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [MultiLogger](https://aws.github.io/amazon-chime-sdk-js/classes/multilogger.html) which logs in multiple destinations.
+Applications can get logs from Chime SDK by passing instances of `Logger` when instantiating [the MeetingSession object](https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html). Amazon Chime SDK has some default implementations of logger that your application can use, such as [ConsoleLogger](https://aws.github.io/amazon-chime-sdk-js/classes/consolelogger.html) which logs into the browser console, [POSTLogger](https://aws.github.io/amazon-chime-sdk-js/classes/postlogger.html) which logs in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [MultiLogger](https://aws.github.io/amazon-chime-sdk-js/classes/multilogger.html) which logs in multiple destinations.
 
 ### How do I file an issue for the Amazon Chime SDK for JavaScript?
 
@@ -387,7 +481,8 @@ Yes, Amazon Voice Focus supports the Samsung Internet browser (Chromium 83 or lo
 
 ### My clients are unable to join the meeting and I see `navigator.mediaDevices is undefined`, what could be the reason?
 
-Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the chooseVideoInputDevice API which can operate in [secure contexts inside a browser only](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security) for privacy concerns so you will need to access your browsers using HTTPS://. The hostname `localhost` and the loopback address `127.0.0.1` are exceptions.
+Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the `startAudioInput` or
+`startVideoInput` APIs which can operate in [secure contexts inside a browser only](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security) for privacy concerns so you will need to access your browsers using HTTPS://. The hostname `localhost` and the loopback address `127.0.0.1` are exceptions.
 
 ### How can I create a video tile layout for my application?
 
@@ -405,24 +500,18 @@ When the camera LED remains on, it does not necessarily mean the device is broad
 
 ```
 // Select no video device (releases any previously selected device)
-meetingSession.audioVideo.chooseVideoInputDevice(null);
-
-// Stop local video tile (stops sharing the video tile in the meeting)
-meetingSession.audioVideo.stopLocalVideoTile();
-
-// Stop a video preview that was previously started (before session starts)
-meetingSession.audioVideo.stopVideoPreviewForVideoInput(previewVideoElement);
-
-// Stop the meeting session (audio and video)
-meetingSession.audioVideo.stop();
+meetingSession.audioVideo.stopVideoInput();
 ```
 
 ### My clients are unable to successfully join audio calls from Safari, they get a `failed to get audio device for constraints null: Type error`, what could be the issue?
 
-This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the `chooseVideoInputDevice` API. In this case you will see the following entry in the log where an empty string after `chooseVideoInputDevice`:
+This error message is an indication that the browser application did not successfully acquire the media stream for 
+audio or video from the device before the meeting starts. Application has not passed in the right device Id to the 
+`startVideoInput` API. In this case you will see the following entry in the log where an empty string after 
+`startVideoInput`:
 
 ```
-[Info] 2020-06-18T17:43:55.380Z [INFO] VLR - API/DefaultDeviceController/chooseVideoInputDevice "" -> "PermissionDeniedByBrowser"
+[Info] 2020-06-18T17:43:55.380Z [INFO] VLR - API/DefaultDeviceController/startVideoInput "" -> "PermissionDeniedByBrowser"
 ```
 
 This applies for video input as well.

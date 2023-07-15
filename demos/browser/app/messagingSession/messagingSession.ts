@@ -12,13 +12,15 @@ import {
   Logger,
   LogLevel,
   Message,
-  MessagingSessionObserver,
   MessagingSession,
   MessagingSessionConfiguration,
+  MessagingSessionObserver,
+  PrefetchOn,
+  PrefetchSortBy,
   Versioning,
 } from 'amazon-chime-sdk-js';
 
-import { ChimeSDKMessagingClient, GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
+import { ChimeSDKMessagingClient } from '@aws-sdk/client-chime-sdk-messaging';
 
 export class DemoMessagingSessionApp implements MessagingSessionObserver {
   static readonly BASE_URL: string = [
@@ -33,6 +35,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
   configuration: MessagingSessionConfiguration;
   session: MessagingSession;
   sessionId: string;
+  prefetchOn = false;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,16 +57,24 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
       try {
         const response = await this.fetchCredentials();
         const chime = new ChimeSDKMessagingClient({ region: 'us-east-1', credentials: response });
-        const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
+        this.prefetchSortByUnread = (document.getElementById('prefetchSortByUnread') as HTMLInputElement).checked;
+        this.prefetchSortByLastMessageTimestamp = (document.getElementById('prefetchSortByLastMessageTimestamp') as HTMLInputElement).checked;
+        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, undefined, chime);
+        if (this.prefetchSortByUnread) {
+          this.configuration.prefetchOn = PrefetchOn.Connect;
+          this.configuration.prefetchSortBy = PrefetchSortBy.Unread
+        } else if (this.prefetchSortByLastMessageTimestamp) {
+          this.configuration.prefetchOn = PrefetchOn.Connect;
+          this.configuration.prefetchSortBy = PrefetchSortBy.LastMessageTimestamp
+        }
         this.session = new DefaultMessagingSession(this.configuration, this.logger);
         this.session.addObserver(this);
-        this.session.start();
+        await this.session.start();
       } catch (error) {
         console.error(error);
-        console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
+        console.error(`Failed to start a session: ${error.reason}`);
       }
     });
     document.getElementById('disconnect').addEventListener('click', () => {

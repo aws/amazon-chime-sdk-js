@@ -70,6 +70,7 @@ import ContentShareController from './contentsharecontroller/ContentShareControl
 import ContentShareControllerFacade from './contentsharecontroller/ContentShareControllerFacade';
 import ContentShareMediaStreamBroker from './contentsharecontroller/ContentShareMediaStreamBroker';
 import ContentShareObserver from './contentshareobserver/ContentShareObserver';
+import ContentShareSimulcastEncodingParameters from './videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 import CreatePeerConnectionTask from './task/CreatePeerConnectionTask';
 import CreateSDPTask from './task/CreateSDPTask';
 import DataMessage from './datamessage/DataMessage';
@@ -96,6 +97,7 @@ import DefaultSessionStateController from './sessionstatecontroller/DefaultSessi
 import DefaultSigV4 from './sigv4/DefaultSigV4';
 import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
+import DefaultSimulcastUplinkPolicyForContentShare from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
 import DefaultTranscriptionController from './transcript/DefaultTranscriptionController';
 import DefaultUserAgentParser from './useragentparser/DefaultUserAgentParser';
@@ -115,6 +117,7 @@ import Device from './devicecontroller/Device';
 import DeviceChangeObserver from './devicechangeobserver/DeviceChangeObserver';
 import DeviceController from './devicecontroller/DeviceController';
 import DeviceControllerBasedMediaStreamBroker from './mediastreambroker/DeviceControllerBasedMediaStreamBroker';
+import DeviceControllerFacade from './devicecontroller/DeviceControllerFacade';
 import DeviceEventAttributes from './eventcontroller/DeviceEventAttributes';
 import DevicePixelRatioMonitor from './devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from './devicepixelratioobserver/DevicePixelRatioObserver';
@@ -161,7 +164,6 @@ import MeetingSessionConfiguration from './meetingsession/MeetingSessionConfigur
 import MeetingSessionCredentials from './meetingsession/MeetingSessionCredentials';
 import MeetingSessionLifecycleEvent from './meetingsession/MeetingSessionLifecycleEvent';
 import MeetingSessionLifecycleEventCondition from './meetingsession/MeetingSessionLifecycleEventCondition';
-import MeetingSessionPOSTLogger from './logger/MeetingSessionPOSTLogger';
 import MeetingSessionStatus from './meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from './meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from './meetingsession/MeetingSessionTURNCredentials';
@@ -194,10 +196,15 @@ import NotReadableError from './devicecontroller/NotReadableError';
 import OnceTask from './task/OnceTask';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
 import OverconstrainedError from './devicecontroller/OverconstrainedError';
+import POSTLogger from './logger/POSTLogger';
+import POSTLoggerOptions from './logger/POSTLoggerOptions';
 import ParallelGroupTask from './task/ParallelGroupTask';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
+import PrefetchOn from './messagingsession/PrefetchOn';
+import PrefetchSortBy from './messagingsession/PrefetchSortBy';
+import PromiseQueue from './utils/PromiseQueue';
 import PromoteToPrimaryMeetingTask from './task/PromoteToPrimaryMeetingTask';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from './realtimecontroller/RealtimeController';
@@ -206,6 +213,7 @@ import RealtimeState from './realtimecontroller/RealtimeState';
 import RealtimeSubscribeToAttendeeIdPresenceCallback from './realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback';
 import RealtimeVolumeIndicator from './realtimecontroller/RealtimeVolumeIndicator';
 import ReceiveAudioInputTask from './task/ReceiveAudioInputTask';
+import ReceiveRemoteVideoPauseResumeTask from './task/ReceiveRemoteVideoPauseResumeTask';
 import ReceiveTURNCredentialsTask from './task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
@@ -219,7 +227,9 @@ import SDPCandidateType from './sdp/SDPCandidateType';
 import SDPMediaSection from './sdp/SDPMediaSection';
 import Scheduler from './scheduler/Scheduler';
 import SendAndReceiveDataMessagesTask from './task/SendAndReceiveDataMessagesTask';
+import SendingAudioFailureConnectionHealthPolicy from './connectionhealthpolicy/SendingAudioFailureConnectionHealthPolicy';
 import SerialGroupTask from './task/SerialGroupTask';
+import ServerSideNetworkAdaption from './signalingclient/ServerSideNetworkAdaption';
 import SessionStateController from './sessionstatecontroller/SessionStateController';
 import SessionStateControllerAction from './sessionstatecontroller/SessionStateControllerAction';
 import SessionStateControllerDeferPriority from './sessionstatecontroller/SessionStateControllerDeferPriority';
@@ -237,6 +247,7 @@ import SignalingClientJoin from './signalingclient/SignalingClientJoin';
 import SignalingClientObserver from './signalingclientobserver/SignalingClientObserver';
 import SignalingClientSubscribe from './signalingclient/SignalingClientSubscribe';
 import SignalingClientVideoSubscriptionConfiguration from './signalingclient/SignalingClientVideoSubscriptionConfiguration';
+import SimulcastContentShareTransceiverController from './transceivercontroller/SimulcastContentShareTransceiverController';
 import SimulcastLayers from './simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from './transceivercontroller/SimulcastTransceiverController';
 import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplinkObserver';
@@ -269,13 +280,19 @@ import UserAgentParser from './useragentparser/UserAgentParser';
 import Versioning from './versioning/Versioning';
 import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
+import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
+import VideoEncodingParameters from './videouplinkbandwidthpolicy/VideoEncodingParameters';
+import VideoFXEventAttributes from './eventcontroller/VideoFXEventAttributes';
 import VideoFrameBuffer from './videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from './videoframeprocessor/VideoFrameProcessor';
 import VideoFrameProcessorPipeline from './videoframeprocessor/VideoFrameProcessorPipeline';
 import VideoFrameProcessorPipelineObserver from './videoframeprocessor/VideoFrameProcessorPipelineObserver';
+import VideoFxBlurStrength from './videofx/VideoFxBlurStrength';
+import VideoFxConfig from './videofx/VideoFxConfig';
+import VideoFxProcessor from './videofx/VideoFxProcessor';
 import VideoInputDevice from './devicecontroller/VideoInputDevice';
 import VideoLogEvent from './statscollector/VideoLogEvent';
 import VideoOnlyTransceiverController from './transceivercontroller/VideoOnlyTransceiverController';
@@ -389,6 +406,7 @@ export {
   ContentShareControllerFacade,
   ContentShareMediaStreamBroker,
   ContentShareObserver,
+  ContentShareSimulcastEncodingParameters,
   CreatePeerConnectionTask,
   CreateSDPTask,
   DataMessage,
@@ -415,6 +433,7 @@ export {
   DefaultSigV4,
   DefaultSignalingClient,
   DefaultSimulcastUplinkPolicy,
+  DefaultSimulcastUplinkPolicyForContentShare,
   DefaultTransceiverController,
   DefaultTranscriptionController,
   DefaultUserAgentParser,
@@ -434,6 +453,7 @@ export {
   DeviceChangeObserver,
   DeviceController,
   DeviceControllerBasedMediaStreamBroker,
+  DeviceControllerFacade,
   DeviceEventAttributes,
   DevicePixelRatioMonitor,
   DevicePixelRatioObserver,
@@ -483,7 +503,6 @@ export {
   MeetingSessionCredentials,
   MeetingSessionLifecycleEvent,
   MeetingSessionLifecycleEventCondition,
-  MeetingSessionPOSTLogger,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionTURNCredentials,
@@ -518,11 +537,16 @@ export {
   OnceTask,
   OpenSignalingConnectionTask,
   OverconstrainedError,
+  POSTLogger,
+  POSTLoggerOptions,
   ParallelGroupTask,
   PartialOrd,
   PermissionDeniedError,
   PingPong,
   PingPongObserver,
+  PrefetchOn,
+  PrefetchSortBy,
+  PromiseQueue,
   PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,
   RealtimeController,
@@ -531,6 +555,7 @@ export {
   RealtimeSubscribeToAttendeeIdPresenceCallback,
   RealtimeVolumeIndicator,
   ReceiveAudioInputTask,
+  ReceiveRemoteVideoPauseResumeTask,
   ReceiveTURNCredentialsTask,
   ReceiveVideoInputTask,
   ReceiveVideoStreamIndexTask,
@@ -544,7 +569,9 @@ export {
   SDPMediaSection,
   Scheduler,
   SendAndReceiveDataMessagesTask,
+  SendingAudioFailureConnectionHealthPolicy,
   SerialGroupTask,
+  ServerSideNetworkAdaption,
   SessionStateController,
   SessionStateControllerAction,
   SessionStateControllerDeferPriority,
@@ -562,6 +589,7 @@ export {
   SignalingClientObserver,
   SignalingClientSubscribe,
   SignalingClientVideoSubscriptionConfiguration,
+  SimulcastContentShareTransceiverController,
   SimulcastLayers,
   SimulcastTransceiverController,
   SimulcastUplinkObserver,
@@ -595,13 +623,19 @@ export {
   Versioning,
   VideoAdaptiveProbePolicy,
   VideoCaptureAndEncodeParameter,
+  VideoCodecCapability,
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
   VideoElementFactory,
+  VideoEncodingParameters,
+  VideoFXEventAttributes,
   VideoFrameBuffer,
   VideoFrameProcessor,
   VideoFrameProcessorPipeline,
   VideoFrameProcessorPipelineObserver,
+  VideoFxBlurStrength,
+  VideoFxConfig,
+  VideoFxProcessor,
   VideoInputDevice,
   VideoLogEvent,
   VideoOnlyTransceiverController,

@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { VideoCodecCapability } from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -20,6 +21,7 @@ import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionSta
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import { Maybe } from '../../src/utils/Types';
 import { wait as delay } from '../../src/utils/Utils';
+import DefaultSimulcastUplinkPolicyForContentShare from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 
@@ -84,7 +86,8 @@ describe('DefaultContentShareController', () => {
       this.audioProfile = audioProfile;
     }
 
-    start(): void {
+    async start(): Promise<void> {
+      await delay(1);
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
       });
@@ -131,11 +134,13 @@ describe('DefaultContentShareController', () => {
   });
 
   describe('content share APIs', () => {
+    let contentShareMeetingSessionConfigure: MeetingSessionConfiguration = undefined;
+
     beforeEach(() => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
       const meetingSessionConfigure = makeSessionConfiguration();
-      const contentShareMeetingSessionConfigure = DefaultContentShareController.createContentShareMeetingSessionConfigure(
+      contentShareMeetingSessionConfigure = DefaultContentShareController.createContentShareMeetingSessionConfigure(
         meetingSessionConfigure
       );
 
@@ -175,6 +180,51 @@ describe('DefaultContentShareController', () => {
       expect(contentShareController.contentAudioVideo.audioProfile).to.equal(audioProfile);
     });
 
+    describe('enableSimulcastForContentShare', () => {
+      it('can be enabled and disabled', () => {
+        contentShareController.enableSimulcastForContentShare(true);
+        expect(
+          contentShareMeetingSessionConfigure.enableSimulcastForUnifiedPlanChromiumBasedBrowsers
+        ).to.be.true;
+        expect(
+          contentShareMeetingSessionConfigure.videoUplinkBandwidthPolicy instanceof
+            DefaultSimulcastUplinkPolicyForContentShare
+        ).to.be.true;
+
+        contentShareController.enableSimulcastForContentShare(false);
+        expect(
+          contentShareMeetingSessionConfigure.enableSimulcastForUnifiedPlanChromiumBasedBrowsers
+        ).to.be.false;
+        expect(contentShareMeetingSessionConfigure.videoUplinkBandwidthPolicy).to.be.undefined;
+      });
+
+      it('can override low and high encoding params', () => {
+        const encodingParams = {
+          low: {
+            maxBitrateKbps: 100,
+            scaleResolutionDownBy: 4,
+            maxFramerate: 3,
+          },
+          high: {
+            maxBitrateKbps: 1000,
+            scaleResolutionDownBy: 2,
+            maxFramerate: 10,
+          },
+        };
+        contentShareController.enableSimulcastForContentShare(true, encodingParams);
+        expect(
+          contentShareMeetingSessionConfigure.enableSimulcastForUnifiedPlanChromiumBasedBrowsers
+        ).to.be.true;
+        expect(
+          contentShareMeetingSessionConfigure.videoUplinkBandwidthPolicy instanceof
+            DefaultSimulcastUplinkPolicyForContentShare
+        ).to.be.true;
+        const policy = contentShareMeetingSessionConfigure.videoUplinkBandwidthPolicy as DefaultSimulcastUplinkPolicyForContentShare;
+        // @ts-ignore
+        expect(policy.encodingParams).to.deep.equal(encodingParams);
+      });
+    });
+
     it('startContentShare with video track', async () => {
       // @ts-ignore
       mediaStream.addTrack(new MediaStreamTrack('video-track-id', 'video'));
@@ -190,9 +240,9 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
-      expect(videoTileSpy.calledOnce).to.be.true;
       await delay(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(videoTileSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.calledOnce).to.be.true;
     });
 
@@ -211,6 +261,28 @@ describe('DefaultContentShareController', () => {
       expect(audioVideoSpy.calledOnce).to.be.true;
       expect(videoTileSpy.notCalled).to.be.true;
       await delay(defaultDelay);
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(selfVideoTileSpy.notCalled).to.be.true;
+    });
+
+    it('startContentShare does not error out if media stream is deleted', async () => {
+      // @ts-ignore
+      mediaStream.addTrack(new MediaStreamTrack('video-track-id', 'video'));
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
+      const videoTileSpy = sinon.spy(
+        contentAudioVideoController.videoTileController,
+        'startLocalVideoTile'
+      );
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
+      );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
+      contentShareController.startContentShare(mediaStream);
+      contentShareMediaStreamBroker.mediaStream = null;
+      await delay(defaultDelay);
+      expect(audioVideoSpy.calledOnce).to.be.true;
+      expect(videoTileSpy.notCalled).to.be.true;
       expect(contentShareObserverSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.notCalled).to.be.true;
     });
@@ -249,9 +321,9 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
-      expect(videoTileSpy.calledOnce).to.be.true;
       await delay(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(videoTileSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.calledOnce).to.be.true;
       attendeeAudioVideoController.realtimeController.realtimeSetAttendeeIdPresence(
         'foo-attendee#content',
@@ -286,9 +358,9 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
-      expect(videoTileSpy.calledOnce).to.be.true;
       await delay(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(videoTileSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.calledOnce).to.be.true;
     });
 
@@ -356,9 +428,10 @@ describe('DefaultContentShareController', () => {
       const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
       mediaStream.addTrack(mediaVideoTrack);
       await contentShareController.startContentShare(mediaStream);
-      (mediaVideoTrack as StoppableMediaStreamTrack).externalStop();
-      expect(contentShareControllerSpy.calledOnce).to.be.true;
       await delay(defaultDelay);
+      (mediaVideoTrack as StoppableMediaStreamTrack).externalStop();
+      await delay(defaultDelay);
+      expect(contentShareControllerSpy.calledOnce).to.be.true;
       expect(contentShareObserverSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.calledOnce).to.be.true;
     });
@@ -430,6 +503,12 @@ describe('DefaultContentShareController', () => {
       contentShareController.removeContentShareObserver(contentShareObserver);
       await delay(defaultDelay);
       expect(contentShareObserverSpy.notCalled).to.be.true;
+    });
+
+    it('setContentShareVideoCodecPreferences', async () => {
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'setVideoCodecSendPreferences');
+      contentShareController.setContentShareVideoCodecPreferences([VideoCodecCapability.vp8()]);
+      expect(audioVideoSpy.calledOnceWith([VideoCodecCapability.vp8()])).to.be.true;
     });
   });
 });

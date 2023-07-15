@@ -22,12 +22,13 @@ describe('CreateSDPTask', () => {
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
-  const browser: BrowserBehavior = new DefaultBrowserBehavior();
+  let browser: BrowserBehavior;
   let task: Task;
 
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
+    browser = new DefaultBrowserBehavior();
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.transceiverController = new DefaultTransceiverController(context.logger, browser);

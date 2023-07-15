@@ -21,19 +21,13 @@ jobs:
         run: npm install
       - name: NPM run build
         run: npm run build
-      - name: Get npm tag name if needed
+      - name: Get npm tag name
         id: npm_tag
         run: |
-          pre_release_name=$(.github/script/get-pre-release-name.js)
-          echo "Pre release name:" $pre_release_name
-          echo ::set-output name=npm_tag::$pre_release_name
-      - name: Publish to NPM latest
-        if:  steps.npm_tag.outputs.npm_tag == ''
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          npm_publish_tag=$(.github/script/get-npm-tag.js)
+          echo "Received NPM publish tag:" $npm_publish_tag
+          echo ::set-output name=npm_tag::$npm_publish_tag
       - name: Publish to NPM with tag
-        if: steps.npm_tag.outputs.npm_tag != ''
         run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
@@ -43,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        name: [ ChimeProd, ChimeSDKMeetingsProdIAD, ChimeSDKMeetingsProdPDX, ChimeSDKMeetingsProdFRA, ChimeSDKMeetingsProdSIN ]
+        name: [ ChimeProd, ChimeSDKMeetingsProdIAD, ChimeSDKMeetingsProdPDX, ChimeSDKMeetingsProdFRA, ChimeSDKMeetingsProdSIN, ChimeSDKMeetingsIAD_ChimeSDKMediaPipelinesProdIAD, Chime_ChimeSDKMediaPipelinesProdIAD ]
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_DEFAULT_OUTPUT: text

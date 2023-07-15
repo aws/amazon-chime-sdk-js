@@ -4,6 +4,7 @@
 import { loadWorker } from '../../libs/voicefocus/loader';
 import BackgroundFilterOptions from '../backgroundfilter/BackgroundFilterOptions';
 import BackgroundFilterVideoFrameProcessorObserver from '../backgroundfilter/BackgroundFilterVideoFrameProcessorObserver';
+import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import CanvasVideoFrameBuffer from '../videoframeprocessor/CanvasVideoFrameBuffer';
 import VideoFrameBuffer from '../videoframeprocessor/VideoFrameBuffer';
@@ -76,6 +77,7 @@ export default abstract class BackgroundFilterProcessor {
   protected scaledCanvas: HTMLCanvasElement;
   protected frameCounter: BackgroundFilterFrameCounter;
   protected modelInitialized = false;
+  protected eventController?: EventController | undefined;
   private destroyed = false;
 
   protected static createWorkerPromise<T>(): {
@@ -135,7 +137,8 @@ export default abstract class BackgroundFilterProcessor {
     filterType: string,
     spec: BackgroundFilterSpec,
     options: BackgroundFilterOptions,
-    delegate: BackgroundFilterVideoFrameProcessorDelegate
+    delegate: BackgroundFilterVideoFrameProcessorDelegate,
+    eventController?: EventController | undefined
   ) {
     this.filterType = filterType;
     this.validateSpec(spec);
@@ -144,6 +147,7 @@ export default abstract class BackgroundFilterProcessor {
     this.logger = options.logger;
     this.delegate = delegate;
     this.initCPUMonitor(options);
+    this.eventController = eventController;
   }
 
   initCPUMonitor(options: BackgroundFilterOptions): void {

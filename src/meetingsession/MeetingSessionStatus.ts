@@ -117,6 +117,8 @@ export default class MeetingSessionStatus {
         return 'The meeting ended because attendee removed.';
       case MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting:
         return 'The Primary meeting credentials provided are no longer valid. chime::DeleteAttendee may have been called on them.';
+      case MeetingSessionStatusCode.AudioDisconnectAudio:
+        return 'The audio connection failed.';
       /* istanbul ignore next */
       default: {
         // You get a compile-time error if you do not handle any status code.
@@ -149,6 +151,8 @@ export default class MeetingSessionStatus {
         return new MeetingSessionStatus(MeetingSessionStatusCode.OK);
       case 301:
         return new MeetingSessionStatus(MeetingSessionStatusCode.AudioJoinedFromAnotherDevice);
+      case 302:
+        return new MeetingSessionStatus(MeetingSessionStatusCode.AudioDisconnectAudio);
       case 403:
         return new MeetingSessionStatus(MeetingSessionStatusCode.AudioAuthenticationRejected);
       case 409:

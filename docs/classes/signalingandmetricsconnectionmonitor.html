@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="signalingandmetricsconnectionmonitor.html">SignalingAndMetricsConnectionMonitor</a>
@@ -77,9 +76,9 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/connectionmonitor.html" class="tsd-signature-type">ConnectionMonitor</a></li>
-					<li><a href="../interfaces/pingpongobserver.html" class="tsd-signature-type">PingPongObserver</a></li>
-					<li><a href="../interfaces/audiovideoobserver.html" class="tsd-signature-type">AudioVideoObserver</a></li>
+					<li><a href="../interfaces/connectionmonitor.html" class="tsd-signature-type" data-tsd-kind="Interface">ConnectionMonitor</a></li>
+					<li><a href="../interfaces/pingpongobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">PingPongObserver</a></li>
+					<li><a href="../interfaces/audiovideoobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioVideoObserver</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -112,37 +111,34 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>And<wbr>Metrics<wbr>Connection<wbr>Monitor<span class="tsd-signature-symbol">(</span>audioVideoController<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a>, realtimeController<span class="tsd-signature-symbol">: </span><a href="../interfaces/realtimecontroller.html" class="tsd-signature-type">RealtimeController</a>, videoTileController<span class="tsd-signature-symbol">: </span><a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a>, connectionHealthData<span class="tsd-signature-symbol">: </span><a href="connectionhealthdata.html" class="tsd-signature-type">ConnectionHealthData</a>, pingPong<span class="tsd-signature-symbol">: </span><a href="../interfaces/pingpong.html" class="tsd-signature-type">PingPong</a>, statsCollector<span class="tsd-signature-symbol">: </span><a href="statscollector.html" class="tsd-signature-type">StatsCollector</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingandmetricsconnectionmonitor.html" class="tsd-signature-type">SignalingAndMetricsConnectionMonitor</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>And<wbr>Metrics<wbr>Connection<wbr>Monitor<span class="tsd-signature-symbol">(</span>audioVideoController<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioVideoController</a>, realtimeController<span class="tsd-signature-symbol">: </span><a href="../interfaces/realtimecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">RealtimeController</a>, connectionHealthData<span class="tsd-signature-symbol">: </span><a href="connectionhealthdata.html" class="tsd-signature-type" data-tsd-kind="Class">ConnectionHealthData</a>, pingPong<span class="tsd-signature-symbol">: </span><a href="../interfaces/pingpong.html" class="tsd-signature-type" data-tsd-kind="Interface">PingPong</a>, statsCollector<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">default</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingandmetricsconnectionmonitor.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingAndMetricsConnectionMonitor</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L21">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L18">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:18</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>audioVideoController: <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></h5>
+									<h5>audioVideoController: <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioVideoController</a></h5>
 								</li>
 								<li>
-									<h5>realtimeController: <a href="../interfaces/realtimecontroller.html" class="tsd-signature-type">RealtimeController</a></h5>
+									<h5>realtimeController: <a href="../interfaces/realtimecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">RealtimeController</a></h5>
 								</li>
 								<li>
-									<h5>videoTileController: <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a></h5>
+									<h5>connectionHealthData: <a href="connectionhealthdata.html" class="tsd-signature-type" data-tsd-kind="Class">ConnectionHealthData</a></h5>
 								</li>
 								<li>
-									<h5>connectionHealthData: <a href="connectionhealthdata.html" class="tsd-signature-type">ConnectionHealthData</a></h5>
+									<h5>pingPong: <a href="../interfaces/pingpong.html" class="tsd-signature-type" data-tsd-kind="Interface">PingPong</a></h5>
 								</li>
 								<li>
-									<h5>pingPong: <a href="../interfaces/pingpong.html" class="tsd-signature-type">PingPong</a></h5>
-								</li>
-								<li>
-									<h5>statsCollector: <a href="statscollector.html" class="tsd-signature-type">StatsCollector</a></h5>
+									<h5>statsCollector: <span class="tsd-signature-type">default</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="signalingandmetricsconnectionmonitor.html" class="tsd-signature-type">SignalingAndMetricsConnectionMonitor</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="signalingandmetricsconnectionmonitor.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingAndMetricsConnectionMonitor</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -158,10 +154,17 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/pingpongobserver.html">PingPongObserver</a>.<a href="../interfaces/pingpongobserver.html#didmisspongs">didMissPongs</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L72">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L68">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:68</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when one or more pongs are missed in a row. This can be an
+									indication that the underlying connection has failed.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -177,9 +180,15 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/pingpongobserver.html">PingPongObserver</a>.<a href="../interfaces/pingpongobserver.html#didreceivepong">didReceivePong</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L65">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:65</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L61">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:61</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when a pong is received with the measured latency from the ping as
+									well as an estimate of the local clock skew compared to the server clock.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -200,20 +209,25 @@
 					<a name="metricsdidreceive" class="tsd-anchor"></a>
 					<h3>metrics<wbr>Did<wbr>Receive</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">metrics<wbr>Did<wbr>Receive<span class="tsd-signature-symbol">(</span>clientMetricReport<span class="tsd-signature-symbol">: </span><a href="clientmetricreport.html" class="tsd-signature-type">ClientMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">metrics<wbr>Did<wbr>Receive<span class="tsd-signature-symbol">(</span>clientMetricReport<span class="tsd-signature-symbol">: </span><a href="clientmetricreport.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideoobserver.html">AudioVideoObserver</a>.<a href="../interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L79">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L75">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:75</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the media stats are available.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>clientMetricReport: <a href="clientmetricreport.html" class="tsd-signature-type">ClientMetricReport</a></h5>
+									<h5>clientMetricReport: <a href="clientmetricreport.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMetricReport</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -230,7 +244,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L54">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L50">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:50</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -254,9 +268,14 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/connectionmonitor.html">ConnectionMonitor</a>.<a href="../interfaces/connectionmonitor.html#start">start</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L40">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L36">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:36</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Starts the ConnectionMonitor.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -272,9 +291,14 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/connectionmonitor.html">ConnectionMonitor</a>.<a href="../interfaces/connectionmonitor.html#stop">stop</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L47">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts#L43">src/connectionmonitor/SignalingAndMetricsConnectionMonitor.ts:43</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stops the ConnectionMonitor.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -284,8 +308,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>

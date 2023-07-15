@@ -5,12 +5,19 @@ import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControl
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from '../meetingsession/MeetingSessionTURNCredentials';
+import ServerSideNetworkAdaption, {
+  convertServerSideNetworkAdaptionEnumFromSignaled,
+} from '../signalingclient/ServerSideNetworkAdaption';
 import SignalingClient from '../signalingclient/SignalingClient';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientJoin from '../signalingclient/SignalingClientJoin';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
-import { SdkIndexFrame, SdkSignalFrame } from '../signalingprotocol/SignalingProtocol.js';
+import {
+  SdkIndexFrame,
+  SdkServerSideNetworkAdaption,
+  SdkSignalFrame,
+} from '../signalingprotocol/SignalingProtocol.js';
 import TaskCanceler from '../taskcanceler/TaskCanceler';
 import BaseTask from './BaseTask';
 
@@ -75,7 +82,20 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
             }
 
             context.serverSupportsCompression = joinAckFrame?.wantsCompressedSdp;
-
+            if (
+              joinAckFrame?.defaultServerSideNetworkAdaption !== undefined &&
+              joinAckFrame.defaultServerSideNetworkAdaption !== ServerSideNetworkAdaption.Default &&
+              context.videoDownlinkBandwidthPolicy.setServerSideNetworkAdaption !== undefined
+            ) {
+              const defaultServerSideNetworkAdaption: SdkServerSideNetworkAdaption =
+                joinAckFrame.defaultServerSideNetworkAdaption;
+              context.logger.info(
+                `Overriding server side network adaption value to ${defaultServerSideNetworkAdaption}`
+              );
+              context.videoDownlinkBandwidthPolicy.setServerSideNetworkAdaption(
+                convertServerSideNetworkAdaptionEnumFromSignaled(defaultServerSideNetworkAdaption)
+              );
+            }
             if (joinAckFrame && joinAckFrame.turnCredentials) {
               context.turnCredentials = new MeetingSessionTURNCredentials();
               context.turnCredentials.username = joinAckFrame.turnCredentials.username;
@@ -111,9 +131,18 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       this.context.previousSdpOffer = null;
       this.context.serverSupportsCompression = false;
 
-      this.context.signalingClient.join(
-        new SignalingClientJoin(this.context.meetingSessionConfiguration.applicationMetadata)
+      const join = new SignalingClientJoin(
+        this.context.meetingSessionConfiguration.applicationMetadata
       );
+      if (
+        this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption !== undefined &&
+        this.context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions !== undefined
+      ) {
+        join.serverSideNetworkAdaption = this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption();
+        join.supportedServerSideNetworkAdaptions = this.context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions();
+      }
+      join.disablePeriodicKeyframeRequestOnContentSender = this.context.meetingSessionConfiguration.disablePeriodicKeyframeRequestOnContentSender;
+      this.context.signalingClient.join(join);
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);
     // We currently don't bother ingesting this into the same places as `ReceiveVideoStreamIndexTask` as we synchronously attempt a first subscribe

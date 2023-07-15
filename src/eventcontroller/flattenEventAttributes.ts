@@ -3,6 +3,7 @@
 
 import AudioVideoEventAttributes from './AudioVideoEventAttributes';
 import DeviceEventAttributes from './DeviceEventAttributes';
+import VideoFXEventAttributes from './VideoFXEventAttributes';
 
 /**
  *
@@ -12,7 +13,7 @@ import DeviceEventAttributes from './DeviceEventAttributes';
  * as value types within the event attributes if added later.
  */
 const flattenEventAttributes = (
-  attributes: AudioVideoEventAttributes | DeviceEventAttributes
+  attributes: AudioVideoEventAttributes | DeviceEventAttributes | VideoFXEventAttributes
 ): { [key: string]: string | number } => {
   const flattenedAttributes: { [key: string]: string | number } = {};
   for (const [key, value] of Object.entries(attributes)) {

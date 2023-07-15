@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="contentsecurity_policy.html">ContentSecurity_Policy</a>
@@ -76,25 +75,25 @@
 					<p>Modern web applications use <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">Content Security Policy</a> to protect users from certain classes of attacks. You can add a security policy by configuring your web server to return the Content-Security-Policy HTTP header or using a <code>&lt;meta&gt;</code> element to configure a policy. You can add security headers using <a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html">Lambda@Edge</a> and Amazon <a href="https://aws.amazon.com/cloudfront/">CloudFront</a>. For more information, see <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/">Adding HTTP Security Headers Using Lambda@Edge and Amazon CloudFront</a>.</p>
 					<p>Include the following in your policy to allow the Amazon Chime SDK access to the meeting, messaging, and Amazon Voice Focus resources.</p>
 					<p>You can do so via an HTTP header:</p>
-					<pre><code><span class="hljs-attribute">Content-Security-Policy</span>: content=&quot;<span class="hljs-keyword">connect-src</span> <span class="hljs-string">&#x27;self&#x27;</span> https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws; <span class="hljs-keyword">script-src</span> <span class="hljs-string">&#x27;self&#x27;</span> https://*.sdkassets.chime.aws; script-src-elem <span class="hljs-string">&#x27;self&#x27;</span> https://*.sdkassets.chime.aws <span class="hljs-string">&#x27;wasm-unsafe-eval&#x27;</span>; worker-src <span class="hljs-string">&#x27;blob:&#x27;</span>; <span class="hljs-keyword">child-src</span> <span class="hljs-string">&#x27;blob:&#x27;</span>
+					<pre><code><span style="color: #001080">Content</span><span style="color: #000000">-</span><span style="color: #001080">Security</span><span style="color: #000000">-Policy: </span><span style="color: #001080">content</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;connect-src &#039;self&#039; https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws; script-src &#039;self&#039; https://*.sdkassets.chime.aws; script-src-elem &#039;self&#039; https://*.sdkassets.chime.aws &#039;wasm-unsafe-eval&#039;; worker-src &#039;blob:&#039;; child-src &#039;blob:</span><span style="color: #CD3131">&#039;</span>
 </code></pre>
 					<p>a <code>&lt;meta&gt;</code> tag:</p>
-					<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">&quot;Content-Security-Policy&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;connect-src &#x27;self&#x27; https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws; script-src &#x27;self&#x27; https://*.sdkassets.chime.aws &#x27;wasm-eval&#x27; &#x27;wasm-unsafe-eval&#x27; &#x27;unsafe-eval&#x27;; script-src-elem &#x27;self&#x27; https://*.sdkassets.chime.aws; worker-src blob:; child-src blob:&quot;</span>&gt;</span>
+					<pre><code class="language-html"><span style="color: #800000">&lt;meta</span><span style="color: #000000"> </span><span style="color: #FF0000">http-equiv</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;Content-Security-Policy&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">content</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;connect-src &#039;self&#039; https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws; script-src &#039;self&#039; https://*.sdkassets.chime.aws &#039;wasm-eval&#039; &#039;wasm-unsafe-eval&#039; &#039;unsafe-eval&#039;; script-src-elem &#039;self&#039; https://*.sdkassets.chime.aws; worker-src blob:; child-src blob:&quot;</span><span style="color: #800000">&gt;</span>
 </code></pre>
 					<p>or by using a bundling tool like <code>csp-html-webpack-plugin</code> with input like:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">new</span> CspHtmlWebpackPlugin({
-  <span class="hljs-string">&#x27;connect-src&#x27;</span>: <span class="hljs-string">&quot;&#x27;self&#x27; https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws&quot;</span>,
+					<pre><code class="language-javascript"><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">CspHtmlWebpackPlugin</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #A31515">&#039;connect-src&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;&#039;self&#039; https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws&quot;</span><span style="color: #000000">,</span>
 
-  <span class="hljs-comment">// &#x27;wasm-unsafe-eval&#x27; is to allow Amazon Voice Focus to work in Chrome 95+.</span>
-  <span class="hljs-comment">// Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless</span>
-  <span class="hljs-comment">// &#x27;unsafe-eval&#x27; is also present.</span>
-  <span class="hljs-string">&#x27;script-src&#x27;</span>: <span class="hljs-string">&quot;&#x27;self&#x27; https://*.sdkassets.chime.aws &#x27;wasm-eval&#x27; &#x27;wasm-unsafe-eval&#x27; &#x27;unsafe-eval&#x27;&quot;</span>,
+<span style="color: #000000">  </span><span style="color: #008000">// &#039;wasm-unsafe-eval&#039; is to allow Amazon Voice Focus to work in Chrome 95+.</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless</span>
+<span style="color: #000000">  </span><span style="color: #008000">// &#039;unsafe-eval&#039; is also present.</span>
+<span style="color: #000000">  </span><span style="color: #A31515">&#039;script-src&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;&#039;self&#039; https://*.sdkassets.chime.aws &#039;wasm-eval&#039; &#039;wasm-unsafe-eval&#039; &#039;unsafe-eval&#039;&quot;</span><span style="color: #000000">,</span>
 
-  <span class="hljs-comment">// Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.</span>
-  <span class="hljs-string">&#x27;script-src-elem&#x27;</span>: <span class="hljs-string">&quot;&#x27;self&#x27; https://*.sdkassets.chime.aws &#x27;unsafe-inline&#x27;&quot;</span>,
-  <span class="hljs-string">&#x27;worker-src&#x27;</span>: <span class="hljs-string">&quot;blob:&quot;</span>,
-  <span class="hljs-string">&#x27;child-src&#x27;</span>: <span class="hljs-string">&quot;blob:&quot;</span>,
-}),
+<span style="color: #000000">  </span><span style="color: #008000">// Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.</span>
+<span style="color: #000000">  </span><span style="color: #A31515">&#039;script-src-elem&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;&#039;self&#039; https://*.sdkassets.chime.aws &#039;unsafe-inline&#039;&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #A31515">&#039;worker-src&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;blob:&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #A31515">&#039;child-src&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;blob:&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">}),</span>
 </code></pre>
 					<p><code>csp-html-webpack-plugin</code> will automatically generate hashes and nonces for your inline script and style tags.</p>
 					<p>Note that <code>script-src-elem</code> is not supported in Safari and Firefox. <code>worker-src</code> is not supported in Safari.</p>
@@ -103,25 +102,25 @@
 						<h2>Meeting</h2>
 					</a>
 					<p>If you use audio, video, or screen sharing in your application by creating a <a href="https://github.com/aws/amazon-chime-sdk-js#meeting-session">meeting session</a>, ensure that your policy includes the following:</p>
-					<pre><code>connect-src: *<span class="hljs-string">.chime.aws</span> wss:<span class="hljs-string">//</span>*<span class="hljs-string">.chime.aws</span>
+					<pre><code><span style="color: #001080">connect</span><span style="color: #000000">-src: *.</span><span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #001080">aws</span><span style="color: #000000"> wss:</span><span style="color: #008000">//*.chime.aws</span>
 </code></pre>
 					<a href="#messaging" id="messaging" style="color: inherit; text-decoration: none;">
 						<h2>Messaging</h2>
 					</a>
 					<p>If you use the <a href="https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html">Amazon Chime SDK messaging</a> with <a href="https://aws.amazon.com/cognito/">Amazon Cognito</a>, ensure that you add the following:</p>
-					<pre><code><span class="hljs-built_in">connect</span>-src: *.amazonaws.com
+					<pre><code><span style="color: #001080">connect</span><span style="color: #000000">-src: *.</span><span style="color: #001080">amazonaws</span><span style="color: #000000">.</span><span style="color: #001080">com</span>
 </code></pre>
 					<a href="#logging" id="logging" style="color: inherit; text-decoration: none;">
 						<h2>Logging</h2>
 					</a>
 					<p>The Amazon Chime SDK for JavaScript listens to the browser&#39;s <a href="https://developer.mozilla.org/en-US/docs/Web/API/SecurityPolicyViolationEvent">security policy violation event</a> and logs URIs that were blocked by the browser when joining meetings, creating audio and video devices, or establishing messaging sessions. The Amazon Chime SDK for JavaScript outputs &quot;Security Policy Violation&quot; error messages to the web console if you enable the console logger. The security policy violation event is an experimental technology and it is only supported in several major browsers. See <a href="https://developer.mozilla.org/en-US/docs/Web/API/SecurityPolicyViolationEvent#browser_compatibility">browser compatibility</a> for more information before using this in production.</p>
 					<p>If you want to disable the error for security policy violation events, you can do the following in your application:</p>
-					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { CSPMonitor } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+					<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">CSPMonitor</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
-CSPMonitor.disable();
+<span style="color: #001080">CSPMonitor</span><span style="color: #000000">.</span><span style="color: #795E26">disable</span><span style="color: #000000">();</span>
 
-<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(...);
-meetingSession.audioVideo.start()
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMeetingSession</span><span style="color: #000000">(...);</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">start</span><span style="color: #000000">()</span>
 </code></pre>
 					<a href="#amazon-voice-focus" id="amazon-voice-focus" style="color: inherit; text-decoration: none;">
 						<h2>Amazon Voice Focus</h2>
@@ -134,8 +133,71 @@ meetingSession.audioVideo.start()
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_videofx_processor.html">Background<wbr>Filter_<wbr><wbr>VideoFX_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="buildersjourney.html">Builders<wbr>Journey</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>

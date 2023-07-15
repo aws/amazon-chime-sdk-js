@@ -1163,6 +1163,50 @@ describe('DefaultVideoStreamIndex', () => {
     });
   });
 
+  describe('groupIdForSSRC', () => {
+    it('returns correct stream id', () => {
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 1,
+              groupId: 1,
+              maxBitrateKbps: 100,
+              attendeeId: '688c',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 2,
+              maxBitrateKbps: 200,
+              attendeeId: '4d82',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 4,
+              groupId: 399,
+              maxBitrateKbps: 800,
+              attendeeId: 'a0ff',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      expect(index.groupIdForSSRC(12345)).to.be.undefined;
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [
+            new SdkTrackMapping({ streamId: 1, trackLabel: 'b18b9db2', ssrc: 0xdeadbeef }),
+            new SdkTrackMapping({ streamId: 4, trackLabel: '85e9', ssrc: 0xdeadc0de }),
+            new SdkTrackMapping({ streamId: 2, trackLabel: '9318', ssrc: 0xdead10cc }),
+          ],
+        })
+      );
+      expect(index.groupIdForSSRC(0xdeadbeef)).to.equal(1);
+      expect(index.groupIdForSSRC(0xdead10cc)).to.equal(2);
+    });
+  });
+
   describe('streamIdForTrack', () => {
     it('returns correct stream id', () => {
       expect(index.streamIdForSSRC(12345)).to.be.undefined;
@@ -1359,6 +1403,10 @@ describe('DefaultVideoStreamIndex', () => {
   });
 
   describe('groupIdForStreamId', () => {
+    it('returns undefined if sources are not set', () => {
+      expect(index.groupIdForStreamId(6)).to.equal(undefined);
+    });
+
     it('returns correct groupId if exists', () => {
       const indexFrame = new SdkIndexFrame({
         sources: [
@@ -1465,6 +1513,45 @@ describe('DefaultVideoStreamIndex', () => {
       });
       index.integrateIndexFrame(indexFrame);
       expect(index.StreamIdsInSameGroup(3, 4)).to.equal(true);
+    });
+  });
+
+  describe('attendeeIdForGroupId', () => {
+    it('returns undefined if sources are not set', () => {
+      index.integrateIndexFrame(undefined);
+      expect(index.attendeeIdForGroupId(6)).to.equal('');
+    });
+
+    it('returns correct attendee if exists and returns empty string if not', () => {
+      const indexFrame = new SdkIndexFrame({
+        sources: [
+          new SdkStreamDescriptor({
+            streamId: 1,
+            groupId: 1,
+            maxBitrateKbps: 1400,
+            avgBitrateBps: 1111 * 1000,
+            attendeeId: '688c',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 2,
+            groupId: 1,
+            maxBitrateKbps: 200,
+            attendeeId: '4d82',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 4,
+            groupId: 5,
+            maxBitrateKbps: 800,
+            attendeeId: 'a0ff',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+        ],
+      });
+      index.integrateIndexFrame(indexFrame);
+      expect(index.attendeeIdForGroupId(1)).to.equal('4d82');
+      expect(index.attendeeIdForGroupId(6)).to.equal('');
     });
   });
 });

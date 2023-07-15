@@ -7,6 +7,7 @@ import DefaultDevicePixelRatioMonitor from '../devicepixelratiomonitor/DefaultDe
 import DevicePixelRatioWindowSource from '../devicepixelratiosource/DevicePixelRatioWindowSource';
 import Logger from '../logger/Logger';
 import { Maybe } from '../utils/Types';
+import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
 import VideoTileFactory from '../videotilefactory/VideoTileFactory';
@@ -56,8 +57,19 @@ export default class DefaultVideoTileController implements VideoTileController {
     tile.bindVideoElement(videoElement);
   }
 
-  unbindVideoElement(tileId: number): void {
-    this.bindVideoElement(tileId, null);
+  unbindVideoElement(tileId: number, cleanUpVideoElement: boolean = true): void {
+    const tile = this.getVideoTile(tileId);
+    if (tile === null) {
+      this.logger.warn(`Ignoring video element unbinding for unknown tile id ${tileId}`);
+      return;
+    }
+    this.logger.info('Unbinding the video element');
+    const videoElement = tile.stateRef().boundVideoElement;
+    tile.bindVideoElement(null);
+    if (cleanUpVideoElement) {
+      this.logger.info('Cleaning up the video element');
+      DefaultVideoTile.disconnectVideoStreamFromVideoElement(videoElement, false);
+    }
   }
 
   startLocalVideoTile(): number {

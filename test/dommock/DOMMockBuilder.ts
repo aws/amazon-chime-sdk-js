@@ -605,8 +605,8 @@ export default class DOMMockBuilder {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
     const SAFARI12_USERAGENT =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15';
-    const SAFARI11_USERAGENT =
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Safari/605.1.15';
+    const SAFARI15_USERAGENT =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.5 Safari/605.1.15';
     const IOS_SAFARI12_0_USERAGENT =
       'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1';
     const IOS_SAFARI12_1_USERAGENT =
@@ -621,13 +621,14 @@ export default class DOMMockBuilder {
     USER_AGENTS.set('firefox', FIREFOX_USERAGENT);
     USER_AGENTS.set('safari', SAFARI_USERAGENT);
     USER_AGENTS.set('safari12', SAFARI12_USERAGENT);
-    USER_AGENTS.set('safari11', SAFARI11_USERAGENT);
+    USER_AGENTS.set('safari15', SAFARI15_USERAGENT);
     USER_AGENTS.set('ios12.0', IOS_SAFARI12_0_USERAGENT);
     USER_AGENTS.set('ios12.1', IOS_SAFARI12_1_USERAGENT);
     USER_AGENTS.set('ios15.1', IOS_SAFARI15_1_USERAGENT);
     USER_AGENTS.set('samsung', SAMSUNG_INTERNET_USERAGENT);
 
     GlobalAny.navigator = {
+      product: mockBehavior.navigatorProduct,
       mediaDevices: mockBehavior.mediaDevicesSupported ? new mediaDevicesMaker() : undefined,
       userAgent: USER_AGENTS.get(mockBehavior.browserName),
       sendBeacon(
@@ -858,19 +859,24 @@ export default class DOMMockBuilder {
       }
 
       getStats(): Promise<RawMetricReport[]> {
-        const reports = [
-          {
-            names: (): string[] => ['stat1'],
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            stat: (_name: string): any => 'stat1-value',
-            id: 'RTCInboundRTPAudioStream',
-            ssrc: 1,
-            timestamp: 1,
-            type: 'inbound-rtp',
-            kind: 'video',
-            ...mockBehavior.rtcPeerConnectionGetStatsReport,
-          },
-        ];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const reports: { [name: string]: any }[] = [{}];
+        mockBehavior.rtcPeerConnectionGetStatsReports.forEach(
+          (rtcPeerConnectionGetStatsReport, index) => {
+            reports.push({
+              names: (): string[] => ['stat' + index],
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              stat: (_name: string): any => 'stat' + index + '-value',
+              id: 'RTCInboundRTPAudioStream',
+              ssrc: 1,
+              timestamp: 1,
+              type: 'inbound-rtp',
+              kind: 'video',
+              ...rtcPeerConnectionGetStatsReport,
+            });
+          }
+        );
+
         const error = new Error('Failed to getStats()');
 
         return new Promise((resolve, reject) => {
@@ -987,6 +993,10 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.Response = class Response {
+      async blob(): Promise<DOMBlobMock> {
+        return new DOMBlobMock();
+      }
+
       // eslint-disable-next-line
       json(): Promise<any> {
         return mockBehavior.FakeTURNCredentialsBody;
@@ -1056,26 +1066,37 @@ export default class DOMMockBuilder {
       delete GlobalAny.HTMLAudioElement.prototype.setSinkId;
     }
 
-    GlobalAny.document = {
-      createElement(_tagName: string): HTMLElement {
-        switch (_tagName) {
-          case 'video': {
-            return new GlobalAny.HTMLVideoElement();
+    if (mockBehavior.undefinedDocument) {
+      GlobalAny.document = undefined;
+    } else {
+      GlobalAny.document = {
+        createElement(_tagName: string): HTMLElement {
+          switch (_tagName) {
+            case 'video': {
+              return new GlobalAny.HTMLVideoElement();
+            }
+            case 'canvas': {
+              return new GlobalAny.HTMLCanvasElement();
+            }
+            case 'script': {
+              return new GlobalAny.HTMLScriptElement();
+            }
           }
-          case 'canvas': {
-            return new GlobalAny.HTMLCanvasElement();
-          }
-        }
-      },
-      visibilityState: mockBehavior.documentVisibilityState,
-    };
+        },
+        visibilityState: mockBehavior.documentVisibilityState,
+      };
+    }
 
     GlobalAny.ImageData = class MockImageData {
       constructor(public data: Uint8ClampedArray, public width: number, public height: number) {}
     };
 
     GlobalAny.Image = class MockImage {
-      constructor(public width: number, public height: number) {
+      private listeners: { [type: string]: MockListener[] } = {};
+      onload(): void {}
+      onerror(): void {}
+
+      constructor(public width?: number, public height?: number) {
         asyncWait(() => {
           if (this.listeners.hasOwnProperty('load')) {
             this.listeners.load.forEach((listener: MockListener) =>
@@ -1086,8 +1107,15 @@ export default class DOMMockBuilder {
             );
           }
         });
+
+        setTimeout(() => {
+          if (mockBehavior.imageLoads) {
+            this.onload(); // simulate success
+          } else {
+            this.onerror();
+          }
+        }, 5);
       }
-      private listeners: { [type: string]: MockListener[] } = {};
 
       addEventListener(type: string, listener: MockListener): void {
         if (!this.listeners.hasOwnProperty(type)) {
@@ -1327,6 +1355,10 @@ export default class DOMMockBuilder {
       videoHeight: number;
       videoWidth: number;
       private listeners: { [type: string]: MockListener[] } = {};
+      style: { [key: string]: string } = {
+        transform: '',
+      };
+      paused: boolean;
 
       private clearAttribute(): void {
         this.videoHeight = 0;
@@ -1353,11 +1385,18 @@ export default class DOMMockBuilder {
         this.listeners[type].push(listener);
       }
 
-      pause(): void {}
+      pause(): void {
+        this.paused = true;
+      }
 
       play(): Promise<void> {
+        this.paused = false;
         if (mockBehavior.videoElementShouldFail) {
-          return Promise.reject();
+          if (['ios15.1', 'safari15'].includes(mockBehavior.browserName)) {
+            return Promise.reject(new MockError('AbortError', 'The operation was aborted'));
+          } else {
+            return Promise.reject();
+          }
         }
         if (this.refSrcObject) {
           new TimeoutScheduler(mockBehavior.videoElementStartPlayDelay).start(() => {
@@ -1411,33 +1450,141 @@ export default class DOMMockBuilder {
       }
     };
 
+    GlobalAny.HTMLScriptElement = class MockHTMLScriptElement {
+      parentNode: Node;
+      constructor() {
+        if (mockBehavior.scriptHasParent) {
+          this.parentNode = new Node();
+        }
+      }
+      setAttribute(_attribute: string, _value: string): void {}
+      addEventListener(type: string, listener: () => void): void {
+        if (type === 'load' && mockBehavior.scriptHasLoaded) {
+          listener();
+        } else if (type === 'error' && !mockBehavior.scriptHasLoaded) {
+          listener();
+        }
+      }
+    };
+
+    GlobalAny.Node = class MockNode {
+      removeChild(_child: HTMLElement): void {}
+    };
+
     GlobalAny.HTMLCanvasElement = class MockHTMLCanvasElement {
-      getContext(_contextId: string): CanvasRenderingContext2D {
-        const context = {
-          drawImage(
-            _image: CanvasImageSource,
-            _dx: number,
-            _dy: number,
-            _dw: number,
-            _dh: number
-          ): void {},
-          getImageData(_sx: number, _sy: number, sw: number, sh: number): ImageData {
-            // @ts-ignore
-            return {
-              width: sw,
-              height: sh,
-              data: new Uint8ClampedArray(),
-            };
-          },
-          fillRect(_x: number, _y: number, _w: number, _h: number): void {},
-          save(): void {},
-          scale(): void {},
-          restore(): void {},
-          putImageData(): void {},
-          clearRect(): void {},
-        };
-        // @ts-ignore
-        return context;
+      getContext(_contextId: string): CanvasRenderingContext2D | WebGL2RenderingContext {
+        if (_contextId === '2d') {
+          const context = {
+            drawImage(
+              _image: CanvasImageSource,
+              _dx: number,
+              _dy: number,
+              _dw: number,
+              _dh: number
+            ): void {},
+            getImageData(_sx: number, _sy: number, sw: number, sh: number): ImageData {
+              // @ts-ignore
+              return {
+                width: sw,
+                height: sh,
+                data: new Uint8ClampedArray(),
+              };
+            },
+            fillRect(_x: number, _y: number, _w: number, _h: number): void {},
+            save(): void {},
+            scale(): void {},
+            restore(): void {},
+            putImageData(): void {},
+            clearRect(): void {},
+          };
+          // @ts-ignore
+          return context;
+        } else {
+          const context = {
+            canvas: new HTMLCanvasElement(),
+            createTexture(): WebGLTexture {
+              return new WebGLTexture();
+            },
+            createShader(_type: number): WebGLShader {
+              return new WebGLShader();
+            },
+            bindTexture(_target: number, _texture: WebGLTexture): void {},
+            texParameteri(_target: number, _pname: number, _param: number): void {},
+            clearColor(_red: number, _green: number, _blue: number, _alpha: number): void {},
+            viewport(_x: number, _y: number, _width: number, _height: number): void {},
+            clear(_mask: number): void {},
+            createVertexArray(): WebGLVertexArrayObject {
+              return new WebGLVertexArrayObject();
+            },
+            bindVertexArray(_array: WebGLVertexArrayObject): void {},
+            createBuffer(): WebGLBuffer {
+              return new WebGLBuffer();
+            },
+            bindBuffer(_target: number, _buffer: WebGLBuffer): void {},
+            bufferData(_target: number, _srcData: BufferSource, _usage: number): void {},
+            useProgram(_program: WebGLProgram): void {},
+            uniform1i(_location: WebGLUniformLocation, _x: number): void {},
+            activeTexture(_texture: number): void {},
+            bindFramebuffer(_target: number, _framebuffer: WebGLFramebuffer): void {},
+            drawArrays(_mode: number, _first: number, _count: number): void {},
+            getUniformLocation(_program: WebGLProgram, _name: string): WebGLUniformLocation {
+              return new WebGLUniformLocation();
+            },
+            uniform2f(_location: WebGLUniformLocation, _x: number, _y: number): void {},
+            shaderSource(_shader: WebGLShader, _source: string): void {},
+            compileShader(_shader: WebGLShader): void {},
+            getShaderParameter(_shader: WebGLShader, _pname: number): boolean {
+              return true;
+            },
+            createFramebuffer(): WebGLFramebuffer {
+              return new WebGLFramebuffer();
+            },
+            texImage2D(
+              _target: number,
+              _level: number,
+              _internalformat: number,
+              _width: number,
+              _height: number,
+              _border: number,
+              _format: number,
+              _type: number,
+              _pixels: ArrayBufferView
+            ): void {},
+            framebufferTexture2D(
+              _target: number,
+              _attachment: number,
+              _textarget: number,
+              _texture: WebGLTexture,
+              _level: number
+            ): void {},
+            createProgram(
+              _gl: WebGL2RenderingContext,
+              _vertexShader: WebGLShader,
+              _fragmentShader: WebGLShader
+            ): WebGLProgram {
+              return new WebGLProgram();
+            },
+            attachShader(_program: WebGLProgram, _shader: WebGLShader): void {},
+            linkProgram(_program: WebGLProgram): void {},
+            getProgramParameter(_program: WebGLProgram, _pname: number): boolean {
+              return true;
+            },
+            getAttribLocation(_program: WebGLProgram, _name: string): number {
+              return 1;
+            },
+            enableVertexAttribArray(_index: number): void {},
+            vertexAttribPointer(
+              _index: number,
+              _size: number,
+              _type: number,
+              _normalized: boolean,
+              _stride: number,
+              _offset: number
+            ): void {},
+          };
+          // @ts-ignore
+          return context;
+        }
       }
 
       captureStream(_frameRate: number): MediaStream {
@@ -1451,6 +1598,16 @@ export default class DOMMockBuilder {
       remove(): void {}
     };
 
+    GlobalAny.WebGLVertexArrayObject = class MockWebGLVertexArrayObject {};
+    GlobalAny.WebGLBuffer = class MockWebGLBuffer {};
+    GlobalAny.WebGLTexture = class MockWebGLTexture {};
+    GlobalAny.WebGLShader = class MockWebGLShader {};
+    GlobalAny.WebGLFramebuffer = class MockWebGLFramebuffer {};
+    GlobalAny.WebGLProgram = class MockWebGLProgram {};
+    GlobalAny.WebGLUniformLocation = class MockWebGLUniformLocation {};
+    GlobalAny.HTMLImageElement = class MockImageElement {
+      constructor(public width: number, public height: number) {}
+    };
     GlobalAny.performance = Date;
   }
 

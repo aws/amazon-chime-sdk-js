@@ -4,11 +4,15 @@
 import AudioVideoEventAttributes from './AudioVideoEventAttributes';
 import DeviceEventAttributes from './DeviceEventAttributes';
 import MeetingHistoryState from './MeetingHistoryState';
+import VideoFXEventAttributes from './VideoFXEventAttributes';
 
 /**
  * [[EventAttributes]] describes the event.
  */
-export default interface EventAttributes extends AudioVideoEventAttributes, DeviceEventAttributes {
+export default interface EventAttributes
+  extends VideoFXEventAttributes,
+    AudioVideoEventAttributes,
+    DeviceEventAttributes {
   attendeeId?: string;
   browserMajorVersion?: string;
   browserName?: string;

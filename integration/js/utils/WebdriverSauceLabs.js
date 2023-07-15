@@ -4,6 +4,7 @@ const axios = require('axios');
 const Base64 = require('js-base64').Base64;
 const { AppPage, MeetingReadinessCheckerPage, MessagingSessionPage, TestAppPage } = require('../pages');
 
+const SAUCE_LAB_DOMAIN = 'us-west-1.saucelabs.com';
 const getPlatformName = capabilities => {
   const { browserName, version, platform } = capabilities;
   switch (platform) {
@@ -15,7 +16,7 @@ const getPlatformName = capabilities => {
     case 'WINDOWS':
       return 'Windows 10';
     case 'LINUX':
-      return 'Linux';
+      return 'Linux Beta';
     case 'IOS':
       return 'iOS';
     case 'ANDROID':
@@ -83,6 +84,26 @@ const getChromeOptions = capabilities => {
       chromeOptions['args'].push('--use-file-for-fake-audio-capture=' + fetchMediaPath(capabilities.audio, capabilities.browserName));
     }
   }
+
+  /**
+   * Recently, SauceLabs loads the web page in test and runs into "Your connection is not private" error.
+   * Content share test is also failing with WebSocket connection failed issues which SauceLabs says may
+   * be related.
+   *
+   * Per SauceLabs suggestion add '--ignore-certificate-errors' to all tests and
+   * few explicit ones for content share test as most errors are on MAC platform.
+   */
+  chromeOptions.args.push('--ignore-certificate-errors');
+  if (capabilities.platform.toUpperCase() === 'MAC' && capabilities.name.includes('ContentShare')) {
+    const args = [
+      "start-maximized",
+      "disable-infobars",
+      "ignore-gpu-blacklist",
+      "test-type",
+      "disable-gpu"
+    ];
+    chromeOptions.args = [...chromeOptions.args, ...args];
+  }
   return chromeOptions;
 }
 
@@ -104,8 +125,9 @@ const getPrerunScript = (capabilities) =>{
   const name = capabilities.name;
   const blurName = "Background Blur Test";
   const repName = "Background Replacement Test";
-  return (name.includes(blurName) || name.includes(repName)) ?  'storage:f196801d-998f-4ef2-bc2b-059b8521f345' : "";
+  return (name.includes(blurName) || name.includes(repName)) ?  process.env.PRE_RUN_SCRIPT_URL : "";
 }
+
 const getChromeCapabilities = capabilities => {
   let cap = Capabilities.chrome();
   var prefs = new logging.Preferences();
@@ -128,6 +150,9 @@ const getSauceLabsConfig = (capabilities) => {
     name: capabilities.name,
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
+    ...(!((capabilities.name).includes('ContentShare')) && {
+      screenResolution: '1280x960',
+    }),
     tunnelIdentifier: process.env.JOB_ID,
     ...((capabilities.platform.toUpperCase() !== 'LINUX' &&
       !((capabilities.name).includes('ContentShare'))) && {
@@ -135,14 +160,6 @@ const getSauceLabsConfig = (capabilities) => {
       }),
       prerun : prerunScript
   }
-};
-
-const getSauceLabsDomain = (platform)  => {
-  const platformUpperCase = platform.toUpperCase();
-  if (platformUpperCase === 'LINUX') {
-    return 'us-east-1.saucelabs.com';
-  }
-  return 'us-west-1.saucelabs.com';
 };
 
 const getSafariIOSConfig = (capabilities) => {
@@ -197,7 +214,7 @@ class SaucelabsSession {
         cap = getSafariCapabilities(capabilities);
       }
     }
-    const domain = getSauceLabsDomain(capabilities.platform);
+    const domain = SAUCE_LAB_DOMAIN;
     const driver = await new Builder()
       .usingServer(getSauceLabsUrl(domain))
       .withCapabilities(cap)
@@ -211,7 +228,7 @@ class SaucelabsSession {
     if (timeouts.script == undefined || timeouts.script < defaultTimeout) {
       await driver.manage().setTimeouts({script: defaultTimeout})
     }
-    
+
     return new SaucelabsSession(driver, domain, appName);
   }
   constructor(inDriver, domain, appName) {
@@ -286,8 +303,8 @@ class SaucelabsSession {
       }
     }
   }
-  
- 
+
+
   async updateTestResults(passed) {
     const sessionId = await this.getSessionId();
     console.log(`Publishing test results to saucelabs for session: ${sessionId} status: ${passed ? 'passed' : 'failed'}`);

@@ -15,8 +15,6 @@ import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import StatsCollector from '../../src/statscollector/StatsCollector';
 import { Maybe } from '../../src/utils/Types';
-import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
-import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 // eslint-disable-next-line
@@ -26,7 +24,6 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   let domMockBuilder: DOMMockBuilder;
   let audioVideoController: NoOpAudioVideoController;
   let realTimeController: DefaultRealtimeController;
-  let videoTileController: DefaultVideoTileController;
   let connectionHealthData: ConnectionHealthData;
   let pingPongStartCalled: boolean;
   let consecutiveMissedPongsCalled: boolean;
@@ -35,6 +32,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   let setLastNoSignalTimestampMsCalled: boolean;
   let setLastWeakSignalTimestampMsCalled: boolean;
   let setLastGoodSignalTimestampMsCalled: boolean;
+  let consecutiveStatsWithNoAudioPacketsSentCalled: boolean;
   let signalStrengthCallback: (signalStrength: number) => void;
 
   class TestAudioVideoController extends NoOpAudioVideoController {
@@ -82,6 +80,10 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     setLastGoodSignalTimestampMs(_timeStamp: number): void {
       setLastGoodSignalTimestampMsCalled = true;
     }
+    setConsecutiveStatsWithNoAudioPacketsSent(_stats: number): void {
+      consecutiveStatsWithNoAudioPacketsSentCalled = true;
+      super.setConsecutiveStatsWithNoAudioPacketsSent(_stats);
+    }
   }
 
   class TestPingPong implements PingPong {
@@ -110,6 +112,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     videoDownstreamFramesDecodedPerSecond: RawMetrics = 100;
     videoDownstreamFrameHeight: RawMetrics = 100;
     videoDownstreamFrameWidth: RawMetrics = 100;
+    audioPacketsSent: RawMetrics = 50;
 
     getObservableMetrics(): { [id: string]: number } {
       return {
@@ -119,6 +122,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
         videoUpstreamBitrate: this.videoUpstreamBitrate,
         availableOutgoingBitrate: this.availableOutgoingBitrate,
         availableIncomingBitrate: this.availableIncomingBitrate,
+        audioPacketsSent: this.audioPacketsSent,
       };
     }
 
@@ -134,7 +138,6 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   }
 
   const expect: Chai.ExpectStatic = chai.expect;
-  const assert: Chai.AssertStatic = chai.assert;
   let connectionMonitor: SignalingAndMetricsConnectionMonitor;
   let testClientMetricReport: TestClientMetricReport;
 
@@ -153,19 +156,14 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     setLastNoSignalTimestampMsCalled = false;
     setLastWeakSignalTimestampMsCalled = false;
     setLastGoodSignalTimestampMsCalled = false;
+    consecutiveStatsWithNoAudioPacketsSentCalled = false;
     audioVideoController = new TestAudioVideoController();
     realTimeController = new TestRealtimeController(new NoOpMediaStreamBroker());
-    videoTileController = new DefaultVideoTileController(
-      new DefaultVideoTileFactory(),
-      audioVideoController,
-      new NoOpDebugLogger()
-    );
     connectionHealthData = new TestConnectionHealthData();
 
     connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       audioVideoController,
       realTimeController,
-      videoTileController,
       connectionHealthData,
       new TestPingPong(),
       new StatsCollector(audioVideoController, new NoOpDebugLogger())
@@ -318,115 +316,26 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     expect(setLastGoodSignalTimestampMsCalled).to.equal(false);
   });
 
-  describe('video', () => {
-    it('can notify an observer when sending bandwidth changes', done => {
-      const bandwidth1 = 100;
-      const bandwidth2 = 1000;
+  it('can increment and reset consecutive stats with no audio packets sent', () => {
+    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.fractionLoss = 0;
+    sendClientMetricReport(testClientMetricReport);
+    expect(connectionHealthData.consecutiveStatsWithNoAudioPacketsSent).to.equal(0);
 
-      class TestAudioVideoObserver implements AudioVideoObserver {
-        videoSendBandwidthDidChange(
-          currentSendBandwidthKbps: number,
-          previousSendBandwidthKbps: number
-        ): void {
-          expect(currentSendBandwidthKbps).to.equal(bandwidth2 / 1000);
-          expect(previousSendBandwidthKbps).to.equal(bandwidth1 / 1000);
-          done();
-        }
-      }
+    testClientMetricReport.audioPacketsSent = 0;
+    sendClientMetricReport(testClientMetricReport);
+    expect(connectionHealthData.consecutiveStatsWithNoAudioPacketsSent).to.equal(1);
 
-      audioVideoController.addObserver(new TestAudioVideoObserver());
-      testClientMetricReport.availableOutgoingBitrate = bandwidth1;
-      sendClientMetricReport(testClientMetricReport);
-      testClientMetricReport.availableOutgoingBitrate = bandwidth2;
-      sendClientMetricReport(testClientMetricReport);
-    });
+    testClientMetricReport.audioPacketsSent = 50;
+    sendClientMetricReport(testClientMetricReport);
+    expect(connectionHealthData.consecutiveStatsWithNoAudioPacketsSent).to.equal(0);
+  });
 
-    it('can notify an observer when receiving bandwidth changes', done => {
-      const bandwidth1 = 100;
-      const bandwidth2 = 1000;
-
-      class TestAudioVideoObserver implements AudioVideoObserver {
-        videoReceiveBandwidthDidChange(
-          currentRecvBandwidthKbps: number,
-          previousRecvBandwidthKbps: number
-        ): void {
-          expect(currentRecvBandwidthKbps).to.equal(bandwidth2 / 1000);
-          expect(previousRecvBandwidthKbps).to.equal(bandwidth1 / 1000);
-          done();
-        }
-      }
-
-      audioVideoController.addObserver(new TestAudioVideoObserver());
-      testClientMetricReport.availableIncomingBitrate = bandwidth1;
-      sendClientMetricReport(testClientMetricReport);
-      testClientMetricReport.availableIncomingBitrate = bandwidth2;
-      sendClientMetricReport(testClientMetricReport);
-    });
-
-    it('can notify an observer of the monitor video uplink state', done => {
-      const bitrate = 100;
-      const packets = 1000;
-
-      class TestAudioVideoObserver implements AudioVideoObserver {
-        videoSendHealthDidChange(
-          videoUpstreamBitrateKbps: number,
-          videoUpstreamPacketPerSecond: number
-        ): void {
-          expect(videoUpstreamBitrateKbps).to.equal(bitrate / 1000);
-          expect(videoUpstreamPacketPerSecond).to.equal(packets);
-          done();
-        }
-      }
-
-      videoTileController.startLocalVideoTile();
-      audioVideoController.addObserver(new TestAudioVideoObserver());
-      testClientMetricReport.videoUpstreamBitrate = bitrate;
-      testClientMetricReport.videoPacketSentPerSecond = packets;
-      sendClientMetricReport(testClientMetricReport);
-    });
-
-    it('does not notify an observer if the raw metrics value is not a number', () => {
-      class TestAudioVideoObserver implements AudioVideoObserver {
-        videoSendBandwidthDidChange(
-          _currentSendBandwidthKbps: number,
-          _previousSendBandwidthKbps: number
-        ): void {
-          assert.fail();
-        }
-
-        videoReceiveBandwidthDidChange(
-          _currentRecvBandwidthKbps: number,
-          _previousRecvBandwidthKbps: number
-        ): void {
-          assert.fail();
-        }
-      }
-
-      audioVideoController.addObserver(new TestAudioVideoObserver());
-      testClientMetricReport.availableOutgoingBitrate = 100;
-      testClientMetricReport.availableIncomingBitrate = 1000;
-      sendClientMetricReport(testClientMetricReport);
-      testClientMetricReport.availableOutgoingBitrate = '100';
-      testClientMetricReport.availableIncomingBitrate = '1000';
-      sendClientMetricReport(testClientMetricReport);
-    });
-
-    it('can notify an observer but always sends 0 if the raw video upstream bitrate is not a number', done => {
-      class TestAudioVideoObserver implements AudioVideoObserver {
-        videoSendHealthDidChange(
-          videoUpstreamBitrateKbps: number,
-          _videoUpstreamPacketPerSecond: number
-        ): void {
-          expect(videoUpstreamBitrateKbps).to.equal(0);
-          done();
-        }
-      }
-
-      videoTileController.startLocalVideoTile();
-      audioVideoController.addObserver(new TestAudioVideoObserver());
-      testClientMetricReport.videoUpstreamBitrate = '100';
-      testClientMetricReport.videoPacketSentPerSecond = 1000;
-      sendClientMetricReport(testClientMetricReport);
-    });
+  it('does not set consecutive stats with no audio packets sent when audioPacketsSent is not present', () => {
+    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsSent = undefined;
+    sendClientMetricReport(testClientMetricReport);
+    expect(consecutiveStatsWithNoAudioPacketsSentCalled).to.be.false;
   });
 });

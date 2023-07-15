@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="faqs.html">FAQs</a>
@@ -154,6 +153,66 @@
 					<p>In Firefox, if access to camera or microphone has been granted to the site — either by currently having a video or audio input, or as a result of the user choosing to always allow access — and the profile has not been configured with <code>media.peerconnection.ice.default_address_only</code>, then ICE will gather all interface addresses. If the user has not granted the appropriate permissions, or if that preference has been set, then the ICE stack will limit ICE candidates to a default interface only. The default interface is the one that was used to load the page. This is a privacy mechanism in Firefox to stop sites from de-anonymizing VPN users via WebRTC leakage.</p>
 					<p>If the page itself is loaded via a different network interface than the one that is intended to be used by the Amazon Chime SDK to connect to Amazon Chime media resources, <em>e.g.</em>, in a split-tunneling VPN where browser traffic uses the VPN interface but Amazon Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.</p>
 					<p>Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.</p>
+					<a href="#known-build-issues" id="known-build-issues" style="color: inherit; text-decoration: none;">
+						<h2>Known Build Issues</h2>
+					</a>
+					<a href="#why-is-my-build-failing-after-upgrading-to-amazon-chime-sdk-for-javascript-370" id="why-is-my-build-failing-after-upgrading-to-amazon-chime-sdk-for-javascript-370" style="color: inherit; text-decoration: none;">
+						<h3>Why is my build failing after upgrading to Amazon Chime SDK for JavaScript 3.7.0?</h3>
+					</a>
+					<p>Amazon Chime SDK for JavaScript 3.7.0 included a bug fix to mitigate messaging session reconnection issue. Check <a href="https://github.com/aws/amazon-chime-sdk-js/commit/bce872c353edbb50908c5a0298f8113f1e8dcc82#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519">MessagingSession reconnects with refreshed endpoint and credentials if needed</a> for more information on the fix. We added <code>@aws-sdk/client-chime-sdk-messaging</code> dependency necessary to mitigate the fix. <code>@aws-sdk/client-chime-sdk-messaging</code> pulls in <code>aws-sdk</code> v3 dependency and its dependencies cause the build to fail in all cases.</p>
+					<p>Depending on the bundler you use, certain additional configuration changes may be required to help the build to succeed. This is actually not an issue with Amazon Chime SDK for JavaScript rather an issue on how bundlers do module resolution and what distributions <code>@aws-sdk/client-chime-sdk-messaging</code>&#39;s dependencies provide when bundlers try to resolve the imported modules.</p>
+					<p>As of now, builders have reported issues with rollup, esbuild, Nuxt2 framework and Webpack v4. In the following sections each issue is described separately and suggests certain configuration changes for the build to succeed.</p>
+					<a href="#rollup" id="rollup" style="color: inherit; text-decoration: none;">
+						<h4>Rollup</h4>
+					</a>
+					<p>When a builder makes use of the rollup plugin: <code>rollup-plugin-includepaths</code> they may run into build issues where node modules and their methods are not found. For example, in the following warnings / errors the Node.js built-ins and the <code>createHash</code> method from <code>crypto</code> is not found.</p>
+					<pre><code><span style="color: #000000">(!) </span><span style="color: #001080">Missing</span><span style="color: #000000"> </span><span style="color: #001080">shims</span><span style="color: #000000"> </span><span style="color: #001080">for</span><span style="color: #000000"> </span><span style="color: #001080">Node</span><span style="color: #000000">.</span><span style="color: #001080">js</span><span style="color: #000000"> </span><span style="color: #001080">built</span><span style="color: #000000">-</span><span style="color: #001080">ins</span>
+<span style="color: #001080">Creating</span><span style="color: #000000"> </span><span style="color: #001080">a</span><span style="color: #000000"> </span><span style="color: #001080">browser</span><span style="color: #000000"> </span><span style="color: #001080">bundle</span><span style="color: #000000"> </span><span style="color: #001080">that</span><span style="color: #000000"> </span><span style="color: #001080">depends</span><span style="color: #000000"> </span><span style="color: #001080">on</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;os&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;path&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;url&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;buffer&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;http&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;https&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;stream&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;process&quot;</span><span style="color: #000000"> </span><span style="color: #001080">and</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;util&quot;</span><span style="color: #000000">. </span><span style="color: #001080">You</span><span style="color: #000000"> </span><span style="color: #001080">might</span><span style="color: #000000"> </span><span style="color: #001080">need</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">include</span><span style="color: #000000"> https:</span><span style="color: #008000">//github.com/FredKSchott/rollup-plugin-polyfill-node</span>
+</code></pre>
+					<pre><code><span style="color: #000000">https:</span><span style="color: #008000">//rollupjs.org/guide/en/#error-name-is-not-exported-by-module</span>
+<span style="color: #001080">node_modules</span><span style="color: #000000">/@</span><span style="color: #001080">aws</span><span style="color: #000000">-</span><span style="color: #001080">sdk</span><span style="color: #000000">/</span><span style="color: #001080">shared</span><span style="color: #000000">-</span><span style="color: #001080">ini</span><span style="color: #000000">-</span><span style="color: #001080">file</span><span style="color: #000000">-</span><span style="color: #001080">loader</span><span style="color: #000000">/</span><span style="color: #001080">dist</span><span style="color: #000000">-</span><span style="color: #001080">es</span><span style="color: #000000">/</span><span style="color: #001080">getSSOTokenFilepath</span><span style="color: #000000">.</span><span style="color: #795E26">js</span><span style="color: #000000"> (</span><span style="color: #098658">1</span><span style="color: #000000">:</span><span style="color: #098658">9</span><span style="color: #000000">)</span>
+<span style="color: #098658">1</span><span style="color: #000000">: </span><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">createHash</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;crypto&quot;</span><span style="color: #000000">;</span>
+</code></pre>
+					<p>This node / browser incompatibility issue happens due to bundlers not using the right <code>runtimeConfig</code> defined in AWS JS SDK client&#39;s <code>package.json</code>. Clients in AWS JS SDK have defined a runtime config alias in their <code>package.json</code> like this: <a href="https://github.com/aws/aws-sdk-js-v3/blob/main/clients/client-chime-sdk-messaging/package.json#L91">Chime SDK Messaging client package.json</a>. If your bundler does not follow the <code>runtimeConfig</code> alias, you can get some incompatibility errors.</p>
+					<p>If the builder is using <a href="https://github.com/dot-build/rollup-plugin-includepaths">rollup-plugin-includepaths</a> to use relative paths in their project. It is recommended that you use <a href="https://github.com/rollup/plugins/tree/master/packages/alias">rollup-plugin-alias</a> to define an alias for relative paths.</p>
+					<p>You can find more information about this build error in GitHub issue: <a href="https://github.com/aws/amazon-chime-sdk-js/issues/2455">3.7.0 broke build with Rollup</a>. If you still have questions about rollup alias and plugin settings please reach out to the plugin / rollup author.</p>
+					<a href="#esbuild" id="esbuild" style="color: inherit; text-decoration: none;">
+						<h4>Esbuild</h4>
+					</a>
+					<p>When bundling an application using <code>esbuild</code>, it checks for dependency distributions depending on whether the imported package follows <code>require</code> that is CommonJS or <code>import</code> that is EcmaScript Module (ESM) approach. The dependency package can have its own dependencies which <code>esbuild</code> will try to resolve using the CommonJS or ESM distributions provided by the dependency package. Each package has to provide a link to the distribution path in their <code>package.json</code> using <code>main</code>, <code>module</code> or <code>browser</code> fields. In <code>@aws-sdk/client-chime-sdk-messaging</code> case, the <code>esbuild</code> runs into an issue where it cannot pick the distribution for <code>browser</code> specifially for one of the dependencies, thus, failing to build with below error:</p>
+					<pre><code><span style="color: #A31515">&quot;../node_modules/@aws-sdk/smithy-client&quot;</span>
+<span style="color: #000000">          </span><span style="color: #001080">Attempting</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">load</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;../node_modules/@aws-sdk/smithy-client/dist-es/index.js&quot;</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">a</span><span style="color: #000000"> </span><span style="color: #267F99">file</span>
+<span style="color: #000000">            </span><span style="color: #001080">Checking</span><span style="color: #000000"> </span><span style="color: #001080">for</span><span style="color: #000000"> </span><span style="color: #001080">file</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;index.js&quot;</span>
+<span style="color: #000000">            </span><span style="color: #001080">Found</span><span style="color: #000000"> </span><span style="color: #001080">file</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;index.js&quot;</span>
+<span style="color: #000000">        </span><span style="color: #001080">Found</span><span style="color: #000000"> </span><span style="color: #001080">main</span><span style="color: #000000"> </span><span style="color: #001080">field</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;main&quot;</span><span style="color: #000000"> </span><span style="color: #AF00DB">with</span><span style="color: #000000"> </span><span style="color: #001080">path</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./dist-cjs/index.js&quot;</span>
+<span style="color: #000000">          </span><span style="color: #001080">No</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;browser&quot;</span><span style="color: #000000"> </span><span style="color: #001080">map</span><span style="color: #000000"> </span><span style="color: #001080">found</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #001080">directory</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;../node_modules/@aws-sdk/smithy-client&quot;</span>
+<span style="color: #000000">          </span><span style="color: #001080">Attempting</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">load</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;../node_modules/@aws-sdk/smithy-client/dist-cjs/index.js&quot;</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">a</span><span style="color: #000000"> </span><span style="color: #267F99">file</span>
+<span style="color: #000000">            </span><span style="color: #001080">Checking</span><span style="color: #000000"> </span><span style="color: #001080">for</span><span style="color: #000000"> </span><span style="color: #001080">file</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;index.js&quot;</span>
+<span style="color: #000000">            </span><span style="color: #001080">Found</span><span style="color: #000000"> </span><span style="color: #001080">file</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;index.js&quot;</span>
+<span style="color: #000000">        </span><span style="color: #001080">Resolved</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;../node_modules/@aws-sdk/smithy-client/dist-cjs/index.js&quot;</span><span style="color: #000000"> </span><span style="color: #001080">because</span><span style="color: #000000"> </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;require&quot;</span>
+</code></pre>
+					<p>To resolve this, add <code>--main-fields=browser,module,main</code> when you bundle your application using <code>esbuild</code>. For more information, check <a href="https://github.com/evanw/esbuild/issues/2692">this issue</a> we reported to <code>esbuild</code>.</p>
+					<a href="#using-amazon-chime-sdk-for-javascript-in-nuxt2-framework" id="using-amazon-chime-sdk-for-javascript-in-nuxt2-framework" style="color: inherit; text-decoration: none;">
+						<h4>Using Amazon Chime SDK for JavaScript in Nuxt2 framework</h4>
+					</a>
+					<p>You can use Amazon Chime SDK for JavaScript in Nuxt2 framework. Nuxt2 framework uses Webpack v4 bundler for bundling the application. Webpack v4 has a known issue when bundling applications that use optional chaining operator. This is resolved in Webpack v5, but, Nuxt2 has not upgraded to use Webpack v5.</p>
+					<p>Thus, when bundling a Nuxt2 application which imports Amazon Chime SDK for JavaScript v3.7.0 and above, it runs into below error:</p>
+					<pre><code><span style="color: #0070C1">ERROR</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> .</span><span style="color: #811F3F">/node_modules/</span><span style="color: #000000">@</span><span style="color: #001080">aws</span><span style="color: #000000">-</span><span style="color: #001080">sdk</span><span style="color: #000000">/</span><span style="color: #001080">signature</span><span style="color: #000000">-</span><span style="color: #001080">v4</span><span style="color: #000000">/</span><span style="color: #001080">dist</span><span style="color: #000000">-</span><span style="color: #001080">es</span><span style="color: #000000">/</span><span style="color: #001080">getCanonicalHeaders</span><span style="color: #000000">.</span><span style="color: #001080">js</span><span style="color: #000000"> </span><span style="color: #098658">10</span><span style="color: #000000">:</span><span style="color: #098658">30</span>
+<span style="color: #001080">Module</span><span style="color: #000000"> </span><span style="color: #001080">parse</span><span style="color: #000000"> failed: </span><span style="color: #001080">Unexpected</span><span style="color: #000000"> </span><span style="color: #795E26">token</span><span style="color: #000000"> (</span><span style="color: #098658">10</span><span style="color: #000000">:</span><span style="color: #098658">30</span><span style="color: #000000">)</span>
+<span style="color: #001080">You</span><span style="color: #000000"> </span><span style="color: #001080">may</span><span style="color: #000000"> </span><span style="color: #001080">need</span><span style="color: #000000"> </span><span style="color: #001080">an</span><span style="color: #000000"> </span><span style="color: #001080">appropriate</span><span style="color: #000000"> </span><span style="color: #001080">loader</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">handle</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000"> </span><span style="color: #001080">file</span><span style="color: #000000"> </span><span style="color: #001080">type</span><span style="color: #000000">, </span><span style="color: #001080">currently</span><span style="color: #000000"> </span><span style="color: #001080">no</span><span style="color: #000000"> </span><span style="color: #001080">loaders</span><span style="color: #000000"> </span><span style="color: #001080">are</span><span style="color: #000000"> </span><span style="color: #001080">configured</span><span style="color: #000000"> </span><span style="color: #001080">to</span><span style="color: #000000"> </span><span style="color: #001080">process</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000"> </span><span style="color: #001080">file</span><span style="color: #000000">. </span><span style="color: #001080">See</span><span style="color: #000000"> https:</span><span style="color: #008000">//webpack.js.org/concepts#loaders</span>
+<span style="color: #000000">|         </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">canonicalHeaderName</span><span style="color: #000000"> = </span><span style="color: #001080">headerName</span><span style="color: #000000">.</span><span style="color: #795E26">toLowerCase</span><span style="color: #000000">();</span>
+<span style="color: #000000">|         </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">canonicalHeaderName</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #0070C1">ALWAYS_UNSIGNABLE_HEADERS</span><span style="color: #000000"> ||</span>
+<span style="color: #000000">&gt;             </span><span style="color: #001080">unsignableHeaders</span><span style="color: #000000">?.</span><span style="color: #795E26">has</span><span style="color: #000000">(</span><span style="color: #001080">canonicalHeaderName</span><span style="color: #000000">) ||</span>
+<span style="color: #000000">|             </span><span style="color: #0070C1">PROXY_HEADER_PATTERN</span><span style="color: #000000">.</span><span style="color: #795E26">test</span><span style="color: #000000">(</span><span style="color: #001080">canonicalHeaderName</span><span style="color: #000000">) ||</span>
+<span style="color: #000000">|             </span><span style="color: #0070C1">SEC_HEADER_PATTERN</span><span style="color: #000000">.</span><span style="color: #795E26">test</span><span style="color: #000000">(</span><span style="color: #001080">canonicalHeaderName</span><span style="color: #000000">)) {</span>
+<span style="color: #000000"> @ .</span><span style="color: #811F3F">/node_modules/</span><span style="color: #000000">@</span><span style="color: #001080">aws</span><span style="color: #000000">-</span><span style="color: #001080">sdk</span><span style="color: #000000">/</span><span style="color: #001080">signature</span><span style="color: #000000">-</span><span style="color: #001080">v4</span><span style="color: #000000">/</span><span style="color: #001080">dist</span><span style="color: #000000">-</span><span style="color: #001080">es</span><span style="color: #000000">/</span><span style="color: #001080">index</span><span style="color: #000000">.</span><span style="color: #001080">js</span><span style="color: #000000"> </span><span style="color: #098658">2</span><span style="color: #000000">:</span><span style="color: #098658">0</span><span style="color: #000000">-</span><span style="color: #098658">60</span><span style="color: #000000"> </span><span style="color: #098658">2</span><span style="color: #000000">:</span><span style="color: #098658">0</span><span style="color: #000000">-</span><span style="color: #098658">60</span>
+</code></pre>
+					<p>To resolve this, you have to override the <code>build</code> configuration in <code>nuxt.config.js</code> like below:</p>
+					<pre><code><span style="color: #000000">build: {</span>
+<span style="color: #000000">  transpile: [</span><span style="color: #A31515">&quot;aws-sdk&quot;</span><span style="color: #000000">]</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>Check <a href="https://github.com/aws/amazon-chime-sdk-js/issues/2498#issuecomment-1362279568">this issue comment</a> for more information on the issue.</p>
 					<a href="#meetings" id="meetings" style="color: inherit; text-decoration: none;">
 						<h2>Meetings</h2>
 					</a>
@@ -164,12 +223,20 @@
 					<a href="#when-does-an-amazon-chime-sdk-meeting-end" id="when-does-an-amazon-chime-sdk-meeting-end" style="color: inherit; text-decoration: none;">
 						<h3>When does an Amazon Chime SDK meeting end?</h3>
 					</a>
-					<p>An Amazon Chime SDK meeting ends when you invoke the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html">DeleteMeeting</a> API action. Also, a meeting automatically ends after a period of inactivity, based on the following rules:</p>
+					<p>An Amazon Chime SDK meeting ends when you invoke the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html">DeleteMeeting</a> API action.</p>
+					<p>Also, a meeting automatically ends after a period of inactivity, based on the following rules:</p>
+					<p>For <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html">Amazon Chime SDK</a> namespace:</p>
+					<ul>
+						<li>No audio connections are present in the meeting for more than five minutes.</li>
+						<li>24 hours have elapsed since the meeting was created.</li>
+					</ul>
+					<p>For <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime.html">Amazon Chime</a> namespace:</p>
 					<ul>
 						<li>No audio connections are present in the meeting for more than five minutes.</li>
 						<li>Only one audio connection is present in the meeting for more than 30 minutes.</li>
 						<li>24 hours have elapsed since the meeting was created.</li>
 					</ul>
+					<p>Learn more about <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html">Amazon Chime SDK</a> namespace and <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime.html">Amazon Chime</a> namespace in <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/meeting-namespace-migration.html">Migrating to the Amazon Chime SDK Meetings namespace</a>.</p>
 					<a href="#how-many-simultaneous-meetings-can-be-hosted-in-an-account-can-this-limit-be-raised" id="how-many-simultaneous-meetings-can-be-hosted-in-an-account-can-this-limit-be-raised" style="color: inherit; text-decoration: none;">
 						<h3>How many simultaneous meetings can be hosted in an account? Can this limit be raised?</h3>
 					</a>
@@ -177,12 +244,12 @@
 					<a href="#how-many-attendees-can-join-an-amazon-chime-sdk-meeting-can-this-limit-be-raised" id="how-many-attendees-can-join-an-amazon-chime-sdk-meeting-can-this-limit-be-raised" style="color: inherit; text-decoration: none;">
 						<h3>How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?</h3>
 					</a>
-					<p>Amazon Chime SDK limits are defined <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">here</a>. The service supports up to 250 attendees and up to 25 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using <code>DeleteAttendee</code>. Attendee limits cannot be changed.</p>
-					<p>If your use case requires more than 250 attendees, consider using a <a href="https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo">broadcasting solution</a>.</p>
-					<a href="#what-happens-to-the-subsequent-participants-who-try-to-turn-on-the-local-video-while-25-participants-have-already-turned-on-the-local-video" id="what-happens-to-the-subsequent-participants-who-try-to-turn-on-the-local-video-while-25-participants-have-already-turned-on-the-local-video" style="color: inherit; text-decoration: none;">
-						<h3>What happens to the subsequent participants who try to turn on the local video while 25 participants have already turned on the local video?</h3>
+					<p>Amazon Chime SDK limits are defined <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">here</a>. The service supports up to 250 attendees and by default up to 25 video senders in a meeting. An attendee is considered active unless it has been explicitly removed using <code>DeleteAttendee</code>. Attendee limits cannot be changed. The number of video senders can be adjusted, but all clients will still be limited to only 25 received videos at a time.</p>
+					<p>If your use case requires more than 250 attendees, consider using <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html">meeting replication</a> to reach up to 10,000 participants, or a <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/connector-pipe-config.html">live connector media pipeline</a> to output to RTMP.</p>
+					<a href="#what-happens-to-the-subsequent-participants-who-try-to-turn-on-the-local-video-when-the-maximum-number-of-video-senders-is-already-reached" id="what-happens-to-the-subsequent-participants-who-try-to-turn-on-the-local-video-when-the-maximum-number-of-video-senders-is-already-reached" style="color: inherit; text-decoration: none;">
+						<h3>What happens to the subsequent participants who try to turn on the local video when the maximum number of video senders is already reached?</h3>
 					</a>
-					<p>Once the limit of 25 video tiles is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly">VideoCallSwitchToViewOnly = 10</a> which in turn triggers the observer &#39;<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable">videoSendDidBecomeUnavailable</a>&#39;.</p>
+					<p>Once the limit of video senders is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly">VideoCallSwitchToViewOnly = 10</a> which in turn triggers the observer &#39;<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable">videoSendDidBecomeUnavailable</a>&#39;.</p>
 					<a href="#can-i-schedule-amazon-chime-sdk-meetings-ahead-of-time" id="can-i-schedule-amazon-chime-sdk-meetings-ahead-of-time" style="color: inherit; text-decoration: none;">
 						<h3>Can I schedule Amazon Chime SDK meetings ahead of time?</h3>
 					</a>
@@ -192,17 +259,17 @@
 					<a href="#what-happens-when-i-try-to-re-use-same-attendee-response-to-join-a-meeting-twice" id="what-happens-when-i-try-to-re-use-same-attendee-response-to-join-a-meeting-twice" style="color: inherit; text-decoration: none;">
 						<h3>What happens when I try to re-use same attendee response to join a meeting twice?</h3>
 					</a>
-					<p>If two clients attempt to join the same meeting using the same <code>AttendeeId</code> or <code>ExternalUserId</code> response received from <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">CreateAttendee</a> API then the first attendee will automatically leave the meeting with <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice"><code>AudioJoinFromAnotherDevice</code></a> meeting session status code. Reference issue: <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1290">#1290</a>. The <code>AudioJoinFromAnotherDevice</code> meeting session status code is triggered by the Amazon Chime backend.</p>
+					<p>If two clients attempt to join the same meeting using the same <code>AttendeeId</code> or <code>ExternalUserId</code> response received from <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">CreateAttendee</a> API then the first attendee will automatically leave the meeting with <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice"><code>AudioJoinFromAnotherDevice</code></a> meeting session status code. The <code>AudioJoinFromAnotherDevice</code> meeting session status code is triggered by the Amazon Chime backend.</p>
 					<a href="#what-does-it-mean-when-the-amazon-chime-sdk-for-javascript-throws-an-error-with-status-code-signalingbadrequest-meetingended-or-signalinginternalservererror-while-establishing-a-signaling-connection-to-the-chime-servers" id="what-does-it-mean-when-the-amazon-chime-sdk-for-javascript-throws-an-error-with-status-code-signalingbadrequest-meetingended-or-signalinginternalservererror-while-establishing-a-signaling-connection-to-the-chime-servers" style="color: inherit; text-decoration: none;">
 						<h3>What does it mean when the Amazon Chime SDK for JavaScript throws an error with status code <code>SignalingBadRequest</code>, <code>MeetingEnded</code>, or <code>SignalingInternalServerError</code> while establishing a signaling connection to the Chime servers?</h3>
 					</a>
 					<p>The <code>SignalingBadRequest</code> status code indicates that the Chime SDK for JavaScript has failed to establish a signaling connection to the Chime servers. The INFO-level browser logs may include the following messages:</p>
-					<pre><code>sending <span class="hljs-keyword">join</span>
-notifying event: WebSocketClosed
-stopped pinging (WebSocketClosed)
-signaling <span class="hljs-keyword">connection</span> closed <span class="hljs-keyword">by</span> <span class="hljs-keyword">server</span> <span class="hljs-keyword">with</span> code <span class="hljs-number">4403</span> <span class="hljs-keyword">and</span> reason: attendee unavailable
-handling status: SignalingBadRequest
-<span class="hljs-keyword">session</span> will <span class="hljs-keyword">not</span> be reconnected: SignalingBadRequest
+					<pre><code><span style="color: #001080">sending</span><span style="color: #000000"> </span><span style="color: #001080">join</span>
+<span style="color: #001080">notifying</span><span style="color: #000000"> event: </span><span style="color: #001080">WebSocketClosed</span>
+<span style="color: #001080">stopped</span><span style="color: #000000"> </span><span style="color: #795E26">pinging</span><span style="color: #000000"> (</span><span style="color: #001080">WebSocketClosed</span><span style="color: #000000">)</span>
+<span style="color: #001080">signaling</span><span style="color: #000000"> </span><span style="color: #001080">connection</span><span style="color: #000000"> </span><span style="color: #001080">closed</span><span style="color: #000000"> </span><span style="color: #001080">by</span><span style="color: #000000"> </span><span style="color: #001080">server</span><span style="color: #000000"> </span><span style="color: #AF00DB">with</span><span style="color: #000000"> </span><span style="color: #001080">code</span><span style="color: #000000"> </span><span style="color: #098658">4403</span><span style="color: #000000"> </span><span style="color: #001080">and</span><span style="color: #000000"> reason: </span><span style="color: #001080">attendee</span><span style="color: #000000"> </span><span style="color: #001080">unavailable</span>
+<span style="color: #001080">handling</span><span style="color: #000000"> status: </span><span style="color: #001080">SignalingBadRequest</span>
+<span style="color: #001080">session</span><span style="color: #000000"> </span><span style="color: #001080">will</span><span style="color: #000000"> </span><span style="color: #001080">not</span><span style="color: #000000"> </span><span style="color: #001080">be</span><span style="color: #000000"> reconnected: </span><span style="color: #001080">SignalingBadRequest</span>
 </code></pre>
 					<p>The possible reasons are as follows:</p>
 					<ol>
@@ -221,46 +288,52 @@ handling status: SignalingBadRequest
 						<li>The SDK encounters a retryable error during the session. Retryable errors are errors with <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html#isfailure">retryable response status codes</a> received regarding the session. i.e. status code with <code>TaskFailed</code> or <code>SignalingInternalServerError</code> will handled for retries.</li>
 					</ul>
 					<p>The SDK uses <a href="https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html">ConnectionHealthPolicyConfiguration</a> to trigger a reconnection. We recommend using the default configuration, but you can also provide the custom ConnectionHealthPolicyConfiguration object to change this behavior.</p>
-					<pre><code class="language-js"><span class="hljs-keyword">import</span> {
-  ConnectionHealthPolicyConfiguration,
-  ConsoleLogger,
-  DefaultDeviceController,
-  DefaultMeetingSession,
-  LogLevel,
-  MeetingSessionConfiguration
-} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">ConnectionHealthPolicyConfiguration</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">ConsoleLogger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">DefaultDeviceController</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">DefaultMeetingSession</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">LogLevel</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">MeetingSessionConfiguration</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;amazon-chime-sdk-js&#039;</span><span style="color: #000000">;</span>
 
-<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;MyLogger&#x27;</span>, LogLevel.INFO);
-<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">logger</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ConsoleLogger</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;MyLogger&#039;</span><span style="color: #000000">, </span><span style="color: #001080">LogLevel</span><span style="color: #000000">.</span><span style="color: #0070C1">INFO</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">(</span><span style="color: #001080">logger</span><span style="color: #000000">);</span>
 
-<span class="hljs-keyword">const</span> healthPolicyConfiguration = <span class="hljs-keyword">new</span> ConnectionHealthPolicyConfiguration();
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">healthPolicyConfiguration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ConnectionHealthPolicyConfiguration</span><span style="color: #000000">();</span>
 
-<span class="hljs-comment">// Default: 25 consecutive WebRTC stats with no packet. You can reduce this value for a faster retry.</span>
-healthPolicyConfiguration.connectionUnhealthyThreshold = <span class="hljs-number">50</span>;
+<span style="color: #008000">// Default: 25 consecutive WebRTC stats with no packet. You can reduce this value for a faster retry.</span>
+<span style="color: #001080">healthPolicyConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">connectionUnhealthyThreshold</span><span style="color: #000000"> = </span><span style="color: #098658">50</span><span style="color: #000000">;</span>
 
-<span class="hljs-comment">// Default: 10000 ms</span>
-healthPolicyConfiguration.connectionWaitTimeMs = <span class="hljs-number">20000</span>;
+<span style="color: #008000">// Default: 10000 ms</span>
+<span style="color: #001080">healthPolicyConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">connectionWaitTimeMs</span><span style="color: #000000"> = </span><span style="color: #098658">20000</span><span style="color: #000000">;</span>
 
-<span class="hljs-comment">// Default: 60000 ms delay</span>
-healthPolicyConfiguration.maximumAudioDelayMs = <span class="hljs-number">30000</span>;
+<span style="color: #008000">// Default: 60000 ms delay</span>
+<span style="color: #001080">healthPolicyConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">maximumAudioDelayMs</span><span style="color: #000000"> = </span><span style="color: #098658">30000</span><span style="color: #000000">; </span>
 
-<span class="hljs-comment">// Default: 10 data points</span>
-healthPolicyConfiguration.maximumAudioDelayDataPoints = <span class="hljs-number">5</span>;
+<span style="color: #008000">// Default: 10 data points</span>
+<span style="color: #001080">healthPolicyConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">maximumAudioDelayDataPoints</span><span style="color: #000000"> = </span><span style="color: #098658">5</span><span style="color: #000000">;</span>
 
-<span class="hljs-comment">// Default: 4 missed pongs. You can set the missed pongs upper threshold to zero to force restart the session.</span>
-healthPolicyConfiguration.missedPongsUpperThreshold = <span class="hljs-number">4</span>;
+<span style="color: #008000">// Default: 4 missed pongs. You can set the missed pongs upper threshold to zero to force restart the session.</span>
+<span style="color: #001080">healthPolicyConfiguration</span><span style="color: #000000">.</span><span style="color: #001080">missedPongsUpperThreshold</span><span style="color: #000000"> = </span><span style="color: #098658">4</span><span style="color: #000000">; </span>
 
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(</span><span style="color: #001080">meetingResponse</span><span style="color: #000000">, </span><span style="color: #001080">attendeeResponse</span><span style="color: #000000">);</span>
 
-<span class="hljs-comment">// Override the default health policy configuration.</span>
-configuration.connectionHealthPolicyConfiguration = healthPolicyConfiguration;
+<span style="color: #008000">// Override the default health policy configuration.</span>
+<span style="color: #001080">configuration</span><span style="color: #000000">.</span><span style="color: #001080">connectionHealthPolicyConfiguration</span><span style="color: #000000"> = </span><span style="color: #001080">healthPolicyConfiguration</span><span style="color: #000000">;</span>
 
-<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
-  configuration,
-  logger,
-  deviceController
-);
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultMeetingSession</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #001080">configuration</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">logger</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">deviceController</span>
+<span style="color: #000000">);</span>
 </code></pre>
+					<a href="#what-should-my-application-do-in-response-to-the-status-codes-in-audiovideodidstop" id="what-should-my-application-do-in-response-to-the-status-codes-in-audiovideodidstop" style="color: inherit; text-decoration: none;">
+						<h3>What should my application do in response to the status codes in <code>audioVideoDidStop</code>?</h3>
+					</a>
+					<p>These status codes can be used for logging, debugging, and possible notification of end users, but in most cases should not be used for any retry behavior, as the audio video controller will already be retrying non-terminal errors (i.e. regardless of <code>MeetingSessionStatus.isTerminal</code>, your application should not try to immediately restart or recreate the audio video controller).</p>
+					<p>If <code>MeetingSessionStatus.isTerminal</code> returns <code>true</code>, you should remove any meeting UX in addition to notifying the user, as the audio video controller will not be retrying the connection.</p>
+					<p>See the documentation for <code>MeetingSessionStatusCode</code> <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">here</a> for explanation of the values when used for <code>audioVideoDidStop</code>, which may be used to provide more detail when notifying end users, though more general failure messages are recommended unless otherwise noted.</p>
 					<a href="#what-is-the-timeout-for-connect-and-reconnect-and-where-can-i-configure-the-value" id="what-is-the-timeout-for-connect-and-reconnect-and-where-can-i-configure-the-value" style="color: inherit; text-decoration: none;">
 						<h3>What is the timeout for connect and reconnect and where can I configure the value?</h3>
 					</a>
@@ -277,7 +350,7 @@ configuration.connectionHealthPolicyConfiguration = healthPolicyConfiguration;
 					<a href="#how-do-i-choose-video-resolution-frame-rate-and-bitrate" id="how-do-i-choose-video-resolution-frame-rate-and-bitrate" style="color: inherit; text-decoration: none;">
 						<h3>How do I choose video resolution, frame rate and bitrate?</h3>
 					</a>
-					<p>Applications built with the Amazon Chime SDK for JavaScript can adjust video parameters before a meeting begins by using the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html#adjust-local-video-quality">chooseVideoInputQuality</a> API.</p>
+					<p>Applications built with the Amazon Chime SDK for JavaScript can adjust video parameters before a meeting begins by using the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html#adjust-local-video-quality">chooseVideoInputQuality and setVideoMaxBandwidthKbps</a> APIs.</p>
 					<a href="#how-can-i-stream-music-or-video-into-a-meeting" id="how-can-i-stream-music-or-video-into-a-meeting" style="color: inherit; text-decoration: none;">
 						<h3>How can I stream music or video into a meeting?</h3>
 					</a>
@@ -310,21 +383,21 @@ configuration.connectionHealthPolicyConfiguration = healthPolicyConfiguration;
 						<h3>How do I get connection indicator for media quality?</h3>
 					</a>
 					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics">getObservableVideoMetrics</a> API exposes video quality statistics. The <code>getObservableVideoMetrics</code> API returns following metrics:</p>
-					<pre><code class="language-js"><span class="hljs-comment">// Upstream metrics of local attendee</span>
-videoUpstreamBitrate,
-videoUpstreamPacketsSent,
-videoUpstreamPacketLossPercent,
-videoUpstreamFramesEncodedPerSecond,
-videoUpstreamFrameHeight,
-videoUpstreamFrameWidth,
+					<pre><code class="language-js"><span style="color: #008000">// Upstream metrics of local attendee</span>
+<span style="color: #001080">videoUpstreamBitrate</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoUpstreamPacketsSent</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoUpstreamPacketLossPercent</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoUpstreamFramesEncodedPerSecond</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoUpstreamFrameHeight</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoUpstreamFrameWidth</span><span style="color: #000000">,</span>
 
-<span class="hljs-comment">// Downstream metrics of remote attendees</span>
-videoDownstreamBitrate,
-videoDownstreamPacketLossPercent,
-videoDownstreamPacketsReceived,
-videoDownstreamFramesDecodedPerSecond,
-videoDownstreamFrameHeight,
-videoDownstreamFrameWidth,
+<span style="color: #008000">// Downstream metrics of remote attendees</span>
+<span style="color: #001080">videoDownstreamBitrate</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoDownstreamPacketLossPercent</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoDownstreamPacketsReceived</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoDownstreamFramesDecodedPerSecond</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoDownstreamFrameHeight</span><span style="color: #000000">,</span>
+<span style="color: #001080">videoDownstreamFrameWidth</span><span style="color: #000000">,</span>
 </code></pre>
 					<p>See this <a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html">guide</a> for more information.</p>
 					<a href="#demos" id="demos" style="color: inherit; text-decoration: none;">
@@ -352,7 +425,7 @@ videoDownstreamFrameWidth,
 					<a href="#how-can-i-get-amazon-chime-sdk-logs-for-debugging" id="how-can-i-get-amazon-chime-sdk-logs-for-debugging" style="color: inherit; text-decoration: none;">
 						<h3>How can I get Amazon Chime SDK logs for debugging?</h3>
 					</a>
-					<p>Applications can get logs from Chime SDK by passing instances of <code>Logger</code> when instantiating <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html">the MeetingSession object</a>. Amazon Chime SDK has some default implementations of logger that your application can use, such as <a href="https://aws.github.io/amazon-chime-sdk-js/classes/consolelogger.html">ConsoleLogger</a> which logs into the browser console, <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionpostlogger.html">MeetingSessionPOSTLogger</a> which logs in <a href="https://aws.amazon.com/cloudwatch/">Amazon CloudWatch</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/classes/multilogger.html">MultiLogger</a> which logs in multiple destinations.</p>
+					<p>Applications can get logs from Chime SDK by passing instances of <code>Logger</code> when instantiating <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html">the MeetingSession object</a>. Amazon Chime SDK has some default implementations of logger that your application can use, such as <a href="https://aws.github.io/amazon-chime-sdk-js/classes/consolelogger.html">ConsoleLogger</a> which logs into the browser console, <a href="https://aws.github.io/amazon-chime-sdk-js/classes/postlogger.html">POSTLogger</a> which logs in <a href="https://aws.amazon.com/cloudwatch/">Amazon CloudWatch</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/classes/multilogger.html">MultiLogger</a> which logs in multiple destinations.</p>
 					<a href="#how-do-i-file-an-issue-for-the-amazon-chime-sdk-for-javascript" id="how-do-i-file-an-issue-for-the-amazon-chime-sdk-for-javascript" style="color: inherit; text-decoration: none;">
 						<h3>How do I file an issue for the Amazon Chime SDK for JavaScript?</h3>
 					</a>
@@ -440,7 +513,8 @@ videoDownstreamFrameWidth,
 					<a href="#my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefined-what-could-be-the-reason" id="my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefined-what-could-be-the-reason" style="color: inherit; text-decoration: none;">
 						<h3>My clients are unable to join the meeting and I see <code>navigator.mediaDevices is undefined</code>, what could be the reason?</h3>
 					</a>
-					<p>Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the chooseVideoInputDevice API which can operate in <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security">secure contexts inside a browser only</a> for privacy concerns so you will need to access your browsers using HTTPS://. The hostname <code>localhost</code> and the loopback address <code>127.0.0.1</code> are exceptions.</p>
+					<p>Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the <code>startAudioInput</code> or
+					<code>startVideoInput</code> APIs which can operate in <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security">secure contexts inside a browser only</a> for privacy concerns so you will need to access your browsers using HTTPS://. The hostname <code>localhost</code> and the loopback address <code>127.0.0.1</code> are exceptions.</p>
 					<a href="#how-can-i-create-a-video-tile-layout-for-my-application" id="how-can-i-create-a-video-tile-layout-for-my-application" style="color: inherit; text-decoration: none;">
 						<h3>How can I create a video tile layout for my application?</h3>
 					</a>
@@ -456,23 +530,17 @@ videoDownstreamFrameWidth,
 						<h3>After leaving a meeting, the camera LED is still on indicating that the camera has not been released. What could be wrong?</h3>
 					</a>
 					<p>When the camera LED remains on, it does not necessarily mean the device is broadcasting to the remote attendees. The LED will remain on until all media streams that use the device are released (its tracks are stopped). The following API methods release media streams.</p>
-					<pre><code><span class="hljs-comment">// Select no video device (releases any previously selected device)</span>
-meetingSession.audioVideo.choose<span class="hljs-constructor">VideoInputDevice(<span class="hljs-params">null</span>)</span>;
-
-<span class="hljs-comment">// Stop local video tile (stops sharing the video tile in the meeting)</span>
-meetingSession.audioVideo.stop<span class="hljs-constructor">LocalVideoTile()</span>;
-
-<span class="hljs-comment">// Stop a video preview that was previously started (before session starts)</span>
-meetingSession.audioVideo.stop<span class="hljs-constructor">VideoPreviewForVideoInput(<span class="hljs-params">previewVideoElement</span>)</span>;
-
-<span class="hljs-comment">// Stop the meeting session (audio and video)</span>
-meetingSession.audioVideo.stop<span class="hljs-literal">()</span>;
+					<pre><code><span style="color: #008000">// Select no video device (releases any previously selected device)</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">stopVideoInput</span><span style="color: #000000">();</span>
 </code></pre>
 					<a href="#my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" id="my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" style="color: inherit; text-decoration: none;">
 						<h3>My clients are unable to successfully join audio calls from Safari, they get a <code>failed to get audio device for constraints null: Type error</code>, what could be the issue?</h3>
 					</a>
-					<p>This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the <code>chooseVideoInputDevice</code> API. In this case you will see the following entry in the log where an empty string after <code>chooseVideoInputDevice</code>:</p>
-					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">&quot;&quot;</span> -&gt; <span class="hljs-string">&quot;PermissionDeniedByBrowser&quot;</span>
+					<p>This error message is an indication that the browser application did not successfully acquire the media stream for
+						audio or video from the device before the meeting starts. Application has not passed in the right device Id to the
+						<code>startVideoInput</code> API. In this case you will see the following entry in the log where an empty string after
+					<code>startVideoInput</code>:</p>
+					<pre><code><span style="color: #000000">[</span><span style="color: #001080">Info</span><span style="color: #000000">] </span><span style="color: #098658">2020</span><span style="color: #000000">-</span><span style="color: #098658">06</span><span style="color: #000000">-18T17:</span><span style="color: #098658">43</span><span style="color: #000000">:55.380</span><span style="color: #0070C1">Z</span><span style="color: #000000"> [</span><span style="color: #0070C1">INFO</span><span style="color: #000000">] </span><span style="color: #0070C1">VLR</span><span style="color: #000000"> - </span><span style="color: #0070C1">API</span><span style="color: #000000">/</span><span style="color: #001080">DefaultDeviceController</span><span style="color: #000000">/</span><span style="color: #001080">startVideoInput</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;&quot;</span><span style="color: #000000"> -&gt; </span><span style="color: #A31515">&quot;PermissionDeniedByBrowser&quot;</span>
 </code></pre>
 					<p>This applies for video input as well.</p>
 					<a href="#how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" id="how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" style="color: inherit; text-decoration: none;">
@@ -482,15 +550,15 @@ meetingSession.audioVideo.stop<span class="hljs-literal">()</span>;
 					<p>You may want to override this behavior to provide a custom UX such as a prompt explaining why microphone and camera
 						access is being asked for by supplying your own function to setDeviceLabelTrigger(). See the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts#L928">meeting demo application</a> for
 					an example.</p>
-					<pre><code>meetingSession.audioVideo.setDeviceLabelTrigger(
-  <span class="hljs-keyword">async</span> (): Promise&lt;MediaStream&gt; =&gt; {
-    <span class="hljs-comment">// For example, let the user know that the browser is asking for microphone and camera permissions.</span>
-    showCustomUX();
-    <span class="hljs-keyword">const</span> stream = <span class="hljs-keyword">await</span> navigator.mediaDevices.getUserMedia({ audio: <span class="hljs-keyword">true</span>, video: <span class="hljs-keyword">true</span> });
-    hideCustomUX();
-    <span class="hljs-keyword">return</span> stream;
-  }
-);
+					<pre><code><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">setDeviceLabelTrigger</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">async</span><span style="color: #000000"> (): </span><span style="color: #267F99">Promise</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MediaStream</span><span style="color: #000000">&gt; </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #008000">// For example, let the user know that the browser is asking for microphone and camera permissions.</span>
+<span style="color: #000000">    </span><span style="color: #795E26">showCustomUX</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">stream</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">navigator</span><span style="color: #000000">.</span><span style="color: #001080">mediaDevices</span><span style="color: #000000">.</span><span style="color: #795E26">getUserMedia</span><span style="color: #000000">({ </span><span style="color: #001080">audio:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">, </span><span style="color: #001080">video:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000"> });</span>
+<span style="color: #000000">    </span><span style="color: #795E26">hideCustomUX</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">stream</span><span style="color: #000000">;</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">);</span>
 </code></pre>
 					<a href="#how-can-i-speed-up-my-meeting-join-times" id="how-can-i-speed-up-my-meeting-join-times" style="color: inherit; text-decoration: none;">
 						<h3>How can I speed up my meeting join times?</h3>
@@ -512,8 +580,71 @@ meetingSession.audioVideo.stop<span class="hljs-literal">()</span>;
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="apioverview.html">APIOverview</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="amazonvoice_focus.html">Amazon<wbr>Voice_<wbr><wbr>Focus</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_videofx_processor.html">Background<wbr>Filter_<wbr><wbr>VideoFX_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="backgroundfilter_video_processor.html">Background<wbr>Filter_<wbr><wbr>Video_<wbr><wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="buildersjourney.html">Builders<wbr>Journey</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="clientevent_ingestion.html">Client<wbr>Event_<wbr><wbr>Ingestion</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentsecurity_policy.html">Content<wbr>Security_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="contentshare.html">Content<wbr>Share</a>
+					</li>
+					<li class="current tsd-kind-namespace">
+						<a href="faqs.html">FAQs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="gettingstarted.html">Getting<wbr>Started</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="meetingevents.html">Meeting<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="migrationto_3_0.html">Migrationto_<wbr>3_0</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="prioritybased_downlink_policy.html">Priority<wbr>Based_<wbr><wbr>Downlink_<wbr><wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="projectboard.html">Project<wbr>Board</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="qualitybandwidth_connectivity.html">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="replicatedmeetings.html">Replicated<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="simulcast.html">Simulcast</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videocodecs.html">Video<wbr>Codecs</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videolayout.html">Video<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="videoprocessor.html">Video<wbr>Processor</a>
 					</li>
 				</ul>
 			</nav>

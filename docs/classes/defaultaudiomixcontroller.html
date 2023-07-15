@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="defaultaudiomixcontroller.html">DefaultAudioMixController</a>
@@ -77,7 +76,8 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/audiomixcontroller.html" class="tsd-signature-type">AudioMixController</a></li>
+					<li><a href="../interfaces/audiomixcontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioMixController</a></li>
+					<li><a href="../interfaces/mediastreambrokerobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">MediaStreamBrokerObserver</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -94,6 +94,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultaudiomixcontroller.html#addaudiomixobserver" class="tsd-kind-icon">add<wbr>Audio<wbr>Mix<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultaudiomixcontroller.html#audiooutputdidchange" class="tsd-kind-icon">audio<wbr>Output<wbr>Did<wbr>Change</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultaudiomixcontroller.html#bindaudiodevice" class="tsd-kind-icon">bind<wbr>Audio<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultaudiomixcontroller.html#bindaudioelement" class="tsd-kind-icon">bind<wbr>Audio<wbr>Element</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultaudiomixcontroller.html#bindaudiostream" class="tsd-kind-icon">bind<wbr>Audio<wbr>Stream</a></li>
@@ -111,22 +112,22 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Audio<wbr>Mix<wbr>Controller<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">?: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultaudiomixcontroller.html" class="tsd-signature-type">DefaultAudioMixController</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Audio<wbr>Mix<wbr>Controller<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">?: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultaudiomixcontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultAudioMixController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L22">src/audiomixcontroller/DefaultAudioMixController.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L24">src/audiomixcontroller/DefaultAudioMixController.ts:24</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> logger: <a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="defaultaudiomixcontroller.html" class="tsd-signature-type">DefaultAudioMixController</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="defaultaudiomixcontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultAudioMixController</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -137,20 +138,55 @@
 					<a name="addaudiomixobserver" class="tsd-anchor"></a>
 					<h3>add<wbr>Audio<wbr>Mix<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Audio<wbr>Mix<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Audio<wbr>Mix<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiomixobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioMixObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiomixcontroller.html">AudioMixController</a>.<a href="../interfaces/audiomixcontroller.html#addaudiomixobserver">addAudioMixObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L162">src/audiomixcontroller/DefaultAudioMixController.ts:162</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L164">src/audiomixcontroller/DefaultAudioMixController.ts:164</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Add an observer to listen for changes to the current meeting audio stream. The observer
+									will be notified when a stream is bound or unbound from an audio element in the page.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observer: <a href="../interfaces/audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a></h5>
+									<h5>observer: <a href="../interfaces/audiomixobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioMixObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="audiooutputdidchange" class="tsd-anchor"></a>
+					<h3>audio<wbr>Output<wbr>Did<wbr>Change</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">audio<wbr>Output<wbr>Did<wbr>Change<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/mediastreambrokerobserver.html">MediaStreamBrokerObserver</a>.<a href="../interfaces/mediastreambrokerobserver.html#audiooutputdidchange">audioOutputDidChange</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L172">src/audiomixcontroller/DefaultAudioMixController.ts:172</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the audio output is changed</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>device: <span class="tsd-signature-type">MediaDeviceInfo</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -161,20 +197,27 @@
 					<a name="bindaudiodevice" class="tsd-anchor"></a>
 					<h3>bind<wbr>Audio<wbr>Device</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">bind<wbr>Audio<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>Audio<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiomixcontroller.html">AudioMixController</a>.<a href="../interfaces/audiomixcontroller.html#bindaudiodevice">bindAudioDevice</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L65">src/audiomixcontroller/DefaultAudioMixController.ts:65</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L67">src/audiomixcontroller/DefaultAudioMixController.ts:67</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the audio mix device can be bound to an element and stream.</p>
+								</div>
+								<p>This method rejects if you specify a device and the browser does not support <code>setSinkId</code>;
+								use <a href="../interfaces/browserbehavior.html#supportssetsinkid">BrowserBehavior.supportsSetSinkId</a> to check before calling this method.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>device: <span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>device: <span class="tsd-signature-type">MediaDeviceInfo</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -192,9 +235,14 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiomixcontroller.html">AudioMixController</a>.<a href="../interfaces/audiomixcontroller.html#bindaudioelement">bindAudioElement</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L26">src/audiomixcontroller/DefaultAudioMixController.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L28">src/audiomixcontroller/DefaultAudioMixController.ts:28</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the audio mix element can be bound to a device and stream.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -216,9 +264,16 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiomixcontroller.html">AudioMixController</a>.<a href="../interfaces/audiomixcontroller.html#bindaudiostream">bindAudioStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L48">src/audiomixcontroller/DefaultAudioMixController.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L50">src/audiomixcontroller/DefaultAudioMixController.ts:50</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the audio mix stream can be bound to a device and element.</p>
+								</div>
+								<p>This method rejects if you specify a device and the browser does not support <code>setSinkId</code>;
+								use <a href="../interfaces/browserbehavior.html#supportssetsinkid">BrowserBehavior.supportsSetSinkId</a> to check before calling this method.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -233,17 +288,23 @@
 					<a name="getcurrentmeetingaudiostream" class="tsd-anchor"></a>
 					<h3>get<wbr>Current<wbr>Meeting<wbr>Audio<wbr>Stream</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Current<wbr>Meeting<wbr>Audio<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Current<wbr>Meeting<wbr>Audio<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiomixcontroller.html">AudioMixController</a>.<a href="../interfaces/audiomixcontroller.html#getcurrentmeetingaudiostream">getCurrentMeetingAudioStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L158">src/audiomixcontroller/DefaultAudioMixController.ts:158</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L160">src/audiomixcontroller/DefaultAudioMixController.ts:160</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the meeting audio stream currently bound to a HTMLAudioElement, or <code>null</code> if
+									there is no current audio stream. This method will typically never reject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -251,20 +312,25 @@
 					<a name="removeaudiomixobserver" class="tsd-anchor"></a>
 					<h3>remove<wbr>Audio<wbr>Mix<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>Audio<wbr>Mix<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Audio<wbr>Mix<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiomixobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioMixObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiomixcontroller.html">AudioMixController</a>.<a href="../interfaces/audiomixcontroller.html#removeaudiomixobserver">removeAudioMixObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L166">src/audiomixcontroller/DefaultAudioMixController.ts:166</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L168">src/audiomixcontroller/DefaultAudioMixController.ts:168</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Remove an observer to stop listening for changes to the current meeting audio stream.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>observer: <a href="../interfaces/audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a></h5>
+									<h5>observer: <a href="../interfaces/audiomixobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioMixObserver</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -282,9 +348,14 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiomixcontroller.html">AudioMixController</a>.<a href="../interfaces/audiomixcontroller.html#unbindaudioelement">unbindAudioElement</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L35">src/audiomixcontroller/DefaultAudioMixController.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiomixcontroller/DefaultAudioMixController.ts#L37">src/audiomixcontroller/DefaultAudioMixController.ts:37</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called to unbind the audio element so that the audio output stream does not have a sink.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -294,8 +365,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -311,6 +382,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultaudiomixcontroller.html#addaudiomixobserver" class="tsd-kind-icon">add<wbr>Audio<wbr>Mix<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultaudiomixcontroller.html#audiooutputdidchange" class="tsd-kind-icon">audio<wbr>Output<wbr>Did<wbr>Change</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultaudiomixcontroller.html#bindaudiodevice" class="tsd-kind-icon">bind<wbr>Audio<wbr>Device</a>

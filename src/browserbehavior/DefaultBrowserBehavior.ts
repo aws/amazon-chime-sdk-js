@@ -2,12 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { detect } from 'detect-browser';
+import { UAParser } from 'ua-parser-js';
 
 import BrowserBehavior from './BrowserBehavior';
 import ExtendedBrowserBehavior from './ExtendedBrowserBehavior';
 
 export default class DefaultBrowserBehavior implements BrowserBehavior, ExtendedBrowserBehavior {
-  private readonly browser = detect();
+  private readonly FALLBACK_BROWSER = {
+    type: 'browser',
+    name: 'unknown',
+    version: 'unknown',
+    os: 'unknown',
+  };
+  private readonly browser = detect() || this.FALLBACK_BROWSER;
+  private readonly uaParserResult =
+    navigator && navigator.userAgent ? new UAParser(navigator.userAgent).getResult() : null;
 
   private browserSupport: { [id: string]: number } = {
     chrome: 78,
@@ -47,14 +56,20 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     'samsung',
   ];
 
-  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
+  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview', 'edge-ios'];
+  private static MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK = 16;
+  private static MIN_IOS_NON_SAFARI_SUPPORT_CANVAS_STREAM_PLAYBACK = 106;
 
   version(): string {
     return this.browser.version;
   }
 
   majorVersion(): number {
-    return parseInt(this.version().split('.')[0]);
+    return this.version() !== null ? parseInt(this.version().split('.')[0]) : -1;
+  }
+
+  osMajorVersion(): number {
+    return parseInt(this.uaParserResult.os.version.split('.')[0]);
   }
 
   name(): string {
@@ -83,8 +98,21 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return this.isFirefox();
   }
 
+  requiresPlaybackLatencyHintForAudioContext(): boolean {
+    return navigator.userAgent.indexOf('Windows') !== -1;
+  }
+
   supportsCanvasCapturedStreamPlayback(): boolean {
-    return !this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox();
+    return (
+      // Desktop browser
+      (!this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox() && !this.isIOSEdge()) ||
+      // iOS Safari (Firefox on iOS with desktop view will be identified as iOS Safari
+      (this.isIOSSafari() &&
+        this.majorVersion() >= DefaultBrowserBehavior.MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK) ||
+      // Chrome, Edge, or Firefox (mobile view) on iOS
+      this.majorVersion() >=
+        DefaultBrowserBehavior.MIN_IOS_NON_SAFARI_SUPPORT_CANVAS_STREAM_PLAYBACK
+    );
   }
 
   supportsBackgroundFilter(): boolean {
@@ -99,6 +127,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     }
 
     return true;
+  }
+
+  supportsVideoLayersAllocationRtpHeaderExtension(): boolean {
+    return this.hasChromiumWebRTC();
   }
 
   requiresResolutionAlignment(width: number, height: number): [number, number] {
@@ -208,6 +240,21 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     );
   }
 
+  // In Safari, a hidden video element can show a black screen.
+  // See https://bugs.webkit.org/show_bug.cgi?id=241152 for more information.
+  requiresVideoPlayWorkaround(): boolean {
+    return this.isSafari();
+  }
+
+  /**
+   * Check if the current browser supports the [[VideoFxProcessor]].
+   * @returns boolean representing if browser supports [[VideoFxProcessor]].
+   */
+  isVideoFxSupportedBrowser(): boolean {
+    // Not supported on safari 15 and on environments without canvas capture playback
+    return this.supportsBackgroundFilter();
+  }
+
   // These helpers should be kept private to encourage
   // feature detection instead of browser detection.
   private isIOSSafari(): boolean {
@@ -218,6 +265,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
         /( Mac )/i.test(navigator.userAgent) &&
         navigator.maxTouchPoints > 1) //Ipad
     );
+  }
+
+  private isSafari(): boolean {
+    return this.browser.name === 'safari' || this.isIOSSafari();
   }
 
   private isFirefox(): boolean {
@@ -238,6 +289,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   private isEdge(): boolean {
     return this.browser.name === 'edge-chromium';
+  }
+
+  private isIOSEdge(): boolean {
+    return this.browser.name === 'edge-ios';
   }
 
   private isSamsungInternet(): boolean {

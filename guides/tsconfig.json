@@ -6,5 +6,21 @@
   "include": [
     "../src/**/*",
     "./docs.ts"
-  ]
+  ],
+  "typedocOptions": {
+    "out": "../docs",
+    "readme": "README.md",
+    "entryPoints": [
+      "../src/index.ts",
+      "./docs.ts"
+    ],
+    "exclude": [
+      "src/signalingprotocol/SignalingProtocol.js",
+      "src/signalingprotocol/SignalingProtocol.d.ts",
+      "src/signalingprotocol/ScreenSignalingProtocol.js",
+      "src/signalingprotocol/ScreenSignalingProtocol.d.ts"
+    ],
+    "excludePrivate": true,
+    "media": "./media",
+  }
 }

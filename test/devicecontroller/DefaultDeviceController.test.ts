@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
+import chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -10,6 +10,7 @@ import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObs
 import AudioInputDevice from '../../src/devicecontroller/AudioInputDevice';
 import AudioTransformDevice from '../../src/devicecontroller/AudioTransformDevice';
 import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
+import Device from '../../src/devicecontroller/Device';
 import GetUserMediaError from '../../src/devicecontroller/GetUserMediaError';
 import NotFoundError from '../../src/devicecontroller/NotFoundError';
 import NotReadableError from '../../src/devicecontroller/NotReadableError';
@@ -46,6 +47,16 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('DefaultDeviceController', () => {
+  const CHROME_MAC_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
+  const CHROMIUM_EDGE_WINDOWS_USER_AGENT =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3729.48 Safari/537.36 Edg/79.1.96.24';
+
+  const setUserAgent = (userAgent: string): void => {
+    // @ts-ignore
+    navigator.userAgent = userAgent;
+  };
+
   const assert: Chai.AssertStatic = chai.assert;
   const expect: Chai.ExpectStatic = chai.expect;
   const logger = new NoOpLogger();
@@ -312,6 +323,25 @@ describe('DefaultDeviceController', () => {
         called = true;
         throw new Error('Something went wrong');
       });
+      const handleEventSpy = sinon.spy(deviceController.eventController, 'publishEvent');
+      // Simulate the device list when no permission is granted.
+      domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo('', 'audioinput', '', '')];
+      try {
+        await deviceController.listAudioInputDevices();
+        expect(called).to.be.true;
+        expect(handleEventSpy.calledTwice).to.be.true;
+      } catch (error) {
+        throw new Error('This line should not be reached.');
+      }
+    });
+
+    it('does not fail even when the custom label device trigger throws an error without event controller', async () => {
+      let called = false;
+      deviceController = new DefaultDeviceController(logger);
+      deviceController.setDeviceLabelTrigger(async () => {
+        called = true;
+        throw new Error('Something went wrong');
+      });
       // Simulate the device list when no permission is granted.
       domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo('', 'audioinput', '', '')];
       try {
@@ -338,8 +368,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('adjusts width and height if required', async () => {
-      // @ts-ignore
-      navigator.userAgent = 'android pixel 3';
+      setUserAgent('android pixel 3');
       deviceController = new DefaultDeviceController(logger);
 
       const width = 540;
@@ -403,7 +432,7 @@ describe('DefaultDeviceController', () => {
       deviceController.muteLocalAudioInputStream();
       deviceController.muteLocalAudioInputStream();
 
-      expect(device.muted).to.deep.equal([true, false, true]);
+      expect(device.muted).to.deep.equal([false, true, false, true]);
     });
   });
 
@@ -806,12 +835,12 @@ describe('DefaultDeviceController', () => {
       }
     });
 
-    it('Do not log error if choose null device with no device cache', () => {
+    it('Do not log error if choose null device with no device cache', async () => {
       const e = sinon.spy(logger, 'error');
       const i = sinon.spy(logger, 'info');
       const w = sinon.spy(logger, 'warn');
 
-      deviceController.startAudioInput(null);
+      await deviceController.startAudioInput(null);
 
       expect(e.notCalled).to.be.true;
       expect(i.called).to.be.true;
@@ -822,12 +851,12 @@ describe('DefaultDeviceController', () => {
       w.restore();
     });
 
-    it('Do not log error if choose a media stream without device Id with no device cache', () => {
+    it('Do not log error if choose a media stream without device Id with no device cache', async () => {
       const e = sinon.spy(logger, 'error');
       const i = sinon.spy(logger, 'info');
       const w = sinon.spy(logger, 'warn');
 
-      deviceController.startAudioInput(new MediaStream());
+      await deviceController.startAudioInput(new MediaStream());
 
       expect(e.notCalled).to.be.true;
       expect(i.called).to.be.true;
@@ -1046,15 +1075,6 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached.');
       }
       expect(spy.calledOnce).to.be.true;
-    });
-
-    it('throw an error if starting another audio input when another is still in progress', () => {
-      deviceController.startAudioInput('abc').then(stream => {
-        expect(stream).to.not.be.undefined;
-      });
-      return expect(deviceController.startAudioInput('def')).to.be.eventually.rejectedWith(
-        'Another start audio input is in progress'
-      );
     });
   });
 
@@ -1486,15 +1506,6 @@ describe('DefaultDeviceController', () => {
       await device.stop();
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
-
-    it('throw an error if starting another video input when another is still in progress', () => {
-      deviceController.startVideoInput('abc').then(stream => {
-        expect(stream).to.not.be.undefined;
-      });
-      return expect(deviceController.startVideoInput('def')).to.be.eventually.rejectedWith(
-        'Another start video input is in progress'
-      );
-    });
   });
 
   describe('handleGetUserMediaError', () => {
@@ -1921,16 +1932,6 @@ describe('DefaultDeviceController', () => {
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
-    it('throw error if called when startAudioInput is in progress', done => {
-      deviceController.startAudioInput(stringDeviceId).then(stream => {
-        expect(stream).to.not.be.undefined;
-        done();
-      });
-      expect(deviceController.stopAudioInput()).to.be.eventually.rejectedWith(
-        'An audio input is starting'
-      );
-    });
-
     it("disconnects the audio input source node, not the given stream's tracks", async () => {
       enableWebAudio(true);
       const stream = await deviceController.startAudioInput(stringDeviceId);
@@ -2020,16 +2021,6 @@ describe('DefaultDeviceController', () => {
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
-    it('throw error if called when startVideoInput is in progress', done => {
-      deviceController.startVideoInput(stringDeviceId).then(stream => {
-        expect(stream).to.not.be.undefined;
-        done();
-      });
-      expect(deviceController.stopVideoInput()).to.be.eventually.rejectedWith(
-        'A video input is starting'
-      );
-    });
-
     it('Sending videoInputDidChange with undefined if calling stopVideoInput', () => {
       let callbackVideoStream;
       const observer = {
@@ -2040,6 +2031,56 @@ describe('DefaultDeviceController', () => {
       deviceController.addMediaStreamBrokerObserver(observer);
       deviceController.stopVideoInput();
       expect(callbackVideoStream).to.be.undefined;
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+  });
+
+  describe('Handling of multiple input calls', () => {
+    it('calling stop after start will stop the video input stream', async () => {
+      const callbackVideoStreams: Array<MediaStream | undefined> = [];
+      const observer = {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
+          callbackVideoStreams.push(videoStream);
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      deviceController.startVideoInput(stringDeviceId);
+      deviceController.stopVideoInput();
+      await delay(100);
+      expect(callbackVideoStreams.length).to.eq(2);
+      expect(callbackVideoStreams[0]).to.not.be.undefined;
+      expect(callbackVideoStreams[1]).to.be.undefined;
+      deviceController.removeMediaStreamBrokerObserver(observer);
+    });
+
+    it('calling start video input multiple times will result in multiple different streams', async () => {
+      const callbackVideoStreams: Array<MediaStream | undefined> = [];
+      const observer = {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
+          callbackVideoStreams.push(videoStream);
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+      const stringDeviceIds: Device[] = [
+        'device-id-1',
+        'device-id-2',
+        'device-id-3',
+        'device-id-4',
+      ];
+      deviceController.startVideoInput(stringDeviceIds[0]);
+      deviceController.startVideoInput(stringDeviceIds[1]);
+      deviceController.startVideoInput(stringDeviceIds[2]);
+      deviceController.startVideoInput(stringDeviceIds[3]);
+      await delay(100);
+      expect(callbackVideoStreams.length).to.eq(4);
+      // @ts-ignore
+      expect(callbackVideoStreams[0].constraints.video.deviceId.exact).to.eq(stringDeviceIds[0]);
+      // @ts-ignore
+      expect(callbackVideoStreams[1].constraints.video.deviceId.exact).to.eq(stringDeviceIds[1]);
+      // @ts-ignore
+      expect(callbackVideoStreams[2].constraints.video.deviceId.exact).to.eq(stringDeviceIds[2]);
+      // @ts-ignore
+      expect(callbackVideoStreams[3].constraints.video.deviceId.exact).to.eq(stringDeviceIds[3]);
       deviceController.removeMediaStreamBrokerObserver(observer);
     });
   });
@@ -2120,7 +2161,7 @@ describe('DefaultDeviceController', () => {
         await deviceController.acquireVideoInputStream();
         throw new Error('This line should not be reached.');
       } catch (e) {
-        expect(e.message).includes(`no video device chosen`);
+        expect(e.message).includes(`No video device chosen`);
       }
     });
 
@@ -2443,6 +2484,52 @@ describe('DefaultDeviceController', () => {
       const audioContext2 = DefaultDeviceController.getAudioContext();
       expect(audioContext).to.not.equal(audioContext2);
     });
+
+    it('uses "playback" latency hint on Windows platform', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      let usedContextOptions: AudioContextOptions;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GlobalAny = global as any;
+      GlobalAny['window'].AudioContext = class MockAudioContext {
+        constructor(contextOptions: AudioContextOptions = {}) {
+          usedContextOptions = contextOptions;
+        }
+      };
+
+      DefaultDeviceController.getAudioContext();
+      expect(usedContextOptions.latencyHint).to.equal('playback');
+    });
+
+    it('uses default latency hint on non-Windows platform', () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      let usedContextOptions: AudioContextOptions;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GlobalAny = global as any;
+      GlobalAny['window'].AudioContext = class MockAudioContext {
+        constructor(contextOptions: AudioContextOptions = {}) {
+          usedContextOptions = contextOptions;
+        }
+      };
+
+      DefaultDeviceController.getAudioContext();
+      expect(usedContextOptions.latencyHint).to.be.undefined;
+    });
+
+    it('uses the specified latency hint override', () => {
+      let usedContextOptions: AudioContextOptions;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GlobalAny = global as any;
+      GlobalAny['window'].AudioContext = class MockAudioContext {
+        constructor(contextOptions: AudioContextOptions = {}) {
+          usedContextOptions = contextOptions;
+        }
+      };
+
+      const latencyHint: AudioContextLatencyCategory = 'balanced';
+      DefaultDeviceController.setDefaultLatencyHint(latencyHint);
+      DefaultDeviceController.getAudioContext();
+      expect(usedContextOptions.latencyHint).to.equal(latencyHint);
+    });
   });
 
   describe('preview', () => {
@@ -2651,12 +2738,12 @@ describe('DefaultDeviceController', () => {
       expect(DefaultDeviceController.getIntrinsicDeviceId(undefined)).to.be.undefined;
     });
 
-    it('Return null if the input device is null', () => {
-      expect(DefaultDeviceController.getIntrinsicDeviceId(null)).to.be.null;
+    it('Return undefined if the input device is null', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId(null)).to.be.undefined;
     });
 
-    it('Return empty string if the input device is an empty string', () => {
-      expect(DefaultDeviceController.getIntrinsicDeviceId('')).to.equal('');
+    it('Return undefined if the input device is an empty string', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId('')).to.be.undefined;
     });
 
     it('Return default if the input device is default string', () => {
@@ -2678,9 +2765,9 @@ describe('DefaultDeviceController', () => {
       expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.undefined;
     });
 
-    it('Return null if the input constraint deviceId is null', () => {
+    it('Return undefined if the input constraint deviceId is null', () => {
       const constraints: MediaTrackConstraints = { deviceId: null };
-      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.null;
+      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.undefined;
     });
 
     it('Return string if the input constraint deviceId is of type string', () => {

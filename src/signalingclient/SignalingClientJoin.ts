@@ -2,14 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ApplicationMetadata from '../applicationmetadata/ApplicationMetadata';
+import ServerSideNetworkAdaption from './ServerSideNetworkAdaption';
 
 /**
  * [[SignalingClientJoin]] contains settings for the Join SignalFrame.
  */
 export default class SignalingClientJoin {
-  /** Initializes a SignalingClientJoin with the given properties.
+  serverSideNetworkAdaption: ServerSideNetworkAdaption = ServerSideNetworkAdaption.Default;
+  supportedServerSideNetworkAdaptions: ServerSideNetworkAdaption[] = [];
+  disablePeriodicKeyframeRequestOnContentSender: boolean = false;
+
+  /**
+   * Initializes a SignalingClientJoin with the given properties.
    * @param applicationMetadata [[ApplicationMetadata]].
    */
-
   constructor(public readonly applicationMetadata?: ApplicationMetadata) {}
 }

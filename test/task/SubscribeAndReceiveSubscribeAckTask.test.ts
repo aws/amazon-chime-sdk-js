@@ -3,7 +3,16 @@
 
 import * as chai from 'chai';
 
-import { DefaultTransceiverController, SDP, ZLIBTextCompressor } from '../../src';
+import {
+  AllHighestVideoBandwidthPolicy,
+  DefaultTransceiverController,
+  SDP,
+  SignalingClientVideoSubscriptionConfiguration,
+  TargetDisplaySize,
+  VideoPreference,
+  VideoPreferences,
+  ZLIBTextCompressor,
+} from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -16,12 +25,16 @@ import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
+import ServerSideNetworkAdaption from '../../src/signalingclient/ServerSideNetworkAdaption';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
 import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../../src/signalingclient/SignalingClientEventType';
 import SignalingClientSubscribe from '../../src/signalingclient/SignalingClientSubscribe';
 import {
+  SdkIndexFrame,
   SdkSignalFrame,
+  SdkStreamDescriptor,
+  SdkStreamMediaType,
   SdkSubscribeAckFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SubscribeAndReceiveSubscribeAckTask from '../../src/task/SubscribeAndReceiveSubscribeAckTask';
@@ -32,6 +45,7 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import FirefoxSDPMock from '../sdp/FirefoxSDPMock';
+import SDPMock from '../sdp/SDPMock';
 
 describe('SubscribeAndReceiveSubscribeAckTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -83,6 +97,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     configuration.credentials.attendeeId = attendeeId;
     configuration.credentials.joinToken = 'foo-join-token';
     context.meetingSessionConfiguration = configuration;
+    context.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy('self');
 
     context.signalingClient.openConnection(
       new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth')
@@ -94,8 +109,8 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     context.videoStreamIndex = videoStreamIndex;
     context.videoSubscriptions = [1, 2, 3];
     class TestTransceiverController extends DefaultTransceiverController {
-      getMidForStreamId(_streamId: number): string {
-        return _streamId === -1 ? undefined : _streamId.toString();
+      getMidForStreamId(streamId: number): string {
+        return streamId === -1 || streamId === 0 ? undefined : streamId.toString();
       }
     }
     // @ts-ignore
@@ -255,6 +270,150 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       expect(settings.audioMuted).to.equal(false);
       expect(settings.audioCheckin).to.equal(false);
       expect(settings.receiveStreamIds).to.deep.equal([0, 0, 0]);
+    });
+
+    it('can subscribe SdkSubscribeAckFrame with remote video subscriptions', async () => {
+      await delay(behavior.asyncWaitMs + 10);
+      class TestDownlinkPolicy extends AllHighestVideoBandwidthPolicy {
+        getServerSideNetworkAdaption(): ServerSideNetworkAdaption {
+          return ServerSideNetworkAdaption.BandwidthProbing;
+        }
+
+        getVideoPreferences(): VideoPreferences {
+          const dummyPreferences = VideoPreferences.prepare();
+          dummyPreferences.add(new VideoPreference('attendee-1', 1, TargetDisplaySize.High));
+          dummyPreferences.add(new VideoPreference('attendee-2', 2, TargetDisplaySize.Low));
+          dummyPreferences.add(new VideoPreference('attendee-3', 3, TargetDisplaySize.Low));
+          return dummyPreferences.build();
+        }
+      }
+
+      class TestTransceiverController extends DefaultTransceiverController {
+        getMidForStreamId(streamId: number): string | undefined {
+          return streamId.toString();
+        }
+
+        getMidForGroupId(groupId: number): string {
+          return groupId.toString();
+        }
+      }
+
+      const sources: SdkStreamDescriptor[] = [];
+      sources.push(
+        new SdkStreamDescriptor({
+          streamId: 1,
+          groupId: 2,
+          maxBitrateKbps: 100,
+          attendeeId: 'attendee-1',
+          mediaType: SdkStreamMediaType.VIDEO,
+        })
+      );
+      sources.push(
+        new SdkStreamDescriptor({
+          streamId: 2,
+          groupId: 3,
+          maxBitrateKbps: 100,
+          attendeeId: 'attendee-2',
+          mediaType: SdkStreamMediaType.VIDEO,
+        })
+      );
+      const index = new DefaultVideoStreamIndex(context.logger);
+      index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
+      context.videoStreamIndex = index;
+      context.transceiverController = new TestTransceiverController(
+        context.logger,
+        new DefaultBrowserBehavior()
+      );
+
+      const description: RTCSessionDescriptionInit = {
+        type: 'offer',
+        sdp: SDPMock.CHROME_UNIFIED_PLAN_AUDIO_VIDEO_TWO_RECEIVE,
+      };
+      context.peer = new RTCPeerConnection();
+      context.peer.setLocalDescription(description);
+      context.videoSubscriptions = [0, 100, 1, 2, 3];
+      context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy('self');
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      await task.run();
+
+      const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
+        .settings;
+
+      const expected: SignalingClientVideoSubscriptionConfiguration[] = [];
+      const first = new SignalingClientVideoSubscriptionConfiguration();
+      first.attendeeId = 'attendee-1';
+      first.groupId = 2;
+      first.mid = '2';
+      first.priority = Number.MAX_SAFE_INTEGER - 1;
+      first.targetBitrateKbps = 1400;
+      expected.push(first);
+      const second = new SignalingClientVideoSubscriptionConfiguration();
+      second.attendeeId = 'attendee-2';
+      second.groupId = 3;
+      second.mid = '3';
+      second.priority = Number.MAX_SAFE_INTEGER - 2;
+      second.targetBitrateKbps = 300;
+      expected.push(second);
+      expect(settings.videoSubscriptionConfiguration).to.deep.equal(expected);
+    });
+
+    it('can subscribe SdkSubscribeAckFrame with remote video subscriptions except no getMidForStreamId', async () => {
+      await delay(behavior.asyncWaitMs + 10);
+      class TestDownlinkPolicy extends AllHighestVideoBandwidthPolicy {
+        getServerSideNetworkAdaption(): ServerSideNetworkAdaption {
+          return ServerSideNetworkAdaption.BandwidthProbing;
+        }
+
+        getVideoPreferences(): VideoPreferences {
+          const dummyPreferences = VideoPreferences.prepare();
+          dummyPreferences.add(new VideoPreference('attendee-1', 1, TargetDisplaySize.High));
+          dummyPreferences.add(new VideoPreference('attendee-2', 2, TargetDisplaySize.Low));
+          return dummyPreferences.build();
+        }
+      }
+
+      const sources: SdkStreamDescriptor[] = [];
+      sources.push(
+        new SdkStreamDescriptor({
+          streamId: 1,
+          groupId: 2,
+          maxBitrateKbps: 100,
+          attendeeId: 'attendee-1',
+          mediaType: SdkStreamMediaType.VIDEO,
+        })
+      );
+      sources.push(
+        new SdkStreamDescriptor({
+          streamId: 2,
+          groupId: 3,
+          maxBitrateKbps: 100,
+          attendeeId: 'attendee-2',
+          mediaType: SdkStreamMediaType.VIDEO,
+        })
+      );
+      const index = new DefaultVideoStreamIndex(context.logger);
+      index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
+      context.videoStreamIndex = index;
+      context.transceiverController.getMidForStreamId = undefined;
+
+      const description: RTCSessionDescriptionInit = {
+        type: 'offer',
+        sdp: SDPMock.CHROME_UNIFIED_PLAN_AUDIO_VIDEO_TWO_RECEIVE,
+      };
+      context.peer = new RTCPeerConnection();
+      context.peer.setLocalDescription(description);
+      context.videoSubscriptions = [0, 1, 2, -1];
+      context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy('self');
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      await task.run();
+
+      const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
+        .settings;
+      expect(settings.videoSubscriptionConfiguration.length).to.equal(0);
     });
 
     it('can receive SdkSubscribeAckFrame', async () => {

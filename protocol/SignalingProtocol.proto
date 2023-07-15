@@ -72,21 +72,34 @@ message SdkClientDetails {
     optional string platform_version = 6;
     optional string client_source = 7;
     optional string chime_sdk_version = 8;
+    optional string client_utc_offset = 9;
 }
 
+enum SdkServerSideNetworkAdaption {
+    DEFAULT = 1;
+    NONE = 2;
+    BANDWIDTH_PROBING = 3;
+    BANDWIDTH_PROBING_AND_VIDEO_QUALITY_ADAPTION = 4;
+};
+
 message SdkJoinFrame {
+    reserved 8, 9;
     optional uint32 protocol_version = 1 [default=2];
     optional uint32 max_num_of_videos = 2;
     optional uint32 flags = 3;
     optional SdkClientDetails client_details = 4;
     optional uint64 audio_session_id = 6;
     optional bool wants_compressed_sdp = 7;
+    optional SdkServerSideNetworkAdaption server_side_network_adaption = 10;
+    repeated SdkServerSideNetworkAdaption supported_server_side_network_adaptions = 11;
+    optional bool disable_periodic_keyframe_request_on_content_sender = 13;
 }
 
 message SdkJoinAckFrame {
     optional SdkTurnCredentials turn_credentials = 1;
-    optional uint32 video_subscription_limit = 2 [default=25];
+    optional uint32 video_subscription_limit = 2;
     optional bool wants_compressed_sdp = 3;
+    optional SdkServerSideNetworkAdaption default_server_side_network_adaption = 4;
 }
 
 message SdkLeaveFrame {}
@@ -113,6 +126,7 @@ message SdkSubscribeFrame {
     optional bool audio_checkin = 6;
     optional bool audio_muted = 7;
     optional bytes compressed_sdp_offer = 8;
+    repeated SdkVideoSubscriptionConfiguration video_subscription_configuration = 9;
 }
 
 message SdkSubscribeAckFrame {
@@ -128,14 +142,17 @@ message SdkIndexFrame {
     repeated SdkStreamDescriptor sources = 2;
     repeated uint32 paused_at_source_ids = 3;
     optional uint32 num_participants = 4;
+    repeated SdkVideoCodecCapability supported_receive_codec_intersection = 5;
 }
 
 message SdkPauseResumeFrame {
     repeated uint32 stream_ids = 1;
+    repeated uint32 group_ids = 2;
 }
 
 message SdkBitrateFrame {
     repeated SdkBitrate bitrates = 1;
+    optional uint32 server_available_outgoing_bitrate = 2;
 }
 
 message SdkStreamDescriptor {
@@ -234,7 +251,7 @@ message SdkMetric {
         VIDEO_ENCODE_USAGE_PERCENT = 22;
         VIDEO_NACKS_RECEIVED = 23;
         VIDEO_PLIS_RECEIVED = 24;
-        VIDEO_AVERAGE_ENCODE_MS = 25;
+        VIDEO_ENCODE_MS = 25;
         VIDEO_INPUT_FPS = 26;
         VIDEO_ENCODE_FPS = 27;
         VIDEO_SENT_FPS = 28;
@@ -265,6 +282,8 @@ message SdkMetric {
         VIDEO_RECEIVED_QP_SUM = 72;
         VIDEO_ENCODE_WIDTH = 86;
         VIDEO_DECODE_WIDTH = 87;
+        VIDEO_ENCODER_IS_HARDWARE = 88;
+        VIDEO_DECODER_IS_HARDWARE = 89;
     }
     optional Type type = 1;
     optional double value = 2;
@@ -274,11 +293,28 @@ message SdkStreamMetricFrame {
     optional uint32 stream_id = 3;
     optional uint32 group_id = 4;
     repeated SdkMetric metrics = 5;
+    repeated SdkStreamDimension dimensions = 6;
 }
 
 message SdkClientMetricFrame {
     repeated SdkMetric global_metrics = 1;
     repeated SdkStreamMetricFrame stream_metric_frames = 2;
+}
+
+
+message SdkStreamDimension {
+    enum Type {
+        VIDEO_ENCODER_NAME = 1;
+        VIDEO_DECODER_NAME = 2;
+    }
+    optional Type type = 1;
+    optional SdkDimensionValue value = 2;
+}
+
+message SdkDimensionValue {
+    optional string string_value = 1;
+    optional bool bool_value = 2;
+    optional uint64 uint_value = 3;
 }
 
 message SdkDataMessageFrame {
@@ -384,9 +420,12 @@ message SdkRemoteVideoUpdateFrame {
 }
 
 message SdkVideoSubscriptionConfiguration {
-   required string mid = 1;
-   optional string attendee_id = 2;
-   optional uint32 stream_id = 3;
+    required string mid = 1;
+    optional string attendee_id = 2;
+    optional uint32 stream_id = 3;
+    optional uint32 priority = 4;
+    optional uint32 target_bitrate_kbps = 5;
+    optional uint32 group_id = 6;
 }
 
 message SdkPrimaryMeetingJoinFrame {
@@ -404,3 +443,8 @@ message SdkMeetingSessionCredentials {
     optional string external_user_id = 2;
     optional string join_token = 3;
 }
+
+enum SdkVideoCodecCapability {
+    VP8 = 1;
+    H264_CONSTRAINED_BASELINE_PROFILE = 3;
+};

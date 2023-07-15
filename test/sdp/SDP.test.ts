@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import { VideoCodecCapability } from '../../src';
 import SDP from '../../src/sdp/SDP';
 import SDPCandidateType from '../../src/sdp/SDPCandidateType';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -153,13 +154,13 @@ describe('SDP', () => {
   describe('withVideoLayersAllocationRtpHeaderExtension', () => {
     it('does not add layers allocation line if no id is available', () => {
       const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
-      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
       expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
     });
 
     it('adds layers allocation line if available', () => {
       const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
-      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
       );
@@ -167,9 +168,71 @@ describe('SDP', () => {
 
     it('adds layers allocation line if available in gap', () => {
       const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS);
-      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('adds layers allocation line if there is ID available and extension not in previous SDP', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('adds layers allocation line if id available in gap and extension not in previous SDP', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS);
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('adds layers allocation line using extension id of previous SDP', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_ADDED_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID
+      );
+    });
+
+    it('does not add layers allocation line if it already exists', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(null);
+      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
+    });
+
+    it('remove layers allocation line if previous ID is used by another extension', () => {
+      const sdpA = new SDP(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_HEADER_EXTENSION);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_NO_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('override layers allocation extension id if differs from previous ID', () => {
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_WITH_GAP_ID);
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_HEADER_EXTENSION);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_LAYERS_ALLOCATION_EXTENSION_OVERRIDE_ID);
+    });
+
+    it('do not add layers allocation extension if previous ID is used by another ID', () => {
+      const sdpA = new SDP(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_NO_LAYERS_ALLOCATION_EXTENSION
+      );
+      const sdpPrev = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_HEADER_EXTENSION);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension(sdpPrev);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_NO_LAYERS_ALLOCATION_EXTENSION
       );
     });
   });
@@ -288,6 +351,11 @@ describe('SDP', () => {
       expect(sdpPlanB.ssrcForVideoSendingSection()).to.deep.equal('');
     });
 
+    it('video without direction', () => {
+      const sdp = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_NO_DIRECTION);
+      expect(sdp.ssrcForVideoSendingSection()).to.deep.equal('138036785');
+    });
+
     it('video sendrecv', () => {
       const sdp = new SDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING);
       expect(sdp.ssrcForVideoSendingSection()).to.deep.equal('2209845614');
@@ -384,6 +452,65 @@ describe('SDP', () => {
       expect(mediaSections[5].mediaType).to.equal('video');
       expect(mediaSections[5].mid).to.equal('5');
       expect(mediaSections[5].direction).to.equal('inactive');
+    });
+  });
+
+  describe('withVideoSendCodecPreferences', () => {
+    it('Does not do anything if no video', () => {
+      const sdpObj = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      expect(
+        sdpObj.withVideoSendCodecPreferences([
+          VideoCodecCapability.h264(),
+          VideoCodecCapability.vp8(),
+        ]).sdp
+      ).to.deep.equal(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+    });
+
+    it('Updates priority of video send codes', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      expect(
+        sdpObj.withVideoSendCodecPreferences([
+          VideoCodecCapability.h264ConstrainedBaselineProfile(),
+          VideoCodecCapability.vp8(),
+        ]).sdp
+      ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_H264_CBP_THEN_VP8);
+    });
+  });
+
+  describe('highestPriorityVideoSendCodec', () => {
+    it('Returns undefined if no video', () => {
+      const sdpObj = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+    });
+
+    it('Returns expected value', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      expect(sdpObj.highestPriorityVideoSendCodec().equals(VideoCodecCapability.vp8())).to.be.true;
+    });
+
+    it('Returns undefined for faulty m line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_M_LINE);
+      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+    });
+
+    it('Returns undefined for faulty rtpmap line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE);
+      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+    });
+
+    it('Returns undefined for faulty name/clockrate line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE_CLOCKRATE);
+      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+    });
+
+    it('Returns expected value for codec with fmtp line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_H264_PREFERRED);
+      expect(sdpObj.highestPriorityVideoSendCodec().equals(VideoCodecCapability.h264())).to.be.true;
+    });
+
+    it('Returns undefined for faulty fmtp line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_H264_PREFERRED_FAULTY_FMTP_LINE);
+      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
     });
   });
 });

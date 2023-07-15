@@ -3,6 +3,8 @@
 
 import AudioProfile from '../audioprofile/AudioProfile';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
+import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 
 export default interface ContentShareControllerFacade {
   /**
@@ -11,6 +13,20 @@ export default interface ContentShareControllerFacade {
    * already started, upon the next reconnect.
    */
   setContentAudioProfile(audioProfile: AudioProfile): void;
+
+  /**
+   * Toggle simulcast for content share. This should be called before calling `startContentShare` or
+   * `startContentShareFromScreenCapture`. The default encoding parameters are:
+   * - High layer: 1200 kbps max bitrate
+   * - Low layer: 300 kbps max bitrate, scale down resolution by 2, and 5 fps max frame rate.
+   * @param enable Enable/disable simulcast
+   * @param encodingParams Overide the default encoding params for either layer in max bitrate, scale resolution
+   * down by, or max frame rate.
+   */
+  enableSimulcastForContentShare(
+    enable: boolean,
+    encodingParams?: ContentShareSimulcastEncodingParameters
+  ): void;
 
   /**
    * Start content sharing
@@ -23,7 +39,11 @@ export default interface ContentShareControllerFacade {
   startContentShareFromScreenCapture(sourceId?: string, frameRate?: number): Promise<MediaStream>;
 
   /**
-   * Pause content sharing
+   * Pause content sharing. This (combined with `unpauseContentShare` is a lightweight alternative to stopping and
+   * starting content share which requires use of a seperate peer connection and therefore has increased latency.
+   *
+   * Remote receivers will continue to subscribe to content share video but there will be nothing transmitting
+   * (e.g. it may be a black frame)
    */
   pauseContentShare(): void;
 
@@ -46,4 +66,12 @@ export default interface ContentShareControllerFacade {
    * Remove an observer
    */
   removeContentShareObserver(observer: ContentShareObserver): void;
+
+  /**
+   * Set codec preferences for this content send stream. See `AudioVideoControllerFacade.setVideoCodecSendPreferences`
+   * for more information.
+   *
+   * @param Array of [[VideoCodecCapability]].
+   */
+  setContentShareVideoCodecPreferences?(preferences: VideoCodecCapability[]): void;
 }

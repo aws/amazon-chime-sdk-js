@@ -22,6 +22,8 @@ export default class DOMMockBehavior {
   iceConnectionStates: string[] = ['completed'];
   setSinkIdSucceeds: boolean = true;
   setSinkIdSupported: boolean = true;
+  navigatorProduct: string = '';
+  undefinedDocument: boolean = false;
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   FakeTURNCredentialsBody: Promise<object> = new Promise((resolve, _reject) => {
@@ -68,7 +70,7 @@ export default class DOMMockBehavior {
   mediaDeviceOnDeviceChangeSupported: boolean = true;
   rtcPeerConnectionGetStatsSucceeds: boolean = true;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  rtcPeerConnectionGetStatsReport: { [name: string]: any } = {};
+  rtcPeerConnectionGetStatsReports: { [name: string]: any }[] = [{}];
   rtcPeerConnectionCreateOfferIncludesLocalHost: boolean = false;
   rtcPeerConnectionCreateOfferWithSendingSsrcChange: boolean = false;
   rtcPeerConnectionUseCustomOffer: boolean = false;
@@ -88,4 +90,7 @@ export default class DOMMockBehavior {
   videoElementSetWidthHeightAttributeDelay = 100;
   beaconQueuedSuccess: boolean = true;
   documentVisibilityState = 'visible';
+  scriptHasLoaded = true;
+  scriptHasParent = true;
+  imageLoads = true;
 }

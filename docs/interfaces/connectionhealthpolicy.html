@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -53,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
 					<a href="connectionhealthpolicy.html">ConnectionHealthPolicy</a>
@@ -77,17 +76,22 @@
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/baseconnectionhealthpolicy.html" class="tsd-signature-type">BaseConnectionHealthPolicy</a></li>
-					<li><a href="../classes/reconnectionhealthpolicy.html" class="tsd-signature-type">ReconnectionHealthPolicy</a></li>
-					<li><a href="../classes/reconnectionhealthpolicy.html" class="tsd-signature-type">ReconnectionHealthPolicy</a></li>
-					<li><a href="../classes/unusableaudiowarningconnectionhealthpolicy.html" class="tsd-signature-type">UnusableAudioWarningConnectionHealthPolicy</a></li>
-					<li><a href="../classes/unusableaudiowarningconnectionhealthpolicy.html" class="tsd-signature-type">UnusableAudioWarningConnectionHealthPolicy</a></li>
+					<li><a href="../classes/baseconnectionhealthpolicy.html" class="tsd-signature-type" data-tsd-kind="Class">BaseConnectionHealthPolicy</a></li>
+					<li><a href="../classes/reconnectionhealthpolicy.html" class="tsd-signature-type" data-tsd-kind="Class">ReconnectionHealthPolicy</a></li>
+					<li><a href="../classes/sendingaudiofailureconnectionhealthpolicy.html" class="tsd-signature-type" data-tsd-kind="Class">SendingAudioFailureConnectionHealthPolicy</a></li>
+					<li><a href="../classes/unusableaudiowarningconnectionhealthpolicy.html" class="tsd-signature-type" data-tsd-kind="Class">UnusableAudioWarningConnectionHealthPolicy</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="connectionhealthpolicy.html#name" class="tsd-kind-icon">name</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
@@ -103,6 +107,24 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="name" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L12">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:12</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A unique readable name for the purpose of logging</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="health" class="tsd-anchor"></a>
@@ -114,7 +136,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L27">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L32">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:32</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -130,13 +152,13 @@
 					<a name="healthifchanged" class="tsd-anchor"></a>
 					<h3>health<wbr>IfChanged</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">health<wbr>IfChanged<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">health<wbr>IfChanged<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L37">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L42">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:42</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -144,7 +166,7 @@
 									<p>The value per this policy or null if it has not changed since the last call.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -158,7 +180,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L32">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L37">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:37</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -180,7 +202,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L17">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L22">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:22</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -202,7 +224,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L12">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L17">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -218,13 +240,13 @@
 					<a name="update" class="tsd-anchor"></a>
 					<h3>update</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>connectionHealthData<span class="tsd-signature-symbol">: </span><a href="../classes/connectionhealthdata.html" class="tsd-signature-type">ConnectionHealthData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>connectionHealthData<span class="tsd-signature-symbol">: </span><a href="../classes/connectionhealthdata.html" class="tsd-signature-type" data-tsd-kind="Class">ConnectionHealthData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L22">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicy.ts#L27">src/connectionhealthpolicy/ConnectionHealthPolicy.ts:27</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -235,7 +257,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>connectionHealthData: <a href="../classes/connectionhealthdata.html" class="tsd-signature-type">ConnectionHealthData</a></h5>
+									<h5>connectionHealthData: <a href="../classes/connectionhealthdata.html" class="tsd-signature-type" data-tsd-kind="Class">ConnectionHealthData</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -247,8 +269,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -259,6 +281,9 @@
 					<li class="current tsd-kind-interface">
 						<a href="connectionhealthpolicy.html" class="tsd-kind-icon">Connection<wbr>Health<wbr>Policy</a>
 						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="connectionhealthpolicy.html#name" class="tsd-kind-icon">name</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="connectionhealthpolicy.html#health" class="tsd-kind-icon">health</a>
 							</li>

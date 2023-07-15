@@ -33,9 +33,27 @@ export default class SetLocalDescriptionTask extends BaseTask {
     const sdpOfferInit = this.context.sdpOfferInit;
     let sdp = sdpOfferInit.sdp;
 
+    if (this.context.browserBehavior.supportsVideoLayersAllocationRtpHeaderExtension()) {
+      // This will be negotiatiated with backend, and we will only use it to skip resubscribes
+      // if we confirm support/negotiation via `RTCRtpTranceiver.sender.getParams`
+      sdp = new SDP(sdp).withVideoLayersAllocationRtpHeaderExtension(this.context.previousSdpOffer)
+        .sdp;
+    }
     if (new DefaultBrowserBehavior().requiresDisablingH264Encoding()) {
       sdp = new SDP(sdp).removeH264SupportFromSendSection().sdp;
     }
+
+    if (
+      this.context.videoSendCodecPreferences !== undefined &&
+      this.context.videoSendCodecPreferences.length > 0
+    ) {
+      sdp = new SDP(sdp).withVideoSendCodecPreferences(
+        this.context.meetingSupportedVideoSendCodecPreferences !== undefined
+          ? this.context.meetingSupportedVideoSendCodecPreferences
+          : this.context.videoSendCodecPreferences
+      ).sdp;
+    }
+
     if (this.context.audioProfile) {
       sdp = new SDP(sdp).withAudioMaxAverageBitrate(this.context.audioProfile.audioBitrateBps).sdp;
       if (this.context.audioProfile.isStereo()) {

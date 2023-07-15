@@ -14,7 +14,9 @@ import IntervalScheduler from '../scheduler/IntervalScheduler';
 import SignalingClient from '../signalingclient/SignalingClient';
 import {
   SdkClientMetricFrame,
+  SdkDimensionValue,
   SdkMetric,
+  SdkStreamDimension,
   SdkStreamMetricFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
 import { Maybe } from '../utils/Types';
@@ -253,8 +255,16 @@ export default class StatsCollector {
 
     for (const rawMetric in rawMetricReport) {
       if (rawMetric in metricMap) {
-        metricReport.previousMetrics[rawMetric] = metricReport.currentMetrics[rawMetric];
-        metricReport.currentMetrics[rawMetric] = rawMetricReport[rawMetric];
+        if (typeof rawMetricReport[rawMetric] === 'number') {
+          metricReport.previousMetrics[rawMetric] = metricReport.currentMetrics[rawMetric];
+          metricReport.currentMetrics[rawMetric] = rawMetricReport[rawMetric];
+        } else if (typeof rawMetricReport[rawMetric] === 'string') {
+          metricReport.currentStringMetrics[rawMetric] = rawMetricReport[rawMetric];
+        } else {
+          this.logger.error(
+            `Unknown metric value type ${typeof rawMetricReport[rawMetric]} for metric ${rawMetric}`
+          );
+        }
       }
     }
   }
@@ -279,6 +289,12 @@ export default class StatsCollector {
             streamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
               Number(rawMetricReport.ssrc)
             );
+            /* istanbul ignore else */
+            if (this.videoStreamIndex.groupIdForSSRC !== undefined) {
+              streamMetricReport.groupId = this.videoStreamIndex.groupIdForSSRC(
+                Number(rawMetricReport.ssrc)
+              );
+            }
           }
           this.clientMetricReport.streamMetricReports[
             Number(rawMetricReport.ssrc)
@@ -298,6 +314,26 @@ export default class StatsCollector {
     this.clientMetricReport.previousTimestampMs = this.clientMetricReport.currentTimestampMs;
     this.clientMetricReport.currentTimestampMs = timeStamp;
     this.clientMetricReport.print();
+  }
+
+  /**
+   *  Add stream metric dimension frames derived from metrics
+   */
+  private addStreamMetricDimensionFrames(
+    streamMetricFrame: SdkStreamMetricFrame,
+    streamMetricReport: StreamMetricReport
+  ): void {
+    const streamDimensionMap = this.clientMetricReport.getStreamDimensionMap();
+    for (const metricName in streamMetricReport.currentStringMetrics) {
+      if (metricName in streamDimensionMap) {
+        const dimensionFrame = SdkStreamDimension.create();
+        dimensionFrame.type = streamDimensionMap[metricName];
+        const dimensionValue = SdkDimensionValue.create();
+        dimensionValue.stringValue = streamMetricReport.currentStringMetrics[metricName];
+        dimensionFrame.value = dimensionValue;
+        streamMetricFrame.dimensions.push(dimensionFrame);
+      }
+    }
   }
 
   /**
@@ -350,12 +386,18 @@ export default class StatsCollector {
       const streamMetricFrame = SdkStreamMetricFrame.create();
       streamMetricFrame.streamId = streamMetricReport.streamId;
       streamMetricFrame.metrics = [];
+      this.addStreamMetricDimensionFrames(streamMetricFrame, streamMetricReport);
       clientMetricFrame.streamMetricFrames.push(streamMetricFrame);
       const metricMap = this.clientMetricReport.getMetricMap(
         streamMetricReport.mediaType,
         streamMetricReport.direction
       );
+
       for (const metricName in streamMetricReport.currentMetrics) {
+        this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
+      }
+
+      for (const metricName in streamMetricReport.currentStringMetrics) {
         this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
       }
     }
@@ -393,18 +435,17 @@ export default class StatsCollector {
    * Returns the MediaType for a RawMetricReport.
    */
   private getMediaType(rawMetricReport: RawMetricReport): MediaType {
-    return rawMetricReport.mediaType === 'audio' ? MediaType.AUDIO : MediaType.VIDEO;
+    return rawMetricReport.kind === 'audio' ? MediaType.AUDIO : MediaType.VIDEO;
   }
 
   /**
    * Returns the Direction for a RawMetricReport.
    */
   private getDirectionType(rawMetricReport: RawMetricReport): Direction {
-    return rawMetricReport.id.toLowerCase().indexOf('send') !== -1 ||
-      rawMetricReport.id.toLowerCase().indexOf('outbound') !== -1 ||
-      rawMetricReport.type === 'outbound-rtp'
-      ? Direction.UPSTREAM
-      : Direction.DOWNSTREAM;
+    const { type } = rawMetricReport;
+    return type === 'inbound-rtp' || type === 'remote-outbound-rtp'
+      ? Direction.DOWNSTREAM
+      : Direction.UPSTREAM;
   }
 
   /**
@@ -494,5 +535,9 @@ export default class StatsCollector {
     } catch (error) {
       this.logger.error(error.message);
     }
+  }
+
+  overrideObservableMetric(name: string, value: number): void {
+    this.clientMetricReport.overrideObservableMetric(name, value);
   }
 }
