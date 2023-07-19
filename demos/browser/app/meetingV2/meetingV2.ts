@@ -2827,9 +2827,22 @@ export class DemoMeetingApp
 
   async selectAudioInputDevice(device: AudioInputDevice): Promise<void> {
     this.currentAudioInputDevice = device;
-    this.log('Selecting audio input', device);
+
+    const audioStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+    });
+    const audioTrack = await audioStream.getAudioTracks()[0];
+    this.log('Selecting audio input', audioTrack);
     try {
-      await this.audioVideo.startAudioInput(device);
+      if (audioTrack) {
+        await this.audioVideo?.startAudioInput(new MediaStream([audioTrack]));
+        await this.audioVideo?.stopAudioInput();
+        await this.audioVideo?.startAudioInput(new MediaStream([audioTrack]));
+        await this.audioVideo?.stopAudioInput();
+        await this.audioVideo?.startAudioInput(new MediaStream([audioTrack]));
+        await this.audioVideo?.stopAudioInput();
+        await this.audioVideo?.startAudioInput(new MediaStream([audioTrack]));
+      }
     } catch (e) {
       fatal(e);
       this.log(`failed to choose audio input device ${device}`, e);
