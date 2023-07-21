@@ -105,7 +105,7 @@ let SHOULD_EARLY_CONNECT = (() => {
 })();
 
 let SHOULD_DIE_ON_FATALS = (() => {
-  const isLocal = document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
+  const isLocal = document.location.host === '127.0.0.1:8082' || document.location.host === 'localhost:8082';
   const fatalYes = document.location.search.includes('fatal=1');
   const fatalNo = document.location.search.includes('fatal=0');
   return fatalYes || (isLocal && !fatalNo);
@@ -1886,7 +1886,7 @@ export class DemoMeetingApp
   }
 
   private isLocalHost(): boolean {
-    return document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
+    return document.location.host === '127.0.0.1:8082' || document.location.host === 'localhost:8082';
   }
 
   async join(): Promise<void> {
@@ -3302,7 +3302,22 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
+    const meetingInfo = (document.getElementById('meeting-joininfo') as HTMLInputElement).value;
+    const attendeeInfo = (document.getElementById('attendee-joininfo') as HTMLInputElement).value;
+    if (meetingInfo && attendeeInfo) {
+      console.log('Joining from UI provided joininfo');
+      this.joinInfo = {
+        "Meeting": JSON.parse(meetingInfo),
+        "Attendee": JSON.parse(attendeeInfo)
+      }
+    } else {
+      console.log('Getting JoinInfo making a backend API call');
+      this.joinInfo = (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
+    }
+    
+    console.log("JoinInfo:", this.joinInfo);
+    console.log("JoinInfo Meeting is:", this.joinInfo.Meeting);
+    console.log("JoinInfo Attendee is:", this.joinInfo.Attendee);
     this.region = this.joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);

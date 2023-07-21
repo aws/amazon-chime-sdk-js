@@ -26,11 +26,11 @@
     <form id="form-authenticate">
       <h1 class="h3 mb-3 fw-normal">Join a meeting</h1>
       <div class="form-floating row mt-3">
-        <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required autofocus>
+        <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" >
         <label for="inputMeeting" style="text-align: left;">Meeting Title or ID</label>
       </div>
       <div class="form-floating row mt-3">
-        <input type="name" id="inputName" class="form-control" placeholder="Your Name" required>
+        <input type="name" id="inputName" class="form-control" placeholder="Your Name" >
         <label for="inputName" style="text-align: left;">Your Name</label>
       </div>
       <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
@@ -63,6 +63,14 @@
                 data-bs-target="#additional-options-modal">
           Additional Options
         </button>
+      </div>
+      <div class="row mt-3">
+        <div class="btn-group p-0" role="group">
+          <label for="meeting-joininfo" style="text-align: left;"> Meeting Join Info</label>
+          <input type="text" id="meeting-joininfo">
+          <label for="attendee-joininfo" style="text-align: left;"> Attendee Join Info</label>
+          <input type="text" id="attendee-joininfo">
+        </div>
       </div>
       <div class="row mt-3">
         <div class="btn-group p-0" role="group">

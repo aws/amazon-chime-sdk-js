@@ -37,7 +37,7 @@ module.exports = env => {
       static: {
         publicPath: '/',
       },
-      port: 8080,
+      port: 8082,
       proxy: {
         '/join': 'http://127.0.0.1:8081',
         '/deleteAttendee': 'http://127.0.0.1:8081',

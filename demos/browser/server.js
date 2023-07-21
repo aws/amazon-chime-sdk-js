@@ -66,7 +66,7 @@ function getClientForMeeting(meeting) {
       : chime;
 }
 
-function serve(host = '127.0.0.1:8080') {
+function serve(host = '127.0.0.1:8082') {
   // Start an HTTP server to serve the index page and handle meeting actions
   http.createServer({}, async (request, response) => {
     log(`${request.method} ${request.url} BEGIN`);

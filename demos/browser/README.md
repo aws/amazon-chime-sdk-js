@@ -53,7 +53,7 @@ For messaging session, make sure your role policy contains `chime:Connect` and `
 2. Start the demo application: `npm run start`
 > Note: Once the demo is run for the first time, you can run the application in hot reload mode by calling `npm run start:hot`.
 
-3. Open http://localhost:8080 in your browser.
+3. Open http://localhost:8082 in your browser.
 
 The meeting created with a local server is only available within your browser.
 
