@@ -490,12 +490,12 @@
 						<tbody><tr>
 								<td>The attendee couldn&#39;t join because the meeting was at capacity.</td>
 								<td>AudioCallAtCapacity</td>
-								<td>Ensure that the number of attendees does not exceed the maximum limit (250). See the <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">Amazon Chime SDK quotas</a>. You can also track the number of attendees in your server application using the <a href="https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-notifications.html">Amazon Chime SDK event notifications</a>.</td>
+								<td>Ensure that the number of attendees does not exceed the maximum limit (250). See the <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-limits">Amazon Chime SDK quotas</a>. You can also track the number of attendees in your server application using the <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/mtgs-sdk-notifications.html">Amazon Chime SDK event notifications</a>.</td>
 							</tr>
 							<tr>
 								<td>The meeting already ended.</td>
 								<td>MeetingEnded</td>
-								<td>Ensure that you or someone else have not deleted a meeting using the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html">DeleteMeeting</a> API action in your server application. A meeting also automatically ends after a period of inactivity. See the <a href="https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-mtgs.html">Chime SDK developer guide</a> for details.</td>
+								<td>Ensure that you or someone else have not deleted a meeting using the <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_DeleteMeeting.html">DeleteMeeting</a> API action in your server application. A meeting also automatically ends after a period of inactivity. See the <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/mtgs-sdk-mtgs.html">Chime SDK developer guide</a> for details.</td>
 							</tr>
 							<tr>
 								<td>The signaling connection was closed with code (close code) and reason: (reason)</td>
@@ -527,12 +527,12 @@
 						<tbody><tr>
 								<td>The meeting ended because attendee removed.</td>
 								<td>AudioAttendeeRemoved</td>
-								<td>Ensure that you or someone else have not called the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html">DeleteMeeting</a> API action in your server application to delete the attendee present in the meeting.</td>
+								<td>Ensure that you or someone else have not called the <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_DeleteMeeting.html">DeleteMeeting</a> API action in your server application to delete the attendee present in the meeting.</td>
 							</tr>
 							<tr>
 								<td>The attendee joined from another device.</td>
 								<td>AudioJoinedFromAnotherDevice</td>
-								<td>Ensure that you do not use the same attendee response from the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">CreateAttendee</a>, <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_BatchCreateAttendee.html">BatchCreateAttendee</a>, or <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html">CreateMeetingWithAttendees</a> API action in two or more meetings simultaneously.</td>
+								<td>Ensure that you do not use the same attendee response from the <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html">CreateAttendee</a>, <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_BatchCreateAttendee.html">BatchCreateAttendee</a>, or <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeetingWithAttendees.html">CreateMeetingWithAttendees</a> API action in two or more meetings simultaneously.</td>
 							</tr>
 							<tr>
 								<td>(An error message from your real-time callback)</td>

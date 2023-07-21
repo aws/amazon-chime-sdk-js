@@ -92,11 +92,13 @@
 					<a href="#1c-create-a-meeting-from-your-server-application" id="1c-create-a-meeting-from-your-server-application" style="color: inherit; text-decoration: none;">
 						<h3>1c. Create a meeting from your server application</h3>
 					</a>
-					<p>Use AWS SDK to create the Chime object. Use the Chime object to get meeting and attendee objects from <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">CreateMeeting</a> and <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">CreateAttendee</a> Chime APIs. See <a href="https://github.com/aws/amazon-chime-sdk-js#getting-responses-from-your-server-application">Getting responses from your server application</a> for more information.</p>
+					<p>Use AWS SDK to create the Chime object. Use the Chime object to get meeting and attendee objects from <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeeting.html">CreateMeeting</a>
+						and <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html">CreateAttendee</a> Chime APIs. See <a href="https://github.com/aws/amazon-chime-sdk-js#getting-responses-from-your-server-application">Getting responses from your
+					server application</a> for more information.</p>
 					<a href="#1d-create-a-meeting-session-configuration" id="1d-create-a-meeting-session-configuration" style="color: inherit; text-decoration: none;">
 						<h3>1d. Create a meeting session configuration</h3>
 					</a>
-					<p>Create a <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#constructor">MeetingSessionConfiguration</a> object with the responses to <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">chime:CreateMeeting</a> and <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">chime:CreateAttendee</a>. Your server application should make these API calls and securely pass the meeting and attendee responses to the browser client application.</p>
+					<p>Create a <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#constructor">MeetingSessionConfiguration</a> object with the responses to <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeeting.html">CreateMeeting</a> and <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html">CreateAttendee</a>. Your server application should make these API calls and securely pass the meeting and attendee responses to the browser client application.</p>
 					<pre><code><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">configuration</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeetingSessionConfiguration</span><span style="color: #000000">(</span><span style="color: #001080">meetingResponse</span><span style="color: #000000">, </span><span style="color: #001080">attendeeResponse</span><span style="color: #000000">);</span>
 </code></pre>
 					<a href="#1e-create-a-meeting-session" id="1e-create-a-meeting-session" style="color: inherit; text-decoration: none;">
@@ -249,7 +251,7 @@
 					<a href="#5a-subscribe-to-attendee-presence-changes" id="5a-subscribe-to-attendee-presence-changes" style="color: inherit; text-decoration: none;">
 						<h3>5a. Subscribe to attendee presence changes</h3>
 					</a>
-					<p>To learn when attendees join or leave, subscribe to the attendee ID presence changes. The callback provides both the attendee ID and external user ID from <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">chime:CreateAttendee</a> so that you may map between the two IDs.</p>
+					<p>To learn when attendees join or leave, subscribe to the attendee ID presence changes. The callback provides both the attendee ID and external user ID from <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html">CreateAttendee</a> so that you may map between the two IDs.</p>
 					<p>To subscribe to attendee presence changes, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetoattendeeidpresence">realtimeSubscribeToAttendeeIdPresence(callback)</a>.</p>
 					<p>To unsubscribe to attendee presence changes, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribetoattendeeidpresence">realtimeUnsubscribeToAttendeeIdPresence(callback)</a>.</p>
 					<a href="#5b-subscribe-to-volume-indicators" id="5b-subscribe-to-volume-indicators" style="color: inherit; text-decoration: none;">

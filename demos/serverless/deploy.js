@@ -36,7 +36,7 @@ let mediaCaptureRegions = [
 ];
 
 // Supported regions for the Amazon Chime SDK Meetings namespace
-// https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html
+// https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html
 const supportedControlRegions = [
   'ap-southeast-1',
   'eu-central-1',
@@ -276,7 +276,7 @@ function copyAssets() {
 function ensureRegion() {
   if (useChimeSDKMeetings === 'true') {
     if (!(new Set(supportedControlRegions)).has(region)) {
-      console.error(`Amazon Chime SDK does not support ${region} (control region). Specify one of the following regions: ${supportedControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html for more information.`);
+      console.error(`Amazon Chime SDK does not support ${region} (control region). Specify one of the following regions: ${supportedControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html for more information.`);
       process.exit(1);
     }
   }

@@ -50,7 +50,7 @@ connect-src: *.chime.aws wss://*.chime.aws
 
 ## Messaging
 
-If you use the [Amazon Chime SDK messaging](https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html) with [Amazon Cognito](https://aws.amazon.com/cognito/), ensure that you add the following:
+If you use the [Amazon Chime SDK messaging](https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html) with [Amazon Cognito](https://aws.amazon.com/cognito/), ensure that you add the following:
 
 ```
 connect-src: *.amazonaws.com
