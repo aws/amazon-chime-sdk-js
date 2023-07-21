@@ -8,7 +8,7 @@ import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
  */
 type RealtimeSubscribeToAttendeeIdPresenceCallback =
   /**
-   * @param attendeeId Internal Amazon Chime `AttendeeId` created by [`CreateAttendee`](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API.
+   * @param attendeeId Internal Amazon Chime `AttendeeId` created by [`CreateAttendee`](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html) API.
    *
    * @param present Indicates the attendee's presence in a meeting.
    *

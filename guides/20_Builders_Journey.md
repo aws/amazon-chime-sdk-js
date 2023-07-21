@@ -114,7 +114,7 @@ The Amazon Chime SDK for JavaScript works by connecting to meeting session resou
 - [Amazon Chime SDK Guides](https://github.com/aws/amazon-chime-sdk-js/tree/master/guides)(Please review each document in this list)
 - [A Builder's Guide to Amazon Chime sessions at](https://aws.amazon.com/blogs/business-productivity/a-builders-guide-to-amazon-chime-sessions-at-reinvent-2019/)[re:Invent 2019](https://aws.amazon.com/blogs/business-productivity/a-builders-guide-to-amazon-chime-sessions-at-reinvent-2019/)
 - [Serverless Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless)
-- [Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html)
+- [Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html)
 
 ### 2.2 Quotas / Limits
 
@@ -144,7 +144,7 @@ Additionally, the Amazon Chime SDK has limits on meeting length to protect again
 - 24 hours with one person in the meeting (new ChimeSDKMeetings namespace only)
 - 6 hours with 2 or more attendees but no detected audio
 
-Messaging quotas can be found here: [https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html](https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html).
+Messaging quotas can be found here: [https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html](https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html).
 
 ###
 
@@ -158,7 +158,7 @@ We do not specify hardware requirements because they are dependent on the requir
 
 ### 2.4 Media and Control Planes for Meetings
 
-The Amazon Chime SDK consists of Control Planes and a Media Planes. The control plane is used to set up a meeting and the medial Plane is where the meeting actually happens. The available regions for each can be found in [https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html](https://docs.aws.amazon.com/chime/latest/dg/sdk-available-regions.html). Additional information and guidance on selecting a region can be found here: [https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html](https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html).
+The Amazon Chime SDK consists of Control Planes and a Media Planes. The control plane is used to set up a meeting and the medial Plane is where the meeting actually happens. The available regions for each can be found in [https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html](https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html). Additional information and guidance on selecting a region can be found here: [https://docs.aws.amazon.com/chime-sdk/latest/dg/chime-sdk-meetings-regions.html](https://docs.aws.amazon.com/chime-sdk/latest/dg/chime-sdk-meetings-regions.html).
 
 ![](RackMultipart20220816-1-gyffxg_html_46f0e418fa28f44a.png)
 
@@ -166,13 +166,13 @@ The Amazon Chime SDK consists of Control Planes and a Media Planes. The control 
 
 Amazon Chime SDK Messaging can be used to add massively scalable messaging capability to your application. This may be in the context of a meeting, but it does not need to be. Amazon Chime SDK Messaging is a service that can be used independently from the other components of the SDK.
 
-- [Using Amazon Chime SDK messaging](https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html)
+- [Using Amazon Chime SDK messaging](https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html)
 
 ### 2.6 Getting a Public Switched Telephone Network (PSTN) audio call into a meeting
 
 Amazon Chime SDK PSTN Audio enables integration with common telephony interfaces including PSTN phone numbers and SIP Trunks. This allows you to build applications that use audio from phone calls, either in the context of a meeting or not. SIP Trunks allow you to integrate directly with your on-premise PBX under programmatic control. You can provision Amazon Chime SDK managed phone numbers in the US and other countries. Using the SIP Media Appliance (SMA) managed object and SIP rules you can associate events that occur on phone line with a lambda function that you write. The lambda function instructs the PSTN Audio Service what actions to take on the phone call: connect to a meeting, play an audio file, record audio from the caller, collect pressed STMF digits, etc. More sophisticated examples include integrating with other Amazon AWS services such as Lex, Polly, Transcribe, etc.
 
-- [Using Amazon PSTN Audio Service](https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html)
+- [Using Amazon PSTN Audio Service](https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html)
 
 When in an Amazon Chime SDK Meeting, it is often helpful to allow users to call into a meeting with their desk or mobile phone. It lets you do much more but this document will focus on the call-in capabilities. The following document provides the details about using the Amazon Chime SDK PSTN Audio feature:
 
@@ -345,7 +345,7 @@ With the Amazon Chime SDK, it is possible to process the image from the camera b
 Users can call to/from meetings from the Public Switched Telephone Network (PSTN) using a desk phone or mobile phone. They can also build stand-alone PSTN apps that can dynamically route calls based on user (DTMF), database, or AI/ML data. Review the links below to become familiar with the techniques and capabilities:
 
 - [Updating an In-Progress Amazon Chime SIP Media Application Call](https://github.com/aws-samples/amazon-chime-sma-update-call)
-- [Amazon Chime SDK PSTN Audio Sample Call Flow](https://docs.aws.amazon.com/chime/latest/dg/call-flow.html)
+- [Amazon Chime SDK PSTN Audio Sample Call Flow](https://docs.aws.amazon.com/chime-sdk/latest/dg/call-flow.html)
 - [PSTN dial-in for Amazon Chime SDK with Amazon Chime SIP Media Application](https://github.com/aws-samples/chime-sipmediaapplication-samples)
 - [Building a Click-To-Call Application with Amazon Chime SDK](https://catalog.us-east-1.prod.workshops.aws/workshops/43b40159-ea91-4a81-ac6e-3f6906034ea0/en-US) (Meeting Outbound dialing)
 - [Building Telephony-Powered Applications with the Amazon Chime SDK PSTN Audio Service](https://catalog.workshops.aws/building-with-chime-sdk/en-US)
@@ -435,7 +435,7 @@ For a POC, you may be able to do without much in the way of logging or monitorin
 This next blog talks about adding client-side events to CloudWatch:
 
 - [Monitoring and troubleshooting with Amazon Chime SDK meeting events |...](https://aws.amazon.com/blogs/business-productivity/monitoring-and-troubleshooting-with-amazon-chime-sdk-meeting-events/)
-- [Automating Amazon Chime with EventBridge - Amazon Chime](https://docs.aws.amazon.com/chime/latest/ag/automating-chime-with-cloudwatch-events.html#events-sdk)
+- [Automating Amazon Chime with EventBridge - Amazon Chime](https://docs.aws.amazon.com/chime-sdk/latest/ag/automating-chime-with-cloudwatch-events.html#events-sdk)
 
 These slide decks provide some guidance for troubleshooting:
 

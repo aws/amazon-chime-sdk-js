@@ -135,7 +135,7 @@ export default GalleryVideoTileGrid;
 
 ### Case 2: Gallery Layout (up to 25 Videos) with Fixed Tile Size
 
-While the JavaScript SDK supports viewing up to [25 video tiles](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits) at this time, as the number of video publishers increases, the bandwidth and CPU consumption of receiving attendees may not be sufficient to display all videos.
+While the JavaScript SDK supports viewing up to [25 video tiles](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-limits) at this time, as the number of video publishers increases, the bandwidth and CPU consumption of receiving attendees may not be sufficient to display all videos.
 
 ![gallery layout example](media://gallery_layout_example.png)
 
@@ -306,7 +306,7 @@ const updateVideoPreferences = () => {
 
 ### Case 3: Featured Layout
 
-The featured layout is designed to focus on important video sources such as an active speaker or content share. The featured tile displays a video source in a large area while other video sources (up to [25 video tiles](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits)) are displayed as smaller tiles.
+The featured layout is designed to focus on important video sources such as an active speaker or content share. The featured tile displays a video source in a large area while other video sources (up to [25 video tiles](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-limits)) are displayed as smaller tiles.
 
 ![featured layout example](media://featured_layout_example.png)
 

@@ -22,7 +22,7 @@ Example 1: A 10 minute meeting with 2 people attending for the whole meeting cos
 
 Example 2: A 10 minute meeting, with 2 people attending for the whole time, and 1 person joining for the last 5 minutes, costs 25 attendee minutes.
 
-Billing starts when the attendee joins the meeting and leaves the meeting.  Calling [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) or [BatchCreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_BatchCreateAttendee.html) does not initiate billing, rather it just creates the join token to enable an attendee to join.
+Billing starts when the attendee joins the meeting and leaves the meeting.  Calling [CreateAttendee](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html) or [BatchCreateAttendee](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_BatchCreateAttendee.html) does not initiate billing, rather it just creates the join token to enable an attendee to join.
 
 Additional information on pricing is available on the [Amazon Chime pricing page](https://aws.amazon.com/chime/pricing/#Chime_SDK_). If you have more questions, contact [Customer support](https://pages.awscloud.com/GLOBAL-aware-GC-Amazon-Chime-SDK-2020-reg.html).
 
@@ -37,7 +37,7 @@ The meetings created by the Amazon Chime meetings application and the SDK are di
 ### Does the MeetingsNotificationsConfiguration only support SQS queues in us-east-1?
 
 Yes, we currently support SNS topics or SQS queues located in `us-east-1` region only. For more details, please refer
- to [Meeting Notification Configuration API](https://docs.aws.amazon.com/chime/latest/APIReference/API_MeetingNotificationConfiguration.html).
+ to [Meeting Notification Configuration API](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_MeetingNotificationConfiguration.html).
 
 ### How can I learn about interruptions to the Amazon Chime service?
 
@@ -47,7 +47,7 @@ You can be notified about Amazon Chime service interruptions at the https://stat
 
 ### What browsers are supported by the Amazon Chime SDK for JavaScript?
 
-You can find the complete list of browsers in this link: [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers). [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) support in a browser is a prerequisite for the Amazon Chime SDK for JavaScript to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.
+You can find the complete list of browsers in this link: [Supported Browsers](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers). [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) support in a browser is a prerequisite for the Amazon Chime SDK for JavaScript to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.
 
 The SDK is built to target ES2015, both syntax and features. If you need your built application bundle to target legacy browsers that do not support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code using a transpiler like Babel, split your application bundle into multiple files that can be built with different targets and conditionally loaded, or generate multiple versions of your application to target specific browsers.
 
@@ -56,7 +56,7 @@ Note that due to limitations in transpilers, requirements of the web platform mi
 
 ### Is the Amazon Chime SDK supported on mobile browsers?
 
-The Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
+The Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
 
 Amazon Chime SDK for iOS https://github.com/aws/amazon-chime-sdk-ios
 
@@ -175,34 +175,26 @@ Check [this issue comment](https://github.com/aws/amazon-chime-sdk-js/issues/249
 
 ### How do users authenticate into a meeting?
 
-The Amazon Chime SDK uses join tokens to control access to meetings. These tokens are obtained when each attendee is [created](https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-mtgs.html). The safe distribution of these tokens to the clients is the application developer’s responsibility. The Amazon Chime SDK does not authenticate end users. Developers can use services such as [Amazon Cognito](https://aws.amazon.com/cognito/), Open ID connect, Active Directory, or Facebook to log in end users to their application. You can tie external identity management to Amazon Chime SDK attendees by supplying an `externalUserId` when creating the attendee.
+The Amazon Chime SDK uses join tokens to control access to meetings. These tokens are obtained when each attendee is [created](https://docs.aws.amazon.com/chime-sdk/latest/dg/mtgs-sdk-mtgs.html). The safe distribution of these tokens to the clients is the application developer’s responsibility. The Amazon Chime SDK does not authenticate end users. Developers can use services such as [Amazon Cognito](https://aws.amazon.com/cognito/), Open ID connect, Active Directory, or Facebook to log in end users to their application. You can tie external identity management to Amazon Chime SDK attendees by supplying an `externalUserId` when creating the attendee.
 
 ### When does an Amazon Chime SDK meeting end?
 
-An Amazon Chime SDK meeting ends when you invoke the [DeleteMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html) API action.
+An Amazon Chime SDK meeting ends when you invoke the [DeleteMeeting](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_DeleteMeeting.html) API action.
 
 Also, a meeting automatically ends after a period of inactivity, based on the following rules:
 
-For [Amazon Chime SDK](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace:
-
 * No audio connections are present in the meeting for more than five minutes.
 * 24 hours have elapsed since the meeting was created.
 
-For [Amazon Chime](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime.html) namespace:
-
-* No audio connections are present in the meeting for more than five minutes.
-* Only one audio connection is present in the meeting for more than 30 minutes.
-* 24 hours have elapsed since the meeting was created.
-
-Learn more about [Amazon Chime SDK](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace and [Amazon Chime](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime.html) namespace in [Migrating to the Amazon Chime SDK Meetings namespace](https://docs.aws.amazon.com/chime-sdk/latest/dg/meeting-namespace-migration.html).
+Learn more about [Amazon Chime SDK](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace.
 
 ### How many simultaneous meetings can be hosted in an account? Can this limit be raised?
 
-AWS accounts have a soft limit of [250 concurrent meetings](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). Your limit can be obtained from the [Service quotas console](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html) in your AWS account. The limit is applied globally, based on the total number of active meetings across all regions. You can track your concurrent meeting usage in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/).  If your application needs to support more concurrent meetings, you can request limit increases through the [AWS Customer support portal](https://pages.awscloud.com/GLOBAL-aware-GC-Amazon-Chime-SDK-2020-reg.html).
+AWS accounts have a soft limit of [250 concurrent meetings](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-limits). Your limit can be obtained from the [Service quotas console](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html) in your AWS account. The limit is applied globally, based on the total number of active meetings across all regions. You can track your concurrent meeting usage in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/).  If your application needs to support more concurrent meetings, you can request limit increases through the [AWS Customer support portal](https://pages.awscloud.com/GLOBAL-aware-GC-Amazon-Chime-SDK-2020-reg.html).
 
 ### How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?
 
-Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and by default up to 25 video senders in a meeting. An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed. The number of video senders can be adjusted, but all clients will still be limited to only 25 received videos at a time.
+Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and by default up to 25 video senders in a meeting. An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed. The number of video senders can be adjusted, but all clients will still be limited to only 25 received videos at a time.
 
 If your use case requires more than 250 attendees, consider using [meeting replication](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-replication.html) to reach up to 10,000 participants, or a [live connector media pipeline](https://docs.aws.amazon.com/chime-sdk/latest/dg/connector-pipe-config.html) to output to RTMP.
 
@@ -212,13 +204,13 @@ Once the limit of video senders is reached in a meeting, each subsequent partici
 
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
-The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) or 
-[CreateMeetingWithAttendees](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html) is invoked and the meeting is created, the auto end
+The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment [CreateMeeting](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeeting.html) or 
+[CreateMeetingWithAttendees](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeetingWithAttendees.html) is invoked and the meeting is created, the auto end
  policies will apply. If no attendees join the meeting, it will end after 5 minutes. The application can create the meeting when drawing closer to the meeting start time or when the the first attendee is ready to join.
 
 ### What happens when I try to re-use same attendee response to join a meeting twice?
  
-If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
+If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
 
 ### What does it mean when the Amazon Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`, `MeetingEnded`, or `SignalingInternalServerError` while establishing a signaling connection to the Chime servers?
 
@@ -235,7 +227,7 @@ session will not be reconnected: SignalingBadRequest
 
 The possible reasons are as follows:
 
-1. If you attempt to join a meeting using a deleted attendee's response, the Amazon Chime SDK for JavaScript throws an error with the status code `SignalingBadRequest`. Note that you or someone can delete an attendee in the [DeleteAttendee API](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html) action.
+1. If you attempt to join a meeting using a deleted attendee's response, the Amazon Chime SDK for JavaScript throws an error with the status code `SignalingBadRequest`. Note that you or someone can delete an attendee in the [DeleteAttendee API](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_DeleteAttendee.html) action.
 2. The close code `4410` from the Chime backend indicates that an attendee has attempted to join an already-ended meeting. The Amazon Chime SDK for JavaScript throws an error with the status code `MeetingEnded`.
 3. The close code between `4500` and `4599` (inclusive) indicates an internal server error in the Amazon Chime backend. In this case, the Amazon Chime SDK for JavaScript throws an error with the status code `SignalingInternalServerError`. Please [create a GitHub issue](https://github.com/aws/amazon-chime-sdk-js/issues/new/choose) including the Amazon Chime SDK browser logs.
 
@@ -309,9 +301,9 @@ The maximum amount of time to allow for connecting is 15 seconds, which can be c
 
 ### Which media regions is the Amazon Chime SDK available in? How do I choose the best media region to place my meetings?
 
-You can find the full list of media regions that the Amazon Chime SDK supports [here](https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html), along with how you can determine the best region for a client. Each client application can query for the best region and return it back to the server application, which can use the collected nearest-region information from each client to select a region for the meeting. This region can then be passed as the [MediaRegion](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#chime-CreateMeeting-request-MediaRegion) 
-parameter to [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#API_CreateMeeting_RequestBody) or 
-[CreateMeetingWithAttendees](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html#API_CreateMeetingWithAttendees_RequestBody).
+You can find the full list of media regions that the Amazon Chime SDK supports [here](https://docs.aws.amazon.com/chime-sdk/latest/dg/chime-sdk-meetings-regions.html), along with how you can determine the best region for a client. Each client application can query for the best region and return it back to the server application, which can use the collected nearest-region information from each client to select a region for the meeting. This region can then be passed as the [MediaRegion](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeeting.html#chimesdk-meeting-chime_CreateMeeting-request-MediaRegion) 
+parameter to [CreateMeeting](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeeting.html#API_meeting-chime_CreateMeeting_RequestBody) or 
+[CreateMeetingWithAttendees](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeetingWithAttendees.html#API_meeting-chime_CreateMeetingWithAttendees_RequestBody).
 
 ### How do I choose video resolution, frame rate and bitrate?
 
@@ -386,7 +378,8 @@ Your account will get billed for attendee minutes and for any other AWS resource
 
 ### Does Amazon Chime SDK support recording functionality?
 
-Yes. You can [record to Amazon S3 using media capture pipelines](https://docs.aws.amazon.com/chime/latest/dg/media-capture.html), or capture from a web browser. [This blog post](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) and [demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) show how to enable client-side recording.
+Yes. You can [record to Amazon S3 using media capture pipelines](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-capture.html), or capture from a web browser. [This blog post](https://aws.amazon.
+com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) and [demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) show how to enable client-side recording.
 
 ## Debugging
 
@@ -403,7 +396,7 @@ level as INFO) and exact reproduction steps. To help you faster, you can check t
 
 ### What are the subnets and ports used by an application using the AWS SDK?
 
-An application which calls Amazon Chime APIs via the [AWS SDK](https://aws.amazon.com/tools/), like [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html), connects to the global service endpoint in the `us-east-1` region: [service.chime.aws.amazon.com](https://service.chime.aws.amazon.com/), or [service-fips.chime.aws.amazon.com](https://service-fips.chime.aws.amazon.com/) with `TCP:443`.
+An application which calls Amazon Chime APIs via the [AWS SDK](https://aws.amazon.com/tools/), like [CreateMeeting](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeeting.html), connects to the global service endpoint in the `us-east-1` region: [service.chime.aws.amazon.com](https://service.chime.aws.amazon.com/), or [service-fips.chime.aws.amazon.com](https://service-fips.chime.aws.amazon.com/) with `TCP:443`.
 
 The URIs resolve to IP addresses in the `AMAZON` subnets for `us-east-1`, as published in the [AWS ip-ranges.json](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html).
 
@@ -427,7 +420,7 @@ Amazon Chime SDK for JavaScript applications do not support content sharing on m
 
 ### Will Amazon Chime SDK for JavaScript meetings work in Chrome and Firefox in iOS?
 
-Yes, the Amazon Chime JS SDK supports Chrome and Firefox on iOS. Refer to the official Amazon Chime SDK Documentation for more information: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers.
+Yes, the Amazon Chime JS SDK supports Chrome and Firefox on iOS. Refer to the official Amazon Chime SDK Documentation for more information: https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers.
 
 ### I notice that my clients lose audio and drop from the meeting if the Chrome browser on Android stays in background for several minutes, is that a known issue?
 
@@ -546,5 +539,5 @@ Meeting join comprises several steps, one of which is establishing a signaling c
 
 ### How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?
 
-Follow the instructions in the ["Using websockets to receive messages" developer guide](https://docs.aws.amazon.com/chime/latest/dg/websockets.html#connect-api).
+Follow the instructions in the ["Using websockets to receive messages" developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/websockets.html#connect-api).
 To sign the URL in Python, use the example code in the [GitHub issue #1241](https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541).
