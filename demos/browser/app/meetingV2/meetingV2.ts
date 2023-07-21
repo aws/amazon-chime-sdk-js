@@ -415,24 +415,24 @@ export class DemoMeetingApp
   audioTrack: MediaStreamTrack | undefined;
   videoTrack: MediaStreamTrack | undefined;
 
-  private async getMediaStreamTracks() {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: true,
-    });
+  // private async getMediaStreamTracks() {
+  //   const stream = await navigator.mediaDevices.getUserMedia({
+  //     audio: true,
+  //     video: true,
+  //   });
 
-    const audioTrack = stream.getAudioTracks()[0];
-    if (audioTrack) {
-      this.audioTrack = audioTrack;
-    }
+  //   const audioTrack = stream.getAudioTracks()[0];
+  //   if (audioTrack) {
+  //     this.audioTrack = audioTrack;
+  //   }
 
-    const videoTrack = stream.getVideoTracks()[0];
-    if (videoTrack) {
-      this.videoTrack = videoTrack;
-    }
+  //   const videoTrack = stream.getVideoTracks()[0];
+  //   if (videoTrack) {
+  //     this.videoTrack = videoTrack;
+  //   }
 
-    console.log("aft bug tracks", this.audioTrack, this.videoTrack)
-  }
+  //   console.log("aft bug tracks", this.audioTrack, this.videoTrack)
+  // }
 
   private async setupAndChooseDefaultDevices() {
     console.log("aft bug setupAndChooseDefaultDevices");
@@ -3640,7 +3640,7 @@ export class DemoMeetingApp
           if (quickjoin) {
             // await this.skipDeviceSelection();
             this.displayButtonStates();
-            await this.getMediaStreamTracks();
+            // await this.getMediaStreamTracks();
             await this.setupAndChooseDefaultDevices();
             await this.join();
             this.switchToFlow('flow-meeting');
