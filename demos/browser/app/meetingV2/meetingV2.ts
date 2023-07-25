@@ -415,40 +415,53 @@ export class DemoMeetingApp
   audioTrack: MediaStreamTrack | undefined;
   videoTrack: MediaStreamTrack | undefined;
 
-  // private async getMediaStreamTracks() {
-  //   const stream = await navigator.mediaDevices.getUserMedia({
-  //     audio: true,
-  //     video: true,
-  //   });
-
-  //   const audioTrack = stream.getAudioTracks()[0];
-  //   if (audioTrack) {
-  //     this.audioTrack = audioTrack;
-  //   }
-
-  //   const videoTrack = stream.getVideoTracks()[0];
-  //   if (videoTrack) {
-  //     this.videoTrack = videoTrack;
-  //   }
-
-  //   console.log("aft bug tracks", this.audioTrack, this.videoTrack)
-  // }
-
-  private async setupAndChooseDefaultDevices() {
-    console.log("aft bug setupAndChooseDefaultDevices");
-    await this.audioVideo.listVideoInputDevices(true);
-    const audioInputDevices = await this.audioVideo.listAudioInputDevices(true);
-    const audioOutputDevices = await this.audioVideo.listAudioOutputDevices(true);
-
-    if (audioInputDevices[0]) {
-      console.log("aft bug startAudioInput");
-      await this.audioVideo?.startAudioInput(audioInputDevices[0]);
+  private async getMediaStreamTracks() {
+    await this.audioVideo.listVideoInputDevices();
+    await this.audioVideo.listAudioInputDevices();
+    const audioOutputDevices = await this.audioVideo.listAudioOutputDevices();
+    
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
+    });
+  
+    const audioTrack = stream.getAudioTracks()[0];
+    if (audioTrack) {
+      this.audioTrack = audioTrack;
+      
     }
+  
+    const videoTrack = stream.getVideoTracks()[0];
+    if (videoTrack) {
+      this.videoTrack = videoTrack;
+    }
+  
+    const audioStream = new MediaStream([this.audioTrack.clone()])
+    await this.audioVideo.startAudioInput(audioStream)
+  
     if (audioOutputDevices[0]) {
       console.log("aft bug chooseAudioOutput");
       await this.audioVideo?.chooseAudioOutput(audioOutputDevices[0].deviceId);
     }
+  
+    console.log("aft bug tracks", this.audioTrack, this.videoTrack)
   }
+
+  // private async setupAndChooseDefaultDevices() {
+  //   console.log("aft bug setupAndChooseDefaultDevices");
+  //   // await this.audioVideo.listVideoInputDevices();
+  //   // const audioInputDevices = await this.audioVideo.listAudioInputDevices();
+  //   // const audioOutputDevices = await this.audioVideo.listAudioOutputDevices();
+
+  //   // if (audioInputDevices[0]) {
+  //   //   console.log("aft bug startAudioInput");
+  //   //   await this.audioVideo?.startAudioInput(audioInputDevices[0]);
+  //   // }
+  //   // if (audioOutputDevices[0]) {
+  //   //   console.log("aft bug chooseAudioOutput");
+  //   //   await this.audioVideo?.chooseAudioOutput(audioOutputDevices[0].deviceId);
+  //   // }
+  // }
 
   addFatalHandlers(): void {
     fatal = this.fatal.bind(this);
@@ -1920,6 +1933,8 @@ export class DemoMeetingApp
     if (this.joinMuted) {
       this.audioVideo.realtimeMuteLocalAudio();
     }
+    // For muting audio as part of quick join
+    this.audioVideo.realtimeMuteLocalAudio();
     this.audioVideo.start();
   }
 
@@ -3354,13 +3369,17 @@ export class DemoMeetingApp
 
   audioVideoDidStart = async () => {
     this.log('session started');
-    const audioStream = new MediaStream([this.audioTrack.clone()])
-    const videoStream = new MediaStream([this.videoTrack.clone()])
-    await this.audioVideo.startAudioInput(audioStream)
     this.audioVideo.realtimeUnmuteLocalAudio();
+    // const audioStream = new MediaStream([this.audioTrack.clone()])
+    const videoStream = new MediaStream([this.videoTrack.clone()])
+    // await this.audioVideo.startAudioInput(audioStream)
+    // this.audioVideo.realtimeUnmuteLocalAudio();
 
     await this.audioVideo.startVideoInput(videoStream)
     this.audioVideo.startLocalVideoTile();
+    
+    // const audioStream = new MediaStream([this.audioTrack.clone()])
+    // await this.audioVideo.startAudioInput(audioStream)
   }
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
@@ -3640,8 +3659,8 @@ export class DemoMeetingApp
           if (quickjoin) {
             // await this.skipDeviceSelection();
             this.displayButtonStates();
-            // await this.getMediaStreamTracks();
-            await this.setupAndChooseDefaultDevices();
+            await this.getMediaStreamTracks();
+            // await this.setupAndChooseDefaultDevices();
             await this.join();
             this.switchToFlow('flow-meeting');
             this.hideProgress('progress-authenticate');
