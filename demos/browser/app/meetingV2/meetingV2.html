@@ -116,6 +116,11 @@
             </select>
             <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
           </div>
+          <button type="button" class="btn btn-outline-secondary h-50 d-sm-block mb-3" style="width: 100%"
+                  data-bs-toggle="modal" id="create-join-info-override-button"
+                  data-bs-target="#join-info-override-modal">
+            Override Join Info
+          </button>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="join-muted" class="form-check-input"></input>
             <label for="join-muted-setting" class="form-check-label">Join Muted</label>
@@ -168,7 +173,7 @@
             <option value="15">15</option>
             <option value="20">20</option>
             <option value="25" selected>25</option>
-          </select>      
+          </select>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" checked id="preconnect" class="form-check-input">
             <label for="preconnect" class="form-check-label">Open signaling connection early</label>
@@ -873,3 +878,53 @@
 </div>
 </body>
 </html>
+
+
+<div class="modal fade" id="join-info-override-modal" tabindex="-1"
+     aria-labelledby="join-info-override-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="width: 90%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="join-info-override-modal-label">Join Info Override</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Use the following overrides to enable joining meetings created from services that do not utilize the
+          serverless demo.</p>
+          <div class="form-group">
+            <label for="get-join-override-input" class="mb-2 mt-3">Join Info</label>
+            <textarea class="form-control" id="get-join-override-input" rows="17" placeholder='{
+              "Session": {
+                  "Meeting": {
+                      "ExternalMeetingId": "eb29abca-8020-4b7c-9ecd-0a3b3098da3c",
+                      "MediaPlacement": {
+                          "AudioFallbackUrl": "wss://haxrp.m2.ue1.g.app.chime.aws:443/calls/213ce239-e822-4247-ac47-de4c634d1142",
+                          "AudioHostUrl": "b902684accadf118e897e35cb594d710.k.m2.ue1.g.app.chime.aws:4172",
+                          "EventIngestionUrl": "https://data.svc.ue1.ingest.gchime.aws/v1/client-events",
+                          "SignalingUrl": "wss://signal.m2.ue1.g.app.chime.aws/control/213ce239-e822-4247-ac47-de4c634d1142",
+                          "TurnControlUrl": "https://1142.cell.us-east-1.meetings.gchime.aws/v2/turn_sessions"
+                      },
+                      "MeetingFeatures": {
+                          "Audio": {
+                              "EchoReduction": "UNAVAILABLE"
+                          }
+                      },
+                      "MeetingId": "213ce239-e822-4247-ac47-de4c634d1142"
+                  },
+                  "Participants": [
+                      {
+                          "AppInstanceUserArn": "arn:aws:chime:us-east-1:593808169604:app-instance/f003719e-551b-4642-b5ed-a91bf1919339/user/d33e7dfb-6ded-4ca5-b678-85da594fdba9",
+                          "JoinToken": "NDYyYjkwNjAtYzUxMi00MWU4LTRkOTYtZmYyMjM3OTk4MWJhOjlkZDQwMTYzLWExZWQtNGQxYy1iZGVmLTBjYzY3M2IyZmE0Mw",
+                          "MeetingAttendeeId": "462b9060-c512-41e8-4d96-ff22379981ba"
+                      }
+                  ],
+                  "SessionArn": "arn:aws:chime:us-east-1:593808169604:widget/demo14/session/213ce239-e822-4247-ac47-de4c634d1142",
+                  "SipMediaApplicationCall": null
+              }
+          }'></textarea>
+          </div>
+        </div>
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="join-info-override-join-button">Join Meeting</button>
+    </div>
+  </div>
+</div>
