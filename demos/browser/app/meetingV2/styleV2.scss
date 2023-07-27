@@ -1006,6 +1006,10 @@ a.markdown:active {
   background-color: rgba(0,0,0,0.4);
 }
 
+#join-info-override-modal .modal-content {
+  max-width: 600px;
+}
+
 .modal-content {
   background-color: #fff;
   margin: auto;
@@ -1067,7 +1071,7 @@ a.markdown:active {
     position: absolute;
 }
 
-input[type="file"] { 
+input[type="file"] {
   opacity: 0;
   z-index: -1;
   position: absolute;

@@ -181,7 +181,7 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
 }
 
 type VideoFilterName = 'Emojify' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'CircularCut' |
- 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 
+ 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' |
  'Background Blur 40% CPU' | 'Background Replacement' | 'None' | 'Background Blur 2.0 - Low' |
  'Background Blur 2.0 - Medium' | 'Background Blur 2.0 - High' | 'Background Replacement 2.0 - (Beach)' |
  'Background Replacement 2.0 - (Blue)' | 'Background Replacement 2.0 - (Default)';
@@ -360,6 +360,7 @@ export class DemoMeetingApp
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
   joinInfo: any | undefined;
+  joinInfoOverride: any | undefined = undefined;
   deleteOwnAttendeeToLeave = false;
   disablePeriodicKeyframeRequestOnContentSender = false;
 
@@ -543,7 +544,7 @@ export class DemoMeetingApp
       this.supportsBackgroundBlur = false;
     }
   }
-  
+
   /**
    * Determine if the videoFxProcessor is supported in current environment
    */
@@ -635,7 +636,7 @@ export class DemoMeetingApp
       ) as HTMLElement;
       const paginationTitle = document.getElementById(
         'pagination-title'
-      ) as HTMLElement;      
+      ) as HTMLElement;
       const serverSideNetworkAdaptionTitle = document.getElementById(
           'server-side-network-adaption-title'
       ) as HTMLElement;
@@ -669,6 +670,11 @@ export class DemoMeetingApp
     });
 
     document.getElementById('quick-join').addEventListener('click', e => {
+      e.preventDefault();
+      this.redirectFromAuthentication(true);
+    });
+
+    document.getElementById('join-info-override-join-button').addEventListener('click', e => {
       e.preventDefault();
       this.redirectFromAuthentication(true);
     });
@@ -3180,7 +3186,7 @@ export class DemoMeetingApp
       this.replacementProcessor.addObserver(this.replacementObserver);
       return this.replacementProcessor;
     }
-    
+
     // Create a VideoFxProcessor
     if (BACKGROUND_FILTER_V2_LIST.includes(videoFilter as VideoFilterName)) {
       const defaultBudgetPerFrame: number = 50;
@@ -3198,7 +3204,7 @@ export class DemoMeetingApp
 
   /**
    * Update this.videoFxConfig to match the corresponding configuration specified by the videoFilter.
-   * @param videoFilter 
+   * @param videoFilter
    */
   private updateFxConfig(videoFilter: string): void {
     this.videoFxConfig.backgroundBlur.isEnabled = (
@@ -3212,7 +3218,7 @@ export class DemoMeetingApp
       videoFilter === 'Background Replacement 2.0 - (Default)' ||
       videoFilter === 'Background Replacement 2.0 - (Blue)'
     )
-    
+
     switch(videoFilter) {
       case 'Background Blur 2.0 - Low':
         this.videoFxConfig.backgroundBlur.strength = 'low';
@@ -3291,7 +3297,7 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
+    this.joinInfo = this.joinInfoOverride ? this.joinInfoOverride.JoinInfo : (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
     this.region = this.joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
@@ -3524,6 +3530,20 @@ export class DemoMeetingApp
         // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
         // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
         break;
+    }
+
+    const createAttendeeOverride = (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value;
+    const getMeetingOverride = (document.getElementById('get-meeting-override-input') as HTMLTextAreaElement).value;
+    if (createAttendeeOverride.length !== 0 && getMeetingOverride.length !== 0) {
+      this.joinInfoOverride = {
+        JoinInfo: {
+          Meeting: JSON.parse(getMeetingOverride),
+          Attendee: JSON.parse(createAttendeeOverride),
+        }
+      };
+      this.meeting = this.joinInfoOverride.JoinInfo.Meeting.ExternalMeetingId;
+      this.name = this.joinInfoOverride.JoinInfo.Attendee.ExternalUserId;
+      this.region = this.joinInfoOverride.JoinInfo.Meeting.MediaRegion;
     }
 
     AsyncScheduler.nextTick(
