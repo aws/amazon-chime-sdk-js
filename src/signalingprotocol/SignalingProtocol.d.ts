@@ -2762,7 +2762,9 @@ export namespace SdkMetric {
         VIDEO_ENCODE_WIDTH = 86,
         VIDEO_DECODE_WIDTH = 87,
         VIDEO_ENCODER_IS_HARDWARE = 88,
-        VIDEO_DECODER_IS_HARDWARE = 89
+        VIDEO_DECODER_IS_HARDWARE = 89,
+        RTC_SPK_AUDIO_LEVEL = 96,
+        RTC_MIC_AUDIO_LEVEL = 97
     }
 }
 
