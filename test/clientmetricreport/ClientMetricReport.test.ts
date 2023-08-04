@@ -425,8 +425,7 @@ describe('ClientMetricReport', () => {
           clientMetricReport.identityValue('availableIncomingBitrate')
         );
 
-        clientMetricReport.globalMetricMap['audioLevel']['source'] =
-          'audioLevel';
+        clientMetricReport.globalMetricMap['audioLevel']['source'] = 'audioLevel';
         expect(clientMetricReport.getObservableMetricValue('audioUpstreamLevel')).to.equal(
           clientMetricReport.identityValue('audioLevel')
         );

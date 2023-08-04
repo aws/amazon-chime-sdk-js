@@ -203,8 +203,8 @@ export default class ClientMetricReport {
     audioLevel: {
       transform: this.identityValue,
       type: SdkMetric.Type.RTC_MIC_AUDIO_LEVEL,
-      source: "audioLevel"
-    }
+      source: 'audioLevel',
+    },
   };
 
   readonly audioUpstreamMetricMap: {
@@ -563,11 +563,16 @@ export default class ClientMetricReport {
     availableOutgoingBitrate: { source: 'availableOutgoingBitrate' },
     availableIncomingBitrate: { source: 'availableIncomingBitrate' },
     currentRoundTripTimeMs: { source: 'currentRoundTripTime' },
+    // Downstream AudioLevel is collected through RTCInboundRtpStreamStats
+    // (https://developer.mozilla.org/en-US/docs/Web/API/RTCInboundRtpStreamStats)
     audioDownstreamLevel: {
       source: 'audioLevel',
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
+    // Upstream AudioLevel is collected through RTCAudioSourceStats
+    // (https://developer.mozilla.org/en-US/docs/Web/API/RTCAudioSourceStats)
+    // That one doesn't have ssrc field so we must collect it through Global Metric Report
     audioUpstreamLevel: {
       source: 'audioLevel',
     },
