@@ -457,7 +457,8 @@ export default class StatsCollector {
       rawMetricReport.type === 'outbound-rtp' ||
       rawMetricReport.type === 'remote-inbound-rtp' ||
       rawMetricReport.type === 'remote-outbound-rtp' ||
-      (rawMetricReport.type === 'candidate-pair' && rawMetricReport.state === 'succeeded')
+      (rawMetricReport.type === 'candidate-pair' && rawMetricReport.state === 'succeeded') ||
+      (rawMetricReport.type === 'media-source' && rawMetricReport.kind === 'audio')
     );
   }
 

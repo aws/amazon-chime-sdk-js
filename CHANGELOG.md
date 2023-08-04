@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set `esModuleInterop` to `true` in tsconfig.json, and update several import statements.
 - Update documentation reference to chime-sdk.
 - Add RTC Speak/Mic Audio Level in proto file
+- Add `audioUpstreamLevel`, `audioDownstreamLevel` to the `ClientMetricReport`
 
 ### Fixed
 
