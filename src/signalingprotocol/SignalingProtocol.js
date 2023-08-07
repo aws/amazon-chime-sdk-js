@@ -7108,6 +7108,8 @@ $root.SdkMetric = (function() {
             case 87:
             case 88:
             case 89:
+            case 96:
+            case 97:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -7357,6 +7359,14 @@ $root.SdkMetric = (function() {
         case 89:
             message.type = 89;
             break;
+        case "RTC_SPK_AUDIO_LEVEL":
+        case 96:
+            message.type = 96;
+            break;
+        case "RTC_MIC_AUDIO_LEVEL":
+        case 97:
+            message.type = 97;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -7459,6 +7469,8 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DECODE_WIDTH=87 VIDEO_DECODE_WIDTH value
      * @property {number} VIDEO_ENCODER_IS_HARDWARE=88 VIDEO_ENCODER_IS_HARDWARE value
      * @property {number} VIDEO_DECODER_IS_HARDWARE=89 VIDEO_DECODER_IS_HARDWARE value
+     * @property {number} RTC_SPK_AUDIO_LEVEL=96 RTC_SPK_AUDIO_LEVEL value
+     * @property {number} RTC_MIC_AUDIO_LEVEL=97 RTC_MIC_AUDIO_LEVEL value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -7519,6 +7531,8 @@ $root.SdkMetric = (function() {
         values[valuesById[87] = "VIDEO_DECODE_WIDTH"] = 87;
         values[valuesById[88] = "VIDEO_ENCODER_IS_HARDWARE"] = 88;
         values[valuesById[89] = "VIDEO_DECODER_IS_HARDWARE"] = 89;
+        values[valuesById[96] = "RTC_SPK_AUDIO_LEVEL"] = 96;
+        values[valuesById[97] = "RTC_MIC_AUDIO_LEVEL"] = 97;
         return values;
     })();
 
