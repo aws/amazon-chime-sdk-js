@@ -931,7 +931,12 @@ export default class DefaultDeviceController
     observerFunc: (obsever: MediaStreamBrokerObserver) => void
   ): void {
     for (const observer of this.mediaStreamBrokerObservers) {
-      observerFunc(observer);
+      AsyncScheduler.nextTick(() => {
+        /* istanbul ignore else */
+        if (this.mediaStreamBrokerObservers.has(observer)) {
+          observerFunc(observer);
+        }
+      });
     }
   }
 
