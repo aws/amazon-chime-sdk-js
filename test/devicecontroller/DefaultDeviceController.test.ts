@@ -111,6 +111,44 @@ describe('DefaultDeviceController', () => {
     domMockBehavior.createElementCaptureStream = mediaStream;
   }
 
+  // The `DefaultDeviceController` invokes media stream broker observers asynchronously.
+  // Use this one-time observer to retrieve the stream from the observer method.
+  async function addVideoStreamObserver(): Promise<MediaStream> {
+    return new Promise(resolve => {
+      const observer = {
+        videoInputDidChange(videoStream: MediaStream | undefined): void {
+          deviceController.removeMediaStreamBrokerObserver(observer);
+          resolve(videoStream);
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+    });
+  }
+
+  async function addAudioStreamObserver(): Promise<MediaStream> {
+    return new Promise(resolve => {
+      const observer = {
+        audioInputDidChange(audioStream: MediaStream | undefined): void {
+          deviceController.removeMediaStreamBrokerObserver(observer);
+          resolve(audioStream);
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+    });
+  }
+
+  async function addAudioOutputObserver(): Promise<MediaDeviceInfo> {
+    return new Promise(resolve => {
+      const observer = {
+        audioOutputDidChange(device: MediaDeviceInfo | null): void {
+          deviceController.removeMediaStreamBrokerObserver(observer);
+          resolve(device);
+        },
+      };
+      deviceController.addMediaStreamBrokerObserver(observer);
+    });
+  }
+
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -784,22 +822,12 @@ describe('DefaultDeviceController', () => {
     });
 
     it('Send audio input changed event', async () => {
-      let callbackAudioStream = undefined;
-
-      const observer = {
-        audioInputDidChange(audioStream: MediaStream | undefined): void {
-          callbackAudioStream = audioStream;
-        },
-      };
-
-      deviceController.addMediaStreamBrokerObserver(observer);
       try {
+        const audioStreamPromise = addAudioStreamObserver();
         const audioStream = await deviceController.startAudioInput(stringDeviceId);
-        expect(callbackAudioStream).to.deep.equal(audioStream);
+        expect(audioStreamPromise).to.eventually.deep.equal(audioStream);
       } catch (e) {
         throw new Error('This line should not be reached.');
-      } finally {
-        deviceController.removeMediaStreamBrokerObserver(observer);
       }
     });
 
@@ -811,6 +839,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addMediaStreamBrokerObserver(observer);
       try {
         const audioStream = await deviceController.startAudioInput(stringDeviceId);
+        await delay(100);
         expect(audioStream).to.not.be.undefined;
       } catch (e) {
         throw new Error('This line should not be reached.');
@@ -1132,19 +1161,16 @@ describe('DefaultDeviceController', () => {
     });
 
     it('Send selected video input change event', async () => {
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
+      let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput(stringDeviceId);
-      expect(callbackVideoStream).to.deep.equal(stream1);
+      const obsreverStream1 = await videoStreamPromise;
+      expect(obsreverStream1).to.deep.equal(stream1);
+
+      videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput('new-device-id');
-      expect(callbackVideoStream).to.not.deep.equal(stream1);
-      expect(callbackVideoStream).to.deep.equal(stream2);
-      deviceController.removeMediaStreamBrokerObserver(observer);
+      const observerStream2 = await videoStreamPromise;
+      expect(observerStream2).to.not.deep.equal(stream1);
+      expect(observerStream2).to.deep.equal(stream2);
     });
 
     it('Does not send video input change event if not implemented', async () => {
@@ -1155,6 +1181,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addMediaStreamBrokerObserver(observer);
       try {
         const videoStream = await deviceController.startVideoInput(stringDeviceId);
+        await delay(100);
         expect(videoStream).to.not.be.undefined;
       } catch (e) {
         throw new Error('This line should not be reached.');
@@ -1221,36 +1248,32 @@ describe('DefaultDeviceController', () => {
       };
       const processor = new NoOpVideoFrameProcessor();
 
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
+      let videoStreamPromise = addVideoStreamObserver();
 
       const stream1 = await deviceController.startVideoInput('test-same-device');
-      expect(callbackVideoStream).to.deep.equal(stream1);
+      expect(await videoStreamPromise).to.deep.equal(stream1);
 
+      videoStreamPromise = addVideoStreamObserver();
       const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
       const stream2 = await deviceController.startVideoInput(device);
 
-      expect(callbackVideoStream).to.deep.equal(stream2);
+      expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream1).to.not.deep.equal(stream2);
       // @ts-ignore
       expect(deviceController.chosenVideoTransformDevice).to.eq(device);
 
       // choose the same device
+      videoStreamPromise = addVideoStreamObserver();
       const stream3 = await deviceController.startVideoInput(device);
-      expect(callbackVideoStream).to.deep.equal(stream3);
+      expect(await videoStreamPromise).to.deep.equal(stream3);
       expect(stream2).to.deep.equal(stream3);
       // @ts-ignore
       expect(deviceController.chosenVideoTransformDevice).to.eq(device);
-      await deviceController.stopVideoInput();
-      expect(callbackVideoStream).to.be.undefined;
-      await device.stop();
 
-      deviceController.removeMediaStreamBrokerObserver(observer);
+      videoStreamPromise = addVideoStreamObserver();
+      await deviceController.stopVideoInput();
+      expect(await videoStreamPromise).to.be.undefined;
+      await device.stop();
     });
 
     it('does not reuse existing stream if two video streams without IDs are selected within a video transform', async () => {
@@ -1295,28 +1318,21 @@ describe('DefaultDeviceController', () => {
     it('can replace the local video for VideoTransformDevice', async () => {
       setupMockCaptureStream();
 
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-
+      let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput(stringDeviceId);
-      expect(callbackVideoStream).to.deep.equal(stream1);
+      expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [processor]);
 
+      videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
-      expect(callbackVideoStream).to.deep.equal(stream2);
+      expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
 
       await deviceController.stopVideoInput();
       await device.stop();
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it('can choose media stream as device then choose VideoTransformDevice without audio video controller', async () => {
@@ -1348,26 +1364,19 @@ describe('DefaultDeviceController', () => {
       };
       setupMockCaptureStream();
 
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-
+      let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput('test');
-      expect(callbackVideoStream).to.deep.equal(stream1);
+      expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test-different-device', [processor]);
+      videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
-      expect(callbackVideoStream).to.deep.equal(stream2);
+      expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
 
       await device.stop();
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it('can reuse the same stream for VideoTransformDevice', async () => {
@@ -1380,27 +1389,20 @@ describe('DefaultDeviceController', () => {
       setupMockCaptureStream();
       const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
 
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-
+      let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput('test-same-device');
-      expect(callbackVideoStream).to.deep.equal(stream1);
+      expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
+      videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
-      expect(callbackVideoStream).to.deep.equal(stream2);
+      expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
 
       await device.stop();
       expect(spy.calledOnce).to.equal(true);
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it('fail to reuse the same stream for VideoTransformDevice if deviceId is not available ', async () => {
@@ -1413,27 +1415,20 @@ describe('DefaultDeviceController', () => {
       setupMockCaptureStream();
       const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
 
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-
+      let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput('test-same-device');
-      expect(callbackVideoStream).to.deep.equal(stream1);
+      expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
+      videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
-      expect(callbackVideoStream).to.deep.equal(stream2);
+      expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
 
       await device.stop();
       expect(spy.calledTwice).to.equal(true);
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it('do not reuse the same stream for VideoTransformDevice if multiple device constraints', async () => {
@@ -1446,31 +1441,24 @@ describe('DefaultDeviceController', () => {
       setupMockCaptureStream();
       const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
 
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-
       const constraints: MediaTrackConstraints = {
         deviceId: ['device-id-1', 'device-id-2'],
         sampleRate: 44100,
       };
+      let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput(constraints);
-      expect(callbackVideoStream).to.deep.equal(stream1);
+      expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, constraints, [processor]);
+      videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
-      expect(callbackVideoStream).to.deep.equal(stream2);
+      expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
 
       await device.stop();
       expect(spy.calledTwice).to.equal(true);
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it('Can switch to non-transform device from transform device', async () => {
@@ -1482,29 +1470,22 @@ describe('DefaultDeviceController', () => {
       };
       setupMockCaptureStream();
 
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test-different-device', [processor]);
+      let videoStreamPromise = addVideoStreamObserver();
       const spy = sinon.spy(device, 'onOutputStreamDisconnect');
       const stream1 = await deviceController.startVideoInput(device);
-      expect(callbackVideoStream).to.deep.equal(stream1);
+      expect(await videoStreamPromise).to.deep.equal(stream1);
       expect(stream1).to.not.be.undefined;
 
+      videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput('test');
-      expect(callbackVideoStream).to.deep.equal(stream2);
+      expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
       expect(spy.calledOnce).to.be.true;
 
       await device.stop();
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
   });
 
@@ -1870,39 +1851,26 @@ describe('DefaultDeviceController', () => {
 
   describe('stopAudioInput', () => {
     it('stop current audio device', async () => {
-      let callbackAudioStream = undefined;
-      const observer = {
-        audioInputDidChange(audioStream: MediaStream | undefined): void {
-          callbackAudioStream = audioStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
+      let audioStreamPromise = addAudioStreamObserver();
       const stream = await deviceController.startAudioInput('abcdef');
       expect(stream.getAudioTracks().length).to.equal(1);
-      expect(callbackAudioStream).to.deep.equal(stream);
+      expect(await audioStreamPromise).to.deep.equal(stream);
       const track = stream.getAudioTracks()[0];
       const spyStopTrack = sinon.spy(track, 'stop');
       const spyRemoveListener = sinon.spy(track, 'removeEventListener');
+      audioStreamPromise = addAudioStreamObserver();
       await deviceController.stopAudioInput();
-      expect(callbackAudioStream).to.be.undefined;
+      expect(await audioStreamPromise).to.be.undefined;
       expect(spyStopTrack.calledOnce).to.be.true;
       expect(spyRemoveListener.calledWith('ended')).to.be.true;
       expect(spyRemoveListener.calledWith('mute')).to.be.true;
       expect(spyRemoveListener.calledWith('unmute')).to.be.true;
       // @ts-ignore
       expect(track.listeners['ended'].length).to.equal(0);
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it('stop current audio transform device', async () => {
       enableWebAudio(true);
-      let callbackAudioStream = undefined;
-      const observer = {
-        audioInputDidChange(audioStream: MediaStream | undefined): void {
-          callbackAudioStream = audioStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
       const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
       const tf = new MockNodeTransformDevice('abdef', 1);
       const stream = await deviceController.startAudioInput(tf);
@@ -1918,8 +1886,9 @@ describe('DefaultDeviceController', () => {
       const spyStopTrack = sinon.spy(track, 'stop');
       const spyRemoveListener = sinon.spy(track, 'removeEventListener');
 
+      const audioStreamPromise = addAudioStreamObserver();
       await deviceController.stopAudioInput();
-      expect(callbackAudioStream).to.be.undefined;
+      expect(await audioStreamPromise).to.be.undefined;
       expect(spyStopTrack.calledOnce).to.be.true;
       expect(spyRemoveListener.calledWith('ended')).to.be.true;
       expect(spyRemoveListener.calledWith('mute')).to.be.true;
@@ -1929,7 +1898,6 @@ describe('DefaultDeviceController', () => {
       expect(deviceController.audioInputSourceNode).to.be.undefined;
       // @ts-ignore
       expect(track.listeners['ended'].length).to.equal(0);
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it("disconnects the audio input source node, not the given stream's tracks", async () => {
@@ -1961,46 +1929,34 @@ describe('DefaultDeviceController', () => {
 
   describe('stopVideoInput', () => {
     it('stop current video device', async () => {
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
+      let videoStreamPromise = addVideoStreamObserver();
       const stream = await deviceController.startVideoInput('abcdef');
-      expect(callbackVideoStream).to.deep.equal(stream);
+      expect(await videoStreamPromise).to.deep.equal(stream);
       expect(stream.getVideoTracks().length).to.equal(1);
       const track = stream.getVideoTracks()[0];
       const spyStopTrack = sinon.spy(track, 'stop');
       const spyRemoveListener = sinon.spy(track, 'removeEventListener');
+      videoStreamPromise = addVideoStreamObserver();
       await deviceController.stopVideoInput();
-      expect(callbackVideoStream).to.be.undefined;
+      expect(await videoStreamPromise).to.be.undefined;
       expect(spyStopTrack.calledOnce).to.be.true;
       expect(spyRemoveListener.calledWith('ended')).to.be.true;
       expect(spyRemoveListener.calledWith('mute')).to.be.false;
       expect(spyRemoveListener.calledWith('unmute')).to.be.false;
       // @ts-ignore
       expect(track.listeners['ended'].length).to.equal(0);
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
     it('stop current video transform device', async () => {
       setupMockCaptureStream();
-      let callbackVideoStream = undefined;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
       const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
       const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [
         new NoOpVideoFrameProcessor(),
       ]);
+      let videoStreamPromise = addVideoStreamObserver();
       const stream = await deviceController.startVideoInput(device);
       expect(stream).to.not.be.undefined;
-      expect(callbackVideoStream).to.deep.equal(stream);
+      expect(await videoStreamPromise).to.deep.equal(stream);
       const innerStream = await gUM.returnValues.pop();
       const track = innerStream.getVideoTracks()[0];
       expect(innerStream.getAudioTracks().length).to.equal(1);
@@ -2010,28 +1966,21 @@ describe('DefaultDeviceController', () => {
       const spyStopTrack = sinon.spy(track, 'stop');
       const spyRemoveListener = sinon.spy(track, 'removeEventListener');
 
+      videoStreamPromise = addVideoStreamObserver();
       await deviceController.stopVideoInput();
-      expect(callbackVideoStream).to.be.undefined;
+      expect(await videoStreamPromise).to.be.undefined;
       expect(spyStopTrack.called).to.be.true;
       expect(spyRemoveListener.calledWith('ended')).to.be.true;
       expect(spyRemoveListener.calledWith('mute')).to.be.false;
       expect(spyRemoveListener.calledWith('unmute')).to.be.false;
       // @ts-ignore
       expect(track.listeners['ended'].length).to.equal(0);
-      deviceController.removeMediaStreamBrokerObserver(observer);
     });
 
-    it('Sending videoInputDidChange with undefined if calling stopVideoInput', () => {
-      let callbackVideoStream;
-      const observer = {
-        videoInputDidChange(videoStream: MediaStream | undefined): void {
-          callbackVideoStream = videoStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
-      deviceController.stopVideoInput();
-      expect(callbackVideoStream).to.be.undefined;
-      deviceController.removeMediaStreamBrokerObserver(observer);
+    it('Sending videoInputDidChange with undefined if calling stopVideoInput', async () => {
+      const videoStreamPromise = addVideoStreamObserver();
+      await deviceController.stopVideoInput();
+      expect(await videoStreamPromise).to.be.undefined;
     });
   });
 
@@ -2097,33 +2046,20 @@ describe('DefaultDeviceController', () => {
         getMediaDeviceInfo(stringDeviceId, null, 'label'),
         getMediaDeviceInfo(stringDeviceId, 'audiooutput', 'label'),
       ];
-      let callbackDevice = undefined;
-      const observer = {
-        audioOutputDidChange(device: MediaDeviceInfo | undefined): void {
-          callbackDevice = device;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
+      const audioOutputPromise = addAudioOutputObserver();
       await deviceController.listAudioOutputDevices();
       await deviceController.chooseAudioOutput(stringDeviceId);
+
+      const device = await audioOutputPromise;
       // @ts-ignore
-      expect(callbackDevice.deviceId).to.equal(stringDeviceId);
-      deviceController.removeMediaStreamBrokerObserver(observer);
+      expect(device.deviceId).to.equal(stringDeviceId);
     });
 
     it('publish audioOutputDidChange for null device', async () => {
-      // domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo(stringDeviceId, null, 'label')];
-      let callbackDevice;
-      const observer = {
-        audioOutputDidChange(device: MediaDeviceInfo | undefined): void {
-          callbackDevice = device;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer);
+      const audioOutputPromise = addAudioOutputObserver();
       await deviceController.listAudioOutputDevices();
       await deviceController.chooseAudioOutput(null);
-      expect(callbackDevice).to.be.null;
-      deviceController.removeMediaStreamBrokerObserver(observer);
+      expect(await audioOutputPromise).to.be.null;
     });
 
     it('Does not publish audioOutputDidChange if not implemented', async () => {
@@ -2676,22 +2612,16 @@ describe('DefaultDeviceController', () => {
         },
       };
       deviceController.addDeviceChangeObserver(observer1);
-      let callbackAudioStream;
-      const observer2 = {
-        audioInputDidChange(audioStream: MediaStream | undefined): void {
-          callbackAudioStream = audioStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer2);
-
+      let audioStreamPromise = addAudioStreamObserver();
       const stream = await deviceController.startAudioInput(stringDeviceId);
-      expect(callbackAudioStream).to.deep.equal(stream);
+      expect(await audioStreamPromise).to.deep.equal(stream);
+
+      audioStreamPromise = addAudioStreamObserver();
       (stream.getAudioTracks()[0] as StoppableMediaStreamTrack).externalStop();
       await delay(100);
       expect(audioInputStreamEndedCallCount).to.equal(1);
-      expect(callbackAudioStream).to.not.deep.equal(stream);
+      expect(await audioStreamPromise).to.not.deep.equal(stream);
       deviceController.removeDeviceChangeObserver(observer1);
-      deviceController.removeMediaStreamBrokerObserver(observer2);
     });
 
     it('calls ended for constraints', async () => {
@@ -2717,19 +2647,14 @@ describe('DefaultDeviceController', () => {
         },
       };
       deviceController.addDeviceChangeObserver(observer1);
-      let callbackVideoStream;
-      const observer2 = {
-        videoInputDidChange(audioStream: MediaStream | undefined): void {
-          callbackVideoStream = audioStream;
-        },
-      };
-      deviceController.addMediaStreamBrokerObserver(observer2);
+      let videoStreamPromise = addVideoStreamObserver();
       const stream = await deviceController.startVideoInput(stringDeviceId);
-      expect(callbackVideoStream).to.deep.equal(stream);
+      expect(await videoStreamPromise).to.deep.equal(stream);
+      videoStreamPromise = addVideoStreamObserver();
       (stream.getVideoTracks()[0] as StoppableMediaStreamTrack).externalStop();
       await delay(100);
       expect(videoInputStreamEndedCallCount).to.equal(1);
-      expect(callbackVideoStream).to.be.undefined;
+      expect(await videoStreamPromise).to.be.undefined;
     });
   });
 
