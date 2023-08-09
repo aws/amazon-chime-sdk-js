@@ -20,7 +20,11 @@ import RemovableObserver from '../removableobserver/RemovableObserver';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
-import { ISdkBitrateFrame, SdkSignalFrame } from '../signalingprotocol/SignalingProtocol';
+import {
+  ISdkBitrateFrame,
+  SdkNotificationFrame,
+  SdkSignalFrame,
+} from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import { Maybe } from '../utils/Types';
 import VideoTileState from '../videotile/VideoTileState';
@@ -331,6 +335,27 @@ export default class MonitorTask
     }
 
     if (event.type === SignalingClientEventType.ReceivedSignalFrame) {
+      if (event.message.type === SdkSignalFrame.Type.NOTIFICATION) {
+        switch (event.message.notification.level) {
+          case SdkNotificationFrame.NotificationLevel.INFO:
+            this.logger.info(
+              `Received notification from server: ${event.message.notification.message}`
+            );
+            break;
+          case SdkNotificationFrame.NotificationLevel.WARNING:
+            this.logger.warn(`Received warning from server: ${event.message.notification.message}`);
+            break;
+          case SdkNotificationFrame.NotificationLevel.ERROR:
+            this.logger.error(`Received error from server: ${event.message.notification.message}`);
+            break;
+          default:
+            this.logger.error(
+              `Received notification from server with unknown level ${event.message.notification.level}: ${event.message.notification.message}`
+            );
+            break;
+        }
+        return;
+      }
       if (!!event.message.bitrates) {
         const bitrateFrame: ISdkBitrateFrame = event.message.bitrates;
         this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);

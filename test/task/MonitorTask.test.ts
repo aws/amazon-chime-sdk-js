@@ -39,6 +39,7 @@ import {
   SdkBitrate,
   SdkBitrateFrame,
   SdkErrorFrame,
+  SdkNotificationFrame,
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import AudioLogEvent from '../../src/statscollector/AudioLogEvent';
@@ -58,6 +59,7 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import CreateMeetingResponseMock from '../meetingsession/CreateMeetingResponseMock';
+import { MockLogger } from '../voicefocus/MockLogger';
 
 function createSignalingEventForBitrateFrame(logger: Logger): SignalingClientEvent {
   const webSocketAdapter = new DefaultWebSocketAdapter(logger);
@@ -1353,6 +1355,82 @@ describe('MonitorTask', () => {
       new TimeoutScheduler(100).start(() => {
         context.eventController.publishEvent('meetingEnded');
       });
+    });
+
+    it('logs notification messages with corresponding to level specified', async () => {
+      const mockLogger = new MockLogger();
+      const webSocketAdapter = new DefaultWebSocketAdapter(mockLogger);
+
+      const message = SdkSignalFrame.create();
+      message.notification = SdkNotificationFrame.create();
+      message.type = SdkSignalFrame.Type.NOTIFICATION;
+      message.notification.level = SdkNotificationFrame.NotificationLevel.INFO;
+      message.notification.message = 'Mock info level notification';
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, mockLogger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(
+        mockLogger.info.calledWith(
+          'Received notification from server: Mock info level notification'
+        )
+      );
+
+      message.notification.level = SdkNotificationFrame.NotificationLevel.WARNING;
+      message.notification.message = 'Mock warning level notification';
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, mockLogger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(
+        mockLogger.warn.calledWith('Received warning from server: Mock warning level notification')
+      );
+
+      message.notification.level = SdkNotificationFrame.NotificationLevel.ERROR;
+      message.notification.message = 'Mock error level notification';
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, mockLogger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(
+        mockLogger.error.calledWith('Received error from server: Mock error level notification')
+      );
+    });
+
+    it('logs error when level is not specified', async () => {
+      const mockLogger = new MockLogger();
+      const webSocketAdapter = new DefaultWebSocketAdapter(mockLogger);
+
+      const message = SdkSignalFrame.create();
+      message.notification = SdkNotificationFrame.create();
+      message.type = SdkSignalFrame.Type.NOTIFICATION;
+      message.notification.level = null;
+      message.notification.message = 'Mock notification with invalid level';
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, mockLogger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(
+        mockLogger.info.calledWith(
+          'Received notification from server with unknown level null: Mock notification with invalid level'
+        )
+      );
     });
   });
 });
