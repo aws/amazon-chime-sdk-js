@@ -8,6 +8,7 @@ import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoD
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import MeetingSessionCredentials from './MeetingSessionCredentials';
 import MeetingSessionURLs from './MeetingSessionURLs';
+import AttendeeCapabilities from '../attendee/AttendeeCapabilities';
 
 /**
  * [[MeetingSessionConfiguration]] contains the information necessary to start
@@ -28,6 +29,11 @@ export default class MeetingSessionConfiguration {
    * The credentials used to authenticate the session.
    */
   credentials: MeetingSessionCredentials | null = null;
+
+  /**
+   * Attendee capabilities.
+   */
+  attendeeCapabilities: AttendeeCapabilities | null = null;
 
   /**
    * The URLs the session uses to reach the meeting service.
@@ -151,7 +157,8 @@ export default class MeetingSessionConfiguration {
    * });
    * ```
    */
-  constructor(createMeetingResponse?: any, createAttendeeResponse?: any) { // eslint-disable-line
+  constructor(createMeetingResponse?: any, createAttendeeResponse?: any) {
+    // eslint-disable-line
     if (createMeetingResponse) {
       createMeetingResponse = toLowerCasePropertyNames(createMeetingResponse);
       if (createMeetingResponse.meeting) {
@@ -176,6 +183,13 @@ export default class MeetingSessionConfiguration {
       this.credentials.attendeeId = createAttendeeResponse.attendeeid;
       this.credentials.externalUserId = createAttendeeResponse.externaluserid;
       this.credentials.joinToken = createAttendeeResponse.jointoken;
+
+      if (createAttendeeResponse.capabilities) {
+        this.attendeeCapabilities = new AttendeeCapabilities();
+        this.attendeeCapabilities.audio = createAttendeeResponse.capabilities.audio;
+        this.attendeeCapabilities.video = createAttendeeResponse.capabilities.video;
+        this.attendeeCapabilities.content = createAttendeeResponse.capabilities.content;
+      }
     }
   }
 }
