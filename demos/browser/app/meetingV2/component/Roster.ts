@@ -60,16 +60,25 @@ export default class Roster {
         const attendeeElement : HTMLLIElement = document.createElement('li') as HTMLLIElement;
         const attendeeNameElement: HTMLSpanElement = document.createElement('span') as HTMLSpanElement;
         const attendeeStatusElement: HTMLSpanElement = document.createElement('span') as HTMLSpanElement;
+        const attendeeCapabilityButton: HTMLButtonElement = document.createElement('button') as HTMLButtonElement;
 
         attendeeNameElement.className = 'name';
         attendeeNameElement.innerText = attendeeName;
 
         attendeeStatusElement.className = 'status';
 
+        attendeeCapabilityButton.className = 'capability-button';
+        attendeeCapabilityButton.innerText = 'Edit';
+        attendeeCapabilityButton.setAttribute('data-bs-target', '#attendee-capabilities-modal');
+        attendeeCapabilityButton.setAttribute('data-bs-toggle', 'modal');
+        attendeeCapabilityButton.setAttribute('data-bs-attendee-id', attendeeId);
+        attendeeCapabilityButton.setAttribute('data-bs-attendee-name', attendeeName);
+
         attendeeElement.className = 'list-group-item d-flex justify-content-between align-items-center';
         attendeeElement.id = Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId;
         attendeeElement.appendChild(attendeeNameElement);
         attendeeElement.appendChild(attendeeStatusElement);
+        attendeeElement.appendChild(attendeeCapabilityButton);
 
         const containerElement: HTMLUListElement = this.getContainerElement();
         containerElement.appendChild(attendeeElement);

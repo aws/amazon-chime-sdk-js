@@ -329,6 +329,11 @@ export class DemoMeetingApp
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
   videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
+
+  audioCapability: string;
+  videoCapability: string;
+  contentCapability: string;
+
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig;
@@ -1348,6 +1353,60 @@ export class DemoMeetingApp
         (buttonMeetingLeave as HTMLButtonElement).disabled = false;
       });
     });
+
+    const attendeeCapabilitiesModal = document.getElementById('attendee-capabilities-modal');
+    attendeeCapabilitiesModal.addEventListener('show.bs.modal', async event => {
+      // @ts-ignore
+      const button = event.relatedTarget;
+      const attendeeName = button.getAttribute('data-bs-attendee-name');
+      const attendeeId = button.getAttribute('data-bs-attendee-id');
+
+      const attendeeNameElement = document.getElementById('attendee-capabilities-modal-attendee-name');
+      attendeeNameElement.innerText = attendeeName;
+      const attendeeIdElement = document.getElementById('attendee-capabilities-modal-attendee-id');
+      attendeeIdElement.innerText = attendeeId;
+
+      const audioSelectElement = document.getElementById('attendee-capabilities-modal-audio-select') as HTMLSelectElement;
+      const videoSelectElement = document.getElementById('attendee-capabilities-modal-video-select') as HTMLSelectElement;
+      const contentSelectElement = document.getElementById('attendee-capabilities-modal-content-select') as HTMLSelectElement;
+
+      audioSelectElement.value = '';
+      videoSelectElement.value = '';
+      contentSelectElement.value = '';
+
+      audioSelectElement.disabled = true;
+      videoSelectElement.disabled = true;
+      contentSelectElement.disabled = true;
+
+      const { Attendee } = await this.getAttendee(attendeeId);
+
+      audioSelectElement.value = Attendee.Capabilities.Audio;
+      videoSelectElement.value = Attendee.Capabilities.Video;
+      contentSelectElement.value = Attendee.Capabilities.Content;
+
+      audioSelectElement.disabled = false;
+      videoSelectElement.disabled = false;
+      contentSelectElement.disabled = false;
+
+      const saveButton = document.getElementById('attendee-capabilities-save-button') as HTMLButtonElement;
+      const onClickSaveButton = () => {
+        saveButton.removeEventListener('click', onClickSaveButton);
+
+        if (
+          audioSelectElement.value !== Attendee.Capabilities.Audio ||
+          videoSelectElement.value !== Attendee.Capabilities.Video ||
+          contentSelectElement.value !== Attendee.Capabilities.Content
+        ) {
+          this.updateAttendeeCapabilities(
+            attendeeId,
+            audioSelectElement.value,
+            videoSelectElement.value,
+            contentSelectElement.value
+          );
+        }
+      };
+      saveButton.addEventListener('click', onClickSaveButton);
+    });
   }
 
   logAudioStreamPPS(clientMetricReport: ClientMetricReport) {
@@ -1445,7 +1504,15 @@ export class DemoMeetingApp
 
   private async getPrimaryMeetingCredentials(): Promise<MeetingSessionCredentials> {
     // Use the same join endpoint, but point it to the provided primary meeting title and give us an arbitrarily different user name
-    const joinInfo = (await this.sendJoinRequest(this.primaryExternalMeetingId, `promoted-${this.name}`, this.region)).JoinInfo;
+    const joinInfo = (await this.sendJoinRequest(
+      this.primaryExternalMeetingId,
+      `promoted-${this.name}`,
+      this.region,
+      undefined,
+      this.audioCapability,
+      this.videoCapability,
+      this.contentCapability,
+    )).JoinInfo;
     // To avoid duplicating code we reuse the constructor for `MeetingSessionConfiguration` which contains `MeetingSessionCredentials`
     // within it and properly does the parsing of the `chime::CreateAttendee` response
     const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
@@ -2280,12 +2347,25 @@ export class DemoMeetingApp
       meeting: string,
       name: string,
       region: string,
-      primaryExternalMeetingId?: string): Promise<any> {
+      primaryExternalMeetingId?: string,
+      audioCapability?: string,
+      videoCapability?: string,
+      contentCapability?: string,
+    ): Promise<any> {
     let uri = `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(
         meeting
     )}&name=${encodeURIComponent(name)}&region=${encodeURIComponent(region)}`
     if (primaryExternalMeetingId) {
       uri += `&primaryExternalMeetingId=${primaryExternalMeetingId}`;
+    }
+    if (audioCapability) {
+      uri += `&attendeeAudioCapability=${audioCapability}`;
+    }
+    if (videoCapability) {
+      uri += `&attendeeVideoCapability=${videoCapability}`;
+    }
+    if (contentCapability) {
+      uri += `&attendeeContentCapability=${contentCapability}`;
     }
     uri += `&ns_es=${this.echoReductionCapability}`
     const response = await fetch(uri,
@@ -2355,10 +2435,57 @@ export class DemoMeetingApp
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getAttendee(attendeeId: string): Promise<any> {
     const response = await fetch(
-        `${DemoMeetingApp.BASE_URL}attendee?title=${encodeURIComponent(
+        `${DemoMeetingApp.BASE_URL}get_attendee?title=${encodeURIComponent(
             this.meeting
-        )}&attendee=${encodeURIComponent(attendeeId)}`
+        )}&id=${encodeURIComponent(attendeeId)}`,
+        {
+          method: 'GET',
+        }
     );
+    const json = await response.json();
+    if (json.error) {
+      throw new Error(`Server error: ${json.error}`);
+    }
+    return json;
+  }
+
+  async updateAttendeeCapabilities(
+    attendeeId: string,
+    audio_capability: string,
+    video_capability: string,
+    content_capability: string
+  ): Promise<void> {
+    let uri = `${DemoMeetingApp.BASE_URL}update_attendee_capabilities?title=${encodeURIComponent(
+      this.meeting
+    )}&id=${encodeURIComponent(attendeeId)}&audio_capability=${encodeURIComponent(
+      audio_capability
+    )}&video_capability=${encodeURIComponent(video_capability)}&content_capability=${encodeURIComponent(
+      content_capability
+    )}`;
+    const response = await fetch(uri, {
+      method: 'POST',
+    });
+    const json = await response.json();
+    if (json.error) {
+      throw new Error(`Server error: ${json.error}`);
+    }
+    return json;
+  }
+
+  async updateAttendeeCapabilitiesExcept(
+    attendees: string,
+    audio_capability: string,
+    video_capability: string,
+    content_capability: string
+  ): Promise<void> {
+    let uri = `${DemoMeetingApp.BASE_URL}update_attendee_capabilities_except?title=${encodeURIComponent(
+      this.meeting
+    )}&ids=${encodeURIComponent(attendees)}&audio_capability=${encodeURIComponent(
+      audio_capability
+    )}&video_capability=${encodeURIComponent(video_capability)}&content_capability=${encodeURIComponent(
+      content_capability
+    )}`;
+    const response = await fetch(uri, { method: 'POST' });
     const json = await response.json();
     if (json.error) {
       throw new Error(`Server error: ${json.error}`);
@@ -3291,7 +3418,15 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
+    this.joinInfo = (await this.sendJoinRequest(
+      this.meeting,
+      this.name,
+      this.region,
+      this.primaryExternalMeetingId,
+      this.audioCapability,
+      this.videoCapability,
+      this.contentCapability,
+    )).JoinInfo;
     this.region = this.joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
@@ -3525,6 +3660,10 @@ export class DemoMeetingApp
         // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
         break;
     }
+
+    this.audioCapability = (document.getElementById('audioCapabilitySelect') as HTMLSelectElement).value;
+    this.videoCapability = (document.getElementById('videoCapabilitySelect') as HTMLSelectElement).value;
+    this.contentCapability = (document.getElementById('contentCapabilitySelect') as HTMLSelectElement).value;
 
     AsyncScheduler.nextTick(
         async (): Promise<void> => {

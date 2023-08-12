@@ -83,6 +83,9 @@ module.exports = env => {
         '/fetch_credentials': 'http://127.0.0.1:8081',
         '/audio_file': 'http://127.0.0.1:8081',
         '/stereo_audio_file': 'http://127.0.0.1:8081',
+        '/update_attendee_capabilities': 'http://127.0.0.1:8081',
+        '/update_attendee_capabilities_except': 'http://127.0.0.1:8081',
+        '/get_attendee': 'http://127.0.0.1:8081',
       }
     },
     plugins: [

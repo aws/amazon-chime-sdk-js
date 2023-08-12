@@ -116,6 +116,33 @@
             </select>
             <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
           </div>
+          <div class="form-floating mb-3">
+            <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
+          </div>
+          <div class="form-floating mb-3">
+            <select name="videoCapability" class="form-select" id="videoCapabilitySelect">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="videoCapability"  style="text-align: left;">Video capability:</label>
+          </div>
+          <div class="form-floating mb-3">
+            <select name="contentCapability" class="form-select" id="contentCapabilitySelect">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="contentCapability"  style="text-align: left;">Content capability:</label>
+          </div>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="join-muted" class="form-check-input"></input>
             <label for="join-muted-setting" class="form-check-label">Join Muted</label>
@@ -871,5 +898,58 @@
     </form>
   </div>
 </div>
+
+<!-- Attendee capabilities modal -->
+
+<div class="modal fade" id="attendee-capabilities-modal" tabindex="-1"
+     aria-labelledby="attendee-capabilities-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="attendee-capabilities-modal-label">Attendee capabilities</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating mb-1">
+          <span><b>Name: </b></span>
+          <span id="attendee-capabilities-modal-attendee-name"></span>
+        </div>
+        <div class="form-floating mb-3">
+          <span><b>Attendee ID: </b></span>
+          <span id="attendee-capabilities-modal-attendee-id"></span>
+        </div>
+        <div class="form-floating mb-3">
+          <select name="audioCapability" class="form-select" id="attendee-capabilities-modal-audio-select">
+            <option value="SendReceive">SendReceive</option>
+            <option value="Send">Send</option>
+            <option value="Receive">Receive</option>
+            <option value="None">None</option>
+          </select>
+          <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
+        </div>
+        <div class="form-floating mb-3">
+          <select name="videoCapability" class="form-select" id="attendee-capabilities-modal-video-select">
+            <option value="SendReceive">SendReceive</option>
+            <option value="Send">Send</option>
+            <option value="Receive">Receive</option>
+            <option value="None">None</option>
+          </select>
+          <label for="videoCapability"  style="text-align: left;">Video capability:</label>
+        </div>
+        <div class="form-floating mb-3">
+          <select name="contentCapability" class="form-select" id="attendee-capabilities-modal-content-select">
+            <option value="SendReceive">SendReceive</option>
+            <option value="Send">Send</option>
+            <option value="Receive">Receive</option>
+            <option value="None">None</option>
+          </select>
+          <label for="contentCapability"  style="text-align: left;">Content capability:</label>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="attendee-capabilities-save-button">Save</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
