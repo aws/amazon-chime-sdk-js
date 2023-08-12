@@ -1415,10 +1415,16 @@ export class DemoMeetingApp
           } catch (error) {
             console.error(error);
             const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('meeting-toast') as MeetingToast
+            const toast = document.createElement('meeting-toast') as MeetingToast;
             toastContainer.appendChild(toast);
             toast.message = `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`;
+            toast.delay = '15000';
             toast.show();
+            const onHidden = () => {
+              toast.removeEventListener('hidden.bs.toast', onHidden);
+              toastContainer.removeChild(toast);
+            };
+            toast.addEventListener('hidden.bs.toast', onHidden);
           }
         }
       };
