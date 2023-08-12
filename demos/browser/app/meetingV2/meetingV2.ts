@@ -1355,15 +1355,23 @@ export class DemoMeetingApp
     });
 
     const attendeeCapabilitiesModal = document.getElementById('attendee-capabilities-modal');
-    attendeeCapabilitiesModal.addEventListener('show.bs.modal', async event => {
-      // @ts-ignore
+    attendeeCapabilitiesModal.addEventListener('show.bs.modal', async (event: any) => {
       const button = event.relatedTarget;
+
+      // Remove focus once the modal is closed to prevent the tooltip from appearing.
+      const onFocusButton = () => {
+        button.blur();
+        button.removeEventListener('focus', onFocusButton);
+      };
+      button.addEventListener('focus', onFocusButton);
+
       const attendeeName = button.getAttribute('data-bs-attendee-name');
       const attendeeId = button.getAttribute('data-bs-attendee-id');
 
       const attendeeNameElement = document.getElementById('attendee-capabilities-modal-attendee-name');
-      attendeeNameElement.innerText = attendeeName;
       const attendeeIdElement = document.getElementById('attendee-capabilities-modal-attendee-id');
+      
+      attendeeNameElement.innerText = attendeeName;
       attendeeIdElement.innerText = attendeeId;
 
       const audioSelectElement = document.getElementById('attendee-capabilities-modal-audio-select') as HTMLSelectElement;
@@ -1389,7 +1397,7 @@ export class DemoMeetingApp
       contentSelectElement.disabled = false;
 
       const saveButton = document.getElementById('attendee-capabilities-save-button') as HTMLButtonElement;
-      const onClickSaveButton = () => {
+      const onClickSaveButton = async () => {
         saveButton.removeEventListener('click', onClickSaveButton);
 
         if (
@@ -1397,17 +1405,27 @@ export class DemoMeetingApp
           videoSelectElement.value !== Attendee.Capabilities.Video ||
           contentSelectElement.value !== Attendee.Capabilities.Content
         ) {
-          this.updateAttendeeCapabilities(
-            attendeeId,
-            audioSelectElement.value,
-            videoSelectElement.value,
-            contentSelectElement.value
-          );
+          try {
+            await this.updateAttendeeCapabilities(
+              attendeeId,
+              audioSelectElement.value,
+              videoSelectElement.value,
+              contentSelectElement.value
+            );
+          } catch (error) {
+            console.error(error);
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('meeting-toast') as MeetingToast
+            toastContainer.appendChild(toast);
+            toast.message = `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`;
+            toast.show();
+          }
         }
       };
       saveButton.addEventListener('click', onClickSaveButton);
     });
   }
+
 
   logAudioStreamPPS(clientMetricReport: ClientMetricReport) {
     const { currentTimestampMs, previousTimestampMs } = clientMetricReport;

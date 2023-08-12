@@ -1,17 +1,26 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Tooltip } from 'bootstrap';
+import {
+  DefaultModality
+} from 'amazon-chime-sdk-js';
+
 class Attendee {
-    name : string;
-    id : string;
+    name: string;
+    id: string;
     muted: boolean;
     signalStrength: number;
     speaking: boolean;
+    isContentAttendee: boolean;
 
-    constructor(name: string, id: string) {
+    constructor(id: string, name: string) {
+        this.id = id;
         this.name = name;
-        this.id = name;
         this.signalStrength = 1;
+        this.isContentAttendee = new DefaultModality(id).hasModality(
+           DefaultModality.MODALITY_CONTENT
+        );
     }
 }
 
@@ -61,20 +70,27 @@ export default class Roster {
         const attendeeNameElement: HTMLSpanElement = document.createElement('span') as HTMLSpanElement;
         const attendeeStatusElement: HTMLSpanElement = document.createElement('span') as HTMLSpanElement;
         const attendeeCapabilityButton: HTMLButtonElement = document.createElement('button') as HTMLButtonElement;
-
-        attendeeNameElement.className = 'name';
+        
+        attendeeNameElement.className = 'name flex-grow-1';
         attendeeNameElement.innerText = attendeeName;
-
+        
         attendeeStatusElement.className = 'status';
 
-        attendeeCapabilityButton.className = 'capability-button';
-        attendeeCapabilityButton.innerText = 'Edit';
-        attendeeCapabilityButton.setAttribute('data-bs-target', '#attendee-capabilities-modal');
-        attendeeCapabilityButton.setAttribute('data-bs-toggle', 'modal');
-        attendeeCapabilityButton.setAttribute('data-bs-attendee-id', attendeeId);
-        attendeeCapabilityButton.setAttribute('data-bs-attendee-name', attendeeName);
-
-        attendeeElement.className = 'list-group-item d-flex justify-content-between align-items-center';
+        // For the content attendee, set it to invisible to maintain the layout.
+        attendeeCapabilityButton.className = 'capability-button btn btn-link btn-sm ' + (attendee.isContentAttendee ? ' invisible' : '');
+        attendeeCapabilityButton.innerHTML = require('../../../node_modules/open-iconic/svg/cog.svg');
+        if (!attendee.isContentAttendee) {
+            attendeeCapabilityButton.setAttribute('data-bs-target', '#attendee-capabilities-modal');
+            attendeeCapabilityButton.setAttribute('data-bs-toggle', 'modal');
+            attendeeCapabilityButton.setAttribute('data-bs-attendee-id', attendeeId);
+            attendeeCapabilityButton.setAttribute('data-bs-attendee-name', attendeeName);
+            new Tooltip(attendeeCapabilityButton, {
+                animation: false,
+                title: 'Update capabilities'
+            });
+        }
+        
+        attendeeElement.className = 'list-group-item d-flex align-items-center gap-1 pe-1';
         attendeeElement.id = Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId;
         attendeeElement.appendChild(attendeeNameElement);
         attendeeElement.appendChild(attendeeStatusElement);
