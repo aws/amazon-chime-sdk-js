@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Tooltip } from 'bootstrap';
 import {
   DefaultModality
 } from 'amazon-chime-sdk-js';
@@ -33,6 +32,8 @@ export default class Roster {
     static readonly CONTAINER_ID = 'roster';
 
     attendeeInfoMap: Map<string, Attendee> = new Map<string, Attendee>();   
+    
+    private selectedAttendeeSet = new Set<Attendee>();
 
     /**
      * Returns a boolean indicating if the attendeeId is part of the roster or not.
@@ -69,32 +70,43 @@ export default class Roster {
         const attendeeElement : HTMLLIElement = document.createElement('li') as HTMLLIElement;
         const attendeeNameElement: HTMLSpanElement = document.createElement('span') as HTMLSpanElement;
         const attendeeStatusElement: HTMLSpanElement = document.createElement('span') as HTMLSpanElement;
-        const attendeeCapabilityButton: HTMLButtonElement = document.createElement('button') as HTMLButtonElement;
+        const attendeeCheckbox: HTMLInputElement = document.createElement('input') as HTMLInputElement;
+
+        // For the content attendee, set it to invisible to maintain the layout.
+        attendeeCheckbox.className = 'form-check-input m-0 ' + (attendee.isContentAttendee ? ' invisible' : '');
+        attendeeCheckbox.type = 'checkbox';
+        attendeeCheckbox.value = '';
+        attendeeCheckbox.addEventListener('change', () => {
+            if (attendeeCheckbox.checked) {
+                this.selectedAttendeeSet.add(attendee);
+            } else {
+                this.selectedAttendeeSet.delete(attendee);
+            }
+            this.updateRosterMenu();
+        });
         
         attendeeNameElement.className = 'name flex-grow-1';
         attendeeNameElement.innerText = attendeeName;
         
         attendeeStatusElement.className = 'status';
-
-        // For the content attendee, set it to invisible to maintain the layout.
-        attendeeCapabilityButton.className = 'capability-button btn btn-link btn-sm ' + (attendee.isContentAttendee ? ' invisible' : '');
-        attendeeCapabilityButton.innerHTML = require('../../../node_modules/open-iconic/svg/cog.svg');
-        if (!attendee.isContentAttendee) {
-            attendeeCapabilityButton.setAttribute('data-bs-target', '#attendee-capabilities-modal');
-            attendeeCapabilityButton.setAttribute('data-bs-toggle', 'modal');
-            attendeeCapabilityButton.setAttribute('data-bs-attendee-id', attendeeId);
-            attendeeCapabilityButton.setAttribute('data-bs-attendee-name', attendeeName);
-            new Tooltip(attendeeCapabilityButton, {
-                animation: false,
-                title: 'Update capabilities'
-            });
-        }
         
-        attendeeElement.className = 'list-group-item d-flex align-items-center gap-1 pe-1';
+        // attendeeCapabilityButton.innerHTML = require('../../../node_modules/open-iconic/svg/cog.svg');
+        // if (!attendee.isContentAttendee) {
+        //     attendeeCapabilityButton.setAttribute('data-bs-target', '#attendee-capabilities-modal');
+        //     attendeeCapabilityButton.setAttribute('data-bs-toggle', 'modal');
+        //     attendeeCapabilityButton.setAttribute('data-bs-attendee-id', attendeeId);
+        //     attendeeCapabilityButton.setAttribute('data-bs-attendee-name', attendeeName);
+        //     new Tooltip(attendeeCapabilityButton, {
+        //         animation: false,
+        //         title: 'Update capabilities'
+        //     });
+        // }
+        
+        attendeeElement.className = 'list-group-item d-flex align-items-center gap-2 ps-2';
         attendeeElement.id = Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId;
+        attendeeElement.appendChild(attendeeCheckbox);
         attendeeElement.appendChild(attendeeNameElement);
         attendeeElement.appendChild(attendeeStatusElement);
-        attendeeElement.appendChild(attendeeCapabilityButton);
 
         const containerElement: HTMLUListElement = this.getContainerElement();
         containerElement.appendChild(attendeeElement);
@@ -116,6 +128,9 @@ export default class Roster {
         const containerElement: HTMLUListElement = this.getContainerElement();
         const childToDelete = document.getElementById(Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId) as HTMLLIElement;
         containerElement.removeChild(childToDelete);
+
+        this.selectedAttendeeSet.delete(this.attendeeInfoMap.get(attendeeId));
+        this.updateRosterMenu();
 
         this.attendeeInfoMap.delete(attendeeId);
         return true;
@@ -170,6 +185,9 @@ export default class Roster {
         const container: HTMLUListElement = this.getContainerElement();
         container.innerHTML = "";
         this.attendeeInfoMap.clear();
+
+        this.selectedAttendeeSet.clear();
+        this.updateRosterMenu();
     }
 
     private getContainerElement(): HTMLUListElement {
@@ -197,5 +215,40 @@ export default class Roster {
         
         attendeeStatusElement.className = statusClass;
         attendeeStatusElement.innerText = statusText;
+    }
+
+    private updateRosterMenu(): void {
+        const instruction = document.getElementById('roster-menu-instruction');
+        const rosterMenuOneAttendee = document.getElementById('roster-menu-one-attendee');
+        const rosterMenuAllAttendeesExcept = document.getElementById('roster-menu-all-attendees-except');
+        const rosterMenuAllAttendeesExceptLabel = document.getElementById('roster-menu-all-attendees-except-label');
+
+        const size = this.selectedAttendeeSet.size;
+        if (size > 0) {
+            instruction.innerText = `${size} selected`;
+            rosterMenuAllAttendeesExceptLabel.innerText = `Update all attendees, except ${size} selected`;
+
+            if (size === 1) {
+                // If one attendee is selected, provide two options:
+                // - Update one attendee only, using the update-attendee-capabilities API
+                // - Update all attendees, except the selected one, using the batch-update-attendee-capabilities-except API
+                rosterMenuOneAttendee.classList.remove('hidden');
+                rosterMenuAllAttendeesExcept.classList.remove('hidden');
+            } else if (size > 1) {
+                // If multiple attendees are selected, provide the following option:
+                // - Update all attendees, except the selected one, using the batch-update-attendee-capabilities-except API
+                rosterMenuOneAttendee.classList.add('hidden');
+                rosterMenuAllAttendeesExcept.classList.remove('hidden');
+            }
+        } else {
+            instruction.innerText = '';
+            rosterMenuAllAttendeesExceptLabel.innerText = `Update all attendees`;
+
+            // If none are selected, provide the following option:
+            // - Update all attendees using the batch-update-attendee-capabilities-except API
+            rosterMenuOneAttendee.classList.add('hidden');
+            rosterMenuAllAttendeesExcept.classList.remove('hidden');
+        }
+
     }
 }

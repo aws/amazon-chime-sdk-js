@@ -776,6 +776,34 @@
     </div>
     <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100" style="flex: unset;">
       <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-5 col-md-4 col-lg-3 h-100">
+        <div class="d-flex justify-content-end py-2 gap-3" style="flex: 0 0 auto; border-color: transparent !important;">
+          <div id="roster-menu-instruction" class="d-flex align-items-center"></div>
+          <div class="btn-group">
+            <button class="btn btn-sm dropdown-toggle btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <%= require('../../node_modules/open-iconic/svg/ellipses.svg') %>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-start">
+              <li class="px-3 text-nowrap user-select-none">Attendee capabilities</li>
+              <li><hr class="dropdown-divider"></li>
+              <li id="roster-menu-one-attendee" class="hidden">
+                <button class="dropdown-item" type="button">
+                  <div class="me-2 d-inline-block" style="transform: scale(0.75);">
+                    <%= require('../../node_modules/open-iconic/svg/person.svg') %>
+                  </div>
+                  <span>Update the selected attendee</span>
+                </button>
+              </li>
+              <li id="roster-menu-all-attendees-except">
+                <button class="dropdown-item" type="button">
+                  <div class="me-2 d-inline-block" style="transform: scale(0.75);">
+                    <%= require('../../node_modules/open-iconic/svg/people.svg') %>
+                  </div>
+                  <span id="roster-menu-all-attendees-except-label">Update all attendees</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
         <div class="bs-component" style="flex: 1 1 auto; overflow-y: auto; height: 50%;">
           <ul id="roster" class="list-group"></ul>
         </div>
