@@ -786,7 +786,12 @@
               <li class="px-3 text-nowrap user-select-none">Attendee capabilities</li>
               <li><hr class="dropdown-divider"></li>
               <li id="roster-menu-one-attendee" class="hidden">
-                <button class="dropdown-item" type="button">
+                <button
+                  class="dropdown-item"
+                  type="button"
+                  data-bs-target="#attendee-capabilities-modal"
+                  data-bs-toggle="modal"
+                  data-bs-type="one-attendee">
                   <div class="me-2 d-inline-block" style="transform: scale(0.75);">
                     <%= require('../../node_modules/open-iconic/svg/person.svg') %>
                   </div>
@@ -794,7 +799,12 @@
                 </button>
               </li>
               <li id="roster-menu-all-attendees-except">
-                <button class="dropdown-item" type="button">
+                <button
+                  class="dropdown-item"
+                  type="button"
+                  data-bs-target="#attendee-capabilities-modal"
+                  data-bs-toggle="modal"
+                  data-bs-type="all-attendees-except">
                   <div class="me-2 d-inline-block" style="transform: scale(0.75);">
                     <%= require('../../node_modules/open-iconic/svg/people.svg') %>
                   </div>
@@ -938,13 +948,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="form-floating mb-1">
-          <span><b>Name: </b></span>
-          <span id="attendee-capabilities-modal-attendee-name"></span>
-        </div>
         <div class="form-floating mb-3">
-          <span><b>Attendee ID: </b></span>
-          <span id="attendee-capabilities-modal-attendee-id"></span>
+          <div id="attendee-capabilities-modal-description" class="text-wrap text-break"></div>
         </div>
         <div class="form-floating mb-3">
           <select name="audioCapability" class="form-select" id="attendee-capabilities-modal-audio-select">
@@ -974,7 +979,7 @@
           <label for="contentCapability"  style="text-align: left;">Content capability:</label>
         </div>
       </div>
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="attendee-capabilities-save-button">Save</button>
+      <button type="button" class="btn btn-primary" id="attendee-capabilities-save-button">Save</button>
     </div>
   </div>
 </div>

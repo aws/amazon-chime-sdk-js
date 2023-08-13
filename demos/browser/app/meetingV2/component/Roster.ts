@@ -33,7 +33,7 @@ export default class Roster {
 
     attendeeInfoMap: Map<string, Attendee> = new Map<string, Attendee>();   
     
-    private selectedAttendeeSet = new Set<Attendee>();
+    selectedAttendeeSet = new Set<Attendee>();
 
     /**
      * Returns a boolean indicating if the attendeeId is part of the roster or not.
@@ -73,7 +73,7 @@ export default class Roster {
         const attendeeCheckbox: HTMLInputElement = document.createElement('input') as HTMLInputElement;
 
         // For the content attendee, set it to invisible to maintain the layout.
-        attendeeCheckbox.className = 'form-check-input m-0 ' + (attendee.isContentAttendee ? ' invisible' : '');
+        attendeeCheckbox.className = 'form-check-input m-0 flex-shrink-0 ' + (attendee.isContentAttendee ? ' invisible' : '');
         attendeeCheckbox.type = 'checkbox';
         attendeeCheckbox.value = '';
         attendeeCheckbox.addEventListener('change', () => {
@@ -85,7 +85,7 @@ export default class Roster {
             this.updateRosterMenu();
         });
         
-        attendeeNameElement.className = 'name flex-grow-1';
+        attendeeNameElement.className = 'name flex-grow-1 text-truncate';
         attendeeNameElement.innerText = attendeeName;
         
         attendeeStatusElement.className = 'status';

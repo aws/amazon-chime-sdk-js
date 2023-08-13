@@ -80,6 +80,7 @@ import {
   POSTLogger,
   VideoCodecCapability,
 } from 'amazon-chime-sdk-js';
+import { Modal } from 'bootstrap';
 
 import TestSound from './audio/TestSound';
 import MeetingToast from './util/MeetingToast'; MeetingToast; // Make sure this file is included in webpack
@@ -1357,22 +1358,8 @@ export class DemoMeetingApp
     const attendeeCapabilitiesModal = document.getElementById('attendee-capabilities-modal');
     attendeeCapabilitiesModal.addEventListener('show.bs.modal', async (event: any) => {
       const button = event.relatedTarget;
-
-      // Remove focus once the modal is closed to prevent the tooltip from appearing.
-      const onFocusButton = () => {
-        button.blur();
-        button.removeEventListener('focus', onFocusButton);
-      };
-      button.addEventListener('focus', onFocusButton);
-
-      const attendeeName = button.getAttribute('data-bs-attendee-name');
-      const attendeeId = button.getAttribute('data-bs-attendee-id');
-
-      const attendeeNameElement = document.getElementById('attendee-capabilities-modal-attendee-name');
-      const attendeeIdElement = document.getElementById('attendee-capabilities-modal-attendee-id');
-      
-      attendeeNameElement.innerText = attendeeName;
-      attendeeIdElement.innerText = attendeeId;
+      const type = button.getAttribute('data-bs-type');
+      const descriptionElement = document.getElementById('attendee-capabilities-modal-description');
 
       const audioSelectElement = document.getElementById('attendee-capabilities-modal-audio-select') as HTMLSelectElement;
       const videoSelectElement = document.getElementById('attendee-capabilities-modal-video-select') as HTMLSelectElement;
@@ -1386,49 +1373,79 @@ export class DemoMeetingApp
       videoSelectElement.disabled = true;
       contentSelectElement.disabled = true;
 
-      const { Attendee } = await this.getAttendee(attendeeId);
+      // Clone the `selectedAttendeeSet` upon selecting the menu option to open a modal. 
+      // Note that the `selectedAttendeeSet` may change when API calls are made.
+      const selectedAttendeeSet = new Set(this.roster.selectedAttendeeSet);
+      
+      if (type === 'one-attendee') {
+        const [selectedAttendee] = selectedAttendeeSet;
+        descriptionElement.innerHTML = `Update <b>${selectedAttendee.name}</b>'s attendee capabilities.`;
 
-      audioSelectElement.value = Attendee.Capabilities.Audio;
-      videoSelectElement.value = Attendee.Capabilities.Video;
-      contentSelectElement.value = Attendee.Capabilities.Content;
+        // Load the selected attendee's capabilities.
+        const { Attendee } = await this.getAttendee(selectedAttendee.id);
+        audioSelectElement.value = Attendee.Capabilities.Audio;
+        videoSelectElement.value = Attendee.Capabilities.Video;
+        contentSelectElement.value = Attendee.Capabilities.Content;
+      } else {
+        if (this.roster.selectedAttendeeSet.size === 0)  {
+          descriptionElement.innerHTML = `Update the capabilities of all attendees.`;
+        } else {
+          descriptionElement.innerHTML = `Update the capabilities of all attendees, excluding:<ul> ${
+            [...selectedAttendeeSet].map(attendee => `<li><b>${attendee.name}</b></li>`).join('')
+          }</ul>`;
+        }
+
+        audioSelectElement.value = 'SendReceive';
+        videoSelectElement.value = 'SendReceive';
+        contentSelectElement.value = 'SendReceive';
+      }
 
       audioSelectElement.disabled = false;
       videoSelectElement.disabled = false;
       contentSelectElement.disabled = false;
-
+    
       const saveButton = document.getElementById('attendee-capabilities-save-button') as HTMLButtonElement;
       const onClickSaveButton = async () => {
         saveButton.removeEventListener('click', onClickSaveButton);
+        Modal.getInstance(attendeeCapabilitiesModal).hide();
 
-        if (
-          audioSelectElement.value !== Attendee.Capabilities.Audio ||
-          videoSelectElement.value !== Attendee.Capabilities.Video ||
-          contentSelectElement.value !== Attendee.Capabilities.Content
-        ) {
-          try {
+        try {
+          if (type === 'one-attendee') {
+            const [selectedAttendee] = selectedAttendeeSet;
             await this.updateAttendeeCapabilities(
-              attendeeId,
+              selectedAttendee.id,
               audioSelectElement.value,
               videoSelectElement.value,
               contentSelectElement.value
             );
-          } catch (error) {
-            console.error(error);
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('meeting-toast') as MeetingToast;
-            toastContainer.appendChild(toast);
-            toast.message = `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`;
-            toast.delay = '15000';
-            toast.show();
-            const onHidden = () => {
-              toast.removeEventListener('hidden.bs.toast', onHidden);
-              toastContainer.removeChild(toast);
-            };
-            toast.addEventListener('hidden.bs.toast', onHidden);
+          } else {
+            await this.updateAttendeeCapabilitiesExcept(
+              [...selectedAttendeeSet].map(attendee => attendee.id),
+              audioSelectElement.value,
+              videoSelectElement.value,
+              contentSelectElement.value
+            );
           }
+        } catch (error) {
+          console.error(error);
+          const toastContainer = document.getElementById('toast-container');
+          const toast = document.createElement('meeting-toast') as MeetingToast;
+          toastContainer.appendChild(toast);
+          toast.message = `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`;
+          toast.delay = '15000';
+          toast.show();
+          const onHidden = () => {
+            toast.removeEventListener('hidden.bs.toast', onHidden);
+            toastContainer.removeChild(toast);
+          };
+          toast.addEventListener('hidden.bs.toast', onHidden);
         }
       };
       saveButton.addEventListener('click', onClickSaveButton);
+
+      attendeeCapabilitiesModal.addEventListener('hide.bs.modal', async () => {
+        saveButton.removeEventListener('click', onClickSaveButton);
+      });
     });
   }
 
@@ -2497,14 +2514,14 @@ export class DemoMeetingApp
   }
 
   async updateAttendeeCapabilitiesExcept(
-    attendees: string,
+    attendees: string[],
     audio_capability: string,
     video_capability: string,
     content_capability: string
   ): Promise<void> {
     let uri = `${DemoMeetingApp.BASE_URL}update_attendee_capabilities_except?title=${encodeURIComponent(
       this.meeting
-    )}&ids=${encodeURIComponent(attendees)}&audio_capability=${encodeURIComponent(
+    )}&ids=${encodeURIComponent(attendees.join(' '))}&audio_capability=${encodeURIComponent(
       audio_capability
     )}&video_capability=${encodeURIComponent(video_capability)}&content_capability=${encodeURIComponent(
       content_capability
