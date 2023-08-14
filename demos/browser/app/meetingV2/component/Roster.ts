@@ -59,7 +59,7 @@ export default class Roster {
      * @param attendeeId - the id to be associated with the attendee
      * @param attendeeName - the name of the attendee
      */
-    addAttendee(attendeeId: string, attendeeName: string): void {
+    addAttendee(attendeeId: string, attendeeName: string, allowAttendeeCapabilities: boolean): void {
         if (this.hasAttendee(attendeeId)) {
             return;
         }
@@ -90,21 +90,12 @@ export default class Roster {
         
         attendeeStatusElement.className = 'status';
         
-        // attendeeCapabilityButton.innerHTML = require('../../../node_modules/open-iconic/svg/cog.svg');
-        // if (!attendee.isContentAttendee) {
-        //     attendeeCapabilityButton.setAttribute('data-bs-target', '#attendee-capabilities-modal');
-        //     attendeeCapabilityButton.setAttribute('data-bs-toggle', 'modal');
-        //     attendeeCapabilityButton.setAttribute('data-bs-attendee-id', attendeeId);
-        //     attendeeCapabilityButton.setAttribute('data-bs-attendee-name', attendeeName);
-        //     new Tooltip(attendeeCapabilityButton, {
-        //         animation: false,
-        //         title: 'Update capabilities'
-        //     });
-        // }
-        
-        attendeeElement.className = 'list-group-item d-flex align-items-center gap-2 ps-2';
+        attendeeElement.className = 'list-group-item d-flex align-items-center gap-2';
         attendeeElement.id = Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId;
-        attendeeElement.appendChild(attendeeCheckbox);
+        if (allowAttendeeCapabilities) {
+            attendeeElement.classList.add('ps-2');
+            attendeeElement.appendChild(attendeeCheckbox);
+        }
         attendeeElement.appendChild(attendeeNameElement);
         attendeeElement.appendChild(attendeeStatusElement);
 
@@ -220,12 +211,14 @@ export default class Roster {
     private updateRosterMenu(): void {
         const instruction = document.getElementById('roster-menu-instruction');
         const rosterMenuOneAttendee = document.getElementById('roster-menu-one-attendee');
+        const rosterMenuNoneSelected = document.getElementById('roster-menu-none-seleced');
         const rosterMenuAllAttendeesExcept = document.getElementById('roster-menu-all-attendees-except');
         const rosterMenuAllAttendeesExceptLabel = document.getElementById('roster-menu-all-attendees-except-label');
 
         const size = this.selectedAttendeeSet.size;
         if (size > 0) {
             instruction.innerText = `${size} selected`;
+            rosterMenuNoneSelected.classList.add('hidden');
             rosterMenuAllAttendeesExceptLabel.innerText = `Update all attendees, except ${size} selected`;
 
             if (size === 1) {
@@ -244,10 +237,10 @@ export default class Roster {
             instruction.innerText = '';
             rosterMenuAllAttendeesExceptLabel.innerText = `Update all attendees`;
 
-            // If none are selected, provide the following option:
-            // - Update all attendees using the batch-update-attendee-capabilities-except API
+            // If none are selected, show the instruction.
+            rosterMenuNoneSelected.classList.remove('hidden');
             rosterMenuOneAttendee.classList.add('hidden');
-            rosterMenuAllAttendeesExcept.classList.remove('hidden');
+            rosterMenuAllAttendeesExcept.classList.add('hidden');
         }
 
     }

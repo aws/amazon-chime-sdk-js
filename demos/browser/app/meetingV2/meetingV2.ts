@@ -368,6 +368,7 @@ export class DemoMeetingApp
   joinInfo: any | undefined;
   deleteOwnAttendeeToLeave = false;
   disablePeriodicKeyframeRequestOnContentSender = false;
+  allowAttendeeCapabilities = false;
 
   blurProcessor: BackgroundBlurProcessor | undefined;
   replacementProcessor: BackgroundReplacementProcessor | undefined;
@@ -1354,99 +1355,6 @@ export class DemoMeetingApp
         (buttonMeetingLeave as HTMLButtonElement).disabled = false;
       });
     });
-
-    const attendeeCapabilitiesModal = document.getElementById('attendee-capabilities-modal');
-    attendeeCapabilitiesModal.addEventListener('show.bs.modal', async (event: any) => {
-      const button = event.relatedTarget;
-      const type = button.getAttribute('data-bs-type');
-      const descriptionElement = document.getElementById('attendee-capabilities-modal-description');
-
-      const audioSelectElement = document.getElementById('attendee-capabilities-modal-audio-select') as HTMLSelectElement;
-      const videoSelectElement = document.getElementById('attendee-capabilities-modal-video-select') as HTMLSelectElement;
-      const contentSelectElement = document.getElementById('attendee-capabilities-modal-content-select') as HTMLSelectElement;
-
-      audioSelectElement.value = '';
-      videoSelectElement.value = '';
-      contentSelectElement.value = '';
-
-      audioSelectElement.disabled = true;
-      videoSelectElement.disabled = true;
-      contentSelectElement.disabled = true;
-
-      // Clone the `selectedAttendeeSet` upon selecting the menu option to open a modal. 
-      // Note that the `selectedAttendeeSet` may change when API calls are made.
-      const selectedAttendeeSet = new Set(this.roster.selectedAttendeeSet);
-      
-      if (type === 'one-attendee') {
-        const [selectedAttendee] = selectedAttendeeSet;
-        descriptionElement.innerHTML = `Update <b>${selectedAttendee.name}</b>'s attendee capabilities.`;
-
-        // Load the selected attendee's capabilities.
-        const { Attendee } = await this.getAttendee(selectedAttendee.id);
-        audioSelectElement.value = Attendee.Capabilities.Audio;
-        videoSelectElement.value = Attendee.Capabilities.Video;
-        contentSelectElement.value = Attendee.Capabilities.Content;
-      } else {
-        if (this.roster.selectedAttendeeSet.size === 0)  {
-          descriptionElement.innerHTML = `Update the capabilities of all attendees.`;
-        } else {
-          descriptionElement.innerHTML = `Update the capabilities of all attendees, excluding:<ul> ${
-            [...selectedAttendeeSet].map(attendee => `<li><b>${attendee.name}</b></li>`).join('')
-          }</ul>`;
-        }
-
-        audioSelectElement.value = 'SendReceive';
-        videoSelectElement.value = 'SendReceive';
-        contentSelectElement.value = 'SendReceive';
-      }
-
-      audioSelectElement.disabled = false;
-      videoSelectElement.disabled = false;
-      contentSelectElement.disabled = false;
-    
-      const saveButton = document.getElementById('attendee-capabilities-save-button') as HTMLButtonElement;
-      const onClickSaveButton = async () => {
-        saveButton.removeEventListener('click', onClickSaveButton);
-        Modal.getInstance(attendeeCapabilitiesModal).hide();
-
-        try {
-          if (type === 'one-attendee') {
-            const [selectedAttendee] = selectedAttendeeSet;
-            await this.updateAttendeeCapabilities(
-              selectedAttendee.id,
-              audioSelectElement.value,
-              videoSelectElement.value,
-              contentSelectElement.value
-            );
-          } else {
-            await this.updateAttendeeCapabilitiesExcept(
-              [...selectedAttendeeSet].map(attendee => attendee.id),
-              audioSelectElement.value,
-              videoSelectElement.value,
-              contentSelectElement.value
-            );
-          }
-        } catch (error) {
-          console.error(error);
-          const toastContainer = document.getElementById('toast-container');
-          const toast = document.createElement('meeting-toast') as MeetingToast;
-          toastContainer.appendChild(toast);
-          toast.message = `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`;
-          toast.delay = '15000';
-          toast.show();
-          const onHidden = () => {
-            toast.removeEventListener('hidden.bs.toast', onHidden);
-            toastContainer.removeChild(toast);
-          };
-          toast.addEventListener('hidden.bs.toast', onHidden);
-        }
-      };
-      saveButton.addEventListener('click', onClickSaveButton);
-
-      attendeeCapabilitiesModal.addEventListener('hide.bs.modal', async () => {
-        saveButton.removeEventListener('click', onClickSaveButton);
-      });
-    });
   }
 
 
@@ -2062,7 +1970,7 @@ export class DemoMeetingApp
         this.contentShare.stop();
       }
       const attendeeName =  externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
-      this.roster.addAttendee(attendeeId, attendeeName);
+      this.roster.addAttendee(attendeeId, attendeeName, this.allowAttendeeCapabilities);
 
       this.volumeIndicatorHandler = async (
           attendeeId: string,
@@ -3478,6 +3386,110 @@ export class DemoMeetingApp
     return configuration.meetingId;
   }
 
+  async initRosterMenu(): Promise<void> {
+    const rosterMenuContainer = document.getElementById('roster-menu-container');
+    if (this.allowAttendeeCapabilities) {
+      rosterMenuContainer.classList.remove('hidden');
+      rosterMenuContainer.classList.add('d-flex');
+
+      const attendeeCapabilitiesModal = document.getElementById('attendee-capabilities-modal');
+      attendeeCapabilitiesModal.addEventListener('show.bs.modal', async (event: any) => {
+        const button = event.relatedTarget;
+        const type = button.getAttribute('data-bs-type');
+        const descriptionElement = document.getElementById('attendee-capabilities-modal-description');
+  
+        const audioSelectElement = document.getElementById('attendee-capabilities-modal-audio-select') as HTMLSelectElement;
+        const videoSelectElement = document.getElementById('attendee-capabilities-modal-video-select') as HTMLSelectElement;
+        const contentSelectElement = document.getElementById('attendee-capabilities-modal-content-select') as HTMLSelectElement;
+  
+        audioSelectElement.value = '';
+        videoSelectElement.value = '';
+        contentSelectElement.value = '';
+  
+        audioSelectElement.disabled = true;
+        videoSelectElement.disabled = true;
+        contentSelectElement.disabled = true;
+  
+        // Clone the `selectedAttendeeSet` upon selecting the menu option to open a modal. 
+        // Note that the `selectedAttendeeSet` may change when API calls are made.
+        const selectedAttendeeSet = new Set(this.roster.selectedAttendeeSet);
+        
+        if (type === 'one-attendee') {
+          const [selectedAttendee] = selectedAttendeeSet;
+          descriptionElement.innerHTML = `Update <b>${selectedAttendee.name}</b>'s attendee capabilities.`;
+  
+          // Load the selected attendee's capabilities.
+          const { Attendee } = await this.getAttendee(selectedAttendee.id);
+          audioSelectElement.value = Attendee.Capabilities.Audio;
+          videoSelectElement.value = Attendee.Capabilities.Video;
+          contentSelectElement.value = Attendee.Capabilities.Content;
+        } else {
+          if (this.roster.selectedAttendeeSet.size === 0)  {
+            descriptionElement.innerHTML = `Update the capabilities of all attendees.`;
+          } else {
+            descriptionElement.innerHTML = `Update the capabilities of all attendees, excluding:<ul> ${
+              [...selectedAttendeeSet].map(attendee => `<li><b>${attendee.name}</b></li>`).join('')
+            }</ul>`;
+          }
+  
+          audioSelectElement.value = 'SendReceive';
+          videoSelectElement.value = 'SendReceive';
+          contentSelectElement.value = 'SendReceive';
+        }
+  
+        audioSelectElement.disabled = false;
+        videoSelectElement.disabled = false;
+        contentSelectElement.disabled = false;
+      
+        const saveButton = document.getElementById('attendee-capabilities-save-button') as HTMLButtonElement;
+        const onClickSaveButton = async () => {
+          saveButton.removeEventListener('click', onClickSaveButton);
+          Modal.getInstance(attendeeCapabilitiesModal).hide();
+  
+          try {
+            if (type === 'one-attendee') {
+              const [selectedAttendee] = selectedAttendeeSet;
+              await this.updateAttendeeCapabilities(
+                selectedAttendee.id,
+                audioSelectElement.value,
+                videoSelectElement.value,
+                contentSelectElement.value
+              );
+            } else {
+              await this.updateAttendeeCapabilitiesExcept(
+                [...selectedAttendeeSet].map(attendee => attendee.id),
+                audioSelectElement.value,
+                videoSelectElement.value,
+                contentSelectElement.value
+              );
+            }
+          } catch (error) {
+            console.error(error);
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('meeting-toast') as MeetingToast;
+            toastContainer.appendChild(toast);
+            toast.message = `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`;
+            toast.delay = '15000';
+            toast.show();
+            const onHidden = () => {
+              toast.removeEventListener('hidden.bs.toast', onHidden);
+              toastContainer.removeChild(toast);
+            };
+            toast.addEventListener('hidden.bs.toast', onHidden);
+          }
+        };
+        saveButton.addEventListener('click', onClickSaveButton);
+  
+        attendeeCapabilitiesModal.addEventListener('hide.bs.modal', async () => {
+          saveButton.removeEventListener('click', onClickSaveButton);
+        });
+      }); 
+    } else {
+      rosterMenuContainer.classList.add('hidden');
+      rosterMenuContainer.classList.remove('d-flex');
+    }
+  };
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   log(str: string, ...args: any[]): void {
     console.log.apply(console, [`[DEMO] ${str}`, ...args]);
@@ -3663,6 +3675,7 @@ export class DemoMeetingApp
     this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
     this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
     this.disablePeriodicKeyframeRequestOnContentSender = (document.getElementById('disable-content-keyframe') as HTMLInputElement).checked;
+    this.allowAttendeeCapabilities = (document.getElementById('allow-attendee-capabilities') as HTMLInputElement).checked;
     this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
     this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
     this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
@@ -3750,6 +3763,7 @@ export class DemoMeetingApp
           await this.initVoiceFocus();
           await this.initBackgroundBlur();
           await this.initBackgroundReplacement();
+          await this.initRosterMenu();
           await this.resolveSupportsVideoFX();
           await this.populateAllDeviceLists();
           await this.populateVideoFilterInputList(false);
@@ -3801,6 +3815,8 @@ export class DemoMeetingApp
         }
     );
   }
+
+  
 
   // to call from form-authenticate form
   private async skipDeviceSelection(autoSelectAudioInput: boolean = true): Promise<void> {

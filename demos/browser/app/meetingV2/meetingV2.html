@@ -227,6 +227,10 @@
             <label for="disable-content-keyframe" class="form-check-label">Disable periodic keyframe request to content senders</label>
           </div>
           <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="allow-attendee-capabilities" class="form-check-input">
+            <label for="allow-attendee-capabilities" class="form-check-label">Allow updating of attendee capabilities after start</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="die" class="form-check-input" checked=true>
             <label for="die" class="form-check-label">Abort on fatal errors</label>
           </div>
@@ -776,7 +780,7 @@
     </div>
     <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100" style="flex: unset;">
       <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-5 col-md-4 col-lg-3 h-100">
-        <div class="d-flex justify-content-end py-2 gap-3" style="flex: 0 0 auto; border-color: transparent !important;">
+        <div id="roster-menu-container" class="justify-content-end py-2 gap-3" style="flex: 0 0 auto; border-color: transparent !important;">
           <div id="roster-menu-instruction" class="d-flex align-items-center"></div>
           <div class="btn-group">
             <button class="btn btn-sm dropdown-toggle btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -785,6 +789,9 @@
             <ul class="dropdown-menu dropdown-menu-start">
               <li class="px-3 text-nowrap user-select-none">Attendee capabilities</li>
               <li><hr class="dropdown-divider"></li>
+              <li id="roster-menu-none-seleced">
+                <div class="px-3 text-nowrap text-muted">Select one or more attendees to update.</div>
+              </li>
               <li id="roster-menu-one-attendee" class="hidden">
                 <button
                   class="dropdown-item"
@@ -798,7 +805,7 @@
                   <span>Update the selected attendee</span>
                 </button>
               </li>
-              <li id="roster-menu-all-attendees-except">
+              <li id="roster-menu-all-attendees-except" class="hidden">
                 <button
                   class="dropdown-item"
                   type="button"
