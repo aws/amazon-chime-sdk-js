@@ -122,7 +122,7 @@ Resources:
         - Ref: ChimeSdkStartLiveConnectorLambdaRole
         - Ref: ChimeSdkEndLiveConnectorLambdaRole
         - Ref: ChimeSdkUpdateAttendeeCapabilitiesLambdaRole
-        - Ref: ChimeSdkUpdateAttendeeCapabilitiesExceptLambdaRole
+        - Ref: ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaRole
         - Ref: ChimeSdkGetAttendeeLambdaRole        
   ChimeMessagingAccessPolicy:
     Type: AWS::IAM::Policy
@@ -703,10 +703,10 @@ Resources:
           Properties:
             Path: /update_attendee_capabilities
             Method: PUT
-  ChimeSdkUpdateAttendeeCapabilitiesExceptLambda:
+  ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers.update_attendee_capabilities_except
+      Handler: handlers.batch_update_attendee_capabilities_except
       CodeUri: src/
       Policies:
         - DynamoDBCrudPolicy:
@@ -718,7 +718,7 @@ Resources:
         Api1:
           Type: Api
           Properties:
-            Path: /update_attendee_capabilities_except
+            Path: /batch_update_attendee_capabilities_except
             Method: POST
   ChimeSdkGetAttendeeLambda:
     Type: AWS::Serverless::Function

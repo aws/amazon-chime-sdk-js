@@ -2400,16 +2400,16 @@ export class DemoMeetingApp
 
   async updateAttendeeCapabilities(
     attendeeId: string,
-    audio_capability: string,
-    video_capability: string,
-    content_capability: string
+    audioCapability: string,
+    videoCapability: string,
+    contentCapability: string
   ): Promise<void> {
-    let uri = `${DemoMeetingApp.BASE_URL}update_attendee_capabilities?title=${encodeURIComponent(
+    const uri = `${DemoMeetingApp.BASE_URL}update_attendee_capabilities?title=${encodeURIComponent(
       this.meeting
-    )}&id=${encodeURIComponent(attendeeId)}&audio_capability=${encodeURIComponent(
-      audio_capability
-    )}&video_capability=${encodeURIComponent(video_capability)}&content_capability=${encodeURIComponent(
-      content_capability
+    )}&attendeeId=${encodeURIComponent(attendeeId)}&audioCapability=${encodeURIComponent(
+      audioCapability
+    )}&videoCapability=${encodeURIComponent(videoCapability)}&contentCapability=${encodeURIComponent(
+      contentCapability
     )}`;
     const response = await fetch(uri, {
       method: 'POST',
@@ -2423,16 +2423,16 @@ export class DemoMeetingApp
 
   async updateAttendeeCapabilitiesExcept(
     attendees: string[],
-    audio_capability: string,
-    video_capability: string,
-    content_capability: string
+    audioCapability: string,
+    videoCapability: string,
+    contentCapability: string
   ): Promise<void> {
-    let uri = `${DemoMeetingApp.BASE_URL}update_attendee_capabilities_except?title=${encodeURIComponent(
+    const uri = `${DemoMeetingApp.BASE_URL}batch_update_attendee_capabilities_except?title=${encodeURIComponent(
       this.meeting
-    )}&ids=${encodeURIComponent(attendees.join(' '))}&audio_capability=${encodeURIComponent(
-      audio_capability
-    )}&video_capability=${encodeURIComponent(video_capability)}&content_capability=${encodeURIComponent(
-      content_capability
+    )}&attendeeIds=${encodeURIComponent(attendees.join(','))}&audioCapability=${encodeURIComponent(
+      audioCapability
+    )}&videoCapability=${encodeURIComponent(videoCapability)}&contentCapability=${encodeURIComponent(
+      contentCapability
     )}`;
     const response = await fetch(uri, { method: 'POST' });
     const json = await response.json();

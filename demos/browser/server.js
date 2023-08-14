@@ -420,31 +420,31 @@ function serve(host = '127.0.0.1:8080') {
           respond(response, 200, 'audio/mpeg', data);
         });
       } else if (request.method === 'POST' && requestUrl.pathname === '/update_attendee_capabilities') {
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
         const data = await client.updateAttendeeCapabilities({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
-          AttendeeId: requestUrl.query.id,
+          AttendeeId: requestUrl.query.attendeeId,
           Capabilities: {
-            Audio: requestUrl.query.audio_capability,
-            Video: requestUrl.query.video_capability,
-            Content: requestUrl.query.content_capability
+            Audio: requestUrl.query.audioCapability,
+            Video: requestUrl.query.videoCapability,
+            Content: requestUrl.query.contentCapability
           }
         }).promise();
         respond(response, 200, 'application/json', JSON.stringify(data));
-      } else if (request.method === 'POST' && requestUrl.pathname === '/update_attendee_capabilities_except') {
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+      } else if (request.method === 'POST' && requestUrl.pathname === '/batch_update_attendee_capabilities_except') {
+        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
         const data = await client.batchUpdateAttendeeCapabilitiesExcept({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
-          ExcludedAttendeeIds: requestUrl.query.ids.split(' ').map(id => { return { AttendeeId: id }} ),
+          ExcludedAttendeeIds: requestUrl.query.attendeeIds.split(',').map(attendeeId => { return { AttendeeId: attendeeId }} ),
           Capabilities: {
-            Audio: requestUrl.query.audio_capability,
-            Video: requestUrl.query.video_capability,
-            Content: requestUrl.query.content_capability
+            Audio: requestUrl.query.audioCapability,
+            Video: requestUrl.query.videoCapability,
+            Content: requestUrl.query.contentCapability
           }
         }).promise();
         respond(response, 200, 'application/json', JSON.stringify(data));
       } else if (request.method === 'GET' && requestUrl.pathname === '/get_attendee') {
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
         const getAttendeeResponse = await client.getAttendee({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
           AttendeeId: requestUrl.query.id
