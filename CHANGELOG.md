@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump protobufjs from 6.11.3 to 7.2.4.
 - Fixed usage of `this` in `VideoCodecCapability` constructors.
-- Fixed a race condition error if calling `startContentShare` then `stopContentShare` right after.
+- Fixed a race condition error if calling `startContentShare` then `stopContentShare` right after. Credits to [@kennyvallejodev](https://github.com/kennyvallejodev) for providing the fix in [#2663](https://github.com/aws/amazon-chime-sdk-js/pull/2663).
 - Invoke MediaStreamBrokerObservers in the next event loop tick to prevent race conditions with the browser's `RTCRtpSender.replaceTrack` API call.
 
 ## [3.15.0] - 2023-05-01
