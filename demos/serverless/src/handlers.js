@@ -180,7 +180,7 @@ exports.join = async (event, context) => {
     ExternalUserId: `${uuidv4().substring(0, 8)}#${query.name}`.substring(0, 64),
   };
 
-  if (query.attendeeAudioCapability && !query.primaryExternalMeetingId) {
+  if (useChimeSDKMeetings === 'true' && query.attendeeAudioCapability && !query.primaryExternalMeetingId) {
     createAttendeeRequest['Capabilities'] = {
       Audio : query.attendeeAudioCapability,
       Video : query.attendeeVideoCapability,

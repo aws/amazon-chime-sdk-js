@@ -179,7 +179,11 @@ function serve(host = '127.0.0.1:8080') {
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
         };
 
-        if (requestUrl.query.attendeeAudioCapability && !requestUrl.query.primaryExternalMeetingId) {
+        if (
+          useChimeSDKMeetings === 'true' &&
+          requestUrl.query.attendeeAudioCapability &&
+          !requestUrl.query.primaryExternalMeetingId
+        ) {
           createAttendeeRequest.Capabilities = {
             Audio: requestUrl.query.attendeeAudioCapability,
             Video: requestUrl.query.attendeeVideoCapability,
