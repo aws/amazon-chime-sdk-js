@@ -1,25 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  DefaultModality
-} from 'amazon-chime-sdk-js';
-
 class Attendee {
-    name: string;
-    id: string;
+    name : string;
+    id : string;
     muted: boolean;
     signalStrength: number;
     speaking: boolean;
-    isContentAttendee: boolean;
 
-    constructor(id: string, name: string) {
-        this.id = id;
+    constructor(name: string, id: string) {
         this.name = name;
+        this.id = name;
         this.signalStrength = 1;
-        this.isContentAttendee = new DefaultModality(id).hasModality(
-           DefaultModality.MODALITY_CONTENT
-        );
     }
 }
 
@@ -32,8 +24,6 @@ export default class Roster {
     static readonly CONTAINER_ID = 'roster';
 
     attendeeInfoMap: Map<string, Attendee> = new Map<string, Attendee>();   
-    
-    selectedAttendeeSet = new Set<Attendee>();
 
     /**
      * Returns a boolean indicating if the attendeeId is part of the roster or not.
@@ -59,7 +49,7 @@ export default class Roster {
      * @param attendeeId - the id to be associated with the attendee
      * @param attendeeName - the name of the attendee
      */
-    addAttendee(attendeeId: string, attendeeName: string, allowAttendeeCapabilities: boolean): void {
+    addAttendee(attendeeId: string, attendeeName: string): void {
         if (this.hasAttendee(attendeeId)) {
             return;
         }
@@ -70,32 +60,14 @@ export default class Roster {
         const attendeeElement : HTMLLIElement = document.createElement('li') as HTMLLIElement;
         const attendeeNameElement: HTMLSpanElement = document.createElement('span') as HTMLSpanElement;
         const attendeeStatusElement: HTMLSpanElement = document.createElement('span') as HTMLSpanElement;
-        const attendeeCheckbox: HTMLInputElement = document.createElement('input') as HTMLInputElement;
 
-        // For the content attendee, set it to invisible to maintain the layout.
-        attendeeCheckbox.className = 'roster-checkbox form-check-input m-0 flex-shrink-0 ' + (attendee.isContentAttendee ? ' invisible' : '');
-        attendeeCheckbox.type = 'checkbox';
-        attendeeCheckbox.value = '';
-        attendeeCheckbox.addEventListener('change', () => {
-            if (attendeeCheckbox.checked) {
-                this.selectedAttendeeSet.add(attendee);
-            } else {
-                this.selectedAttendeeSet.delete(attendee);
-            }
-            this.updateRosterMenu();
-        });
-        
-        attendeeNameElement.className = 'name flex-grow-1 text-truncate';
+        attendeeNameElement.className = 'name';
         attendeeNameElement.innerText = attendeeName;
-        
+
         attendeeStatusElement.className = 'status';
-        
-        attendeeElement.className = 'list-group-item d-flex align-items-center gap-2';
+
+        attendeeElement.className = 'list-group-item d-flex justify-content-between align-items-center';
         attendeeElement.id = Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId;
-        if (allowAttendeeCapabilities) {
-            attendeeElement.classList.add('ps-2');
-            attendeeElement.appendChild(attendeeCheckbox);
-        }
         attendeeElement.appendChild(attendeeNameElement);
         attendeeElement.appendChild(attendeeStatusElement);
 
@@ -119,9 +91,6 @@ export default class Roster {
         const containerElement: HTMLUListElement = this.getContainerElement();
         const childToDelete = document.getElementById(Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId) as HTMLLIElement;
         containerElement.removeChild(childToDelete);
-
-        this.selectedAttendeeSet.delete(this.attendeeInfoMap.get(attendeeId));
-        this.updateRosterMenu();
 
         this.attendeeInfoMap.delete(attendeeId);
         return true;
@@ -176,16 +145,6 @@ export default class Roster {
         const container: HTMLUListElement = this.getContainerElement();
         container.innerHTML = "";
         this.attendeeInfoMap.clear();
-
-        this.unselectAll();
-    }
-
-    unselectAll() {
-        this.selectedAttendeeSet.clear();
-        this.updateRosterMenu();
-        for (const checkboxElement of (Array.from(document.getElementsByClassName('roster-checkbox')) as HTMLInputElement[])) {
-            checkboxElement.checked = false;
-        }
     }
 
     private getContainerElement(): HTMLUListElement {
@@ -213,42 +172,5 @@ export default class Roster {
         
         attendeeStatusElement.className = statusClass;
         attendeeStatusElement.innerText = statusText;
-    }
-
-    private updateRosterMenu(): void {
-        const instruction = document.getElementById('roster-menu-instruction');
-        const rosterMenuOneAttendee = document.getElementById('roster-menu-one-attendee');
-        const rosterMenuNoneSelected = document.getElementById('roster-menu-none-seleced');
-        const rosterMenuAllAttendeesExcept = document.getElementById('roster-menu-all-attendees-except');
-        const rosterMenuAllAttendeesExceptLabel = document.getElementById('roster-menu-all-attendees-except-label');
-
-        const size = this.selectedAttendeeSet.size;
-        if (size > 0) {
-            instruction.innerText = `${size} selected`;
-            rosterMenuNoneSelected.classList.add('hidden');
-            rosterMenuAllAttendeesExceptLabel.innerText = `Update all attendees, except ${size} selected`;
-
-            if (size === 1) {
-                // If one attendee is selected, provide two options:
-                // - Update one attendee only, using the update-attendee-capabilities API
-                // - Update all attendees, except the selected one, using the batch-update-attendee-capabilities-except API
-                rosterMenuOneAttendee.classList.remove('hidden');
-                rosterMenuAllAttendeesExcept.classList.remove('hidden');
-            } else if (size > 1) {
-                // If multiple attendees are selected, provide the following option:
-                // - Update all attendees, except the selected one, using the batch-update-attendee-capabilities-except API
-                rosterMenuOneAttendee.classList.add('hidden');
-                rosterMenuAllAttendeesExcept.classList.remove('hidden');
-            }
-        } else {
-            instruction.innerText = '';
-            rosterMenuAllAttendeesExceptLabel.innerText = `Update all attendees`;
-
-            // If none are selected, show the instruction.
-            rosterMenuNoneSelected.classList.remove('hidden');
-            rosterMenuOneAttendee.classList.add('hidden');
-            rosterMenuAllAttendeesExcept.classList.add('hidden');
-        }
-
     }
 }

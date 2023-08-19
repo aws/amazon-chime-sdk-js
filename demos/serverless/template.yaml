@@ -104,8 +104,6 @@ Resources:
               - 'chime:DeleteMediaCapturePipeline'
               - 'chime:CreateMediaLiveConnectorPipeline'
               - 'chime:DeleteMediaPipeline'
-              - 'chime:UpdateAttendeeCapabilities'
-              - 'chime:BatchUpdateAttendeeCapabilitiesExcept'
               - 'ivs:CreateChannel'
               - 'ivs:DeleteChannel'
               - 's3:GetBucketPolicy'
@@ -121,9 +119,6 @@ Resources:
         - Ref: ChimeSdkEndCaptureLambdaRole
         - Ref: ChimeSdkStartLiveConnectorLambdaRole
         - Ref: ChimeSdkEndLiveConnectorLambdaRole
-        - Ref: ChimeSdkUpdateAttendeeCapabilitiesLambdaRole
-        - Ref: ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaRole
-        - Ref: ChimeSdkGetAttendeeLambdaRole        
   ChimeMessagingAccessPolicy:
     Type: AWS::IAM::Policy
     Condition: ShouldDeployFetchCredentialLambda
@@ -685,57 +680,6 @@ Resources:
             ]
           }
         - { Source: !Ref ChimeBrowserMeetingEventLogs }
-  ChimeSdkUpdateAttendeeCapabilitiesLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers.update_attendee_capabilities
-      CodeUri: src/
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Meetings
-      Environment:
-        Variables:
-          USE_EVENT_BRIDGE: !Ref UseEventBridge
-      Events:
-        Api1:
-          Type: Api
-          Properties:
-            Path: /update_attendee_capabilities
-            Method: POST
-  ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers.batch_update_attendee_capabilities_except
-      CodeUri: src/
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Meetings
-      Environment:
-        Variables:
-          USE_EVENT_BRIDGE: !Ref UseEventBridge
-      Events:
-        Api1:
-          Type: Api
-          Properties:
-            Path: /batch_update_attendee_capabilities_except
-            Method: POST
-  ChimeSdkGetAttendeeLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers.get_attendee
-      CodeUri: src/
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Meetings
-      Environment:
-        Variables:
-          USE_EVENT_BRIDGE: !Ref UseEventBridge
-      Events:
-        Api1:
-          Type: Api
-          Properties:
-            Path: /get_attendee
-            Method: GET
 Outputs:
   ApiURL:
     Description: "API endpoint URL for Prod environment"

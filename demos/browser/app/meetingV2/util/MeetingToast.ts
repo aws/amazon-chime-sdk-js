@@ -5,7 +5,7 @@ import { Toast } from 'bootstrap';
 
 export default class MeetingToast extends HTMLElement {
   innerHTMLToInject = `
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="10000">
       <div class="toast-body">
         <p class="toast-message"></p>
         <div class="mt-2 pt-2 border-top button-container">
@@ -20,7 +20,7 @@ export default class MeetingToast extends HTMLElement {
   }
 
   public set delay(delay: string) {
-    this.querySelector('.toast').setAttribute("data-bs-delay", delay);
+    this.querySelector('.toast').setAttribute("data-delay", delay);
   }
 
   addButton(label: string, action: () => void) {

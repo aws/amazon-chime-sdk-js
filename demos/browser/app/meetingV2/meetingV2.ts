@@ -80,7 +80,6 @@ import {
   POSTLogger,
   VideoCodecCapability,
 } from 'amazon-chime-sdk-js';
-import { Modal } from 'bootstrap';
 
 import TestSound from './audio/TestSound';
 import MeetingToast from './util/MeetingToast'; MeetingToast; // Make sure this file is included in webpack
@@ -330,11 +329,6 @@ export class DemoMeetingApp
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
   videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
-
-  audioCapability: string;
-  videoCapability: string;
-  contentCapability: string;
-
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig;
@@ -368,7 +362,6 @@ export class DemoMeetingApp
   joinInfo: any | undefined;
   deleteOwnAttendeeToLeave = false;
   disablePeriodicKeyframeRequestOnContentSender = false;
-  allowAttendeeCapabilities = false;
 
   blurProcessor: BackgroundBlurProcessor | undefined;
   replacementProcessor: BackgroundReplacementProcessor | undefined;
@@ -1452,15 +1445,7 @@ export class DemoMeetingApp
 
   private async getPrimaryMeetingCredentials(): Promise<MeetingSessionCredentials> {
     // Use the same join endpoint, but point it to the provided primary meeting title and give us an arbitrarily different user name
-    const joinInfo = (await this.sendJoinRequest(
-      this.primaryExternalMeetingId,
-      `promoted-${this.name}`,
-      this.region,
-      undefined,
-      this.audioCapability,
-      this.videoCapability,
-      this.contentCapability,
-    )).JoinInfo;
+    const joinInfo = (await this.sendJoinRequest(this.primaryExternalMeetingId, `promoted-${this.name}`, this.region)).JoinInfo;
     // To avoid duplicating code we reuse the constructor for `MeetingSessionConfiguration` which contains `MeetingSessionCredentials`
     // within it and properly does the parsing of the `chime::CreateAttendee` response
     const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
@@ -1969,7 +1954,7 @@ export class DemoMeetingApp
         this.contentShare.stop();
       }
       const attendeeName =  externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '');
-      this.roster.addAttendee(attendeeId, attendeeName, this.allowAttendeeCapabilities);
+      this.roster.addAttendee(attendeeId, attendeeName);
 
       this.volumeIndicatorHandler = async (
           attendeeId: string,
@@ -2295,25 +2280,12 @@ export class DemoMeetingApp
       meeting: string,
       name: string,
       region: string,
-      primaryExternalMeetingId?: string,
-      audioCapability?: string,
-      videoCapability?: string,
-      contentCapability?: string,
-    ): Promise<any> {
+      primaryExternalMeetingId?: string): Promise<any> {
     let uri = `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(
         meeting
     )}&name=${encodeURIComponent(name)}&region=${encodeURIComponent(region)}`
     if (primaryExternalMeetingId) {
       uri += `&primaryExternalMeetingId=${primaryExternalMeetingId}`;
-    }
-    if (audioCapability) {
-      uri += `&attendeeAudioCapability=${audioCapability}`;
-    }
-    if (videoCapability) {
-      uri += `&attendeeVideoCapability=${videoCapability}`;
-    }
-    if (contentCapability) {
-      uri += `&attendeeContentCapability=${contentCapability}`;
     }
     uri += `&ns_es=${this.echoReductionCapability}`
     const response = await fetch(uri,
@@ -2383,57 +2355,10 @@ export class DemoMeetingApp
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getAttendee(attendeeId: string): Promise<any> {
     const response = await fetch(
-        `${DemoMeetingApp.BASE_URL}get_attendee?title=${encodeURIComponent(
+        `${DemoMeetingApp.BASE_URL}attendee?title=${encodeURIComponent(
             this.meeting
-        )}&id=${encodeURIComponent(attendeeId)}`,
-        {
-          method: 'GET',
-        }
+        )}&attendee=${encodeURIComponent(attendeeId)}`
     );
-    const json = await response.json();
-    if (json.error) {
-      throw new Error(`Server error: ${json.error}`);
-    }
-    return json;
-  }
-
-  async updateAttendeeCapabilities(
-    attendeeId: string,
-    audioCapability: string,
-    videoCapability: string,
-    contentCapability: string
-  ): Promise<void> {
-    const uri = `${DemoMeetingApp.BASE_URL}update_attendee_capabilities?title=${encodeURIComponent(
-      this.meeting
-    )}&attendeeId=${encodeURIComponent(attendeeId)}&audioCapability=${encodeURIComponent(
-      audioCapability
-    )}&videoCapability=${encodeURIComponent(videoCapability)}&contentCapability=${encodeURIComponent(
-      contentCapability
-    )}`;
-    const response = await fetch(uri, {
-      method: 'POST',
-    });
-    const json = await response.json();
-    if (json.error) {
-      throw new Error(`Server error: ${json.error}`);
-    }
-    return json;
-  }
-
-  async updateAttendeeCapabilitiesExcept(
-    attendees: string[],
-    audioCapability: string,
-    videoCapability: string,
-    contentCapability: string
-  ): Promise<void> {
-    const uri = `${DemoMeetingApp.BASE_URL}batch_update_attendee_capabilities_except?title=${encodeURIComponent(
-      this.meeting
-    )}&attendeeIds=${encodeURIComponent(attendees.join(','))}&audioCapability=${encodeURIComponent(
-      audioCapability
-    )}&videoCapability=${encodeURIComponent(videoCapability)}&contentCapability=${encodeURIComponent(
-      contentCapability
-    )}`;
-    const response = await fetch(uri, { method: 'POST' });
     const json = await response.json();
     if (json.error) {
       throw new Error(`Server error: ${json.error}`);
@@ -3366,15 +3291,7 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.sendJoinRequest(
-      this.meeting,
-      this.name,
-      this.region,
-      this.primaryExternalMeetingId,
-      this.audioCapability,
-      this.videoCapability,
-      this.contentCapability,
-    )).JoinInfo;
+    this.joinInfo = (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
     this.region = this.joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
@@ -3384,111 +3301,6 @@ export class DemoMeetingApp
     history.replaceState({}, `${this.meeting}`, url.toString());
     return configuration.meetingId;
   }
-
-  async initAttendeeCapabilityFeature(): Promise<void> {
-    const rosterMenuContainer = document.getElementById('roster-menu-container');
-    if (this.allowAttendeeCapabilities) {
-      rosterMenuContainer.classList.remove('hidden');
-      rosterMenuContainer.classList.add('d-flex');
-
-      const attendeeCapabilitiesModal = document.getElementById('attendee-capabilities-modal');
-      attendeeCapabilitiesModal.addEventListener('show.bs.modal', async (event: any) => {
-        const button = event.relatedTarget;
-        const type = button.getAttribute('data-bs-type');
-        const descriptionElement = document.getElementById('attendee-capabilities-modal-description');
-  
-        const audioSelectElement = document.getElementById('attendee-capabilities-modal-audio-select') as HTMLSelectElement;
-        const videoSelectElement = document.getElementById('attendee-capabilities-modal-video-select') as HTMLSelectElement;
-        const contentSelectElement = document.getElementById('attendee-capabilities-modal-content-select') as HTMLSelectElement;
-  
-        audioSelectElement.value = '';
-        videoSelectElement.value = '';
-        contentSelectElement.value = '';
-  
-        audioSelectElement.disabled = true;
-        videoSelectElement.disabled = true;
-        contentSelectElement.disabled = true;
-  
-        // Clone the `selectedAttendeeSet` upon selecting the menu option to open a modal. 
-        // Note that the `selectedAttendeeSet` may change when API calls are made.
-        const selectedAttendeeSet = new Set(this.roster.selectedAttendeeSet);
-        
-        if (type === 'one-attendee') {
-          const [selectedAttendee] = selectedAttendeeSet;
-          descriptionElement.innerHTML = `Update <b>${selectedAttendee.name}</b>'s attendee capabilities.`;
-  
-          // Load the selected attendee's capabilities.
-          const { Attendee } = await this.getAttendee(selectedAttendee.id);
-          audioSelectElement.value = Attendee.Capabilities.Audio;
-          videoSelectElement.value = Attendee.Capabilities.Video;
-          contentSelectElement.value = Attendee.Capabilities.Content;
-        } else {
-          if (this.roster.selectedAttendeeSet.size === 0)  {
-            descriptionElement.innerHTML = `Update the capabilities of all attendees.`;
-          } else {
-            descriptionElement.innerHTML = `Update the capabilities of all attendees, excluding:<ul> ${
-              [...selectedAttendeeSet].map(attendee => `<li><b>${attendee.name}</b></li>`).join('')
-            }</ul>`;
-          }
-  
-          audioSelectElement.value = 'SendReceive';
-          videoSelectElement.value = 'SendReceive';
-          contentSelectElement.value = 'SendReceive';
-        }
-  
-        audioSelectElement.disabled = false;
-        videoSelectElement.disabled = false;
-        contentSelectElement.disabled = false;
-      
-        const saveButton = document.getElementById('attendee-capabilities-save-button') as HTMLButtonElement;
-        const onClickSaveButton = async () => {
-          saveButton.removeEventListener('click', onClickSaveButton);
-          Modal.getInstance(attendeeCapabilitiesModal).hide();
-          this.roster.unselectAll();
-  
-          try {
-            if (type === 'one-attendee') {
-              const [selectedAttendee] = selectedAttendeeSet;
-              await this.updateAttendeeCapabilities(
-                selectedAttendee.id,
-                audioSelectElement.value,
-                videoSelectElement.value,
-                contentSelectElement.value
-              );
-            } else {
-              await this.updateAttendeeCapabilitiesExcept(
-                [...selectedAttendeeSet].map(attendee => attendee.id),
-                audioSelectElement.value,
-                videoSelectElement.value,
-                contentSelectElement.value
-              );
-            }
-          } catch (error) {
-            console.error(error);
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('meeting-toast') as MeetingToast;
-            toastContainer.appendChild(toast);
-            toast.message = `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`;
-            toast.delay = '15000';
-            toast.show();
-            const onHidden = () => {
-              toast.removeEventListener('hidden.bs.toast', onHidden);
-              toastContainer.removeChild(toast);
-            };
-            toast.addEventListener('hidden.bs.toast', onHidden);
-          }
-        };
-        saveButton.addEventListener('click', onClickSaveButton);
-  
-        attendeeCapabilitiesModal.addEventListener('hide.bs.modal', async () => {
-          saveButton.removeEventListener('click', onClickSaveButton);
-        });
-      }); 
-    } else {
-      rosterMenuContainer.classList.add('hidden');
-      rosterMenuContainer.classList.remove('d-flex');
-    }
-  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   log(str: string, ...args: any[]): void {
@@ -3675,7 +3487,6 @@ export class DemoMeetingApp
     this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
     this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
     this.disablePeriodicKeyframeRequestOnContentSender = (document.getElementById('disable-content-keyframe') as HTMLInputElement).checked;
-    this.allowAttendeeCapabilities = (document.getElementById('allow-attendee-capabilities') as HTMLInputElement).checked;
     this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
     this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
     this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
@@ -3714,10 +3525,6 @@ export class DemoMeetingApp
         // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
         break;
     }
-
-    this.audioCapability = (document.getElementById('audioCapabilitySelect') as HTMLSelectElement).value;
-    this.videoCapability = (document.getElementById('videoCapabilitySelect') as HTMLSelectElement).value;
-    this.contentCapability = (document.getElementById('contentCapabilitySelect') as HTMLSelectElement).value;
 
     AsyncScheduler.nextTick(
         async (): Promise<void> => {
@@ -3763,7 +3570,6 @@ export class DemoMeetingApp
           await this.initVoiceFocus();
           await this.initBackgroundBlur();
           await this.initBackgroundReplacement();
-          await this.initAttendeeCapabilityFeature();
           await this.resolveSupportsVideoFX();
           await this.populateAllDeviceLists();
           await this.populateVideoFilterInputList(false);
