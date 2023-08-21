@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Allow receiving notification messages from server and print messages received to console
+
 ### Removed
 
 ### Changed
