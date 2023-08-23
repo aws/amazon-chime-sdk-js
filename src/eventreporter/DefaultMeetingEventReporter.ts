@@ -22,6 +22,7 @@ export default class DefaultMeetingEventReporter implements EventReporter, Destr
     'audioInputFailed',
     'videoInputFailed',
     'meetingStartSucceeded',
+    'deviceLabelTriggerFailed',
   ];
   destroyed = false;
 
