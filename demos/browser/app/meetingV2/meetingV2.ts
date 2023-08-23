@@ -1728,6 +1728,7 @@ export class DemoMeetingApp
       }
       case 'audioInputFailed':
       case 'videoInputFailed':
+      case 'deviceLabelTriggerFailed':
       case 'meetingStartFailed':
       case 'meetingFailed': {
         // Send the last 5 minutes of events.

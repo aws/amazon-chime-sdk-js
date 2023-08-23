@@ -7,4 +7,5 @@
 export default interface DeviceEventAttributes {
   audioInputErrorMessage?: string;
   videoInputErrorMessage?: string;
+  deviceLabelTriggerErrorMessage?: string;
 }

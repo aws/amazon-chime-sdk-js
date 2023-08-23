@@ -367,7 +367,7 @@ describe('DefaultDeviceController', () => {
       try {
         await deviceController.listAudioInputDevices();
         expect(called).to.be.true;
-        expect(handleEventSpy.calledTwice).to.be.true;
+        expect(handleEventSpy.calledWith('deviceLabelTriggerFailed')).to.be.true;
       } catch (error) {
         throw new Error('This line should not be reached.');
       }

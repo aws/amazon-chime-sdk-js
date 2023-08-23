@@ -19,6 +19,7 @@ type EventName =
   | 'receivingAudioDropped'
   | 'sendingAudioFailed'
   | 'sendingAudioRecovered'
-  | 'backgroundFilterConfigSelected';
+  | 'backgroundFilterConfigSelected'
+  | 'deviceLabelTriggerFailed';
 
 export default EventName;

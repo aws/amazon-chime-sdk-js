@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Allow receiving notification messages from server and print messages received to console
+- Add a new meeting event, `deviceLabelTriggerFailed`, for device label trigger failures. By default, the Chime SDK for JavaScript requests access to the microphone and camera in order to retrieve device labels. The SDK will send the `deviceLabelTriggerFailed` event when either the microphone, camera or both requests fail. (Before this PR, the SDK would emit `audioInputFailed` and `videoInputFailed` events simultaneously, which could lead to confusion.) If a custom function is supplied with `meetingSession.audioVideo.setDeviceLabelTrigger`, the SDK will send this event when the custom function is not successful.
 
 ### Removed
 
