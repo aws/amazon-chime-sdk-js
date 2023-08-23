@@ -1554,7 +1554,9 @@ export default class DefaultAudioVideoController
   setVideoCodecSendPreferences(preferences: VideoCodecCapability[]): void {
     this.videoSendCodecPreferences = preferences; // In case we haven't called `initSignalingClient` yet
     this.meetingSessionContext.videoSendCodecPreferences = preferences;
-    this.update({ needsRenegotiation: true });
+    if (this.sessionStateController.state() !== SessionStateControllerState.NotConnected) {
+      this.update({ needsRenegotiation: true });
+    }
   }
 
   getRemoteVideoSources(): VideoSource[] {
