@@ -4253,6 +4253,21 @@ describe('DefaultAudioVideoController', () => {
 
       expect(spy.callCount).to.equal(1);
     });
+
+    it('does not trigger an update if invoked before the session starts.', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+
+      // @ts-ignore
+      const spy = sinon.spy(audioVideoController, 'update');
+      audioVideoController.setVideoCodecSendPreferences([VideoCodecCapability.vp8()]);
+      expect(spy.callCount).to.equal(0);
+    });
   });
 
   describe('getRTCPeerConnectionStats', () => {
