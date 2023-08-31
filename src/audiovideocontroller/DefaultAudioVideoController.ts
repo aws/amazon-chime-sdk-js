@@ -752,6 +752,11 @@ export default class DefaultAudioVideoController
 
   /* @internal */
   stopReturningPromise(): Promise<void> {
+    // We need to ensure this disables reconnection before any other steps are taken,
+    // in case something during close is triggering a reconnection (e.g. websocket
+    // close)
+    this._reconnectController.disableReconnect();
+
     // In order to avoid breaking backward compatibility, when only the
     // signaling connection is established we appear to not be connected.
     // We handle this by simply disconnecting the websocket directly.
@@ -772,7 +777,6 @@ export default class DefaultAudioVideoController
     */
     return new Promise((resolve, reject) => {
       this.sessionStateController.perform(SessionStateControllerAction.Disconnect, () => {
-        this._reconnectController.disableReconnect();
         this.logger.info('attendee left meeting, session will not be reconnected');
         this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.Left), false, null)
           .then(resolve)
@@ -1532,21 +1536,21 @@ export default class DefaultAudioVideoController
     }
     if (status.isFailure() || status.isTerminal()) {
       if (this.meetingSessionContext.reconnectController) {
-        const willRetry = this.reconnect(status, error);
-        if (willRetry) {
+        const willReconnect = this.reconnect(status, error);
+        if (willReconnect) {
           this.logger.warn(
-            `will retry due to status code ${MeetingSessionStatusCode[status.statusCode()]}${
-              error ? ` and error: ${error.message}` : ``
-            }`
+            `The audio video controller will reconnect due to status code ${
+              MeetingSessionStatusCode[status.statusCode()]
+            }${error ? ` and error: ${error.message}` : ``}`
           );
         } else {
           this.logger.error(
-            `failed with status code ${MeetingSessionStatusCode[status.statusCode()]}${
-              error ? ` and error: ${error.message}` : ``
-            }`
+            `The audio video controller failed with status code ${
+              MeetingSessionStatusCode[status.statusCode()]
+            }${error ? ` and error: ${error.message}` : ``}`
           );
         }
-        return willRetry;
+        return willReconnect;
       }
     }
     return false;

@@ -197,6 +197,10 @@ export default class AudioVideoControllerState {
 
   startTimeMs: number | null = null;
 
+  // Indicates whether the session has completed initial connection (i.e. signal channel open and first subscribe
+  // and subscribe-ack)
+  isSessionConnected: boolean = false;
+
   /*
    * Reset state corresponding to state that is dependent on a individual connection
    * and may not be valid for others, e.g. on a reconnection.
@@ -257,5 +261,7 @@ export default class AudioVideoControllerState {
     this.videoDuplexMode = null;
 
     // `poorConnectionCount`and `maxVideoTileCount` is intentionally not set to 0 across reconnections.
+
+    this.isSessionConnected = false;
   }
 }
