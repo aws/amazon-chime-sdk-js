@@ -1479,8 +1479,8 @@ export default class DefaultAudioVideoController
     }
     if (status.isFailure() || status.isTerminal()) {
       if (this.meetingSessionContext.reconnectController) {
-        const wiiReconnect = this.reconnect(status, error);
-        if (wiiReconnect) {
+        const willReconnect = this.reconnect(status, error);
+        if (willReconnect) {
           this.logger.warn(
             `The audio video controller will reconnect due to status code ${
               MeetingSessionStatusCode[status.statusCode()]
@@ -1493,7 +1493,7 @@ export default class DefaultAudioVideoController
             }${error ? ` and error: ${error.message}` : ``}`
           );
         }
-        return wiiReconnect;
+        return willReconnect;
       }
     }
     return false;

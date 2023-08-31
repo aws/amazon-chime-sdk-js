@@ -401,6 +401,7 @@ export default class DefaultSignalingClient implements SignalingClient {
           `notifying event: ${SignalingClientEventType[event.type]}, 
               code: ${event.closeCode} reason: ${event.closeReason}`
         );
+        break;
       default:
         this.logger.info(`notifying event: ${SignalingClientEventType[event.type]}`);
         break;
