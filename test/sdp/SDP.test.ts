@@ -513,4 +513,22 @@ describe('SDP', () => {
       expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
     });
   });
+
+  describe('getAudioPayloadTypes', () => {
+    it('Returns expected values for red and opus codecs', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_RED);
+      const payloadTypes = sdpObj.getAudioPayloadTypes();
+      expect(payloadTypes.get('opus')).to.equal(111);
+      expect(payloadTypes.get('red')).to.equal(63);
+    });
+
+    it('Returns payload type 0 if the rtpmap attribute was not found for RED and Opus codecs', () => {
+      const sdpObj = new SDP(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_RED_BUT_MISSING_RED_AND_OPUS_RTPMAP_ATTRIBUTES
+      );
+      const payloadTypes = sdpObj.getAudioPayloadTypes();
+      expect(payloadTypes.get('opus')).to.equal(0);
+      expect(payloadTypes.get('red')).to.equal(0);
+    });
+  });
 });

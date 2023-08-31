@@ -59,6 +59,17 @@ export default class SetLocalDescriptionTask extends BaseTask {
       if (this.context.audioProfile.isStereo()) {
         sdp = new SDP(sdp).withStereoAudio().sdp;
       }
+
+      if (this.context.audioProfile.hasRedundancyEnabled()) {
+        const audioPayloadMap = new SDP(sdp).getAudioPayloadTypes();
+        /* istanbul ignore else */
+        if (
+          this.context.transceiverController &&
+          this.context.transceiverController.setAudioPayloadTypes
+        ) {
+          this.context.transceiverController.setAudioPayloadTypes(audioPayloadMap);
+        }
+      }
     }
 
     this.logger.debug(() => {

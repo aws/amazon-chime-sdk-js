@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { RedundantAudioRecoveryMetricReport } from '../../src';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
@@ -658,6 +659,79 @@ describe('StatsCollector', () => {
         expect(spy.calledOnce).to.be.false;
         done();
       });
+    });
+  });
+
+  describe('When it has a red recovery metric report', () => {
+    it('adds it to stats report as audio inbound-rtp-red', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          const rtcStatsReports = _clientMetricReport.customStatsReports;
+          let foundReport = false;
+          // @ts-ignore
+          rtcStatsReports.forEach(report => {
+            if (report.kind === 'audio') {
+              if (report.type === 'inbound-rtp-red') {
+                foundReport = true;
+                expect(report.totalAudioPacketsExpected).to.equal(7);
+                expect(report.totalAudioPacketsLost).to.equal(5);
+                expect(report.totalAudioPacketsRecoveredRed).to.equal(3);
+                expect(report.totalAudioPacketsRecoveredFec).to.equal(2);
+              }
+            }
+          });
+          expect(foundReport).to.be.true;
+          statsCollector.stop();
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.recoveryMetricsDidReceive({
+        currentTimestampMs: 1000,
+        totalAudioPacketsExpected: 7,
+        totalAudioPacketsLost: 5,
+        totalAudioPacketsRecoveredRed: 3,
+        totalAudioPacketsRecoveredFec: 2,
+      } as RedundantAudioRecoveryMetricReport);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+    });
+
+    it('does not add it to stats report if already processed', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          const rtcStatsReports = _clientMetricReport.customStatsReports;
+          let foundReport = false;
+          // @ts-ignore
+          rtcStatsReports.forEach(report => {
+            if (report.kind === 'audio') {
+              if (report.type === 'inbound-rtp-red') {
+                foundReport = true;
+              }
+            }
+          });
+          expect(foundReport).to.be.false;
+          statsCollector.stop();
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.recoveryMetricsDidReceive({
+        currentTimestampMs: 1000,
+        totalAudioPacketsExpected: 7,
+        totalAudioPacketsLost: 5,
+        totalAudioPacketsRecoveredRed: 3,
+        totalAudioPacketsRecoveredFec: 2,
+      } as RedundantAudioRecoveryMetricReport);
+      statsCollector['lastRedRecoveryMetricReportConsumedTimestampMs'] = 1000;
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
     });
   });
 });

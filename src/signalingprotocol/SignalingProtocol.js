@@ -7144,6 +7144,10 @@ $root.SdkMetric = (function() {
             case 89:
             case 96:
             case 97:
+            case 98:
+            case 99:
+            case 100:
+            case 101:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -7400,6 +7404,21 @@ $root.SdkMetric = (function() {
         case "RTC_MIC_AUDIO_LEVEL":
         case 97:
             message.type = 97;
+        case "RTC_SPK_TOTAL_LOST":
+        case 98:
+            message.type = 98;
+            break;
+        case "RTC_SPK_TOTAL_EXPECTED":
+        case 99:
+            message.type = 99;
+            break;
+        case "RTC_SPK_TOTAL_RECOVERED_RED":
+        case 100:
+            message.type = 100;
+            break;
+        case "RTC_SPK_TOTAL_RECOVERED_FEC":
+        case 101:
+            message.type = 101;
             break;
         }
         if (object.value != null)
@@ -7505,6 +7524,10 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DECODER_IS_HARDWARE=89 VIDEO_DECODER_IS_HARDWARE value
      * @property {number} RTC_SPK_AUDIO_LEVEL=96 RTC_SPK_AUDIO_LEVEL value
      * @property {number} RTC_MIC_AUDIO_LEVEL=97 RTC_MIC_AUDIO_LEVEL value
+     * @property {number} RTC_SPK_TOTAL_LOST=98 RTC_SPK_TOTAL_LOST value
+     * @property {number} RTC_SPK_TOTAL_EXPECTED=99 RTC_SPK_TOTAL_EXPECTED value
+     * @property {number} RTC_SPK_TOTAL_RECOVERED_RED=100 RTC_SPK_TOTAL_RECOVERED_RED value
+     * @property {number} RTC_SPK_TOTAL_RECOVERED_FEC=101 RTC_SPK_TOTAL_RECOVERED_FEC value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -7567,6 +7590,10 @@ $root.SdkMetric = (function() {
         values[valuesById[89] = "VIDEO_DECODER_IS_HARDWARE"] = 89;
         values[valuesById[96] = "RTC_SPK_AUDIO_LEVEL"] = 96;
         values[valuesById[97] = "RTC_MIC_AUDIO_LEVEL"] = 97;
+        values[valuesById[98] = "RTC_SPK_TOTAL_LOST"] = 98;
+        values[valuesById[99] = "RTC_SPK_TOTAL_EXPECTED"] = 99;
+        values[valuesById[100] = "RTC_SPK_TOTAL_RECOVERED_RED"] = 100;
+        values[valuesById[101] = "RTC_SPK_TOTAL_RECOVERED_FEC"] = 101;
         return values;
     })();
 

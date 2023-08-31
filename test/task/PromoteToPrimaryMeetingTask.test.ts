@@ -4,9 +4,9 @@
 import * as chai from 'chai';
 
 import { MeetingSessionStatusCode } from '../../src';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
@@ -39,7 +39,6 @@ describe('PromoteToPrimaryMeetingTask', () => {
   let signalingClient: SignalingClient;
   let primaryMeetingJoinAck: Uint8Array;
   let request: SignalingClientConnectionRequest;
-  let browser: BrowserBehavior;
 
   function makePrimaryMeetingJoinAckFrame(errorStatus: number = undefined): Uint8Array {
     const frame = SdkPrimaryMeetingJoinAckFrame.create();
@@ -61,10 +60,15 @@ describe('PromoteToPrimaryMeetingTask', () => {
 
   beforeEach(() => {
     domMockBuilder = new DOMMockBuilder(behavior);
-    browser = new DefaultBrowserBehavior();
     context = new AudioVideoControllerState();
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     context.audioVideoController = new NoOpAudioVideoController();
-    context.transceiverController = new DefaultTransceiverController(context.logger, browser);
+    context.transceiverController = new DefaultTransceiverController(
+      context.logger,
+      context.browserBehavior,
+      context
+    );
     context.logger = context.audioVideoController.logger;
     webSocketAdapter = new DefaultWebSocketAdapter(context.logger);
     signalingClient = new DefaultSignalingClient(webSocketAdapter, context.logger);

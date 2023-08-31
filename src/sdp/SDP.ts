@@ -830,4 +830,27 @@ export default class SDP {
     }
     return undefined;
   }
+
+  getAudioPayloadTypes(): Map<string, number> {
+    const payloadTypeMap: Map<string, number> = new Map<string, number>();
+    const srcSDP: string = this.sdp;
+    const sections = SDP.splitSections(srcSDP);
+    payloadTypeMap.set('opus', SDP.findAudioPayloadType('opus', sections));
+    payloadTypeMap.set('red', SDP.findAudioPayloadType('red', sections));
+    return payloadTypeMap;
+  }
+
+  private static findAudioPayloadType(codecName: string, sections: string[]): number {
+    const codecRegex = `a=rtpmap:\\s*(\\d+)\\s+${codecName}\\/48000`;
+    const rtpMapRegex = new RegExp(codecRegex);
+    for (const sec of sections) {
+      if (/^m=audio/.test(sec)) {
+        const match = rtpMapRegex.exec(sec);
+        if (match !== null) {
+          return Number(match[1]);
+        }
+      }
+    }
+    return 0;
+  }
 }

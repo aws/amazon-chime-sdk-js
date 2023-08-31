@@ -287,6 +287,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.eventController = this.eventController;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
     this.meetingSessionContext.videoSendCodecPreferences = this.videoSendCodecPreferences;
+    this.meetingSessionContext.audioProfile = this._audioProfile;
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
@@ -459,7 +460,8 @@ export default class DefaultAudioVideoController
       this.logger.info(`Using video only transceiver controller`);
       this.meetingSessionContext.transceiverController = new VideoOnlyTransceiverController(
         this.logger,
-        this.meetingSessionContext.browserBehavior
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
       );
     } else if (this.enableSimulcast) {
       this.logger.info(`Using transceiver controller with simulcast support`);
@@ -470,19 +472,22 @@ export default class DefaultAudioVideoController
       ) {
         this.meetingSessionContext.transceiverController = new SimulcastContentShareTransceiverController(
           this.logger,
-          this.meetingSessionContext.browserBehavior
+          this.meetingSessionContext.browserBehavior,
+          this.meetingSessionContext
         );
       } else {
         this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
           this.logger,
-          this.meetingSessionContext.browserBehavior
+          this.meetingSessionContext.browserBehavior,
+          this.meetingSessionContext
         );
       }
     } else {
       this.logger.info(`Using default transceiver controller`);
       this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
         this.logger,
-        this.meetingSessionContext.browserBehavior
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
       );
     }
 
