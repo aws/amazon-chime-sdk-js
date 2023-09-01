@@ -101,6 +101,7 @@
     "@aws-sdk/client-chime-sdk-messaging": "^3.341.0",
     "@aws-sdk/util-hex-encoding": "^3.47.0",
     "@types/ua-parser-js": "^0.7.35",
+    "amazon-chime-sdk-js": "^3.16.0",
     "detect-browser": "^5.2.0",
     "pako": "^2.0.4",
     "protobufjs": "^7.2.4",
