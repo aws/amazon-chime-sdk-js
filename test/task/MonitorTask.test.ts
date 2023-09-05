@@ -1138,7 +1138,19 @@ describe('MonitorTask', () => {
       expect(spy.called).to.be.false;
     });
 
-    it('publish event for Signalling Dropped when Web Socket Failed', () => {
+    it('publishes signalingDropped event and meeting session status for websocket failure', () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(
+          MeetingSessionStatusCode.SignalChannelClosedUnexpectedly
+        );
+        receivedStatus = true;
+        return true;
+      };
       const spy = sinon.spy(context.eventController, 'publishEvent');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       task.handleSignalingClientEvent(
@@ -1149,9 +1161,23 @@ describe('MonitorTask', () => {
         )
       );
       expect(spy.calledWith('signalingDropped')).to.be.true;
+      expect(receivedStatus).to.be.true;
     });
 
-    it('publish event for Signalling Dropped when Web Socket Error', () => {
+    it('publishes signalingDropped event and meeting session status for websocket error once', () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(
+          MeetingSessionStatusCode.SignalChannelClosedUnexpectedly
+        );
+        receivedStatus = true;
+        return true;
+      };
+
       const spy = sinon.spy(context.eventController, 'publishEvent');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       task.handleSignalingClientEvent(
@@ -1161,10 +1187,32 @@ describe('MonitorTask', () => {
           null
         )
       );
+      // Additional test of duplicate call, should not send event twice
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketError,
+          null
+        )
+      );
       expect(spy.calledWith('signalingDropped')).to.be.true;
+      expect(receivedStatus).to.be.true;
     });
 
-    it('publish event for Signalling Dropped when Web Socket Closed', () => {
+    it('publishes signalingDropped event and meeting session status for websocket close', () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(
+          MeetingSessionStatusCode.SignalChannelClosedUnexpectedly
+        );
+        receivedStatus = true;
+        return true;
+      };
+
       const spy = sinon.spy(context.eventController, 'publishEvent');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const currentEvent = new SignalingClientEvent(
@@ -1175,6 +1223,7 @@ describe('MonitorTask', () => {
       currentEvent.closeCode = 4410;
       task.handleSignalingClientEvent(currentEvent);
       expect(spy.calledWith('signalingDropped')).to.be.true;
+      expect(receivedStatus).to.be.true;
     });
 
     it('does not handle the non-OK status code', () => {

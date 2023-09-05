@@ -39,6 +39,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.AudioAttendeeRemoved,
     MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting,
     MeetingSessionStatusCode.AudioDisconnectAudio,
+    MeetingSessionStatusCode.SignalChannelClosedUnexpectedly,
   ];
 
   describe('isFailure', () => {
@@ -58,6 +59,7 @@ describe('MeetingSessionStatus', () => {
         MeetingSessionStatusCode.RealtimeApiFailed,
         MeetingSessionStatusCode.TaskFailed,
         MeetingSessionStatusCode.NoAttendeePresent,
+        MeetingSessionStatusCode.SignalChannelClosedUnexpectedly,
       ]);
       for (const statusCode of statusCodes) {
         const status = new MeetingSessionStatus(statusCode);
