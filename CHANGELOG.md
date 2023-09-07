@@ -83,6 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Resolution constraint for content share
 
+- Remove unused legacy TURN credentials path.
+
 ### Changed
 - Improve reconnection behavior on signaling disconnection mid call or during join/subscribe
 

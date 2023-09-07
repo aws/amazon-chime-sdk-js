@@ -551,48 +551,6 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    it('can be started without a join ack frame containing turn credentials', async () => {
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController
-      );
-      let sessionStarted = false;
-      let sessionConnecting = false;
-      class TestObserver implements AudioVideoObserver {
-        audioVideoDidStart(): void {
-          // use this opportunity to verify that start is idempotent
-          audioVideoController.start();
-          sessionStarted = true;
-        }
-        audioVideoDidStartConnecting(): void {
-          sessionConnecting = true;
-        }
-      }
-      const observer = new TestObserver();
-      audioVideoController.addObserver(observer);
-      expect(audioVideoController.configuration).to.equal(configuration);
-      expect(audioVideoController.rtcPeerConnection).to.be.null;
-
-      await delay(defaultDelay);
-      audioVideoController.start();
-      await delay(defaultDelay);
-      webSocketAdapter.send(makeJoinAckFrame(false));
-      await delay(defaultDelay);
-      webSocketAdapter.send(makeIndexFrame());
-      await delay(300);
-      await sendICEEventAndSubscribeAckFrame();
-      await delay(defaultDelay);
-      await sendAudioStreamIdInfoFrame();
-      await delay(defaultDelay);
-      expect(sessionStarted).to.be.true;
-      expect(sessionConnecting).to.be.true;
-      await stop();
-      audioVideoController.removeObserver(observer);
-    });
-
     it('can be started with customized audio and video policies', async () => {
       const myUplinkPolicy = new NScaleVideoUplinkBandwidthPolicy('test');
       const myDownlinkPolicy = new AllHighestVideoBandwidthPolicy('test');
