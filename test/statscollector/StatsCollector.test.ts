@@ -514,6 +514,87 @@ describe('StatsCollector', () => {
       });
     });
 
+    it('add object metric when there is object type metrics and current value is undefined', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'outbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          qualityLimitationDurations: {
+            cpu: 1.0,
+            other: 0.0,
+          },
+        },
+      ];
+
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('add object metric when there is object type metrics and current value is not undefined', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'outbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          qualityLimitationDurations: {
+            cpu: 1.0,
+            other: 0.0,
+          },
+        },
+      ];
+
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.UPSTREAM;
+      streamMetricReport.currentMetrics['packetsLost'] = 10;
+      streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
+      streamMetricReport.currentObjectMetrics['qualityLimitationDurations'] = {
+        cpu: 1.0,
+        other: 0.0,
+      };
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      // @ts-ignore
+      statsCollector.clientMetricReport.streamMetricReports[1] = streamMetricReport;
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
     it('stream metric report and videoStreamIndex has streams and there are existing streamMetricReports', done => {
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
         allStreams(): DefaultVideoStreamIdSet {
@@ -585,7 +666,7 @@ describe('StatsCollector', () => {
       });
     });
 
-    it('adds the metric frame from the stream metric report when videoStreamIndex has streams and value in null type', done => {
+    it('adds the metric frame from the stream metric report when videoStreamIndex has streams and value in unknown type', done => {
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
         allStreams(): DefaultVideoStreamIdSet {
           return new DefaultVideoStreamIdSet([1, 2, 3]);
@@ -602,7 +683,7 @@ describe('StatsCollector', () => {
           kind: 'video',
           packetsLost: 10,
           jitterBufferDelay: 100,
-          decoderImplementation: null,
+          decoderImplementation: true,
         },
       ];
 
