@@ -77,13 +77,21 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
           if (event.message.type === SdkSignalFrame.Type.JOIN_ACK) {
             // @ts-ignore: force cast to SdkJoinAckFrame
             const joinAckFrame: SdkJoinAckFrame = event.message.joinack;
-            if (joinAckFrame && joinAckFrame.videoSubscriptionLimit) {
+            if (!joinAckFrame) {
+              // This should realistically never happen
+              context.audioVideoController.handleMeetingSessionStatus(
+                new MeetingSessionStatus(MeetingSessionStatusCode.SignalingRequestFailed),
+                new Error(`Join ACK message did not include expected frame`)
+              );
+              return;
+            }
+            if (joinAckFrame.videoSubscriptionLimit) {
               context.videoSubscriptionLimit = joinAckFrame.videoSubscriptionLimit;
             }
 
-            context.serverSupportsCompression = joinAckFrame?.wantsCompressedSdp;
+            context.serverSupportsCompression = joinAckFrame.wantsCompressedSdp;
             if (
-              joinAckFrame?.defaultServerSideNetworkAdaption !== undefined &&
+              joinAckFrame.defaultServerSideNetworkAdaption !== undefined &&
               joinAckFrame.defaultServerSideNetworkAdaption !== ServerSideNetworkAdaption.Default &&
               context.videoDownlinkBandwidthPolicy.setServerSideNetworkAdaption !== undefined
             ) {
