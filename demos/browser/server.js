@@ -168,8 +168,7 @@ function serve(host = '127.0.0.1:8080') {
           meetingTable[requestUrl.query.title] = meeting;
         }
 
-        // Create new attendee for the meeting
-        const attendee = await client.createAttendee({
+        const createAttendeeRequest = {
           // The meeting ID of the created meeting to add the attendee to
           MeetingId: meeting.Meeting.MeetingId,
 
@@ -178,7 +177,22 @@ function serve(host = '127.0.0.1:8080') {
           // combined with the name the user provided, which can later
           // be used to help build the roster.
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
-        }).promise();
+        };
+
+        if (
+          useChimeSDKMeetings === 'true' &&
+          requestUrl.query.attendeeAudioCapability &&
+          !requestUrl.query.primaryExternalMeetingId
+        ) {
+          createAttendeeRequest.Capabilities = {
+            Audio: requestUrl.query.attendeeAudioCapability,
+            Video: requestUrl.query.attendeeVideoCapability,
+            Content: requestUrl.query.attendeeContentCapability,
+          };
+        }
+
+       // Create new attendee for the meeting
+       const attendee = await client.createAttendee(createAttendeeRequest).promise();
 
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
@@ -409,6 +423,45 @@ function serve(host = '127.0.0.1:8080') {
           }
           respond(response, 200, 'audio/mpeg', data);
         });
+      } else if (request.method === 'POST' && requestUrl.pathname === '/update_attendee_capabilities') {
+        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+        const data = await client
+          .updateAttendeeCapabilities({
+            MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
+            AttendeeId: requestUrl.query.attendeeId,
+            Capabilities: {
+              Audio: requestUrl.query.audioCapability,
+              Video: requestUrl.query.videoCapability,
+              Content: requestUrl.query.contentCapability,
+            },
+          })
+          .promise();
+        respond(response, 200, 'application/json', JSON.stringify(data));
+      } else if (request.method === 'POST' && requestUrl.pathname === '/batch_update_attendee_capabilities_except') {
+        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+        const data = await client
+          .batchUpdateAttendeeCapabilitiesExcept({
+            MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
+            ExcludedAttendeeIds: requestUrl.query.attendeeIds.split(',').map((attendeeId) => {
+              return { AttendeeId: attendeeId };
+            }),
+            Capabilities: {
+              Audio: requestUrl.query.audioCapability,
+              Video: requestUrl.query.videoCapability,
+              Content: requestUrl.query.contentCapability,
+            },
+          })
+          .promise();
+        respond(response, 200, 'application/json', JSON.stringify(data));
+      } else if (request.method === 'GET' && requestUrl.pathname === '/get_attendee') {
+        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+        const getAttendeeResponse = await client
+          .getAttendee({
+            MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
+            AttendeeId: requestUrl.query.id,
+          })
+          .promise();
+        respond(response, 200, 'application/json', JSON.stringify(getAttendeeResponse));      
       } else {
         respond(response, 404, 'text/html', '404 Not Found');
       }

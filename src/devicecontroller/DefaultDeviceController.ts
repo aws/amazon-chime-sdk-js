@@ -828,13 +828,10 @@ export default class DefaultDeviceController
         for (const track of triggerStream.getTracks()) {
           track.stop();
         }
-      } catch (err) {
+      } catch (error) {
         this.logger.info('unable to get media device labels');
-        this.eventController?.publishEvent('audioInputFailed', {
-          audioInputErrorMessage: this.getErrorMessage(err),
-        });
-        this.eventController?.publishEvent('videoInputFailed', {
-          videoInputErrorMessage: this.getErrorMessage(err),
+        this.eventController?.publishEvent('deviceLabelTriggerFailed', {
+          deviceLabelTriggerErrorMessage: this.getErrorMessage(error),
         });
       }
     }

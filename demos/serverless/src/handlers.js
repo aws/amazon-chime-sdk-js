@@ -169,7 +169,7 @@ exports.join = async (event, context) => {
 
   // Create new attendee for the meeting
   console.info('Adding new attendee');
-  const attendee = (await client.createAttendee({
+  const createAttendeeRequest = {
     // The meeting ID of the created meeting to add the attendee to
     MeetingId: meeting.Meeting.MeetingId,
 
@@ -178,7 +178,17 @@ exports.join = async (event, context) => {
     // combined with the name the user provided, which can later
     // be used to help build the roster.
     ExternalUserId: `${uuidv4().substring(0, 8)}#${query.name}`.substring(0, 64),
-  }).promise());
+  };
+
+  if (useChimeSDKMeetings === 'true' && query.attendeeAudioCapability && !query.primaryExternalMeetingId) {
+    createAttendeeRequest['Capabilities'] = {
+      Audio : query.attendeeAudioCapability,
+      Video : query.attendeeVideoCapability,
+      Content: query.attendeeContentCapability,
+    };
+  }
+
+  const attendee = (await client.createAttendee(createAttendeeRequest).promise());
 
   // Return the meeting and attendee responses. The client will use these
   // to join the meeting.
@@ -219,6 +229,90 @@ exports.deleteAttendee = async (event, context) => {
   }).promise();
 
   return response(200, 'application/json', JSON.stringify({}));
+};
+
+exports.get_attendee = async (event) => {
+  const query = event.queryStringParameters;
+  if (!query.title || !query.id) {
+    return response(400, 'application/json', JSON.stringify({ error: 'Need parameters: title, id' }));
+  }
+  const meeting = await getMeeting(query.title);
+  const client = await getClientForMeeting(meeting);
+  const attendeeResponse = await client
+    .getAttendee({
+      MeetingId: meeting.Meeting.MeetingId,
+      AttendeeId: query.id,
+    })
+    .promise();
+  return response(200, 'application/json', JSON.stringify(attendeeResponse, null, 2));
+};
+
+exports.update_attendee_capabilities = async (event) => {
+  const query = event.queryStringParameters;
+  if (
+    !query.title ||
+    !query.attendeeId ||
+    !query.audioCapability ||
+    !query.videoCapability ||
+    !query.contentCapability
+  ) {
+    return response(
+      400,
+      'application/json',
+      JSON.stringify({
+        error: 'Need parameters: title, attendeeId, audioCapability, videoCapability, contentCapability',
+      })
+    );
+  }
+  const meeting = await getMeeting(query.title);
+  const client = getClientForMeeting(meeting);
+  const attendeeCapsResponse = await client
+    .updateAttendeeCapabilities({
+      MeetingId: meeting.Meeting.MeetingId,
+      AttendeeId: query.attendeeId,
+      Capabilities: {
+        Audio: query.audioCapability,
+        Video: query.videoCapability,
+        Content: query.contentCapability,
+      },
+    })
+    .promise();
+  return response(200, 'application/json', JSON.stringify(attendeeCapsResponse));
+};
+
+exports.batch_update_attendee_capabilities_except = async (event) => {
+  const query = event.queryStringParameters;
+  if (
+    !query.title ||
+    !query.attendeeIds ||
+    !query.audioCapability ||
+    !query.videoCapability ||
+    !query.contentCapability
+  ) {
+    return response(
+      400,
+      'application/json',
+      JSON.stringify({
+        error: 'Need parameters: title, attendeeIds, audioCapability, videoCapability, contentCapability',
+      })
+    );
+  }
+  const meeting = await getMeeting(query.title);
+  const client = getClientForMeeting(meeting);
+  const attendeeCapsExceptResponse = await client
+    .batchUpdateAttendeeCapabilitiesExcept({
+      MeetingId: meeting.Meeting.MeetingId,
+      ExcludedAttendeeIds: query.attendeeIds.split(',').map((attendeeId) => {
+        return { AttendeeId: attendeeId };
+      }),
+      Capabilities: {
+        Audio: query.audioCapability,
+        Video: query.videoCapability,
+        Content: query.contentCapability,
+      },
+    })
+    .promise();
+  return response(200, 'application/json', JSON.stringify(attendeeCapsExceptResponse));
 };
 
 exports.start_transcription = async (event, context) => {

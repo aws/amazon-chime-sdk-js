@@ -34,6 +34,7 @@ describe('InMemoryJSONEventBuffer', () => {
     'meetingStartFailed',
     'audioInputFailed',
     'videoInputFailed',
+    'deviceLabelTriggerFailed',
   ];
   let buffer: EventBuffer<EventData>;
 

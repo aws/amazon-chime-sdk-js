@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
-import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
-import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import SDP from '../sdp/SDP';
 import ZLIBTextCompressor from '../sdp/ZLIBTextCompressor';
 import { serverSideNetworkAdaptionIsNoneOrDefault } from '../signalingclient/ServerSideNetworkAdaption';
@@ -214,7 +212,6 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
   private receiveSubscribeAck(): Promise<SdkSubscribeAckFrame> {
     return new Promise((resolve, reject) => {
-      const context = this.context;
       class Interceptor implements SignalingClientObserver, TaskCanceler {
         constructor(private signalingClient: SignalingClient) {}
 
@@ -228,22 +225,11 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
         }
 
         handleSignalingClientEvent(event: SignalingClientEvent): void {
-          if (event.isConnectionTerminated()) {
-            const message = `SubscribeAndReceiveSubscribeAckTask connection was terminated with code ${event.closeCode} and reason: ${event.closeReason}`;
-            context.logger.warn(message);
-
-            let statusCode: MeetingSessionStatusCode = MeetingSessionStatusCode.TaskFailed;
-            if (event.closeCode >= 4500 && event.closeCode < 4600) {
-              statusCode = MeetingSessionStatusCode.SignalingInternalServerError;
-            }
-            context.audioVideoController.handleMeetingSessionStatus(
-              new MeetingSessionStatus(statusCode),
-              new Error(message)
-            );
+          if (event.type === SignalingClientEventType.WebSocketClosed) {
+            // Forwarding of this message to the controller will be completed by MonitorTask
+            this.cancel();
             return;
-          }
-
-          if (
+          } else if (
             event.type !== SignalingClientEventType.ReceivedSignalFrame ||
             event.message.type !== SdkSignalFrame.Type.SUBSCRIBE_ACK
           ) {

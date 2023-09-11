@@ -94,6 +94,7 @@ The Chime SDK for JavaScript sends these meeting events.
 |`meetingEnded`          |The meeting ended.
 |`meetingFailed`         |The meeting ended with one of the following failure [MeetingSessionStatusCode](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html): <br><ul><li>`AudioAttendeeRemoved`</li><li>`AudioJoinedFromAnotherDevice`</li><li>`RealtimeApiFailed`</li><li>`TaskFailed`</li></ul>For more information, see the ["Meeting error messages" section](#meeting-error-messages).
 |`attendeePresenceReceived`   |The attendee joined the meeting with the microphone.
+|`deviceLabelTriggerFailed`    |The device label trigger failed. By default, the Chime SDK for JavaScript requests access to the microphone and camera in order to retrieve device labels. The SDK sends this event when either the microphone, camera, or both requests fail.<br><br>If you have configured a custom function with `meetingSession.audioVideo.setDeviceLabelTrigger`, the SDK sends this event when your function fails.
 |`audioInputSelected`    |The microphone was selected.
 |`audioInputUnselected`  |The microphone was removed. You called `meetingSession.audioVideo.stopAudioInput`.
 |`audioInputFailed`      |The microphone selection failed.
@@ -157,12 +158,13 @@ The following table describes attributes for the microphone and camera.
 |--|--|--
 |`audioInputErrorMessage`|The error message that explains why the microphone selection failed. For more information, see the ["Device error messages" section](#device-error-messages).|`audioInputFailed`
 |`videoInputErrorMessage`|The error message that explains why the camera selection failed. For more information, see the ["Device error messages" section](#device-error-messages).|`videoInputFailed`
+|`deviceLabelTriggerErrorMessage`|The error message that explains why the device label trigger failed. For more information, see the ["Device error messages" section](#device-error-messages).|`deviceLabelTriggerFailed`
 
 <br>
 
 ### The meeting history attribute
 
-The meeting history attribute is a list of states. Each state object contains the state name and timestamp.
+The meeting history attribute is a list of states. Each state object contains the event name and timestamp.
 
 ```js
 [
@@ -187,27 +189,6 @@ the meeting history will include two `meetingStartSucceeded`.
 
 Note that meeting history can have a large number of states. Ensure that you process the meeting history
 before sending it to your server application or analytics tool.
-
-The following table lists available states.
-
-|State|Description
-|--|--
-|`audioInputFailed`|The microphone selection failed.
-|`audioInputSelected`|The microphone was selected.
-|`audioInputUnselected`|The microphone was removed. You called `meetingSession.audioVideo.stopAudioInput`.
-|`meetingEnded`|The meeting ended.
-|`meetingFailed`|The meeting ended with the failure status.
-|`meetingReconnected`|The meeting reconnected.
-|`meetingStartFailed`|The meeting failed to start.
-|`meetingStartRequested`|The meeting will start.
-|`meetingStartSucceeded`|The meeting started.
-|`receivingAudioDropped`|A significant number of receive-audio packets dropped.
-|`signalingDropped`|WebSocket failed or closed with an error.
-|`videoInputFailed`|The camera selection failed.
-|`videoInputSelected`|The camera was selected.
-|`videoInputUnselected`|The camera was removed. You called `meetingSession.audioVideo.stopVideoInput` with `null`.
-|`sendingAudioFailed`|Sending audio packets failed for `N` samples consecutively after an initial wait time of `T`. You can configure these values in [ConnectionHealthPolicyConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html) where `N` = `sendingAudioFailureSamplesToConsider` and `T` = `sendingAudioFailureInitialWaitTimeMs`.
-|`sendingAudioRecovered`|Sending audio packets successful after failure.
 
 <br>
 
@@ -244,6 +225,8 @@ The following table lists common error messages from a stopped meeting.
 The `audioInputErrorMessage` and `videoInputErrorMessage` may indicate the browser's [getUserMedia API exceptions](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions). When you call 
 `meetingSession.audioVideo.startAudioInput` or `meetingSession.audioVideo.startVideoInput`, the Chime SDK for 
 JavaScript uses the browser's [`getUserMedia` API](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia) to acquire access to your device. When the getUserMedia API throws an error, the Chime SDK for JavaScript catches an error and publishes the `audioInputFailed` or `videoInputFailed` event containing a browser's error message.
+
+The `deviceLabelTriggerErrorMessage` can also include the exceptions from the browser's [getUserMedia API](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions). By default, the Chime SDK for JavaScript asks for access to the microphone and the camera to retrieve device labels. If the request for either the microphone, the camera, or both fails, the SDK triggers the `deviceLabelTriggerFailed` event with exceptions from the getUserMedia API. If you have set a custom function using `meetingSession.audioVideo.setDeviceLabelTrigger`, the SDK will capture the error message generated by your function.
 
 |Messages|Suggested resolution
 |--|--
