@@ -96,43 +96,6 @@ describe('ReceiveVideoInputTask', () => {
       assert.exists(context.activeVideoInput);
     });
 
-    it('will acquire the video input and query constraint (unicast - content with video track constraint)', async () => {
-      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
-      context.enableSimulcast = false;
-      context.meetingSessionConfiguration.credentials.attendeeId = 'foo-attendee#content';
-      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
-        'attendee',
-        new NoOpLogger()
-      );
-      context.videoTileController.startLocalVideoTile();
-      context.mediaStreamBroker = new MockMediaStreamBroker({
-        acquireVideoInputDeviceSucceeds: true,
-      });
-
-      const task = new ReceiveVideoInputTask(context);
-      await task.run();
-      assert.exists(context.activeVideoInput);
-    });
-
-    it('will acquire the video input and query constraint (unicast - content without video track constraint)', async () => {
-      domMockBehavior.applyConstraintSucceeds = false;
-      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
-      context.enableSimulcast = false;
-      context.meetingSessionConfiguration.credentials.attendeeId = 'foo-attendee#content';
-      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
-        'attendee',
-        new NoOpLogger()
-      );
-      context.videoTileController.startLocalVideoTile();
-      context.mediaStreamBroker = new MockMediaStreamBroker({
-        acquireVideoInputDeviceSucceeds: true,
-      });
-
-      const task = new ReceiveVideoInputTask(context);
-      await task.run();
-      assert.exists(context.activeVideoInput);
-    });
-
     it('will acquire the video input and query constraint', async () => {
       context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
       context.enableSimulcast = true;

@@ -91,11 +91,11 @@
 				<ul>
 					<li><a href="https://aws.amazon.com/chime/chime-sdk/">Amazon Chime SDK Overview</a></li>
 					<li><a href="https://aws.amazon.com/chime/pricing/#Chime_SDK_">Pricing</a></li>
-					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">Supported Browsers</a></li>
+					<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers">Supported Browsers</a></li>
 					<li><a href="guides/20_Builders_Journey.md">Getting Started Guides</a></li>
-					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html">Developer Guide</a></li>
-					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html">PSTN Audio Developer Guide</a></li>
-					<li><a href="https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Control Plane API Reference</a></li>
+					<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html">Developer Guide</a></li>
+					<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html">PSTN Audio Developer Guide</a></li>
+					<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/welcome.html">Control Plane API Reference</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html">Frequently Asked Questions (FAQ)</a></li>
 				</ul>
 				<a href="#blog-posts" id="blog-posts" style="color: inherit; text-decoration: none;">
@@ -184,8 +184,8 @@
 				</a>
 				<p>The following developer guides cover the Amazon Chime SDK more broadly.</p>
 				<ul>
-					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html">PSTN Audio developer guide</a></li>
-					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html">Messaging developer guide</a></li>
+					<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html">PSTN Audio developer guide</a></li>
+					<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html">Messaging developer guide</a></li>
 					<li><a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/media-pipelines.html">Media Pipelines developer guide</a></li>
 				</ul>
 				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
@@ -275,7 +275,7 @@
 				</a>
 				<p>You can use an AWS SDK, the AWS Command Line Interface (AWS CLI), or the REST API
 					to make API calls. In this section, you will use the AWS SDK for JavaScript in your server application, e.g. Node.js.
-				See <a href="https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Amazon Chime SDK API Reference</a> for more information.</p>
+				See <a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/welcome.html">Amazon Chime SDK API Reference</a> for more information.</p>
 				<blockquote>
 					<p>⚠️ The server application does not require the Amazon Chime SDK for JavaScript.</p>
 				</blockquote>
@@ -283,8 +283,7 @@
 <span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #001080">v4</span><span style="color: #000000">: </span><span style="color: #0070C1">uuid</span><span style="color: #000000"> } = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;uuid&#039;</span><span style="color: #000000">);</span>
 
 <span style="color: #008000">// You must use &quot;us-east-1&quot; as the region for Chime API and set the endpoint.</span>
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">chime</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #0070C1">AWS</span><span style="color: #000000">.</span><span style="color: #795E26">Chime</span><span style="color: #000000">({ </span><span style="color: #001080">region:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;us-east-1&#039;</span><span style="color: #000000"> });</span>
-<span style="color: #001080">chime</span><span style="color: #000000">.</span><span style="color: #001080">endpoint</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #0070C1">AWS</span><span style="color: #000000">.</span><span style="color: #795E26">Endpoint</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;https://service.chime.aws.amazon.com&#039;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">chime</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #0070C1">AWS</span><span style="color: #000000">.</span><span style="color: #795E26">ChimeSDKMeetings</span><span style="color: #000000">({ </span><span style="color: #001080">region:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;us-east-1&#039;</span><span style="color: #000000"> });</span>
 
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingResponse</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">chime</span>
 <span style="color: #000000">  .</span><span style="color: #795E26">createMeeting</span><span style="color: #000000">({</span>
@@ -302,7 +301,7 @@
 </code></pre>
 				<p>Now securely transfer the <code>meetingResponse</code> and <code>attendeeResponse</code> objects to your client application.
 				These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.</p>
-				<p>The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic &#39;Choosing the nearest media Region&#39; in the <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html">Amazon Chime SDK Media Regions documentation</a>.</p>
+				<p>The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic &#39;Choosing the nearest media Region&#39; in the <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/chime-sdk-meetings-regions.html">Amazon Chime SDK Media Regions documentation</a>.</p>
 				<a href="#messaging-session" id="messaging-session" style="color: inherit; text-decoration: none;">
 					<h3>Messaging session</h3>
 				</a>
@@ -1073,10 +1072,8 @@
 <span style="color: #008000">        - You (or someone else) have called the DeleteMeeting API action in your server application.</span>
 <span style="color: #008000">        - You attempted to join a deleted meeting.</span>
 <span style="color: #008000">        - No audio connections are present in the meeting for more than five minutes.</span>
-<span style="color: #008000">        - Fewer than two audio connections are present in the meeting for more than 30 minutes.</span>
-<span style="color: #008000">        - Screen share viewer connections are inactive for more than 30 minutes.</span>
 <span style="color: #008000">        - The meeting time exceeds 24 hours.</span>
-<span style="color: #008000">        See https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-mtgs.html for details.</span>
+<span style="color: #008000">        See https://docs.aws.amazon.com/chime-sdk/latest/dg/mtgs-sdk-mtgs.html for details.</span>
 <span style="color: #008000">      */</span>
 <span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;The session has ended&#039;</span><span style="color: #000000">);</span>
 <span style="color: #000000">    } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> {</span>

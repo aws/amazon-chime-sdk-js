@@ -38,6 +38,7 @@ $root.SdkSignalFrame = (function() {
      * @property {ISdkPrimaryMeetingJoinFrame|null} [primaryMeetingJoin] SdkSignalFrame primaryMeetingJoin
      * @property {ISdkPrimaryMeetingJoinAckFrame|null} [primaryMeetingJoinAck] SdkSignalFrame primaryMeetingJoinAck
      * @property {ISdkPrimaryMeetingLeaveFrame|null} [primaryMeetingLeave] SdkSignalFrame primaryMeetingLeave
+     * @property {ISdkNotificationFrame|null} [notification] SdkSignalFrame notification
      */
 
     /**
@@ -240,6 +241,14 @@ $root.SdkSignalFrame = (function() {
     SdkSignalFrame.prototype.primaryMeetingLeave = null;
 
     /**
+     * SdkSignalFrame notification.
+     * @member {ISdkNotificationFrame|null|undefined} notification
+     * @memberof SdkSignalFrame
+     * @instance
+     */
+    SdkSignalFrame.prototype.notification = null;
+
+    /**
      * Creates a new SdkSignalFrame instance using the specified properties.
      * @function create
      * @memberof SdkSignalFrame
@@ -307,6 +316,8 @@ $root.SdkSignalFrame = (function() {
             $root.SdkPrimaryMeetingJoinAckFrame.encode(message.primaryMeetingJoinAck, writer.uint32(/* id 27, wireType 2 =*/218).fork()).ldelim();
         if (message.primaryMeetingLeave != null && Object.hasOwnProperty.call(message, "primaryMeetingLeave"))
             $root.SdkPrimaryMeetingLeaveFrame.encode(message.primaryMeetingLeave, writer.uint32(/* id 28, wireType 2 =*/226).fork()).ldelim();
+        if (message.notification != null && Object.hasOwnProperty.call(message, "notification"))
+            $root.SdkNotificationFrame.encode(message.notification, writer.uint32(/* id 35, wireType 2 =*/282).fork()).ldelim();
         return writer;
     };
 
@@ -410,6 +421,9 @@ $root.SdkSignalFrame = (function() {
             case 28:
                 message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.decode(reader, reader.uint32());
                 break;
+            case 35:
+                message.notification = $root.SdkNotificationFrame.decode(reader, reader.uint32());
+                break;
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -475,6 +489,7 @@ $root.SdkSignalFrame = (function() {
         case 25:
         case 26:
         case 27:
+        case 34:
             break;
         }
         if (message.error != null && message.hasOwnProperty("error")) {
@@ -581,6 +596,11 @@ $root.SdkSignalFrame = (function() {
             var error = $root.SdkPrimaryMeetingLeaveFrame.verify(message.primaryMeetingLeave);
             if (error)
                 return "primaryMeetingLeave." + error;
+        }
+        if (message.notification != null && message.hasOwnProperty("notification")) {
+            var error = $root.SdkNotificationFrame.verify(message.notification);
+            if (error)
+                return "notification." + error;
         }
         return null;
     };
@@ -691,6 +711,10 @@ $root.SdkSignalFrame = (function() {
         case 27:
             message.type = 27;
             break;
+        case "NOTIFICATION":
+        case 34:
+            message.type = 34;
+            break;
         }
         if (object.error != null) {
             if (typeof object.error !== "object")
@@ -797,6 +821,11 @@ $root.SdkSignalFrame = (function() {
                 throw TypeError(".SdkSignalFrame.primaryMeetingLeave: object expected");
             message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.fromObject(object.primaryMeetingLeave);
         }
+        if (object.notification != null) {
+            if (typeof object.notification !== "object")
+                throw TypeError(".SdkSignalFrame.notification: object expected");
+            message.notification = $root.SdkNotificationFrame.fromObject(object.notification);
+        }
         return message;
     };
 
@@ -841,6 +870,7 @@ $root.SdkSignalFrame = (function() {
             object.primaryMeetingJoin = null;
             object.primaryMeetingJoinAck = null;
             object.primaryMeetingLeave = null;
+            object.notification = null;
         }
         if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
             if (typeof message.timestampMs === "number")
@@ -891,6 +921,8 @@ $root.SdkSignalFrame = (function() {
             object.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.toObject(message.primaryMeetingJoinAck, options);
         if (message.primaryMeetingLeave != null && message.hasOwnProperty("primaryMeetingLeave"))
             object.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.toObject(message.primaryMeetingLeave, options);
+        if (message.notification != null && message.hasOwnProperty("notification"))
+            object.notification = $root.SdkNotificationFrame.toObject(message.notification, options);
         return object;
     };
 
@@ -930,6 +962,7 @@ $root.SdkSignalFrame = (function() {
      * @property {number} PRIMARY_MEETING_JOIN=25 PRIMARY_MEETING_JOIN value
      * @property {number} PRIMARY_MEETING_JOIN_ACK=26 PRIMARY_MEETING_JOIN_ACK value
      * @property {number} PRIMARY_MEETING_LEAVE=27 PRIMARY_MEETING_LEAVE value
+     * @property {number} NOTIFICATION=34 NOTIFICATION value
      */
     SdkSignalFrame.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -954,6 +987,7 @@ $root.SdkSignalFrame = (function() {
         values[valuesById[25] = "PRIMARY_MEETING_JOIN"] = 25;
         values[valuesById[26] = "PRIMARY_MEETING_JOIN_ACK"] = 26;
         values[valuesById[27] = "PRIMARY_MEETING_LEAVE"] = 27;
+        values[valuesById[34] = "NOTIFICATION"] = 34;
         return values;
     })();
 
@@ -7108,6 +7142,8 @@ $root.SdkMetric = (function() {
             case 87:
             case 88:
             case 89:
+            case 96:
+            case 97:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -7357,6 +7393,14 @@ $root.SdkMetric = (function() {
         case 89:
             message.type = 89;
             break;
+        case "RTC_SPK_AUDIO_LEVEL":
+        case 96:
+            message.type = 96;
+            break;
+        case "RTC_MIC_AUDIO_LEVEL":
+        case 97:
+            message.type = 97;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -7459,6 +7503,8 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DECODE_WIDTH=87 VIDEO_DECODE_WIDTH value
      * @property {number} VIDEO_ENCODER_IS_HARDWARE=88 VIDEO_ENCODER_IS_HARDWARE value
      * @property {number} VIDEO_DECODER_IS_HARDWARE=89 VIDEO_DECODER_IS_HARDWARE value
+     * @property {number} RTC_SPK_AUDIO_LEVEL=96 RTC_SPK_AUDIO_LEVEL value
+     * @property {number} RTC_MIC_AUDIO_LEVEL=97 RTC_MIC_AUDIO_LEVEL value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -7519,6 +7565,8 @@ $root.SdkMetric = (function() {
         values[valuesById[87] = "VIDEO_DECODE_WIDTH"] = 87;
         values[valuesById[88] = "VIDEO_ENCODER_IS_HARDWARE"] = 88;
         values[valuesById[89] = "VIDEO_DECODER_IS_HARDWARE"] = 89;
+        values[valuesById[96] = "RTC_SPK_AUDIO_LEVEL"] = 96;
+        values[valuesById[97] = "RTC_MIC_AUDIO_LEVEL"] = 97;
         return values;
     })();
 
@@ -12549,6 +12597,250 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
     };
 
     return SdkVideoSubscriptionConfiguration;
+})();
+
+$root.SdkNotificationFrame = (function() {
+
+    /**
+     * Properties of a SdkNotificationFrame.
+     * @exports ISdkNotificationFrame
+     * @interface ISdkNotificationFrame
+     * @property {SdkNotificationFrame.NotificationLevel|null} [level] SdkNotificationFrame level
+     * @property {string|null} [message] SdkNotificationFrame message
+     */
+
+    /**
+     * Constructs a new SdkNotificationFrame.
+     * @exports SdkNotificationFrame
+     * @classdesc Represents a SdkNotificationFrame.
+     * @implements ISdkNotificationFrame
+     * @constructor
+     * @param {ISdkNotificationFrame=} [properties] Properties to set
+     */
+    function SdkNotificationFrame(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkNotificationFrame level.
+     * @member {SdkNotificationFrame.NotificationLevel} level
+     * @memberof SdkNotificationFrame
+     * @instance
+     */
+    SdkNotificationFrame.prototype.level = 3;
+
+    /**
+     * SdkNotificationFrame message.
+     * @member {string} message
+     * @memberof SdkNotificationFrame
+     * @instance
+     */
+    SdkNotificationFrame.prototype.message = "";
+
+    /**
+     * Creates a new SdkNotificationFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {ISdkNotificationFrame=} [properties] Properties to set
+     * @returns {SdkNotificationFrame} SdkNotificationFrame instance
+     */
+    SdkNotificationFrame.create = function create(properties) {
+        return new SdkNotificationFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkNotificationFrame message. Does not implicitly {@link SdkNotificationFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {ISdkNotificationFrame} message SdkNotificationFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkNotificationFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.level != null && Object.hasOwnProperty.call(message, "level"))
+            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.level);
+        if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkNotificationFrame message, length delimited. Does not implicitly {@link SdkNotificationFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {ISdkNotificationFrame} message SdkNotificationFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkNotificationFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkNotificationFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkNotificationFrame} SdkNotificationFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkNotificationFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkNotificationFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.level = reader.int32();
+                break;
+            case 2:
+                message.message = reader.string();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkNotificationFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkNotificationFrame} SdkNotificationFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkNotificationFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkNotificationFrame message.
+     * @function verify
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkNotificationFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.level != null && message.hasOwnProperty("level"))
+            switch (message.level) {
+            default:
+                return "level: enum value expected";
+            case 1:
+            case 2:
+            case 3:
+                break;
+            }
+        if (message.message != null && message.hasOwnProperty("message"))
+            if (!$util.isString(message.message))
+                return "message: string expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkNotificationFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkNotificationFrame} SdkNotificationFrame
+     */
+    SdkNotificationFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkNotificationFrame)
+            return object;
+        var message = new $root.SdkNotificationFrame();
+        switch (object.level) {
+        case "INFO":
+        case 1:
+            message.level = 1;
+            break;
+        case "WARNING":
+        case 2:
+            message.level = 2;
+            break;
+        case "ERROR":
+        case 3:
+            message.level = 3;
+            break;
+        }
+        if (object.message != null)
+            message.message = String(object.message);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkNotificationFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {SdkNotificationFrame} message SdkNotificationFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkNotificationFrame.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.level = options.enums === String ? "ERROR" : 3;
+            object.message = "";
+        }
+        if (message.level != null && message.hasOwnProperty("level"))
+            object.level = options.enums === String ? $root.SdkNotificationFrame.NotificationLevel[message.level] : message.level;
+        if (message.message != null && message.hasOwnProperty("message"))
+            object.message = message.message;
+        return object;
+    };
+
+    /**
+     * Converts this SdkNotificationFrame to JSON.
+     * @function toJSON
+     * @memberof SdkNotificationFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkNotificationFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * NotificationLevel enum.
+     * @name SdkNotificationFrame.NotificationLevel
+     * @enum {number}
+     * @property {number} INFO=1 INFO value
+     * @property {number} WARNING=2 WARNING value
+     * @property {number} ERROR=3 ERROR value
+     */
+    SdkNotificationFrame.NotificationLevel = (function() {
+        var valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[1] = "INFO"] = 1;
+        values[valuesById[2] = "WARNING"] = 2;
+        values[valuesById[3] = "ERROR"] = 3;
+        return values;
+    })();
+
+    return SdkNotificationFrame;
 })();
 
 $root.SdkPrimaryMeetingJoinFrame = (function() {

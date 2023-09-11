@@ -39,6 +39,7 @@ import {
   SdkBitrate,
   SdkBitrateFrame,
   SdkErrorFrame,
+  SdkNotificationFrame,
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import AudioLogEvent from '../../src/statscollector/AudioLogEvent';
@@ -58,6 +59,7 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import CreateMeetingResponseMock from '../meetingsession/CreateMeetingResponseMock';
+import { MockLogger } from '../voicefocus/MockLogger';
 
 function createSignalingEventForBitrateFrame(logger: Logger): SignalingClientEvent {
   const webSocketAdapter = new DefaultWebSocketAdapter(logger);
@@ -1136,7 +1138,19 @@ describe('MonitorTask', () => {
       expect(spy.called).to.be.false;
     });
 
-    it('publish event for Signalling Dropped when Web Socket Failed', () => {
+    it('publishes signalingDropped event and meeting session status for websocket failure', () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(
+          MeetingSessionStatusCode.SignalChannelClosedUnexpectedly
+        );
+        receivedStatus = true;
+        return true;
+      };
       const spy = sinon.spy(context.eventController, 'publishEvent');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       task.handleSignalingClientEvent(
@@ -1147,9 +1161,23 @@ describe('MonitorTask', () => {
         )
       );
       expect(spy.calledWith('signalingDropped')).to.be.true;
+      expect(receivedStatus).to.be.true;
     });
 
-    it('publish event for Signalling Dropped when Web Socket Error', () => {
+    it('publishes signalingDropped event and meeting session status for websocket error once', () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(
+          MeetingSessionStatusCode.SignalChannelClosedUnexpectedly
+        );
+        receivedStatus = true;
+        return true;
+      };
+
       const spy = sinon.spy(context.eventController, 'publishEvent');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       task.handleSignalingClientEvent(
@@ -1159,10 +1187,32 @@ describe('MonitorTask', () => {
           null
         )
       );
+      // Additional test of duplicate call, should not send event twice
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketError,
+          null
+        )
+      );
       expect(spy.calledWith('signalingDropped')).to.be.true;
+      expect(receivedStatus).to.be.true;
     });
 
-    it('publish event for Signalling Dropped when Web Socket Closed', () => {
+    it('publishes signalingDropped event and meeting session status for websocket close', () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(
+          MeetingSessionStatusCode.SignalChannelClosedUnexpectedly
+        );
+        receivedStatus = true;
+        return true;
+      };
+
       const spy = sinon.spy(context.eventController, 'publishEvent');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const currentEvent = new SignalingClientEvent(
@@ -1173,6 +1223,7 @@ describe('MonitorTask', () => {
       currentEvent.closeCode = 4410;
       task.handleSignalingClientEvent(currentEvent);
       expect(spy.calledWith('signalingDropped')).to.be.true;
+      expect(receivedStatus).to.be.true;
     });
 
     it('does not handle the non-OK status code', () => {
@@ -1353,6 +1404,82 @@ describe('MonitorTask', () => {
       new TimeoutScheduler(100).start(() => {
         context.eventController.publishEvent('meetingEnded');
       });
+    });
+
+    it('logs notification messages with corresponding to level specified', async () => {
+      const mockLogger = new MockLogger();
+      const webSocketAdapter = new DefaultWebSocketAdapter(mockLogger);
+
+      const message = SdkSignalFrame.create();
+      message.notification = SdkNotificationFrame.create();
+      message.type = SdkSignalFrame.Type.NOTIFICATION;
+      message.notification.level = SdkNotificationFrame.NotificationLevel.INFO;
+      message.notification.message = 'Mock info level notification';
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, mockLogger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(
+        mockLogger.info.calledWith(
+          'Received notification from server: Mock info level notification'
+        )
+      );
+
+      message.notification.level = SdkNotificationFrame.NotificationLevel.WARNING;
+      message.notification.message = 'Mock warning level notification';
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, mockLogger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(
+        mockLogger.warn.calledWith('Received warning from server: Mock warning level notification')
+      );
+
+      message.notification.level = SdkNotificationFrame.NotificationLevel.ERROR;
+      message.notification.message = 'Mock error level notification';
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, mockLogger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(
+        mockLogger.error.calledWith('Received error from server: Mock error level notification')
+      );
+    });
+
+    it('logs error when level is not specified', async () => {
+      const mockLogger = new MockLogger();
+      const webSocketAdapter = new DefaultWebSocketAdapter(mockLogger);
+
+      const message = SdkSignalFrame.create();
+      message.notification = SdkNotificationFrame.create();
+      message.type = SdkSignalFrame.Type.NOTIFICATION;
+      message.notification.level = null;
+      message.notification.message = 'Mock notification with invalid level';
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, mockLogger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(
+        mockLogger.info.calledWith(
+          'Received notification from server with unknown level null: Mock notification with invalid level'
+        )
+      );
     });
   });
 });

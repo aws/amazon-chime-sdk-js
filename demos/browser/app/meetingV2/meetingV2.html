@@ -116,6 +116,37 @@
             </select>
             <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
           </div>
+          <div class="form-floating mb-3">
+            <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
+          </div>
+          <div class="form-floating mb-3">
+            <select name="videoCapability" class="form-select" id="videoCapabilitySelect">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="videoCapability"  style="text-align: left;">Video capability:</label>
+          </div>
+          <div class="form-floating mb-3">
+            <select name="contentCapability" class="form-select" id="contentCapabilitySelect">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="contentCapability"  style="text-align: left;">Content capability:</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="join-muted" class="form-check-input"></input>
+            <label for="join-muted-setting" class="form-check-label">Join Muted</label>
+          </div>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="webaudio" class="form-check-input">
             <label for="webaudio" class="form-check-label">Use WebAudio</label>
@@ -194,6 +225,10 @@
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="disable-content-keyframe" class="form-check-input">
             <label for="disable-content-keyframe" class="form-check-label">Disable periodic keyframe request to content senders</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="allow-attendee-capabilities" class="form-check-input">
+            <label for="allow-attendee-capabilities" class="form-check-label">Allow updating of attendee capabilities after start</label>
           </div>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="die" class="form-check-input" checked=true>
@@ -745,6 +780,47 @@
     </div>
     <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100" style="flex: unset;">
       <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-5 col-md-4 col-lg-3 h-100">
+        <div id="roster-menu-container" class="justify-content-end py-2 gap-3" style="flex: 0 0 auto; border-color: transparent !important;">
+          <div id="roster-menu-instruction" class="d-flex align-items-center"></div>
+          <div class="btn-group">
+            <button class="btn btn-sm dropdown-toggle btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <%= require('../../node_modules/open-iconic/svg/ellipses.svg') %>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-start">
+              <li class="px-3 text-nowrap user-select-none">Attendee capabilities</li>
+              <li><hr class="dropdown-divider"></li>
+              <li id="roster-menu-none-seleced">
+                <div class="px-3 text-nowrap text-muted">Select one or more attendees to update.</div>
+              </li>
+              <li id="roster-menu-one-attendee" class="hidden">
+                <button
+                  class="dropdown-item"
+                  type="button"
+                  data-bs-target="#attendee-capabilities-modal"
+                  data-bs-toggle="modal"
+                  data-bs-type="one-attendee">
+                  <div class="me-2 d-inline-block" style="transform: scale(0.75);">
+                    <%= require('../../node_modules/open-iconic/svg/person.svg') %>
+                  </div>
+                  <span>Update the selected attendee</span>
+                </button>
+              </li>
+              <li id="roster-menu-all-attendees-except" class="hidden">
+                <button
+                  class="dropdown-item"
+                  type="button"
+                  data-bs-target="#attendee-capabilities-modal"
+                  data-bs-toggle="modal"
+                  data-bs-type="all-attendees-except">
+                  <div class="me-2 d-inline-block" style="transform: scale(0.75);">
+                    <%= require('../../node_modules/open-iconic/svg/people.svg') %>
+                  </div>
+                  <span id="roster-menu-all-attendees-except-label"></span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
         <div class="bs-component" style="flex: 1 1 auto; overflow-y: auto; height: 50%;">
           <ul id="roster" class="list-group"></ul>
         </div>
@@ -867,5 +943,53 @@
     </form>
   </div>
 </div>
+
+<!-- Attendee capabilities modal -->
+
+<div class="modal fade" id="attendee-capabilities-modal" tabindex="-1"
+     aria-labelledby="attendee-capabilities-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="attendee-capabilities-modal-label">Attendee capabilities</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating mb-3">
+          <div id="attendee-capabilities-modal-description" class="text-wrap text-break"></div>
+        </div>
+        <div class="form-floating mb-3">
+          <select name="audioCapability" class="form-select" id="attendee-capabilities-modal-audio-select">
+            <option value="SendReceive">SendReceive</option>
+            <option value="Send">Send</option>
+            <option value="Receive">Receive</option>
+            <option value="None">None</option>
+          </select>
+          <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
+        </div>
+        <div class="form-floating mb-3">
+          <select name="videoCapability" class="form-select" id="attendee-capabilities-modal-video-select">
+            <option value="SendReceive">SendReceive</option>
+            <option value="Send">Send</option>
+            <option value="Receive">Receive</option>
+            <option value="None">None</option>
+          </select>
+          <label for="videoCapability"  style="text-align: left;">Video capability:</label>
+        </div>
+        <div class="form-floating mb-3">
+          <select name="contentCapability" class="form-select" id="attendee-capabilities-modal-content-select">
+            <option value="SendReceive">SendReceive</option>
+            <option value="Send">Send</option>
+            <option value="Receive">Receive</option>
+            <option value="None">None</option>
+          </select>
+          <label for="contentCapability"  style="text-align: left;">Content capability:</label>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" id="attendee-capabilities-save-button">Save</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

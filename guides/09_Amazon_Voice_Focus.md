@@ -83,7 +83,7 @@ Amazon Voice Focus and Echo Reduction model files are loaded from an Amazon Cont
 
 Model files range in size from 200KB up to 8MB, depending on the complexity level selected by you or by the SDK’s own performance estimator, and depending on the capabilities of the user’s browser. Model files will be cached indefinitely by end users’ browsers, so that subsequent uses of Amazon Voice Focus on the same device will take less time to initialize.
 
-In addition to having network connectivity to [Amazon Chime’s media services, as described in the documentation](https://docs.aws.amazon.com/chime/latest/dg/chime-components.html), the use of Amazon Voice Focus and Echo Reduction requires access to Amazon CloudFront via HTTPS (port 443). All requests will be to subdomains of `sdkassets.chime.aws`. End users whose network configurations prevent access to this CDN, or applications that do not include the correct domain in Content Security Policy (see below), will fail support checks and be unable to use Amazon Voice Focus and Echo Reduction.
+In addition to having network connectivity to [Amazon Chime’s media services, as described in the documentation](https://docs.aws.amazon.com/chime-sdk/latest/dg/what-is-chime-sdk.html), the use of Amazon Voice Focus and Echo Reduction requires access to Amazon CloudFront via HTTPS (port 443). All requests will be to subdomains of `sdkassets.chime.aws`. End users whose network configurations prevent access to this CDN, or applications that do not include the correct domain in Content Security Policy (see below), will fail support checks and be unable to use Amazon Voice Focus and Echo Reduction.
 
 CloudFront’s IP address ranges are documented in the [Amazon CloudFront Developer Guide](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html).
 
@@ -283,7 +283,7 @@ A specification is used to derive a runtime _configuration_ when a transformer i
 
 ## Enabling Voice Focus with Echo Reduction
 
-> ⚠️ To use the Echo Reduction feature, you must migrate to the [Amazon Chime SDK Meetings](https://docs.aws.amazon.com/chime/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace. To do so, you can follow the steps in the [Migrating to the Amazon Chime SDK Meetings namespace](https://docs.aws.amazon.com/chime/latest/dg/meeting-namespace-migration.html).
+> ⚠️ To use the Echo Reduction feature, you must migrate to the [Amazon Chime SDK Meetings](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace. To do so, you can follow the steps in the [Migrating to the Amazon Chime SDK Meetings namespace](https://docs.aws.amazon.com/chime-sdk/latest/dg/meeting-namespace-migration.html).
 
 Enabling Voice Focus with Echo Reduction is a two step process: 
 
@@ -291,7 +291,7 @@ Enabling Voice Focus with Echo Reduction is a two step process:
 
 The Amazon Chime SDK Meetings namespace uses a new service principal: meetings.chime.amazonaws.com. If you have SQS, SNS, or other IAM access policies that grant access to the service, you need to update those polices to grant access to the new service principal.
 
-More information regarding this change can be found [here](https://docs.aws.amazon.com/chime/latest/dg/meeting-namespace-migration.html).
+More information regarding this change can be found [here](https://docs.aws.amazon.com/chime-sdk/latest/dg/meeting-namespace-migration.html).
 
 Create your meeting by calling the CreateMeeting API and specifying the Echo Reduction flag as `'AVAILABLE'`.
 

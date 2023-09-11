@@ -99,7 +99,7 @@ export enum MeetingSessionStatusCode {
   /**
    * The Amazon Chime SDK for JavaScript failed to establish a signaling connection because
    * you or someone else deleted the attendee using the
-   * [DeleteAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html)
+   * [DeleteAttendee](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_DeleteAttendee.html)
    * API action in your server application. You also should not use the attendee response from
    * the ended meeting that you created with the same ClientRequestToken parameter
    * before.
@@ -182,6 +182,16 @@ export enum MeetingSessionStatusCode {
    * Reserved.
    */
   AudioDisconnectAudio,
+
+  /**
+   * The websocket signalling channel was closed unexpectedly mid-meeting. This may be due to:
+   * * A client side network change, e.g. switching WiFi networks (most typical).
+   * * A backend detecting client side issues (e.g. decryption issues), and snapping
+   *   the connection to force a reconnection.
+   * * Unexpected backend issues, e.g. AWS networking issues.
+   * The latter two are less common.
+   */
+  SignalChannelClosedUnexpectedly,
 }
 
 export default MeetingSessionStatusCode;

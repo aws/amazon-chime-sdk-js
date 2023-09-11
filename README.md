@@ -35,11 +35,11 @@ The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) ca
 
 - [Amazon Chime SDK Overview](https://aws.amazon.com/chime/chime-sdk/)
 - [Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
-- [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers)
+- [Supported Browsers](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers)
 - [Getting Started Guides](guides/20_Builders_Journey.md)
-- [Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html)
-- [PSTN Audio Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html)
-- [Control Plane API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
+- [Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html)
+- [PSTN Audio Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html)
+- [Control Plane API Reference](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/welcome.html)
 - [Frequently Asked Questions (FAQ)](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
 
 ## Blog posts
@@ -112,8 +112,8 @@ The following developer guides cover specific topics for a technical audience.
 
 The following developer guides cover the Amazon Chime SDK more broadly.
 
-- [PSTN Audio developer guide](https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html)
-- [Messaging developer guide](https://docs.aws.amazon.com/chime/latest/dg/using-the-messaging-sdk.html)
+- [PSTN Audio developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html)
+- [Messaging developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html)
 - [Media Pipelines developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-pipelines.html)
 
 ## Examples
@@ -204,7 +204,7 @@ const meetingSession = new DefaultMeetingSession(
 
 You can use an AWS SDK, the AWS Command Line Interface (AWS CLI), or the REST API
 to make API calls. In this section, you will use the AWS SDK for JavaScript in your server application, e.g. Node.js.
-See [Amazon Chime SDK API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html) for more information.
+See [Amazon Chime SDK API Reference](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/welcome.html) for more information.
 
 > ⚠️ The server application does not require the Amazon Chime SDK for JavaScript.
 
@@ -213,8 +213,7 @@ const AWS = require('aws-sdk');
 const { v4: uuid } = require('uuid');
 
 // You must use "us-east-1" as the region for Chime API and set the endpoint.
-const chime = new AWS.Chime({ region: 'us-east-1' });
-chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com');
+const chime = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
 
 const meetingResponse = await chime
   .createMeeting({
@@ -234,7 +233,7 @@ const attendeeResponse = await chime
 Now securely transfer the `meetingResponse` and `attendeeResponse` objects to your client application.
 These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.
 
-The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic 'Choosing the nearest media Region' in the [Amazon Chime SDK Media Regions documentation](https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html).
+The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic 'Choosing the nearest media Region' in the [Amazon Chime SDK Media Regions documentation](https://docs.aws.amazon.com/chime-sdk/latest/dg/chime-sdk-meetings-regions.html).
 
 ### Messaging session
 
@@ -1096,10 +1095,8 @@ const observer = {
         - You (or someone else) have called the DeleteMeeting API action in your server application.
         - You attempted to join a deleted meeting.
         - No audio connections are present in the meeting for more than five minutes.
-        - Fewer than two audio connections are present in the meeting for more than 30 minutes.
-        - Screen share viewer connections are inactive for more than 30 minutes.
         - The meeting time exceeds 24 hours.
-        See https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-mtgs.html for details.
+        See https://docs.aws.amazon.com/chime-sdk/latest/dg/mtgs-sdk-mtgs.html for details.
       */
       console.log('The session has ended');
     } else {

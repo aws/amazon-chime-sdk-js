@@ -24,11 +24,13 @@ const deviceController = new DefaultDeviceController(logger);
 
 ### 1c. Create a meeting from your server application
 
-Use AWS SDK to create the Chime object. Use the Chime object to get meeting and attendee objects from [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) and [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) Chime APIs. See [Getting responses from your server application](https://github.com/aws/amazon-chime-sdk-js#getting-responses-from-your-server-application) for more information.
+Use AWS SDK to create the Chime object. Use the Chime object to get meeting and attendee objects from [CreateMeeting](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeeting.html) 
+and [CreateAttendee](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html) Chime APIs. See [Getting responses from your 
+server application](https://github.com/aws/amazon-chime-sdk-js#getting-responses-from-your-server-application) for more information.
 
 ### 1d. Create a meeting session configuration
 
-Create a [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#constructor) object with the responses to [chime:CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) and [chime:CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html). Your server application should make these API calls and securely pass the meeting and attendee responses to the browser client application.
+Create a [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#constructor) object with the responses to [CreateMeeting](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateMeeting.html) and [CreateAttendee](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html). Your server application should make these API calls and securely pass the meeting and attendee responses to the browser client application.
 
 ```
 const configuration = new MeetingSessionConfiguration(meetingResponse, attendeeResponse);
@@ -213,7 +215,7 @@ Real-time volume indicator callbacks are called at a rate of 5 updates per secon
 
 ### 5a. Subscribe to attendee presence changes
 
-To learn when attendees join or leave, subscribe to the attendee ID presence changes. The callback provides both the attendee ID and external user ID from [chime:CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) so that you may map between the two IDs.
+To learn when attendees join or leave, subscribe to the attendee ID presence changes. The callback provides both the attendee ID and external user ID from [CreateAttendee](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_CreateAttendee.html) so that you may map between the two IDs.
 
 To subscribe to attendee presence changes, call meetingSession.audioVideo.[realtimeSubscribeToAttendeeIdPresence(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetoattendeeidpresence).
 
