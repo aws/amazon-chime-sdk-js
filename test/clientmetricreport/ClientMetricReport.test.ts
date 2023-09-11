@@ -415,6 +415,7 @@ describe('ClientMetricReport', () => {
       it('returns the transformed metric from the global metric spec', () => {
         const report = new GlobalMetricReport();
         report.currentMetrics['availableIncomingBitrate'] = 10;
+        report.currentMetrics['audioLevel'] = 0.5;
         clientMetricReport.globalMetricReport = report;
 
         // Force setting "source" for the test coverage in case we are adding a new metric spec with "source".
@@ -422,6 +423,11 @@ describe('ClientMetricReport', () => {
           'availableIncomingBitrate';
         expect(clientMetricReport.getObservableMetricValue('availableIncomingBitrate')).to.equal(
           clientMetricReport.identityValue('availableIncomingBitrate')
+        );
+
+        clientMetricReport.globalMetricMap['audioLevel']['source'] = 'audioLevel';
+        expect(clientMetricReport.getObservableMetricValue('audioUpstreamLevel')).to.equal(
+          clientMetricReport.identityValue('audioLevel')
         );
       });
     });
@@ -517,7 +523,7 @@ describe('ClientMetricReport', () => {
   describe('getObservableMetrics', () => {
     it('returns the observable metrics as a JS object', () => {
       const metrics = clientMetricReport.getObservableMetrics();
-      expect(Object.keys(metrics).length).to.equal(15);
+      expect(Object.keys(metrics).length).to.equal(17);
     });
   });
 

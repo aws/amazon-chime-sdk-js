@@ -20,7 +20,11 @@ import RemovableObserver from '../removableobserver/RemovableObserver';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
-import { ISdkBitrateFrame, SdkSignalFrame } from '../signalingprotocol/SignalingProtocol';
+import {
+  ISdkBitrateFrame,
+  SdkNotificationFrame,
+  SdkSignalFrame,
+} from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import { Maybe } from '../utils/Types';
 import VideoTileState from '../videotile/VideoTileState';
@@ -317,20 +321,50 @@ export default class MonitorTask
     // Don't add two or more consecutive "signalingDropped" states.
     if (
       (event.type === SignalingClientEventType.WebSocketClosed &&
-        (event.closeCode === 4410 || (event.closeCode >= 4500 && event.closeCode < 4600))) ||
+        this.isUnexpectedWebsocketCloseCode(event.closeCode)) ||
       event.type === SignalingClientEventType.WebSocketError ||
       event.type === SignalingClientEventType.WebSocketFailed
     ) {
+      if (event.type === SignalingClientEventType.WebSocketClosed) {
+        this.context.logger.info(
+          `The signaling connection was closed with code ${event.closeCode} and reason: ${event.closeReason}`
+        );
+      }
       if (!this.hasSignalingError) {
         const attributes = this.generateAudioVideoEventAttributesForReceivingAudioDropped();
         this.context.eventController?.publishEvent('signalingDropped', attributes);
         this.hasSignalingError = true;
       }
+      this.context.audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.SignalChannelClosedUnexpectedly),
+        null
+      );
     } else if (event.type === SignalingClientEventType.WebSocketOpen) {
       this.hasSignalingError = false;
     }
 
     if (event.type === SignalingClientEventType.ReceivedSignalFrame) {
+      if (event.message.type === SdkSignalFrame.Type.NOTIFICATION) {
+        switch (event.message.notification.level) {
+          case SdkNotificationFrame.NotificationLevel.INFO:
+            this.logger.info(
+              `Received notification from server: ${event.message.notification.message}`
+            );
+            break;
+          case SdkNotificationFrame.NotificationLevel.WARNING:
+            this.logger.warn(`Received warning from server: ${event.message.notification.message}`);
+            break;
+          case SdkNotificationFrame.NotificationLevel.ERROR:
+            this.logger.error(`Received error from server: ${event.message.notification.message}`);
+            break;
+          default:
+            this.logger.error(
+              `Received notification from server with unknown level ${event.message.notification.level}: ${event.message.notification.message}`
+            );
+            break;
+        }
+        return;
+      }
       if (!!event.message.bitrates) {
         const bitrateFrame: ISdkBitrateFrame = event.message.bitrates;
         this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);
@@ -346,6 +380,15 @@ export default class MonitorTask
         this.context.audioVideoController.handleMeetingSessionStatus(status, null);
       }
     }
+  }
+
+  private isUnexpectedWebsocketCloseCode(closeCode: number): boolean {
+    return (
+      // Abnormal Closure. This might be expected for unplanned disconnections.
+      closeCode === 1006 ||
+      // Custom close codes that may be sent by the backend
+      (closeCode >= 4500 && closeCode < 4600)
+    );
   }
 
   private checkAndSendWeakSignalEvent = (signalStrength: number): void => {

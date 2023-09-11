@@ -828,13 +828,10 @@ export default class DefaultDeviceController
         for (const track of triggerStream.getTracks()) {
           track.stop();
         }
-      } catch (err) {
+      } catch (error) {
         this.logger.info('unable to get media device labels');
-        this.eventController?.publishEvent('audioInputFailed', {
-          audioInputErrorMessage: this.getErrorMessage(err),
-        });
-        this.eventController?.publishEvent('videoInputFailed', {
-          videoInputErrorMessage: this.getErrorMessage(err),
+        this.eventController?.publishEvent('deviceLabelTriggerFailed', {
+          deviceLabelTriggerErrorMessage: this.getErrorMessage(error),
         });
       }
     }
@@ -931,7 +928,12 @@ export default class DefaultDeviceController
     observerFunc: (obsever: MediaStreamBrokerObserver) => void
   ): void {
     for (const observer of this.mediaStreamBrokerObservers) {
-      observerFunc(observer);
+      AsyncScheduler.nextTick(() => {
+        /* istanbul ignore else */
+        if (this.mediaStreamBrokerObservers.has(observer)) {
+          observerFunc(observer);
+        }
+      });
     }
   }
 

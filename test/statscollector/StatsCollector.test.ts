@@ -353,6 +353,12 @@ describe('StatsCollector', () => {
             type: 'remote-outbound-rtp',
           })
         ).to.be.true;
+        expect(
+          statsCollector.isValidStandardRawMetric({
+            type: 'media-source',
+            kind: 'audio',
+          })
+        ).to.be.true;
 
         statsCollector.stop();
       });

@@ -305,7 +305,7 @@ class AppPage {
 
   async getNumberOfParticipantsOnRoster() {
     const roster = await this.driver.findElement(elements.roster);
-    const participantElements = await this.driver.findElements(elements.participants);
+    const participantElements = await roster.findElements(elements.participants);
     this.logger(`Number of participants on roster: ${participantElements.length}`);
     return participantElements.length;
   }
