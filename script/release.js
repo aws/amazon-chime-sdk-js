@@ -45,15 +45,15 @@ const release = async () => {
     quit(1);
   }
 
-  await cleanUp(remoteBranch);
+  // await cleanUp(remoteBranch);
 
-  buildAndPack();
+  // buildAndPack();
 
-  logger.log(`Do you want to upload these files to release-${currentVersion} branch?\n`);
-  await shouldContinuePrompt();
-  spawnOrFail('git', [`push origin HEAD:release-${currentVersion} -f`]);
+  // logger.log(`Do you want to upload these files to release-${currentVersion} branch?\n`);
+  // await shouldContinuePrompt();
+  // spawnOrFail('git', [`push origin HEAD:release-${currentVersion} -f`]);
 
-  deployDemo(currentVersion);
+  // deployDemo(currentVersion);
 
   //Bump next development version
   await versionBump();
