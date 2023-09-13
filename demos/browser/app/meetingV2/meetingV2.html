@@ -1,995 +1,1842 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+
   <title>Meeting Demo</title>
 </head>
+
 <body>
 
-<div id="flow-fatal" class="flow">
-  <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
-    <h1>Fatal error</h1>
-    <p>An error was thrown that should not occur in ordinary use. This should be considered a fatal error for testing
-      and canary purposes.</p>
-    <p>This error will ordinarily be muffled, but you should consider removing this code if you are building an app
-      based on this demo.</p>
-    <code id="stack"></code>
-  </div>
-</div>
+  <!-- landing page start -->
 
-<!-- Initial meeting authentication screen with meeting and name inputs -->
-<div id="flow-authenticate" class="flow text-center p-2">
-  <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
-  <div class="container">
-    <form id="form-authenticate">
-      <h1 class="h3 mb-3 fw-normal">Join a meeting</h1>
-      <div class="form-floating row mt-3">
-        <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required autofocus>
-        <label for="inputMeeting" style="text-align: left;">Meeting Title or ID</label>
+  <div class="landing-page" id="landing-page" style="display: block;">
+    <div class="headerBlock">
+      <div class="logo">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="200"
+          height="55"
+          viewBox="0 0 200 55"
+          fill="none"
+        >
+          <path
+            d="M37.8378 54.3601C35.4855 53.8262 33.4001 53.284 31.5816 52.7335C29.7631 52.1996 28.028 51.5907 26.3764 50.9067C24.7414 50.2226 22.9813 49.4052 21.0961 48.4542H19.9199C17.0504 48.4542 14.3977 47.9704 11.962 47.0027C9.54288 46.0184 7.43243 44.6504 5.63063 42.8986C3.84551 41.1469 2.46079 39.0865 1.47648 36.7175C0.492159 34.3484 0 31.7625 0 28.9597C0 26.1569 0.492159 23.571 1.47648 21.2019C2.46079 18.8329 3.84551 16.7725 5.63063 15.0208C7.43243 13.2523 9.54288 11.8843 11.962 10.9167C14.3977 9.93234 17.0587 9.44019 19.9449 9.44019C22.8145 9.44019 25.4588 9.93234 27.8779 10.9167C30.297 11.8843 32.3907 13.2523 34.1592 15.0208C35.9443 16.7725 37.329 18.8329 38.3133 21.2019C39.2976 23.571 39.7898 26.1569 39.7898 28.9597C39.7898 31.3621 39.4144 33.6227 38.6637 35.7415C37.9296 37.8436 36.8869 39.7372 35.5355 41.4222C34.1842 43.0905 32.5742 44.4836 30.7057 45.6013C31.7067 45.7849 32.691 45.9517 33.6587 46.1018C34.643 46.2353 35.6523 46.3438 36.6867 46.4272C37.7211 46.5106 38.8222 46.5773 39.99 46.6274L37.8378 54.3601ZM19.9199 39.8456C21.3046 39.8456 22.5893 39.5703 23.7738 39.0198C24.9583 38.4692 25.9843 37.7018 26.8519 36.7175C27.7361 35.7165 28.4201 34.557 28.9039 33.239C29.4044 31.921 29.6547 30.4946 29.6547 28.9597C29.6547 27.4248 29.4044 25.9984 28.9039 24.6804C28.4201 23.3624 27.7361 22.2113 26.8519 21.227C25.9843 20.226 24.9583 19.4502 23.7738 18.8996C22.5893 18.3491 21.3046 18.0738 19.9199 18.0738C18.5352 18.0738 17.2422 18.3491 16.041 18.8996C14.8565 19.4502 13.8222 20.226 12.9379 21.227C12.0537 22.2113 11.3614 23.3624 10.8609 24.6804C10.377 25.9984 10.1351 27.4248 10.1351 28.9597C10.1351 30.4946 10.377 31.921 10.8609 33.239C11.3614 34.557 12.0537 35.7165 12.9379 36.7175C13.8222 37.7018 14.8565 38.4692 16.041 39.0198C17.2422 39.5703 18.5352 39.8456 19.9199 39.8456Z"
+            fill="#353535"
+          />
+          <path
+            d="M69.4945 47.7285H62.1872L61.8869 43.7495C61.0193 45.2176 59.8682 46.3354 58.4334 47.1028C56.9987 47.8536 55.322 48.229 53.4034 48.229C50.3003 48.229 47.8729 47.2613 46.1211 45.3261C44.3694 43.3908 43.4935 40.7131 43.4935 37.293V22.7034H52.7277V34.7655C52.7277 36.4338 53.0447 37.7185 53.6787 38.6194C54.3293 39.5203 55.2469 39.9707 56.4314 39.9707C57.6493 39.9707 58.5919 39.5203 59.2593 38.6194C59.9266 37.7018 60.2603 36.4172 60.2603 34.7655V22.7034H69.4945V47.7285Z"
+            fill="#353535"
+          />
+          <path
+            d="M113.764 47.7285H87.5375V43.224L98.023 30.9617H88.1632V22.7034H112.713V26.4572L101.602 39.4702H113.764V47.7285Z"
+            fill="#353535"
+          />
+          <path
+            d="M163.463 48.229C160.827 48.229 158.475 47.6701 156.406 46.5523C154.354 45.4178 152.736 43.8746 151.552 41.9227C150.384 39.954 149.8 37.7185 149.8 35.216C149.8 32.7135 150.384 30.4862 151.552 28.5343C152.736 26.5656 154.354 25.0224 156.406 23.9046C158.475 22.7702 160.827 22.2029 163.463 22.2029C166.083 22.2029 168.41 22.7702 170.445 23.9046C172.497 25.0224 174.107 26.5656 175.275 28.5343C176.443 30.4862 177.027 32.7135 177.027 35.216C177.027 37.7185 176.443 39.954 175.275 41.9227C174.107 43.8746 172.497 45.4178 170.445 46.5523C168.41 47.6701 166.083 48.229 163.463 48.229ZM163.413 39.9707C164.214 39.9707 164.923 39.7705 165.541 39.3701C166.174 38.953 166.667 38.3858 167.017 37.6684C167.384 36.9343 167.568 36.1002 167.568 35.1659C167.568 34.265 167.384 33.4642 167.017 32.7635C166.667 32.0461 166.174 31.4872 165.541 31.0868C164.923 30.6697 164.214 30.4612 163.413 30.4612C162.613 30.4612 161.895 30.6697 161.261 31.0868C160.644 31.4872 160.152 32.0461 159.785 32.7635C159.434 33.4642 159.259 34.265 159.259 35.1659C159.259 36.1002 159.434 36.9343 159.785 37.6684C160.152 38.3858 160.644 38.953 161.261 39.3701C161.895 39.7705 162.613 39.9707 163.413 39.9707Z"
+            fill="#353535"
+          />
+          <path
+            d="M200 47.0278C197.898 47.8286 195.871 48.229 193.919 48.229C191.8 48.229 189.932 47.7869 188.313 46.9026C186.695 46.0184 185.427 44.7922 184.51 43.224C183.609 41.639 183.158 39.8122 183.158 37.7435V30.9367H178.779V22.7034H183.659V16.4472H192.392V22.7034H198.974V30.9367H192.392V36.0668C192.392 37.3514 192.751 38.3274 193.468 38.9947C194.186 39.6454 195.028 39.9707 195.996 39.9707C196.98 39.9707 197.931 39.6537 198.849 39.0198L200 47.0278Z"
+            fill="#353535"
+          />
+          <path
+            d="M83.516 47.8138L74.2832 47.6526L74.7871 18.7812L84.0199 18.9424L83.516 47.8138Z"
+            fill="#353535"
+          />
+          <path
+            d="M83.9363 23.7742L74.7035 23.613L74.786 18.8882C74.7952 18.3575 75.233 17.9348 75.7637 17.944L83.0746 18.0716C83.6053 18.0809 84.0281 18.5186 84.0188 19.0493L83.9363 23.7742Z"
+            fill="#C9C9C9"
+          />
+          <path
+            d="M83.5155 47.8138L74.2827 47.6527L74.334 44.7146L83.5668 44.8758L83.5155 47.8138Z"
+            fill="#353535"
+          />
+          <path
+            d="M116.54 46.5355L123.717 9.396L137.855 12.1279C142.13 12.954 145.264 14.4585 147.256 16.6414C149.249 18.8243 149.939 21.5004 149.326 24.6696C148.985 26.4358 148.284 27.9356 147.224 29.1691C146.167 30.386 144.887 31.2516 143.383 31.7659C145.269 32.8152 146.622 34.1896 147.441 35.8889C148.26 37.5881 148.46 39.519 148.042 41.6813C147.628 43.8271 146.747 45.5919 145.401 46.9756C144.058 48.3427 142.345 49.2787 140.261 49.7836C138.181 50.2719 135.836 50.2641 133.228 49.7602L116.54 46.5355ZM130.688 26.7632L134.291 26.9783C135.695 27.2494 136.83 27.1777 137.698 26.7632C138.585 26.3354 139.131 25.5933 139.335 24.5369C139.523 23.563 139.284 22.7205 138.616 22.0094C137.949 21.2982 136.922 20.8087 135.535 20.5408L130.688 19.7085L130.688 26.7632ZM127.996 39.888L132.329 40.7253C133.451 40.9422 134.432 41.0034 135.272 40.9089C136.116 40.7979 136.79 40.5429 137.295 40.144C137.804 39.7285 138.125 39.1742 138.259 38.4809C138.393 37.7876 138.323 37.1748 138.049 36.6424C137.778 36.0936 137.31 35.635 136.645 35.2668C136 34.8852 135.174 34.5972 134.167 34.4026L130.688 33.4652L127.996 39.888Z"
+            fill="#8E509C"
+          />
+          <path
+            d="M78.147 5.61441L74.7622 5.03656C74.4881 4.99002 74.2062 5.0285 73.9546 5.14683C73.703 5.26516 73.4935 5.45767 73.3545 5.69849C73.2155 5.93931 73.1535 6.21692 73.1768 6.49401C73.2001 6.7711 73.3077 7.0344 73.4851 7.24854L75.6779 9.89092L75.0999 13.2759C75.054 13.5498 75.0929 13.8312 75.2114 14.0825C75.3299 14.3337 75.5223 14.5427 75.7628 14.6816C76.0033 14.8204 76.2806 14.8825 76.5574 14.8595C76.8342 14.8365 77.0973 14.7295 77.3117 14.5529L79.9541 12.3598L83.3378 12.937C83.6121 12.9843 83.8944 12.9463 84.1464 12.8281C84.3985 12.7099 84.6083 12.5173 84.7475 12.2762C84.8867 12.0351 84.9486 11.7571 84.9249 11.4798C84.9012 11.2024 84.793 10.939 84.6149 10.725L82.4231 8.08325L83.0012 4.6983C83.0485 4.42395 83.0105 4.14171 82.8924 3.88963C82.7742 3.63756 82.5816 3.42778 82.3405 3.2886C82.0995 3.14941 81.8215 3.08751 81.5441 3.11124C81.2668 3.13497 81.0033 3.24319 80.7894 3.42131L78.147 5.61441Z"
+            fill="#FFAC33"
+          />
+        </svg>
       </div>
-      <div class="form-floating row mt-3">
-        <input type="name" id="inputName" class="form-control" placeholder="Your Name" required>
-        <label for="inputName" style="text-align: left;">Your Name</label>
-      </div>
-      <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
-        <select id="inputRegion" class="form-select" style="width:100%">
-          <option value="us-east-1" selected>United States (N. Virginia)</option>
-          <option value="ap-northeast-1">Japan (Tokyo)</option>
-          <option value="ap-southeast-1">Singapore</option>
-          <option value="af-south-1">South Africa (Cape Town)</option>
-          <option value="eu-south-1">Italy (Milan)</option>
-          <option value="ap-south-1">India (Mumbai)</option>
-          <option value="ap-northeast-2">South Korea (Seoul)</option>
-          <option value="ap-southeast-2">Australia (Sydney)</option>
-          <option value="ca-central-1">Canada</option>
-          <option value="eu-central-1">Germany (Frankfurt)</option>
-          <option value="eu-north-1">Sweden (Stockholm)</option>
-          <option value="eu-west-1">Ireland</option>
-          <option value="eu-west-2">United Kingdom (London)</option>
-          <option value="eu-west-3">France (Paris)</option>
-          <option value="sa-east-1">Brazil (São Paulo)</option>
-          <option value="us-east-2">United States (Ohio)</option>
-          <option value="us-west-1">United States (N. California)</option>
-          <option value="us-west-2">United States (Oregon)</option>
-          <option value="us-gov-west-1">GovCloud (US-West)</option>
-          <option value="us-gov-east-1">GovCloud (US-East)</option>
-        </select>
-        <label for="inputRegion" style="text-align: left;"> Media Region</label>
-      </div>
-      <div class="row mt-3">
-        <button type="button" class="btn btn-outline-secondary h-50 d-sm-block" data-bs-toggle="modal" id="additional-options-button"
-                data-bs-target="#additional-options-modal">
-          Additional Options
+      <div class="rightBlock">
+        <button class="btn" style="color: rgba(63, 65, 73, 1)">
+          Quiz Generator
+        </button>
+        <button id="host-meeting" class="btn" style="background-color: #8e509c">
+          Host a meeting
         </button>
       </div>
-      <div class="row mt-3">
-        <div class="btn-group p-0" role="group">
-          <button id="authenticate" class="btn btn-lg btn-secondary w-100" type="submit">Continue</button>
-          <button id="quick-join" class="btn btn-lg btn-success" title="Skip Device Selection"><%= require('../../node_modules/open-iconic/svg/bolt.svg') %></button>
+    </div>
+    <div class="card-wrapper">
+      <div class="card-box">
+        <div class="card">
+          <div class="overlay">
+            <div class="card-body">
+              <h2>Test the effectiveness of your live tutoring session</h2>
+              <h3 class="mt-2">
+                Automatically create engaging quiz from a live tutor session based
+                on you say during the remote learning session.
+              </h3>
+              <div class="cardFooter mt-4">
+                <button class="btn hostMeeting">Host a meeting</button>
+                <button class="btn createMeeting">Try Creating a quiz</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="row mt-3">
-        <p>Anyone with access to the meeting link can join.</p>
+    </div>
+  
+    <div class="d-flex justify-content-center"><h1>How it works?</h1></div>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
+        <h1>🌐 This is how it work</h1>
+        <h4>
+          Host remote sessions and watch knowledge travel the world faster than a
+          jetsetter on caffeine.
+        </h4>
       </div>
-      <div class="row mt-3">
-        <a id="to-sip-flow" href="#">Joining via SIP? Click here.</a>
+      <div class="col-lg-6 col-md-6 col-12 d-flex justify-content-end">
+        <img src="../../image/first.png" />
       </div>
-      <div class="row mt-3">
-        <div id="progress-authenticate" class="w-100 progress progress-hidden">
-          <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-               aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+  
+      <div class="col-lg-6 col-md-6 col-12">
+        <img src="../../image/second.png" />
+      </div>
+      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
+        <h1>Create an automated quiz 🧠</h1>
+        <h4>
+          Turn your tutoring gold into captivating quizzes with the ease of a
+          magician's sleight of hand.
+        </h4>
+      </div>
+      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
+        <h1>📈 Test the effectiveness</h1>
+        <h4>
+          Test the tutoring waters and measure your success waves with analytical
+          precision that would make a scientist proud.
+        </h4>
+      </div>
+      <div class="col-lg-6 col-md-6 col-12 d-flex justify-content-end">
+        <img src="../../image/third.png" />
+      </div>
+    </div>
+    <div class="d-flex justify-content-between">
+      <img src="../../image/left.png" />
+      <img src="../../image/right.png" />
+    </div>
+    <div class="bottomBlock">
+      <h1>Turning Tutor-Talk into Quiz-Whiz</h1>
+      <h6 class="mt-3">Embark on a journey of enlightening education</h6>
+      <div class="d-flex align-items-center mt-4" style="gap: 10px">
+        <button class="btn hostMeeting">Host a meeting</button>
+        <button class="btn createMeeting">Try Creating a quiz</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="footerBlock">
+        <div class="col-lg-6 col-md-6 col-12 ps-5">
+          <a>All rights reserved @ QuizBot</a>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12">
+          <a class="me-5">Privacy Policy</a>
+          <a>Terms & Conditions</a>
         </div>
       </div>
-    </form>
-  </div>
-</div>
-
-<!-- Additional options modal -->
-
-<div class="modal fade" id="additional-options-modal" tabindex="-1"
-     aria-labelledby="additional-options-modal-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="additional-options-modal-label">Additional Options</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <fieldset>
-          <div class="form-floating mb-3" style="text-align: left;">
-            <select name="logLevel" class="form-select" id="logLevelSelect">
-              <option value="debug">Debug</option>
-              <option value="info">Info</option>
-              <option value="warn">Warn</option>
-              <option value="error">Error</option>
-              <option value="off">Off</option>
-            </select>
-            <label for="logLevel" style="text-align: left;">Log Level:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="videoCodec" class="form-select" id="videoCodecSelect">
-              <option value="default">Meeting Default</option>
-              <option value="vp8">VP8</option>
-              <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
-            </select>
-            <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="videoCapability" class="form-select" id="videoCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="videoCapability"  style="text-align: left;">Video capability:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="contentCapability" class="form-select" id="contentCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="contentCapability"  style="text-align: left;">Content capability:</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="join-muted" class="form-check-input"></input>
-            <label for="join-muted-setting" class="form-check-label">Join Muted</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="webaudio" class="form-check-input">
-            <label for="webaudio" class="form-check-label">Use WebAudio</label>
-          </div>
-          <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
-            <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
-            <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
-              only)</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
-            <label for="fullband-speech-mono-quality" class="form-check-label">Set fullband speech (mono)
-              quality</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-music-mono-quality" class="form-check-input">
-            <label for="fullband-music-mono-quality" class="form-check-label">Set fullband music (mono)
-              quality</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-music-stereo-quality" class="form-check-input">
-            <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
-              quality</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="simulcast" class="form-check-input">
-            <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
-            <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
-              Policy</label>
-          </div>
-          <lable id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</lable>
-          <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
-            <option value="default">Default</option>
-            <option value="none">None (Deprecated)</option>
-            <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
-            <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video Quality Adaption</option>
-          </select>
-          <label id="pagination-title" for="pagination-page-size" style="display: none; padding-top:5px">Paginate displayed video tiles</label>
-          <select id="pagination-page-size" class="form-select" style="width:100%; display: none;">
-            <option value="2">2</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="25" selected>25</option>
-          </select>      
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" checked id="preconnect" class="form-check-input">
-            <label for="preconnect" class="form-check-label">Open signaling connection early</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="join-view-only" class="form-check-input">
-            <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="pause-last-frame" class="form-check-input">
-            <label for="pause-last-frame" class="form-check-label">Keep last video frame when paused</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="event-reporting" class="form-check-input">
-            <label for="event-reporting" class="form-check-label">Enable event reporting</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="replica-meeting-input" class="form-check-input">
-            <label for="replica-meeting-input" class="form-check-label">Create meeting as replica</label>
-            <input type="name" id="primary-meeting-external-id" class="form-control"
-                   placeholder="Primary Meeting Title or ID">
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="delete-attendee" class="form-check-input">
-            <label for="delete-attendee" class="form-check-label">Delete own attendee to leave</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="disable-content-keyframe" class="form-check-input">
-            <label for="disable-content-keyframe" class="form-check-label">Disable periodic keyframe request to content senders</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="allow-attendee-capabilities" class="form-check-input">
-            <label for="allow-attendee-capabilities" class="form-check-label">Allow updating of attendee capabilities after start</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="die" class="form-check-input" checked=true>
-            <label for="die" class="form-check-label">Abort on fatal errors</label>
-          </div>
-        </fieldset>
-      </div>
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="additional-options-save-button">Save</button>
     </div>
   </div>
-</div>
 
-<!-- Authenticate for SIP with meeting and voice connector ID -->
+  <!-- End of Landing Page -->
 
-<div id="flow-sip-authenticate" class="flow text-center">
-  <div class="container">
-    <form id="form-sip-authenticate">
-      <h1 class="h3 mb-3 font-weight-normal">Join a meeting via SIP</h1>
-      <div class="row mt-3">
-        <label for="sip-inputMeeting" class="visually-hidden">Meeting Title</label>
-        <input type="name" id="sip-inputMeeting" class="form-control" placeholder="Meeting Title" required autofocus>
-      </div>
-      <div class="row mt-3">
-        <label for="voiceConnectorId" class="visually-hidden">Voice Connector ID</label>
-        <input type="name" id="voiceConnectorId" class="form-control" placeholder="Voice Connector ID" required>
-      </div>
-      <div class="row mt-3">
-        <button id="button-sip-authenticate" class="btn btn-lg btn-primary" type="submit">Continue</button>
-      </div>
-      <div class="row mt-3">
-        <p>You will need a SIP client in order to join the meeting.</p>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Failure card if meeting is invalid -->
-
-<div id="flow-failed-meeting" class="flow">
-  <div class="container">
-    <form id="form-failed-meeting">
-      <div class="card border-warning mb-3" style="max-width: 20rem;">
-        <div id="failed-meeting" class="card-header"></div>
-        <div class="card-body">
-          <h4 class="card-title">Unable to find meeting</h4>
-          <p class="card-text">There was an issue finding that meeting. The meeting may have already ended, or your
-            authorization may have expired.</p>
-          <small id="failed-meeting-error" class="text-muted"></small>
-        </div>
-      </div>
-      <div class="d-grid gap-2">
-        <button class="btn btn-lg btn-outline-warning" type="submit">OK</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Prompt for permission to get access to device labels -->
-
-<div id="flow-need-permission" class="flow">
-  <div class="container">
-    <form id="form-need-permission">
-      <div class="card border-info mb-3" style="max-width: 20rem;">
-        <div class="card-header">Permissions check</div>
-        <div class="card-body">
-          <h4 class="card-title">Unable to get device labels</h4>
-          <p class="card-text">In order to select media devices, we need to do a quick permissions check of your mic
-            and camera. When the pop-up appears, choose <b>Allow</b>.</p>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Display SIP URI -->
-
-<div id="flow-sip-uri" class="flow">
-  <div class="container">
-    <form id="sip-uri-form">
-      <div class="card border-info mb-3" style="max-width: 20rem;">
-        <div class="card-header">SIP URI</div>
-        <div class="card-body">
-          <a id="copy-sip-uri" class="card-title" href="#">Copy</a>
-          <input id="sip-uri" class="card-text"></input>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Device management and preview screen -->
-
-<div id="flow-devices" class="flow">
-  <div class="container">
-    <form id="form-devices">
-      <h1 class="h3 mb-3 font-weight-normal text-center">Select devices</h1>
-      <div class="row mt-3">
-        <div class="col-12 text-center d-sm-block video-preview">
-          <video id="video-preview" class="" style="border-radius:8px"></video>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-12">
-          <label for="audio-input block">Microphone</label>
-          <select id="audio-input" class="form-select" style="width:100%"></select>
-        </div>
-
-        <div class="text-center col-12 d-sm-block">
-          <label>Preview</label>
-          <div class="w-100 progress" style="margin-top:0.75rem">
-            <div id="audio-preview" class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
-                 aria-valuemin="0" aria-valuemax="100"></div>
+  <!-- start of joining page -->
+  <div  id="joining-page" class="mainBlock" style="display: none;">
+  <div class="row">
+    <div class="col-lg-4 col-md-4 col-12">
+      <div class="leftBlock">
+        <div class="card-wrapper">
+          <div class="card-box">
+            <div class="card">
+              <div class="overlay">
+                <div class="card-body">
+                  <h2>10:24 PM</h2>
+                  <h3 class="mt-2">August 18, 2023</h3>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="row mt-3">
-        <div id="voice-focus-setting" class="col-12 hidden">
-          <input autocomplete="off" type="checkbox" id="add-voice-focus"></input>
-          <label style="margin-left: 0.5em" for="voice-focus-setting block">Add Voice Focus</label>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-12">
-          <label for="video-input block">Camera</label>
-          <select id="video-input" class="form-select" style="width:100%"></select>
-        </div>
+        <div class="leftDetailsBlock">
+          <p>Upcoming Classes</p>
+          <div class="listingBlock mt-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5>Marketing</h5>
+                <p>10:30 PM, Today</p>
+              </div>
+              <a>(Start the Meeting)</a>
+            </div>
+          </div>
+          <div class="listingBlock mt-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5>Science Grade 4</h5>
+                <p>7:30 AM, August 19</p>
+              </div>
+              <a>(Start the Meeting)</a>
+            </div>
+          </div>
 
-      </div>
-      <div class="row mt-3">
-        <div class="col-12">
-          <label for="video-input-quality block">Resolution</label>
-          <select id="video-input-quality" class="form-select" style="width:100%">
-            <option value="360p">360p (nHD) @ 15 fps (600 Kbps max)</option>
-            <option value="540p" selected>540p (qHD) @ 15 fps (1.4 Mbps max)</option>
-            <option value="720p">720p (HD) @ 15 fps (1.5 Mbps max)</option>
-          </select>
+          <p>Upcoming Classes</p>
         </div>
       </div>
-      <div class="row mt-3" id="video-input-filter-container">
-        <div class="col-12">
-          <label for="video-input-filter block">Video Filter</label>
-          <select id="video-input-filter" class="form-select" style="width:100%">
-            <option value="None" selected>None</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-12">
-          <label for="audio-output block">Speaker</label>
-          <select id="audio-output" class="form-select" style="width:100%"></select>
-        </div>
-        <div class="col-12">
-          <button id="button-test-sound" class="btn btn-outline-secondary h-50 d-sm-block"
-                  style="width:100%;margin-top:2rem">Test Speaker</button>
-        </div>
-      </div>
-
-      <div class="row mt-3">
-        <div class="col-lg">
-          <button id="joinButton" class="btn btn-lg btn-primary" style="width:100%"
-                  type="submit">Join</button>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-lg">
-          <p>Ready to join meeting <b><span id="info-meeting"></span></b> as <b><span id="info-name"></span></b>.</p>
-        </div>
-      </div>
-    </form>
-    <div id="progress-join" class="w-100 progress progress-hidden">
-      <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100"
-           aria-valuemin="0" aria-valuemax="100"></div>
     </div>
-  </div>
-</div>
+    <div class="col-lg-8 col-md-8 col-12">
+      <div class="d-flex justify-content-between">
+        <h2 class="title">Good afternoon, Rebecca</h2>
+        <div class="profileAvater">
+          <img
+            src="https://s3-alpha-sig.figma.com/img/8e13/1369/b47203c24d7fa0639a315d4fa276eab6?Expires=1694995200&Signature=B6KU4lPh8DgElotlLnPVnXrzFOvnlDJRl~g5LnsvPTaDuWYmvgWhbV-JGX0xXmUPvi6AcdnXfItXO0-rXczHvaqI1fPb32B8P930YVI0ptnpof0H84s86MobxSI5rOT0ZiQ8l4boD6EU8VAZgXMXWonXfuW9sYmgKC40OwTYbNXVhsNytSZpyCmus1HO~xa1JvE44rzgxxkjR6B5LBAn2HwWemJ2vKboJGnpEI9DMTnZGoGdjG--tWAWnBN4wq2xbKwAbzzu57vHy3XSew5SqtNk7cex-RnenNwq0qbmdX-znX8XZXDLVYyTS3eIvTI5U3y47OS2xdXEpSQmBNX2Jg__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
+          />
+        </div>
+      </div>
+      <div class="d-flex" style="gap: 40px">
+        <div class="buttonBlock" style="background-color: #8e509c">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="64"
+            height="64"
+            viewBox="0 0 64 64"
+            fill="none"
+          >
+            <path
+              d="M24 32H32M32 32H40M32 32V24M32 32V40"
+              stroke="white"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M56 9.6V54.4C56 55.2837 55.2837 56 54.4 56H9.6C8.71635 56 8 55.2837 8 54.4V9.6C8 8.71635 8.71635 8 9.6 8H54.4C55.2837 8 56 8.71635 56 9.6Z"
+              stroke="white"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <p style="color: #fff">New Meeting</p>
+        </div>
+        <div class="buttonBlock" id="join-meeting"> 
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="vuesax/linear/video">
+              <g id="video">
+                <path
+                  id="Vector"
+                  d="M33.413 54.4533H16.5597C8.13301 54.4533 5.33301 48.8533 5.33301 43.2266V20.7733C5.33301 12.3466 8.13301 9.54663 16.5597 9.54663H33.413C41.8397 9.54663 44.6397 12.3466 44.6397 20.7733V43.2266C44.6397 51.6533 41.813 54.4533 33.413 54.4533Z"
+                  stroke="#8E509C"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  id="Vector_2"
+                  d="M52.053 45.6L44.6396 40.4V23.5733L52.053 18.3733C55.6797 15.84 58.6663 17.3867 58.6663 21.84V42.16C58.6663 46.6133 55.6797 48.16 52.053 45.6Z"
+                  stroke="#8E509C"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  id="Vector_3"
+                  d="M30.667 29.3334C32.8761 29.3334 34.667 27.5425 34.667 25.3334C34.667 23.1242 32.8761 21.3334 30.667 21.3334C28.4579 21.3334 26.667 23.1242 26.667 25.3334C26.667 27.5425 28.4579 29.3334 30.667 29.3334Z"
+                  stroke="#8E509C"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </g>
+            </g>
+          </svg>
 
-<!-- In-meeting screen -->
-
-<div id="flow-meeting" class="flow" style="position:absolute;left:0;top:0;bottom:55px;right:0">
-  <div id="live-transcription-modal" class="modal">
-    <div id="live-transcription-modal-content" class="modal-content">
-      <div class="modal-content-header">
-        <span></span>
-        <span class="modal-title text-muted">Live Transcription Configuration</span>
-        <span id="button-live-transcription-modal-close" class="close">&times;</span>
-      </div>
-      <div id="engine-option-group active">
-        <input type="radio" id="engine-transcribe" name="transcription-engine" value="engine-transcribe" checked=true>
-        <label for="engine-transcribe">Amazon Transcribe</label><br>
-        <input type="radio" id="engine-transcribe-medical" name="transcription-engine"
-               value="engine-transcribe-medical">
-        <label for="engine-transcribe-medical">Amazon Transcribe Medical</label><br>
-      </div>
-      <div id="engine-language-group">
-        <div id="engine-transcribe-language">
-          <label for="transcribe-language" class="visually-hidden">Language</label>
-          <select id="transcribe-language" class="form-select" style="width:100%">
-            <option value="en-US" selected>US English (en-US)</option>
-            <option value="en-GB">British English (en-GB)</option>
-            <option value="en-AU">Australian English (en-AU)</option>
-            <option value="es-US">US Spanish (es-US)</option>
-            <option value="fr-CA">Canadian French (fr-CA)</option>
-            <option value="fr-FR">French (fr-FR)</option>
-            <option value="it-IT">Italian (it-IT)</option>
-            <option value="de-DE">German (de-DE)</option>
-            <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
-            <option value="ja-JP">Japanese (ja-JP)</option>
-            <option value="ko-KR">Korean (ko-KR)</option>
-            <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
-            <option value="hi-IN">Hindi, Indian (hi-IN)</option>
-            <option value="th-TH">Thai (th-TH)</option>
-          </select>
+          <p>Join Meeting</p>
         </div>
-        <div id="engine-transcribe-medical-language" class="hidden">
-          <label for="transcribe-medical-language" class="visually-hidden">Language</label>
-          <select id="transcribe-medical-language" class="form-select" style="width:100%">
-            <option value="en-US" selected>US English (en-US)</option>
-          </select>
+        <div class="buttonBlock">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="61"
+            height="61"
+            viewBox="0 0 61 61"
+            fill="none"
+          >
+            <path
+              d="M13.8882 50.3105L3.61523 11.9712L41.7334 17.167L41.0145 17.3596C39.6167 17.7341 38.3416 18.247 37.1892 18.8982C36.0368 19.5494 34.9564 20.3098 33.948 21.1792L10.3338 17.8757L12.5811 26.2624L27.9214 26.0044L14.5072 33.451L16.7545 41.8378L28.2172 32.8594C28.1439 33.8635 28.1476 34.8359 28.2284 35.7765C28.3092 36.717 28.4782 37.6674 28.7355 38.6275L28.7676 38.7473L13.8882 50.3105ZM48.7193 46.1141C45.4045 47.0023 42.2655 46.5909 39.3021 44.88C36.3388 43.1691 34.4141 40.6569 33.5279 37.3433C32.6397 34.0286 33.0511 30.8895 34.7619 27.9262C36.4728 24.9629 38.9851 23.0381 42.2986 22.152C45.6134 21.2638 48.7524 21.6751 51.7158 23.386C54.6791 25.0969 56.6038 27.6091 57.49 30.9227C58.3782 34.2375 57.9668 37.3765 56.256 40.3398C54.5451 43.3032 52.0328 45.2279 48.7193 46.1141ZM50.9715 38.7047L52.1994 36.5779L46.5786 33.3328L44.7809 26.6234L42.3847 27.2654L44.4393 34.9333L50.9715 38.7047Z"
+              fill="#8E509C"
+            />
+          </svg>
+          <p>Schedule</p>
         </div>
       </div>
-      <div id="transcription-region-group">
-        <div id="engine-transcribe-region">
-          <label for="transcribe-region" class="visually-hidden">Region</label>
-          <select id="transcribe-region" class="form-select" style="width:100%">
-            <option value="auto" selected>Auto</option>
-            <option value="">Not specified</option>
-            <option value="ap-northeast-1">Japan (Tokyo)</option>
-            <option value="ap-northeast-2">South Korea (Seoul)</option>
-            <option value="ap-southeast-2">Australia (Sydney)</option>
-            <option value="ca-central-1">Canada</option>
-            <option value="eu-central-1">Germany (Frankfurt)</option>
-            <option value="eu-west-1">Ireland</option>
-            <option value="eu-west-2">United Kingdom (London)</option>
-            <option value="sa-east-1">Brazil (São Paulo)</option>
-            <option value="us-east-1">United States (N. Virginia)</option>
-            <option value="us-east-2">United States (Ohio)</option>
-            <option value="us-west-2">United States (Oregon)</option>
-            <option value="us-gov-west-1">GovCloud (US-West)</option>
-          </select>
-        </div>
-        <div id="engine-transcribe-medical-region" class="hidden">
-          <label for="transcribe-medical-region" class="visually-hidden">Language</label>
-          <select id="transcribe-medical-region" class="form-select" style="width:100%">
-            <option value="auto" selected>Auto</option>
-            <option value="">Not specified</option>
-            <option value="ap-southeast-2">Australia (Sydney)</option>
-            <option value="ca-central-1">Canada</option>
-            <option value="eu-west-1">Ireland</option>
-            <option value="us-east-1">United States (N. Virginia)</option>
-            <option value="us-east-2">United States (Ohio)</option>
-            <option value="us-west-2">United States (Oregon)</option>
-          </select>
-        </div>
-      </div>
-      <div id="engine-transcribe-language-identification">
-        <div id="engine-transcribe-identify-language" class="form-check" style="text-align: left;">
-          <input type="checkbox" id="identify-language-checkbox" class="form-check-input">
-          <label for="identify-language-checkbox" class="form-check-label"
-                 title="Automatically identify the language spoken in a media file without you having to specify a language code">Enable
-            Automatic Language Identification</label>
-        </div>
-        <div id="language-options" class="hidden">
-          <label for="language-options" class="visually-hidden">Language Options</label>
-          <p
-                  title="For better accuracy of automatic language identification, select at least 2 languages, one from each group.">
-            <small>Select a minimum of 2 language options</small>
+      <h6 class="mt-4 mb-4">Quiz Dashboard</h6>
+      <div class="quizBlock">
+        <div class="d-flex justify-content-between">
+          <a class="heading">Science: Chapter 1 - Photosynthesis</a>
+          <p class="link">
+            Download detailed summary
+            <span
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M20.25 10.5V19.5C20.25 19.8978 20.092 20.2793 19.8107 20.5606C19.5294 20.8419 19.1478 21 18.75 21H5.25C4.85218 21 4.47064 20.8419 4.18934 20.5606C3.90804 20.2793 3.75 19.8978 3.75 19.5V10.5C3.75 10.1022 3.90804 9.72062 4.18934 9.43932C4.47064 9.15802 4.85218 8.99998 5.25 8.99998H7.5C7.69891 8.99998 7.88968 9.079 8.03033 9.21965C8.17098 9.3603 8.25 9.55107 8.25 9.74998C8.25 9.94889 8.17098 10.1397 8.03033 10.2803C7.88968 10.421 7.69891 10.5 7.5 10.5H5.25V19.5H18.75V10.5H16.5C16.3011 10.5 16.1103 10.421 15.9697 10.2803C15.829 10.1397 15.75 9.94889 15.75 9.74998C15.75 9.55107 15.829 9.3603 15.9697 9.21965C16.1103 9.079 16.3011 8.99998 16.5 8.99998H18.75C19.1478 8.99998 19.5294 9.15802 19.8107 9.43932C20.092 9.72062 20.25 10.1022 20.25 10.5ZM8.78063 6.53061L11.25 4.06029V12.75C11.25 12.9489 11.329 13.1397 11.4697 13.2803C11.6103 13.421 11.8011 13.5 12 13.5C12.1989 13.5 12.3897 13.421 12.5303 13.2803C12.671 13.1397 12.75 12.9489 12.75 12.75V4.06029L15.2194 6.53061C15.3601 6.67134 15.551 6.7504 15.75 6.7504C15.949 6.7504 16.1399 6.67134 16.2806 6.53061C16.4214 6.38987 16.5004 6.199 16.5004 5.99998C16.5004 5.80096 16.4214 5.61009 16.2806 5.46935L12.5306 1.71935C12.461 1.64962 12.3783 1.5943 12.2872 1.55656C12.1962 1.51882 12.0986 1.49939 12 1.49939C11.9014 1.49939 11.8038 1.51882 11.7128 1.55656C11.6217 1.5943 11.539 1.64962 11.4694 1.71935L7.71937 5.46935C7.57864 5.61009 7.49958 5.80096 7.49958 5.99998C7.49958 6.199 7.57864 6.38987 7.71938 6.5306C7.86011 6.67133 8.05098 6.7504 8.25 6.7504C8.44902 6.7504 8.63989 6.67134 8.78063 6.53061Z"
+                  fill="#3F4149"
+                />
+              </svg>
+            </span>
           </p>
-          <select name="language-options" id="language-options" multiple="multiple" class="form-select"
-                  style="width:100%">
-            <optgroup id="group1" label="English">
-              <option value="en-US">US English (en-US)</option>
+        </div>
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-12">
+            <div class="sub-header">Class Average: <span>3.75</span></div>
+            <div class="listingBlock">
+              <h5>Most Difficult Question:</h5>
+              <div class="lists">
+                <p>At night, plants breathe in ______________</p>
+              </div>
+            </div>
+            <div class="listingBlock">
+              <h5>Top Performer:</h5>
+              <div class="lists">
+                <p>Maria <span>5/5</span></p>
+                <p class="mt-3">Drew <span>(5/5)</span></p>
+              </div>
+            </div>
+            <div class="listingBlock">
+              <h5>Needs Attention:</h5>
+              <div class="lists">
+                <p>Somya <span>(2/5)</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-12">
+            <div class="listingBlock">
+              <div class="sub-header">Completed (<span>6</span>)</div>
+              <div class="listingBlock">
+                <div class="lists">
+                  <div class="d-flex justify-content-between mb-3">
+                    <p>Somya <span>(2/5)</span></p>
+                    <a>(View Score)</a>
+                  </div>
+                  <div class="d-flex justify-content-between mb-3">
+                    <p>Somya <span>(2/5)</span></p>
+                    <a>(View Score)</a>
+                  </div>
+                  <div class="d-flex justify-content-between mb-3">
+                    <p>Somya <span>(2/5)</span></p>
+                    <a>(View Score)</a>
+                  </div>
+                  <div class="d-flex justify-content-between mb-3">
+                    <p>Somya <span>(2/5)</span></p>
+                    <a>(View Score)</a>
+                  </div>
+                  <div class="d-flex justify-content-between mb-3">
+                    <p>Somya <span>(2/5)</span></p>
+                    <a>(View Score)</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="listingBlock">
+              <div class="sub-header">Did not complete (<span>2</span>)</div>
+              <div class="listingBlock">
+                <div class="lists">
+                  <div class="d-flex justify-content-between">
+                    <p>Maria<span>(2/5)</span></p>
+                    <a>(View Score)</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="quizBlock mt-4">
+        <h1 class="heading" style="text-decoration: underline">
+          View Previous Quizzes
+        </h1>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of joining page -->
+
+
+  <div id="flow-fatal" class="flow">
+    <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
+      <h1>Fatal error</h1>
+      <p>An error was thrown that should not occur in ordinary use. This should be considered a fatal error for testing
+        and canary purposes.</p>
+      <p>This error will ordinarily be muffled, but you should consider removing this code if you are building an app
+        based on this demo.</p>
+      <code id="stack"></code>
+    </div>
+  </div>
+
+  <!-- Initial meeting authentication screen with meeting and name inputs -->
+  <div id="main-page"  class="main-page" style="display: none;">
+    <div id="flow-authenticate" class="flow text-center p-2">
+      <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
+      <div class="container">
+        <form id="form-authenticate">
+          <h1 class="h3 mb-3 fw-normal">Join a meeting</h1>
+          <div class="form-floating row mt-3">
+            <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required
+              autofocus>
+            <label for="inputMeeting" style="text-align: left;">Meeting Title or ID</label>
+          </div>
+          <div class="form-floating row mt-3">
+            <input type="name" id="inputName" class="form-control" placeholder="Your Name" required>
+            <label for="inputName" style="text-align: left;">Your Name</label>
+          </div>
+          <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
+            <select id="inputRegion" class="form-select" style="width:100%">
+              <option value="us-east-1" selected>United States (N. Virginia)</option>
+              <option value="ap-northeast-1">Japan (Tokyo)</option>
+              <option value="ap-southeast-1">Singapore</option>
+              <option value="af-south-1">South Africa (Cape Town)</option>
+              <option value="eu-south-1">Italy (Milan)</option>
+              <option value="ap-south-1">India (Mumbai)</option>
+              <option value="ap-northeast-2">South Korea (Seoul)</option>
+              <option value="ap-southeast-2">Australia (Sydney)</option>
+              <option value="ca-central-1">Canada</option>
+              <option value="eu-central-1">Germany (Frankfurt)</option>
+              <option value="eu-north-1">Sweden (Stockholm)</option>
+              <option value="eu-west-1">Ireland</option>
+              <option value="eu-west-2">United Kingdom (London)</option>
+              <option value="eu-west-3">France (Paris)</option>
+              <option value="sa-east-1">Brazil (São Paulo)</option>
+              <option value="us-east-2">United States (Ohio)</option>
+              <option value="us-west-1">United States (N. California)</option>
+              <option value="us-west-2">United States (Oregon)</option>
+              <option value="us-gov-west-1">GovCloud (US-West)</option>
+              <option value="us-gov-east-1">GovCloud (US-East)</option>
+            </select>
+            <label for="inputRegion" style="text-align: left;"> Media Region</label>
+          </div>
+          <div class="row mt-3">
+            <button type="button" class="btn btn-outline-secondary h-50 d-sm-block" data-bs-toggle="modal"
+              id="additional-options-button" data-bs-target="#additional-options-modal">
+              Additional Options
+            </button>
+          </div>
+          <div class="row mt-3">
+            <div class="btn-group p-0" role="group">
+              <button id="authenticate" class="btn btn-lg btn-secondary w-100" type="submit">Continue</button>
+              <button id="quick-join" class="btn btn-lg btn-success" title="Skip Device Selection">
+                <%= require('../../node_modules/open-iconic/svg/bolt.svg') %>
+              </button>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <p>Anyone with access to the meeting link can join.</p>
+          </div>
+          <div class="row mt-3">
+            <a id="to-sip-flow" href="#">Joining via SIP? Click here.</a>
+          </div>
+          <div class="row mt-3">
+            <div id="progress-authenticate" class="w-100 progress progress-hidden">
+              <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- publish Quiz -->
+
+  <div class="modal fade" id="publish-quiz-modal" tabindex="-1" aria-labelledby="publish-quiz-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="publish-quiz-modal-label">Publish Quiz</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+        <div class="modal-body">
+          You are about to publish the Quiz to your classroom. Do you confirm?
+        </div>
+        <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
+            aria-label="Close">Cancel</button>
+          <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;"
+            id="publish-quiz-button">Publish the Quiz</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional options modal -->
+
+  <div class="modal fade" id="additional-options-modal" tabindex="-1" aria-labelledby="additional-options-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="additional-options-modal-label">Additional Options</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+            <div class="form-floating mb-3" style="text-align: left;">
+              <select name="logLevel" class="form-select" id="logLevelSelect">
+                <option value="debug">Debug</option>
+                <option value="info">Info</option>
+                <option value="warn">Warn</option>
+                <option value="error">Error</option>
+                <option value="off">Off</option>
+              </select>
+              <label for="logLevel" style="text-align: left;">Log Level:</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select name="videoCodec" class="form-select" id="videoCodecSelect">
+                <option value="default">Meeting Default</option>
+                <option value="vp8">VP8</option>
+                <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
+              </select>
+              <label for="videoCodec" style="text-align: left;">Preferred Video Send Codec:</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
+                <option value="SendReceive">SendReceive</option>
+                <option value="Send">Send</option>
+                <option value="Receive">Receive</option>
+                <option value="None">None</option>
+              </select>
+              <label for="audioCapability" style="text-align: left;">Audio capability:</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select name="videoCapability" class="form-select" id="videoCapabilitySelect">
+                <option value="SendReceive">SendReceive</option>
+                <option value="Send">Send</option>
+                <option value="Receive">Receive</option>
+                <option value="None">None</option>
+              </select>
+              <label for="videoCapability" style="text-align: left;">Video capability:</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select name="contentCapability" class="form-select" id="contentCapabilitySelect">
+                <option value="SendReceive">SendReceive</option>
+                <option value="Send">Send</option>
+                <option value="Receive">Receive</option>
+                <option value="None">None</option>
+              </select>
+              <label for="contentCapability" style="text-align: left;">Content capability:</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="join-muted" class="form-check-input"></input>
+              <label for="join-muted-setting" class="form-check-label">Join Muted</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="webaudio" class="form-check-input">
+              <label for="webaudio" class="form-check-label">Use WebAudio</label>
+            </div>
+            <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
+              <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
+              <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
+                only)</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
+              <label for="fullband-speech-mono-quality" class="form-check-label">Set fullband speech (mono)
+                quality</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="fullband-music-mono-quality" class="form-check-input">
+              <label for="fullband-music-mono-quality" class="form-check-label">Set fullband music (mono)
+                quality</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="fullband-music-stereo-quality" class="form-check-input">
+              <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
+                quality</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="simulcast" class="form-check-input">
+              <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
+              <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
+                Policy</label>
+            </div>
+            <lable id="server-side-network-adaption-title" for="server-side-network-adaption"
+              style="display: none; padding-top:5px">Server Side Network Adaption</lable>
+            <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
+              <option value="default">Default</option>
+              <option value="none">None (Deprecated)</option>
+              <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
+              <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video
+                Quality Adaption</option>
+            </select>
+            <label id="pagination-title" for="pagination-page-size" style="display: none; padding-top:5px">Paginate
+              displayed video tiles</label>
+            <select id="pagination-page-size" class="form-select" style="width:100%; display: none;">
+              <option value="2">2</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25" selected>25</option>
+            </select>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" checked id="preconnect" class="form-check-input">
+              <label for="preconnect" class="form-check-label">Open signaling connection early</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="join-view-only" class="form-check-input">
+              <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="pause-last-frame" class="form-check-input">
+              <label for="pause-last-frame" class="form-check-label">Keep last video frame when paused</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="event-reporting" class="form-check-input">
+              <label for="event-reporting" class="form-check-label">Enable event reporting</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="replica-meeting-input" class="form-check-input">
+              <label for="replica-meeting-input" class="form-check-label">Create meeting as replica</label>
+              <input type="name" id="primary-meeting-external-id" class="form-control"
+                placeholder="Primary Meeting Title or ID">
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="delete-attendee" class="form-check-input">
+              <label for="delete-attendee" class="form-check-label">Delete own attendee to leave</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="disable-content-keyframe" class="form-check-input">
+              <label for="disable-content-keyframe" class="form-check-label">Disable periodic keyframe request to
+                content senders</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="allow-attendee-capabilities" class="form-check-input">
+              <label for="allow-attendee-capabilities" class="form-check-label">Allow updating of attendee capabilities
+                after start</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="die" class="form-check-input" checked=true>
+              <label for="die" class="form-check-label">Abort on fatal errors</label>
+            </div>
+          </fieldset>
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+          id="additional-options-save-button">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authenticate for SIP with meeting and voice connector ID -->
+
+  <div id="flow-sip-authenticate" class="flow text-center">
+    <div class="container">
+      <form id="form-sip-authenticate">
+        <h1 class="h3 mb-3 font-weight-normal">Join a meeting via SIP</h1>
+        <div class="row mt-3">
+          <label for="sip-inputMeeting" class="visually-hidden">Meeting Title</label>
+          <input type="name" id="sip-inputMeeting" class="form-control" placeholder="Meeting Title" required autofocus>
+        </div>
+        <div class="row mt-3">
+          <label for="voiceConnectorId" class="visually-hidden">Voice Connector ID</label>
+          <input type="name" id="voiceConnectorId" class="form-control" placeholder="Voice Connector ID" required>
+        </div>
+        <div class="row mt-3">
+          <button id="button-sip-authenticate" class="btn btn-lg btn-primary" type="submit">Continue</button>
+        </div>
+        <div class="row mt-3">
+          <p>You will need a SIP client in order to join the meeting.</p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Failure card if meeting is invalid -->
+
+  <div id="flow-failed-meeting" class="flow">
+    <div class="container">
+      <form id="form-failed-meeting">
+        <div class="card border-warning mb-3" style="max-width: 20rem;">
+          <div id="failed-meeting" class="card-header"></div>
+          <div class="card-body">
+            <h4 class="card-title">Unable to find meeting</h4>
+            <p class="card-text">There was an issue finding that meeting. The meeting may have already ended, or your
+              authorization may have expired.</p>
+            <small id="failed-meeting-error" class="text-muted"></small>
+          </div>
+        </div>
+        <div class="d-grid gap-2">
+          <button class="btn btn-lg btn-outline-warning" type="submit">OK</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Prompt for permission to get access to device labels -->
+
+  <div id="flow-need-permission" class="flow">
+    <div class="container">
+      <form id="form-need-permission">
+        <div class="card border-info mb-3" style="max-width: 20rem;">
+          <div class="card-header">Permissions check</div>
+          <div class="card-body">
+            <h4 class="card-title">Unable to get device labels</h4>
+            <p class="card-text">In order to select media devices, we need to do a quick permissions check of your mic
+              and camera. When the pop-up appears, choose <b>Allow</b>.</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Display SIP URI -->
+
+  <div id="flow-sip-uri" class="flow">
+    <div class="container">
+      <form id="sip-uri-form">
+        <div class="card border-info mb-3" style="max-width: 20rem;">
+          <div class="card-header">SIP URI</div>
+          <div class="card-body">
+            <a id="copy-sip-uri" class="card-title" href="#">Copy</a>
+            <input id="sip-uri" class="card-text"></input>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Device management and preview screen -->
+<div class="main-page">
+  <div id="flow-devices" class="flow">
+    <div class="container">
+      <form id="form-devices">
+        <h1 class="h3 mb-3 font-weight-normal text-center">Select devices</h1>
+        <div class="row mt-3">
+          <div class="col-12 text-center d-sm-block video-preview">
+            <video id="video-preview" class="" style="border-radius:8px"></video>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <label for="audio-input block">Microphone</label>
+            <select id="audio-input" class="form-select" style="width:100%"></select>
+          </div>
+
+          <div class="text-center col-12 d-sm-block">
+            <label>Preview</label>
+            <div class="w-100 progress" style="margin-top:0.75rem">
+              <div id="audio-preview" class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
+                aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div id="voice-focus-setting" class="col-12 hidden">
+            <input autocomplete="off" type="checkbox" id="add-voice-focus"></input>
+            <label style="margin-left: 0.5em" for="voice-focus-setting block">Add Voice Focus</label>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <label for="video-input block">Camera</label>
+            <select id="video-input" class="form-select" style="width:100%"></select>
+          </div>
+
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <label for="video-input-quality block">Resolution</label>
+            <select id="video-input-quality" class="form-select" style="width:100%">
+              <option value="360p">360p (nHD) @ 15 fps (600 Kbps max)</option>
+              <option value="540p" selected>540p (qHD) @ 15 fps (1.4 Mbps max)</option>
+              <option value="720p">720p (HD) @ 15 fps (1.5 Mbps max)</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mt-3" id="video-input-filter-container">
+          <div class="col-12">
+            <label for="video-input-filter block">Video Filter</label>
+            <select id="video-input-filter" class="form-select" style="width:100%">
+              <option value="None" selected>None</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <label for="audio-output block">Speaker</label>
+            <select id="audio-output" class="form-select" style="width:100%"></select>
+          </div>
+          <div class="col-12">
+            <button id="button-test-sound" class="btn btn-outline-secondary h-50 d-sm-block"
+              style="width:100%;margin-top:2rem">Test Speaker</button>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-lg">
+            <button id="joinButton" class="btn btn-lg btn-primary" style="width:100%" type="submit">Join</button>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-lg">
+            <p>Ready to join meeting <b><span id="info-meeting"></span></b> as <b><span id="info-name"></span></b>.</p>
+          </div>
+        </div>
+      </form>
+      <div id="progress-join" class="w-100 progress progress-hidden">
+        <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+          aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+
+  <!-- In-meeting screen -->
+
+  <div id="flow-meeting" class="flow" style="position:absolute;left:0;top:0;bottom:55px;right:0">
+    <div id="live-transcription-modal" class="modal">
+      <div id="live-transcription-modal-content" class="modal-content">
+        <div class="modal-content-header">
+          <span></span>
+          <span class="modal-title text-muted">Live Transcription Configuration</span>
+          <span id="button-live-transcription-modal-close" class="close">&times;</span>
+        </div>
+        <div id="engine-option-group active">
+          <input type="radio" id="engine-transcribe" name="transcription-engine" value="engine-transcribe" checked=true>
+          <label for="engine-transcribe">Amazon Transcribe</label><br>
+          <input type="radio" id="engine-transcribe-medical" name="transcription-engine"
+            value="engine-transcribe-medical">
+          <label for="engine-transcribe-medical">Amazon Transcribe Medical</label><br>
+        </div>
+        <div id="engine-language-group">
+          <div id="engine-transcribe-language">
+            <label for="transcribe-language" class="visually-hidden">Language</label>
+            <select id="transcribe-language" class="form-select" style="width:100%">
+              <option value="en-US" selected>US English (en-US)</option>
               <option value="en-GB">British English (en-GB)</option>
               <option value="en-AU">Australian English (en-AU)</option>
-            </optgroup>
-            <optgroup id="group2" label="Spanish">
               <option value="es-US">US Spanish (es-US)</option>
-            </optgroup>
-            <optgroup id="group3" label="French">
-              <option value="fr-FR">French (fr-FR)</option>
               <option value="fr-CA">Canadian French (fr-CA)</option>
-            </optgroup>
-            <optgroup id="group4" label="German">
-              <option value="de-DE">German (de-DE)</option>
-            </optgroup>
-            <optgroup id="group5" label="Chinese">
-              <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
-            </optgroup>
-            <optgroup id="group6" label="Italian">
+              <option value="fr-FR">French (fr-FR)</option>
               <option value="it-IT">Italian (it-IT)</option>
-            </optgroup>
-            <optgroup id="group7" label="Portuguese">
+              <option value="de-DE">German (de-DE)</option>
               <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
-            </optgroup>
-            <optgroup id="group8" label="Japanese">
               <option value="ja-JP">Japanese (ja-JP)</option>
-            </optgroup>
-            <optgroup id="group9" label="Korean">
               <option value="ko-KR">Korean (ko-KR)</option>
-            </optgroup>
-            <optgroup id="group10" label="Hindi">
+              <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
               <option value="hi-IN">Hindi, Indian (hi-IN)</option>
-            </optgroup>
-            <optgroup id="group11" label="Thai">
               <option value="th-TH">Thai (th-TH)</option>
-            </optgroup>
-          </select>
-          <div id="language-options-selected-options-container"><i><small>Selected: <span id="language-options-selected-options">None</span></small></i></div>
-          <div id="language-options-error-message"></div>
+            </select>
+          </div>
+          <div id="engine-transcribe-medical-language" class="hidden">
+            <label for="transcribe-medical-language" class="visually-hidden">Language</label>
+            <select id="transcribe-medical-language" class="form-select" style="width:100%">
+              <option value="en-US" selected>US English (en-US)</option>
+            </select>
+          </div>
         </div>
-        <div id="preferred-language" class="hidden" style="margin-top: 10px">
-          <label for="preferred-language-selection" class="visually-hidden">Preferred Language</label>
-          <p title="Help Amazon Transcribe identify the language in the first few seconds of your stream.">
-            <small>Specify one preferred language</small>
-          </p>
-          <select id="preferred-language-selection" class="form-select" style="width:100%">
-            <option value="" selected> -- Optional -- </option>
-          </select>
+        <div id="transcription-region-group">
+          <div id="engine-transcribe-region">
+            <label for="transcribe-region" class="visually-hidden">Region</label>
+            <select id="transcribe-region" class="form-select" style="width:100%">
+              <option value="auto" selected>Auto</option>
+              <option value="">Not specified</option>
+              <option value="ap-northeast-1">Japan (Tokyo)</option>
+              <option value="ap-northeast-2">South Korea (Seoul)</option>
+              <option value="ap-southeast-2">Australia (Sydney)</option>
+              <option value="ca-central-1">Canada</option>
+              <option value="eu-central-1">Germany (Frankfurt)</option>
+              <option value="eu-west-1">Ireland</option>
+              <option value="eu-west-2">United Kingdom (London)</option>
+              <option value="sa-east-1">Brazil (São Paulo)</option>
+              <option value="us-east-1">United States (N. Virginia)</option>
+              <option value="us-east-2">United States (Ohio)</option>
+              <option value="us-west-2">United States (Oregon)</option>
+              <option value="us-gov-west-1">GovCloud (US-West)</option>
+            </select>
+          </div>
+          <div id="engine-transcribe-medical-region" class="hidden">
+            <label for="transcribe-medical-region" class="visually-hidden">Language</label>
+            <select id="transcribe-medical-region" class="form-select" style="width:100%">
+              <option value="auto" selected>Auto</option>
+              <option value="">Not specified</option>
+              <option value="ap-southeast-2">Australia (Sydney)</option>
+              <option value="ca-central-1">Canada</option>
+              <option value="eu-west-1">Ireland</option>
+              <option value="us-east-1">United States (N. Virginia)</option>
+              <option value="us-east-2">United States (Ohio)</option>
+              <option value="us-west-2">United States (Oregon)</option>
+            </select>
+          </div>
+        </div>
+        <div id="engine-transcribe-language-identification">
+          <div id="engine-transcribe-identify-language" class="form-check" style="text-align: left;">
+            <input type="checkbox" id="identify-language-checkbox" class="form-check-input">
+            <label for="identify-language-checkbox" class="form-check-label"
+              title="Automatically identify the language spoken in a media file without you having to specify a language code">Enable
+              Automatic Language Identification</label>
+          </div>
+          <div id="language-options" class="hidden">
+            <label for="language-options" class="visually-hidden">Language Options</label>
+            <p
+              title="For better accuracy of automatic language identification, select at least 2 languages, one from each group.">
+              <small>Select a minimum of 2 language options</small>
+            </p>
+            <select name="language-options" id="language-options" multiple="multiple" class="form-select"
+              style="width:100%">
+              <optgroup id="group1" label="English">
+                <option value="en-US">US English (en-US)</option>
+                <option value="en-GB">British English (en-GB)</option>
+                <option value="en-AU">Australian English (en-AU)</option>
+              </optgroup>
+              <optgroup id="group2" label="Spanish">
+                <option value="es-US">US Spanish (es-US)</option>
+              </optgroup>
+              <optgroup id="group3" label="French">
+                <option value="fr-FR">French (fr-FR)</option>
+                <option value="fr-CA">Canadian French (fr-CA)</option>
+              </optgroup>
+              <optgroup id="group4" label="German">
+                <option value="de-DE">German (de-DE)</option>
+              </optgroup>
+              <optgroup id="group5" label="Chinese">
+                <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
+              </optgroup>
+              <optgroup id="group6" label="Italian">
+                <option value="it-IT">Italian (it-IT)</option>
+              </optgroup>
+              <optgroup id="group7" label="Portuguese">
+                <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
+              </optgroup>
+              <optgroup id="group8" label="Japanese">
+                <option value="ja-JP">Japanese (ja-JP)</option>
+              </optgroup>
+              <optgroup id="group9" label="Korean">
+                <option value="ko-KR">Korean (ko-KR)</option>
+              </optgroup>
+              <optgroup id="group10" label="Hindi">
+                <option value="hi-IN">Hindi, Indian (hi-IN)</option>
+              </optgroup>
+              <optgroup id="group11" label="Thai">
+                <option value="th-TH">Thai (th-TH)</option>
+              </optgroup>
+            </select>
+            <div id="language-options-selected-options-container"><i><small>Selected: <span
+                    id="language-options-selected-options">None</span></small></i></div>
+            <div id="language-options-error-message"></div>
+          </div>
+          <div id="preferred-language" class="hidden" style="margin-top: 10px">
+            <label for="preferred-language-selection" class="visually-hidden">Preferred Language</label>
+            <p title="Help Amazon Transcribe identify the language in the first few seconds of your stream.">
+              <small>Specify one preferred language</small>
+            </p>
+            <select id="preferred-language-selection" class="form-select" style="width:100%">
+              <option value="" selected> -- Optional -- </option>
+            </select>
 
+          </div>
+          <div id="vocabulary-names" class="hidden" style="margin-top: 10px">
+            <small>Vocabulary Names</small>
+            <input type="text" id="vocabulary-names-input-text" style="text-align: left; width:100%">
+          </div>
+          <div id="vocabulary-filter-names" class="hidden" style="margin-top: 10px">
+            <small>Vocabulary Filter Names</small>
+            <input type="text" id="vocabulary-filter-names-input-text" style="text-align: left; width:100%">
+          </div>
         </div>
-        <div id="vocabulary-names" class="hidden" style="margin-top: 10px">
-          <small>Vocabulary Names</small>
-          <input type="text" id="vocabulary-names-input-text" style="text-align: left; width:100%">
+        <div id="engine-transcribe-custom-language-model">
+          <div id="engine-transcribe-language-model" class="form-check" style="text-align: left;">
+            <input type="checkbox" id="custom-language-model-checkbox" class="form-check-input">
+            <label for="custom-language-model-checkbox" class="form-check-label">Enable Custom Language Model</label>
+          </div>
+          <div id="language-model" class="hidden">
+            <input type="text" id="language-model-input-text" style="text-align: left; width:100%">
+          </div>
         </div>
-        <div id="vocabulary-filter-names" class="hidden" style="margin-top: 10px">
-          <small>Vocabulary Filter Names</small>
-          <input type="text" id="vocabulary-filter-names-input-text" style="text-align: left; width:100%">
+        <div id="engine-transcribe-stability">
+          <div id="engine-transcribe-partial-stabilization" class="form-check" style="text-align: left;">
+            <input type="checkbox" id="partial-stabilization-checkbox" class="form-check-input">
+            <label for="partial-stabilization-checkbox" class="form-check-label">Enable Partial Results
+              Stabilization</label>
+          </div>
+          <div id="transcribe-partial-stability" class="hidden">
+            <label for="partial-stability" class="visually-hidden">Transcribe Entities</label>
+            <select id="partial-stability" class="form-select" style="width:100%">
+              <option value="" selected> -- DEFAULT (HIGH) -- </option>
+              <option value="low">LOW</option>
+              <option value="medium">MEDIUM</option>
+              <option value="high">HIGH</option>
+            </select>
+          </div>
         </div>
-      </div>
-      <div id="engine-transcribe-custom-language-model">
-        <div id="engine-transcribe-language-model" class="form-check" style="text-align: left;">
-          <input type="checkbox" id="custom-language-model-checkbox" class="form-check-input">
-          <label for="custom-language-model-checkbox" class="form-check-label">Enable Custom Language Model</label>
+        <div id="engine-transcribe-content-identification" class="form-check" style="text-align: left;">
+          <input type="checkbox" id="content-identification-checkbox" class="form-check-input">
+          <label for="content-identification-checkbox" class="form-check-label">Enable PII Content
+            Identification</label>
         </div>
-        <div id="language-model" class="hidden">
-          <input type="text" id="language-model-input-text" style="text-align: left; width:100%">
+        <div id="engine-transcribe-medical-content-identification" class="form-check hidden" style="text-align: left;">
+          <input type="checkbox" id="medical-content-identification-checkbox" class="form-check-input">
+          <label for="medical-content-identification-checkbox" class="form-check-label">Enable PHI Content
+            Identification</label>
         </div>
-      </div>
-      <div id="engine-transcribe-stability">
-        <div id="engine-transcribe-partial-stabilization" class="form-check" style="text-align: left;">
-          <input type="checkbox" id="partial-stabilization-checkbox" class="form-check-input">
-          <label for="partial-stabilization-checkbox" class="form-check-label">Enable Partial Results
-            Stabilization</label>
+        <div id="engine-transcribe-redaction" class="form-check" style="text-align: left;">
+          <input type="checkbox" id="content-redaction-checkbox" class="form-check-input">
+          <label for="content-redaction-checkbox" class="form-check-label">Enable PII Content Redaction</label>
         </div>
-        <div id="transcribe-partial-stability" class="hidden">
-          <label for="partial-stability" class="visually-hidden">Transcribe Entities</label>
-          <select id="partial-stability" class="form-select" style="width:100%">
-            <option value="" selected> -- DEFAULT (HIGH) -- </option>
-            <option value="low">LOW</option>
-            <option value="medium">MEDIUM</option>
-            <option value="high">HIGH</option>
+        <div id="transcribe-entity-types" class="hidden">
+          <label for="transcribe-entity" class="visually-hidden">Transcribe Entities</label>
+          <select id="transcribe-entity" class="form-select" style="width:100%" multiple>
+            <option selected value> -- DEFAULT (ALL) -- </option>
+            <option value="BANK_ROUTING">BANK ROUTING</option>
+            <option value="CREDIT_DEBIT_NUMBER">CREDIT/DEBIT NUMBER</option>
+            <option value="CREDIT_DEBIT_CVV">CREDIT/DEBIT CVV</option>
+            <option value="CREDIT_DEBIT_EXPIRY">CREDIT/DEBIT EXPIRY</option>
+            <option value="PIN">PIN</option>
+            <option value="EMAIL">EMAIL</option>
+            <option value="ADDRESS">ADDRESS</option>
+            <option value="NAME">NAME</option>
+            <option value="PHONE">PHONE</option>
+            <option value="SSN">SSN</option>
           </select>
         </div>
+        <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
+          data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+          <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
+        </button>
       </div>
-      <div id="engine-transcribe-content-identification" class="form-check" style="text-align: left;">
-        <input type="checkbox" id="content-identification-checkbox" class="form-check-input">
-        <label for="content-identification-checkbox" class="form-check-label">Enable PII Content
-          Identification</label>
-      </div>
-      <div id="engine-transcribe-medical-content-identification" class="form-check hidden" style="text-align: left;">
-        <input type="checkbox" id="medical-content-identification-checkbox" class="form-check-input">
-        <label for="medical-content-identification-checkbox" class="form-check-label">Enable PHI Content
-          Identification</label>
-      </div>
-      <div id="engine-transcribe-redaction" class="form-check" style="text-align: left;">
-        <input type="checkbox" id="content-redaction-checkbox" class="form-check-input">
-        <label for="content-redaction-checkbox" class="form-check-label">Enable PII Content Redaction</label>
-      </div>
-      <div id="transcribe-entity-types" class="hidden">
-        <label for="transcribe-entity" class="visually-hidden">Transcribe Entities</label>
-        <select id="transcribe-entity" class="form-select" style="width:100%" multiple>
-          <option selected value> -- DEFAULT (ALL) -- </option>
-          <option value="BANK_ROUTING">BANK ROUTING</option>
-          <option value="CREDIT_DEBIT_NUMBER">CREDIT/DEBIT NUMBER</option>
-          <option value="CREDIT_DEBIT_CVV">CREDIT/DEBIT CVV</option>
-          <option value="CREDIT_DEBIT_EXPIRY">CREDIT/DEBIT EXPIRY</option>
-          <option value="PIN">PIN</option>
-          <option value="EMAIL">EMAIL</option>
-          <option value="ADDRESS">ADDRESS</option>
-          <option value="NAME">NAME</option>
-          <option value="PHONE">PHONE</option>
-          <option value="SSN">SSN</option>
-        </select>
-      </div>
-      <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
-              data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-        <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
-      </button>
     </div>
-  </div>
 
-  <div class="p-2 d-none d-sm-block align-items-end" style="position:fixed;right:0;bottom:0;left:0;">
-    <div class="row align-items-end">
-      <div class="col">
-        <div id="chime-meeting-id" class="text-muted"></div>
-        <div id="desktop-attendee-id" class="text-muted"></div>
-      </div>
-      <div class="col">
-        <div class="btn-group" role="group" style="width: 100%;">
-          <button type="button" id="video-paginate-left" class="btn btn-secondary" style="display: none;">
-            <%= require('../../node_modules/open-iconic/svg/caret-left.svg') %>
-          </button>
-          <button type="button" id="video-paginate-right" class="btn btn-secondary" style="display: none;">
-            <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
-          </button>
-        </div>
-      </div>
-      <div class="col d-none d-lg-block">
-        <div id="video-uplink-bandwidth" class="text-muted text-end"></div>
-        <div id="video-downlink-bandwidth" class="text-muted text-end"></div>
-      </div>
-    </div>
-  </div>
-  <audio id="meeting-audio" style="display:none"></audio>
-  <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column">
-    <div class="row mb-3 mb-lg-0" style="flex: unset;">
-      <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left">
-        <div id="meeting-id" class="navbar-brand text-muted m-0 m-lg-2"></div>
-        <div id="mobile-chime-meeting-id" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
-        <div id="mobile-attendee-id" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
-        <div id="mobile-video-uplink-bandwidth" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
-        <div id="mobile-video-downlink-bandwidth" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;">
-        </div>
-      </div>
-      <div class="col-8 col-lg-6 order-2 order-lg-2 text-left text-lg-center">
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
-          <button id="button-microphone" type="button" class="btn btn-success" title="Toggle microphone">
-            <%= require('../../node_modules/open-iconic/svg/microphone.svg') %>
-          </button>
-          <button id="button-microphone-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                  aria-expanded="false" title="Select microphone"><span class="visually-hidden">Toggle Dropdown</span></button>
-          <div id="dropdown-menu-microphone" class="dropdown-menu dropdown-menu-end"
-               aria-labelledby="button-microphone-drop" x-placement="bottom-start"
-               style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a class="dropdown-item" href="#">Default microphone</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle camera">
-          <button id="button-camera" type="button" class="btn btn-success" title="Toggle camera">
-            <%= require('../../node_modules/open-iconic/svg/video.svg') %>
-          </button>
-          <button id="button-camera-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                  aria-expanded="false" title="Select camera"><span class="visually-hidden">Toggle Dropdown</span></button>
-          <div id="dropdown-menu-camera" class="dropdown-menu dropdown-menu-end">
-            <a class="dropdown-item" href="#">Default camera</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Apply filter">
-          <button id="button-video-filter" type="button" class="btn btn-success" title="Apply filter">
-            <%= require('../../node_modules/open-iconic/svg/contrast.svg') %>
-          </button>
-          <button id="button-video-filter-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
-          <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
-            <a class="dropdown-item" href="#">No filter</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle content share">
-          <button id="button-content-share" type="button" class="btn btn-success" title="Toggle content share">
-            <%= require('../../node_modules/open-iconic/svg/camera-slr.svg') %>
-          </button>
-          <button id="button-content-share-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                  title="Select content to share"></button>
-          <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-content-share-drop" x-placement="bottom-start"
-                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
-            data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content Sharing</a>
-            <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item" href="#">Pause Content Share</a>
-            <hr class="dropdown-divider">
-            <a id="dropdown-item-content-share-screen-capture" class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
-            <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option" href="#">Test Video</a>
-            <a id="dropdown-item-content-share-test-mono-audio-speech" class="dropdown-item content-share-source-option" href="#">Test Mono
-              Audio Speech</a>
-            <a id="dropdown-item-content-share-test-stereo-audio-speech" class="dropdown-item content-share-source-option" href="#">Test Stereo
-              Audio Speech</a>
-            <a id="dropdown-item-content-share-test-stereo-audio-tone" class="dropdown-item content-share-source-option" href="#">Test Stereo
-              Tone (L-500Hz R-1000Hz)</a>
-            <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option" for="content-share-item">Local file</label>
-            <input id="content-share-item" type="file">
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle speaker">
-          <button id="button-speaker" type="button" class="btn btn-success" title="Toggle speaker">
-            <%= require('../../node_modules/open-iconic/svg/volume-low.svg') %>
-          </button>
-          <button id="button-speaker-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
-          <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-speaker-drop" x-placement="bottom-start"
-                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a class="dropdown-item" href="#">Default speaker</a>
-          </div>
-        </div>
-        <button id="button-live-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Toggle live transcription display" data-bs-toggle="button" aria-pressed="false" autocomplete="off"
-                style="display: none">
-          <%= require('../../node_modules/open-iconic/svg/code.svg') %>
-        </button>
-        <button id="button-video-stats" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-          <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
-        </button>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Select destination">
-          <div class="btn-group" role="group">
-            <button id="button-video-recording-drop" type="button" class="btn btn-success dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
-              <%= require('../../node_modules/open-iconic/svg/cloud.svg') %>
-            </button>
-            <div id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
-                 aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
-              <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <svg class="svg">
-                  <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
-                </svg>
-                Capture Media to Device
+
+    <div style="display: none">
+      <div style="display: none" class="d-none" style="position:fixed;right:0;bottom:0;left:0;">
+        <div class="row align-items-end">
+
+          <div class="col">
+            <div class="btn-group" role="group" style="width: 100%;">
+              <button type="button" id="video-paginate-left" class="btn btn-secondary" style="display: none;">
+                <%= require('../../node_modules/open-iconic/svg/caret-left.svg') %>
               </button>
-              <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
-                Capture Media to S3
-              </button>
-              <button id="button-live-connector" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
-                Broadcast Media to IVS
+              <button type="button" id="video-paginate-right" class="btn btn-secondary" style="display: none;">
+                <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
               </button>
             </div>
           </div>
+          <div class="col d-none d-lg-block">
+            <div id="video-uplink-bandwidth" class="text-muted text-end"></div>
+            <div id="video-downlink-bandwidth" class="text-muted text-end"></div>
+          </div>
         </div>
-        <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
-                autocomplete="off">
-          <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
-        </button>
-      </div>
-      <div class="col-4 col-lg-3 order-3 order-lg-3 text-end text-lg-right">
-        <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4"
-                title="Leave meeting">
-          <%= require('../../node_modules/open-iconic/svg/account-logout.svg') %>
-        </button>
-        <button id="button-meeting-end" type="button" class="btn btn-outline-danger mx-1 mx-xl-2 my-2 px-4"
-                title="End meeting">
-          <%= require('../../node_modules/open-iconic/svg/power-standby.svg') %>
-        </button>
       </div>
     </div>
-    <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100" style="flex: unset;">
-      <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-5 col-md-4 col-lg-3 h-100">
-        <div id="roster-menu-container" class="justify-content-end py-2 gap-3" style="flex: 0 0 auto; border-color: transparent !important;">
-          <div id="roster-menu-instruction" class="d-flex align-items-center"></div>
-          <div class="btn-group">
-            <button class="btn btn-sm dropdown-toggle btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <%= require('../../node_modules/open-iconic/svg/ellipses.svg') %>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-start">
-              <li class="px-3 text-nowrap user-select-none">Attendee capabilities</li>
-              <li><hr class="dropdown-divider"></li>
-              <li id="roster-menu-none-seleced">
-                <div class="px-3 text-nowrap text-muted">Select one or more attendees to update.</div>
-              </li>
-              <li id="roster-menu-one-attendee" class="hidden">
-                <button
-                  class="dropdown-item"
-                  type="button"
-                  data-bs-target="#attendee-capabilities-modal"
-                  data-bs-toggle="modal"
-                  data-bs-type="one-attendee">
-                  <div class="me-2 d-inline-block" style="transform: scale(0.75);">
-                    <%= require('../../node_modules/open-iconic/svg/person.svg') %>
-                  </div>
-                  <span>Update the selected attendee</span>
-                </button>
-              </li>
-              <li id="roster-menu-all-attendees-except" class="hidden">
-                <button
-                  class="dropdown-item"
-                  type="button"
-                  data-bs-target="#attendee-capabilities-modal"
-                  data-bs-toggle="modal"
-                  data-bs-type="all-attendees-except">
-                  <div class="me-2 d-inline-block" style="transform: scale(0.75);">
-                    <%= require('../../node_modules/open-iconic/svg/people.svg') %>
-                  </div>
-                  <span id="roster-menu-all-attendees-except-label"></span>
-                </button>
-              </li>
-            </ul>
+
+    <audio id="meeting-audio" style="display:none"></audio>
+    <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column">
+
+      <div id="roster-tile-container" class="d-flex flex-sm-grow-1 overflow-hidden h-100 p-3" style="flex: unset; ">
+        <div id="roster-message-container" class="d-flex flex-column h-100" style="width: 20%;">
+          <div id="roster-menu-container" class="justify-content-end py-2 gap-3"
+            style="flex: 0 0 auto; border-color: transparent !important;">
+            <div id="roster-menu-instruction" class="d-flex align-items-center"></div>
+            <div class="btn-group">
+              <button class="btn btn-sm dropdown-toggle btn-outline-secondary" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <%= require('../../node_modules/open-iconic/svg/ellipses.svg') %>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-start">
+                <li class="px-3 text-nowrap user-select-none">Attendee capabilities</li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li id="roster-menu-none-seleced">
+                  <div class="px-3 text-nowrap text-muted">Select one or more attendees to update.</div>
+                </li>
+                <li id="roster-menu-one-attendee" class="hidden">
+                  <button class="dropdown-item" type="button" data-bs-target="#attendee-capabilities-modal"
+                    data-bs-toggle="modal" data-bs-type="one-attendee">
+                    <div class="me-2 d-inline-block" style="transform: scale(0.75);">
+                      <%= require('../../node_modules/open-iconic/svg/person.svg') %>
+                    </div>
+                    <span>Update the selected attendee</span>
+                  </button>
+                </li>
+                <li id="roster-menu-all-attendees-except" class="hidden">
+                  <button class="dropdown-item" type="button" data-bs-target="#attendee-capabilities-modal"
+                    data-bs-toggle="modal" data-bs-type="all-attendees-except">
+                    <div class="me-2 d-inline-block" style="transform: scale(0.75);">
+                      <%= require('../../node_modules/open-iconic/svg/people.svg') %>
+                    </div>
+                    <span id="roster-menu-all-attendees-except-label"></span>
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-        <div class="bs-component" style="flex: 1 1 auto; overflow-y: auto; height: 50%;">
-          <ul id="roster" class="list-group"></ul>
-        </div>
-        <div class="message d-flex flex-column pt-3" style="flex: 1 1 auto; overflow: hidden; height: 50%;">
-          <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
+          <div class="bs-component" style="flex: 1 1 auto; overflow-y: auto; height: 30%;">
+            <ul id="roster" class="list-group"></ul>
+          </div>
+          <div class="message d-flex flex-column pt-3" style="flex: 1 1 auto; overflow: hidden; height: 70%;">
+            <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
             border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
-          <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
-            <textarea class="form-control shadow-none" id="send-message" rows="1"
-                      placeholder="Type a message (markdown supported)" style="display:inline-block; width:100%;
-              resize:none; border-color: rgba(0, 0, 0, 0.125); outline: none; padding-left: 1.4rem"></textarea>
+            <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
+              <textarea class="form-control shadow-none" id="send-message" rows="1"
+                placeholder="Type a message (markdown supported)"></textarea>
+            </div>
           </div>
         </div>
-      </div>
-      <div id="tile-transcript-container"
-           class="d-flex flex-column col-12 col-sm-7 col-md-8 col-lg-9 my-4 my-sm-0 h-100" style="overflow-y: scroll">
-        <div id="tile-area" class="v-grid"></div>
-        <div id="transcript-container" class="transcript-container" style="display:none"></div>
+        <div id="tile-transcript-container" class="d-flex flex-column  my-4 my-sm-0 h-100"
+          style="overflow-y: scrolll;width: 80%;">
+          <div id="tile-area" class="v-grid"></div>
+          <div id="transcript-container" class="transcript-container scrollbar-new-design" style="display:none">
+            <div class="d-flex justify-content-center mt-3 mb-3" id="transcription-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="33" height="31" viewBox="0 0 33 31" fill="none">
+                <g filter="url(#filter0_d_281_2347)">
+                  <path d="M25.6064 1.26762C25.7425 1.13146 25.9042 1.02345 26.0821 0.949756C26.26 0.876064 26.4507 0.838135 26.6432 0.838135C26.8358 0.838135 27.0265 0.876064 27.2044 0.949756C27.3823 1.02345 27.544 1.13146 27.6801 1.26762C27.8163 1.40379 27.9243 1.56544 27.998 1.74335C28.0717 1.92126 28.1096 2.11194 28.1096 2.30451C28.1096 2.49707 28.0717 2.68775 27.998 2.86566C27.9243 3.04357 27.8163 3.20522 27.6801 3.34139L17.4285 13.593C17.2924 13.7294 17.1308 13.8376 16.9529 13.9115C16.775 13.9853 16.5842 14.0233 16.3916 14.0233C16.199 14.0233 16.0082 13.9853 15.8303 13.9115C15.6524 13.8376 15.4908 13.7294 15.3547 13.593L5.10305 3.34139C4.96689 3.20522 4.85887 3.04357 4.78518 2.86566C4.71149 2.68775 4.67356 2.49707 4.67356 2.30451C4.67356 2.11194 4.71149 1.92126 4.78518 1.74335C4.85887 1.56544 4.96689 1.40379 5.10305 1.26762C5.23922 1.13146 5.40087 1.02345 5.57878 0.949756C5.75669 0.876064 5.94737 0.838135 6.13993 0.838135C6.3325 0.838135 6.52318 0.876064 6.70109 0.949756C6.879 1.02345 7.04065 1.13146 7.17682 1.26762L16.3916 10.4853L25.6064 1.26762ZM26.6432 22.8078C27.0317 22.8078 27.4042 22.6535 27.6788 22.3789C27.9535 22.1042 28.1078 21.7317 28.1078 21.3433C28.1078 20.9549 27.9535 20.5824 27.6788 20.3077C27.4042 20.0331 27.0317 19.8788 26.6432 19.8788L6.13993 19.8788C5.75152 19.8788 5.37901 20.0331 5.10436 20.3077C4.82971 20.5824 4.67541 20.9549 4.67541 21.3433C4.67541 21.7317 4.82971 22.1042 5.10436 22.3789C5.37901 22.6535 5.75152 22.8078 6.13993 22.8078L26.6432 22.8078Z" fill="#757575"/>
+                  <path d="M17.0749 13.2395L17.0745 13.2399C16.9849 13.3298 16.8784 13.401 16.7613 13.4497C16.6441 13.4983 16.5185 13.5233 16.3916 13.5233C16.2647 13.5233 16.1391 13.4983 16.0219 13.4497C15.9047 13.401 15.7983 13.3298 15.7087 13.2399L15.7083 13.2395L5.45661 2.98784C5.36687 2.8981 5.29569 2.79157 5.24712 2.67432C5.19856 2.55708 5.17356 2.43142 5.17356 2.30451C5.17356 2.1776 5.19856 2.05194 5.24712 1.93469C5.29569 1.81745 5.36687 1.71091 5.45661 1.62118C5.54634 1.53144 5.65287 1.46026 5.77012 1.4117C5.88737 1.36313 6.01303 1.33813 6.13993 1.33813C6.26684 1.33813 6.3925 1.36313 6.50975 1.4117C6.627 1.46026 6.73353 1.53144 6.82326 1.62118L16.038 10.8388L16.3916 11.1925L16.7452 10.8388L25.9599 1.62118C26.0497 1.53144 26.1562 1.46026 26.2734 1.4117C26.3907 1.36313 26.5163 1.33813 26.6432 1.33813C26.7702 1.33813 26.8958 1.36313 27.0131 1.4117C27.1303 1.46026 27.2368 1.53144 27.3266 1.62118C27.4163 1.71091 27.4875 1.81745 27.5361 1.93469C27.5846 2.05194 27.6096 2.1776 27.6096 2.30451C27.6096 2.43141 27.5846 2.55708 27.5361 2.67432C27.4875 2.79157 27.4163 2.8981 27.3266 2.98784L17.0749 13.2395ZM27.3253 22.0253C27.1444 22.2062 26.8991 22.3078 26.6432 22.3078L6.13993 22.3078C5.88413 22.3078 5.6388 22.2062 5.45791 22.0253C5.27703 21.8444 5.17541 21.5991 5.17541 21.3433C5.17541 21.0875 5.27703 20.8422 5.45791 20.6613C5.6388 20.4804 5.88413 20.3788 6.13993 20.3788L26.6432 20.3788C26.8991 20.3788 27.1444 20.4804 27.3253 20.6613C27.5061 20.8422 27.6078 21.0875 27.6078 21.3433C27.6078 21.5991 27.5061 21.8444 27.3253 22.0253Z" stroke="black"/>
+                </g>
+                <defs>
+                  <filter id="filter0_d_281_2347" x="0.673584" y="0.838135" width="31.436" height="29.9697" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dy="4"/>
+                    <feGaussianBlur stdDeviation="2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_281_2347"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_281_2347" result="shape"/>
+                  </filter>
+                </defs>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div id="myDIV" class=" my-4 my-sm-0 quizBlock" style="display:none;width: 30%;">
+          <div id="create-quiz" style="display: block;" class="h-100">
+            <div class="d-flex flex-column justify-content-between h-100">
+              <div>
+                <div class="d-flex justify-content-end mb-3">
+                  <button type="button" class="btn-close"></button>
+                </div>
+                <div class="quiz-heading">Create an Automated Quiz</div>
+                <div class="questions-num">
+                  <h2 class="quiz-title">Number of questions</h2>
+                  <div class="d-flex" style="gap: 20px;">
+                    <div class="numbers-block">
+                      1
+                    </div>
+                    <div class="numbers-block">
+                      2
+                    </div>
+                    <div class="numbers-block">
+                      3
+                    </div>
+                    <div class="numbers-block">
+                      4
+                    </div>
+                    <div class="numbers-block">
+                      5
+                    </div>
+                    <div class="numbers-block pe-2 ps-2">
+                      Custom
+                    </div>
+                  </div>
+                </div>
+                <div class="questions-block">
+                  <div class="quiz-title">Type of Quiz</div>
+                  <div class="radioButton col-md-12 col-lg-12 col-12 mb-3">
+    
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="kg" name="weightUnit" [value]="1" />
+                      <label class="form-check-label" for="kg">Multiple type questions</label>
+                    </div>
+    
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">Open-ended questions</label>
+                    </div>
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">Fill in the blanks</label>
+                    </div>
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">Mix them all</label>
+                    </div>
+    
+                  </div>
+                  <div class="col-md-12 col-lg-12 col-12 mt-3">
+                    <div class="form-check form-check-inline checkBox">
+                      <label class="customCheckBox">
+                        <input type="checkbox" name="optInToEmails" />
+                        <span class="checkmark"></span>
+                      </label>
+    
+                      <label class="form-check-label" for="inlineemail">
+                        Prioritize my highlights
+                      </label>
+                    </div>
+                  </div>
+                  <div class="quiz-title">Continue on drafts</div>
+                  <div class="chapters">
+                    Chapter 1- Photosynthesis
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="customButton" id="submit-quiz">
+                Generate Quiz
+              </button>
+            </div>
+           
+          </div>
+          <div id="generating-quiz" class="h-100" style="display: none;">
+            <div class="loading-block justify-content-between">
+              <div class="d-flex flex-column align-items-center justify-content-end h-50">
+             
+                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <path
+                      d="M6.94793 38.0859L38.1721 6.86047C38.6368 6.39582 41.6041 9.36435 41.1395 9.82781L9.91527 41.0532C9.45181 41.5179 6.48328 38.5493 6.94793 38.0859Z"
+                      fill="#292F33" />
+                    <path d="M38.7853 7.42493L7.53613 38.6741L8.58546 39.7234L39.8346 8.47425L38.7853 7.42493Z"
+                      fill="#66757F" />
+                    <path
+                      d="M43.6624 5.6258L43.1728 5.13619L42.3754 4.3388C42.2857 4.2562 42.1834 4.18841 42.0723 4.13797C41.8513 4.02019 41.5985 3.97616 41.3507 4.01229C41.1029 4.04842 40.8732 4.16283 40.695 4.3388L38.1971 6.83674L38.7853 7.42498L39.8346 8.4743L41.1644 9.80408L43.6624 7.30614C43.7728 7.19588 43.8604 7.06491 43.9202 6.92075C43.98 6.77658 44.0108 6.62204 44.0108 6.46597C44.0108 6.3099 43.98 6.15536 43.9202 6.01119C43.8604 5.86703 43.7728 5.73606 43.6624 5.6258ZM8.58547 39.7235L7.53614 38.6742L6.9479 38.0859L4.32281 40.7098C4.14684 40.888 4.03243 41.1177 3.9963 41.3655C3.96017 41.6133 4.0042 41.8661 4.12198 42.0871C4.17664 42.1941 4.23368 42.301 4.32281 42.3902L5.1202 43.1876L5.60981 43.6772C5.72007 43.7876 5.85103 43.8752 5.9952 43.935C6.13937 43.9948 6.29391 44.0256 6.44998 44.0256C6.60605 44.0256 6.76059 43.9948 6.90476 43.935C7.04892 43.8752 7.17989 43.7876 7.29015 43.6772L9.91406 41.0533L8.58547 39.7235Z"
+                      fill="#E1E8ED" />
+                    <path
+                      d="M39.8346 8.47427L43.1727 5.13616L42.3753 4.33877C42.2856 4.25617 42.1833 4.18838 42.0723 4.13794L38.7841 7.42614L39.8346 8.47427ZM7.53611 38.6741L4.12195 42.0883C4.17661 42.1952 4.23365 42.3022 4.32278 42.3913L5.12017 43.1887L8.58544 39.7234L7.53611 38.6741Z"
+                      fill="#F5F8FA" />
+                    <path
+                      d="M38.5293 19.884L40.5853 19.1227L41.3853 16.1894C41.4367 16.0011 41.5485 15.835 41.7035 15.7166C41.8585 15.5982 42.0482 15.534 42.2433 15.534C42.4384 15.534 42.6281 15.5982 42.7831 15.7166C42.9382 15.835 43.05 16.0011 43.1013 16.1894L43.9013 19.1227L45.9573 19.884C46.1284 19.9462 46.2762 20.0595 46.3806 20.2086C46.4851 20.3577 46.5411 20.5353 46.5411 20.7174C46.5411 20.8994 46.4851 21.077 46.3806 21.2261C46.2762 21.3752 46.1284 21.4885 45.9573 21.5507L43.912 22.308L43.1053 25.528C43.0567 25.7197 42.9455 25.8897 42.7894 26.0112C42.6333 26.1326 42.4411 26.1986 42.2433 26.1986C42.0455 26.1986 41.8534 26.1326 41.6973 26.0112C41.5412 25.8897 41.43 25.7197 41.3813 25.528L40.5747 22.308L38.5293 21.5507C38.3582 21.4885 38.2104 21.3752 38.106 21.2261C38.0016 21.077 37.9455 20.8994 37.9455 20.7174C37.9455 20.5353 38.0016 20.3577 38.106 20.2086C38.2104 20.0595 38.3582 19.9462 38.5293 19.884ZM15.948 7.04668L19.428 5.75868L20.716 2.27868C20.82 1.9964 21.008 1.7528 21.2548 1.58073C21.5016 1.40866 21.7952 1.31641 22.096 1.31641C22.3968 1.31641 22.6904 1.40866 22.9372 1.58073C23.1839 1.7528 23.372 1.9964 23.476 2.27868L24.764 5.75868L28.2427 7.04668C28.5249 7.15068 28.7685 7.33873 28.9406 7.5855C29.1127 7.83226 29.2049 8.12585 29.2049 8.42668C29.2049 8.72751 29.1127 9.02111 28.9406 9.26787C28.7685 9.51463 28.5249 9.70269 28.2427 9.80668L24.764 11.0947L23.476 14.5747C23.3709 14.8558 23.1824 15.0981 22.9357 15.2692C22.6891 15.4403 22.3961 15.532 22.096 15.532C21.7958 15.532 21.5028 15.4403 21.2562 15.2692C21.0096 15.0981 20.8211 14.8558 20.716 14.5747L19.428 11.0947L15.948 9.80668C15.6663 9.70212 15.4233 9.51384 15.2518 9.26715C15.0802 9.02046 14.9882 8.72717 14.9882 8.42668C14.9882 8.1262 15.0802 7.83291 15.2518 7.58622C15.4233 7.33952 15.6663 7.15125 15.948 7.04668ZM32.1733 27.696L34.0173 27.0133L34.7 25.1707C34.7556 25.0218 34.8554 24.8935 34.986 24.8028C35.1166 24.7122 35.2717 24.6637 35.4307 24.6637C35.5896 24.6637 35.7447 24.7122 35.8753 24.8028C36.0059 24.8935 36.1057 25.0218 36.1613 25.1707L36.844 27.0133L38.6867 27.696C38.8361 27.7511 38.9651 27.8506 39.0562 27.9813C39.1473 28.112 39.1962 28.2674 39.1962 28.4267C39.1962 28.586 39.1473 28.7414 39.0562 28.8721C38.9651 29.0027 38.8361 29.1023 38.6867 29.1573L36.844 29.84L36.1613 31.6827C36.1057 31.8316 36.0059 31.9599 35.8753 32.0505C35.7447 32.1411 35.5896 32.1897 35.4307 32.1897C35.2717 32.1897 35.1166 32.1411 34.986 32.0505C34.8554 31.9599 34.7556 31.8316 34.7 31.6827L34.0173 29.84L32.1733 29.1573C32.0244 29.1017 31.8961 29.0019 31.8055 28.8714C31.7149 28.7408 31.6663 28.5856 31.6663 28.4267C31.6663 28.2677 31.7149 28.1126 31.8055 27.982C31.8961 27.8514 32.0244 27.7516 32.1733 27.696Z"
+                      fill="#FFAC33" />
+                  </svg>
+            
+                <h4>
+                  Generating your quiz. Please wait..
+                </h4>
+              </div>
+              <div class="d-flex flex-column h-50 justify-content-end" style="width: 100%;">
+                <button class="deleteButton" type="button" id="delete-quiz">
+                  Stop generating
+                </button>
+              </div>
+             
+            </div>
+          </div>
+          <div id="quiz_question" class="h-100" style="display: none;">
+            <div class="d-flex flex-column justify-content-between h-100">
+              <div>
+                <div class="d-flex justify-content-end mb-3">
+                  <button type="button" class="btn-close"></button>
+                </div>
+                <div class="d-flex" style="gap:10px">
+  
+                  <button id="publish-quiz" type="button" class="customButton" data-bs-toggle="modal"
+                    data-bs-target="#publish-quiz-modal">Publish the Quiz</button>
+                  <button class="btn" style="border-radius: 8px;
+                    border: 3px solid #8E509C;">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" width="" height="32" viewBox="0 0 32 32" fill="none">
+                      <path
+                        d="M7.02111 26.6065L1.49963 6.00012L21.9872 8.79271L21.6008 8.89624C20.8495 9.09754 20.1642 9.3732 19.5448 9.72322C18.9254 10.0732 18.3447 10.4819 17.8027 10.9492L5.11071 9.17364L6.31853 13.6813L14.5636 13.5426L7.35381 17.545L8.56163 22.0527L14.7226 17.227C14.6832 17.7667 14.6852 18.2893 14.7286 18.7949C14.772 19.3004 14.8629 19.8112 15.0011 20.3272L15.0184 20.3916L7.02111 26.6065ZM25.7419 24.3511C23.9603 24.8284 22.2732 24.6073 20.6804 23.6878C19.0877 22.7682 18.0532 21.418 17.5769 19.637C17.0996 17.8554 17.3207 16.1683 18.2402 14.5755C19.1598 12.9828 20.51 11.9483 22.291 11.472C24.0726 10.9947 25.7597 11.2158 27.3524 12.1353C28.9452 13.0549 29.9797 14.4051 30.456 16.1861C30.9333 17.9677 30.7122 19.6548 29.7927 21.2476C28.8731 22.8403 27.5229 23.8748 25.7419 24.3511ZM26.9524 20.3687L27.6124 19.2256L24.5914 17.4814L23.6251 13.8753L22.3372 14.2204L23.4415 18.3417L26.9524 20.3687Z"
+                        fill="#8E509C" />
+                    </svg>
+                  </button>
+  
+                </div>
+                <div class="quiz-heading mt-3">Quiz (Draft)</div>
+                <div class="questions-num mt-2">
+                  <h2 class="quiz-title">Chapter 1-Photosynthesis</h2>
+                  <div class="d-flex" style="gap: 20px;">
+                    <div class="numbers-block">
+                      1
+                    </div>
+                    <div class="numbers-block">
+                      2
+                    </div>
+                    <div class="numbers-block">
+                      3
+                    </div>
+                    <div class="numbers-block">
+                      4
+                    </div>
+                    <div class="numbers-block">
+                      5
+                    </div>
+                    <div class="numbers-block">
+                      +
+                    </div>
+                  </div>
+                </div>
+                <div class="questions-block">
+                  <div class="quiz-title">What is Photosynthesis?</div>
+                  <div class="radioButton col-md-12 col-lg-12 col-12 mb-3">
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="kg" name="weightUnit" [value]="1" />
+                      <label class="form-check-label" for="kg">Process in which plants make their own food</label>
+                    </div>
+  
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">Process used for agriculture</label>
+                    </div>
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">Feeding good amount of water to plants</label>
+                    </div>
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">None of the above</label>
+                    </div>
+                  </div>
+                  <p class="note"><span>Note:</span>Selected answer above is marked as correct.</p>
+  
+                </div>
+              </div>
+              <button class="deleteButton" type="button">
+                Stop generating
+              </button>
+            </div>
+           
+          </div>
+          <div id="quiz_in_progress" class="h-100" style="display: none;">
+            <div class="d-flex flex-column justify-content-between h-100">
+              <div>
+                <div class="d-flex justify-content-end mb-3">
+                  <button type="button" class="btn-close"></button>
+                </div>
+                <div class="d-flex align-items-center justify-content-between" style="gap:10px">
+  
+                  <div class="quiz-heading">Quiz (Draft)</div>
+                  <button id="publish-quiz" type="button" class="customButton" style="width: 40%;" data-bs-toggle="modal"
+                    data-bs-target="#publish-quiz-modal">End Quiz</button>
+                </div>
+                <div class="tabs-block">
+                  <p id="participants" class="activeTabs">Participants</p>
+                  <p id="queries">Queries</p>
+                </div>
+                <div id="participants-block" class="tab-sections" style="display: block;">
+                  <div class="col-lg-12 col-md-12 col-12">
+                    <div class="sub-header">In progress (<span>6</span>)</div>
+                    <div class="listingBlock mb-2">
+           
+                      <div class="listingBlock">
+                        <div class="lists">
+                          <div class="d-flex justify-content-between   mb-3">
+                            <p>Somya <span>(2/5)</span></p>
+                            <a>(View Score)</a>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <p>Somya <span>(2/5)</span></p>
+                            <a>(View Score)</a>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <p>Somya <span>(2/5)</span></p>
+                            <a>(View Score)</a>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    <div class="sub-header">Completed (<span>2</span>)</div>
+                    <div class="listingBlock">
+                  
+                      <div class="listingBlock">
+                        <div class="lists">
+                          <div class="d-flex justify-content-between">
+                            <p>Maria<span>(2/5)</span></p>
+                            <a>(View Score)</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="queries-block" class="tab-sections" style="display: none;">
+                  <div class="queries-section">
+                    <div class="d-flex" >
+                      <p class="pe-3">Maria</p>
+                      <p>Question 2 <span>✋</span></p>
+                    </div>
+                    <h5>I cannot seem to understand the question.</h5>
+                    <div class="customInput">
+                      <input type="text" placeholder="Respond"/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+                        <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8"/>
+                        <path d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472" stroke="#3F4149" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                  </div>
+              
+                </div>
+              </div>
+              <button class="deleteButton" type="button">
+                Cancel Quiz
+              </button>
+            </div>
+           
+          </div>
+        </div>
       </div>
       <video id="content-share-video" playsinline crossOrigin="anonymous" style="display:none"></video>
-    </div>
-  </div>
 
-  <div id='toast-container' aria-live="polite" aria-atomic="true">
-  </div>
-</div>
-
-<!-- Content Share Configuration Modal -->
-
-<div id="content-share-configuration-modal" class="modal fade" style="display: none">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="additional-options-modal-label">Content Share Options</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <h5 class="my-2">Screen Capture</h5>
-        <label for="content-capture-frame-rate" style=" text-align: left;">Frame Rate</label>
-        <input type="number" id="content-capture-frame-rate" class="form-control" placeholder="30">
-        <div class="form-text">
-          The browser is not guaranteed to send the chosen value.
-        </div>
-        <h5 class="my-2">Media Processing</h5>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="content-enable-volume-reduction" class="form-check-input">
-          <label for="content-share-voice-focus" class="form-check-label">Reduce audio volume</label>
-        </div>
-        <div class="form-check" style="text-align: left;">
-          <input type="checkbox" id="content-enable-circular-cut" class="form-check-input">
-          <label for="content-enable-circular-cut" class="form-check-label">Circular crop video</label>
-        </div>
-        <div id="content-simulcast-config">
-          <h5 class="my-2">Simulcast Encoding</h5>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="content-enable-simulcast">
-            <label class="form-check-label" for="content-enable-simulcast">Enable Simulcast</label>
+      <div class="row" style="margin-bottom: -55px;background: #F8F8F8;
+        box-shadow: 0px -4px 8px 0px rgba(0, 0, 0, 0.11);" style="flex: unset;" style="display: none;">
+        <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left" style="display: none;">
+          <div id="meeting-id" class="navbar-brand text-muted m-0 m-lg-2"></div>
+          <div id="mobile-chime-meeting-id" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
+          <div id="mobile-attendee-id" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
+          <div id="mobile-video-uplink-bandwidth" class="text-muted d-block d-sm-none" style="font-size:0.65rem;">
           </div>
-          <div class="container p-0">
-            <div class="row row-cols-2 my-1">
-              <div class="col-6 text-center">Low Layer</div>
-              <div class="col-6 text-center">High Layer</div>
-            </div>
-            <div class="row row-cols-2 my-1">
-              <div class="col-6">
-                <input type="number" id="content-simulcast-low-max-bitratekbps" class="form-control"
-                  placeholder="Max bitrate (kbps)">
-              </div>
-              <div class="col-6">
-                <input type="number" id="content-simulcast-high-max-bitratekbps" class="form-control"
-                  placeholder="Max bitrate (kbps)">
-              </div>
-            </div>
-            <div class="row row-cols-2 my-1">
-              <div class="col-6">
-                <input type="number" id="content-simulcast-low-scale-factor" class="form-control"
-                  placeholder="Scale factor">
-              </div>
-              <div class="col-6">
-                <input type="number" id="content-simulcast-high-scale-factor" class="form-control"
-                  placeholder="Scale factor">
-              </div>
-            </div>
-            <div class="row row-cols-2 my-1">
-              <div class="col-6">
-                <input type="number" id="content-simulcast-low-max-framerate" class="form-control"
-                  placeholder="Max frame rate">
-              </div>
-              <div class="col-6">
-                <input type="number" id="content-simulcast-high-max-framerate" class="form-control"
-                  placeholder="Max frame rate">
-              </div>
-            </div>
+          <div id="mobile-video-downlink-bandwidth" class="text-muted d-block d-sm-none mb-2"
+            style="font-size:0.65rem;">
           </div>
         </div>
+        <div class="col-8 col-lg-12 col-md-12 order-2 order-lg-2 text-left text-lg-center">
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+            <div class="iconButton">
+              <button id="button-microphone" type="button" title="Toggle microphone">
+                <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g id="ph:microphone">
+                    <g id="Group 35861">
+                      <path id="Vector"
+                        d="M29.1694 30.0253C27.85 31.1687 26.0342 31.8314 24.1155 31.8333C22.1968 31.8314 20.381 31.1687 19.0616 30.0253C17.7467 28.8857 17.0406 27.3737 17.0386 25.8327V16.5C17.0386 14.9586 17.7439 13.4459 19.0592 12.3059C20.379 11.1621 22.196 10.5 24.1155 10.5C26.035 10.5 27.852 11.1621 29.1718 12.3059C30.4871 13.4459 31.1924 14.9586 31.1924 16.5L31.1924 25.8321C31.1924 25.8324 31.1924 25.8326 31.1924 25.8329C31.1903 27.3738 30.4842 28.8857 29.1694 30.0253Z"
+                        stroke="#3F4149" stroke-width="2" />
+                      <path id="Vector_2"
+                        d="M12 25.8464C12 28.4985 13.2764 31.0421 15.5485 32.9174C17.8206 34.7928 20.9022 35.8464 24.1154 35.8464C27.3286 35.8464 30.4102 34.7928 32.6823 32.9174C34.9543 31.0421 36.2308 28.4985 36.2308 25.8464"
+                        stroke="#3F4149" stroke-width="2" stroke-linecap="round" />
+                      <path id="Line 2" d="M15.0293 39.5H33.2024" stroke="#3F4149" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    </g>
+                  </g>
+                </svg>
+
+              </button>
+
+              <p>Mute</p>
+
+            </div>
+
+            <button style="height: 32px;" id="button-microphone-drop" type="button"
+              class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+              aria-expanded="false" title="Select microphone"><span class="visually-hidden">Toggle
+                Dropdown</span></button>
+            <div id="dropdown-menu-microphone" class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="button-microphone-drop" x-placement="bottom-start"
+              style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+              <a class="dropdown-item" href="#">Default microphone</a>
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle camera">
+            <div class="iconButton">
+              <button id="button-camera" type="button" class="btn btn-success" title="Toggle camera">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g id="bi:camera-video">
+                    <path id="Vector"
+                      d="M27.9375 12H27.9376C28.9684 11.9999 29.9642 12.3744 30.7394 13.0538C30.8536 13.1539 31.0166 13.364 31.2069 13.6969C31.3884 14.0143 31.5594 14.38 31.71 14.7331C31.8413 15.0407 31.9505 15.3227 32.0368 15.5457C32.0493 15.5779 32.0613 15.6089 32.0729 15.6385C32.1133 15.7427 32.16 15.8623 32.199 15.947C32.2098 15.9704 32.2268 16.0061 32.2485 16.0452L32.2497 16.0474C32.2613 16.0685 32.3208 16.1768 32.4251 16.2816L32.426 16.2825C32.4655 16.3222 32.6482 16.5059 32.9583 16.5624C33.145 16.5965 33.3636 16.5808 33.5744 16.4788C33.6159 16.4588 33.6542 16.4368 33.6894 16.4137L41.7127 12.8483L41.7136 12.8479C41.961 12.7377 42.232 12.6911 42.502 12.7122C42.772 12.7334 43.0324 12.8217 43.2595 12.9691C43.4867 13.1165 43.6735 13.3184 43.8028 13.5563C43.932 13.7941 43.9998 14.0605 44 14.3311C44 14.3313 44 14.3314 44 14.3316V33.918C43.9998 34.1886 43.932 34.4549 43.8027 34.6926C43.6735 34.9304 43.4869 35.1321 43.26 35.2795C43.033 35.4268 42.7729 35.5152 42.5031 35.5365C42.2334 35.5579 41.9625 35.5115 41.7153 35.4016L41.7152 35.4016L33.6893 31.8363C33.6541 31.8131 33.6159 31.7912 33.5745 31.7712C33.3636 31.6693 33.145 31.6535 32.9583 31.6876C32.6482 31.7441 32.4655 31.9278 32.426 31.9675L32.4251 31.9684C32.3208 32.0732 32.2613 32.1815 32.2497 32.2026L32.2485 32.2048C32.2268 32.2439 32.2098 32.2796 32.199 32.303C32.16 32.3877 32.1133 32.5073 32.0729 32.6115C32.0613 32.6411 32.0493 32.6721 32.0368 32.7043C31.9505 32.9273 31.8413 33.2093 31.71 33.5169C31.5594 33.87 31.3884 34.2357 31.2069 34.5531C31.0166 34.886 30.8536 35.0961 30.7394 35.1962C29.9642 35.8756 28.9684 36.2501 27.9376 36.25H27.9375H8.25C7.12283 36.25 6.04183 35.8022 5.2448 35.0052L4.53769 35.7123L5.2448 35.0052C4.44777 34.2082 4 33.1272 4 32V16.25C4 15.1228 4.44777 14.0418 5.2448 13.2448C6.04183 12.4478 7.12283 12 8.25 12H27.9375Z"
+                      stroke="#3F4149" stroke-width="2" />
+                  </g>
+
+                </svg>
+
+              </button>
+              <p>Video</p>
+            </div>
+            <button style="height: 32px;" id="button-camera-drop" type="button"
+              class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+              aria-expanded="false" title="Select camera"><span class="visually-hidden">Toggle
+                Dropdown</span></button>
+            <div id="dropdown-menu-camera" class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" href="#">Default camera</a>
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+            <div class="iconButton">
+              <button id="button-microphone" type="button" title="Toggle microphone">
+                <svg width="49" height="49" viewBox="0 0 49 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g id="Frame 427318917">
+                    <path id="Vector"
+                      d="M37.4298 38.503C37.7076 38.9803 38.3198 39.1421 38.7971 38.8643C39.2744 38.5865 39.4362 37.9743 39.1584 37.497L37.4298 38.503ZM28.5817 30.4066L28.1306 29.5142C27.7625 29.7002 27.5464 30.0933 27.5865 30.5038C27.6266 30.9144 27.9146 31.2582 28.3118 31.3695L28.5817 30.4066ZM33.0317 25.8121L33.9386 26.2333L33.0317 25.8121ZM33.6642 19.4643L34.6364 19.23V19.23L33.6642 19.4643ZM14.6299 19.4643L13.6577 19.23L14.6299 19.4643ZM15.2625 25.8121L14.3555 26.2333L15.2625 25.8121ZM19.7124 30.4066L19.982 31.3696C20.3793 31.2584 20.6675 30.9146 20.7076 30.504C20.7478 30.0934 20.5317 29.7003 20.1635 29.5142L19.7124 30.4066ZM9.13563 37.4972C8.85791 37.9745 9.01977 38.5867 9.49715 38.8644C9.97453 39.1421 10.5867 38.9802 10.8644 38.5028L9.13563 37.4972ZM39.1584 37.497C36.8193 33.4776 33.1379 30.6452 28.8516 29.4437L28.3118 31.3695C32.0896 32.4285 35.3483 34.9262 37.4298 38.503L39.1584 37.497ZM29.0328 31.2991C31.193 30.2072 32.9215 28.4231 33.9386 26.2333L32.1247 25.3908C31.2977 27.1714 29.8911 28.6243 28.1306 29.5142L29.0328 31.2991ZM33.9386 26.2333C34.9557 24.0434 35.2017 21.5763 34.6364 19.23L32.692 19.6985C33.1514 21.6052 32.9517 23.6103 32.1247 25.3908L33.9386 26.2333ZM34.6364 19.23C34.0711 16.8838 32.728 14.7964 30.8248 13.3038L29.5905 14.8775C31.1405 16.0932 32.2326 17.7917 32.692 19.6985L34.6364 19.23ZM30.8248 13.3038C28.9217 11.8112 26.5693 11 24.1471 11V13C26.1228 13 28.0404 13.6617 29.5905 14.8775L30.8248 13.3038ZM24.1471 11C21.7248 11 19.3724 11.8112 17.4693 13.3038L18.7036 14.8775C20.2537 13.6617 22.1713 13 24.1471 13V11ZM17.4693 13.3038C15.5662 14.7964 14.223 16.8838 13.6577 19.23L15.6021 19.6985C16.0615 17.7917 17.1536 16.0932 18.7036 14.8775L17.4693 13.3038ZM13.6577 19.23C13.0924 21.5763 13.3384 24.0434 14.3555 26.2333L16.1694 25.3908C15.3424 23.6103 15.1427 21.6052 15.6021 19.6985L13.6577 19.23ZM14.3555 26.2333C15.3726 28.4231 17.1012 30.2072 19.2613 31.2991L20.1635 29.5142C18.403 28.6243 16.9964 27.1714 16.1694 25.3908L14.3555 26.2333ZM19.4428 29.4436C15.1562 30.6438 11.4747 33.4763 9.13563 37.4972L10.8644 38.5028C12.946 34.9247 16.2045 32.4272 19.982 31.3696L19.4428 29.4436Z"
+                      fill="#3F4149" />
+                  </g>
+                </svg>
+
+
+              </button>
+
+              <p>Participants</p>
+
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+            <div class="iconButton">
+              <button id="button-microphone" type="button" title="Toggle microphone">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+                  <path
+                    d="M13.1182 12.5H34.8407C35.8188 12.5 36.7514 12.8783 37.4348 13.5432C38.1173 14.2073 38.4956 15.102 38.4956 16.029V29.6161C38.4956 30.5431 38.1173 31.4378 37.4348 32.1019C36.7514 32.7668 35.8188 33.1451 34.8407 33.1451H13.1182C12.1402 33.1451 11.2075 32.7668 10.5241 32.1019C9.84159 31.4378 9.46338 30.5431 9.46338 29.6161V16.029C9.46338 15.102 9.84159 14.2073 10.5241 13.5432C11.2075 12.8783 12.1402 12.5 13.1182 12.5Z"
+                    stroke="#3F4149" stroke-width="2" />
+                  <path d="M6 37.5H41.9596" stroke="#3F4149" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </button>
+              <p>Share Screen</p>
+
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+            <div class="iconButton">
+              <button  id="button-live-transcription" title="Toggle live transcription display" data-bs-toggle="button"
+              aria-pressed="false" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+                  <path
+                    d="M35.7143 26.2188C36.2376 26.2188 36.7395 26.3186 37.1096 26.4964C37.4796 26.6742 37.6875 26.9153 37.6875 27.1667C37.6875 27.4181 37.4796 27.6592 37.1096 27.8369C36.7395 28.0147 36.2376 28.1146 35.7143 28.1146H19.9286C19.4052 28.1146 18.9033 28.0147 18.5333 27.8369C18.1632 27.6592 17.9554 27.4181 17.9554 27.1667C17.9554 26.9153 18.1632 26.6742 18.5333 26.4964C18.9033 26.3186 19.4052 26.2188 19.9286 26.2188H35.7143ZM14.0089 26.2188C14.5323 26.2188 15.0342 26.3186 15.4042 26.4964C15.7743 26.6742 15.9821 26.9153 15.9821 27.1667C15.9821 27.4181 15.7743 27.6592 15.4042 27.8369C15.0342 28.0147 14.5323 28.1146 14.0089 28.1146H12.0357C11.5124 28.1146 11.0105 28.0147 10.6404 27.8369C10.2704 27.6592 10.0625 27.4181 10.0625 27.1667C10.0625 26.9153 10.2704 26.6742 10.6404 26.4964C11.0105 26.3186 11.5124 26.2188 12.0357 26.2188H14.0089Z"
+                    fill="#3F4149" />
+                  <path
+                    d="M10.6404 31.9131C10.2704 32.0909 10.0625 32.332 10.0625 32.5834C10.0625 32.8348 10.2704 33.0759 10.6404 33.2537C11.0105 33.4315 11.5124 33.5313 12.0357 33.5313H27.8214C28.3448 33.5313 28.8467 33.4315 29.2167 33.2537C29.5868 33.0759 29.7946 32.8348 29.7946 32.5834C29.7946 32.332 29.5868 32.0909 29.2167 31.9131C28.8467 31.7354 28.3448 31.6355 27.8214 31.6355H12.0357C11.5124 31.6355 11.0105 31.7354 10.6404 31.9131Z"
+                    fill="#3F4149" />
+                  <path
+                    d="M32.3458 31.9131C31.9757 32.0909 31.7679 32.332 31.7679 32.5834C31.7679 32.8348 31.9757 33.0759 32.3458 33.2537C32.7158 33.4315 33.2177 33.5313 33.7411 33.5313H35.7143C36.2376 33.5313 36.7395 33.4315 37.1096 33.2537C37.4796 33.0759 37.6875 32.8348 37.6875 32.5834C37.6875 32.332 37.4796 32.0909 37.1096 31.9131C36.7395 31.7354 36.2376 31.6355 35.7143 31.6355H33.7411C33.2177 31.6355 32.7158 31.7354 32.3458 31.9131Z"
+                    fill="#3F4149" />
+                  <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M10.875 12C9.58207 12 8.34209 12.4565 7.42785 13.2692C6.51361 14.0819 6 15.1841 6 16.3333V33.6667C6 34.8159 6.51361 35.9181 7.42785 36.7308C8.34209 37.5435 9.58207 38 10.875 38H36.875C38.1679 38 39.4079 37.5435 40.3221 36.7308C41.2364 35.9181 41.75 34.8159 41.75 33.6667V16.3333C41.75 15.1841 41.2364 14.0819 40.3221 13.2692C39.4079 12.4565 38.1679 12 36.875 12H10.875Z"
+                    stroke="#3F4149" stroke-width="2" />
+                </svg>
+              </button>
+              <p>Open Transcript</p>
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+            <div class="iconButton">
+              <button id="button-microphone" type="button" title="Toggle microphone">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+                  <path
+                    d="M23.6023 38C27.0636 37.9996 30.4265 37.0398 33.1614 35.2719C35.8964 33.504 37.8481 31.0284 38.7094 28.2347C39.5706 25.4409 39.2924 22.4879 37.9187 19.8404C36.5449 17.1929 34.1535 15.0013 31.121 13.6106C28.0886 12.22 24.5872 11.7093 21.1682 12.1589C17.7492 12.6086 14.6067 13.993 12.2356 16.0943C9.86436 18.1956 8.39911 20.8944 8.07049 23.7657C7.74186 26.6371 8.56852 29.5181 10.4203 31.955L8.00233 38L15.2563 35.985C17.7515 37.3049 20.6469 38.0039 23.6023 38Z"
+                    stroke="#3F4149" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <p>Chat</p>
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+            <div class="iconButton">
+              <button id="button-quizbot" type="button" title="Toggle microphone">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+                  <path
+                    d="M9.6 13H38.4C40.0443 13 41 14.0465 41 14.8889V35.1111C41 35.9535 40.0443 37 38.4 37H9.6C7.95565 37 7 35.9535 7 35.1111V14.8889C7 14.0465 7.95565 13 9.6 13Z"
+                    stroke="#3F4149" stroke-width="2" />
+                  <path
+                    d="M37.3379 21.2733C34.1114 23.8569 29.0759 27.8889 29.0759 27.8889C27.0936 26.2869 26.8822 26.2409 24.8999 24.6389M11.3999 19.2222C14.9146 19.2222 16.8852 19.2222 20.3999 19.2222M11.3999 25H20.3999M11.3999 30.7778H20.3999"
+                    stroke="#3F4149" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <p>Create Quiz</p>
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+            <div class="iconButton">
+              <button id="button-microphone" type="button" title="Toggle microphone">
+                <svg xmlns="http://www.w3.org/2000/svg" width="49" height="49" viewBox="0 0 49 49" fill="none">
+                  <path
+                    d="M36.4708 30.0303C38.0567 30.6286 41.6124 31.4628 43.4358 31.4474C45.1784 31.4363 45.2308 31.2937 45.4841 30.6044C45.5149 30.5206 45.5487 30.4287 45.5889 30.328M36.4708 30.0303L36.8246 29.095M36.4708 30.0303L36.8237 29.0947C36.824 29.0948 36.8243 29.0949 36.8246 29.095M36.4708 30.0303C34.4333 29.2595 34.2044 29.1409 33.9309 27.2897C33.905 27.1149 33.8829 26.9455 33.8614 26.7815C33.7218 25.714 33.6125 24.878 32.717 24.2782C31.684 23.5863 28.6902 22.7342 25.448 22.7395C22.2059 22.7449 19.3254 23.6029 18.2901 24.2984C17.3789 24.9106 17.2692 25.7616 17.1284 26.8548C17.1093 27.0036 17.0895 27.1569 17.0671 27.3147L6.49531 30.4494C6.51582 30.4527 6.53973 30.4562 6.56741 30.4596C6.76931 30.4844 7.07465 30.4977 7.55917 30.5002C8.35245 30.5032 9.60011 30.3032 10.9039 30.0137C12.1887 29.7284 13.438 29.3767 14.1996 29.1167C14.7373 28.9328 15.0954 28.8096 15.3642 28.6925C15.6264 28.5784 15.7166 28.5055 15.7552 28.4656C15.8294 28.3889 15.926 28.2352 16.0771 27.174C16.0945 27.0512 16.1111 26.9212 16.1283 26.7868C16.1907 26.2993 16.2605 25.7534 16.4039 25.2823C16.6122 24.5978 16.9931 23.965 17.7325 23.4683C18.396 23.0226 19.5099 22.6003 20.8075 22.2879C22.1325 21.9689 23.7412 21.7424 25.4464 21.7395C27.1514 21.7367 28.7872 21.9588 30.1378 22.2735C31.4569 22.5808 32.6051 22.9996 33.2735 23.4474C34.0162 23.9449 34.3924 24.5812 34.5967 25.2646C34.7321 25.7177 34.8013 26.249 34.8629 26.7224C34.8821 26.8698 34.9006 27.0115 34.9201 27.1436C35.0626 28.1075 35.1662 28.275 35.2577 28.3695C35.3122 28.4258 35.4197 28.5093 35.6822 28.6341C35.95 28.7614 36.3049 28.8984 36.8246 29.095M36.8246 29.095C37.5536 29.3699 38.7856 29.7155 40.0735 29.9911C41.3735 30.2693 42.63 30.4542 43.4274 30.4475L43.4294 30.4474C43.9141 30.4444 44.2193 30.4307 44.4211 30.4056C44.4496 30.402 44.4741 30.3985 44.495 30.395M44.495 30.395C44.4804 30.4332 44.4693 30.4602 44.4594 30.4821C44.4533 30.4957 44.4502 30.5015 44.4503 30.5016C44.4507 30.5018 44.4842 30.4435 44.5586 30.3948C44.583 30.3789 44.5991 30.3727 44.5991 30.3725C44.599 30.3723 44.5705 30.3827 44.495 30.395ZM44.495 30.395C44.5052 30.3684 44.5172 30.3362 44.5318 30.2966C44.5361 30.2852 44.5405 30.2732 44.5451 30.2607C44.5755 30.1778 44.6139 30.0734 44.659 29.9599M44.659 29.9599C44.6588 29.9605 44.6586 29.9612 44.6583 29.9618L45.5889 30.328M44.659 29.9599C44.6593 29.9592 44.6596 29.9585 44.6599 29.9578L45.5889 30.328M44.659 29.9599C44.9354 29.2573 45.1494 28.5296 45.298 27.7861M45.5889 30.328C45.8876 29.5688 46.1187 28.7828 46.2791 27.9799M46.2791 27.9799L45.2975 27.7889C45.2977 27.7879 45.2979 27.787 45.298 27.7861M46.2791 27.9799C46.5864 26.4009 46.5893 25.3508 46.1852 24.1958C45.7812 23.0408 44.1604 21.0307 38.9907 19.4778C33.821 17.9249 30.8284 17.4926 25.5053 17.5003C20.1822 17.5081 16.7037 18.1508 12.0273 19.514L12.3078 20.4738C16.9107 19.1321 20.2946 18.5079 25.5067 18.5003C30.7318 18.4928 33.627 18.9108 38.703 20.4355C43.7424 21.9493 44.9918 23.8127 45.2413 24.526C45.5647 25.4505 45.5864 26.3034 45.298 27.7861M46.2791 27.9799L45.2984 27.784C45.2983 27.7847 45.2982 27.7854 45.298 27.7861M7.03633 22.8612C7.92397 22.1455 9.48673 21.2981 12.3072 20.474L5.40338 30.3849L6.33421 30.0194C6.33402 30.019 6.33384 30.0185 6.33365 30.018C6.05798 29.3156 5.84515 28.5881 5.69798 27.8447C5.41133 26.3645 5.43797 25.5128 5.76468 24.584C5.92092 24.1398 6.18366 23.5487 7.03633 22.8612Z"
+                    stroke="#FF2222" stroke-width="2" stroke-miterlimit="10" />
+                </svg>
+              </button>
+              <p>End Session</p>
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Apply filter" style="display: none;">
+            <button id="button-video-filter" type="button" class="btn btn-success" title="Apply filter">
+              <%= require('../../node_modules/open-iconic/svg/contrast.svg') %>
+            </button>
+            <button id="button-video-filter-drop" type="button"
+              class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+            <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
+              <a class="dropdown-item" href="#">No filter</a>
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle content share"
+            style="display: none;">
+            <button id="button-content-share" type="button" class="btn btn-success" title="Toggle content share">
+              <%= require('../../node_modules/open-iconic/svg/camera-slr.svg') %>
+            </button>
+            <button id="button-content-share-drop" type="button"
+              class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" title="Select content to share"></button>
+            <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="button-content-share-drop" x-placement="bottom-start"
+              style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+              <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
+                data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content
+                Sharing</a>
+              <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item" href="#">Pause
+                Content Share</a>
+              <hr class="dropdown-divider">
+              <a id="dropdown-item-content-share-screen-capture"
+                class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
+              <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option"
+                href="#">Test Video</a>
+              <a id="dropdown-item-content-share-test-mono-audio-speech"
+                class="dropdown-item content-share-source-option" href="#">Test Mono
+                Audio Speech</a>
+              <a id="dropdown-item-content-share-test-stereo-audio-speech"
+                class="dropdown-item content-share-source-option" href="#">Test Stereo
+                Audio Speech</a>
+              <a id="dropdown-item-content-share-test-stereo-audio-tone"
+                class="dropdown-item content-share-source-option" href="#">Test Stereo
+                Tone (L-500Hz R-1000Hz)</a>
+              <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option"
+                for="content-share-item">Local file</label>
+              <input id="content-share-item" type="file">
+            </div>
+          </div>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle speaker" style="display: none;">
+            <button id="button-speaker" type="button" class="btn btn-success" title="Toggle speaker">
+              <%= require('../../node_modules/open-iconic/svg/volume-low.svg') %>
+            </button>
+            <button id="button-speaker-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
+            <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="button-speaker-drop" x-placement="bottom-start"
+              style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+              <a class="dropdown-item" href="#">Default speaker</a>
+            </div>
+          </div>
+          <!-- <button id="button-live-transcription" type="button" style="display: none !important;"
+            class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle live transcription display" data-bs-toggle="button"
+            aria-pressed="false" autocomplete="off" style="display: none">
+            <%= require('../../node_modules/open-iconic/svg/code.svg') %>
+          </button> -->
+          <button id="button-video-stats" style="display: none;" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
+            title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+            <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
+          </button>
+          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Select destination" style="display: none;">
+            <div class="btn-group" role="group">
+              <button id="button-video-recording-drop" type="button" class="btn btn-success dropdown-toggle"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
+                <%= require('../../node_modules/open-iconic/svg/cloud.svg') %>
+              </button>
+              <div id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
+                <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                  title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                  <svg class="svg">
+                    <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
+                  </svg>
+                  Capture Media to Device
+                </button>
+                <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                  title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false"
+                  autocomplete="off">
+                  <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
+                    Capture Media to S3
+                </button>
+                <button id="button-live-connector" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                  title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false"
+                  autocomplete="off">
+                  <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
+                    Broadcast Media to IVS
+                </button>
+              </div>
+            </div>
+          </div>
+          <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
+            title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
+            autocomplete="off">
+            <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
+          </button>
+        </div>
+        <div class="col-4 col-lg-3 order-3 order-lg-3 text-end text-lg-right" style="display: none;">
+          <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4"
+            title="Leave meeting">
+            <%= require('../../node_modules/open-iconic/svg/account-logout.svg') %>
+          </button>
+          <button id="button-meeting-end" type="button" class="btn btn-outline-danger mx-1 mx-xl-2 my-2 px-4"
+            title="End meeting">
+            <%= require('../../node_modules/open-iconic/svg/power-standby.svg') %>
+          </button>
+        </div>
       </div>
-      <button id="button-save-content-share-configs" type="button" class="btn btn-primary" data-bs-dismiss="modal"
-        aria-pressed="false" autocomplete="off">
-        Save
-      </button>
+    </div>
+
+
+
+    <div id='toast-container' aria-live="polite" aria-atomic="true">
     </div>
   </div>
-</div>
 
-<!-- Failure card if meeting cannot be joined -->
+  <!-- Content Share Configuration Modal -->
 
-<div id="flow-failed-join" class="flow">
-  <div class="container">
-    <form id="form-failed-join">
-      <div class="card border-warning mb-3" style="max-width: 20rem;">
-        <div id="failed-join" class="card-header"></div>
-        <div class="card-body">
-          <h4 class="card-title">Unable to join meeting</h4>
-          <p class="card-text">There was an issue joining that meeting. Check your connectivity and try again.</p>
-          <small id="failed-join-error" class="text-muted"></small>
+  <div id="content-share-configuration-modal" class="modal fade" style="display: none">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="additional-options-modal-label">Content Share Options</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          <h5 class="my-2">Screen Capture</h5>
+          <label for="content-capture-frame-rate" style=" text-align: left;">Frame Rate</label>
+          <input type="number" id="content-capture-frame-rate" class="form-control" placeholder="30">
+          <div class="form-text">
+            The browser is not guaranteed to send the chosen value.
+          </div>
+          <h5 class="my-2">Media Processing</h5>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="content-enable-volume-reduction" class="form-check-input">
+            <label for="content-share-voice-focus" class="form-check-label">Reduce audio volume</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="content-enable-circular-cut" class="form-check-input">
+            <label for="content-enable-circular-cut" class="form-check-label">Circular crop video</label>
+          </div>
+          <div id="content-simulcast-config">
+            <h5 class="my-2">Simulcast Encoding</h5>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="content-enable-simulcast">
+              <label class="form-check-label" for="content-enable-simulcast">Enable Simulcast</label>
+            </div>
+            <div class="container p-0">
+              <div class="row row-cols-2 my-1">
+                <div class="col-6 text-center">Low Layer</div>
+                <div class="col-6 text-center">High Layer</div>
+              </div>
+              <div class="row row-cols-2 my-1">
+                <div class="col-6">
+                  <input type="number" id="content-simulcast-low-max-bitratekbps" class="form-control"
+                    placeholder="Max bitrate (kbps)">
+                </div>
+                <div class="col-6">
+                  <input type="number" id="content-simulcast-high-max-bitratekbps" class="form-control"
+                    placeholder="Max bitrate (kbps)">
+                </div>
+              </div>
+              <div class="row row-cols-2 my-1">
+                <div class="col-6">
+                  <input type="number" id="content-simulcast-low-scale-factor" class="form-control"
+                    placeholder="Scale factor">
+                </div>
+                <div class="col-6">
+                  <input type="number" id="content-simulcast-high-scale-factor" class="form-control"
+                    placeholder="Scale factor">
+                </div>
+              </div>
+              <div class="row row-cols-2 my-1">
+                <div class="col-6">
+                  <input type="number" id="content-simulcast-low-max-framerate" class="form-control"
+                    placeholder="Max frame rate">
+                </div>
+                <div class="col-6">
+                  <input type="number" id="content-simulcast-high-max-framerate" class="form-control"
+                    placeholder="Max frame rate">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button id="button-save-content-share-configs" type="button" class="btn btn-primary" data-bs-dismiss="modal"
+          aria-pressed="false" autocomplete="off">
+          Save
+        </button>
       </div>
-      <div class="d-grid gap-2">
-        <button class="btn btn-lg btn-outline-warning" type="submit">OK</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Attendee capabilities modal -->
-
-<div class="modal fade" id="attendee-capabilities-modal" tabindex="-1"
-     aria-labelledby="attendee-capabilities-modal-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="attendee-capabilities-modal-label">Attendee capabilities</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="form-floating mb-3">
-          <div id="attendee-capabilities-modal-description" class="text-wrap text-break"></div>
-        </div>
-        <div class="form-floating mb-3">
-          <select name="audioCapability" class="form-select" id="attendee-capabilities-modal-audio-select">
-            <option value="SendReceive">SendReceive</option>
-            <option value="Send">Send</option>
-            <option value="Receive">Receive</option>
-            <option value="None">None</option>
-          </select>
-          <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
-        </div>
-        <div class="form-floating mb-3">
-          <select name="videoCapability" class="form-select" id="attendee-capabilities-modal-video-select">
-            <option value="SendReceive">SendReceive</option>
-            <option value="Send">Send</option>
-            <option value="Receive">Receive</option>
-            <option value="None">None</option>
-          </select>
-          <label for="videoCapability"  style="text-align: left;">Video capability:</label>
-        </div>
-        <div class="form-floating mb-3">
-          <select name="contentCapability" class="form-select" id="attendee-capabilities-modal-content-select">
-            <option value="SendReceive">SendReceive</option>
-            <option value="Send">Send</option>
-            <option value="Receive">Receive</option>
-            <option value="None">None</option>
-          </select>
-          <label for="contentCapability"  style="text-align: left;">Content capability:</label>
-        </div>
-      </div>
-      <button type="button" class="btn btn-primary" id="attendee-capabilities-save-button">Save</button>
     </div>
   </div>
-</div>
+
+  <!-- Failure card if meeting cannot be joined -->
+
+  <div id="flow-failed-join" class="flow">
+    <div class="container">
+      <form id="form-failed-join">
+        <div class="card border-warning mb-3" style="max-width: 20rem;">
+          <div id="failed-join" class="card-header"></div>
+          <div class="card-body">
+            <h4 class="card-title">Unable to join meeting</h4>
+            <p class="card-text">There was an issue joining that meeting. Check your connectivity and try again.</p>
+            <small id="failed-join-error" class="text-muted"></small>
+          </div>
+        </div>
+        <div class="d-grid gap-2">
+          <button class="btn btn-lg btn-outline-warning" type="submit">OK</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Attendee capabilities modal -->
+
+  <div class="modal fade" id="attendee-capabilities-modal" tabindex="-1"
+    aria-labelledby="attendee-capabilities-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="attendee-capabilities-modal-label">Attendee capabilities</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-floating mb-3">
+            <div id="attendee-capabilities-modal-description" class="text-wrap text-break"></div>
+          </div>
+          <div class="form-floating mb-3">
+            <select name="audioCapability" class="form-select" id="attendee-capabilities-modal-audio-select">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="audioCapability" style="text-align: left;">Audio capability:</label>
+          </div>
+          <div class="form-floating mb-3">
+            <select name="videoCapability" class="form-select" id="attendee-capabilities-modal-video-select">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="videoCapability" style="text-align: left;">Video capability:</label>
+          </div>
+          <div class="form-floating mb-3">
+            <select name="contentCapability" class="form-select" id="attendee-capabilities-modal-content-select">
+              <option value="SendReceive">SendReceive</option>
+              <option value="Send">Send</option>
+              <option value="Receive">Receive</option>
+              <option value="None">None</option>
+            </select>
+            <label for="contentCapability" style="text-align: left;">Content capability:</label>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary" id="attendee-capabilities-save-button">Save</button>
+      </div>
+    </div>
+  </div>
 
 </body>
+
 </html>
