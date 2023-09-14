@@ -8,7 +8,7 @@ end
 # Why not read node_modules/.package-lock.json? Because it's not the same.
 hashfile = 'node_modules/.package-lock.json.hash'
 current = Digest::SHA2.file('package-lock.json').hexdigest
-expected = File.read(hashfile) if File.exists?(hashfile)
+expected = File.read(hashfile) if File.exist?(hashfile)
 
 if expected != current
   puts 'Running npm ci to regenerate node_modules.'
