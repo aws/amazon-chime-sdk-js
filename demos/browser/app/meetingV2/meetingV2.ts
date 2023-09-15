@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import './styleV2.scss';
-
+import './dbfunctions';  
 import {
   ApplicationMetadata,
   AsyncScheduler,
@@ -757,15 +757,17 @@ export class DemoMeetingApp
     });
 
     const submitQuizBot = document.getElementById('submit-quiz') as HTMLButtonElement;
-    submitQuizBot.addEventListener('click', _e => {
+    submitQuizBot.addEventListener('click', async (): Promise<void> => {
       console.log('submit quiz');
 
       // DREW ADDED CODES
-      const transcript = document.getElementById('transcript-container').innerText;
-      const transcriptData = {
-          "transcript": transcript
-      };
-      console.log("TRANSCRIPT DATA:",transcriptData);
+      // const transcript = document.getElementById('transcript-container').innerText;
+      // const transcriptData = {
+      //     "transcript": transcript
+      // };
+      // const url = "https://aptiversity.com:5555/MakeQuiz";
+      // const url = "https://10.0.0.94:5555/MakeQuiz";
+      // console.log("TRANSCRIPT DATA:",transcriptData);
       // const response = await fetch(url, {
       //     method: 'POST',
       //     headers: {
@@ -819,7 +821,13 @@ export class DemoMeetingApp
     const quizOptions = document.getElementById('quiz-options') as HTMLElement;
     
     // Populate quiz numbers
-    questions.forEach((question, index) => {
+    questions.forEach((question: {
+          answer_reason: string;
+          correct_answer: string;
+          question: string;
+          question_number: number;
+          wrong_answers: string[];
+        }, index: number) => {
         let questionNumber = question.question_number;
         let questionBlock = document.createElement('div');
         questionBlock.className = 'numbers-block';
