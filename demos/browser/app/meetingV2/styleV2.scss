@@ -393,7 +393,7 @@ $overlay-z-index: 10;
 }
 .modal-body {
   color: #000;
-  font-family: Inter;
+
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
@@ -447,11 +447,11 @@ body {
 }
 
 .svg-active {
-  fill: $white;
+  fill: lighten($secondary, 15%);
 }
 
 .svg-inactive {
-  fill: lighten($secondary, 15%);
+  fill: $white;
 }
 
 .flow {
@@ -600,7 +600,7 @@ a.markdown:active {
 
 .message-bubble-self {
   color: #3f4149;
-  font-family: Inter;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -617,7 +617,7 @@ a.markdown:active {
 
 .message-bubble-other {
   color: #3f4149;
-  font-family: Inter;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -635,7 +635,7 @@ a.markdown:active {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
   color: #3f4149;
-  font-family: Inter;
+
   font-size: 18px;
   font-style: normal;
   font-weight: 700;
@@ -1056,8 +1056,8 @@ a.markdown:active {
   white-space: nowrap;
   word-wrap: break-word;
   color: #3f4149;
-  font-family: Inter;
-  font-size: 16px;
+
+  font-size: 36px;
   font-style: normal;
   font-weight: 400;
   line-height: 150%;
@@ -1065,7 +1065,7 @@ a.markdown:active {
 
 .transcript-speaker {
   color: #3f4149;
-  font-family: Inter;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -1172,7 +1172,7 @@ input[type='file']:focus + label {
   p {
     color: #3f4149;
     text-align: center;
-    font-family: Inter;
+
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
@@ -1192,7 +1192,7 @@ input[type='file']:focus + label {
   justify-content: center;
   border-radius: 8px;
   color: #fff;
-  font-family: Inter;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -1211,7 +1211,7 @@ input[type='file']:focus + label {
   justify-content: center;
   border-radius: 8px;
   color: #8e509c;
-  font-family: Inter;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -1225,7 +1225,7 @@ input[type='file']:focus + label {
 
   .quiz-heading {
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
@@ -1233,7 +1233,7 @@ input[type='file']:focus + label {
   }
   .quiz-title {
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 18px;
     font-style: normal;
     font-weight: 600;
@@ -1250,7 +1250,7 @@ input[type='file']:focus + label {
     border: 1px solid #e6e6e6;
     background: #fff;
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 16px;
     font-style: normal;
     font-weight: 600;
@@ -1260,9 +1260,14 @@ input[type='file']:focus + label {
       background: #8e509c;
     }
   }
+  .numbers-block.active-numbers-block {
+    color: #fff;
+    background: #8e509c;
+  }
+
   .chapters {
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
@@ -1298,44 +1303,42 @@ input[type='file']:focus + label {
   }
   label {
     color: #3f4149;
-    font-family: Inter;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%;
-  }
-}
-.radioButton {
-  padding-left: 30px;
-  align-items: center;
-  .radioBox {
-    display: flex;
-    margin-left: -20px;
-    align-items: center;
-  }
 
-  label {
-    color: #3f4149;
-    font-family: Inter;
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
     line-height: 150%;
   }
-  input[type='radio'] {
-    accent-color: rgba(142, 80, 156, 1);
-    width: 15.2px;
-    margin-right: 10px;
-    height: 15.2px;
-  }
 }
+
+.radioBox {
+  display: flex;
+  margin-left: -20px;
+  align-items: center;
+}
+
+label {
+  color: #3f4149;
+
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+}
+input[type='radio'] {
+  accent-color: rgba(142, 80, 156, 1);
+  width: 15.2px;
+  margin-right: 10px;
+  height: 15.2px;
+}
+
 .radioCheckBox {
   display: flex;
   align-items: center;
   .label {
     margin-right: 10px;
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
@@ -1354,7 +1357,7 @@ input[type='file']:focus + label {
   }
   label {
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
@@ -1373,7 +1376,7 @@ input[type='file']:focus + label {
   justify-content: center;
   border-radius: 8px;
   color: #f22;
-  font-family: Inter;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -1389,7 +1392,7 @@ input[type='file']:focus + label {
   h4 {
     color: #8e509c;
     text-align: center;
-    font-family: Inter;
+
     font-size: 24px;
     font-style: normal;
     font-weight: 900;
@@ -1402,7 +1405,7 @@ input[type='file']:focus + label {
 }
 .note {
   color: #3f4149;
-  font-family: Inter;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -1417,7 +1420,7 @@ input[type='file']:focus + label {
 
   p {
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
@@ -1644,7 +1647,7 @@ input[type='file']:focus + label {
     width: 100%;
     p {
       color: #3f4149;
-      font-family: Inter;
+
       font-size: 18px;
       font-style: normal;
       font-weight: 400;
@@ -1660,7 +1663,7 @@ input[type='file']:focus + label {
       padding: 16px;
       h5 {
         color: #3f4149;
-        font-family: Inter;
+
         font-size: 24px;
         font-style: normal;
         font-weight: 700;
@@ -1668,7 +1671,7 @@ input[type='file']:focus + label {
       }
       p {
         color: #3f4149;
-        font-family: Inter;
+
         font-size: 18px;
         font-style: normal;
         font-weight: 400;
@@ -1676,7 +1679,7 @@ input[type='file']:focus + label {
       }
       a {
         color: #8e509c;
-        font-family: Inter;
+
         font-size: 16px;
         font-style: normal;
         font-weight: 300;
@@ -1695,7 +1698,7 @@ input[type='file']:focus + label {
     border: 4px solid #8e509c;
     p {
       color: #8e509c;
-      font-family: Inter;
+
       font-size: 18px;
       font-style: normal;
       font-weight: 700;
@@ -1711,7 +1714,7 @@ input[type='file']:focus + label {
     padding: 40px;
     .sub-header {
       color: #3f4149;
-      font-family: Inter;
+
       font-size: 18px;
       font-style: normal;
       font-weight: 400;
@@ -1725,7 +1728,7 @@ input[type='file']:focus + label {
 
       h5 {
         color: #3f4149;
-        font-family: Inter;
+
         font-size: 18px;
         font-style: normal;
         font-weight: 700;
@@ -1738,7 +1741,7 @@ input[type='file']:focus + label {
 
         p {
           color: #3f4149;
-          font-family: Inter;
+
           font-size: 18px;
           font-style: normal;
           font-weight: 400;
@@ -1751,7 +1754,7 @@ input[type='file']:focus + label {
         }
         a {
           color: #8e509c;
-          font-family: Inter;
+
           font-size: 16px;
           font-style: normal;
           font-weight: 300;
@@ -1761,7 +1764,7 @@ input[type='file']:focus + label {
     }
     .heading {
       color: #8e509c;
-      font-family: Inter;
+
       font-size: 18px;
       font-style: normal;
       font-weight: 700;
@@ -1770,7 +1773,7 @@ input[type='file']:focus + label {
     }
     .link {
       color: #3f4149;
-      font-family: Inter;
+
       font-size: 12px;
       font-style: normal;
       font-weight: 400;
@@ -1812,7 +1815,7 @@ input[type='file']:focus + label {
     h2 {
       color: #fff;
       text-align: center;
-      font-family: Inter;
+
       font-size: 48px;
       font-style: normal;
       font-weight: 700;
@@ -1821,7 +1824,7 @@ input[type='file']:focus + label {
     h3 {
       color: #fff;
       text-align: center;
-      font-family: Inter;
+
       font-size: 24px;
       font-style: normal;
       font-weight: 400;
@@ -1830,7 +1833,7 @@ input[type='file']:focus + label {
   }
   .title {
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 32px;
     font-style: normal;
     font-weight: 700;
@@ -1839,7 +1842,7 @@ input[type='file']:focus + label {
   }
   h6 {
     color: #3f4149;
-    font-family: Inter;
+
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
@@ -1861,7 +1864,7 @@ input[type='file']:focus + label {
     padding: 16px;
     h5 {
       color: #3f4149;
-      font-family: Inter;
+
       font-size: 24px;
       font-style: normal;
       font-weight: 700;
@@ -1869,7 +1872,7 @@ input[type='file']:focus + label {
     }
     p {
       color: #3f4149;
-      font-family: Inter;
+
       font-size: 18px;
       font-style: normal;
       font-weight: 400;
@@ -1877,11 +1880,52 @@ input[type='file']:focus + label {
     }
     a {
       color: #8e509c;
-      font-family: Inter;
+
       font-size: 16px;
       font-style: normal;
       font-weight: 300;
       line-height: 100%;
+    }
+  }
+}
+// .btn-group:hover .dropdown-menu {
+//   margin-top: 40px;
+//   margin-left: -135px;
+// }
+.btn-group {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+}
+.btn-group {
+  ul {
+    width: 300px;
+    padding-top: 12px;
+    align-items: center;
+    border-radius: 22px;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.11);
+
+    a {
+      margin: 0 5px;
+      color: #3f4149;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 25px;
+      fa-icon {
+        margin-right: 5px;
+      }
+      &:hover {
+        background-color: rgba(0, 168, 132, 0.2);
+        color: #00a884;
+        width: 240px;
+        margin: 0 5px;
+        border-radius: 10px;
+      }
     }
   }
 }
