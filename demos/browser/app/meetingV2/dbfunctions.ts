@@ -21,7 +21,7 @@ run().catch(err => console.log(err));
 
 async function run() {
   // 4. Connect to MongoDB
-  await connect('mongodb://127.0.0.1:27017/test');
+  await connect('mongodb+srv://TeachservAdmin:emR7jaiHTKdyeB0P@cluster0.g0zds.mongodb.net');
 //   mongodb+srv://TeachservAdmin:emR7jaiHTKdyeB0P@cluster0.g0zds.mongodb.net
 
   const user = new User({
@@ -30,6 +30,6 @@ async function run() {
     avatar: 'https://i.imgur.com/dM7Thhn.png'
   });
   await user.save();
-
+  console.log("***************CONNECTED TO MONGO DB***************",user.id); // '5d2dcf6b793fa0fc2a47ebb3'
   console.log(user.email); // 'bill@initech.com'
 }
