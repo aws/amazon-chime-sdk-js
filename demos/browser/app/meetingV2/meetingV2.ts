@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import './styleV2.scss';
-import './dbfunctions';  
+import './dbfunctions';
 import {
   ApplicationMetadata,
   AsyncScheduler,
@@ -715,17 +715,28 @@ export class DemoMeetingApp
         x.style.display = 'none';
       }
     });
-    const buttonQuizBot = document.getElementById('button-quizbot') as HTMLButtonElement;
-    buttonQuizBot.addEventListener('click', _e => {
-      console.log('button-quizbot');
+    const buttonQuizBot = document.getElementsByClassName('cancel-button');
+    for (var i = 0; i < buttonQuizBot.length; i++) {
+      buttonQuizBot[i].addEventListener('click', _e => {
+        console.log('button-quizbot');
+        let quiz_question = document.getElementById('quiz_question');
+        let quiz_in_progress = document.getElementById('quiz_in_progress');
+        var create_quiz = document.getElementById('create-quiz');
+        var x = document.getElementById('myDIV');
+        var transcript_container = document.getElementById('tile-transcript-container');
 
-      var x = document.getElementById('myDIV');
-      if (x.style.display === 'none') {
-        x.style.display = 'block';
-      } else {
-        x.style.display = 'none';
-      }
-    });
+        if (x.style.display === 'none') {
+          x.style.display = 'block';
+          transcript_container.style.width = '55%';
+        } else {
+          create_quiz.style.display = 'block';
+          x.style.display = 'none';
+          quiz_question.style.display = 'none';
+          quiz_in_progress.style.display = 'none';
+          transcript_container.style.width = '80%';
+        }
+      });
+    }
 
     const buttonChat = document.getElementById('button-chat') as HTMLButtonElement;
     buttonChat.addEventListener('click', _e => {
@@ -762,132 +773,159 @@ export class DemoMeetingApp
     });
 
     const submitQuizBot = document.getElementById('submit-quiz') as HTMLButtonElement;
-    submitQuizBot.addEventListener('click', async (): Promise<void> => {
-      console.log('submit quiz');
+    submitQuizBot.addEventListener(
+      'click',
+      async (): Promise<void> => {
+        console.log('submit quiz');
 
-      // DREW ADDED CODES
-      // const transcript = document.getElementById('transcript-container').innerText;
-      // const transcriptData = {
-      //     "transcript": transcript
-      // };
-      // const url = "https://aptiversity.com:5555/MakeQuiz";
-      // const url = "https://10.0.0.94:5555/MakeQuiz";
-      // console.log("TRANSCRIPT DATA:",transcriptData);
-      // const response = await fetch(url, {
-      //     method: 'POST',
-      //     headers: {
-      //         'Content-Type': 'application/json'
-      //     },
-      //     body: JSON.stringify(transcriptData)
-      // });
-  
-      // const quizJson = await response.json();
+        // DREW ADDED CODES
+        // const transcript = document.getElementById('transcript-container').innerText;
+        // const transcriptData = {
+        //     "transcript": transcript
+        // };
+        // const url = "https://aptiversity.com:5555/MakeQuiz";
+        // const url = "https://10.0.0.94:5555/MakeQuiz";
+        // console.log("TRANSCRIPT DATA:",transcriptData);
+        // const response = await fetch(url, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(transcriptData)
+        // });
 
-    // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-    const quizJson = {
-      "message": {
-        "quiz_title": "History 101",
-        "questions": [
-          {
-            "answer_reason": "The Magna Carta was sealed by King John in the year 1215.",
-            "correct_answer": "1215",
-            "question": "In which year was the Magna Carta sealed?",
-            "question_number": 1,
-            "wrong_answers": ["1200", "1230", "1150"]
+        // const quizJson = await response.json();
+
+        // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
+        const quizJson = {
+          message: {
+            quiz_title: 'History 101',
+            questions: [
+              {
+                answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+                correct_answer: '1215',
+                question: 'In which year was the Magna Carta sealed?',
+                question_number: 1,
+                wrong_answers: ['1200', '1230', '1150'],
+              },
+              {
+                answer_reason:
+                  'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+                correct_answer: 'Revival of classical learning',
+                question: 'What was the primary aim of the Renaissance?',
+                question_number: 2,
+                wrong_answers: [
+                  'Promotion of modern art',
+                  'Start of the industrial revolution',
+                  'Promotion of religious beliefs',
+                ],
+              },
+              {
+                answer_reason:
+                  'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+                correct_answer: 'Galileo Galilei',
+                question: 'Who is known as the father of observational astronomy?',
+                question_number: 3,
+                wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+              },
+            ],
           },
-          {
-            "answer_reason": "The primary aim of the Renaissance was the revival of classical learning and wisdom.",
-            "correct_answer": "Revival of classical learning",
-            "question": "What was the primary aim of the Renaissance?",
-            "question_number": 2,
-            "wrong_answers": ["Promotion of modern art", "Start of the industrial revolution", "Promotion of religious beliefs"]
-          },
-          {
-            "answer_reason": "Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.",
-            "correct_answer": "Galileo Galilei",
-            "question": "Who is known as the father of observational astronomy?",
-            "question_number": 3,
-            "wrong_answers": ["Isaac Newton", "Albert Einstein", "Nikola Tesla"]
-          }
-        ]
-      }
-    };
-    
-    console.log("quizJson:", quizJson);
+        };
 
-    const quizTitle = quizJson.message.quiz_title;
-    console.log(quizTitle);
-    
-    const questions = quizJson.message.questions;
-    console.log(questions);
-    
-    const quizNumbers = document.getElementById('quiz-numbers') as HTMLElement;
-    const quizQuestionElement = document.getElementById('quiz-question') as HTMLElement;
-    const quizOptions = document.getElementById('quiz-options') as HTMLElement;
-    
-    // Populate quiz numbers
-    questions.forEach((question: {
-          answer_reason: string;
-          correct_answer: string;
-          question: string;
-          question_number: number;
-          wrong_answers: string[];
-        }, index: number) => {
-        let questionNumber = question.question_number;
-        let questionBlock = document.createElement('div');
-        questionBlock.className = 'numbers-block';
-        questionBlock.innerText = `${questionNumber}`;
-        quizNumbers.appendChild(questionBlock);
-    
-        // Attach a click event to each questionBlock
-        questionBlock.addEventListener('click', function() {
-            // Display the selected question and its options
-            quizQuestionElement.innerText = question.question;
-            quizOptions.innerHTML = ''; // Clear previous options
-    
-            let correctAnswer = question.correct_answer;
-            let wrongAnswers = question.wrong_answers;
-            let allAnswers = [correctAnswer, ...wrongAnswers]; // No randomization
-    
-            allAnswers.forEach((answer, ansIndex) => {
+        console.log('quizJson:', quizJson);
+
+        const quizTitle = quizJson.message.quiz_title;
+        console.log(quizTitle);
+
+        const questions = quizJson.message.questions;
+        console.log(questions);
+
+        const quizNumbers = document.getElementById('quiz-numbers') as HTMLElement;
+        const quizQuestionElement = document.getElementById('quiz-question') as HTMLElement;
+        const quizOptions = document.getElementById('quiz-options') as HTMLElement;
+
+        // Populate quiz numbers
+        questions.forEach(
+          (
+            question: {
+              answer_reason: string;
+              correct_answer: string;
+              question: string;
+              question_number: number;
+              wrong_answers: string[];
+            },
+            index: number
+          ) => {
+            let questionNumber = question.question_number;
+            let questionBlock = document.createElement('div');
+            questionBlock.className = 'numbers-block';
+            // const element = document.getElementById('numbers-block');
+            // element.classList.add('active-numbers-block');
+            questionBlock.innerText = `${questionNumber}`;
+            quizNumbers.appendChild(questionBlock);
+
+            // Attach a click event to each questionBlock
+            questionBlock.addEventListener('click', function () {
+              // Display the selected question and its options
+
+              console.log('questionBlock', questionBlock);
+              console.log('questionNumber', questionNumber);
+              index++;
+              if (index === questionNumber) {
+                console.log('Index', index);
+                questionBlock.classList.add('active-numbers-block');
+              } else {
+                questionBlock.classList.remove('active-numbers-block');
+              }
+
+              quizQuestionElement.innerText = question.question;
+              quizOptions.innerHTML = ''; // Clear previous options
+
+              let correctAnswer = question.correct_answer;
+              let wrongAnswers = question.wrong_answers;
+              let allAnswers = [correctAnswer, ...wrongAnswers]; // No randomization
+
+              allAnswers.forEach((answer, ansIndex) => {
                 let optionLabel = document.createElement('label');
                 optionLabel.className = 'form-check form-check-inline radioBox';
-                
+
                 let optionInput = document.createElement('input');
                 optionInput.type = 'radio';
                 optionInput.id = `option-${index}-${ansIndex}`;
                 optionInput.name = 'option';
                 optionInput.value = `${ansIndex}`;
-    
-                if(answer === correctAnswer) { // Check the correct answer
-                    optionInput.checked = true;
+
+                if (answer === correctAnswer) {
+                  // Check the correct answer
+                  optionInput.checked = true;
                 }
-    
+
                 let answerLabel = document.createElement('label');
                 answerLabel.className = 'form-check-label';
                 answerLabel.htmlFor = optionInput.id;
                 answerLabel.innerText = answer;
-    
+
                 optionLabel.appendChild(optionInput);
                 optionLabel.appendChild(answerLabel);
                 quizOptions.appendChild(optionLabel);
+              });
             });
-        });
-    });
-    
+          }
+        );
 
-      // DREW CODE END
+        // DREW CODE END
 
-      var create_quiz = document.getElementById('create-quiz');
-      var generating_quiz = document.getElementById('generating-quiz');
+        var create_quiz = document.getElementById('create-quiz');
+        var generating_quiz = document.getElementById('generating-quiz');
 
-      if (generating_quiz.style.display === 'none') {
-        create_quiz.style.display = 'none';
-        generating_quiz.style.display = 'block';
-      } else {
-        create_quiz.style.display = 'none';
+        if (generating_quiz.style.display === 'none') {
+          create_quiz.style.display = 'none';
+          generating_quiz.style.display = 'block';
+        } else {
+          create_quiz.style.display = 'none';
+        }
       }
-    });
+    );
     const deleteQuizBot = document.getElementById('delete-quiz') as HTMLButtonElement;
     deleteQuizBot.addEventListener('click', _e => {
       console.log('delete_quiz');
