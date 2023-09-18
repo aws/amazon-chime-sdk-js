@@ -151,6 +151,39 @@ export default class ClientMetricReport {
     return (diff * 1000) / intervalSeconds;
   };
 
+  averageCpuQualityLimitationDurationPerSecondInMilliseconds = (
+    metricName?: string,
+    ssrc?: number
+  ): number => {
+    const metricReport = this.streamMetricReports[ssrc];
+    let intervalSeconds = (this.currentTimestampMs - this.previousTimestampMs) / 1000;
+    if (intervalSeconds <= 0) {
+      return 0;
+    }
+    if (this.previousTimestampMs <= 0) {
+      intervalSeconds = 1;
+    }
+
+    let previousValue = 0;
+    let currentValue = 0;
+    for (const [key, value] of Object.entries(metricReport.previousObjectMetrics[metricName])) {
+      if (key === 'cpu') {
+        previousValue = value;
+      }
+    }
+    for (const [key, value] of Object.entries(metricReport.currentObjectMetrics[metricName])) {
+      if (key === 'cpu') {
+        currentValue = value;
+      }
+    }
+
+    const diff = currentValue - previousValue;
+    if (diff <= 0) {
+      return 0;
+    }
+    return (diff * 1000) / intervalSeconds;
+  };
+
   isHardwareImplementation = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
     const implName = String(metricReport.currentStringMetrics[metricName]);
@@ -322,6 +355,10 @@ export default class ClientMetricReport {
       transform: this.isHardwareImplementation,
       type: SdkMetric.Type.VIDEO_ENCODER_IS_HARDWARE,
     },
+    qualityLimitationDurations: {
+      transform: this.averageCpuQualityLimitationDurationPerSecondInMilliseconds,
+      type: SdkMetric.Type.VIDEO_QUALITY_LIMITATION_DURATION_CPU,
+    },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -373,6 +410,26 @@ export default class ClientMetricReport {
     decoderImplementation: {
       transform: this.isHardwareImplementation,
       type: SdkMetric.Type.VIDEO_DECODER_IS_HARDWARE,
+    },
+    totalFreezeDuration: {
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
+      type: SdkMetric.Type.VIDEO_FREEZE_DURATION,
+    },
+    freezeCount: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_FREEZE_COUNT,
+    },
+    totalPauseDuration: {
+      transform: this.averageTimeSpentPerSecondInMilliseconds,
+      type: SdkMetric.Type.VIDEO_PAUSE_DURATION,
+    },
+    pauseCount: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_PAUSE_COUNT,
+    },
+    framesDropped: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_DROPPED_FPS,
     },
   };
 

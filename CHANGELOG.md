@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Support sending and receiving redundant audio data to help reduce the effects of packet loss on audio quality. See README for more details.
+- Send a few additional metrics to backend
 
 ### Removed
 
