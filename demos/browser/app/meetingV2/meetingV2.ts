@@ -830,58 +830,58 @@ export class DemoMeetingApp
         console.log('submit quiz');
 
         // // DREW ADDED CODES
-        const transcript = document.getElementById('transcript-container').innerText;
-        const transcriptData = {
-            "transcript": transcript
-        };
-        const url = "https://aptiversity.com:5555/MakeQuiz";
+        // const transcript = document.getElementById('transcript-container').innerText;
+        // const transcriptData = {
+        //     "transcript": transcript
+        // };
+        // const url = "https://aptiversity.com:5555/MakeQuiz";
         // const url = "https://10.0.0.94:5555/MakeQuiz";
-        console.log("TRANSCRIPT DATA:",transcriptData);
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(transcriptData)
-        });
+        // console.log("TRANSCRIPT DATA:",transcriptData);
+        // const response = await fetch(url, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(transcriptData)
+        // });
 
-        const quizJson = await response.json();
+        // const quizJson = await response.json();
 
         //// BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-        // const quizJson = {
-        //   message: {
-        //     quiz_title: 'History 101',
-        //     questions: [
-        //       {
-        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
-        //         correct_answer: '1215',
-        //         question: 'In which year was the Magna Carta sealed?',
-        //         question_number: 1,
-        //         wrong_answers: ['1200', '1230', '1150'],
-        //       },
-        //       {
-        //         answer_reason:
-        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
-        //         correct_answer: 'Revival of classical learning',
-        //         question: 'What was the primary aim of the Renaissance?',
-        //         question_number: 2,
-        //         wrong_answers: [
-        //           'Promotion of modern art',
-        //           'Start of the industrial revolution',
-        //           'Promotion of religious beliefs',
-        //         ],
-        //       },
-        //       {
-        //         answer_reason:
-        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
-        //         correct_answer: 'Galileo Galilei',
-        //         question: 'Who is known as the father of observational astronomy?',
-        //         question_number: 3,
-        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
-        //       },
-        //     ],
-        //   },
-        // };
+        const quizJson = {
+          message: {
+            quiz_title: 'History 101',
+            questions: [
+              {
+                answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+                correct_answer: '1215',
+                question: 'In which year was the Magna Carta sealed?',
+                question_number: 1,
+                wrong_answers: ['1200', '1230', '1150'],
+              },
+              {
+                answer_reason:
+                  'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+                correct_answer: 'Revival of classical learning',
+                question: 'What was the primary aim of the Renaissance?',
+                question_number: 2,
+                wrong_answers: [
+                  'Promotion of modern art',
+                  'Start of the industrial revolution',
+                  'Promotion of religious beliefs',
+                ],
+              },
+              {
+                answer_reason:
+                  'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+                correct_answer: 'Galileo Galilei',
+                question: 'Who is known as the father of observational astronomy?',
+                question_number: 3,
+                wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+              },
+            ],
+          },
+        };
 
         console.log('quizJson:', quizJson);
 
