@@ -4,7 +4,7 @@
 // @ts-nocheck
 
 import '../../style.scss';
-import 'bootstrap';
+import 'bootstrap'
 
 import {
   ConsoleLogger,
@@ -46,6 +46,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
     this.initEventListeners();
     this.initParameters();
     this.switchToFlow('flow-connect');
+
   }
 
   initParameters(): void {
@@ -118,6 +119,7 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
     if (message.payload) {
       this.appendMessage('payload:', message.payload);
     }
+
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
 
@@ -165,7 +167,15 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
       obj[key] = value;
     }
   }
+
+
+
+
 }
 window.addEventListener('load', () => {
   new DemoMessagingSessionApp();
 });
+
+
+
+

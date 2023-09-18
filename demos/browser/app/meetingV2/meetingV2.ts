@@ -699,8 +699,12 @@ export class DemoMeetingApp
         x.style.display = 'none';
       }
     });
+
+    // SEND QUIZBOT FORM TO USERS DREW SEND
+    
     const buttonPublishQuiz = document.getElementById('publish-quiz-button') as HTMLButtonElement;
     buttonPublishQuiz.addEventListener('click', _e => {
+
       var x = document.getElementById('quiz_in_progress');
       var delete_quiz = document.getElementById('quiz_question');
       if (x.style.display === 'none') {
@@ -709,11 +713,57 @@ export class DemoMeetingApp
       } else {
         x.style.display = 'none';
       }
+
+
+      // DREW PUBLISH FORM ADDITIONS **********
+      const formData = {
+        title: "Sample Quiz",
+        fields: [
+          {
+            label: "Question 1",
+            type: "textarea"
+          },
+          {
+            label: "Options",
+            type: "dropdown",
+            options: ["Option 1", "Option 2", "Option 3"]
+          }
+        ]
+      };
+    const formDataString = JSON.stringify(formData);
+    console.log("formDataString:", formDataString);
+  
+
+    // Send the formData as a stringified JSON
+    this.audioVideo.realtimeSendDataMessage(
+      'displayForm',  // Adjusted the topic to 'displayForm'
+      formDataString,
+      DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+    );
+
+    this.dataMessageHandler(
+      new DataMessage(
+        Date.now(),
+        'displayForm',
+        new TextEncoder().encode(formDataString),  
+        this.meetingSession.configuration.credentials.attendeeId,
+        this.meetingSession.configuration.credentials.externalUserId
+      )
+    );
+    
+
     });
+
+// make a function displayForm():
+
+      
+
+    
     const buttonQuizBot = document.getElementsByClassName('cancel-button');
     for (var i = 0; i < buttonQuizBot.length; i++) {
       buttonQuizBot[i].addEventListener('click', _e => {
         console.log('button-quizbot');
+        console.log(this.primaryExternalMeetingId);
         let quiz_question = document.getElementById('quiz_question');
         let quiz_in_progress = document.getElementById('quiz_in_progress');
         var create_quiz = document.getElementById('create-quiz');
@@ -737,7 +787,8 @@ export class DemoMeetingApp
     buttonChat.addEventListener('click', _e => {
       console.log('button-chat');
 
-      var x = document.getElementById('messages');
+      // var x = document.getElementById('messages');
+      var x = document.getElementById('roster-message-container');
       if (x.style.display === 'none' || x.classList.contains('d-none')) {
         // add d-hidden to hide the roster
         x.classList.remove('d-none');
@@ -773,25 +824,25 @@ export class DemoMeetingApp
       async (): Promise<void> => {
         console.log('submit quiz');
 
-        // DREW ADDED CODES
-        // const transcript = document.getElementById('transcript-container').innerText;
-        // const transcriptData = {
-        //     "transcript": transcript
-        // };
-        // const url = "https://aptiversity.com:5555/MakeQuiz";
+        // // DREW ADDED CODES
+        const transcript = document.getElementById('transcript-container').innerText;
+        const transcriptData = {
+            "transcript": transcript
+        };
+        const url = "https://aptiversity.com:5555/MakeQuiz";
         // const url = "https://10.0.0.94:5555/MakeQuiz";
-        // console.log("TRANSCRIPT DATA:",transcriptData);
-        // const response = await fetch(url, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(transcriptData)
-        // });
+        console.log("TRANSCRIPT DATA:",transcriptData);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transcriptData)
+        });
 
-        // const quizJson = await response.json();
+        const quizJson = await response.json();
 
-        // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
+        //// BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
         const quizJson = {
           message: {
             quiz_title: 'History 101',
@@ -1770,6 +1821,63 @@ export class DemoMeetingApp
       }
     });
 
+
+    // DREW SEND END BEGIN
+
+    const sendFormMessage = (): void => {
+      AsyncScheduler.nextTick(() => {
+        // const textArea = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
+        
+        const formData = {
+          title: "Sample Quiz",
+          fields: [
+            {
+              label: "Question 1",
+              type: "textarea"
+            },
+            {
+              label: "Options",
+              type: "dropdown",
+              options: ["Option 1", "Option 2", "Option 3"]
+            }
+          ]
+        };
+      const formDataString = JSON.stringify(formData);
+  
+        
+        const textToSend = formDataString;
+        // if (!textToSend) {
+        //   return;
+        // }
+        // textArea.value = '';
+        this.audioVideo.realtimeSendDataMessage(
+          "displayForm",
+          textToSend,
+          DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+        );
+        // echo the message to the handler
+        this.dataMessageHandler(
+          new DataMessage(
+            Date.now(),
+            "displayForm",
+            new TextEncoder().encode(textToSend),
+            this.meetingSession.configuration.credentials.attendeeId,
+            this.meetingSession.configuration.credentials.externalUserId
+          )
+        );
+      });
+    };
+
+    const textAreaSendFormMessage = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
+    textAreaSendFormMessage.addEventListener('click', e => {
+          sendFormMessage();      
+    });
+
+
+
+
+    // DREW SEND END
+
     const buttonMeetingEnd = document.getElementById('button-meeting-end');
     buttonMeetingEnd.addEventListener('click', _e => {
       const confirmEnd = new URL(window.location.href).searchParams.get('confirm-end') === 'true';
@@ -2320,6 +2428,7 @@ export class DemoMeetingApp
     this.setupCanUnmuteHandler();
     this.setupSubscribeToAttendeeIdPresenceHandler();
     this.setupDataMessage();
+    this.setupDataFormMessage();
     this.setupLiveTranscription();
     this.audioVideo.addObserver(this);
     this.meetingSession.eventController.addObserver(this);
@@ -2540,6 +2649,9 @@ export class DemoMeetingApp
   }
 
   dataMessageHandler(dataMessage: DataMessage): void {
+    console.log("*************************messager:", dataMessage);
+    console.log("*************************message.TYPE:", dataMessage.topic);
+
     if (!dataMessage.throttled) {
       const isSelf =
         dataMessage.senderAttendeeId === this.meetingSession.configuration.credentials.attendeeId;
@@ -2547,15 +2659,46 @@ export class DemoMeetingApp
         return;
       }
       this.lastReceivedMessageTimestamp = dataMessage.timestampMs;
+      // Drew ADD FORM POPUP END SEND END
+      // const parsedMessage = JSON.parse(dataMessage.text());
+      
+      // Check if the message has an action to display a form
+      // if (parsedMessage.action === 'displayForm') {
+      //   displayFormPopup(parsedMessage.formData);
+      //   return; // Exit early after displaying the form
+      // }
+      // END DREW ADD
+
+          // DREW ADD
+      
+      // console.log("*************************message:", dataMessage);
+      // console.log("*************************message.TYPE:", dataMessage.topic);
+      if (dataMessage.topic === 'displayForm') {
+
+        
+      console.log("*************************RUNNNING DISPLAYFORM:");
+      console.log("Received message:", dataMessage.text());
+      // const messageContent = new TextDecoder().decode(dataMessage.data);
+      // const parsedMessage = JSON.parse(messageContent);
+      const receivedData = JSON.parse(dataMessage.text());
+      this.displayForm(receivedData);
+
+
+    }
+    // DREW ADD END
+
+
       const messageDiv = document.getElementById('receive-message') as HTMLDivElement;
       const messageNameSpan = document.createElement('div') as HTMLDivElement;
       messageNameSpan.classList.add('message-bubble-sender');
       messageNameSpan.innerText = dataMessage.senderExternalUserId.split('#').slice(-1)[0];
+
       const messageTextSpan = document.createElement('div') as HTMLDivElement;
       messageTextSpan.classList.add(isSelf ? 'message-bubble-self' : 'message-bubble-other');
       messageTextSpan.innerHTML = this.markdown
         .render(dataMessage.text())
         .replace(/[<]a /g, '<a target="_blank" ');
+
       const appendClass = (element: HTMLElement, className: string): void => {
         for (let i = 0; i < element.children.length; i++) {
           const child = element.children[i] as HTMLElement;
@@ -2583,8 +2726,107 @@ export class DemoMeetingApp
       }
     );
   }
+  
+  setupDataFormMessage(): void {
+    this.audioVideo.realtimeSubscribeToReceiveDataMessage(
+      "displayForm",
+      (dataMessage: DataMessage) => {
+        this.dataMessageHandler(dataMessage);
+      }
+    );
+  }
 
-  transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
+
+  // DRew FORM FUNCTION ********************
+
+  async displayForm(displayformData: any): Promise<void> {
+    // Parse the received message
+        // const displayformData = JSON.parse(dataMessage.text());
+        console.log("*************************RUNNNING DISPLAYFORM!!!!");
+        // const displayformData = dataMessage;
+          // Call the function to display the form with the received data
+      // if element with ID of quiz-form exists, remove it
+      const existingFormElement = document.getElementById('quiz-form');
+      if (existingFormElement) {
+        existingFormElement.remove();
+      }
+
+      const formElement = document.createElement('form');
+      // give it ID of quiz-form
+      formElement.id = 'quiz-form';
+      // set its z-index to 1000 so it appears on top of everything else
+      formElement.style.zIndex = '1000';
+      // set its position to fixed so it appears in the top left corner
+      formElement.style.position = 'fixed';
+      // set its top and left to 0 so it appears in the top left corner
+      formElement.style.top = '20%';
+      // and background white so it's visible
+      formElement.style.background = 'white';
+      // set its width and height to 100% so it takes up the whole screen
+      formElement.style.width = '80%';
+      // center the form
+      formElement.style.left = '10%';
+      // padding to 20px so it's not right up against the edge
+      formElement.style.padding = '20px';
+      // add a cancel button to the form so the user can close it
+      const cancelButton = document.createElement('button');
+      cancelButton.innerText = 'Cancel';
+      cancelButton.addEventListener('click', () => {
+        formElement.remove();
+      });
+      formElement.appendChild(cancelButton);
+
+
+
+      const titleElement = document.createElement('h2');
+      titleElement.innerText = displayformData.title;
+        
+      formElement.appendChild(titleElement);
+    
+      displayformData.fields.forEach((field: { label: string, type: string, options?: string[] }) => {
+        const labelElement = document.createElement('label');
+        labelElement.innerText = field.label;
+        formElement.appendChild(labelElement);
+    
+        let inputElement: HTMLSelectElement | HTMLTextAreaElement;
+        switch (field.type) {
+          case 'dropdown':
+            inputElement = document.createElement('select');
+            field.options?.forEach(option => {
+              const optionElement = document.createElement('option');
+              optionElement.value = option;
+              optionElement.innerText = option;
+              inputElement.appendChild(optionElement);
+            });
+            break;
+          case 'textarea':
+            inputElement = document.createElement('textarea');
+            break;
+        }
+    
+        formElement.appendChild(inputElement);
+      });
+    
+      const submitButton = document.createElement('button');
+      submitButton.innerText = 'Submit';
+      formElement.appendChild(submitButton);
+    
+      // Append the form to your modal or popup container
+      const modalContainer: HTMLElement = document.getElementById('meeting-container')!;
+      modalContainer.appendChild(formElement);
+    
+      // Display the modal or popup
+      modalContainer.style.display = 'block';
+
+
+
+}
+
+
+
+  // END DREW FORM FUNCTION ***************
+
+transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
     if (!this.enableLiveTranscription) {
       // Toggle disabled 'Live Transcription' button to enabled when we receive any transcript event
       this.enableLiveTranscription = true;
@@ -4097,7 +4339,7 @@ export class DemoMeetingApp
   audioVideoDidStart(): void {
     this.log('session started');
   }
-
+  
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
     if (this.behaviorAfterLeave === 'nothing') {
