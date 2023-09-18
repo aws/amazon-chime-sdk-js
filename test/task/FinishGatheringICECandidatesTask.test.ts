@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -85,6 +86,7 @@ describe('FinishGatheringICECandidatesTask', () => {
     context.peer = peer;
     context.turnCredentials = turnCredentials;
     context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     setUpPeerConnection(context);
     task = new FinishGatheringICECandidatesTask(context);
   });

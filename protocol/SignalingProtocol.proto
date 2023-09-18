@@ -288,6 +288,10 @@ message SdkMetric {
         VIDEO_DECODER_IS_HARDWARE = 89;
         RTC_SPK_AUDIO_LEVEL = 96;
         RTC_MIC_AUDIO_LEVEL = 97;
+        RTC_SPK_TOTAL_LOST = 98;
+        RTC_SPK_TOTAL_EXPECTED = 99;
+        RTC_SPK_TOTAL_RECOVERED_RED = 100;
+        RTC_SPK_TOTAL_RECOVERED_FEC = 101;
     }
     optional Type type = 1;
     optional double value = 2;

@@ -3,7 +3,8 @@
 
 import * as chai from 'chai';
 
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
+import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -18,7 +19,7 @@ describe('SimulcastTransceiverController', () => {
   const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
   let tc: TransceiverController;
   let domMockBuilder: DOMMockBuilder;
-  let browser: BrowserBehavior;
+  const context: AudioVideoControllerState = new AudioVideoControllerState();
 
   function isEncodingParamsEqual(
     encoding1: RTCRtpEncodingParameters,
@@ -45,12 +46,13 @@ describe('SimulcastTransceiverController', () => {
   beforeEach(() => {
     domMockBehavior.browserName = 'firefox';
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
-    browser = new DefaultBrowserBehavior();
-    tc = new SimulcastContentShareTransceiverController(logger, browser);
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
+    tc = new SimulcastContentShareTransceiverController(logger, context.browserBehavior, context);
   });
 
   afterEach(() => {
-    tc = new SimulcastContentShareTransceiverController(logger, browser);
+    tc = new SimulcastContentShareTransceiverController(logger, context.browserBehavior, context);
     domMockBuilder.cleanup();
   });
 

@@ -358,6 +358,11 @@ export class DemoMeetingApp
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   lastPacketsSent = 0;
+  lastTotalAudioPacketsExpected = 0;
+  lastTotalAudioPacketsLost = 0;
+  lastTotalAudioPacketsRecoveredRed = 0;
+  lastTotalAudioPacketsRecoveredFec = 0;
+  lastRedRecoveryMetricsReceived = 0;
   meetingSessionPOSTLogger: POSTLogger;
   meetingEventPOSTLogger: POSTLogger;
 
@@ -623,6 +628,12 @@ export class DemoMeetingApp
       }
     );
 
+    if (this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
+      // Firefox currently does not support audio redundancy through insertable streams or
+      // script transform so disable the redundancy checkbox
+      (document.getElementById('disable-audio-redundancy') as HTMLInputElement).disabled = true;
+      (document.getElementById('disable-audio-redundancy-checkbox') as HTMLElement).style.display = 'none';
+    }
     if (!this.defaultBrowserBehavior.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('content-simulcast-config')).style.display = 'none';
@@ -1382,6 +1393,40 @@ export class DemoMeetingApp
     });
   }
 
+  logRedRecoveryPercent(clientMetricReport: ClientMetricReport) {
+    const customStatsReports = clientMetricReport.customStatsReports;
+
+    // @ts-ignore
+    customStatsReports.forEach(report => {
+      if (report.type === 'inbound-rtp-red' && report.kind === 'audio') {
+
+        const deltaExpected = report.totalAudioPacketsExpected - this.lastTotalAudioPacketsExpected;
+        const deltaLost = report.totalAudioPacketsLost - this.lastTotalAudioPacketsLost;
+        const deltaRedRecovered = report.totalAudioPacketsRecoveredRed - this.lastTotalAudioPacketsRecoveredRed;
+        const deltaFecRecovered = report.totalAudioPacketsRecoveredFec - this.lastTotalAudioPacketsRecoveredFec;
+        if (this.lastRedRecoveryMetricsReceived === 0) this.lastRedRecoveryMetricsReceived = report.timestamp;
+        const deltaTime = report.timestamp - this.lastRedRecoveryMetricsReceived;
+        this.lastRedRecoveryMetricsReceived = report.timestamp;
+        this.lastTotalAudioPacketsExpected = report.totalAudioPacketsExpected;
+        this.lastTotalAudioPacketsLost = report.totalAudioPacketsLost;
+        this.lastTotalAudioPacketsRecoveredRed = report.totalAudioPacketsRecoveredRed;
+        this.lastTotalAudioPacketsRecoveredFec = report.totalAudioPacketsRecoveredFec;
+
+        let lossPercent = 0;
+        if (deltaExpected > 0) {
+          lossPercent = 100 * (deltaLost / deltaExpected);
+        }
+        let redRecoveryPercent = 0;
+        let fecRecoveryPercent = 0;
+        if (deltaLost > 0) {
+          redRecoveryPercent = 100 * (deltaRedRecovered / deltaLost);
+          fecRecoveryPercent = 100 * (deltaFecRecovered / deltaLost);
+        }
+        console.debug(`[AudioRed] time since last report = ${deltaTime/1000}s, loss % = ${lossPercent}, red recovery % = ${redRecoveryPercent}, fec recovery % = ${fecRecoveryPercent}, total expected = ${report.totalAudioPacketsExpected}, total lost = ${report.totalAudioPacketsLost}, total red recovered  = ${report.totalAudioPacketsRecoveredRed}, total fec recovered = ${report.totalAudioPacketsRecoveredFec}`);
+      }
+    });
+  }
+
   getSupportedMediaRegions(): string[] {
     const supportedMediaRegions: string[] = [];
     const mediaRegion = document.getElementById('inputRegion') as HTMLSelectElement;
@@ -1635,6 +1680,7 @@ export class DemoMeetingApp
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     this.logAudioStreamPPS(clientMetricReport);
+    this.logRedRecoveryPercent(clientMetricReport);
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
     this.displayEstimatedUplinkBandwidth(metricReport.availableOutgoingBitrate);
@@ -1810,23 +1856,25 @@ export class DemoMeetingApp
         new DefaultEventController(configuration, this.meetingLogger, this.eventReporter)
     );
 
+    const enableAudioRedundancy = !((document.getElementById('disable-audio-redundancy') as HTMLInputElement).checked);
+    let audioProfile: AudioProfile = new AudioProfile(null, enableAudioRedundancy);
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
-      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
-      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono());
+      audioProfile = AudioProfile.fullbandSpeechMono(enableAudioRedundancy);
       this.log('Using audio profile fullband-speech-mono-quality');
     } else if (
         (document.getElementById('fullband-music-mono-quality') as HTMLInputElement).checked
     ) {
-      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicMono());
-      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
+      audioProfile = AudioProfile.fullbandMusicMono(enableAudioRedundancy);
       this.log('Using audio profile fullband-music-mono-quality');
     } else if (
         (document.getElementById('fullband-music-stereo-quality') as HTMLInputElement).checked
     ) {
-      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicStereo());
-      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
+      audioProfile = AudioProfile.fullbandMusicStereo(enableAudioRedundancy);
       this.log('Using audio profile fullband-music-stereo-quality');
     }
+    this.log(`Audio Redundancy Enabled = ${audioProfile.hasRedundancyEnabled()}`);
+    this.meetingSession.audioVideo.setAudioProfile(audioProfile);
+    this.meetingSession.audioVideo.setContentAudioProfile(audioProfile);
     this.audioVideo = this.meetingSession.audioVideo;
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
@@ -2691,8 +2739,8 @@ export class DemoMeetingApp
 
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
-    let additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Echo'];
-    const additionalStereoTestDevices = ['L-500Hz R-1000Hz', 'Prerecorded Speech (Stereo)'];
+    let additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Prerecorded Speech Loop (Mono)', 'Echo'];
+    const additionalStereoTestDevices = ['L-500Hz R-1000Hz', 'Prerecorded Speech Loop (Stereo)'];
     const additionalToggles = [];
 
     if (!this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
@@ -3070,7 +3118,11 @@ export class DemoMeetingApp
       return new AudioBufferMediaStreamProvider('audio_file').getMediaStream();
     }
 
-    if (value === 'Prerecorded Speech (Stereo)') {
+    if (value === 'Prerecorded Speech Loop (Mono)') {
+      return new AudioBufferMediaStreamProvider('audio_file', /*shouldLoop*/ true).getMediaStream();
+    }
+
+    if (value === 'Prerecorded Speech Loop (Stereo)') {
       return new AudioBufferMediaStreamProvider('stereo_audio_file', true).getMediaStream();
     }
 

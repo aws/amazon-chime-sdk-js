@@ -6,6 +6,7 @@ import * as sinon from 'sinon';
 
 import { AllHighestVideoBandwidthPolicy } from '../../src';
 import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -56,6 +57,7 @@ describe('JoinAndReceiveIndexTask', () => {
     context.logger = logger;
     context.signalingClient = signalingClient;
     context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     context.meetingSessionConfiguration = new MeetingSessionConfiguration();
     context.meetingSessionConfiguration.urls = new MeetingSessionURLs();
     context.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy('self');

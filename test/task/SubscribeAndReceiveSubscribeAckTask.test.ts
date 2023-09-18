@@ -13,6 +13,7 @@ import {
   VideoPreferences,
   ZLIBTextCompressor,
 } from '../../src';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -99,6 +100,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth')
     );
     context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     const captureAndEncodeParameters = new DefaultVideoAndCaptureParameter(0, 0, 0, 0, false);
     context.videoCaptureAndEncodeParameter = captureAndEncodeParameters;
     const videoStreamIndex = new DefaultVideoStreamIndex(context.logger);

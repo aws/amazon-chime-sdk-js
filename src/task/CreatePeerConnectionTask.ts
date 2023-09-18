@@ -83,6 +83,8 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     configuration.bundlePolicy = this.context.browserBehavior.requiresBundlePolicy();
     // @ts-ignore
     configuration.sdpSemantics = 'unified-plan';
+    // @ts-ignore
+    configuration.encodedInsertableStreams = this.context.audioProfile.hasRedundancyEnabled();
     if (this.context.peer) {
       this.context.logger.info('reusing peer connection');
     } else {

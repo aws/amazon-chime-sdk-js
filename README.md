@@ -1215,9 +1215,55 @@ Use the following setting to optimize the content share audio for an audio strea
 meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
 ```
 
+**Use case 35.** Redundant Audio
+
+Starting from version 3.17.0, the SDK starts sending redundant audio data to our servers on detecting packet loss
+to help reduce its effect on audio quality. Redundant audio packets are only sent out for packets containing active
+audio, ie, speech or music. This may increase the bandwidth consumed by audio to up to 3 times the normal amount
+depending on the amount of packet loss detected. The SDK will automatically stop sending redundant data if it hasn't
+detected any packet loss for 5 minutes.
+
+This feature requires `blob:` to be in your content security policy under the `worker-src` directive.
+Without this, we will not be able to send out redundant audio data.
+
+This feature is not supported on Firefox at the moment.
+We were able to successfully send redundant audio from safari 16.1 onwards. 15.6.1 advertises support as well but is untested.
+Chrome advertises support for redundant audio from version M96.
+
+To disable this feature for attendee audio, you can use the following:
+
+```js
+meetingSession.audioVideo.setAudioProfile(new AudioProfile(null, false));
+```
+
+If using bitrate optimization and you want to disable audio redundancy you can use the below line.
+In the example below, we only use fullbandSpeechMono but you can use fullbandMusicMono and fullbandMusicStereo
+depending on your use case.
+
+```js
+meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono(false));
+```
+
+To disable this feature for content share audio, you can use any one of the following:
+
+```js
+meetingSession.audioVideo.setContentAudioProfile(new AudioProfile(null, false));
+```
+
+If using bitrate optimization and you want to disable audio redundancy you can use the below line.
+In the example below, we only use fullbandSpeechMono but you can use fullbandMusicMono and fullbandMusicStereo
+depending on your use case.
+
+```js
+meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono(false));
+```
+
+While there is an option to disable the feature, we recommend keeping it enabled for improved audio quality.
+One possible reason to disable it might be if your customers have very strict bandwidth limitations.
+
 ### Starting a messaging session
 
-**Use case 35.** Setup an observer to receive events: connecting, start, stop and receive message; and
+**Use case 36.** Setup an observer to receive events: connecting, start, stop and receive message; and
 start a messaging session.
 
 > Note: You can remove an observer by calling `messagingSession.removeObserver(observer)`.
@@ -1254,7 +1300,7 @@ Amazon Chime SDK for JavaScript allows builders to provide application metadata 
 
 > ⚠️ Do not pass any Personal Identifiable Information (PII).
 
-**Use case 36.** Provide application metadata to the meeting session configuration.
+**Use case 37.** Provide application metadata to the meeting session configuration.
 
 ```js
 import { MeetingSessionConfiguration, ApplicationMetadata } from 'amazon-chime-sdk-js';

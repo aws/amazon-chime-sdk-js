@@ -219,6 +219,9 @@ import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
 import ReconnectController from './reconnectcontroller/ReconnectController';
 import ReconnectionHealthPolicy from './connectionhealthpolicy/ReconnectionHealthPolicy';
+import RedundantAudioEncoder from './redundantaudioencoder/RedundantAudioEncoder';
+import RedundantAudioRecoveryMetricReport from './clientmetricreport/RedundantAudioRecoveryMetricReport';
+import RedundantAudioRecoveryMetricsObserver from './redundantaudiorecoverymetricsobserver/RedundantAudioRecoveryMetricsObserver';
 import RemovableAnalyserNode from './devicecontroller/RemovableAnalyserNode';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
@@ -561,6 +564,9 @@ export {
   ReceiveVideoStreamIndexTask,
   ReconnectController,
   ReconnectionHealthPolicy,
+  RedundantAudioEncoder,
+  RedundantAudioRecoveryMetricReport,
+  RedundantAudioRecoveryMetricsObserver,
   RemovableAnalyserNode,
   RemovableObserver,
   RunnableTask,

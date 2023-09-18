@@ -4,6 +4,8 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
+import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -30,6 +32,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
   let domMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder | null = null;
   let transceiverController: DefaultTransceiverController;
+  let context: AudioVideoControllerState | null = null;
 
   class TestTransceiverController extends DefaultTransceiverController {
     setEncodingParameters(_encodingParamMap: Map<string, RTCRtpEncodingParameters>): Promise<void> {
@@ -48,9 +51,13 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
     };
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     const peer = new RTCPeerConnection();
+    context = new AudioVideoControllerState();
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     transceiverController = new TestTransceiverController(
       new NoOpLogger(),
-      new DefaultBrowserBehavior()
+      context.browserBehavior,
+      context
     );
     transceiverController.setPeer(peer);
     transceiverController.setupLocalTransceivers();
@@ -783,7 +790,8 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       }
       const invalidTransceiverController = new InvalidTransceiverController(
         new NoOpLogger(),
-        new DefaultBrowserBehavior()
+        context.browserBehavior,
+        context
       );
       const spy = sinon.spy(invalidTransceiverController, 'setEncodingParameters');
       invalidTransceiverController.setPeer(new RTCPeerConnection());

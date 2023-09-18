@@ -3,9 +3,9 @@
 
 import * as chai from 'chai';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
@@ -33,7 +33,6 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
   let signalingClient: SignalingClient;
   let leaveAckBuffer: Uint8Array;
   let request: SignalingClientConnectionRequest;
-  let browser: BrowserBehavior;
 
   function makeLeaveAckFrame(): Uint8Array {
     const frame = SdkLeaveAckFrame.create();
@@ -50,10 +49,15 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
 
   beforeEach(() => {
     domMockBuilder = new DOMMockBuilder(behavior);
-    browser = new DefaultBrowserBehavior();
     context = new AudioVideoControllerState();
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     context.audioVideoController = new NoOpAudioVideoController();
-    context.transceiverController = new DefaultTransceiverController(context.logger, browser);
+    context.transceiverController = new DefaultTransceiverController(
+      context.logger,
+      context.browserBehavior,
+      context
+    );
     context.logger = context.audioVideoController.logger;
     webSocketAdapter = new DefaultWebSocketAdapter(context.logger);
     signalingClient = new DefaultSignalingClient(webSocketAdapter, context.logger);
