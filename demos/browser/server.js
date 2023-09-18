@@ -9,10 +9,10 @@ const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 
 
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/aptiversity.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/aptiversity.com/fullchain.pem', 'utf8');
-// const privateKey = fs.readFileSync('key.pem', 'utf8');
-// const certificate = fs.readFileSync('cert.pem', 'utf8');
+// const privateKey = fs.readFileSync('/etc/letsencrypt/live/aptiversity.com/privkey.pem', 'utf8');
+// const certificate = fs.readFileSync('/etc/letsencrypt/live/aptiversity.com/fullchain.pem', 'utf8');
+const privateKey = fs.readFileSync('key.pem', 'utf8');
+const certificate = fs.readFileSync('cert.pem', 'utf8');
 const credentials = {
   key: privateKey,
   cert: certificate,
