@@ -4,7 +4,7 @@
 const AWS = require('aws-sdk');
 const compression = require('compression');
 const fs = require('fs');
-const http = require('http');
+const http = require('https');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 
@@ -66,7 +66,9 @@ function getClientForMeeting(meeting) {
       : chime;
 }
 
-function serve(host = '127.0.0.1:8080') {
+// function serve(host = '127.0.0.1:8080') {
+  
+function serve(host = 'aptiversity.com:8080') {
   // Start an HTTP server to serve the index page and handle meeting actions
   http.createServer({}, async (request, response) => {
     log(`${request.method} ${request.url} BEGIN`);
