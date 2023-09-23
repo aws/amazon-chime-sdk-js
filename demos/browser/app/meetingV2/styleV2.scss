@@ -437,8 +437,8 @@ body {
 }
 
 // svg {
-//   width: 20px;
-//   height: 20px;
+//   min-width: 20px;
+//   min-height: 20px;
 //   fill: lighten($secondary, 15%);
 // }
 
@@ -448,10 +448,16 @@ body {
 
 .svg-active {
   fill: lighten($secondary, 15%);
+  g {
+    fill: lightgray;
+  }
 }
 
 .svg-inactive {
   fill: $white;
+  g {
+    fill: gray;
+  }
 }
 
 .flow {
@@ -1057,7 +1063,7 @@ a.markdown:active {
   word-wrap: break-word;
   color: #3f4149;
 
-  font-size: 36px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 400;
   line-height: 150%;
@@ -1065,11 +1071,11 @@ a.markdown:active {
 
 .transcript-speaker {
   color: #3f4149;
-
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
   line-height: 100%;
+  margin-right: 40px;
 }
 
 .transcript-content {
@@ -1182,7 +1188,7 @@ input[type='file']:focus + label {
 .customButton {
   height: 45px;
   width: 100%;
-  padding: 0 17px;
+  padding: 6px 0px;
   border-radius: 8px;
   background: #8e509c;
   border: none;
@@ -1221,60 +1227,59 @@ input[type='file']:focus + label {
   border-radius: 22px 0px 0px 22px;
   border: 1px solid #d9d9d9;
   background: #f7f7fc;
-  padding: 20px 20px 40px 20px;
+  padding: 20px 20px 20px 20px;
+}
 
-  .quiz-heading {
-    color: #3f4149;
+.quiz-heading {
+  color: #3f4149;
 
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 130%;
-  }
-  .quiz-title {
-    color: #3f4149;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%;
+}
+.quiz-title {
+  color: #3f4149;
 
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 150%;
-    margin-top: 20px;
-  }
-  .numbers-block {
-    display: flex;
-    min-width: 40px;
-    height: 40px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 4px;
-    border: 1px solid #e6e6e6;
-    background: #fff;
-    color: #3f4149;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%;
+  margin-top: 20px;
+}
+.numbers-block {
+  display: flex;
+  min-width: 40px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  border: 1px solid #e6e6e6;
+  background: #fff;
+  color: #3f4149;
 
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 100%;
-    &:hover {
-      color: #fff;
-      background: #8e509c;
-    }
-  }
-  .numbers-block.active-numbers-block {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 100%;
+  &:hover {
     color: #fff;
     background: #8e509c;
   }
+}
+.numbers-block.active-numbers-block {
+  color: #fff;
+  background: #8e509c;
+}
 
-  .chapters {
-    color: #3f4149;
-
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%;
-    text-decoration-line: underline;
-    margin-top: 10px;
-  }
+.chapters {
+  color: #3f4149;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  text-decoration-line: underline;
+  margin-top: 10px;
 }
 .checkBox {
   align-items: center;
@@ -1943,6 +1948,160 @@ input[type='radio'] {
           border-radius: 10px;
         }
       }
+    }
+  }
+}
+.timing-details {
+  color: #8e509c;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+}
+.modal-details {
+  color: #3f4149;
+  font-family: Inter;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  span {
+    font-weight: 700;
+  }
+}
+.quizContainer {
+  height: calc(100vh - 117px) !important;
+  padding: 30px 40px 40px 40px;
+  align-items: center;
+  border-radius: 22px;
+  border: 1px solid #e6e6e6;
+  background: #f7f7fc;
+}
+.messagingContainer {
+  height: calc(100vh - 117px) !important;
+  padding: 40px 12px 263.931px 12px;
+
+  border-radius: 22px 0px 0px 22px;
+  background: #f7f7fc;
+  .heading {
+    color: #3f4149;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+  }
+  textarea {
+    width: 100%;
+    height: 119.069px;
+    fill: #fff;
+    stroke-width: 2px;
+    stroke: #e6e6e6;
+    padding: 16px;
+    color: #747487;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    outline: none;
+    border-radius: 4px;
+    &:hover {
+      border-color: #8e509c;
+    }
+  }
+  textarea:focus {
+    border-color: #8e509c;
+    -webkit-box-shadow: 0px 0px 0px 3px rgba(0, 168, 132, 0.1);
+    -moz-box-shadow: 0px 0px 0px 3px rgba(0, 168, 132, 0.1);
+    box-shadow: 0px 0px 0px 3px rgba(0, 168, 132, 0.1);
+  }
+}
+.message-heading {
+  color: #3f4149;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 100%;
+  span {
+    color: #3f4149;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 100%;
+    margin-left: 10px;
+  }
+}
+.meetingButtonBlock {
+  display: flex;
+  gap: 40px;
+}
+.message-details {
+  color: #3f4149;
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+}
+.send-message {
+  padding: 13px;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  background: #fff;
+}
+
+.calendar {
+  border: 1px solid #ccc;
+  padding: 20px;
+  max-width: 300px;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+.calendar-header {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.calendar-month {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+.calendar-day {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  border: 1px solid #eee;
+  display: inline-block;
+  margin: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.calendar-day:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+.calendar-day.active {
+  background-color: #007bff;
+  color: #fff;
+}
+@media screen and (max-width: 1024px) {
+  .mainBlock {
+    padding: 10px;
+  }
+}
+@media screen and (max-width: 660px) {
+  .mainBlock {
+    padding: 10px;
+  }
+  .meetingButtonBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .buttonBlock {
+      width: 90%;
+      height: 122px;
     }
   }
 }

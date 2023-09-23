@@ -302,8 +302,8 @@
   <!-- start of joining page -->
   <div id="joining-page" class="mainBlock" style="display: block;">
     <div class="row">
-      <div class="col-lg-4 col-md-4 col-12">
-        <div class="leftBlock">
+      <div class="col-lg-4 col-md-12 col-12">
+        <div class="leftBlock mb-3">
           <div class="card-wrapper">
             <div class="card-box">
               <div class="card">
@@ -322,7 +322,7 @@
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <h5>Marketing</h5>
-                  <p>10:30 PM, Today</p>
+                  <p>10:30 AM, Today</p>
                 </div>
                 <a>(Start the Meeting)</a>
               </div>
@@ -330,7 +330,7 @@
             <div class="listingBlock mt-3 mb-3">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <h5>Science Grade 4</h5>
+                  <h5>Science Grade 34</h5>
                   <p>7:30 AM, August 19</p>
                 </div>
                 <a>(Start the Meeting)</a>
@@ -339,20 +339,42 @@
 
             <p>Upcoming Classes</p>
           </div>
+          <div class="container mt-5">
+            <div class="calendar">
+              <div class="calendar-header">
+                <span id="prev-month" class="btn">&lt;</span>
+                <span class="calendar-month" id="current-month">August 2023</span>
+                <span id="next-month" class="btn">&gt;</span>
+              </div>
+              <div class="calendar-days">
+                <div class="calendar-day">Sun</div>
+                <div class="calendar-day">Mon</div>
+                <div class="calendar-day">Tue</div>
+                <div class="calendar-day">Wed</div>
+                <div class="calendar-day">Thu</div>
+                <div class="calendar-day">Fri</div>
+                <div class="calendar-day">Sat</div>
+              </div>
+              <div class="calendar-dates" id="calendar-dates">
+                <!-- Dates will be populated here by JavaScript -->
+              </div>
+            </div>
+          </div>
+
+
+
         </div>
       </div>
-      <div class="col-lg-8 col-md-8 col-12">
+      <div class="col-lg-8 col-md-12 col-12">
         <div class="d-flex justify-content-between">
           <h2 class="title">Good afternoon, Rebecca</h2>
-
-
           <div class="dropdown-block">
             <div class="btn-group">
               <div class="profileAvater" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <img
                   src="https://s3-alpha-sig.figma.com/img/8e13/1369/b47203c24d7fa0639a315d4fa276eab6?Expires=1694995200&Signature=B6KU4lPh8DgElotlLnPVnXrzFOvnlDJRl~g5LnsvPTaDuWYmvgWhbV-JGX0xXmUPvi6AcdnXfItXO0-rXczHvaqI1fPb32B8P930YVI0ptnpof0H84s86MobxSI5rOT0ZiQ8l4boD6EU8VAZgXMXWonXfuW9sYmgKC40OwTYbNXVhsNytSZpyCmus1HO~xa1JvE44rzgxxkjR6B5LBAn2HwWemJ2vKboJGnpEI9DMTnZGoGdjG--tWAWnBN4wq2xbKwAbzzu57vHy3XSew5SqtNk7cex-RnenNwq0qbmdX-znX8XZXDLVYyTS3eIvTI5U3y47OS2xdXEpSQmBNX2Jg__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4" />
               </div>
-  
+
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-start" aria-labelledby="dropdownMenuButton">
                 <li class="d-flex">
                   <div>
@@ -369,22 +391,27 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                           <g clip-path="url(#clip0_281_627)">
                             <g filter="url(#filter0_d_281_627)">
-                              <path d="M8.45499 2.76525C8.38732 2.69365 8.33443 2.60942 8.29932 2.51737C8.2642 2.42533 8.24757 2.32727 8.25035 2.22879C8.25314 2.13031 8.27529 2.03335 8.31555 1.94344C8.35581 1.85352 8.41338 1.77242 8.48499 1.70475C8.55659 1.63709 8.64082 1.58419 8.73287 1.54908C8.82491 1.51397 8.92297 1.49733 9.02145 1.50012C9.11993 1.5029 9.21689 1.52506 9.30681 1.56532C9.39672 1.60558 9.47782 1.66315 9.54549 1.73475L15.9205 8.48475C16.0521 8.62401 16.1255 8.80837 16.1255 9C16.1255 9.19164 16.0521 9.376 15.9205 9.51525L9.54549 16.266C9.47827 16.3392 9.39719 16.3983 9.30694 16.4398C9.21669 16.4814 9.11909 16.5046 9.01979 16.5081C8.9205 16.5117 8.82149 16.4954 8.72852 16.4604C8.63556 16.4253 8.55048 16.3721 8.47824 16.3039C8.406 16.2357 8.34803 16.1538 8.30771 16.063C8.26738 15.9722 8.24551 15.8743 8.24334 15.775C8.24118 15.6756 8.25877 15.5768 8.29511 15.4844C8.33144 15.3919 8.38579 15.3076 8.45499 15.2363L14.344 9L8.45499 2.76525Z" fill="#3F4149"/>
+                              <path
+                                d="M8.45499 2.76525C8.38732 2.69365 8.33443 2.60942 8.29932 2.51737C8.2642 2.42533 8.24757 2.32727 8.25035 2.22879C8.25314 2.13031 8.27529 2.03335 8.31555 1.94344C8.35581 1.85352 8.41338 1.77242 8.48499 1.70475C8.55659 1.63709 8.64082 1.58419 8.73287 1.54908C8.82491 1.51397 8.92297 1.49733 9.02145 1.50012C9.11993 1.5029 9.21689 1.52506 9.30681 1.56532C9.39672 1.60558 9.47782 1.66315 9.54549 1.73475L15.9205 8.48475C16.0521 8.62401 16.1255 8.80837 16.1255 9C16.1255 9.19164 16.0521 9.376 15.9205 9.51525L9.54549 16.266C9.47827 16.3392 9.39719 16.3983 9.30694 16.4398C9.21669 16.4814 9.11909 16.5046 9.01979 16.5081C8.9205 16.5117 8.82149 16.4954 8.72852 16.4604C8.63556 16.4253 8.55048 16.3721 8.47824 16.3039C8.406 16.2357 8.34803 16.1538 8.30771 16.063C8.26738 15.9722 8.24551 15.8743 8.24334 15.775C8.24118 15.6756 8.25877 15.5768 8.29511 15.4844C8.33144 15.3919 8.38579 15.3076 8.45499 15.2363L14.344 9L8.45499 2.76525Z"
+                                fill="#3F4149" />
                             </g>
                           </g>
                           <defs>
-                            <filter id="filter0_d_281_627" x="4.24316" y="1.49982" width="15.8828" height="23.0088" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                              <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                              <feOffset dy="4"/>
-                              <feGaussianBlur stdDeviation="2"/>
-                              <feComposite in2="hardAlpha" operator="out"/>
-                              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-                              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_281_627"/>
-                              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_281_627" result="shape"/>
+                            <filter id="filter0_d_281_627" x="4.24316" y="1.49982" width="15.8828" height="23.0088"
+                              filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                              <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                              <feColorMatrix in="SourceAlpha" type="matrix"
+                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                              <feOffset dy="4" />
+                              <feGaussianBlur stdDeviation="2" />
+                              <feComposite in2="hardAlpha" operator="out" />
+                              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_281_627" />
+                              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_281_627"
+                                result="shape" />
                             </filter>
                             <clipPath id="clip0_281_627">
-                              <rect width="18" height="18" fill="white"/>
+                              <rect width="18" height="18" fill="white" />
                             </clipPath>
                           </defs>
                         </svg>
@@ -401,18 +428,18 @@
                 <li class="d-flex">
                   <a class="dropdown-item">Download location</a>
                 </li>
-  
+
                 <li class="d-flex">
                   <a class="dropdown-item">Sign out</a>
                 </li>
-  
+
               </ul>
             </div>
           </div>
-      
+
 
         </div>
-        <div class="d-flex" style="gap: 40px">
+        <div class="meetingButtonBlock">
           <div class="buttonBlock" style="background-color: #8e509c">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
               <path d="M24 32H32M32 32H40M32 32V24M32 32V40" stroke="white" stroke-width="4" stroke-linecap="round"
@@ -623,8 +650,53 @@
       </div>
     </div>
   </div>
+  <!-- Quiz Submission Modal Pop-Up -->
+  <div class="modal fade" id="submit-modal" tabindex="-1" aria-labelledby="submit-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="submit-modal-label">Confirm submission</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+        <div class="modal-body ">
+          <div class="modal-details">
+            Do you want to submit your quiz -
+            <span>Chapter 1 - Photosynthesis?</span>
 
+          </div>
 
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Submit</button>
+          <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;">Keep working</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Challenge Modal Pop-Up -->
+  <div class="modal fade" id="challenge-modal" tabindex="-1" aria-labelledby="challenge-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="challenge-modal-label">Challenge your understanding</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+        <div class="modal-body ">
+          <div class="modal-details">
+            The teacher is inviting you to take a quiz.
+            <span>Chapter 1 - Photosynthesis</span>
+
+          </div>
+
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="timing-details">Will automatically start in 00:56 seconds</div>
+          <button id="starting-quiz" type="button" class="customButton" data-bs-dismiss="modal"
+            style="width: 40%;">Start the Quiz</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- publish Quiz -->
 
   <div class="modal fade" id="publish-quiz-modal" tabindex="-1" aria-labelledby="publish-quiz-modal-label"
@@ -640,8 +712,8 @@
         </div>
         <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
             aria-label="Close">Cancel</button>
-          <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;"
-            id="publish-quiz-button">Publish the Quiz</button>
+          <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
+            data-bs-target="#challenge-modal" id="publish-quiz-button">Publish the Quiz</button>
         </div>
 
       </div>
@@ -1214,9 +1286,95 @@
     </div>
 
     <audio id="meeting-audio" style="display:none"></audio>
-    <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column">
+    <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column;">
+      <div id="starting_quiz_container" style="gap: 20px;display: none;">
+        <div class="quizContainer h-100" style="width: 70%;">
+          <div class="d-flex justify-content-end mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 3H21M21 3V9M21 3L14.5 9.5M9 3H3V9M15 21H21V15M9 21H3M3 21V15M3 21L9.5 14.5" stroke="#3F4149"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div>
+            <div class="d-flex flex-column justify-content-between h-100 scrollbar-new-design"
+              style="overflow-y: overlay;">
+              <div>
 
-      <div id="roster-tile-container" class="d-flex flex-sm-grow-1 overflow-hidden h-100 p-3" style="flex: unset;gap: 10px; ">
+                <div class="quiz-heading">Challenge your understanding</div>
+                <div class="questions-num">
+                  <h2 class="quiz-title mt-4 mb-4" style="font-size: 24px; font-weight: 400;">Chapter 1-Photosynthesis
+                  </h2>
+                  <div class="d-flex" style="gap: 20px;">
+                    <div class="numbers-block">
+                      1
+                    </div>
+                    <div class="numbers-block">
+                      2
+                    </div>
+                    <div class="numbers-block">
+                      3
+                    </div>
+                    <div class="numbers-block">
+                      4
+                    </div>
+                    <div class="numbers-block">
+                      5
+                    </div>
+
+                  </div>
+                </div>
+                <div class="questions-block">
+                  <div class="quiz-title" style="font-size: 24px;">What is Photosynthesis?</div>
+                  <div class="radioButton col-md-12 col-lg-12 col-12 mb-3">
+
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="kg" name="weightUnit" [value]="1" />
+                      <label class="form-check-label" for="kg">Process in which plants make their own food</label>
+                    </div>
+
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">Process used for agriculture</label>
+                    </div>
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">Feeding good amount of water to plants</label>
+                    </div>
+                    <div class="form-check form-check-inline radioBox">
+                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
+                      <label class="form-check-label" for="lbs">None of the above</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button type="button" style="margin-top: 44px; width: 180px;" class="customButton" data-bs-toggle="modal"
+                data-bs-target="#submit-modal">
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="messagingContainer h-100" style="width: 30%;">
+          <p class="heading">Ask for help ✋</p>
+          <textarea placeholder="Please write down your queries"></textarea>
+
+          <hr />
+          <div class="me-2">
+            <h4 class="message-heading">
+              Dr. Robinson<span>15:23 PM</span>
+            </h4>
+            <p class="message-details">The quiz has started at 05:10 PM. You will have 20 mins to complete the quiz</p>
+          </div>
+          <div class="send-message">
+            <h4 class="message-heading">
+              You<span>15:23 PM</span>
+            </h4>
+            <p class="message-details">Question 1 - Do we consider indirect effects of photosynthesis?</p>
+          </div>
+        </div>
+      </div>
+      <div id="roster-tile-container" class="d-flex flex-sm-grow-1 overflow-hidden h-100 p-3"
+        style="flex: unset;gap: 10px; ">
         <div id="roster-message-container" class="d-flex flex-column h-100" style="width: 20%;">
           <div id="roster-menu-container" class="justify-content-end py-2 gap-3"
             style="flex: 0 0 auto; border-color: transparent !important;">
@@ -1269,7 +1427,7 @@
           </div>
         </div>
         <div id="tile-transcript-container" class="d-flex flex-column  my-4 my-sm-0 h-100"
-          style="overflow-y: scrolll;width: 80%;">
+          style="overflow-y: scrolll;width: 100%;">
           <div id="tile-area" class="v-grid"></div>
           <div id="transcript-container" class="transcript-container scrollbar-new-design" style="display:none">
             <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
@@ -1304,11 +1462,11 @@
               </svg>
             </div>
           </div>
-
         </div>
         <div id="myDIV" class=" my-4 my-sm-0 quizBlock" style="display:none;width: 25%;">
           <div id="create-quiz" style="display: block;" class="h-100">
-            <div class="d-flex flex-column justify-content-between h-100">
+            <div class="d-flex flex-column justify-content-between h-100 scrollbar-new-design"
+              style="overflow-y: overlay;">
               <div>
                 <div class="d-flex justify-content-end mb-3">
                   <button type="button" class="btn-close cancel-button"></button>
@@ -1595,7 +1753,7 @@
           </div>
         </div>
         <div class="col-8 col-lg-12 col-md-12 order-2 order-lg-2 text-left text-lg-center">
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle microphone">
             <div class="iconButton">
               <button id="button-microphone" type="button" title="Toggle microphone">
                 <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1613,9 +1771,7 @@
                   </g>
                 </svg>
               </button>
-
               <p>Mute</p>
-
             </div>
 
             <button style="height: 32px;" id="button-microphone-drop" type="button"
@@ -1628,7 +1784,7 @@
               <a class="dropdown-item" href="#">Default microphone</a>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle camera">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle camera">
             <div class="iconButton">
               <button id="button-camera" type="button" class="btn btn-success" title="Toggle camera">
                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1637,9 +1793,7 @@
                       d="M27.9375 12H27.9376C28.9684 11.9999 29.9642 12.3744 30.7394 13.0538C30.8536 13.1539 31.0166 13.364 31.2069 13.6969C31.3884 14.0143 31.5594 14.38 31.71 14.7331C31.8413 15.0407 31.9505 15.3227 32.0368 15.5457C32.0493 15.5779 32.0613 15.6089 32.0729 15.6385C32.1133 15.7427 32.16 15.8623 32.199 15.947C32.2098 15.9704 32.2268 16.0061 32.2485 16.0452L32.2497 16.0474C32.2613 16.0685 32.3208 16.1768 32.4251 16.2816L32.426 16.2825C32.4655 16.3222 32.6482 16.5059 32.9583 16.5624C33.145 16.5965 33.3636 16.5808 33.5744 16.4788C33.6159 16.4588 33.6542 16.4368 33.6894 16.4137L41.7127 12.8483L41.7136 12.8479C41.961 12.7377 42.232 12.6911 42.502 12.7122C42.772 12.7334 43.0324 12.8217 43.2595 12.9691C43.4867 13.1165 43.6735 13.3184 43.8028 13.5563C43.932 13.7941 43.9998 14.0605 44 14.3311C44 14.3313 44 14.3314 44 14.3316V33.918C43.9998 34.1886 43.932 34.4549 43.8027 34.6926C43.6735 34.9304 43.4869 35.1321 43.26 35.2795C43.033 35.4268 42.7729 35.5152 42.5031 35.5365C42.2334 35.5579 41.9625 35.5115 41.7153 35.4016L41.7152 35.4016L33.6893 31.8363C33.6541 31.8131 33.6159 31.7912 33.5745 31.7712C33.3636 31.6693 33.145 31.6535 32.9583 31.6876C32.6482 31.7441 32.4655 31.9278 32.426 31.9675L32.4251 31.9684C32.3208 32.0732 32.2613 32.1815 32.2497 32.2026L32.2485 32.2048C32.2268 32.2439 32.2098 32.2796 32.199 32.303C32.16 32.3877 32.1133 32.5073 32.0729 32.6115C32.0613 32.6411 32.0493 32.6721 32.0368 32.7043C31.9505 32.9273 31.8413 33.2093 31.71 33.5169C31.5594 33.87 31.3884 34.2357 31.2069 34.5531C31.0166 34.886 30.8536 35.0961 30.7394 35.1962C29.9642 35.8756 28.9684 36.2501 27.9376 36.25H27.9375H8.25C7.12283 36.25 6.04183 35.8022 5.2448 35.0052L4.53769 35.7123L5.2448 35.0052C4.44777 34.2082 4 33.1272 4 32V16.25C4 15.1228 4.44777 14.0418 5.2448 13.2448C6.04183 12.4478 7.12283 12 8.25 12H27.9375Z"
                       stroke="#3F4149" stroke-width="2" />
                   </g>
-
                 </svg>
-
               </button>
               <p>Video</p>
             </div>
@@ -1651,7 +1805,7 @@
               <a class="dropdown-item" href="#">Default camera</a>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle participants">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle participants">
             <div class="iconButton">
               <button id="button-participants" type="button" title="Toggle participants">
                 <svg width="49" height="49" viewBox="0 0 49 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1661,15 +1815,11 @@
                       fill="#3F4149" />
                   </g>
                 </svg>
-
-
               </button>
-
               <p>Participants</p>
-
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle screenshare">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle screenshare">
             <div class="iconButton">
               <button id="button-content-share" type="button" title="Toggle Screenshare" class="btn-success">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none"
@@ -1714,7 +1864,7 @@
               <input id="content-share-item" type="file">
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle microphone">
             <div class="iconButton">
               <button id="button-live-transcription" title="Toggle live transcription display" data-bs-toggle="button"
                 aria-pressed="false" type="button">
@@ -1736,7 +1886,7 @@
               <p>Open Transcript</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle chat">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle chat">
             <div class="iconButton">
               <button id="button-chat" type="button" title="Toggle chat">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
@@ -1748,7 +1898,7 @@
               <p>Chat</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle microphone">
             <div class="iconButton">
               <button class="cancel-button" type="button" title="Toggle microphone">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
@@ -1763,7 +1913,7 @@
               <p>Create Quiz</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="End Meeting">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="End Meeting">
             <div class="iconButton">
               <button id="button-meeting-leave" type="button" title="End Meeting">
                 <svg xmlns="http://www.w3.org/2000/svg" width="49" height="49" viewBox="0 0 49 49" fill="none">
@@ -1775,109 +1925,173 @@
               <p>Leave Session</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Apply filter" style="display: none;">
-            <button id="button-video-filter" type="button" class="btn btn-success" title="Apply filter">
-              <%= require('../../node_modules/open-iconic/svg/contrast.svg') %>
-            </button>
-            <button id="button-video-filter-drop" type="button"
-              class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
-            <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
-              <a class="dropdown-item" href="#">No filter</a>
-            </div>
-          </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle content share"
-            style="display: none;">
-            <button id="button-content-share" type="button" class="btn btn-success" title="Toggle content share">
-              <%= require('../../node_modules/open-iconic/svg/camera-slr.svg') %>
-            </button>
-            <button id="button-content-share-drop" type="button"
-              class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" title="Select content to share"></button>
-            <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-content-share-drop" x-placement="bottom-start"
-              style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-              <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
-                data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content
-                Sharing</a>
-              <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item" href="#">Pause
-                Content Share</a>
-              <hr class="dropdown-divider">
-              <a id="dropdown-item-content-share-screen-capture"
-                class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
-              <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option"
-                href="#">Test Video</a>
-              <a id="dropdown-item-content-share-test-mono-audio-speech"
-                class="dropdown-item content-share-source-option" href="#">Test Mono
-                Audio Speech</a>
-              <a id="dropdown-item-content-share-test-stereo-audio-speech"
-                class="dropdown-item content-share-source-option" href="#">Test Stereo
-                Audio Speech</a>
-              <a id="dropdown-item-content-share-test-stereo-audio-tone"
-                class="dropdown-item content-share-source-option" href="#">Test Stereo
-                Tone (L-500Hz R-1000Hz)</a>
-              <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option"
-                for="content-share-item">Local file</label>
-              <input id="content-share-item" type="file">
-            </div>
-          </div>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle speaker" style="display: none;">
-            <button id="button-speaker" type="button" class="btn btn-success" title="Toggle speaker">
-              <%= require('../../node_modules/open-iconic/svg/volume-low.svg') %>
-            </button>
-            <button id="button-speaker-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
-            <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-speaker-drop" x-placement="bottom-start"
-              style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-              <a class="dropdown-item" href="#">Default speaker</a>
-            </div>
-          </div>
-          <!-- <button id="button-live-transcription" type="button" style="display: none !important;"
-            class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle live transcription display" data-bs-toggle="button"
-            aria-pressed="false" autocomplete="off" style="display: none">
-            <%= require('../../node_modules/open-iconic/svg/code.svg') %>
-          </button> -->
-          <button id="button-video-stats" style="display: none;" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-            title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-            <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
-          </button>
-          <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Select destination" style="display: none;">
-            <div class="btn-group" role="group">
-              <button id="button-video-recording-drop" type="button" class="btn btn-success dropdown-toggle"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
-                <%= require('../../node_modules/open-iconic/svg/cloud.svg') %>
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="End Meeting">
+            <div class="iconButton">
+              <button type="button" id="toggle-menu" title="See More">
+                <svg width="800px" height="800px" viewBox="0 0 24 24" id="three-dots"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <g id="_20x20_three-dots--grey" data-name="20x20/three-dots--grey"
+                    transform="translate(24) rotate(90)">
+                    <rect id="Rectangle" width="24" height="24" fill="none" />
+                    <circle id="Oval" cx="1" cy="1" r="1" transform="translate(5 11)" stroke="#000000"
+                      stroke-miterlimit="10" stroke-width="0.5" />
+                    <circle id="Oval-2" data-name="Oval" cx="1" cy="1" r="1" transform="translate(11 11)"
+                      stroke="#000000" stroke-miterlimit="10" stroke-width="0.5" />
+                    <circle id="Oval-3" data-name="Oval" cx="1" cy="1" r="1" transform="translate(17 11)"
+                      stroke="#000000" stroke-miterlimit="10" stroke-width="0.5" />
+                  </g>
+                </svg>
               </button>
-              <div id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
-                <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                  title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                  <svg class="svg">
-                    <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
+
+            </div>
+          </div>
+          <div id="toggle-icons" style="display: none;">
+            <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Apply filter">
+              <div class="iconButton">
+                <button id="button-video-filter" type="button" title="Apply filter">
+                  <svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 490 490"
+                    xml:space="preserve">
+                    <g>
+                      <path d="M490,245C490,109.9,380.1,0,245,0S0,109.9,0,245s109.9,245,245,245S490,380.1,490,245z M245,79c91.5,0,166,74.5,166,166
+                 s-74.5,166-166,166V79z" />
+                    </g>
                   </svg>
-                  Capture Media to Device
-                </button>
-                <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                  title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false"
-                  autocomplete="off">
-                  <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
-                    Capture Media to S3
-                </button>
-                <button id="button-live-connector" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                  title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false"
-                  autocomplete="off">
-                  <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
-                    Broadcast Media to IVS
                 </button>
               </div>
+              <button style="height: 32px;" id="button-video-filter-drop" type="button"
+                class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+              <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
+                <a class="dropdown-item" href="#">No filter</a>
+              </div>
             </div>
+            <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle content share">
+              <div class="iconButton">
+                <button id="button-content-share" type="button" title="Toggle content share">
+                  <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z"
+                      stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                      d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z"
+                      stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+              <button style="height: 32px;" id="button-content-share-drop" type="button"
+                class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" title="Select content to share"></button>
+              <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="button-content-share-drop" x-placement="bottom-start"
+                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
+                  data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content
+                  Sharing</a>
+                <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item"
+                  href="#">Pause
+                  Content Share</a>
+                <hr class="dropdown-divider">
+                <a id="dropdown-item-content-share-screen-capture"
+                  class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
+                <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option"
+                  href="#">Test Video</a>
+                <a id="dropdown-item-content-share-test-mono-audio-speech"
+                  class="dropdown-item content-share-source-option" href="#">Test Mono
+                  Audio Speech</a>
+                <a id="dropdown-item-content-share-test-stereo-audio-speech"
+                  class="dropdown-item content-share-source-option" href="#">Test Stereo
+                  Audio Speech</a>
+                <a id="dropdown-item-content-share-test-stereo-audio-tone"
+                  class="dropdown-item content-share-source-option" href="#">Test Stereo
+                  Tone (L-500Hz R-1000Hz)</a>
+                <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option"
+                  for="content-share-item">Local file</label>
+                <input id="content-share-item" type="file">
+              </div>
+            </div>
+            <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle speaker"
+              style="display: none;">
+              <div class="iconButton">
+                <button id="button-speaker" type="button" title="Toggle speaker">
+                  <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path opacity="0.15"
+                      d="M13 3L7 8H5C3.89543 8 3 8.89543 3 10V14C3 15.1046 3.89543 16 5 16H7L13 21V3Z" fill="#000000" />
+                    <path
+                      d="M16 8.99998C16.5 9.49998 17 10.5 17 12C17 13.5 16.5 14.5 16 15M13 3L7 8H5C3.89543 8 3 8.89543 3 10V14C3 15.1046 3.89543 16 5 16H7L13 21V3Z"
+                      stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+
+              </div>
+              <button style="height: 32px;" id="button-speaker-drop" type="button"
+                class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
+              <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="button-speaker-drop" x-placement="bottom-start"
+                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a class="dropdown-item" href="#">Default speaker</a>
+              </div>
+            </div>
+            <!-- <button id="button-live-transcription" type="button" style="display: none !important;"
+              class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle live transcription display" data-bs-toggle="button"
+              aria-pressed="false" autocomplete="off" style="display: none">
+              <%= require('../../node_modules/open-iconic/svg/code.svg') %>
+            </button> -->
+            <div class="iconButton">
+            <button id="button-video-stats" type="button" class="mx-1 mx-xl-2 my-2"
+              title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+              <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 20V19M8 20V16M12 20V12M16 20V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
           </div>
-          <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-            title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
-            autocomplete="off">
-            <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
-          </button>
+
+            <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Select destination">
+              <div class="btn-group" role="group">
+                <div class="iconButton">
+                <button id="button-video-recording-drop" type="button" class="dropdown-toggle"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
+                  <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 13.6493C3 16.6044 5.41766 19 8.4 19L16.5 19C18.9853 19 21 16.9839 21 14.4969C21 12.6503 19.8893 10.9449 18.3 10.25C18.1317 7.32251 15.684 5 12.6893 5C10.3514 5 8.34694 6.48637 7.5 8.5C4.8 8.9375 3 11.2001 3 13.6493Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+              </div>
+                <div style="height: 32px;" id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
+                  <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                    title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                    <svg class="svg">
+                      <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
+                    </svg>
+                    Capture Media to Device
+                  </button>
+                  <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                    title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false"
+                    autocomplete="off">
+                    <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
+                      Capture Media to S3
+                  </button>
+                  <button id="button-live-connector" type="button"
+                    class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                    title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false"
+                    autocomplete="off">
+                    <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
+                      Broadcast Media to IVS
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2"
+              style="margin:10px 0px;" title="Promote to or demote from Primary meeting" data-bs-toggle="button"
+              aria-pressed="false" autocomplete="off">
+              <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
+            </button>
+          </div>
+
+
+
         </div>
         <div class="col-4 col-lg-3 order-3 order-lg-3 text-end text-lg-right" style="display: none;">
           <!-- <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4"
