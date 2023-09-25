@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 
 import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
+import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 
 describe('MeetingSessionConfiguration', () => {
@@ -126,6 +127,159 @@ describe('MeetingSessionConfiguration', () => {
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
       expect(configuration.credentials.joinToken).to.eq('join-token');
+    });
+
+    it('can take a CreateMeeting and CreateAttendee response object with high resolution features', () => {
+      const configuration = new MeetingSessionConfiguration(
+        {
+          MeetingId: 'meeting-id',
+          MediaPlacement: {
+            AudioHostUrl: 'audio-host-url',
+            ScreenDataUrl: 'screen-data-url',
+            ScreenSharingUrl: 'screen-sharing-url',
+            ScreenViewingUrl: 'screen-viewing-url',
+            SignalingUrl: 'signaling-url',
+            TurnControlUrl: 'turn-control-url',
+          },
+          MeetingFeatures: {
+            Video: {
+              MaxResolution: 'FHD',
+            },
+            Content: {
+              MaxResolution: 'UHD',
+            },
+          },
+        },
+        {
+          AttendeeId: 'attendee-id',
+          JoinToken: 'join-token',
+        }
+      );
+      expect(configuration.meetingId).to.eq('meeting-id');
+      expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
+      expect(configuration.urls.signalingURL).to.eq('signaling-url');
+      expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
+      expect(configuration.credentials.attendeeId).to.eq('attendee-id');
+      expect(configuration.credentials.joinToken).to.eq('join-token');
+      expect(configuration.meetingFeatures.videoMaxResolution).to.eq(
+        VideoQualitySettings.VideoResolutionFHD
+      );
+      expect(configuration.meetingFeatures.contentMaxResolution).to.eq(
+        VideoQualitySettings.VideoResolutionUHD
+      );
+    });
+
+    it('can take a CreateMeeting and CreateAttendee response object with [Video=HD, Content=FHD] features', () => {
+      const configuration = new MeetingSessionConfiguration(
+        {
+          MeetingId: 'meeting-id',
+          MediaPlacement: {
+            AudioHostUrl: 'audio-host-url',
+            ScreenDataUrl: 'screen-data-url',
+            ScreenSharingUrl: 'screen-sharing-url',
+            ScreenViewingUrl: 'screen-viewing-url',
+            SignalingUrl: 'signaling-url',
+            TurnControlUrl: 'turn-control-url',
+          },
+          MeetingFeatures: {
+            Video: {
+              MaxResolution: 'HD',
+            },
+            Content: {
+              MaxResolution: 'FHD',
+            },
+          },
+        },
+        {
+          AttendeeId: 'attendee-id',
+          JoinToken: 'join-token',
+        }
+      );
+      expect(configuration.meetingId).to.eq('meeting-id');
+      expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
+      expect(configuration.urls.signalingURL).to.eq('signaling-url');
+      expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
+      expect(configuration.credentials.attendeeId).to.eq('attendee-id');
+      expect(configuration.credentials.joinToken).to.eq('join-token');
+      expect(configuration.meetingFeatures.videoMaxResolution).to.eq(
+        VideoQualitySettings.VideoResolutionHD
+      );
+      expect(configuration.meetingFeatures.contentMaxResolution).to.eq(
+        VideoQualitySettings.VideoResolutionFHD
+      );
+    });
+
+    it('can take a CreateMeeting and CreateAttendee response object with none resolution features', () => {
+      const configuration = new MeetingSessionConfiguration(
+        {
+          MeetingId: 'meeting-id',
+          MediaPlacement: {
+            AudioHostUrl: 'audio-host-url',
+            ScreenDataUrl: 'screen-data-url',
+            ScreenSharingUrl: 'screen-sharing-url',
+            ScreenViewingUrl: 'screen-viewing-url',
+            SignalingUrl: 'signaling-url',
+            TurnControlUrl: 'turn-control-url',
+          },
+          MeetingFeatures: {
+            Video: {
+              MaxResolution: 'None',
+            },
+            Content: {
+              MaxResolution: 'None',
+            },
+          },
+        },
+        {
+          AttendeeId: 'attendee-id',
+          JoinToken: 'join-token',
+        }
+      );
+      expect(configuration.meetingId).to.eq('meeting-id');
+      expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
+      expect(configuration.urls.signalingURL).to.eq('signaling-url');
+      expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
+      expect(configuration.credentials.attendeeId).to.eq('attendee-id');
+      expect(configuration.credentials.joinToken).to.eq('join-token');
+      expect(configuration.meetingFeatures.videoMaxResolution).to.eq(
+        VideoQualitySettings.VideoDisabled
+      );
+      expect(configuration.meetingFeatures.contentMaxResolution).to.eq(
+        VideoQualitySettings.VideoDisabled
+      );
+    });
+
+    it('can take a CreateMeeting and CreateAttendee response object without video/content feature', () => {
+      const configuration = new MeetingSessionConfiguration(
+        {
+          MeetingId: 'meeting-id',
+          MediaPlacement: {
+            AudioHostUrl: 'audio-host-url',
+            ScreenDataUrl: 'screen-data-url',
+            ScreenSharingUrl: 'screen-sharing-url',
+            ScreenViewingUrl: 'screen-viewing-url',
+            SignalingUrl: 'signaling-url',
+            TurnControlUrl: 'turn-control-url',
+          },
+          MeetingFeatures: {},
+        },
+        {
+          AttendeeId: 'attendee-id',
+          JoinToken: 'join-token',
+        }
+      );
+      expect(configuration.meetingId).to.eq('meeting-id');
+      expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
+      expect(configuration.urls.signalingURL).to.eq('signaling-url');
+      expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
+      expect(configuration.credentials.attendeeId).to.eq('attendee-id');
+      expect(configuration.credentials.joinToken).to.eq('join-token');
+      expect(configuration.meetingFeatures.videoMaxResolution).to.eq(
+        VideoQualitySettings.VideoResolutionHD
+      );
+      expect(configuration.meetingFeatures.contentMaxResolution).to.eq(
+        VideoQualitySettings.VideoResolutionFHD
+      );
     });
 
     it('can take a CreateMeeting and CreateAttendee response object root-level values', () => {

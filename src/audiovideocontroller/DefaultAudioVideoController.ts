@@ -13,6 +13,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import Destroyable from '../destroyable/Destroyable';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
@@ -119,6 +120,7 @@ export default class DefaultAudioVideoController
   private static PING_PONG_INTERVAL_MS = 10000;
 
   private enableSimulcast: boolean = false;
+  private enableSVC: boolean = false;
   private useUpdateTransceiverControllerForUplink: boolean = false;
   private totalRetryCount = 0;
   private startAudioVideoTimestamp: number = 0;
@@ -454,6 +456,14 @@ export default class DefaultAudioVideoController
       this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
+    if (this.enableSimulcast && this.configuration.enableSVC) {
+      this.logger.warn(`SVC is not successfully enabled since simulcast is enabled`);
+    }
+    this.enableSVC =
+      !this.enableSimulcast &&
+      this.configuration.enableSVC &&
+      new DefaultBrowserBehavior().supportsScalableVideoCoding();
+
     const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
 
     if (!useAudioConnection) {
@@ -502,6 +512,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
     this.meetingSessionContext.videoUplinkBandwidthPolicy = this.configuration.videoUplinkBandwidthPolicy;
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
+    this.meetingSessionContext.enableSVC = this.enableSVC;
 
     if (this.enableSimulcast) {
       let simulcastPolicy = this.meetingSessionContext
@@ -534,6 +545,7 @@ export default class DefaultAudioVideoController
           this.meetingSessionContext.logger,
           this.meetingSessionContext.browserBehavior
         );
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setSVCEnabled(this.enableSVC);
       }
       if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
         this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
@@ -551,6 +563,29 @@ export default class DefaultAudioVideoController
         );
       }
       this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+
+    if (
+      new DefaultModality(this.configuration.credentials.attendeeId).hasModality(
+        DefaultModality.MODALITY_CONTENT
+      )
+    ) {
+      const enableUhdContent =
+        this.configuration.meetingFeatures.contentMaxResolution ===
+        VideoQualitySettings.VideoResolutionUHD;
+      if (enableUhdContent) {
+        this.setVideoMaxBandwidthKbps(2500);
+      }
+      this.meetingSessionContext.videoUplinkBandwidthPolicy.setHighResolutionFeatureEnabled(
+        enableUhdContent
+      );
+    } else {
+      const enableFhdVideo =
+        this.configuration.meetingFeatures.videoMaxResolution ===
+        VideoQualitySettings.VideoResolutionFHD;
+      this.meetingSessionContext.videoUplinkBandwidthPolicy.setHighResolutionFeatureEnabled(
+        enableFhdVideo
+      );
     }
 
     if (this.meetingSessionContext.videoUplinkBandwidthPolicy && this.maxUplinkBandwidthKbps) {

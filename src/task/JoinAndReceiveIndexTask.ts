@@ -141,6 +141,9 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
         join.serverSideNetworkAdaption = this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption();
         join.supportedServerSideNetworkAdaptions = this.context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions();
       }
+      if (this.context.videoDownlinkBandwidthPolicy.wantsAllTemporalLayersInIndex !== undefined) {
+        join.wantsAllTemporalLayersInIndex = this.context.videoDownlinkBandwidthPolicy.wantsAllTemporalLayersInIndex();
+      }
       join.disablePeriodicKeyframeRequestOnContentSender = this.context.meetingSessionConfiguration.disablePeriodicKeyframeRequestOnContentSender;
       this.context.signalingClient.join(join);
     });

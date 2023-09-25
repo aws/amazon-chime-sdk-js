@@ -8,7 +8,6 @@ import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
 import AudioInputDevice from './AudioInputDevice';
 import RemovableAnalyserNode from './RemovableAnalyserNode';
 import VideoInputDevice from './VideoInputDevice';
-import VideoQualitySettings from './VideoQualitySettings';
 
 export default class NoOpDeviceController
   extends NoOpMediaStreamBroker
@@ -74,10 +73,6 @@ export default class NoOpDeviceController
   }
 
   chooseVideoInputQuality(_width: number, _height: number, _frameRate: number): void {}
-
-  getVideoInputQualitySettings(): VideoQualitySettings | null {
-    return null;
-  }
 }
 
 export class NoOpDeviceControllerWithEventController extends NoOpDeviceController {

@@ -17,6 +17,7 @@ import ContentShareObserver from '../../src/contentshareobserver/ContentShareObs
 import DataMessage from '../../src/datamessage/DataMessage';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
+import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
@@ -65,6 +66,8 @@ describe('DefaultAudioVideoFacade', () => {
     removeContentShareObserver(_observer: ContentShareObserver): void {}
 
     forEachContentShareObserver(_observerFunc: (observer: ContentShareObserver) => void): void {}
+
+    enableSVCForContentShare(_enable: boolean): void {}
   }
 
   class NoOpContentShareObserver implements ContentShareObserver {
@@ -193,6 +196,14 @@ describe('DefaultAudioVideoFacade', () => {
       const spy = sinon.spy(controller.videoTileController, 'startLocalVideoTile');
       facade.startLocalVideoTile();
       assert(spy.calledOnceWith());
+    });
+
+    it('will call startLocalVideoTile with meetingFeatures.videoMaxResolution set to VideoDisabled', () => {
+      const spy = sinon.spy(controller.videoTileController, 'startLocalVideoTile');
+      controller.configuration.meetingFeatures.videoMaxResolution =
+        VideoQualitySettings.VideoDisabled;
+      facade.startLocalVideoTile();
+      assert(spy.notCalled);
     });
 
     it('will call stopLocalVideoTile', () => {
@@ -664,6 +675,12 @@ describe('DefaultAudioVideoFacade', () => {
     it('will call enableSimulcastForContentShare', () => {
       const spy = sinon.spy(contentShareController, 'enableSimulcastForContentShare');
       facade.enableSimulcastForContentShare(true);
+      spy.calledOnceWith(true);
+    });
+
+    it('will call enableSVCForContentShare', () => {
+      const spy = sinon.spy(contentShareController, 'enableSVCForContentShare');
+      facade.enableSVCForContentShare(true);
       spy.calledOnceWith(true);
     });
 

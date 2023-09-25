@@ -81,7 +81,15 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX;
 
     let compressedSDPOffer: Uint8Array | null;
-    const localSdpOffer = localSdp;
+    let localSdpOffer = localSdp;
+    if (
+      this.context.videoUplinkBandwidthPolicy.wantsVideoDependencyDescriptorRtpHeaderExtension ===
+        undefined ||
+      !this.context.videoUplinkBandwidthPolicy.wantsVideoDependencyDescriptorRtpHeaderExtension()
+    ) {
+      // See note above similar code in `SetLocalDescriptionTask`.
+      localSdpOffer = new SDP(localSdpOffer).withoutDependencyDescriptorRtpHeaderExtension().sdp;
+    }
 
     if (this.context.serverSupportsCompression) {
       // If the server supports compression, then send the compressed version of the sdp
@@ -93,7 +101,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       );
       localSdp = '';
     }
-    this.context.previousSdpOffer = new SDP(localSdpOffer);
+    this.context.previousSdpOffer = new SDP(localSdp);
 
     const subscribe = new SignalingClientSubscribe(
       this.context.meetingSessionConfiguration.credentials.attendeeId,

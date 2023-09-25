@@ -157,6 +157,7 @@ import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
 import MediaStreamBrokerObserver from './mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingEventsClientConfiguration from './eventsclientconfiguration/MeetingEventsClientConfiguration';
 import MeetingEventsClientConfigurationAttributes from './eventsclientconfiguration/MeetingEventsClientConfigurationAttributes';
+import MeetingFeatures from './meetingsession/MeetingFeatures';
 import MeetingHistoryState from './eventcontroller/MeetingHistoryState';
 import MeetingReadinessChecker from './meetingreadinesschecker/MeetingReadinessChecker';
 import MeetingReadinessCheckerConfiguration from './meetingreadinesschecker/MeetingReadinessCheckerConfiguration';
@@ -261,6 +262,7 @@ import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIn
 import SingleNodeAudioTransformDevice from './devicecontroller/SingleNodeAudioTransformDevice';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
 import SubscribeAndReceiveSubscribeAckTask from './task/SubscribeAndReceiveSubscribeAckTask';
+import SupportedCodecPreferencesObserver from './videouplinkbandwidthpolicy/SupportedCodecPreferencesObserver';
 import TargetDisplaySize from './videodownlinkbandwidthpolicy/TargetDisplaySize';
 import Task from './task/Task';
 import TaskCanceler from './taskcanceler/TaskCanceler';
@@ -306,7 +308,9 @@ import VideoPreference from './videodownlinkbandwidthpolicy/VideoPreference';
 import VideoPreferences from './videodownlinkbandwidthpolicy/VideoPreferences';
 import VideoPriorityBasedPolicy from './videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoPriorityBasedPolicyConfig from './videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig';
+import VideoQualityAdaptationPreference from './videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
+import VideoResolution from './devicecontroller/VideoResolution';
 import VideoSource from './videosource/VideoSource';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
 import VideoStreamIdSet from './videostreamidset/VideoStreamIdSet';
@@ -502,6 +506,7 @@ export {
   MediaStreamBrokerObserver,
   MeetingEventsClientConfiguration,
   MeetingEventsClientConfigurationAttributes,
+  MeetingFeatures,
   MeetingHistoryState,
   MeetingReadinessChecker,
   MeetingReadinessCheckerConfiguration,
@@ -610,6 +615,7 @@ export {
   Some,
   StreamMetricReport,
   SubscribeAndReceiveSubscribeAckTask,
+  SupportedCodecPreferencesObserver,
   TargetDisplaySize,
   Task,
   TaskCanceler,
@@ -655,7 +661,9 @@ export {
   VideoPreferences,
   VideoPriorityBasedPolicy,
   VideoPriorityBasedPolicyConfig,
+  VideoQualityAdaptationPreference,
   VideoQualitySettings,
+  VideoResolution,
   VideoSource,
   VideoStreamDescription,
   VideoStreamIdSet,

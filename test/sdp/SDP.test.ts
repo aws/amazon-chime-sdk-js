@@ -462,6 +462,8 @@ describe('SDP', () => {
         sdpObj.withVideoSendCodecPreferences([
           VideoCodecCapability.h264(),
           VideoCodecCapability.vp8(),
+          VideoCodecCapability.vp9profile0(),
+          VideoCodecCapability.av1main(),
         ]).sdp
       ).to.deep.equal(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
     });
@@ -474,6 +476,26 @@ describe('SDP', () => {
           VideoCodecCapability.vp8(),
         ]).sdp
       ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_H264_CBP_THEN_VP8);
+    });
+
+    it('Updates priority of VP9 profile0 video send codes', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      expect(
+        sdpObj.withVideoSendCodecPreferences([
+          VideoCodecCapability.vp9profile0(),
+          VideoCodecCapability.av1main(),
+        ]).sdp
+      ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_VP9_PROFILE0);
+    });
+
+    it('Updates priority of VP9 video send codes without profile ID', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_VP9_NO_PROFILE_ID);
+      expect(
+        sdpObj.withVideoSendCodecPreferences([
+          VideoCodecCapability.vp9profile0(),
+          VideoCodecCapability.av1main(),
+        ]).sdp
+      ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_VP9_NO_PROFILE_ID);
     });
   });
 
@@ -529,6 +551,20 @@ describe('SDP', () => {
       const payloadTypes = sdpObj.getAudioPayloadTypes();
       expect(payloadTypes.get('opus')).to.equal(0);
       expect(payloadTypes.get('red')).to.equal(0);
+    });
+  });
+
+  describe('withStartingVideoSendBitrate', () => {
+    it('Returns original if no video', () => {
+      const sdpObj = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      expect(sdpObj.withStartingVideoSendBitrate(1000)).to.equal(sdpObj);
+    });
+
+    it('Adds starting video send bitrate', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      expect(sdpObj.withStartingVideoSendBitrate(1000).sdp).to.deep.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_STARTING_VIDEO_SEND_BITRATE
+      );
     });
   });
 });

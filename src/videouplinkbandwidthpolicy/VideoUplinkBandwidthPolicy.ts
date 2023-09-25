@@ -84,4 +84,25 @@ export default interface VideoUplinkBandwidthPolicy {
    * This method should not throw.
    */
   updateTransceiverController?(): void;
+
+  /**
+   * Set if high resultion feature (i.e., 1080p for camera and 4k for content) is enabled.
+   */
+  setHighResolutionFeatureEnabled?(enabled: boolean): void;
+
+  /**
+   * Set whether to enable scalable video coding (SVC)
+   */
+  setSVCEnabled?(enable: boolean): void;
+
+  /**
+   * Dependency descriptors can be used by the backend to designate spatial or temporal layers
+   * on a single encoding. Along with the video layers allocation exension this will
+   * result in the ability for remote attendees to subscribe to individual layers below the top.
+   *
+   * If the send transceiver is in a state where the layers allocation extension is not matching up with
+   * the dependency descriptor extension, or we simply don't want to allow for the seperation of spatial
+   * or temporal layers, we can remove the dependency descriptor from the SDP.
+   */
+  wantsVideoDependencyDescriptorRtpHeaderExtension?(): boolean;
 }

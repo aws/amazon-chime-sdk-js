@@ -26,10 +26,12 @@ import {
   SdkStreamMediaType,
   SdkStreamServiceType,
   SdkSubscribeFrame,
+  SdkVideoQualityAdaptationPreference,
   SdkVideoSubscriptionConfiguration,
 } from '../signalingprotocol/SignalingProtocol.js';
 import { getFormattedOffset } from '../utils/Utils';
 import Versioning from '../versioning/Versioning';
+import VideoQualityAdaptationPreference from '../videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
 import { convertServerSideNetworkAdaptionEnumToSignaled } from './ServerSideNetworkAdaption';
@@ -118,6 +120,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.supportedServerSideNetworkAdaptions = settings.supportedServerSideNetworkAdaptions.map(
       convertServerSideNetworkAdaptionEnumToSignaled
     );
+    joinFrame.wantsAllTemporalLayersInIndex = settings.wantsAllTemporalLayersInIndex;
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
     message.join = joinFrame;
@@ -200,6 +203,22 @@ export default class DefaultSignalingClient implements SignalingClient {
     signalConfig.groupId = config.groupId;
     signalConfig.priority = config.priority;
     signalConfig.targetBitrateKbps = config.targetBitrateKbps;
+    switch (config.qualityAdaptationPreference) {
+      case VideoQualityAdaptationPreference.Balanced:
+        signalConfig.qualityAdaptationPreference = SdkVideoQualityAdaptationPreference.BALANCED;
+        break;
+      case VideoQualityAdaptationPreference.MaintainFramerate:
+        signalConfig.qualityAdaptationPreference =
+          SdkVideoQualityAdaptationPreference.MAINTAIN_FRAMERATE;
+        break;
+      case VideoQualityAdaptationPreference.MaintainResolution:
+        signalConfig.qualityAdaptationPreference =
+          SdkVideoQualityAdaptationPreference.MAINTAIN_RESOLUTION;
+        break;
+      default:
+        signalConfig.qualityAdaptationPreference = SdkVideoQualityAdaptationPreference.BALANCED;
+    }
+
     return signalConfig;
   }
 

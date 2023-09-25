@@ -19,6 +19,7 @@ import { Maybe } from '../utils/Types';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoSource from '../videosource/VideoSource';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
+import SupportedCodecPreferencesObserver from '../videouplinkbandwidthpolicy/SupportedCodecPreferencesObserver';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import BaseTask from './BaseTask';
 
@@ -245,6 +246,15 @@ export default class ReceiveVideoStreamIndexTask
         'Interesection of meeting receive codec support and send codec preferences has no overlap, falling back to just values provided in `setVideoCodecSendPreferences`'
       );
       this.context.meetingSupportedVideoSendCodecPreferences = undefined;
+    }
+
+    const observer = (this.context
+      .videoUplinkBandwidthPolicy as unknown) as SupportedCodecPreferencesObserver;
+    if (observer.supportedCodecsDidChange) {
+      observer.supportedCodecsDidChange(
+        this.context.meetingSupportedVideoSendCodecPreferences,
+        this.context.videoSendCodecPreferences
+      );
     }
 
     if (willNeedUpdate) {

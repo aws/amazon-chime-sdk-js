@@ -3,47 +3,53 @@
 
 import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import Logger from '../logger/Logger';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import ConnectionMetrics from './ConnectionMetrics';
+import SupportedCodecPreferencesObserver from './SupportedCodecPreferencesObserver';
 import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 
 /** NScaleVideoUplinkBandwidthPolicy implements capture and encode
  *  parameters that are nearly equivalent to those chosen by the
  *  traditional native clients, except for a modification to
  *  maxBandwidthKbps and scaleResolutionDownBy described below. */
-export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
+export default class NScaleVideoUplinkBandwidthPolicy
+  implements VideoUplinkBandwidthPolicy, SupportedCodecPreferencesObserver {
   static readonly encodingMapKey = 'video';
   // 0, 1, 2 have dummy value as we keep the original resolution if we have less than 2 videos.
+  // For each video cource, we define a target height for low resoultion and high resolution,
+  // respectively. This is corresponding to the meeting feature specified for the meeting.
   static readonly targetHeightArray = [
-    0,
-    0,
-    0,
-    540,
-    540,
-    480,
-    480,
-    480,
-    480,
-    360,
-    360,
-    360,
-    360,
-    270,
-    270,
-    270,
-    270,
-    180,
-    180,
-    180,
-    180,
-    180,
-    180,
-    180,
-    180,
-    180,
+    [0, 0], // 0
+    [0, 0], // 1
+    [0, 0], // 2
+    [540, 720], // 3
+    [540, 720], // 4
+    [480, 540], // 5
+    [480, 540], // 6
+    [480, 540], // 7
+    [480, 540], // 8
+    [360, 480], // 9
+    [360, 480], // 10
+    [360, 480], // 11
+    [360, 480], // 12
+    [270, 360], // 13
+    [270, 360], // 14
+    [270, 360], // 15
+    [270, 360], // 16
+    [180, 270], // 17
+    [180, 270], // 18
+    [180, 270], // 19
+    [180, 270], // 20
+    [180, 270], // 21
+    [180, 270], // 22
+    [180, 270], // 23
+    [180, 270], // 24
+    [180, 270], // 25
   ];
+  static readonly SVCCodecNames: string[] = ['VP9'];
 
   private numberOfPublishedVideoSources: number | undefined = undefined;
   private optimalParameters: DefaultVideoAndEncodeParameter;
@@ -52,6 +58,10 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private hasBandwidthPriority: boolean = false;
   private encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
   private transceiverController: TransceiverController;
+  private enableHighResolutionFeature: boolean = false;
+  private enableSVC: boolean = false;
+  private isUsingSVCCodec: boolean = true;
+  private numParticipants: number = 0;
 
   constructor(
     private selfAttendeeId: string,
@@ -86,7 +96,6 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
 
   updateIndex(videoIndex: VideoStreamIndex): void {
     let hasLocalVideo = true;
-    let scale = 1;
     if (this.transceiverController) {
       hasLocalVideo = this.transceiverController.hasVideoInput();
     }
@@ -95,12 +104,31 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     const numberOfPublishedVideoSources =
       videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) +
       (hasLocalVideo ? 1 : 0);
-    if (this.numberOfPublishedVideoSources === numberOfPublishedVideoSources) {
+    const numParticipants = videoIndex.numberOfParticipants();
+    if (
+      this.numParticipants === numParticipants &&
+      this.numberOfPublishedVideoSources === numberOfPublishedVideoSources
+    ) {
       this.logger?.debug('Skipping update index; Number of participants has not changed');
       return;
     }
     this.numberOfPublishedVideoSources = numberOfPublishedVideoSources;
+    this.numParticipants = numParticipants;
 
+    this.updateOptimalParameters();
+  }
+
+  wantsResubscribe(): boolean {
+    return !this.parametersInEffect.equal(this.optimalParameters);
+  }
+
+  chooseCaptureAndEncodeParameters(): DefaultVideoAndEncodeParameter {
+    this.parametersInEffect = this.optimalParameters.clone();
+    return this.parametersInEffect.clone();
+  }
+
+  private updateOptimalParameters(): void {
+    let scale = 1;
     if (this.transceiverController) {
       const settings = this.getStreamCaptureSetting();
       if (settings) {
@@ -114,17 +142,9 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       this.captureFrameRate(),
       this.maxBandwidthKbps(),
       false,
-      scale
+      scale,
+      this.enableSVC && this.numParticipants > 2 && this.isUsingSVCCodec
     );
-  }
-
-  wantsResubscribe(): boolean {
-    return !this.parametersInEffect.equal(this.optimalParameters);
-  }
-
-  chooseCaptureAndEncodeParameters(): DefaultVideoAndEncodeParameter {
-    this.parametersInEffect = this.optimalParameters.clone();
-    return this.parametersInEffect.clone();
   }
 
   private captureWidth(): number {
@@ -176,6 +196,15 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     this.transceiverController = transceiverController;
   }
 
+  setSVCEnabled(enable: boolean): void {
+    this.enableSVC = enable;
+    this.logger?.info(`setSVCEnabled, enable: ${enable}}`);
+  }
+
+  setHighResolutionFeatureEnabled(enabled: boolean): void {
+    this.enableHighResolutionFeature = enabled;
+  }
+
   async updateTransceiverController(): Promise<void> {
     const settings = this.getStreamCaptureSetting();
     if (!settings) {
@@ -196,13 +225,16 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     /* istanbul ignore next: transceiverEncoding?.scaleResolutionDownBy cannot be covered */
     return (
       encoding.maxBitrate !== transceiverEncoding?.maxBitrate ||
-      encoding.scaleResolutionDownBy !== transceiverEncoding?.scaleResolutionDownBy
+      encoding.scaleResolutionDownBy !== transceiverEncoding?.scaleResolutionDownBy ||
+      // @ts-ignore
+      encoding?.scalabilityMode !== transceiverEncoding?.scalabilityMode
     );
   }
 
   private calculateEncodingParameters(setting: MediaTrackSettings): RTCRtpEncodingParameters {
     const maxBitrate = this.maxBandwidthKbps() * 1000;
     let scale = 1;
+    let targetHeight = 720;
     if (
       setting.height !== undefined &&
       setting.width !== undefined &&
@@ -210,13 +242,13 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       !this.hasBandwidthPriority &&
       this.getNumberOfPublishedVideoSources() > 2
     ) {
-      let targetHeight =
+      targetHeight =
         NScaleVideoUplinkBandwidthPolicy.targetHeightArray[
           Math.min(
             this.getNumberOfPublishedVideoSources(),
             NScaleVideoUplinkBandwidthPolicy.targetHeightArray.length - 1
           )
-        ];
+        ][this.enableHighResolutionFeature ? 1 : 0];
       //Workaround for issue https://github.com/aws/amazon-chime-sdk-js/issues/2002
       if (targetHeight === 480 && this.browserBehavior?.disable480pResolutionScaleDown()) {
         targetHeight = 360;
@@ -228,10 +260,33 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
         }. New dimension is ${setting.width / scale}x${setting.height / scale}`
       );
     }
-    return {
-      scaleResolutionDownBy: scale,
-      maxBitrate: maxBitrate,
-    };
+
+    if (this.enableSVC) {
+      let scalabilityMode: string;
+      if ((this.numParticipants >= 0 && this.numParticipants < 3) || !this.isUsingSVCCodec) {
+        scalabilityMode = 'L1T1';
+      } else {
+        scalabilityMode = targetHeight >= 720 ? 'L3T3' : targetHeight >= 360 ? 'L2T3' : 'L1T3';
+      }
+      this.logger?.info(
+        `calculateEncodingParameters: SVC: ${this.enableSVC}    participants: ${
+          this.numParticipants
+        }     publishers: ${this.getNumberOfPublishedVideoSources()}     bitrate: ${maxBitrate}  targetHeight: ${targetHeight}  scalabilityMode: ${scalabilityMode}   isUsingSVCCodec: ${
+          this.isUsingSVCCodec
+        }`
+      );
+      return {
+        scaleResolutionDownBy: scale,
+        maxBitrate: maxBitrate,
+        // @ts-ignore
+        scalabilityMode: scalabilityMode,
+      };
+    } else {
+      return {
+        scaleResolutionDownBy: scale,
+        maxBitrate: maxBitrate,
+      };
+    }
   }
 
   private getStreamCaptureSetting(): MediaTrackSettings | undefined {
@@ -241,5 +296,24 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private getNumberOfPublishedVideoSources(): number {
     /* istanbul ignore next: policy calculation is dependent on index so this is never undefined at time of use */
     return this.numberOfPublishedVideoSources ?? 0;
+  }
+
+  wantsVideoDependencyDescriptorRtpHeaderExtension(): boolean {
+    return this.enableSVC;
+  }
+
+  supportedCodecsDidChange(
+    meetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] | undefined,
+    videoSendCodecPreferences: VideoCodecCapability[]
+  ): void {
+    const codecs = meetingSupportedVideoSendCodecPreferences ?? videoSendCodecPreferences;
+
+    const isUsingSVCCodec =
+      codecs.length > 0 &&
+      NScaleVideoUplinkBandwidthPolicy.SVCCodecNames.includes(codecs[0].codecName);
+    if (isUsingSVCCodec !== this.isUsingSVCCodec) {
+      this.isUsingSVCCodec = isUsingSVCCodec;
+      this.updateOptimalParameters();
+    }
   }
 }

@@ -19,6 +19,9 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
   private videoIndex: VideoStreamIndex | null = null;
   private currLocalDescriptions: VideoStreamDescription[] = [];
   private nextLocalDescriptions: VideoStreamDescription[] = [];
+  private enableUhdContent: boolean = false;
+  private defaultHiTargetBitrateKbps: number = 1200;
+  private defaultLowTargetBitrateKbps: number = 300;
 
   constructor(
     private logger: Logger,
@@ -43,14 +46,16 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
       rid: nameArr[0],
       active: true,
       scaleResolutionDownBy: this.encodingParams?.low?.scaleResolutionDownBy || 2,
-      maxBitrate: (this.encodingParams?.low?.maxBitrateKbps || 300) * toBps,
+      maxBitrate:
+        (this.encodingParams?.low?.maxBitrateKbps || this.defaultLowTargetBitrateKbps) * toBps,
       maxFramerate: this.encodingParams?.low?.maxFramerate || 5,
     });
     newMap.set(nameArr[1], {
       rid: nameArr[1],
       active: true,
       scaleResolutionDownBy: this.encodingParams?.high?.scaleResolutionDownBy || 1,
-      maxBitrate: (this.encodingParams?.high?.maxBitrateKbps || 1200) * toBps,
+      maxBitrate:
+        (this.encodingParams?.high?.maxBitrateKbps || this.defaultHiTargetBitrateKbps) * toBps,
       maxFramerate: this.encodingParams?.high?.maxFramerate,
     });
     this.getQualityMapString(newMap);
@@ -92,7 +97,7 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
 
   maxBandwidthKbps(): number {
     // should deprecate in this policy
-    return 1200;
+    return this.enableUhdContent ? 2000 : 1200;
   }
 
   setIdealMaxBandwidthKbps(_idealMaxBandwidthKbps: number): void {
@@ -101,6 +106,12 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
 
   setHasBandwidthPriority(_hasBandwidthPriority: boolean): void {
     // should deprecate in this policy
+  }
+
+  setHighResolutionFeatureEnabled(enabled: boolean): void {
+    this.enableUhdContent = enabled;
+    this.defaultHiTargetBitrateKbps = enabled ? 2000 : 1200;
+    this.defaultLowTargetBitrateKbps = enabled ? 500 : 300;
   }
 
   private getQualityMapString(params: Map<string, RTCRtpEncodingParameters>): void {

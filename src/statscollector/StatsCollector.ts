@@ -296,7 +296,14 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
           const streamMetricReport = new StreamMetricReport();
           streamMetricReport.mediaType = this.getMediaType(rawMetricReport);
           streamMetricReport.direction = this.getDirectionType(rawMetricReport);
-          if (!this.videoStreamIndex.allStreams().empty()) {
+          if (
+            streamMetricReport.mediaType === MediaType.VIDEO &&
+            streamMetricReport.direction === Direction.UPSTREAM
+          ) {
+            streamMetricReport.streamId = this.videoStreamIndex.sendVideoStreamIdFromRid(
+              rawMetricReport.rid
+            );
+          } else if (!this.videoStreamIndex.allStreams().empty()) {
             streamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
               Number(rawMetricReport.ssrc)
             );
@@ -313,9 +320,18 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
         } else {
           // Update stream ID in case we have overridden it locally in the case of remote video
           // updates completed without a negotiation
-          existingStreamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
-            Number(rawMetricReport.ssrc)
-          );
+          if (
+            existingStreamMetricReport.mediaType === MediaType.VIDEO &&
+            existingStreamMetricReport.direction === Direction.UPSTREAM
+          ) {
+            existingStreamMetricReport.streamId = this.videoStreamIndex.sendVideoStreamIdFromRid(
+              rawMetricReport.rid
+            );
+          } else {
+            existingStreamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
+              Number(rawMetricReport.ssrc)
+            );
+          }
         }
         this.clientMetricReport.currentSsrcs[Number(rawMetricReport.ssrc)] = 1;
       }

@@ -152,6 +152,41 @@ describe('SetRemoteDescriptionTask', () => {
         done();
       });
     });
+
+    it('sets content hint for SVC content', done => {
+      context.sdpAnswer = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO;
+      context.audioVideoController.configuration.credentials.attendeeId = 'attendee#content';
+      context.audioVideoController.configuration.enableSVC = true;
+      context.activeVideoInput = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      context.activeVideoInput.addTrack(track);
+      task.run().then(() => done());
+    });
+
+    it('sets content hint for AV1 content', done => {
+      context.sdpAnswer = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_AV1;
+      context.audioVideoController.configuration.credentials.attendeeId = 'attendee#content';
+      context.activeVideoInput = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      context.activeVideoInput.addTrack(track);
+      task.run().then(() => done());
+    });
+
+    it('does not set content hint for non AV1/SVC content', done => {
+      context.sdpAnswer = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO;
+      context.audioVideoController.configuration.credentials.attendeeId = 'attendee#content';
+      context.currentVideoSendCodec = VideoCodecCapability.h264ConstrainedBaselineProfile();
+      context.activeVideoInput = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      context.activeVideoInput.addTrack(track);
+      task.run().then(() => done());
+    });
   });
 
   describe('cancel', () => {

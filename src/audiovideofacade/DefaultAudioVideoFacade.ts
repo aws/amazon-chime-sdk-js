@@ -113,7 +113,15 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
   }
 
   startLocalVideoTile(): number {
-    const result = this.videoTileController.startLocalVideoTile();
+    let result = 0;
+    if (
+      this.audioVideoController.configuration.meetingFeatures.videoMaxResolution ===
+      VideoQualitySettings.VideoDisabled
+    ) {
+      this.trace('Could not start camera video because max video resolution was set to None');
+    } else {
+      result = this.videoTileController.startLocalVideoTile();
+    }
     this.trace('startLocalVideoTile', null, result);
     return result;
   }
@@ -465,6 +473,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
   ): void {
     this.trace('enableSimulcastForContentShare');
     this.contentShareController.enableSimulcastForContentShare(enable, encodingParams);
+  }
+
+  enableSVCForContentShare(enable: boolean): void {
+    this.trace('enableSVCForContentShare');
+    this.contentShareController.enableSVCForContentShare(enable);
   }
 
   startContentShare(stream: MediaStream): Promise<void> {

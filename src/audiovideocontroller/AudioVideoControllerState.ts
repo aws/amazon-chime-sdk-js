@@ -165,6 +165,8 @@ export default class AudioVideoControllerState {
 
   enableSimulcast: boolean = false;
 
+  enableSVC: boolean = false;
+
   eventController: EventController | null = null;
 
   signalingOpenDurationMs: number | null = null;

@@ -109,14 +109,6 @@
             <label for="logLevel" style="text-align: left;">Log Level:</label>
           </div>
           <div class="form-floating mb-3">
-            <select name="videoCodec" class="form-select" id="videoCodecSelect">
-              <option value="default">Meeting Default</option>
-              <option value="vp8">VP8</option>
-              <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
-            </select>
-            <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
-          </div>
-          <div class="form-floating mb-3">
             <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
               <option value="SendReceive">SendReceive</option>
               <option value="Send">Send</option>
@@ -175,16 +167,52 @@
             <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
               quality</label>
           </div>
+          <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
+          <select name="videoCodec" class="form-select" id="videoCodecSelect">
+            <option value="default">Meeting Default</option>
+            <option value="vp8">VP8</option>
+            <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
+            <option value="vp9profile0">VP9 Profile 0</option>
+            <option value="av1main">AV1 Main Profile</option>
+          </select>
+          <label for="contentCodec"  style="text-align: left;">Preferred Content Send Codec:</label>
+          <select name="contentCodec" class="form-select" id="contentCodecSelect">
+            <option value="default">Meeting Default</option>
+            <option value="vp8">VP8</option>
+            <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
+            <option value="vp9profile0">VP9 Profile 0</option>
+            <option value="av1main">AV1 Main Profile</option>
+          </select>
+          <label for="videoFeature" id="videoFeatureTitle" style="text-align: left;">Meeting Maximum Camera Video Resolution:</label>
+          <select name="videoFeature" class="form-select" id="videoFeatureSelect">
+            <option value="none">Disable Camera Video</option>
+            <option value="hd" selected>HD 720p</option>
+            <option value="fhd">FHD 1080p (requires max attendee)</option>
+          </select>
+          <label for="contentFeature" id="contentFeatureTitle" style="text-align: left;">Meeting Maximum Content Share Resolution:</label>
+            <select name="contentFeature" class="form-select" id="contentFeatureSelect">
+              <option value="none">Disable Content Share</option>
+              <option value="fhd" selected>FHD 1080p</option>
+              <option value="uhd">UHD 2160p (requires max attendee)</option>
+            </select>
+          <div class="form-group row" style="text-align: left;">
+            <label style="padding-top:5px" class="col-md-9 col-form-label">Max attendees allowed (range: 1 - 250):</label>
+            <input for="max-attendee-count" class="col-md-3" type="number" id="max-attendee-cnt">
+          </div>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="simulcast" class="form-check-input">
             <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="svc" class="form-check-input">
+            <label for="svc" class="form-check-label">Enable SVC for Chrome</label>
           </div>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
             <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
               Policy</label>
           </div>
-          <lable id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</lable>
+          <label id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</label>
           <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
             <option value="default">Default</option>
             <option value="none">None (Deprecated)</option>
@@ -366,8 +394,9 @@
           <label for="video-input-quality block">Resolution</label>
           <select id="video-input-quality" class="form-select" style="width:100%">
             <option value="360p">360p (nHD) @ 15 fps (600 Kbps max)</option>
-            <option value="540p" selected>540p (qHD) @ 15 fps (1.4 Mbps max)</option>
-            <option value="720p">720p (HD) @ 15 fps (1.5 Mbps max)</option>
+            <option value="540p">540p (qHD) @ 15 fps (1.4 Mbps max)</option>
+            <option value="720p" selected>720p (HD) @ 15 fps (1.5 Mbps max)</option>
+            <option value="1080p" id="1080p">1080p (FHD) @ 15 fps (2.5 Mbps max)</option>
           </select>
         </div>
       </div>
@@ -917,6 +946,13 @@
                   placeholder="Max frame rate">
               </div>
             </div>
+          </div>
+        </div>
+        <div id="content-svc-config">
+          <h5 class="my-2">SVC Encoding</h5>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="content-enable-svc">
+            <label class="form-check-label" for="content-enable-svc">Enable SVC</label>
           </div>
         </div>
       </div>

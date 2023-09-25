@@ -3,9 +3,12 @@
 
 import ApplicationMetadata from '../applicationmetadata/ApplicationMetadata';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
+import VideoResolution from '../devicecontroller/VideoResolution';
 import { toLowerCasePropertyNames } from '../utils/Utils';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
+import MeetingFeatures from './MeetingFeatures';
 import MeetingSessionCredentials from './MeetingSessionCredentials';
 import MeetingSessionURLs from './MeetingSessionURLs';
 
@@ -77,6 +80,12 @@ export default class MeetingSessionConfiguration {
   enableSimulcastForUnifiedPlanChromiumBasedBrowsers: boolean = false;
 
   /**
+   * Feature flag to enable SVC on supported browsers.
+   * Currently SVC is only supported on Chromium-based browsers.
+   */
+  enableSVC: boolean = false;
+
+  /**
    * Video downlink bandwidth policy to determine which remote videos
    * are subscribed to.
    */
@@ -110,6 +119,11 @@ export default class MeetingSessionConfiguration {
    */
   disablePeriodicKeyframeRequestOnContentSender: boolean = false;
 
+  /*
+   * Additional features in the meeting
+   */
+  meetingFeatures: MeetingFeatures;
+
   /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
    * chime:CreateAttendee response. You can pass in either a JSON object containing the
@@ -124,7 +138,13 @@ export default class MeetingSessionConfiguration {
    *        "AudioHostUrl": "...",
    *        "SignalingUrl": "...",
    *        "TurnControlUrl": "..."
-   *      }
+   *      },
+   *      "MeetingFeatures":{
+   *        "Audio":"...",
+   *        "Video":"....",
+   *        "Content":"...",
+   *        "Attendee":"..."
+   *      },
    *    }
    *   }
    * }, {
@@ -166,6 +186,42 @@ export default class MeetingSessionConfiguration {
       if (createMeetingResponse.mediaplacement.eventingestionurl) {
         this.urls.eventIngestionURL = createMeetingResponse.mediaplacement.eventingestionurl;
       }
+      if (createMeetingResponse.meetingfeatures === undefined) {
+        this.meetingFeatures = new MeetingFeatures();
+      } else {
+        if (
+          createMeetingResponse.meetingfeatures.video === undefined ||
+          createMeetingResponse.meetingfeatures.content === undefined
+        ) {
+          this.meetingFeatures = new MeetingFeatures();
+        } else {
+          let videoMaxResolution: VideoQualitySettings;
+          let contentMaxResolution: VideoQualitySettings;
+          if (createMeetingResponse.meetingfeatures.video.maxresolution === VideoResolution.None) {
+            videoMaxResolution = VideoQualitySettings.VideoDisabled;
+          } else if (
+            createMeetingResponse.meetingfeatures.video.maxresolution === VideoResolution.HD
+          ) {
+            videoMaxResolution = VideoQualitySettings.VideoResolutionHD;
+          } else {
+            videoMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+          }
+          if (
+            createMeetingResponse.meetingfeatures.content.maxresolution === VideoResolution.None
+          ) {
+            contentMaxResolution = VideoQualitySettings.VideoDisabled;
+          } else if (
+            createMeetingResponse.meetingfeatures.content.maxresolution === VideoResolution.FHD
+          ) {
+            contentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+          } else {
+            contentMaxResolution = VideoQualitySettings.VideoResolutionUHD;
+          }
+          this.meetingFeatures = new MeetingFeatures(videoMaxResolution, contentMaxResolution);
+        }
+      }
+    } else {
+      this.meetingFeatures = new MeetingFeatures();
     }
     if (createAttendeeResponse) {
       createAttendeeResponse = toLowerCasePropertyNames(createAttendeeResponse);
