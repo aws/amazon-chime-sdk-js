@@ -8,6 +8,168 @@
 
   <title>Meeting Demo</title>
 </head>
+<style>
+.center{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 29vw;
+  background: white;
+  border-radius: 10px;
+  padding:30px
+}
+
+.center h1{
+  text-align: center;
+  padding: 0 0 20px 0;
+  border-bottom: 1px solid silver;
+}
+
+.center form{
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+form .txt_field{
+  position: relative;
+  border-bottom: 2px solid #adadad;
+  margin: 30px 0;
+}
+
+.txt_field input{
+  width: 100%;
+  padding: 0 5px;
+  height: 40px;
+  font-size: 16px;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+.txt_field label{
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  color: #adadad;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.txt_field span::before{
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 0px;
+  height: 2px;
+  background: #7126d9;
+  transition: .5s;
+}
+
+.txt_field input:focus ~ label,
+.txt_field input:valid ~ label{
+  top: -5px;
+  color: #7126d9;
+}
+
+.txt_field input:focus ~ span::before,
+.txt_field input:Valid ~ span::before{
+  width: 100%;
+}
+
+.pass{
+  margin: -5px 0 20px 5px;
+  color: #a6a6a6;
+  cursor: pointer;
+}
+
+.pass:hover{
+  text-decoration: underline;
+}
+
+input[type="Submit"]{
+  width: 100%;
+  height: 50px;
+  border: 1px solid;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+
+}
+
+input[type="Submit"]:hover{
+  background: #7126d9;
+  color: #e9f4fb;
+  transition: .5s;
+}
+
+.signup_link{
+  margin: 30px 0;
+  text-align: center;
+  font-size: 16px;
+  color: #666666;
+}
+
+.signup_link a{
+  color: #7126d9;
+  text-decoration: none;
+}
+
+.signup_link a:hover{
+  text-decoration: underline;
+}
+
+.HomeAbout{
+  width: 100vw;
+  height: 25vh;
+}
+
+
+/* Mobile/Tablet Styles */
+@media only screen and (max-width: 950px) {
+  .center {
+    width: 90vw; /* Adjusted width for mobile/tablet */
+    padding: 15px; /* Reduced padding */
+  }
+
+  .center form {
+    padding: 0 20px; /* Reduced padding for form */
+  }
+
+  form .txt_field {
+    margin: 15px 0; /* Reduced margin */
+  }
+
+  .txt_field input {
+    height: 35px; /* Adjusted input height */
+    font-size: 14px; /* Adjusted font size */
+  }
+
+  .txt_field label {
+    font-size: 14px; /* Adjusted label font size */
+  }
+
+  .pass {
+    margin: -3px 0 10px 3px; /* Adjusted margin */
+  }
+
+  input[type="Submit"] {
+    height: 40px; /* Adjusted button height */
+    font-size: 16px; /* Adjusted font size */
+  }
+
+  .signup_link {
+    margin: 15px 0; /* Adjusted margin */
+    font-size: 14px; /* Adjusted font size */
+  }
+}
+
+
+
+</style>
 
 <body>
 
@@ -298,6 +460,28 @@
   </div>
 
   <!-- End of Landing Page -->
+  <div class="login container" style="display:none">
+    <div class="center">
+        <h1>Quizbot Login</h1>
+        <form action="https://aptiversity.com:5555/login" method="POST">
+          <div class="txt_field">
+                <input type="text" name="text" required>
+                <span></span>
+                <label>Username</label>
+            </div>
+            <div class="txt_field">
+                <input type="password" name="password" required>
+                <span></span>
+                <label>Password</label>
+            </div>
+            <div class="pass">Forget Password?</div>
+            <input name="submit" type="Submit" value="Login">
+            <div class="signup_link">
+                Not a Member ? <a href="signup.php">Signup</a><br>Or <a href="signup.php">Join Meeting As Guest</a>
+            </div>
+        </form>
+    </div>
+  </div>
 
   <!-- start of joining page -->
   <div id="joining-page" class="mainBlock" style="display: block;">
@@ -309,9 +493,9 @@
               <div class="card">
                 <div class="overlay">
                   <div class="card-body">
-                    <h2>10:24 PM</h2>
-                    <h3 class="mt-2">August 18, 2023</h3>
-                  </div>
+                    <h2 class="currentTime">10:24 PM</h2>
+                    <h3 class="currentDate mt-2">August 18, 2023</h3>
+                    </div>
                 </div>
               </div>
             </div>
@@ -319,7 +503,7 @@
           <div class="leftDetailsBlock">
             <p>Upcoming Classes</p>
             <div class="listingBlock mt-3">
-              <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex justify-content-between align-items-center meeting-calendar-item">
                 <div>
                   <h5>Marketing</h5>
                   <p>10:30 AM, Today</p>
@@ -328,7 +512,7 @@
               </div>
             </div>
             <div class="listingBlock mt-3 mb-3">
-              <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex justify-content-between align-items-center meeting-calendar-item">
                 <div>
                   <h5>Science Grade 34</h5>
                   <p>7:30 AM, August 19</p>
