@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Fixed audio send failing for the rest of the meeting when writing frames larger than 1000 bytes in Chrome, which could be caused by sending redundant audio
 
 ## [3.17.0] - 2023-08-15
 

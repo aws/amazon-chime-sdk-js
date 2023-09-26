@@ -5,8 +5,9 @@ export default class RedundantAudioEncoder {
   // Each payload must be less than 1024 bytes to fit the 10 bit block length
   private readonly maxRedPacketSizeBytes = 1 << 10;
 
-  // Limit payload to 1100 bytes to handle small MTU
-  private readonly maxAudioRtpPacketSizeBytes = 1100;
+  // Limit payload to 1000 bytes to handle small MTU. 1000 is chosen because in Chromium-based browsers, writing audio
+  // frames larger than 1000 bytes will cause an error to be thrown. See https://crbug.com/1248479.
+  private readonly maxAudioRtpPacketSizeBytes = 1000;
 
   // Each payload can encode a timestamp delta of 14 bits
   private readonly maxRedTimestampOffset = 1 << 14;
@@ -236,12 +237,12 @@ export default class RedundantAudioEncoder {
     frame: RTCEncodedAudioFrame,
     controller: TransformStreamDefaultController
   ): void {
-    // const frameMetadata = frame.getMetadata();
-    // // @ts-ignore
-    // if (frameMetadata.payloadType !== this.redPayloadType) {
-    //   controller.enqueue(frame);
-    //   return;
-    // }
+    const frameMetadata = frame.getMetadata();
+    // @ts-ignore
+    if (frameMetadata.payloadType !== this.redPayloadType) {
+      controller.enqueue(frame);
+      return;
+    }
     const primaryPayloadBuffer = this.getPrimaryPayload(frame.timestamp, frame.data);
     if (!primaryPayloadBuffer) {
       controller.enqueue(frame);
