@@ -2307,6 +2307,9 @@ input[type="Submit"]:hover{
   -webkit-box-shadow: 0px 0px 10px 0px rgba(54, 53, 53, 0.75);
   -moz-box-shadow: 0px 0px 10px 0px rgba(54, 53, 53, 0.75);
 // border: 5px solid #8e509c;
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 1;
 }
 #login-container *{
   font-family: 'Cabin Condensed', sans-serif;
