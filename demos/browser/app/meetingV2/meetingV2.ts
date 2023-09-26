@@ -4749,6 +4749,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const calendarDates = document.getElementById('calendar-dates');
   const currentMonthElement = document.getElementById('current-month');
 
+  // Sample JSON structure for events
+  const events: { [key: string]: string } = {
+    "2023-09-26": "Sample Event 1",
+    "2023-09-27": "Sample Event 2"
+    // Add more events as needed
+};
+
   function generateCalendar() {
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
@@ -4759,10 +4766,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     calendarDates.innerHTML = '';
 
+    // Add padding for days before the first day of the month
+    for (let i = 0; i < firstDay.getDay(); i++) {
+      const paddingElement = document.createElement('div');
+      paddingElement.classList.add('calendar-day', 'inactive');
+      calendarDates.appendChild(paddingElement);
+    }
+
     for (let day = 1; day <= daysInMonth; day++) {
       const dateElement = document.createElement('div');
       dateElement.classList.add('calendar-day');
       dateElement.textContent = day.toString();
+
+      // Check if there's an event for this day
+      const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      if (events[eventDate]) {
+        const eventElement = document.createElement('div');
+        eventElement.classList.add('calendar-event');
+        eventElement.textContent = events[eventDate];
+        dateElement.appendChild(eventElement);
+      }
 
       calendarDates.appendChild(dateElement);
     }
