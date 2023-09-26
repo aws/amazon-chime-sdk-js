@@ -339,12 +339,17 @@
 
             <p>Upcoming Classes</p>
           </div>
-          <div class="container mt-5">
+          <div class="d-flex justify-content-center mt-3 mb-3">
             <div class="calendar">
               <div class="calendar-header">
-                <span id="prev-month" class="btn">&lt;</span>
+
                 <span class="calendar-month" id="current-month">August 2023</span>
-                <span id="next-month" class="btn">&gt;</span>
+                <div class="d-flex" style="gap: 10px;"> 
+                  <span id="prev-month" class="btn"
+                    style="font-size: 27px;">&lt;</span>
+                  <span id="next-month" class="btn" style="font-size: 27px;">&gt;</span>
+                </div>
+
               </div>
               <div class="calendar-days">
                 <div class="calendar-day">Sun</div>
@@ -2040,24 +2045,29 @@
               <%= require('../../node_modules/open-iconic/svg/code.svg') %>
             </button> -->
             <div class="iconButton">
-            <button id="button-video-stats" type="button" class="mx-1 mx-xl-2 my-2"
-              title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-              <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 20V19M8 20V16M12 20V12M16 20V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <button id="button-video-stats" type="button" class="mx-1 mx-xl-2 my-2"
+                title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false"
+                autocomplete="off">
+                <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 20V19M8 20V16M12 20V12M16 20V8" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
                 </svg>
-            </button>
-          </div>
+              </button>
+            </div>
 
             <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Select destination">
               <div class="btn-group" role="group">
                 <div class="iconButton">
-                <button id="button-video-recording-drop" type="button" class="dropdown-toggle"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
-                  <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 13.6493C3 16.6044 5.41766 19 8.4 19L16.5 19C18.9853 19 21 16.9839 21 14.4969C21 12.6503 19.8893 10.9449 18.3 10.25C18.1317 7.32251 15.684 5 12.6893 5C10.3514 5 8.34694 6.48637 7.5 8.5C4.8 8.9375 3 11.2001 3 13.6493Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <button id="button-video-recording-drop" type="button" class="dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
+                    <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M3 13.6493C3 16.6044 5.41766 19 8.4 19L16.5 19C18.9853 19 21 16.9839 21 14.4969C21 12.6503 19.8893 10.9449 18.3 10.25C18.1317 7.32251 15.684 5 12.6893 5C10.3514 5 8.34694 6.48637 7.5 8.5C4.8 8.9375 3 11.2001 3 13.6493Z"
+                        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                </button>
-              </div>
+                  </button>
+                </div>
                 <div style="height: 32px;" id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
                   aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
                   <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
