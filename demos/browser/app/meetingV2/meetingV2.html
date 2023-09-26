@@ -9,460 +9,45 @@
   <title>Meeting Demo</title>
 </head>
 <style>
-.center{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 29vw;
-  background: white;
-  border-radius: 10px;
-  padding:30px
-}
-
-.center h1{
-  text-align: center;
-  padding: 0 0 20px 0;
-  border-bottom: 1px solid silver;
-}
-
-.center form{
-  padding: 0 40px;
-  box-sizing: border-box;
-}
-
-form .txt_field{
-  position: relative;
-  border-bottom: 2px solid #adadad;
-  margin: 30px 0;
-}
-
-.txt_field input{
-  width: 100%;
-  padding: 0 5px;
-  height: 40px;
-  font-size: 16px;
-  border: none;
-  background: none;
-  outline: none;
-}
-
-.txt_field label{
-  position: absolute;
-  top: 50%;
-  left: 5px;
-  color: #adadad;
-  transform: translateY(-50%);
-  font-size: 16px;
-  pointer-events: none;
-}
-
-.txt_field span::before{
-  content: '';
-  position: absolute;
-  top: 40px;
-  left: 0;
-  width: 0px;
-  height: 2px;
-  background: #7126d9;
-  transition: .5s;
-}
-
-.txt_field input:focus ~ label,
-.txt_field input:valid ~ label{
-  top: -5px;
-  color: #7126d9;
-}
-
-.txt_field input:focus ~ span::before,
-.txt_field input:Valid ~ span::before{
-  width: 100%;
-}
-
-.pass{
-  margin: -5px 0 20px 5px;
-  color: #a6a6a6;
-  cursor: pointer;
-}
-
-.pass:hover{
-  text-decoration: underline;
-}
-
-input[type="Submit"]{
-  width: 100%;
-  height: 50px;
-  border: 1px solid;
-  border-radius: 25px;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-
-}
-
-input[type="Submit"]:hover{
-  background: #7126d9;
-  color: #e9f4fb;
-  transition: .5s;
-}
-
-.signup_link{
-  margin: 30px 0;
-  text-align: center;
-  font-size: 16px;
-  color: #666666;
-}
-
-.signup_link a{
-  color: #7126d9;
-  text-decoration: none;
-}
-
-.signup_link a:hover{
-  text-decoration: underline;
-}
-
-.HomeAbout{
-  width: 100vw;
-  height: 25vh;
-}
-
-
-/* Mobile/Tablet Styles */
-@media only screen and (max-width: 950px) {
-  .center {
-    width: 90vw; /* Adjusted width for mobile/tablet */
-    padding: 15px; /* Reduced padding */
-  }
-
-  .center form {
-    padding: 0 20px; /* Reduced padding for form */
-  }
-
-  form .txt_field {
-    margin: 15px 0; /* Reduced margin */
-  }
-
-  .txt_field input {
-    height: 35px; /* Adjusted input height */
-    font-size: 14px; /* Adjusted font size */
-  }
-
-  .txt_field label {
-    font-size: 14px; /* Adjusted label font size */
-  }
-
-  .pass {
-    margin: -3px 0 10px 3px; /* Adjusted margin */
-  }
-
-  input[type="Submit"] {
-    height: 40px; /* Adjusted button height */
-    font-size: 16px; /* Adjusted font size */
-  }
-
-  .signup_link {
-    margin: 15px 0; /* Adjusted margin */
-    font-size: 14px; /* Adjusted font size */
-  }
-}
-
-
-
 </style>
 
 <body>
 
   <!-- landing page start -->
 
-  <div class="landing-page" id="landing-page" style="display: none;">
-    <div class="headerBlock">
-      <div class="logo">
-        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="55" viewBox="0 0 200 55" fill="none">
-          <path
-            d="M37.8378 54.3601C35.4855 53.8262 33.4001 53.284 31.5816 52.7335C29.7631 52.1996 28.028 51.5907 26.3764 50.9067C24.7414 50.2226 22.9813 49.4052 21.0961 48.4542H19.9199C17.0504 48.4542 14.3977 47.9704 11.962 47.0027C9.54288 46.0184 7.43243 44.6504 5.63063 42.8986C3.84551 41.1469 2.46079 39.0865 1.47648 36.7175C0.492159 34.3484 0 31.7625 0 28.9597C0 26.1569 0.492159 23.571 1.47648 21.2019C2.46079 18.8329 3.84551 16.7725 5.63063 15.0208C7.43243 13.2523 9.54288 11.8843 11.962 10.9167C14.3977 9.93234 17.0587 9.44019 19.9449 9.44019C22.8145 9.44019 25.4588 9.93234 27.8779 10.9167C30.297 11.8843 32.3907 13.2523 34.1592 15.0208C35.9443 16.7725 37.329 18.8329 38.3133 21.2019C39.2976 23.571 39.7898 26.1569 39.7898 28.9597C39.7898 31.3621 39.4144 33.6227 38.6637 35.7415C37.9296 37.8436 36.8869 39.7372 35.5355 41.4222C34.1842 43.0905 32.5742 44.4836 30.7057 45.6013C31.7067 45.7849 32.691 45.9517 33.6587 46.1018C34.643 46.2353 35.6523 46.3438 36.6867 46.4272C37.7211 46.5106 38.8222 46.5773 39.99 46.6274L37.8378 54.3601ZM19.9199 39.8456C21.3046 39.8456 22.5893 39.5703 23.7738 39.0198C24.9583 38.4692 25.9843 37.7018 26.8519 36.7175C27.7361 35.7165 28.4201 34.557 28.9039 33.239C29.4044 31.921 29.6547 30.4946 29.6547 28.9597C29.6547 27.4248 29.4044 25.9984 28.9039 24.6804C28.4201 23.3624 27.7361 22.2113 26.8519 21.227C25.9843 20.226 24.9583 19.4502 23.7738 18.8996C22.5893 18.3491 21.3046 18.0738 19.9199 18.0738C18.5352 18.0738 17.2422 18.3491 16.041 18.8996C14.8565 19.4502 13.8222 20.226 12.9379 21.227C12.0537 22.2113 11.3614 23.3624 10.8609 24.6804C10.377 25.9984 10.1351 27.4248 10.1351 28.9597C10.1351 30.4946 10.377 31.921 10.8609 33.239C11.3614 34.557 12.0537 35.7165 12.9379 36.7175C13.8222 37.7018 14.8565 38.4692 16.041 39.0198C17.2422 39.5703 18.5352 39.8456 19.9199 39.8456Z"
-            fill="#353535" />
-          <path
-            d="M69.4945 47.7285H62.1872L61.8869 43.7495C61.0193 45.2176 59.8682 46.3354 58.4334 47.1028C56.9987 47.8536 55.322 48.229 53.4034 48.229C50.3003 48.229 47.8729 47.2613 46.1211 45.3261C44.3694 43.3908 43.4935 40.7131 43.4935 37.293V22.7034H52.7277V34.7655C52.7277 36.4338 53.0447 37.7185 53.6787 38.6194C54.3293 39.5203 55.2469 39.9707 56.4314 39.9707C57.6493 39.9707 58.5919 39.5203 59.2593 38.6194C59.9266 37.7018 60.2603 36.4172 60.2603 34.7655V22.7034H69.4945V47.7285Z"
-            fill="#353535" />
-          <path
-            d="M113.764 47.7285H87.5375V43.224L98.023 30.9617H88.1632V22.7034H112.713V26.4572L101.602 39.4702H113.764V47.7285Z"
-            fill="#353535" />
-          <path
-            d="M163.463 48.229C160.827 48.229 158.475 47.6701 156.406 46.5523C154.354 45.4178 152.736 43.8746 151.552 41.9227C150.384 39.954 149.8 37.7185 149.8 35.216C149.8 32.7135 150.384 30.4862 151.552 28.5343C152.736 26.5656 154.354 25.0224 156.406 23.9046C158.475 22.7702 160.827 22.2029 163.463 22.2029C166.083 22.2029 168.41 22.7702 170.445 23.9046C172.497 25.0224 174.107 26.5656 175.275 28.5343C176.443 30.4862 177.027 32.7135 177.027 35.216C177.027 37.7185 176.443 39.954 175.275 41.9227C174.107 43.8746 172.497 45.4178 170.445 46.5523C168.41 47.6701 166.083 48.229 163.463 48.229ZM163.413 39.9707C164.214 39.9707 164.923 39.7705 165.541 39.3701C166.174 38.953 166.667 38.3858 167.017 37.6684C167.384 36.9343 167.568 36.1002 167.568 35.1659C167.568 34.265 167.384 33.4642 167.017 32.7635C166.667 32.0461 166.174 31.4872 165.541 31.0868C164.923 30.6697 164.214 30.4612 163.413 30.4612C162.613 30.4612 161.895 30.6697 161.261 31.0868C160.644 31.4872 160.152 32.0461 159.785 32.7635C159.434 33.4642 159.259 34.265 159.259 35.1659C159.259 36.1002 159.434 36.9343 159.785 37.6684C160.152 38.3858 160.644 38.953 161.261 39.3701C161.895 39.7705 162.613 39.9707 163.413 39.9707Z"
-            fill="#353535" />
-          <path
-            d="M200 47.0278C197.898 47.8286 195.871 48.229 193.919 48.229C191.8 48.229 189.932 47.7869 188.313 46.9026C186.695 46.0184 185.427 44.7922 184.51 43.224C183.609 41.639 183.158 39.8122 183.158 37.7435V30.9367H178.779V22.7034H183.659V16.4472H192.392V22.7034H198.974V30.9367H192.392V36.0668C192.392 37.3514 192.751 38.3274 193.468 38.9947C194.186 39.6454 195.028 39.9707 195.996 39.9707C196.98 39.9707 197.931 39.6537 198.849 39.0198L200 47.0278Z"
-            fill="#353535" />
-          <path d="M83.516 47.8138L74.2832 47.6526L74.7871 18.7812L84.0199 18.9424L83.516 47.8138Z" fill="#353535" />
-          <path
-            d="M83.9363 23.7742L74.7035 23.613L74.786 18.8882C74.7952 18.3575 75.233 17.9348 75.7637 17.944L83.0746 18.0716C83.6053 18.0809 84.0281 18.5186 84.0188 19.0493L83.9363 23.7742Z"
-            fill="#C9C9C9" />
-          <path d="M83.5155 47.8138L74.2827 47.6527L74.334 44.7146L83.5668 44.8758L83.5155 47.8138Z" fill="#353535" />
-          <path
-            d="M116.54 46.5355L123.717 9.396L137.855 12.1279C142.13 12.954 145.264 14.4585 147.256 16.6414C149.249 18.8243 149.939 21.5004 149.326 24.6696C148.985 26.4358 148.284 27.9356 147.224 29.1691C146.167 30.386 144.887 31.2516 143.383 31.7659C145.269 32.8152 146.622 34.1896 147.441 35.8889C148.26 37.5881 148.46 39.519 148.042 41.6813C147.628 43.8271 146.747 45.5919 145.401 46.9756C144.058 48.3427 142.345 49.2787 140.261 49.7836C138.181 50.2719 135.836 50.2641 133.228 49.7602L116.54 46.5355ZM130.688 26.7632L134.291 26.9783C135.695 27.2494 136.83 27.1777 137.698 26.7632C138.585 26.3354 139.131 25.5933 139.335 24.5369C139.523 23.563 139.284 22.7205 138.616 22.0094C137.949 21.2982 136.922 20.8087 135.535 20.5408L130.688 19.7085L130.688 26.7632ZM127.996 39.888L132.329 40.7253C133.451 40.9422 134.432 41.0034 135.272 40.9089C136.116 40.7979 136.79 40.5429 137.295 40.144C137.804 39.7285 138.125 39.1742 138.259 38.4809C138.393 37.7876 138.323 37.1748 138.049 36.6424C137.778 36.0936 137.31 35.635 136.645 35.2668C136 34.8852 135.174 34.5972 134.167 34.4026L130.688 33.4652L127.996 39.888Z"
-            fill="#8E509C" />
-          <path
-            d="M78.147 5.61441L74.7622 5.03656C74.4881 4.99002 74.2062 5.0285 73.9546 5.14683C73.703 5.26516 73.4935 5.45767 73.3545 5.69849C73.2155 5.93931 73.1535 6.21692 73.1768 6.49401C73.2001 6.7711 73.3077 7.0344 73.4851 7.24854L75.6779 9.89092L75.0999 13.2759C75.054 13.5498 75.0929 13.8312 75.2114 14.0825C75.3299 14.3337 75.5223 14.5427 75.7628 14.6816C76.0033 14.8204 76.2806 14.8825 76.5574 14.8595C76.8342 14.8365 77.0973 14.7295 77.3117 14.5529L79.9541 12.3598L83.3378 12.937C83.6121 12.9843 83.8944 12.9463 84.1464 12.8281C84.3985 12.7099 84.6083 12.5173 84.7475 12.2762C84.8867 12.0351 84.9486 11.7571 84.9249 11.4798C84.9012 11.2024 84.793 10.939 84.6149 10.725L82.4231 8.08325L83.0012 4.6983C83.0485 4.42395 83.0105 4.14171 82.8924 3.88963C82.7742 3.63756 82.5816 3.42778 82.3405 3.2886C82.0995 3.14941 81.8215 3.08751 81.5441 3.11124C81.2668 3.13497 81.0033 3.24319 80.7894 3.42131L78.147 5.61441Z"
-            fill="#FFAC33" />
-        </svg>
-      </div>
-      <div class="rightBlock">
-        <button class="btn" style="color: rgba(63, 65, 73, 1)">
-          Quiz Generator
-        </button>
-        <button id="host-meeting" class="btn" style="background-color: #8e509c">
-          Host a meeting
-        </button>
-      </div>
-    </div>
-    <div class="card-wrapper">
-      <div class="card-box">
-        <div class="card">
-          <div class="overlay">
-            <div class="card-body">
-              <h2>Test the effectiveness of your live tutoring session</h2>
-              <h3 class="mt-2">
-                Automatically create engaging quiz from a live tutor session based
-                on you say during the remote learning session.
-              </h3>
-              <div class="cardFooter mt-4">
-                <button class="btn hostMeeting">Host a meeting</button>
-                <button class="btn createMeeting">Try Creating a quiz</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-center">
-      <h1>How does it work?</h1>
-    </div>
-    <div class="row">
-      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
-        <h1>🌐 This is how Quizbot works:</h1>
-        <h4>
-          Host remote sessions and watch knowledge travel the world faster than a
-          jetsetter on caffeine.
-        </h4>
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 d-flex justify-content-end">
-        <img src="../../image/first.png" />
-      </div>
-
-      <div class="col-lg-6 col-md-6 col-12">
-        <img src="../../image/second.png" />
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
-        <h1>Create an automated quiz 🧠</h1>
-        <h4>
-          Turn your tutoring gold into captivating quizzes with the ease of a
-          magician's sleight of hand.
-        </h4>
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
-        <h1>📈 Test the effectiveness</h1>
-        <h4>
-          Test the tutoring waters and measure your success waves with analytical
-          precision that would make a scientist proud.
-        </h4>
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 d-flex justify-content-end">
-        <img src="../../image/third.png" />
-      </div>
-    </div>
-    <div class="d-flex justify-content-between">
-      <img src="../../image/left.png" />
-      <img src="../../image/right.png" />
-    </div>
-    <div class="bottomBlock">
-      <h1>Turning Tutor-Talk into Quiz-Whiz</h1>
-      <h6 class="mt-3">Embark on a journey of enlightening education</h6>
-      <div class="d-flex align-items-center mt-4" style="gap: 10px">
-        <button class="btn hostMeeting">Host a meeting</button>
-        <button class="btn createMeeting">Try Creating a quiz</button>
-      </div>
-    </div>
-    <div class="row">
-      <div class="footerBlock">
-        <div class="col-lg-6 col-md-6 col-12 ps-5">
-          <a>All rights reserved @ QuizBot</a>
-        </div>
-        <div class="col-lg-6 col-md-6 col-12">
-          <a class="me-5">Privacy Policy</a>
-          <a>Terms & Conditions</a>
-        </div>
-      </div>
-<<<<<<< HEAD
-    </form>
-  </div>
-</div>
-
-<!-- Additional options modal -->
-
-<div class="modal fade" id="additional-options-modal" tabindex="-1"
-     aria-labelledby="additional-options-modal-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="additional-options-modal-label">Additional Options</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <fieldset>
-          <div class="form-floating mb-3" style="text-align: left;">
-            <select name="logLevel" class="form-select" id="logLevelSelect">
-              <option value="debug">Debug</option>
-              <option value="info">Info</option>
-              <option value="warn">Warn</option>
-              <option value="error">Error</option>
-              <option value="off">Off</option>
-            </select>
-            <label for="logLevel" style="text-align: left;">Log Level:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="videoCodec" class="form-select" id="videoCodecSelect">
-              <option value="default">Meeting Default</option>
-              <option value="vp8">VP8</option>
-              <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
-            </select>
-            <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="audioCapability"  style="text-align: left;">Audio capability:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="videoCapability" class="form-select" id="videoCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="videoCapability"  style="text-align: left;">Video capability:</label>
-          </div>
-          <div class="form-floating mb-3">
-            <select name="contentCapability" class="form-select" id="contentCapabilitySelect">
-              <option value="SendReceive">SendReceive</option>
-              <option value="Send">Send</option>
-              <option value="Receive">Receive</option>
-              <option value="None">None</option>
-            </select>
-            <label for="contentCapability"  style="text-align: left;">Content capability:</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="join-muted" class="form-check-input"></input>
-            <label for="join-muted-setting" class="form-check-label">Join Muted</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="webaudio" class="form-check-input">
-            <label for="webaudio" class="form-check-label">Use WebAudio</label>
-          </div>
-          <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
-            <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
-            <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
-              only)</label>
-          </div>
-          <div class="form-check" id="disable-audio-redundancy-checkbox" style="text-align: left; display: block;">
-            <input type="checkbox" id="disable-audio-redundancy" class="form-check-input">
-            <label for="disable-audio-redundancy" class="form-check-label">Disable Audio Redundancy</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
-            <label for="fullband-speech-mono-quality" class="form-check-label">Set fullband speech (mono)
-              quality</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-music-mono-quality" class="form-check-input">
-            <label for="fullband-music-mono-quality" class="form-check-label">Set fullband music (mono)
-              quality</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="fullband-music-stereo-quality" class="form-check-input">
-            <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
-              quality</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="simulcast" class="form-check-input">
-            <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
-            <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
-              Policy</label>
-          </div>
-          <lable id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</lable>
-          <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
-            <option value="default">Default</option>
-            <option value="none">None (Deprecated)</option>
-            <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
-            <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video Quality Adaption</option>
-          </select>
-          <label id="pagination-title" for="pagination-page-size" style="display: none; padding-top:5px">Paginate displayed video tiles</label>
-          <select id="pagination-page-size" class="form-select" style="width:100%; display: none;">
-            <option value="2">2</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="25" selected>25</option>
-          </select>      
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" checked id="preconnect" class="form-check-input">
-            <label for="preconnect" class="form-check-label">Open signaling connection early</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="join-view-only" class="form-check-input">
-            <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="pause-last-frame" class="form-check-input">
-            <label for="pause-last-frame" class="form-check-label">Keep last video frame when paused</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="event-reporting" class="form-check-input">
-            <label for="event-reporting" class="form-check-label">Enable event reporting</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="replica-meeting-input" class="form-check-input">
-            <label for="replica-meeting-input" class="form-check-label">Create meeting as replica</label>
-            <input type="name" id="primary-meeting-external-id" class="form-control"
-                   placeholder="Primary Meeting Title or ID">
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="delete-attendee" class="form-check-input">
-            <label for="delete-attendee" class="form-check-label">Delete own attendee to leave</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="disable-content-keyframe" class="form-check-input">
-            <label for="disable-content-keyframe" class="form-check-label">Disable periodic keyframe request to content senders</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="allow-attendee-capabilities" class="form-check-input">
-            <label for="allow-attendee-capabilities" class="form-check-label">Allow updating of attendee capabilities after start</label>
-          </div>
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="die" class="form-check-input" checked=true>
-            <label for="die" class="form-check-label">Abort on fatal errors</label>
-          </div>
-        </fieldset>
-      </div>
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="additional-options-save-button">Save</button>
-=======
->>>>>>> 5f83177c (updated meeting and video calling pages and added landing pages to quiz bot)
-    </div>
-  </div>
 
   <!-- End of Landing Page -->
-<div class="login container" style="display:none">
+<div class="login container" id="login-container" style="display:none">
     <div class="center">
-        <h1>Quizbot Login</h1>
+        <h1>Welcome to 
+          
+    <svg viewbox="0 0 100 20">
+      <defs>
+        <linearGradient id="gradient">
+          <stop color="#000"/>
+        </linearGradient>
+        <pattern id="wave" x="0" y="-.2" width="100%" height="100%" patternUnits="userSpaceOnUse">
+          <path id="wavePath" d="M-40 9 Q-30 7 -20 9 T0 9 T20 9 T40 9 T60 9 T80 9 T100 9 T120 9 V20 H-40z" mask="url(#mask)" fill="url(#gradient)"> 
+            <animateTransform
+                attributeName="transform"
+                begin="0s"
+                dur="1.5s"
+                type="translate"
+                from="0,0"
+                to="40,0"
+                repeatCount="indefinite" />
+          </path>
+        </pattern>
+      </defs>
+      <text text-anchor="middle" x="50" y="15" font-size="17" fill="url(#wave)"  fill-opacity="1">LARQ</text>
+      <text text-anchor="middle" x="50" y="15" font-size="17" fill="#7126d9" fill-opacity="0.6">LARQ</text>
+
+    </svg>
+
+
+
+
+        </h1>
         <form action="https://aptiversity.com:5555/login" method="POST">
           <div class="txt_field">
                 <input type="text" name="text" required>
@@ -481,6 +66,10 @@ input[type="Submit"]:hover{
             </div>
         </form>
     </div>
+
+
+
+
   </div>
 
   <!-- start of joining page -->
@@ -561,7 +150,7 @@ input[type="Submit"]:hover{
             <div class="btn-group">
               <div class="profileAvater" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <img
-                  src="https://s3-alpha-sig.figma.com/img/8e13/1369/b47203c24d7fa0639a315d4fa276eab6?Expires=1694995200&Signature=B6KU4lPh8DgElotlLnPVnXrzFOvnlDJRl~g5LnsvPTaDuWYmvgWhbV-JGX0xXmUPvi6AcdnXfItXO0-rXczHvaqI1fPb32B8P930YVI0ptnpof0H84s86MobxSI5rOT0ZiQ8l4boD6EU8VAZgXMXWonXfuW9sYmgKC40OwTYbNXVhsNytSZpyCmus1HO~xa1JvE44rzgxxkjR6B5LBAn2HwWemJ2vKboJGnpEI9DMTnZGoGdjG--tWAWnBN4wq2xbKwAbzzu57vHy3XSew5SqtNk7cex-RnenNwq0qbmdX-znX8XZXDLVYyTS3eIvTI5U3y47OS2xdXEpSQmBNX2Jg__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4" />
+                  src="https://i.pinimg.com/1200x/c3/e8/c8/c3e8c8abdfa16c2d577623c8610729f4.jpg" />
               </div>
 
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-start" aria-labelledby="dropdownMenuButton">
@@ -570,7 +159,7 @@ input[type="Submit"]:hover{
                     <div class="d-flex">
                       <div class="profileAvater">
                         <img
-                          src="https://s3-alpha-sig.figma.com/img/8e13/1369/b47203c24d7fa0639a315d4fa276eab6?Expires=1694995200&Signature=B6KU4lPh8DgElotlLnPVnXrzFOvnlDJRl~g5LnsvPTaDuWYmvgWhbV-JGX0xXmUPvi6AcdnXfItXO0-rXczHvaqI1fPb32B8P930YVI0ptnpof0H84s86MobxSI5rOT0ZiQ8l4boD6EU8VAZgXMXWonXfuW9sYmgKC40OwTYbNXVhsNytSZpyCmus1HO~xa1JvE44rzgxxkjR6B5LBAn2HwWemJ2vKboJGnpEI9DMTnZGoGdjG--tWAWnBN4wq2xbKwAbzzu57vHy3XSew5SqtNk7cex-RnenNwq0qbmdX-znX8XZXDLVYyTS3eIvTI5U3y47OS2xdXEpSQmBNX2Jg__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4" />
+                          src="https://i.pinimg.com/1200x/c3/e8/c8/c3e8c8abdfa16c2d577623c8610729f4.jpg" />
                       </div>
                       <div class="d-flex align-items-center">
                         <div class="ms-2 me-2">
@@ -2449,6 +2038,130 @@ input[type="Submit"]:hover{
       </div>
     </div>
   </div>
+
+
+  <div class="landing-page" id="landing-page" style="display: none;">
+    <div class="headerBlock">
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="55" viewBox="0 0 200 55" fill="none">
+          <path
+            d="M37.8378 54.3601C35.4855 53.8262 33.4001 53.284 31.5816 52.7335C29.7631 52.1996 28.028 51.5907 26.3764 50.9067C24.7414 50.2226 22.9813 49.4052 21.0961 48.4542H19.9199C17.0504 48.4542 14.3977 47.9704 11.962 47.0027C9.54288 46.0184 7.43243 44.6504 5.63063 42.8986C3.84551 41.1469 2.46079 39.0865 1.47648 36.7175C0.492159 34.3484 0 31.7625 0 28.9597C0 26.1569 0.492159 23.571 1.47648 21.2019C2.46079 18.8329 3.84551 16.7725 5.63063 15.0208C7.43243 13.2523 9.54288 11.8843 11.962 10.9167C14.3977 9.93234 17.0587 9.44019 19.9449 9.44019C22.8145 9.44019 25.4588 9.93234 27.8779 10.9167C30.297 11.8843 32.3907 13.2523 34.1592 15.0208C35.9443 16.7725 37.329 18.8329 38.3133 21.2019C39.2976 23.571 39.7898 26.1569 39.7898 28.9597C39.7898 31.3621 39.4144 33.6227 38.6637 35.7415C37.9296 37.8436 36.8869 39.7372 35.5355 41.4222C34.1842 43.0905 32.5742 44.4836 30.7057 45.6013C31.7067 45.7849 32.691 45.9517 33.6587 46.1018C34.643 46.2353 35.6523 46.3438 36.6867 46.4272C37.7211 46.5106 38.8222 46.5773 39.99 46.6274L37.8378 54.3601ZM19.9199 39.8456C21.3046 39.8456 22.5893 39.5703 23.7738 39.0198C24.9583 38.4692 25.9843 37.7018 26.8519 36.7175C27.7361 35.7165 28.4201 34.557 28.9039 33.239C29.4044 31.921 29.6547 30.4946 29.6547 28.9597C29.6547 27.4248 29.4044 25.9984 28.9039 24.6804C28.4201 23.3624 27.7361 22.2113 26.8519 21.227C25.9843 20.226 24.9583 19.4502 23.7738 18.8996C22.5893 18.3491 21.3046 18.0738 19.9199 18.0738C18.5352 18.0738 17.2422 18.3491 16.041 18.8996C14.8565 19.4502 13.8222 20.226 12.9379 21.227C12.0537 22.2113 11.3614 23.3624 10.8609 24.6804C10.377 25.9984 10.1351 27.4248 10.1351 28.9597C10.1351 30.4946 10.377 31.921 10.8609 33.239C11.3614 34.557 12.0537 35.7165 12.9379 36.7175C13.8222 37.7018 14.8565 38.4692 16.041 39.0198C17.2422 39.5703 18.5352 39.8456 19.9199 39.8456Z"
+            fill="#353535" />
+          <path
+            d="M69.4945 47.7285H62.1872L61.8869 43.7495C61.0193 45.2176 59.8682 46.3354 58.4334 47.1028C56.9987 47.8536 55.322 48.229 53.4034 48.229C50.3003 48.229 47.8729 47.2613 46.1211 45.3261C44.3694 43.3908 43.4935 40.7131 43.4935 37.293V22.7034H52.7277V34.7655C52.7277 36.4338 53.0447 37.7185 53.6787 38.6194C54.3293 39.5203 55.2469 39.9707 56.4314 39.9707C57.6493 39.9707 58.5919 39.5203 59.2593 38.6194C59.9266 37.7018 60.2603 36.4172 60.2603 34.7655V22.7034H69.4945V47.7285Z"
+            fill="#353535" />
+          <path
+            d="M113.764 47.7285H87.5375V43.224L98.023 30.9617H88.1632V22.7034H112.713V26.4572L101.602 39.4702H113.764V47.7285Z"
+            fill="#353535" />
+          <path
+            d="M163.463 48.229C160.827 48.229 158.475 47.6701 156.406 46.5523C154.354 45.4178 152.736 43.8746 151.552 41.9227C150.384 39.954 149.8 37.7185 149.8 35.216C149.8 32.7135 150.384 30.4862 151.552 28.5343C152.736 26.5656 154.354 25.0224 156.406 23.9046C158.475 22.7702 160.827 22.2029 163.463 22.2029C166.083 22.2029 168.41 22.7702 170.445 23.9046C172.497 25.0224 174.107 26.5656 175.275 28.5343C176.443 30.4862 177.027 32.7135 177.027 35.216C177.027 37.7185 176.443 39.954 175.275 41.9227C174.107 43.8746 172.497 45.4178 170.445 46.5523C168.41 47.6701 166.083 48.229 163.463 48.229ZM163.413 39.9707C164.214 39.9707 164.923 39.7705 165.541 39.3701C166.174 38.953 166.667 38.3858 167.017 37.6684C167.384 36.9343 167.568 36.1002 167.568 35.1659C167.568 34.265 167.384 33.4642 167.017 32.7635C166.667 32.0461 166.174 31.4872 165.541 31.0868C164.923 30.6697 164.214 30.4612 163.413 30.4612C162.613 30.4612 161.895 30.6697 161.261 31.0868C160.644 31.4872 160.152 32.0461 159.785 32.7635C159.434 33.4642 159.259 34.265 159.259 35.1659C159.259 36.1002 159.434 36.9343 159.785 37.6684C160.152 38.3858 160.644 38.953 161.261 39.3701C161.895 39.7705 162.613 39.9707 163.413 39.9707Z"
+            fill="#353535" />
+          <path
+            d="M200 47.0278C197.898 47.8286 195.871 48.229 193.919 48.229C191.8 48.229 189.932 47.7869 188.313 46.9026C186.695 46.0184 185.427 44.7922 184.51 43.224C183.609 41.639 183.158 39.8122 183.158 37.7435V30.9367H178.779V22.7034H183.659V16.4472H192.392V22.7034H198.974V30.9367H192.392V36.0668C192.392 37.3514 192.751 38.3274 193.468 38.9947C194.186 39.6454 195.028 39.9707 195.996 39.9707C196.98 39.9707 197.931 39.6537 198.849 39.0198L200 47.0278Z"
+            fill="#353535" />
+          <path d="M83.516 47.8138L74.2832 47.6526L74.7871 18.7812L84.0199 18.9424L83.516 47.8138Z" fill="#353535" />
+          <path
+            d="M83.9363 23.7742L74.7035 23.613L74.786 18.8882C74.7952 18.3575 75.233 17.9348 75.7637 17.944L83.0746 18.0716C83.6053 18.0809 84.0281 18.5186 84.0188 19.0493L83.9363 23.7742Z"
+            fill="#C9C9C9" />
+          <path d="M83.5155 47.8138L74.2827 47.6527L74.334 44.7146L83.5668 44.8758L83.5155 47.8138Z" fill="#353535" />
+          <path
+            d="M116.54 46.5355L123.717 9.396L137.855 12.1279C142.13 12.954 145.264 14.4585 147.256 16.6414C149.249 18.8243 149.939 21.5004 149.326 24.6696C148.985 26.4358 148.284 27.9356 147.224 29.1691C146.167 30.386 144.887 31.2516 143.383 31.7659C145.269 32.8152 146.622 34.1896 147.441 35.8889C148.26 37.5881 148.46 39.519 148.042 41.6813C147.628 43.8271 146.747 45.5919 145.401 46.9756C144.058 48.3427 142.345 49.2787 140.261 49.7836C138.181 50.2719 135.836 50.2641 133.228 49.7602L116.54 46.5355ZM130.688 26.7632L134.291 26.9783C135.695 27.2494 136.83 27.1777 137.698 26.7632C138.585 26.3354 139.131 25.5933 139.335 24.5369C139.523 23.563 139.284 22.7205 138.616 22.0094C137.949 21.2982 136.922 20.8087 135.535 20.5408L130.688 19.7085L130.688 26.7632ZM127.996 39.888L132.329 40.7253C133.451 40.9422 134.432 41.0034 135.272 40.9089C136.116 40.7979 136.79 40.5429 137.295 40.144C137.804 39.7285 138.125 39.1742 138.259 38.4809C138.393 37.7876 138.323 37.1748 138.049 36.6424C137.778 36.0936 137.31 35.635 136.645 35.2668C136 34.8852 135.174 34.5972 134.167 34.4026L130.688 33.4652L127.996 39.888Z"
+            fill="#8E509C" />
+          <path
+            d="M78.147 5.61441L74.7622 5.03656C74.4881 4.99002 74.2062 5.0285 73.9546 5.14683C73.703 5.26516 73.4935 5.45767 73.3545 5.69849C73.2155 5.93931 73.1535 6.21692 73.1768 6.49401C73.2001 6.7711 73.3077 7.0344 73.4851 7.24854L75.6779 9.89092L75.0999 13.2759C75.054 13.5498 75.0929 13.8312 75.2114 14.0825C75.3299 14.3337 75.5223 14.5427 75.7628 14.6816C76.0033 14.8204 76.2806 14.8825 76.5574 14.8595C76.8342 14.8365 77.0973 14.7295 77.3117 14.5529L79.9541 12.3598L83.3378 12.937C83.6121 12.9843 83.8944 12.9463 84.1464 12.8281C84.3985 12.7099 84.6083 12.5173 84.7475 12.2762C84.8867 12.0351 84.9486 11.7571 84.9249 11.4798C84.9012 11.2024 84.793 10.939 84.6149 10.725L82.4231 8.08325L83.0012 4.6983C83.0485 4.42395 83.0105 4.14171 82.8924 3.88963C82.7742 3.63756 82.5816 3.42778 82.3405 3.2886C82.0995 3.14941 81.8215 3.08751 81.5441 3.11124C81.2668 3.13497 81.0033 3.24319 80.7894 3.42131L78.147 5.61441Z"
+            fill="#FFAC33" />
+        </svg>
+      </div>
+      <div class="rightBlock">
+        <button class="btn" style="color: rgba(63, 65, 73, 1)">
+          Quiz Generator
+        </button>
+        <button id="host-meeting" class="btn" style="background-color: #8e509c">
+          Host a meeting
+        </button>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="card-box">
+        <div class="card">
+          <div class="overlay">
+            <div class="card-body">
+              <h2>Test the effectiveness of your live tutoring session</h2>
+              <h3 class="mt-2">
+                Automatically create engaging quiz from a live tutor session based
+                on you say during the remote learning session.
+              </h3>
+              <div class="cardFooter mt-4">
+                <button class="btn hostMeeting">Host a meeting</button>
+                <button class="btn createMeeting">Try Creating a quiz</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <h1>How does it work?</h1>
+    </div>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
+        <h1>🌐 This is how Quizbot works:</h1>
+        <h4>
+          Host remote sessions and watch knowledge travel the world faster than a
+          jetsetter on caffeine.
+        </h4>
+      </div>
+      <div class="col-lg-6 col-md-6 col-12 d-flex justify-content-end">
+        <img src="../../image/first.png" />
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-12">
+        <img src="../../image/second.png" />
+      </div>
+      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
+        <h1>Create an automated quiz 🧠</h1>
+        <h4>
+          Turn your tutoring gold into captivating quizzes with the ease of a
+          magician's sleight of hand.
+        </h4>
+      </div>
+      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
+        <h1>📈 Test the effectiveness</h1>
+        <h4>
+          Test the tutoring waters and measure your success waves with analytical
+          precision that would make a scientist proud.
+        </h4>
+      </div>
+      <div class="col-lg-6 col-md-6 col-12 d-flex justify-content-end">
+        <img src="../../image/third.png" />
+      </div>
+    </div>
+    <div class="d-flex justify-content-between">
+      <img src="../../image/left.png" />
+      <img src="../../image/right.png" />
+    </div>
+    <div class="bottomBlock">
+      <h1>Turning Tutor-Talk into Quiz-Whiz</h1>
+      <h6 class="mt-3">Embark on a journey of enlightening education</h6>
+      <div class="d-flex align-items-center mt-4" style="gap: 10px">
+        <button class="btn hostMeeting">Host a meeting</button>
+        <button class="btn createMeeting">Try Creating a quiz</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="footerBlock">
+        <div class="col-lg-6 col-md-6 col-12 ps-5">
+          <a>All rights reserved @ QuizBot</a>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12">
+          <a class="me-5">Privacy Policy</a>
+          <a>Terms & Conditions</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 </body>
 
