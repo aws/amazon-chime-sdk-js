@@ -574,20 +574,51 @@ describe('RedundantAudioEncoder', () => {
     });
 
     it('forwards non-RED frames', () => {
+      const header = createRedHeader(
+        true,
+        encoder['opusPayloadType'],
+        0,
+        importantPayload.byteLength
+      );
+      let i = 0;
+      for (; i < 2; ++i) {
+        frame = createRTCEncodedAudioFrame(packetizationTime * i, redPayloadType, 0);
+        frame.data = createRedPayload([header], [importantPayload]);
+        encoder['senderTransform'](frame, controller);
+      }
+
+      // The next outgoing packet should not contain the previous important payloads as redundancy.
+      encoder.setNumRedundantEncodings(1);
       encoder.setRedPayloadType(redPayloadType + 1);
+      frame = createRTCEncodedAudioFrame(packetizationTime * i, redPayloadType, 0);
+      frame.data = createRedPayload([header], [importantPayload]);
       encoder['senderTransform'](frame, controller);
-      expect(frame.data.byteLength).to.equal(0);
+      expect(frame.data.byteLength).to.equal(header.byteLength + importantPayload.byteLength);
     });
 
     it('forwards frames when the primary payload cannot be determined', () => {
+      const header = createRedHeader(
+        true,
+        encoder['opusPayloadType'],
+        0,
+        importantPayload.byteLength
+      );
+      let i = 0;
+      for (; i < 2; ++i) {
+        frame = createRTCEncodedAudioFrame(packetizationTime * i, redPayloadType, 0);
+        frame.data = createRedPayload([header], [importantPayload]);
+        encoder['senderTransform'](frame, controller);
+      }
+
+      // The next outgoing packet should not contain the previous important payloads as redundancy.
       const redundantHeader = createRedHeader(
         false,
         encoder['opusPayloadType'],
         0,
         redundantBlock.byteLength
       );
+      frame = createRTCEncodedAudioFrame(packetizationTime * i, redPayloadType, 0);
       frame.data = createRedPayload([redundantHeader, redundantHeader.slice(0, 3)], []);
-
       encoder['senderTransform'](frame, controller);
       expect(frame.data.byteLength).to.equal(
         redundantHeader.byteLength + redundantHeader.slice(0, 3).byteLength
@@ -1275,10 +1306,11 @@ describe('RedundantAudioEncoder', () => {
 
       // The RED payload should not include the previously added important payload as that would cause the packet size
       // limit to be exceeded.
-      const payloadLenBytes = encoder['maxRedPacketSizeBytes'] - 1;
+      const payloadLenBytes =
+        encoder['maxAudioRtpPacketSizeBytes'] - encoder['redLastHeaderSizeBytes'];
       expect(
         encoder['encode'](packetizationTime * 2, new ArrayBuffer(payloadLenBytes)).byteLength
-      ).to.equal(1 + payloadLenBytes);
+      ).to.equal(encoder['redLastHeaderSizeBytes'] + payloadLenBytes);
     });
   });
 
