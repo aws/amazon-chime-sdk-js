@@ -1951,101 +1951,6 @@ input[type='radio'] {
     }
   }
 }
-<<<<<<< HEAD
-
-
-/* Existing Styles */
-/* ... (your existing styles) ... */
-
-/* Mobile Friendly Enhancements */
-
-/* General mobile styles */
-@media (max-width: 767px) {
-  .card-body {
-      padding: 0px 20px; /* Reduce padding for mobile */
-  }
-
-  .title {
-      font-size: 24px; /* Reduce font size for mobile */
-  }
-
-  .profileAvater img {
-      width: 40px;
-      height: 40px; /* Reduce avatar size for mobile */
-  }
-
-  h6 {
-      font-size: 18px; /* Reduce font size for mobile */
-  }
-}
-
-/* Adjustments for very small screens */
-@media (max-width: 480px) {
-  // flex-direction: column;
-
-
-  #button-row {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .card-body h2 {
-      font-size: 32px; /* Reduce font size for very small screens */
-  }
-
-  .card-body h3 {
-      font-size: 18px; /* Reduce font size for very small screens */
-  }
-
-  #joining-page{
-    width:100vw
-  }
-  .mainBlock{
-    padding:0
-  }
-
-  .buttonBlock {
-    flex: 0 0 100%;
-    margin-right: 0;
-    margin-bottom: 20px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-  h6,h2{
-    text-align:center;
-    padding:5px
-  }
-}
-
-/* Adjustments for tablets */
-@media (min-width: 768px) and (max-width: 991px) {
-  .card-body {
-      padding: 0px 40px; /* Adjust padding for tablets */
-      margin-bottom:50px
-  }
-  .leftBlock{
-    padding:0;
-    // margin-top:100px;
-    min-height: 250px;
-  }
-  .buttonBlock{
-    padding:20px
-  }
-
-  .mainBlock .card-body{
-    padding:0px;
-    margin-top:80px
-  }
-  .meeting-calendar-item a{
-    display:none
-  }
-  
-
-=======
 .timing-details {
   color: #8e509c;
   font-family: Inter;
@@ -2199,5 +2104,4 @@ input[type='radio'] {
       height: 122px;
     }
   }
->>>>>>> c6277dd9358f4aefc7674757e2a36e51958205b1
 }
