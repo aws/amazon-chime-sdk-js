@@ -65,6 +65,10 @@ csp['connect-src'] += " https://www.ec2-34-235-178-135.compute-1.amazonaws.com:5
 csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:*";
 csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com";
 csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:5555";
+csp['connect-src'] += " https://larq.ai:5555";
+csp['connect-src'] += " https://larq.com:*";
+csp['connect-src'] += " https://larq.ai";
+csp['connect-src'] += " https://larq.ai:*";
 
 
 // 4. Add 'unsafe-eval' because TensorFlow needs it.
