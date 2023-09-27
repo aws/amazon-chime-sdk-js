@@ -2251,12 +2251,12 @@ input[type="Submit"]:hover{
 
 /* Mobile/Tablet Styles */
 @media only screen and (max-width: 950px) {
-  .center {
-    width: 90vw; /* Adjusted width for mobile/tablet */
+  .center, #login-container {
+    width: 90%; /* Adjusted width for mobile/tablet */
     padding: 15px; /* Reduced padding */
   }
 
-  .center form {
+  .center form, #login-container form {
     padding: 0 20px; /* Reduced padding for form */
   }
 

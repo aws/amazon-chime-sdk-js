@@ -999,6 +999,88 @@ export class DemoMeetingApp
         delete_quiz.style.display = 'none';
       }
     });
+
+
+    // DREW LOGIN
+
+// if you have localStorage.getItem('authToken') then hide the login form and show the joining page:
+if (localStorage.getItem('authToken')) {
+  document.getElementById('login-container')!.style.display = 'none';
+  document.getElementById('joining-page')!.style.display = 'block';
+}
+else {
+  document.getElementById('login-container')!.style.display = 'block';
+  document.getElementById('joining-page')!.style.display = 'none';
+}
+
+
+    
+// Assuming you have a type definition for the response data structure. 
+// If not, you can use 'any' or create a more detailed type.
+
+interface ResponseData {
+  status: string;
+  token?: string;
+  message?: string;
+}
+document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) => {
+  event.preventDefault();
+
+  const targetForm = <HTMLFormElement>event.target;
+  const username: string = targetForm.username.value;
+  const password: string = targetForm.password.value;
+
+  // Convert username and password to base64
+  const base64Credentials = btoa(username + ':' + password);
+
+  fetch("https://ec2-34-235-178-135.compute-1.amazonaws.com:5555/login", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + base64Credentials  // Set the Authorization header
+      }
+  })
+  .then(response => response.json())
+  .then((data: ResponseData) => {
+      if (data.status === 'success') {
+          localStorage.setItem('authToken', data.token!);
+          document.getElementById('login-container')!.style.display = 'none';
+          document.getElementById('joining-page')!.style.display = 'block';
+      } else {
+          alert(data.message);
+      }
+  })
+  .catch(error => {
+    alert('Error occurred: ' + error.message);
+    console.error('Error:', error);
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const token: string | null = localStorage.getItem('authToken');
+  if (token) {
+      document.getElementById('login-container')!.style.display = 'none';
+      document.getElementById('joining-page')!.style.display = 'block';
+  } else {
+      document.getElementById('login-container')!.style.display = 'block';
+      document.getElementById('joining-page')!.style.display = 'none';
+  }
+});
+
+
+function logout(): void {
+  localStorage.removeItem('authToken');
+  location.reload();
+}
+// if user clicks .logout button class, call logout function
+document.querySelector('.logout')?.addEventListener('click', logout);
+
+
+
+// END DREW LOGIN
+
+
+
     (document.getElementById('join-muted') as HTMLInputElement).addEventListener('change', e => {
       this.joinMuted = (e.target as HTMLInputElement).checked;
       if (this.joinMuted) {
