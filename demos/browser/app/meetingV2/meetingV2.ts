@@ -4779,6 +4779,7 @@ document.addEventListener('DOMContentLoaded', function () {
       dateElement.textContent = day.toString();
 
       // Check if there's an event for this day
+
       const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       if (events[eventDate]) {
         const eventElement = document.createElement('div');

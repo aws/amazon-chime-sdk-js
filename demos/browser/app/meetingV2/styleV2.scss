@@ -2051,40 +2051,63 @@ input[type='radio'] {
 }
 
 .calendar {
-  border: 1px solid #ccc;
   padding: 20px;
-  max-width: 300px;
+  width: 450px;
   background-color: #fff;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 13.61px;
+  background: #fff;
 }
 .calendar-header {
   text-align: center;
   font-weight: bold;
   margin-bottom: 10px;
+  color: #3f4149;
+  font-size: 20.414px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: normal;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .calendar-month {
   text-align: center;
   font-size: 1.5rem;
-  margin-bottom: 15px;
 }
 .calendar-day {
-  width: 30px;
-  height: 30px;
+  width: 54px;
+  height: 54px;
   text-align: center;
-  line-height: 30px;
+
   border: 1px solid #eee;
   display: inline-block;
   margin: 2px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
+  color: #3f4149;
+  font-size: 11.908px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 53px;
 }
 .calendar-day:hover {
-  background-color: #007bff;
+  background-color: rgba(142, 80, 156, 1);
   color: #fff;
 }
 .calendar-day.active {
-  background-color: #007bff;
+  background-color: rgba(142, 80, 156, 1);
   color: #fff;
+}
+.calendar-day.inactive {
+  display: inline-block;
+  width: 54px;
+  height: 54px;
+  border: none;
+  margin-top: -24px;
+  &:hover {
+    background-color: none;
+    color: none;
+  }
 }
 @media screen and (max-width: 1024px) {
   .mainBlock {
