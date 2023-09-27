@@ -4751,10 +4751,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Sample JSON structure for events
   const events: { [key: string]: string } = {
-    '2023-09-26': 'Sample Event 1',
-    '2023-09-27': 'Sample Event 2',
+    "2023-09-26": "Sample Event 1",
+    "2023-09-27": "Sample Event 2"
     // Add more events as needed
-  };
+};
 
   function generateCalendar() {
     const firstDay = new Date(currentYear, currentMonth, 1);
@@ -4779,9 +4779,8 @@ document.addEventListener('DOMContentLoaded', function () {
       dateElement.textContent = day.toString();
 
       // Check if there's an event for this day
-      const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(
-        day
-      ).padStart(2, '0')}`;
+
+      const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       if (events[eventDate]) {
         const eventElement = document.createElement('div');
         eventElement.classList.add('calendar-event');

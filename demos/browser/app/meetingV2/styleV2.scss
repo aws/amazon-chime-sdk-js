@@ -21,7 +21,7 @@ $teal: #20c997;
 $cyan: #3498db;
 $primary: $blue;
 $secondary: $gray-600;
-$success: $green;
+$success: $indigo;
 $info: $cyan;
 $warning: $yellow;
 $danger: $red;
@@ -2128,3 +2128,190 @@ input[type='radio'] {
     }
   }
 }
+
+
+.center{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 29vw;
+  background: white;
+  border-radius: 10px;
+  padding:30px
+}
+
+.center h1{
+  text-align: center;
+  padding: 0 0 20px 0;
+  border-bottom: 1px solid silver;
+}
+
+.center form{
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+form .txt_field{
+  position: relative;
+  border-bottom: 2px solid #adadad;
+  margin: 30px 0;
+}
+
+.txt_field input{
+  width: 100%;
+  padding: 0 5px;
+  height: 40px;
+  font-size: 16px;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+.txt_field label{
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  color: #adadad;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.txt_field span::before{
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 0px;
+  height: 2px;
+  background: #7126d9;
+  transition: .5s;
+}
+
+.txt_field input:focus ~ label,
+.txt_field input:valid ~ label{
+  top: -5px;
+  color: #7126d9;
+}
+
+.txt_field input:focus ~ span::before,
+.txt_field input:Valid ~ span::before{
+  width: 100%;
+}
+
+.pass{
+  margin: -5px 0 20px 5px;
+  color: #a6a6a6;
+  cursor: pointer;
+}
+
+.pass:hover{
+  text-decoration: underline;
+}
+
+input[type="Submit"]{
+  width: 100%;
+  height: 50px;
+  border: 1px solid;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+
+}
+
+input[type="Submit"]:hover{
+  background: #7126d9;
+  color: #e9f4fb;
+  transition: .5s;
+}
+
+.signup_link{
+  margin: 30px 0;
+  text-align: center;
+  font-size: 16px;
+  color: #666666;
+}
+
+.signup_link a{
+  color: #7126d9;
+  text-decoration: none;
+}
+
+.signup_link a:hover{
+  text-decoration: underline;
+}
+
+.HomeAbout{
+  width: 100vw;
+  height: 25vh;
+}
+
+
+/* Mobile/Tablet Styles */
+@media only screen and (max-width: 950px) {
+  .center {
+    width: 90vw; /* Adjusted width for mobile/tablet */
+    padding: 15px; /* Reduced padding */
+  }
+
+  .center form {
+    padding: 0 20px; /* Reduced padding for form */
+  }
+
+  form .txt_field {
+    margin: 15px 0; /* Reduced margin */
+  }
+
+  .txt_field input {
+    height: 35px; /* Adjusted input height */
+    font-size: 14px; /* Adjusted font size */
+  }
+
+  .txt_field label {
+    font-size: 14px; /* Adjusted label font size */
+  }
+
+  .pass {
+    margin: -3px 0 10px 3px; /* Adjusted margin */
+  }
+
+  input[type="Submit"] {
+    height: 40px; /* Adjusted button height */
+    font-size: 16px; /* Adjusted font size */
+  }
+
+  .signup_link {
+    margin: 15px 0; /* Adjusted margin */
+    font-size: 14px; /* Adjusted font size */
+  }
+}
+
+/* bigshot one font */
+@import url(https://fonts.googleapis.com/css?family=Cabin+Condensed);
+
+#login-container {
+  background: #ffffff;
+  background-size:cover;
+  font-family: 'Cabin Condensed', sans-serif;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  height:80%;
+  max-width: 600px;
+  margin-top:5%;
+  /* add shadow to the login box */
+  box-shadow: 0px 0px 10px 0px rgba(54, 53, 53, 0.75);
+  -webkit-box-shadow: 0px 0px 10px 0px rgba(54, 53, 53, 0.75);
+  -moz-box-shadow: 0px 0px 10px 0px rgba(54, 53, 53, 0.75);
+// border: 5px solid #8e509c;
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 1;
+}
+#login-container *{
+  font-family: 'Cabin Condensed', sans-serif;
+}
+#login-container svg{font-weight:bold;max-width:600px;height:100%;}
