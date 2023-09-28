@@ -4,9 +4,17 @@
 const AWS = require('aws-sdk');
 const compression = require('compression');
 const fs = require('fs');
-const http = require('http');
+const https = require('https');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/larq.ai/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/larq.ai/fullchain.pem', 'utf8');
+
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+};
 
 // Store created meetings in a map so attendees can join by meeting title.
 const meetingTable = {};
@@ -66,9 +74,9 @@ function getClientForMeeting(meeting) {
       : chime;
 }
 
-function serve(host = '127.0.0.1:8080') {
+function serve(host = '0.0.0.0:8080') {
   // Start an HTTP server to serve the index page and handle meeting actions
-  http.createServer({}, async (request, response) => {
+  https.createServer(credentials, async (request, response) => {
     log(`${request.method} ${request.url} BEGIN`);
     try {
       // Enable HTTP compression
