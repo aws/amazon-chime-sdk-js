@@ -57,7 +57,7 @@ csp['connect-src'] += " https://10.0.0.94:5555";
 csp['connect-src'] += " http://127.0.0.1:8081/";
 csp['connect-src'] += " http://127.0.0.1:8081";
 csp['connect-src'] += " http://127.0.0.1:8081*";
-csp['connect-src'] += " http://127.0.0.1:8081";
+csp['connect-src'] += " http://127.0.0.1:8080";
 csp['connect-src'] += " http://127.0.0.1:8081*";
 csp['connect-src'] += " https://10.0.0.94";
 csp['connect-src'] += " https://10.0.0.94:5555";
@@ -69,6 +69,8 @@ csp['connect-src'] += " https://larq.ai:5555";
 csp['connect-src'] += " https://larq.com:*";
 csp['connect-src'] += " https://larq.ai";
 csp['connect-src'] += " https://larq.ai:*";
+csp['connect-src'] += " https://larq.ai:8081";
+csp['connect-src'] += " https://larq.ai:8080";
 
 
 // 4. Add 'unsafe-eval' because TensorFlow needs it.
