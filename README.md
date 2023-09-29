@@ -1217,7 +1217,7 @@ meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStere
 
 **Use case 35.** Redundant Audio
 
-Starting from version 3.18.0, the SDK starts sending redundant audio data to our servers on detecting packet loss
+Starting from version 3.18.1, the SDK starts sending redundant audio data to our servers on detecting packet loss
 to help reduce its effect on audio quality. Redundant audio packets are only sent out for packets containing active
 audio, ie, speech or music. This may increase the bandwidth consumed by audio to up to 3 times the normal amount
 depending on the amount of packet loss detected. The SDK will automatically stop sending redundant data if it hasn't
