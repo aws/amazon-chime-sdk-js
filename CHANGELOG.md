@@ -14,16 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
-
-## [3.18.1] - 2023-09-29
-
-### Added
-
-### Removed
-
-### Changed
-
-### Fixed
 - Fixed bug that prevented sending and receiving audio, video, and content share when using Simulcast and Redundant Audio at the same time
 
 ## [3.18.0] - 2023-09-11
