@@ -98,11 +98,16 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
         direction: 'inactive',
         streams: [this.defaultMediaStream],
       });
+
+      if (this.meetingSessionContext?.audioProfile?.hasRedundancyEnabled()) {
+        // This will perform additional necessary setup for the audio transceiver.
+        this.setupAudioRedWorker();
+      }
     }
 
     if (!this._localCameraTransceiver) {
       const encodingParams = Array.from(this.videoQualityControlParameterMap.values());
-      this._localCameraTransceiver = this.peer.addTransceiver('video', {
+      this._localCameraTransceiver = this.addTransceiver('video', {
         direction: 'inactive',
         streams: [this.defaultMediaStream],
         sendEncodings: encodingParams,
