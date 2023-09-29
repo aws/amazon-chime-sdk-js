@@ -169,7 +169,7 @@ export default class DefaultTransceiverController
         streams: [this.defaultMediaStream],
       });
 
-      if (this.meetingSessionContext?.audioProfile.hasRedundancyEnabled()) {
+      if (this.meetingSessionContext?.audioProfile?.hasRedundancyEnabled()) {
         // This will perform additional necessary setup for the audio transceiver.
         this.setupAudioRedWorker();
       }
@@ -466,7 +466,7 @@ export default class DefaultTransceiverController
     );
   }
 
-  private setupAudioRedWorker(): void {
+  protected setupAudioRedWorker(): void {
     // @ts-ignore
     const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform;
     // @ts-ignore
@@ -588,7 +588,7 @@ export default class DefaultTransceiverController
   /**
    * Adds a transceiver to the peer connection and performs additional necessary setup.
    */
-  private addTransceiver(
+  protected addTransceiver(
     trackOrKind: string | MediaStreamTrack,
     init?: RTCRtpTransceiverInit
   ): RTCRtpTransceiver {
