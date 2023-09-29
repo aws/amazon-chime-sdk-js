@@ -1166,7 +1166,7 @@
 				<pre><code class="language-js"><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">setContentAudioProfile</span><span style="color: #000000">(</span><span style="color: #001080">AudioProfile</span><span style="color: #000000">.</span><span style="color: #795E26">fullbandMusicStereo</span><span style="color: #000000">());</span>
 </code></pre>
 				<p><strong>Use case 35.</strong> Redundant Audio</p>
-				<p>Starting from version 3.18.0, the SDK starts sending redundant audio data to our servers on detecting packet loss
+				<p>Starting from version 3.18.1, the SDK starts sending redundant audio data to our servers on detecting packet loss
 					to help reduce its effect on audio quality. Redundant audio packets are only sent out for packets containing active
 					audio, ie, speech or music. This may increase the bandwidth consumed by audio to up to 3 times the normal amount
 					depending on the amount of packet loss detected. The SDK will automatically stop sending redundant data if it hasn&#39;t
