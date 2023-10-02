@@ -386,11 +386,6 @@ export class DemoMeetingApp
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   lastPacketsSent = 0;
-  lastTotalAudioPacketsExpected = 0;
-  lastTotalAudioPacketsLost = 0;
-  lastTotalAudioPacketsRecoveredRed = 0;
-  lastTotalAudioPacketsRecoveredFec = 0;
-  lastRedRecoveryMetricsReceived = 0;
   meetingSessionPOSTLogger: POSTLogger;
   meetingEventPOSTLogger: POSTLogger;
 
@@ -657,7 +652,7 @@ export class DemoMeetingApp
         x.style.display = 'block';
       } else {
         x.style.display = 'none';
-        joining_page.style.display = 'block';
+        joining_page.style.display = 'flex';
       }
     });
     const buttonJoin = document.getElementById('host-meeting') as HTMLButtonElement;
@@ -755,10 +750,67 @@ export class DemoMeetingApp
     });
 
     // make a function displayForm():
+    // Sample data for radio buttons
 
     const buttonQuizBot = document.getElementsByClassName('cancel-button');
     for (var i = 0; i < buttonQuizBot.length; i++) {
       buttonQuizBot[i].addEventListener('click', _e => {
+
+
+        const radioOptions = ['Option 1', 'Option 2', 'Option 3'];
+
+        // Function to create radio buttons
+
+        const container = document.getElementById('radio-container');
+        // const radioBlock = document.getElementById('radio-block');
+
+        radioOptions.forEach((option, index) => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          const radioBlock = document.createElement('div');
+          radioBlock.classList.add('radioBlock');
+
+          input.type = 'radio';
+          input.name = 'radioOption';
+          input.value = option; // Set the initial value to the option text
+
+          label.className = 'radio-label';
+          radioBlock.appendChild(input);
+
+          label.appendChild(document.createTextNode(option));
+
+          // Double-click handler to make label editable
+          label.addEventListener('dblclick', () => {
+            label.contentEditable = 'true';
+            label.classList.add('editing');
+
+            // Save the original label text
+            const originalText = label.textContent;
+
+            // On blur, save the edited label text and exit editing mode
+            label.addEventListener('blur', () => {
+              const newText = label.textContent;
+
+              // Remove leading/trailing spaces
+
+              label.contentEditable = 'false';
+
+              label.classList.remove('editing');
+
+              // Update the radio option value if the label text changed
+              if (newText !== originalText) {
+                input.value = newText;
+              }
+
+              // If the label text is empty, reset it to the original option text
+              if (newText === '') {
+                label.textContent = option;
+              }
+            });
+          });
+          radioBlock.appendChild(label);
+          container.appendChild(radioBlock);
+        });
         console.log('button-quizbot');
         console.log(this.primaryExternalMeetingId);
         let quiz_question = document.getElementById('quiz_question');
@@ -843,58 +895,57 @@ export class DemoMeetingApp
         console.log('submit quiz');
 
         // // DREW ADDED CODES
-        // const transcript = document.getElementById('transcript-container').innerText;
-        // const transcriptData = {
-        //     "transcript": transcript
-        // };
-        // const url = "https://aptiversity.com:5555/MakeQuiz";
-        // const url = "https://10.0.0.94:5555/MakeQuiz";
-        // console.log("TRANSCRIPT DATA:",transcriptData);
-        // const response = await fetch(url, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(transcriptData)
-        // });
+        const transcript = document.getElementById('transcript-container').innerText;
+        const transcriptData = {
+            "transcript": transcript
+        };
+        const url = "https://larq.ai:5555/MakeQuiz";
+        console.log("TRANSCRIPT DATA:",transcriptData);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transcriptData)
+        });
 
-        // const quizJson = await response.json();
+        const quizJson = await response.json();
 
         //// BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-        const quizJson = {
-          message: {
-            quiz_title: 'History 101',
-            questions: [
-              {
-                answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
-                correct_answer: '1215',
-                question: 'In which year was the Magna Carta sealed?',
-                question_number: 1,
-                wrong_answers: ['1200', '1230', '1150'],
-              },
-              {
-                answer_reason:
-                  'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
-                correct_answer: 'Revival of classical learning',
-                question: 'What was the primary aim of the Renaissance?',
-                question_number: 2,
-                wrong_answers: [
-                  'Promotion of modern art',
-                  'Start of the industrial revolution',
-                  'Promotion of religious beliefs',
-                ],
-              },
-              {
-                answer_reason:
-                  'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
-                correct_answer: 'Galileo Galilei',
-                question: 'Who is known as the father of observational astronomy?',
-                question_number: 3,
-                wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
-              },
-            ],
-          },
-        };
+        // const quizJson = {
+        //   message: {
+        //     quiz_title: 'History 101',
+        //     questions: [
+        //       {
+        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+        //         correct_answer: '1215',
+        //         question: 'In which year was the Magna Carta sealed?',
+        //         question_number: 1,
+        //         wrong_answers: ['1200', '1230', '1150'],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+        //         correct_answer: 'Revival of classical learning',
+        //         question: 'What was the primary aim of the Renaissance?',
+        //         question_number: 2,
+        //         wrong_answers: [
+        //           'Promotion of modern art',
+        //           'Start of the industrial revolution',
+        //           'Promotion of religious beliefs',
+        //         ],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+        //         correct_answer: 'Galileo Galilei',
+        //         question: 'Who is known as the father of observational astronomy?',
+        //         question_number: 3,
+        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+        //       },
+        //     ],
+        //   },
+        // };
 
         console.log('quizJson:', quizJson);
 
@@ -923,8 +974,6 @@ export class DemoMeetingApp
             let questionNumber = question.question_number;
             let questionBlock = document.createElement('div');
             questionBlock.className = 'numbers-block';
-            // const element = document.getElementById('numbers-block');
-            // element.classList.add('active-numbers-block');
             questionBlock.innerText = `${questionNumber}`;
             quizNumbers.appendChild(questionBlock);
 
@@ -932,15 +981,12 @@ export class DemoMeetingApp
             questionBlock.addEventListener('click', function () {
               // Display the selected question and its options
 
-              console.log('questionBlock', questionBlock);
               console.log('questionNumber', questionNumber);
-              index++;
-              if (index === questionNumber) {
-                console.log('Index', index);
-                questionBlock.classList.add('active-numbers-block');
-              } else {
-                questionBlock.classList.remove('active-numbers-block');
+              const currentActive = document.querySelector('.numbers-block.active-numbers-block');
+              if (currentActive) {
+                currentActive.classList.remove('active-numbers-block');
               }
+              questionBlock.classList.add('active-numbers-block');
 
               quizQuestionElement.innerText = question.question;
               quizOptions.innerHTML = ''; // Clear previous options
@@ -1005,7 +1051,7 @@ export class DemoMeetingApp
       }
     });
 
-
+    
     // DREW LOGIN
 
 // if you have localStorage.getItem('authToken') then hide the login form and show the joining page:
@@ -1027,6 +1073,9 @@ interface ResponseData {
   status: string;
   token?: string;
   message?: string;
+  user_id?: string;
+  first_name?: string;
+  last_name?: string;
 }
 document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) => {
   event.preventDefault();
@@ -1038,35 +1087,55 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
-  fetch("https://ec2-34-235-178-135.compute-1.amazonaws.com:5555/login", {
+  fetch("https://larq.ai:5555/login", {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Basic ' + base64Credentials  // Set the Authorization header
       }
-  })
-  .then(response => response.json())
-  .then((data: ResponseData) => {
-      if (data.status === 'success') {
-          localStorage.setItem('authToken', data.token!);
-          document.getElementById('login-container')!.style.display = 'none';
-          document.getElementById('joining-page')!.style.display = 'block';
-      } else {
-          alert(data.message);
-      }
+  }).then(response => {
+    if (!response.ok) {
+      return response.text().then(text => {
+        throw new Error(`Server responded with status ${response.status}: ${text}`);
+    });
+}
+    return response.json();
+}).then((data: ResponseData) => {
+  if (data.status === 'success') {
+    localStorage.setItem('authToken', data.token!);
+    document.getElementById('login-container')!.style.display = 'none';
+    document.getElementById('joining-page')!.style.display = 'block';
+
+    // Console log user_id and last_name
+    console.log("User ID:", data.user_id);
+    console.log("Last Name:", data.last_name);
+
+    // Update elements with class name "first_name" to display the first_name returned
+    const firstNameElements = document.querySelectorAll('.first_name');
+    firstNameElements.forEach(element => {
+      element.textContent = data.first_name!;
+    });
+
+  } else {
+    alert(data.message);
+  }
   })
   .catch(error => {
     alert('Error occurred: ' + error.message);
     console.error('Error:', error);
   });
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const token: string | null = localStorage.getItem('authToken');
   if (token) {
       document.getElementById('login-container')!.style.display = 'none';
+      document.getElementById('register-container')!.style.display = 'none';
       document.getElementById('joining-page')!.style.display = 'block';
+
   } else {
       document.getElementById('login-container')!.style.display = 'block';
+      document.getElementById('register-container')!.style.display = 'block';
       document.getElementById('joining-page')!.style.display = 'none';
   }
 });
@@ -1083,6 +1152,46 @@ document.querySelector('.logout')?.addEventListener('click', logout);
 
 // END DREW LOGIN
 
+// DREw REGISTRATION
+
+document.querySelector('#registerForm')?.addEventListener('submit', (event: Event) => {
+  event.preventDefault();
+
+  const targetForm = <HTMLFormElement>event.target;
+  const username: string = targetForm.username.value;
+  const password: string = targetForm.password.value;
+  const email: string = targetForm.email.value;
+
+  fetch("https://larq.ai:5555/register", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          username: username,
+          password: password,
+          email: email
+      })
+  })
+  .then(response => response.json())
+  .then(data => {
+      if (data.status === 'success') {
+          alert(data.message);
+          document.getElementById('register-container')!.style.display = 'none';
+          document.getElementById('joining-page')!.style.display = 'block';
+      } else {
+          alert(data.message);
+      }
+  })
+  .catch(error => {
+      alert('Error occurred: ' + error.message);
+      console.error('Error:', error);
+  });
+});
+
+
+// END DREW REGISTRATION
+
 
 
     (document.getElementById('join-muted') as HTMLInputElement).addEventListener('change', e => {
@@ -1094,12 +1203,6 @@ document.querySelector('.logout')?.addEventListener('click', logout);
       }
     });
 
-    if (this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
-      // Firefox currently does not support audio redundancy through insertable streams or
-      // script transform so disable the redundancy checkbox
-      (document.getElementById('disable-audio-redundancy') as HTMLInputElement).disabled = true;
-      (document.getElementById('disable-audio-redundancy-checkbox') as HTMLElement).style.display = 'none';
-    }
     if (!this.defaultBrowserBehavior.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       document.getElementById('content-simulcast-config').style.display = 'none';
@@ -2034,40 +2137,6 @@ document.querySelector('.logout')?.addEventListener('click', logout);
     });
   }
 
-  logRedRecoveryPercent(clientMetricReport: ClientMetricReport) {
-    const customStatsReports = clientMetricReport.customStatsReports;
-
-    // @ts-ignore
-    customStatsReports.forEach(report => {
-      if (report.type === 'inbound-rtp-red' && report.kind === 'audio') {
-
-        const deltaExpected = report.totalAudioPacketsExpected - this.lastTotalAudioPacketsExpected;
-        const deltaLost = report.totalAudioPacketsLost - this.lastTotalAudioPacketsLost;
-        const deltaRedRecovered = report.totalAudioPacketsRecoveredRed - this.lastTotalAudioPacketsRecoveredRed;
-        const deltaFecRecovered = report.totalAudioPacketsRecoveredFec - this.lastTotalAudioPacketsRecoveredFec;
-        if (this.lastRedRecoveryMetricsReceived === 0) this.lastRedRecoveryMetricsReceived = report.timestamp;
-        const deltaTime = report.timestamp - this.lastRedRecoveryMetricsReceived;
-        this.lastRedRecoveryMetricsReceived = report.timestamp;
-        this.lastTotalAudioPacketsExpected = report.totalAudioPacketsExpected;
-        this.lastTotalAudioPacketsLost = report.totalAudioPacketsLost;
-        this.lastTotalAudioPacketsRecoveredRed = report.totalAudioPacketsRecoveredRed;
-        this.lastTotalAudioPacketsRecoveredFec = report.totalAudioPacketsRecoveredFec;
-
-        let lossPercent = 0;
-        if (deltaExpected > 0) {
-          lossPercent = 100 * (deltaLost / deltaExpected);
-        }
-        let redRecoveryPercent = 0;
-        let fecRecoveryPercent = 0;
-        if (deltaLost > 0) {
-          redRecoveryPercent = 100 * (deltaRedRecovered / deltaLost);
-          fecRecoveryPercent = 100 * (deltaFecRecovered / deltaLost);
-        }
-        console.debug(`[AudioRed] time since last report = ${deltaTime/1000}s, loss % = ${lossPercent}, red recovery % = ${redRecoveryPercent}, fec recovery % = ${fecRecoveryPercent}, total expected = ${report.totalAudioPacketsExpected}, total lost = ${report.totalAudioPacketsLost}, total red recovered  = ${report.totalAudioPacketsRecoveredRed}, total fec recovered = ${report.totalAudioPacketsRecoveredFec}`);
-      }
-    });
-  }
-
   getSupportedMediaRegions(): string[] {
     const supportedMediaRegions: string[] = [];
     const mediaRegion = document.getElementById('inputRegion') as HTMLSelectElement;
@@ -2343,7 +2412,6 @@ document.querySelector('.logout')?.addEventListener('click', logout);
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     this.logAudioStreamPPS(clientMetricReport);
-    this.logRedRecoveryPercent(clientMetricReport);
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
     this.displayEstimatedUplinkBandwidth(metricReport.availableOutgoingBitrate);
@@ -2541,25 +2609,23 @@ document.querySelector('.logout')?.addEventListener('click', logout);
       new DefaultEventController(configuration, this.meetingLogger, this.eventReporter)
     );
 
-    const enableAudioRedundancy = !((document.getElementById('disable-audio-redundancy') as HTMLInputElement).checked);
-    let audioProfile: AudioProfile = new AudioProfile(null, enableAudioRedundancy);
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
-      audioProfile = AudioProfile.fullbandSpeechMono(enableAudioRedundancy);
+      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
+      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono());
       this.log('Using audio profile fullband-speech-mono-quality');
     } else if (
       (document.getElementById('fullband-music-mono-quality') as HTMLInputElement).checked
     ) {
-      audioProfile = AudioProfile.fullbandMusicMono(enableAudioRedundancy);
+      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicMono());
+      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
       this.log('Using audio profile fullband-music-mono-quality');
     } else if (
       (document.getElementById('fullband-music-stereo-quality') as HTMLInputElement).checked
     ) {
-      audioProfile = AudioProfile.fullbandMusicStereo(enableAudioRedundancy);
+      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicStereo());
+      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
       this.log('Using audio profile fullband-music-stereo-quality');
     }
-    this.log(`Audio Redundancy Enabled = ${audioProfile.hasRedundancyEnabled()}`);
-    this.meetingSession.audioVideo.setAudioProfile(audioProfile);
-    this.meetingSession.audioVideo.setContentAudioProfile(audioProfile);
     this.audioVideo = this.meetingSession.audioVideo;
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
@@ -3605,8 +3671,8 @@ document.querySelector('.logout')?.addEventListener('click', logout);
 
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
-    let additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Prerecorded Speech Loop (Mono)', 'Echo'];
-    const additionalStereoTestDevices = ['L-500Hz R-1000Hz', 'Prerecorded Speech Loop (Stereo)'];
+    let additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Echo'];
+    const additionalStereoTestDevices = ['L-500Hz R-1000Hz', 'Prerecorded Speech (Stereo)'];
     const additionalToggles = [];
 
     if (!this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
@@ -3996,11 +4062,7 @@ document.querySelector('.logout')?.addEventListener('click', logout);
       return new AudioBufferMediaStreamProvider('audio_file').getMediaStream();
     }
 
-    if (value === 'Prerecorded Speech Loop (Mono)') {
-      return new AudioBufferMediaStreamProvider('audio_file', /*shouldLoop*/ true).getMediaStream();
-    }
-
-    if (value === 'Prerecorded Speech Loop (Stereo)') {
+    if (value === 'Prerecorded Speech (Stereo)') {
       return new AudioBufferMediaStreamProvider('stereo_audio_file', true).getMediaStream();
     }
 
@@ -4906,17 +4968,25 @@ document.addEventListener('DOMContentLoaded', function () {
       calendarDates.appendChild(paddingElement);
     }
 
-    // Add padding for days before the first day of the month
-    for (let i = 0; i < firstDay.getDay(); i++) {
-      const paddingElement = document.createElement('div');
-      paddingElement.classList.add('calendar-day', 'inactive');
-      calendarDates.appendChild(paddingElement);
-    }
-
     for (let day = 1; day <= daysInMonth; day++) {
       const dateElement = document.createElement('div');
       dateElement.classList.add('calendar-day');
       dateElement.textContent = day.toString();
+
+      // Check if there's an event for this day
+      const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(
+        day
+      ).padStart(2, '0')}`;
+      if (events[eventDate]) {
+        const eventElement = document.createElement('div');
+        eventElement.classList.add('calendar-event');
+
+        // eventElement.textContent = events[eventDate];
+        dateElement.appendChild(eventElement);
+        // Add an event listener to show the tooltip on click
+        dateElement.addEventListener('click', (e) => showTooltip(e, events[eventDate]));
+
+      }
 
       calendarDates.appendChild(dateElement);
     }
@@ -4948,3 +5018,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   generateCalendar();
 });
+
+function showTooltip(event: MouseEvent, content: string) {
+  const tooltip = document.createElement('div');
+  tooltip.classList.add('tooltip');
+  tooltip.textContent = content;
+  tooltip.style.top = `${event.clientY + 10}px`;
+  tooltip.style.left = `${event.clientX + 10}px`;
+  document.body.appendChild(tooltip);
+
+  // Hide tooltip on next click anywhere in the document
+  document.addEventListener('click', function hideTooltip() {
+    tooltip.remove();
+    document.removeEventListener('click', hideTooltip);
+  }, { once: true });
+}
