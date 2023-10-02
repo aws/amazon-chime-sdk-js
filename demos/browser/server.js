@@ -178,7 +178,9 @@ function serve(host = '0.0.0.0:8080') {
           meetingTable[requestUrl.query.title] = meeting;
         }
 
-        const createAttendeeRequest = {
+
+        // Create new attendee for the meeting
+        const attendee = await client.createAttendee({
           // The meeting ID of the created meeting to add the attendee to
           MeetingId: meeting.Meeting.MeetingId,
 
@@ -187,23 +189,8 @@ function serve(host = '0.0.0.0:8080') {
           // combined with the name the user provided, which can later
           // be used to help build the roster.
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
-        };
-
-        if (
-          useChimeSDKMeetings === 'true' &&
-          requestUrl.query.attendeeAudioCapability &&
-          !requestUrl.query.primaryExternalMeetingId
-        ) {
-          createAttendeeRequest.Capabilities = {
-            Audio: requestUrl.query.attendeeAudioCapability,
-            Video: requestUrl.query.attendeeVideoCapability,
-            Content: requestUrl.query.attendeeContentCapability,
-          };
-        }
-
-       // Create new attendee for the meeting
-       const attendee = await client.createAttendee(createAttendeeRequest).promise();
-
+        }).promise();
+        
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
         let joinResponse = {
