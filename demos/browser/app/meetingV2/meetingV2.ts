@@ -4948,17 +4948,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Sample JSON structure for events
   const events: { [key: string]: string } = {
-<<<<<<< HEAD
-    "2023-09-26": "Sample Event 1",
-    "2023-09-27": "Sample Event 2"
-    // Add more events as needed
-};
-=======
     '2023-09-26': 'Sample Event 1',
     '2023-09-27': 'Sample Event 2',
     // Add more events as needed
   };
->>>>>>> drew-oct-2
 
   function generateCalendar() {
     const firstDay = new Date(currentYear, currentMonth, 1);
@@ -4983,15 +4976,6 @@ document.addEventListener('DOMContentLoaded', function () {
       dateElement.textContent = day.toString();
 
       // Check if there's an event for this day
-<<<<<<< HEAD
-
-      const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      if (events[eventDate]) {
-        const eventElement = document.createElement('div');
-        eventElement.classList.add('calendar-event');
-        eventElement.textContent = events[eventDate];
-        dateElement.appendChild(eventElement);
-=======
       const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(
         day
       ).padStart(2, '0')}`;
@@ -5004,7 +4988,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add an event listener to show the tooltip on click
         dateElement.addEventListener('click', (e) => showTooltip(e, events[eventDate]));
 
->>>>>>> drew-oct-2
       }
 
       calendarDates.appendChild(dateElement);
