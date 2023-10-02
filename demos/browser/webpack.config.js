@@ -47,6 +47,19 @@ csp['connect-src'] += ' https://storage.googleapis.com';
 csp['script-src'] += ' https://cdn.jsdelivr.net';
 csp['script-src-elem'] += ' https://cdn.jsdelivr.net';
 
+// DREW ADDING LOCALHOST
+csp['connect-src'] += " https://aptiversity.com:5555";
+csp['connect-src'] += " https://aptiversity.com";
+csp['connect-src'] += " https://www.aptiversity.com";
+csp['connect-src'] += " https://aptiversity.com:*";
+csp['connect-src'] += " https://172.31.84.112:5555";
+csp['connect-src'] += " https://10.0.0.94:5555";
+csp['connect-src'] += " http://127.0.0.1:8081/";
+csp['connect-src'] += " http://127.0.0.1:8081";
+csp['connect-src'] += " http://127.0.0.1:8081*";
+
+
+
 // 4. Add 'unsafe-eval' because TensorFlow needs it.
 if (!csp['script-src'].includes("'unsafe-eval'")) {
   csp['script-src'] += " 'unsafe-eval'";
