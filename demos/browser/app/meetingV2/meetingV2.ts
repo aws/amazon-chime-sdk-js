@@ -1152,7 +1152,7 @@ document.querySelector('.logout')?.addEventListener('click', logout);
 
 // END DREW LOGIN
 
-// DREw REGISTRATION
+// DREW REGISTRATION
 
 document.querySelector('#registerForm')?.addEventListener('submit', (event: Event) => {
   event.preventDefault();
@@ -1161,6 +1161,8 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   const username: string = targetForm.username.value;
   const password: string = targetForm.password.value;
   const email: string = targetForm.email.value;
+  const firstName: string = targetForm.first_name.value;  // Retrieve first name
+  const lastName: string = targetForm.last_name.value;    // Retrieve last name
 
   fetch("https://larq.ai:5555/register", {
       method: 'POST',
@@ -1170,7 +1172,9 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       body: JSON.stringify({
           username: username,
           password: password,
-          email: email
+          email: email,
+          first_name: firstName,  // Include first name in the request body
+          last_name: lastName     // Include last name in the request body
       })
   })
   .then(response => response.json())
@@ -1189,9 +1193,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   });
 });
 
-
 // END DREW REGISTRATION
-
 
 
     (document.getElementById('join-muted') as HTMLInputElement).addEventListener('change', e => {
