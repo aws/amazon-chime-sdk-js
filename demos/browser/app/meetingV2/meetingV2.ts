@@ -1059,7 +1059,6 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
     alert('Error occurred: ' + error.message);
     console.error('Error:', error);
   });
-});
 
 document.addEventListener('DOMContentLoaded', () => {
   const token: string | null = localStorage.getItem('authToken');
