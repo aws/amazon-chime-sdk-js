@@ -17,14 +17,14 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
  * This is exactly what we document in the CSP guide.
  */
 const csp = {
-  'connect-src': "'self' data: https://*.chime.aws wss://*.chime.aws https://*.                                                                              amazonaws.com",
+  'connect-src': "'self' data: https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com",
 
-  // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+.
-  // Strictly speaking, this should be enough, but the worker cannot compile We                                                                              bAssembly unless
+  // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+. 
+  // Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless
   // 'unsafe-eval' is also present.
   'script-src': "'self' 'unsafe-eval' blob: 'wasm-eval' 'wasm-unsafe-eval'",
 
-  // Script hashes/nonces are not emitted for script-src-elem, so just add unsa                                                                              fe-inline.
+  // Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.
   'script-src-elem': "'self' 'unsafe-inline' blob:",
   'worker-src': "'self' blob:",
   'child-src': "'self' blob:",
@@ -61,10 +61,10 @@ csp['connect-src'] += " http://127.0.0.1:8080";
 csp['connect-src'] += " http://127.0.0.1:8081*";
 csp['connect-src'] += " https://10.0.0.94";
 csp['connect-src'] += " https://10.0.0.94:5555";
-csp['connect-src'] += " https://www.ec2-34-235-178-135.compute-1.amazonaws.com:                                                                              5555";
+csp['connect-src'] += " https://www.ec2-34-235-178-135.compute-1.amazonaws.com:5555";
 csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:*";
 csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com";
-csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:5555                                                                              ";
+csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:5555";
 csp['connect-src'] += " https://larq.ai:5555";
 csp['connect-src'] += " https://larq.com:*";
 csp['connect-src'] += " https://larq.ai";
