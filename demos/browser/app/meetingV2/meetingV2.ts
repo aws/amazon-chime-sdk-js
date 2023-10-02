@@ -652,7 +652,11 @@ export class DemoMeetingApp
         x.style.display = 'block';
       } else {
         x.style.display = 'none';
+<<<<<<< HEAD
         joining_page.style.display = 'block';
+=======
+        joining_page.style.display = 'flex';
+>>>>>>> drew-oct-2
       }
     });
     const buttonJoin = document.getElementById('host-meeting') as HTMLButtonElement;
@@ -750,10 +754,73 @@ export class DemoMeetingApp
     });
 
     // make a function displayForm():
+<<<<<<< HEAD
+=======
+    // Sample data for radio buttons
+>>>>>>> drew-oct-2
 
     const buttonQuizBot = document.getElementsByClassName('cancel-button');
     for (var i = 0; i < buttonQuizBot.length; i++) {
       buttonQuizBot[i].addEventListener('click', _e => {
+<<<<<<< HEAD
+=======
+
+
+        const radioOptions = ['Option 1', 'Option 2', 'Option 3'];
+
+        // Function to create radio buttons
+
+        const container = document.getElementById('radio-container');
+        // const radioBlock = document.getElementById('radio-block');
+
+        radioOptions.forEach((option, index) => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          const radioBlock = document.createElement('div');
+          radioBlock.classList.add('radioBlock');
+
+          input.type = 'radio';
+          input.name = 'radioOption';
+          input.value = option; // Set the initial value to the option text
+
+          label.className = 'radio-label';
+          radioBlock.appendChild(input);
+
+          label.appendChild(document.createTextNode(option));
+
+          // Double-click handler to make label editable
+          label.addEventListener('dblclick', () => {
+            label.contentEditable = 'true';
+            label.classList.add('editing');
+
+            // Save the original label text
+            const originalText = label.textContent;
+
+            // On blur, save the edited label text and exit editing mode
+            label.addEventListener('blur', () => {
+              const newText = label.textContent;
+
+              // Remove leading/trailing spaces
+
+              label.contentEditable = 'false';
+
+              label.classList.remove('editing');
+
+              // Update the radio option value if the label text changed
+              if (newText !== originalText) {
+                input.value = newText;
+              }
+
+              // If the label text is empty, reset it to the original option text
+              if (newText === '') {
+                label.textContent = option;
+              }
+            });
+          });
+          radioBlock.appendChild(label);
+          container.appendChild(radioBlock);
+        });
+>>>>>>> drew-oct-2
         console.log('button-quizbot');
         console.log(this.primaryExternalMeetingId);
         let quiz_question = document.getElementById('quiz_question');
@@ -838,6 +905,7 @@ export class DemoMeetingApp
         console.log('submit quiz');
 
         // // DREW ADDED CODES
+<<<<<<< HEAD
         // const transcript = document.getElementById('transcript-container').innerText;
         // const transcriptData = {
         //     "transcript": transcript
@@ -890,6 +958,59 @@ export class DemoMeetingApp
             ],
           },
         };
+=======
+        const transcript = document.getElementById('transcript-container').innerText;
+        const transcriptData = {
+            "transcript": transcript
+        };
+        const url = "https://larq.ai:5555/MakeQuiz";
+        console.log("TRANSCRIPT DATA:",transcriptData);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transcriptData)
+        });
+
+        const quizJson = await response.json();
+
+        //// BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
+        // const quizJson = {
+        //   message: {
+        //     quiz_title: 'History 101',
+        //     questions: [
+        //       {
+        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+        //         correct_answer: '1215',
+        //         question: 'In which year was the Magna Carta sealed?',
+        //         question_number: 1,
+        //         wrong_answers: ['1200', '1230', '1150'],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+        //         correct_answer: 'Revival of classical learning',
+        //         question: 'What was the primary aim of the Renaissance?',
+        //         question_number: 2,
+        //         wrong_answers: [
+        //           'Promotion of modern art',
+        //           'Start of the industrial revolution',
+        //           'Promotion of religious beliefs',
+        //         ],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+        //         correct_answer: 'Galileo Galilei',
+        //         question: 'Who is known as the father of observational astronomy?',
+        //         question_number: 3,
+        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+        //       },
+        //     ],
+        //   },
+        // };
+>>>>>>> drew-oct-2
 
         console.log('quizJson:', quizJson);
 
@@ -918,8 +1039,11 @@ export class DemoMeetingApp
             let questionNumber = question.question_number;
             let questionBlock = document.createElement('div');
             questionBlock.className = 'numbers-block';
+<<<<<<< HEAD
             // const element = document.getElementById('numbers-block');
             // element.classList.add('active-numbers-block');
+=======
+>>>>>>> drew-oct-2
             questionBlock.innerText = `${questionNumber}`;
             quizNumbers.appendChild(questionBlock);
 
@@ -927,6 +1051,7 @@ export class DemoMeetingApp
             questionBlock.addEventListener('click', function () {
               // Display the selected question and its options
 
+<<<<<<< HEAD
               console.log('questionBlock', questionBlock);
               console.log('questionNumber', questionNumber);
               index++;
@@ -936,6 +1061,14 @@ export class DemoMeetingApp
               } else {
                 questionBlock.classList.remove('active-numbers-block');
               }
+=======
+              console.log('questionNumber', questionNumber);
+              const currentActive = document.querySelector('.numbers-block.active-numbers-block');
+              if (currentActive) {
+                currentActive.classList.remove('active-numbers-block');
+              }
+              questionBlock.classList.add('active-numbers-block');
+>>>>>>> drew-oct-2
 
               quizQuestionElement.innerText = question.question;
               quizOptions.innerHTML = ''; // Clear previous options
@@ -1000,7 +1133,11 @@ export class DemoMeetingApp
       }
     });
 
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> drew-oct-2
     // DREW LOGIN
 
 // if you have localStorage.getItem('authToken') then hide the login form and show the joining page:
@@ -1022,6 +1159,12 @@ interface ResponseData {
   status: string;
   token?: string;
   message?: string;
+<<<<<<< HEAD
+=======
+  user_id?: string;
+  first_name?: string;
+  last_name?: string;
+>>>>>>> drew-oct-2
 }
 document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) => {
   event.preventDefault();
@@ -1033,12 +1176,17 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
+<<<<<<< HEAD
   fetch("https://ec2-34-235-178-135.compute-1.amazonaws.com:5555/login", {
+=======
+  fetch("https://larq.ai:5555/login", {
+>>>>>>> drew-oct-2
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Basic ' + base64Credentials  // Set the Authorization header
       }
+<<<<<<< HEAD
   })
   .then(response => response.json())
   .then((data: ResponseData) => {
@@ -1049,6 +1197,34 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
       } else {
           alert(data.message);
       }
+=======
+  }).then(response => {
+    if (!response.ok) {
+      return response.text().then(text => {
+        throw new Error(`Server responded with status ${response.status}: ${text}`);
+    });
+}
+    return response.json();
+}).then((data: ResponseData) => {
+  if (data.status === 'success') {
+    localStorage.setItem('authToken', data.token!);
+    document.getElementById('login-container')!.style.display = 'none';
+    document.getElementById('joining-page')!.style.display = 'block';
+
+    // Console log user_id and last_name
+    console.log("User ID:", data.user_id);
+    console.log("Last Name:", data.last_name);
+
+    // Update elements with class name "first_name" to display the first_name returned
+    const firstNameElements = document.querySelectorAll('.first_name');
+    firstNameElements.forEach(element => {
+      element.textContent = data.first_name!;
+    });
+
+  } else {
+    alert(data.message);
+  }
+>>>>>>> drew-oct-2
   })
   .catch(error => {
     alert('Error occurred: ' + error.message);
@@ -1060,9 +1236,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const token: string | null = localStorage.getItem('authToken');
   if (token) {
       document.getElementById('login-container')!.style.display = 'none';
+<<<<<<< HEAD
       document.getElementById('joining-page')!.style.display = 'block';
   } else {
       document.getElementById('login-container')!.style.display = 'block';
+=======
+      document.getElementById('register-container')!.style.display = 'none';
+      document.getElementById('joining-page')!.style.display = 'block';
+
+  } else {
+      document.getElementById('login-container')!.style.display = 'block';
+      document.getElementById('register-container')!.style.display = 'block';
+>>>>>>> drew-oct-2
       document.getElementById('joining-page')!.style.display = 'none';
   }
 });
@@ -1079,6 +1264,51 @@ document.querySelector('.logout')?.addEventListener('click', logout);
 
 // END DREW LOGIN
 
+<<<<<<< HEAD
+=======
+// DREW REGISTRATION
+
+document.querySelector('#registerForm')?.addEventListener('submit', (event: Event) => {
+  event.preventDefault();
+
+  const targetForm = <HTMLFormElement>event.target;
+  const username: string = targetForm.username.value;
+  const password: string = targetForm.password.value;
+  const email: string = targetForm.email.value;
+  const firstName: string = targetForm.first_name.value;  // Retrieve first name
+  const lastName: string = targetForm.last_name.value;    // Retrieve last name
+
+  fetch("https://larq.ai:5555/register", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          username: username,
+          password: password,
+          email: email,
+          first_name: firstName,  // Include first name in the request body
+          last_name: lastName     // Include last name in the request body
+      })
+  })
+  .then(response => response.json())
+  .then(data => {
+      if (data.status === 'success') {
+          alert(data.message);
+          document.getElementById('register-container')!.style.display = 'none';
+          document.getElementById('joining-page')!.style.display = 'block';
+      } else {
+          alert(data.message);
+      }
+  })
+  .catch(error => {
+      alert('Error occurred: ' + error.message);
+      console.error('Error:', error);
+  });
+});
+
+// END DREW REGISTRATION
+>>>>>>> drew-oct-2
 
 
     (document.getElementById('join-muted') as HTMLInputElement).addEventListener('change', e => {
@@ -4833,10 +5063,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Sample JSON structure for events
   const events: { [key: string]: string } = {
+<<<<<<< HEAD
     "2023-09-26": "Sample Event 1",
     "2023-09-27": "Sample Event 2"
     // Add more events as needed
 };
+=======
+    '2023-09-26': 'Sample Event 1',
+    '2023-09-27': 'Sample Event 2',
+    // Add more events as needed
+  };
+>>>>>>> drew-oct-2
 
   function generateCalendar() {
     const firstDay = new Date(currentYear, currentMonth, 1);
@@ -4861,6 +5098,7 @@ document.addEventListener('DOMContentLoaded', function () {
       dateElement.textContent = day.toString();
 
       // Check if there's an event for this day
+<<<<<<< HEAD
 
       const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       if (events[eventDate]) {
@@ -4868,6 +5106,20 @@ document.addEventListener('DOMContentLoaded', function () {
         eventElement.classList.add('calendar-event');
         eventElement.textContent = events[eventDate];
         dateElement.appendChild(eventElement);
+=======
+      const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(
+        day
+      ).padStart(2, '0')}`;
+      if (events[eventDate]) {
+        const eventElement = document.createElement('div');
+        eventElement.classList.add('calendar-event');
+
+        // eventElement.textContent = events[eventDate];
+        dateElement.appendChild(eventElement);
+        // Add an event listener to show the tooltip on click
+        dateElement.addEventListener('click', (e) => showTooltip(e, events[eventDate]));
+
+>>>>>>> drew-oct-2
       }
 
       calendarDates.appendChild(dateElement);
@@ -4900,3 +5152,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   generateCalendar();
 });
+<<<<<<< HEAD
+=======
+
+function showTooltip(event: MouseEvent, content: string) {
+  const tooltip = document.createElement('div');
+  tooltip.classList.add('tooltip');
+  tooltip.textContent = content;
+  tooltip.style.top = `${event.clientY + 10}px`;
+  tooltip.style.left = `${event.clientX + 10}px`;
+  document.body.appendChild(tooltip);
+
+  // Hide tooltip on next click anywhere in the document
+  document.addEventListener('click', function hideTooltip() {
+    tooltip.remove();
+    document.removeEventListener('click', hideTooltip);
+  }, { once: true });
+}
+>>>>>>> drew-oct-2

@@ -286,8 +286,19 @@ message SdkMetric {
         VIDEO_DECODE_WIDTH = 87;
         VIDEO_ENCODER_IS_HARDWARE = 88;
         VIDEO_DECODER_IS_HARDWARE = 89;
+        VIDEO_FREEZE_COUNT = 90;
+        VIDEO_FREEZE_DURATION = 91;
+        VIDEO_PAUSE_COUNT = 92;
+        VIDEO_PAUSE_DURATION = 93;
+        VIDEO_QUALITY_REASON = 94;
+        VIDEO_PROCESSING_TIME = 95;
         RTC_SPK_AUDIO_LEVEL = 96;
         RTC_MIC_AUDIO_LEVEL = 97;
+        RTC_SPK_TOTAL_LOST = 98;
+        RTC_SPK_TOTAL_EXPECTED = 99;
+        RTC_SPK_TOTAL_RECOVERED_RED = 100;
+        RTC_SPK_TOTAL_RECOVERED_FEC = 101;
+        VIDEO_QUALITY_LIMITATION_DURATION_CPU = 102;
     }
     optional Type type = 1;
     optional double value = 2;

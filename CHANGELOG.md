@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.0] - 2023-09-20
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+## [3.18.1] - 2023-09-29
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+- Fixed bug that prevented sending and receiving audio, video, and content share when using Simulcast and Redundant Audio at the same time
+
+## [3.18.0] - 2023-09-11
+
+### Added
+- Support sending and receiving redundant audio data to help reduce the effects of packet loss on audio quality. See README for more details.
+- Send a few additional metrics to backend
+
+### Removed
+
+### Changed
+
+### Fixed
+- Fixed audio send failing for the rest of the meeting when writing frames larger than 1000 bytes in Chrome, which could be caused by sending redundant audio
+
 ## [3.17.0] - 2023-08-15
 
 ### Added
@@ -13,8 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a new meeting event, `deviceLabelTriggerFailed`, for device label trigger failures. By default, the Chime SDK for JavaScript requests access to the microphone and camera in order to retrieve device labels. The SDK will send the `deviceLabelTriggerFailed` event when either the microphone, camera or both requests fail. (Before this PR, the SDK would emit `audioInputFailed` and `videoInputFailed` events simultaneously, which could lead to confusion.) If a custom function is supplied with `meetingSession.audioVideo.setDeviceLabelTrigger`, the SDK will send this event when the custom function is not successful.
 
 ### Removed
+- Resolution constraint for content share
 
 ### Changed
+
+- Improve reconnection behavior on signaling disconnection mid call or during join/subscribe
 
 ### Fixed
 

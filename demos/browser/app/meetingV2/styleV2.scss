@@ -1271,6 +1271,18 @@ input[type='file']:focus + label {
   color: #fff;
   background: #8e509c;
 }
+<<<<<<< HEAD
+=======
+.calendar-event {
+  width: 8px;
+  height: 8px;
+  background: #ff2222;
+  border: 1px solid #ff2222;
+  border-radius: 50%;
+  margin-top: -43px;
+  margin-left: 10px;
+}
+>>>>>>> drew-oct-2
 
 .chapters {
   color: #3f4149;
@@ -2128,6 +2140,46 @@ input[type='radio'] {
     }
   }
 }
+<<<<<<< HEAD
+=======
+.tooltip {
+  position: absolute;
+  background-color: #333;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  z-index: 1000; /* Ensure it's above other elements */
+  pointer-events: none; /* Make sure it doesn't interfere with other click events */
+}
+
+/* Basic styling */
+.radio-container {
+  display: flex;
+  flex-direction: column;
+}
+.radio-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.radio-input {
+  margin-right: 10px;
+}
+.radio-label.editing {
+  border: 1px solid #8e509c;
+  border-radius: 4px;
+  padding: 2px;
+  min-width: 120px;
+  &:focus {
+    border: 1px solid #e6e6e6;
+  }
+}
+.radioBlock {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+>>>>>>> drew-oct-2
 
 
 .center{

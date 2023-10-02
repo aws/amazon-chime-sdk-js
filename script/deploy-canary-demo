@@ -89,7 +89,7 @@ ChimeProd)
     echo "Deploying to prod stage for canary that talks to prod Chime client for meetings and prod Chime client for media pipelines"
 
     # Uses Chime Client
-    npm run deploy -- -b chime-sdk-demo-prod-canary$canarySuffix -o chime-sdk-demo-prod-canary$canarySuffix -s chime-sdk-demo-prod-canary$canarySuffix -u false -t -l --use-chime-sdk-media-pipelines false -p chime.amazonaws.com
+    npm run deploy -- -b chime-sdk-demo-prod-canary$canarySuffix -o chime-sdk-demo-prod-canary$canarySuffix -s chime-sdk-demo-prod-canary$canarySuffix -i eu-south-1 -u false -t -l --use-chime-sdk-media-pipelines false -p chime.amazonaws.com
     npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-prod-canary$canarySuffix -a meetingReadinessChecker -u false -t -l
     ;;
 

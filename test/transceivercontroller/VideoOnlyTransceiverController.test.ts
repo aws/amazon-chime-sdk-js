@@ -3,7 +3,8 @@
 
 import * as chai from 'chai';
 
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
+import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -18,13 +19,14 @@ describe('VideoOnlyTransceiverController', () => {
   const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
   let tc: TransceiverController;
   let domMockBuilder: DOMMockBuilder;
-  let browser: BrowserBehavior;
+  const context: AudioVideoControllerState = new AudioVideoControllerState();
 
   beforeEach(() => {
     domMockBehavior.browserName = 'firefox';
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
-    browser = new DefaultBrowserBehavior();
-    tc = new VideoOnlyTransceiverController(logger, browser);
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
+    tc = new VideoOnlyTransceiverController(logger, context.browserBehavior, context);
   });
 
   afterEach(() => {
@@ -58,7 +60,7 @@ describe('VideoOnlyTransceiverController', () => {
     });
 
     it('can only set up video transceiver idempotently', () => {
-      tc = new VideoOnlyTransceiverController(logger, browser);
+      tc = new VideoOnlyTransceiverController(logger, context.browserBehavior, context);
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
       tc.setupLocalTransceivers();

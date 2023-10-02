@@ -7142,8 +7142,19 @@ $root.SdkMetric = (function() {
             case 87:
             case 88:
             case 89:
+            case 90:
+            case 91:
+            case 92:
+            case 93:
+            case 94:
+            case 95:
             case 96:
             case 97:
+            case 98:
+            case 99:
+            case 100:
+            case 101:
+            case 102:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -7393,6 +7404,26 @@ $root.SdkMetric = (function() {
         case 89:
             message.type = 89;
             break;
+        case "VIDEO_FREEZE_DURATION":
+        case 91:
+            message.type = 91;
+            break;
+        case "VIDEO_PAUSE_COUNT":
+        case 92:
+            message.type = 92;
+            break;
+        case "VIDEO_PAUSE_DURATION":
+        case 93:
+            message.type = 93;
+            break;
+        case "VIDEO_QUALITY_REASON":
+        case 94:
+            message.type = 94;
+            break;
+        case "VIDEO_PROCESSING_TIME":
+        case 95:
+            message.type = 95;
+            break;
         case "RTC_SPK_AUDIO_LEVEL":
         case 96:
             message.type = 96;
@@ -7400,6 +7431,41 @@ $root.SdkMetric = (function() {
         case "RTC_MIC_AUDIO_LEVEL":
         case 97:
             message.type = 97;
+        case "RTC_SPK_TOTAL_LOST":
+        case 98:
+            message.type = 98;
+            break;
+        case "RTC_SPK_TOTAL_EXPECTED":
+        case 99:
+            message.type = 99;
+            break;
+        case "RTC_SPK_TOTAL_RECOVERED_RED":
+        case 100:
+            message.type = 100;
+            break;
+        case "RTC_SPK_TOTAL_RECOVERED_FEC":
+        case 101:
+            message.type = 101;
+            break;
+        case "RTC_SPK_TOTAL_LOST":
+        case 98:
+            message.type = 98;
+            break;
+        case "RTC_SPK_TOTAL_EXPECTED":
+        case 99:
+            message.type = 99;
+            break;
+        case "RTC_SPK_TOTAL_RECOVERED_RED":
+        case 100:
+            message.type = 100;
+            break;
+        case "RTC_SPK_TOTAL_RECOVERED_FEC":
+        case 101:
+            message.type = 101;
+            break;
+        case "VIDEO_QUALITY_LIMITATION_DURATION_CPU":
+        case 102:
+            message.type = 102;
             break;
         }
         if (object.value != null)
@@ -7503,8 +7569,19 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DECODE_WIDTH=87 VIDEO_DECODE_WIDTH value
      * @property {number} VIDEO_ENCODER_IS_HARDWARE=88 VIDEO_ENCODER_IS_HARDWARE value
      * @property {number} VIDEO_DECODER_IS_HARDWARE=89 VIDEO_DECODER_IS_HARDWARE value
+     * @property {number} VIDEO_FREEZE_COUNT=90 VIDEO_FREEZE_COUNT value
+     * @property {number} VIDEO_FREEZE_DURATION=91 VIDEO_FREEZE_DURATION value
+     * @property {number} VIDEO_PAUSE_COUNT=92 VIDEO_PAUSE_COUNT value
+     * @property {number} VIDEO_PAUSE_DURATION=93 VIDEO_PAUSE_DURATION value
+     * @property {number} VIDEO_QUALITY_REASON=94 VIDEO_QUALITY_REASON value
+     * @property {number} VIDEO_PROCESSING_TIME=95 VIDEO_PROCESSING_TIME value
      * @property {number} RTC_SPK_AUDIO_LEVEL=96 RTC_SPK_AUDIO_LEVEL value
      * @property {number} RTC_MIC_AUDIO_LEVEL=97 RTC_MIC_AUDIO_LEVEL value
+     * @property {number} RTC_SPK_TOTAL_LOST=98 RTC_SPK_TOTAL_LOST value
+     * @property {number} RTC_SPK_TOTAL_EXPECTED=99 RTC_SPK_TOTAL_EXPECTED value
+     * @property {number} RTC_SPK_TOTAL_RECOVERED_RED=100 RTC_SPK_TOTAL_RECOVERED_RED value
+     * @property {number} RTC_SPK_TOTAL_RECOVERED_FEC=101 RTC_SPK_TOTAL_RECOVERED_FEC value
+     * @property {number} VIDEO_QUALITY_LIMITATION_DURATION_CPU=102 VIDEO_QUALITY_LIMITATION_DURATION_CPU value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -7565,8 +7642,19 @@ $root.SdkMetric = (function() {
         values[valuesById[87] = "VIDEO_DECODE_WIDTH"] = 87;
         values[valuesById[88] = "VIDEO_ENCODER_IS_HARDWARE"] = 88;
         values[valuesById[89] = "VIDEO_DECODER_IS_HARDWARE"] = 89;
+        values[valuesById[90] = "VIDEO_FREEZE_COUNT"] = 90;
+        values[valuesById[91] = "VIDEO_FREEZE_DURATION"] = 91;
+        values[valuesById[92] = "VIDEO_PAUSE_COUNT"] = 92;
+        values[valuesById[93] = "VIDEO_PAUSE_DURATION"] = 93;
+        values[valuesById[94] = "VIDEO_QUALITY_REASON"] = 94;
+        values[valuesById[95] = "VIDEO_PROCESSING_TIME"] = 95;
         values[valuesById[96] = "RTC_SPK_AUDIO_LEVEL"] = 96;
         values[valuesById[97] = "RTC_MIC_AUDIO_LEVEL"] = 97;
+        values[valuesById[98] = "RTC_SPK_TOTAL_LOST"] = 98;
+        values[valuesById[99] = "RTC_SPK_TOTAL_EXPECTED"] = 99;
+        values[valuesById[100] = "RTC_SPK_TOTAL_RECOVERED_RED"] = 100;
+        values[valuesById[101] = "RTC_SPK_TOTAL_RECOVERED_FEC"] = 101;
+        values[valuesById[102] = "VIDEO_QUALITY_LIMITATION_DURATION_CPU"] = 102;
         return values;
     })();
 

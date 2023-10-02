@@ -18,7 +18,11 @@ export default class AttachMediaInputTask extends BaseTask {
   async run(): Promise<void> {
     const transceiverController = this.context.transceiverController;
     transceiverController.setPeer(this.context.peer);
-    transceiverController.setupLocalTransceivers();
+    try {
+      transceiverController.setupLocalTransceivers();
+    } catch (error) {
+      throw error;
+    }
 
     const audioInput = this.context.activeAudioInput;
 
@@ -30,6 +34,8 @@ export default class AttachMediaInputTask extends BaseTask {
       await transceiverController.setAudioInput(null);
       this.context.logger.info('no audio track');
     }
+
+    this.setAudioCodecPreferences();
 
     const videoInput = this.context.activeVideoInput;
     if (videoInput) {
@@ -56,5 +62,42 @@ export default class AttachMediaInputTask extends BaseTask {
       this.context.videoStreamIndex,
       this.context.videosToReceive
     );
+  }
+
+  private setAudioCodecPreferences(): void {
+    const supportsSetCodecPreferences =
+      window.RTCRtpTransceiver && 'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
+    const enableAudioRedundancy = this.context.audioProfile.hasRedundancyEnabled();
+    /* istanbul ignore if */
+    if (!supportsSetCodecPreferences) {
+      this.context.logger.warn(`Setting codec preferences not supported`);
+      return;
+    }
+    const audioTransceiver = this.context.transceiverController.localAudioTransceiver();
+    const { codecs } = RTCRtpSender.getCapabilities('audio');
+    this.context.logger.debug(`Available audio codecs ${JSON.stringify(codecs, null, 4)}`);
+    const redCodecIndex = codecs.findIndex(c => c.mimeType === 'audio/red');
+    /* istanbul ignore if */
+    if (!audioTransceiver) {
+      this.context.logger.error(`audio transceiver is null`);
+      return;
+    }
+    if (redCodecIndex >= 0) {
+      const redCodec = codecs[redCodecIndex];
+      codecs.splice(redCodecIndex, 1);
+      if (enableAudioRedundancy) {
+        // Add to the beginning of the codec list to
+        // signify that this is the preferred codec.
+        // Media backend enables RED only if the preference
+        // for RED is highest.
+        codecs.unshift(redCodec);
+        this.context.logger.info('audio/red set as preferred codec');
+      } else {
+        this.context.logger.info('audio/red removed from preferred codec');
+      }
+      audioTransceiver.setCodecPreferences(codecs);
+      return;
+    }
+    this.context.logger.info('audio/red codec not supported');
   }
 }

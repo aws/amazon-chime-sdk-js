@@ -3,9 +3,9 @@
 
 import * as chai from 'chai';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -22,16 +22,20 @@ describe('CreateSDPTask', () => {
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
-  let browser: BrowserBehavior;
   let task: Task;
 
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
-    browser = new DefaultBrowserBehavior();
     context = new AudioVideoControllerState();
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     context.audioVideoController = new NoOpAudioVideoController();
-    context.transceiverController = new DefaultTransceiverController(context.logger, browser);
+    context.transceiverController = new DefaultTransceiverController(
+      context.logger,
+      context.browserBehavior,
+      context
+    );
     context.videoTileController = context.audioVideoController.videoTileController;
     context.logger = context.audioVideoController.logger;
     context.videosToReceive = new DefaultVideoStreamIdSet();

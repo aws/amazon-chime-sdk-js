@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import Logger from '../logger/Logger';
 import SimulcastTransceiverController from './SimulcastTransceiverController';
@@ -9,8 +10,12 @@ export default class SimulcastContentShareTransceiverController extends Simulcas
   static readonly NAME_ARR_ASCENDING = ['low', 'hi'];
   static readonly BITRATE_ARR_ASCENDING = [300, 1200];
 
-  constructor(logger: Logger, browserBehavior: BrowserBehavior) {
-    super(logger, browserBehavior);
+  constructor(
+    logger: Logger,
+    browserBehavior: BrowserBehavior,
+    meetingSessionContext?: AudioVideoControllerState
+  ) {
+    super(logger, browserBehavior, meetingSessionContext);
     let scale = 2;
     this.videoQualityControlParameterMap = new Map<string, RTCRtpEncodingParameters>();
     for (let i = 0; i < SimulcastContentShareTransceiverController.NAME_ARR_ASCENDING.length; i++) {

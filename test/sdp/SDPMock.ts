@@ -5000,4 +5000,94 @@ a=ssrc:138036787 cname:87eXz3QiQBBvJFID\r
 a=ssrc:138036787 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r
 a=ssrc-group:FID 138036786 138036787\r
 `;
+
+  static readonly LOCAL_OFFER_WITH_AUDIO_RED: string = `v=0\r
+o=mozilla-chrome 9163902593268737648 2 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+a=group:BUNDLE 0 1\r
+a=extmap-allow-mixed\r
+a=msid-semantic: WMS cd932a75-0354-4253-ad7d-e36f2414733d\r
+m=audio 53948 UDP/TLS/RTP/SAVPF 63 111 103 104 9 0 8 106 105 13 18 110 112 113 126\r
+c=IN IP4 10.2.26.104\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=candidate:1715190694 1 udp 41885951 10.2.26.104 53948 typ relay raddr 0.0.0.0 rport 0 generation 0 network-id 1 network-cost 10\r
+a=ice-ufrag:Eb5p\r
+a=ice-pwd:EKti2/uvy5Svg/jnL2IuHoKL\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 11:55:66:F1:92:6A:75:3E:8A:37:DE:DF:44:8D:EF:0F:E0:EB:E1:22:39:DD:67:18:C9:80:99:F3:D4:BB:4A:D2\r
+a=setup:actpass\r
+a=mid:0\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r
+a=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\r
+a=sendrecv\r
+a=msid:cd932a75-0354-4253-ad7d-e36f2414733d 8d0e41a3-f4d5-488d-8296-5960bd1d70a0\r
+a=rtcp-mux\r
+a=rtpmap:63 red/48000/2\r
+a=fmtp:63 111/111\r
+a=rtpmap:111 opus/48000/2\r
+a=rtcp-fb:111 transport-cc\r
+a=fmtp:111 minptime=10;useinbandfec=1\r
+a=rtpmap:103 ISAC/16000\r
+a=rtpmap:104 ISAC/32000\r
+a=rtpmap:9 G722/8000\r
+a=rtpmap:0 PCMU/8000\r
+a=rtpmap:8 PCMA/8000\r
+a=rtpmap:106 CN/32000\r
+a=rtpmap:105 CN/16000\r
+a=rtpmap:13 CN/8000\r
+a=rtpmap:18 G729B/8000\r
+a=rtpmap:110 telephone-event/48000\r
+a=rtpmap:112 telephone-event/32000\r
+a=rtpmap:113 telephone-event/16000\r
+a=rtpmap:126 telephone-event/8000\r
+a=ssrc:4012659083 cname:ZP28PpLAHaoSlS7P\r
+a=ssrc:4012659083 msid:cd932a75-0354-4253-ad7d-e36f2414733d 8d0e41a3-f4d5-488d-8296-5960bd1d70a0\r
+`;
+
+  static readonly LOCAL_OFFER_WITH_AUDIO_RED_BUT_MISSING_RED_AND_OPUS_RTPMAP_ATTRIBUTES: string = `v=0\r
+o=mozilla-chrome 9163902593268737648 2 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+a=group:BUNDLE 0 1\r
+a=extmap-allow-mixed\r
+a=msid-semantic: WMS cd932a75-0354-4253-ad7d-e36f2414733d\r
+m=audio 53948 UDP/TLS/RTP/SAVPF 63 111 103 104 9 0 8 106 105 13 18 110 112 113 126\r
+c=IN IP4 10.2.26.104\r
+a=rtcp:9 IN IP4 0.0.0.0\r
+a=candidate:1715190694 1 udp 41885951 10.2.26.104 53948 typ relay raddr 0.0.0.0 rport 0 generation 0 network-id 1 network-cost 10\r
+a=ice-ufrag:Eb5p\r
+a=ice-pwd:EKti2/uvy5Svg/jnL2IuHoKL\r
+a=ice-options:trickle\r
+a=fingerprint:sha-256 11:55:66:F1:92:6A:75:3E:8A:37:DE:DF:44:8D:EF:0F:E0:EB:E1:22:39:DD:67:18:C9:80:99:F3:D4:BB:4A:D2\r
+a=setup:actpass\r
+a=mid:0\r
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r
+a=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r
+a=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r
+a=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\r
+a=sendrecv\r
+a=msid:cd932a75-0354-4253-ad7d-e36f2414733d 8d0e41a3-f4d5-488d-8296-5960bd1d70a0\r
+a=rtcp-mux\r
+a=fmtp:63 111/111\r
+a=rtcp-fb:111 transport-cc\r
+a=fmtp:111 minptime=10;useinbandfec=1\r
+a=rtpmap:103 ISAC/16000\r
+a=rtpmap:104 ISAC/32000\r
+a=rtpmap:9 G722/8000\r
+a=rtpmap:0 PCMU/8000\r
+a=rtpmap:8 PCMA/8000\r
+a=rtpmap:106 CN/32000\r
+a=rtpmap:105 CN/16000\r
+a=rtpmap:13 CN/8000\r
+a=rtpmap:18 G729B/8000\r
+a=rtpmap:110 telephone-event/48000\r
+a=rtpmap:112 telephone-event/32000\r
+a=rtpmap:113 telephone-event/16000\r
+a=rtpmap:126 telephone-event/8000\r
+a=ssrc:4012659083 cname:ZP28PpLAHaoSlS7P\r
+a=ssrc:4012659083 msid:cd932a75-0354-4253-ad7d-e36f2414733d 8d0e41a3-f4d5-488d-8296-5960bd1d70a0\r
+`;
 }
