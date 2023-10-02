@@ -42,19 +42,6 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 // csp['script-src'] += host;
 
 const csp = {
-<<<<<<< HEAD
-  'connect-src': "'self' data: https://*.chime.aws wss://*.chime.aws https://*.                                                                              amazonaws.com",
-
-  // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+.
-  // Strictly speaking, this should be enough, but the worker cannot compile We                                                                              bAssembly unless
-  // 'unsafe-eval' is also present.
-  'script-src': "'self' 'unsafe-eval' blob: 'wasm-eval' 'wasm-unsafe-eval'",
-
-  // Script hashes/nonces are not emitted for script-src-elem, so just add unsa                                                                              fe-inline.
-  'script-src-elem': "'self' 'unsafe-inline' blob:",
-  'worker-src': "'self' blob:",
-  'child-src': "'self' blob:",
-=======
   'default-src': "'self' * data: blob:;",
   'script-src': "'self' * 'unsafe-inline' 'unsafe-eval' data: blob:;",
   'style-src': "'self' * 'unsafe-inline' data: blob:;",
@@ -66,17 +53,11 @@ const csp = {
   'frame-src': "'self' * blob:;",
   'worker-src': "'self' blob:;",
   'child-src': "'self' blob:;"
->>>>>>> drew-oct-2
 };
 
 
-<<<<<<< HEAD
-// 2. Access to googleapis for the Segmentation filter
-csp['connect-src'] += ' https://storage.googleapis.com';
-=======
 // // 2. Access to googleapis for the Segmentation filter
 // csp['connect-src'] += ' https://storage.googleapis.com';
->>>>>>> drew-oct-2
 
 // // 3. Access to jsdelivr for TensorFlow for background blur.
 // csp['script-src'] += ' https://cdn.jsdelivr.net';
@@ -116,39 +97,6 @@ csp['connect-src'] += ' https://storage.googleapis.com';
 // // 5. Access to event ingestion gamma endpoint for testing and canaries.
 // csp['connect-src'] += ' https://*.ingest.gchime.aws ';
 
-<<<<<<< HEAD
-// DREW ADDING LOCALHOST
-csp['connect-src'] += " https://aptiversity.com:5555";
-csp['connect-src'] += " https://aptiversity.com";
-csp['connect-src'] += " https://www.aptiversity.com";
-csp['connect-src'] += " https://aptiversity.com:*";
-csp['connect-src'] += " https://172.31.84.112:5555";
-csp['connect-src'] += " https://10.0.0.94:5555";
-csp['connect-src'] += " http://127.0.0.1:8081/";
-csp['connect-src'] += " http://127.0.0.1:8081";
-csp['connect-src'] += " http://127.0.0.1:8081*";
-csp['connect-src'] += " http://127.0.0.1:8080";
-csp['connect-src'] += " http://127.0.0.1:8081*";
-csp['connect-src'] += " https://10.0.0.94";
-csp['connect-src'] += " https://10.0.0.94:5555";
-csp['connect-src'] += " https://www.ec2-34-235-178-135.compute-1.amazonaws.com:                                                                              5555";
-csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:*";
-csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com";
-csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:5555                                                                              ";
-csp['connect-src'] += " https://larq.ai:5555";
-csp['connect-src'] += " https://larq.com:*";
-csp['connect-src'] += " https://larq.ai";
-csp['connect-src'] += " https://larq.ai:*";
-csp['connect-src'] += " https://larq.ai:8081";
-csp['connect-src'] += " https://larq.ai:8080";
-
-
-// 4. Add 'unsafe-eval' because TensorFlow needs it.
-if (!csp['script-src'].includes("'unsafe-eval'")) {
-  csp['script-src'] += " 'unsafe-eval'";
-}
-=======
->>>>>>> drew-oct-2
 
 
 module.exports = env => {
