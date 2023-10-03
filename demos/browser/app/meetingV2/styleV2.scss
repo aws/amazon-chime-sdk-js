@@ -2181,10 +2181,11 @@ input[type='radio'] {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 29vw;
+  max-width: 600px;
   background: white;
   border-radius: 10px;
-  padding:30px
+  padding:30px;
+  margin-top:5%
 }
 
 .center h1{
@@ -2345,7 +2346,7 @@ input[type="Submit"]:hover{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  height:80%;
+  height:100%;
   max-width: 600px;
   margin-top:5%;
   /* add shadow to the login box */

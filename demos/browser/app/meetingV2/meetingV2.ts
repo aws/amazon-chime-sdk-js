@@ -724,7 +724,7 @@ export class DemoMeetingApp
           {
             label: 'Options',
             type: 'dropdown',
-            options: ['Option 1', 'Option 2', 'Option 3'],
+            options: ['Multiple Choice'],
           },
         ],
       };
@@ -757,7 +757,7 @@ export class DemoMeetingApp
       buttonQuizBot[i].addEventListener('click', _e => {
 
 
-        const radioOptions = ['Option 1', 'Option 2', 'Option 3'];
+        const radioOptions = ['Multiple Choice'];
 
         // Function to create radio buttons
 
@@ -771,7 +771,7 @@ export class DemoMeetingApp
           radioBlock.classList.add('radioBlock');
 
           input.type = 'radio';
-          input.name = 'radioOption';
+          input.name = 'radioOption'; 
           input.value = option; // Set the initial value to the option text
 
           label.className = 'radio-label';
@@ -858,6 +858,45 @@ export class DemoMeetingApp
         x.style.display = 'none';
       }
     });
+    // make a rule for #register that when clicked will hide #login-container and show #register-container:
+    const registerButton = document.getElementById('register') as HTMLButtonElement;
+    registerButton.addEventListener('click', _e => {
+      var x = document.getElementById('login-container');
+      var y = document.getElementById('register-container');
+      if (x.style.display === 'none') {
+        x.style.display = 'block';
+        y.style.display = 'none';
+      } else {
+        x.style.display = 'none';
+        y.style.display = 'block';
+      }
+    });
+    // make a rule for #login that when clicked will hide #register-container and show #login-container:
+    const loginButton = document.getElementById('login') as HTMLButtonElement;
+    loginButton.addEventListener('click', _e => {
+      var x = document.getElementById('register-container');
+      var y = document.getElementById('login-container');
+      if (x.style.display === 'none') {
+        x.style.display = 'block';
+        y.style.display = 'none';
+      } else {
+        x.style.display = 'none';
+        y.style.display = 'block';
+      }
+    });
+    // make the body background #1e1e1e when the #login container or #register container is displayed, else make it #fff:
+    const body = document.getElementById('body');
+    const loginContainer = document.getElementById('login-container');
+    const registerContainer = document.getElementById('register-container');
+    if (loginContainer.style.display === 'block' || registerContainer.style.display === 'block') {
+      body.style.background = '#1e1e1e';
+    }
+    else {
+      body.style.background = '#fff';
+    }
+
+
+
     const startingQuizButton = document.getElementById('starting-quiz') as HTMLButtonElement;
     startingQuizButton.addEventListener('click', _e => {
       var roster_tile_container = document.getElementById('roster-tile-container');
@@ -892,6 +931,18 @@ export class DemoMeetingApp
     submitQuizBot.addEventListener(
       'click',
       async (): Promise<void> => {
+
+        var create_quiz = document.getElementById('create-quiz');
+        var generating_quiz = document.getElementById('generating-quiz');
+
+        if (generating_quiz.style.display === 'none') {
+          create_quiz.style.display = 'none';
+          generating_quiz.style.display = 'block';
+        } else {
+          create_quiz.style.display = 'none';
+        }
+
+
         console.log('submit quiz');
 
         // // DREW ADDED CODES
@@ -1025,15 +1076,6 @@ export class DemoMeetingApp
 
         // DREW CODE END
 
-        var create_quiz = document.getElementById('create-quiz');
-        var generating_quiz = document.getElementById('generating-quiz');
-
-        if (generating_quiz.style.display === 'none') {
-          create_quiz.style.display = 'none';
-          generating_quiz.style.display = 'block';
-        } else {
-          create_quiz.style.display = 'none';
-        }
       }
     );
     const deleteQuizBot = document.getElementById('delete-quiz') as HTMLButtonElement;
@@ -4948,8 +4990,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Sample JSON structure for events
   const events: { [key: string]: string } = {
-    '2023-09-26': 'Sample Event 1',
-    '2023-09-27': 'Sample Event 2',
+    '2023-10-03': 'Teachserv Meeting',
+    '2023-10-06': 'Meeting with Ryan',
+    '2023-10-15': 'Meeting with Ryan',
+    '2023-10-26': 'Meeting with Ryan',
+    '2023-10-27': 'Meetings with team leads',
     // Add more events as needed
   };
 
