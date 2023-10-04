@@ -109,8 +109,8 @@ module.exports = env => {
       devMiddleware: {
         index: `${app}.html`
       },
-  allowedHosts: ['larq.ai'],
-  public: 'larq.ai',
+  allowedHosts: ['app.larq.ai'],
+  public: 'app.larq.ai',
   headers: {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",

@@ -2110,22 +2110,22 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       AsyncScheduler.nextTick(() => {
         // const textArea = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
 
-        const formData = {
-          title: 'Sample Quiz',
-          fields: [
-            {
-              label: 'Question 1',
-              type: 'textarea',
-            },
-            {
-              label: 'Options',
-              type: 'dropdown',
-              options: ['Option 1', 'Option 2', 'Option 3'],
-            },
-          ],
-          host : this.meetingSession.configuration.credentials.attendeeId
-        };
-        const formDataString = JSON.stringify(formData);
+        // const formData = {
+        //   title: 'Sample Quiz',
+        //   fields: [
+        //     {
+        //       label: 'Question 1',
+        //       type: 'textarea',
+        //     },
+        //     {
+        //       label: 'Options',
+        //       type: 'dropdown',
+        //       options: ['Option 1', 'Option 2', 'Option 3'],
+        //     },
+        //   ],
+        //   host : this.meetingSession.configuration.credentials.attendeeId
+        // };
+        const formDataString = JSON.stringify(quizJson);
 
         const textToSend = formDataString;
         // if (!textToSend) {
