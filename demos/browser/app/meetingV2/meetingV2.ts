@@ -342,7 +342,7 @@ export class DemoMeetingApp
     'button-camera': 'off',
     'button-speaker': 'on',
     'button-content-share': 'off',
-    'button-live-transcription': 'off',
+    'button-live-transcription': 'on',
     'button-video-stats': 'off',
     'button-promote-to-primary': 'off',
     'button-video-filter': 'off',
@@ -2944,19 +2944,30 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       // const parsedMessage = JSON.parse(dataMessage.text());
 
       // Check if the message has an action to display a form
-      if (parsedMessage.action === 'displayForm') {
-        displayFormPopup(parsedMessage.formData);
-        return; // Exit early after displaying the form
-      }
+      // if parsedMessage.action === 'displayForm'  and dataMessage.senderAttendeeId !== this.meetingSession.configuration.credentials.attendeeId
+      // if (parsedMessage.action === 'displayForm' && !isSelf) {
+      // // if (parsedMessage.action === 'displayForm') {
+      //   // show the #challenge-modal:
+
+      //   // displayFormPopup(parsedMessage.formData);
+
+      //   return; // Exit early after displaying the form
+      // }
       // END DREW ADD
 
       // DREW ADD
 
       // console.log("*************************message:", dataMessage);
       // console.log("*************************message.TYPE:", dataMessage.topic);
-      if (dataMessage.topic === 'displayForm') {
+      if (dataMessage.topic === 'displayForm' && !isSelf) {
         console.log('*************************RUNNNING DISPLAYFORM:');
         console.log('Received message:', dataMessage.text());
+    
+        let myModalEl = document.getElementById('challenge-modal');
+        if (myModalEl) {
+            let myModal = new Modal(myModalEl);
+            myModal.show();
+        }
         // const messageContent = new TextDecoder().decode(dataMessage.data);
         // const parsedMessage = JSON.parse(messageContent);
         // const receivedData = JSON.parse(dataMessage.text());
