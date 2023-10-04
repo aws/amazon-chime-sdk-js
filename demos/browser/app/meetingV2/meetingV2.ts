@@ -700,6 +700,8 @@ export class DemoMeetingApp
       }
     });
 
+
+
     // SEND QUIZBOT FORM TO USERS DREW SEND
 
     const buttonPublishQuiz = document.getElementById('publish-quiz-button') as HTMLButtonElement;
@@ -752,149 +754,168 @@ export class DemoMeetingApp
     // make a function displayForm():
     // Sample data for radio buttons
 
+
+    // FAULTY CODE
     const buttonQuizBot = document.getElementsByClassName('cancel-button');
-    for (var i = 0; i < buttonQuizBot.length; i++) {
-      buttonQuizBot[i].addEventListener('click', _e => {
+for (let i = 0; i < buttonQuizBot.length; i++) {
+  buttonQuizBot[i].addEventListener('click', _e => {
+    const radioOptions = ['Multiple Choice', 'Other'];
+    const container = document.getElementById('radio-container');
 
+    if (container) {
+      radioOptions.forEach((option, index) => {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        const radioBlock = document.createElement('div');
+        radioBlock.classList.add('radioBlock');
 
-        const radioOptions = ['Multiple Choice'];
+        input.type = 'radio';
+        input.name = 'radioOption';
+        input.value = option;
 
-        // Function to create radio buttons
+        label.className = 'radio-label';
+        radioBlock.appendChild(input);
+        label.appendChild(document.createTextNode(option));
 
-        const container = document.getElementById('radio-container');
-        // const radioBlock = document.getElementById('radio-block');
+        label.addEventListener('dblclick', () => {
+          label.contentEditable = 'true';
+          label.classList.add('editing');
+          const originalText = label.textContent;
 
-        radioOptions.forEach((option, index) => {
-          const label = document.createElement('label');
-          const input = document.createElement('input');
-          const radioBlock = document.createElement('div');
-          radioBlock.classList.add('radioBlock');
+          label.addEventListener('blur', () => {
+            const newText = label.textContent?.trim() || '';
+            label.contentEditable = 'false';
+            label.classList.remove('editing');
 
-          input.type = 'radio';
-          input.name = 'radioOption'; 
-          input.value = option; // Set the initial value to the option text
+            if (newText !== originalText) {
+              input.value = newText;
+            }
 
-          label.className = 'radio-label';
-          radioBlock.appendChild(input);
-
-          label.appendChild(document.createTextNode(option));
-
-          // Double-click handler to make label editable
-          label.addEventListener('dblclick', () => {
-            label.contentEditable = 'true';
-            label.classList.add('editing');
-
-            // Save the original label text
-            const originalText = label.textContent;
-
-            // On blur, save the edited label text and exit editing mode
-            label.addEventListener('blur', () => {
-              const newText = label.textContent;
-
-              // Remove leading/trailing spaces
-
-              label.contentEditable = 'false';
-
-              label.classList.remove('editing');
-
-              // Update the radio option value if the label text changed
-              if (newText !== originalText) {
-                input.value = newText;
-              }
-
-              // If the label text is empty, reset it to the original option text
-              if (newText === '') {
-                label.textContent = option;
-              }
-            });
+            if (newText === '') {
+              label.textContent = option;
+            }
           });
-          radioBlock.appendChild(label);
-          container.appendChild(radioBlock);
         });
-        console.log('button-quizbot');
-        console.log(this.primaryExternalMeetingId);
-        let quiz_question = document.getElementById('quiz_question');
-        let quiz_in_progress = document.getElementById('quiz_in_progress');
-        var create_quiz = document.getElementById('create-quiz');
-        var x = document.getElementById('myDIV');
-        var transcript_container = document.getElementById('tile-transcript-container');
 
-        if (x.style.display === 'none') {
-          x.style.display = 'block';
-          transcript_container.style.width = '100%';
-        } else {
-          create_quiz.style.display = 'block';
-          x.style.display = 'none';
-          quiz_question.style.display = 'none';
-          quiz_in_progress.style.display = 'none';
-          transcript_container.style.width = '100%';
-        }
+        radioBlock.appendChild(label);
+        container.appendChild(radioBlock);
       });
     }
 
-    const buttonChat = document.getElementById('button-chat') as HTMLButtonElement;
-    buttonChat.addEventListener('click', _e => {
-      console.log('button-chat');
+    console.log('button-quizbot');
+    const quiz_question = document.getElementById('quiz_question');
+    const quiz_in_progress = document.getElementById('quiz_in_progress');
+    const create_quiz = document.getElementById('create-quiz');
+    const x = document.getElementById('myDIV');
+    const transcript_container = document.getElementById('tile-transcript-container');
 
-      // var x = document.getElementById('messages');
-      var x = document.getElementById('roster-message-container');
-      if (x.style.display === 'none' || x.classList.contains('d-none')) {
-        // add d-hidden to hide the roster
-        x.classList.remove('d-none');
-        x.classList.add('d-flex');
-        x.style.display = 'block';
-      } else {
-        x.classList.add('d-none');
-        x.classList.remove('d-flex');
+    if (x && x.style.display === 'none') {
+      x.style.display = 'block';
+      if (transcript_container) {
+        transcript_container.style.width = '100%';
+      }
+    } else {
+      if (create_quiz) {
+        create_quiz.style.display = 'block';
+      }
+      if (x) {
         x.style.display = 'none';
       }
-    });
-    const toggleMenuButton = document.getElementById('toggle-menu') as HTMLButtonElement;
-    toggleMenuButton.addEventListener('click', _e => {
-      var x = document.getElementById('toggle-icons');
-      if (x.style.display === 'none') {
-        x.style.display = 'inline-flex';
-      } else {
-        x.style.display = 'none';
+      if (quiz_question) {
+        quiz_question.style.display = 'none';
       }
-    });
-    // make a rule for #register that when clicked will hide #login-container and show #register-container:
-    const registerButton = document.getElementById('register') as HTMLButtonElement;
-    registerButton.addEventListener('click', _e => {
-      var x = document.getElementById('login-container');
-      var y = document.getElementById('register-container');
-      if (x.style.display === 'none') {
-        x.style.display = 'block';
-        y.style.display = 'none';
-      } else {
-        x.style.display = 'none';
-        y.style.display = 'block';
+      if (quiz_in_progress) {
+        quiz_in_progress.style.display = 'none';
       }
-    });
-    // make a rule for #login that when clicked will hide #register-container and show #login-container:
-    const loginButton = document.getElementById('login') as HTMLButtonElement;
-    loginButton.addEventListener('click', _e => {
-      var x = document.getElementById('register-container');
-      var y = document.getElementById('login-container');
-      if (x.style.display === 'none') {
-        x.style.display = 'block';
-        y.style.display = 'none';
-      } else {
-        x.style.display = 'none';
-        y.style.display = 'block';
+      if (transcript_container) {
+        transcript_container.style.width = '100%';
       }
-    });
-    // make the body background #1e1e1e when the #login container or #register container is displayed, else make it #fff:
-    const body = document.getElementById('body');
-    const loginContainer = document.getElementById('login-container');
-    const registerContainer = document.getElementById('register-container');
-    if (loginContainer.style.display === 'block' || registerContainer.style.display === 'block') {
-      body.style.background = '#1e1e1e';
     }
-    else {
-      body.style.background = '#fff';
-    }
+  });
+}
 
+const buttonChat = document.getElementById('button-chat') as HTMLButtonElement | null;
+buttonChat?.addEventListener('click', _e => {
+  const x = document.getElementById('roster-message-container');
+  if (x && (x.style.display === 'none' || x.classList.contains('d-none'))) {
+    x.classList.remove('d-none');
+    x.classList.add('d-flex');
+    x.style.display = 'block';
+  } else {
+    x?.classList.add('d-none');
+    x?.classList.remove('d-flex');
+    if (x) {
+      x.style.display = 'none';
+    }
+  }
+});
+
+const toggleMenuButton = document.getElementById('toggle-menu') as HTMLButtonElement | null;
+toggleMenuButton?.addEventListener('click', _e => {
+  const x = document.getElementById('toggle-icons');
+  if (x && x.style.display === 'none') {
+    x.style.display = 'inline-flex';
+  } else {
+    if (x) {
+      x.style.display = 'none';
+    }
+  }
+});
+
+const registerButton = document.getElementById('register') as HTMLButtonElement | null;
+registerButton?.addEventListener('click', _e => {
+  const x = document.getElementById('loginForm');
+  const y = document.getElementById('register-container');
+  if (x && x.style.display === 'none') {
+    x.style.display = 'block';
+    if (y) {
+      y.style.display = 'none';
+    }
+  } else {
+    if (x) {
+      x.style.display = 'none';
+    }
+    if (y) {
+      y.style.display = 'block';
+    }
+  }
+});
+
+const loginButton = document.getElementById('login') as HTMLButtonElement | null;
+loginButton?.addEventListener('click', _e => {
+  const x = document.getElementById('register-container');
+  const y = document.getElementById('loginForm');
+  if (x && x.style.display === 'none') {
+    x.style.display = 'block';
+    if (y) {
+      y.style.display = 'none';
+    }
+  } else {
+    if (x) {
+      x.style.display = 'none';
+    }
+    if (y) {
+      y.style.display = 'block';
+    }
+  }
+});
+
+const body = document.getElementById('body');
+const loginContainer = document.getElementById('login-container');
+const registerContainer = document.getElementById('register-container');
+if (loginContainer && loginContainer.style.display === 'block' || registerContainer && registerContainer.style.display === 'block') {
+  if (body) {
+    body.style.background = '#1e1e1e';
+  }
+} else {
+  if (body) {
+    body.style.background = '#fff';
+  }
+}
+
+
+
+    // FAULTY CODE
 
 
     const startingQuizButton = document.getElementById('starting-quiz') as HTMLButtonElement;
@@ -927,6 +948,12 @@ export class DemoMeetingApp
       }
     });
 
+
+    // *****************************
+    // *****************************
+    // *****************************
+    // BEGIN QUIZBOT
+    
     const submitQuizBot = document.getElementById('submit-quiz') as HTMLButtonElement;
     submitQuizBot.addEventListener(
       'click',
@@ -950,7 +977,7 @@ export class DemoMeetingApp
         const transcriptData = {
             "transcript": transcript
         };
-        const url = "https://larq.ai:5555/MakeQuiz";
+        const url = "https://app.larq.ai:5555/MakeQuiz";
         console.log("TRANSCRIPT DATA:",transcriptData);
         const response = await fetch(url, {
             method: 'POST',
@@ -1094,7 +1121,7 @@ export class DemoMeetingApp
     });
 
     
-    // DREW LOGIN
+// DREW LOGIN
 
 // if you have localStorage.getItem('authToken') then hide the login form and show the joining page:
 if (localStorage.getItem('authToken')) {
@@ -1107,7 +1134,6 @@ else {
 }
 
 
-    
 // Assuming you have a type definition for the response data structure. 
 // If not, you can use 'any' or create a more detailed type.
 
@@ -1128,8 +1154,9 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
+  alert(base64Credentials);
 
-  fetch("https://larq.ai:5555/login", {
+  fetch("https://app.larq.ai:5555/login", {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -1172,12 +1199,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const token: string | null = localStorage.getItem('authToken');
   if (token) {
       document.getElementById('login-container')!.style.display = 'none';
-      document.getElementById('register-container')!.style.display = 'none';
       document.getElementById('joining-page')!.style.display = 'block';
 
   } else {
       document.getElementById('login-container')!.style.display = 'block';
-      document.getElementById('register-container')!.style.display = 'block';
       document.getElementById('joining-page')!.style.display = 'none';
   }
 });
@@ -1236,6 +1261,11 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
 });
 
 // END DREW REGISTRATION
+    
+    // END QUIZBOT
+    // *****************************
+    // *****************************
+
 
 
     (document.getElementById('join-muted') as HTMLInputElement).addEventListener('change', e => {

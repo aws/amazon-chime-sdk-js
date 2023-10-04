@@ -2177,10 +2177,9 @@ input[type='radio'] {
 
 
 .center{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  // top: 50%;
+  // transform: translate(-50%, -50%);
   max-width: 600px;
   background: white;
   border-radius: 10px;
@@ -2195,7 +2194,6 @@ input[type='radio'] {
 }
 
 .center form{
-  padding: 0 40px;
   box-sizing: border-box;
 }
 
@@ -2362,3 +2360,6 @@ input[type="Submit"]:hover{
   font-family: 'Cabin Condensed', sans-serif;
 }
 #login-container svg{font-weight:bold;max-width:600px;height:100%;}
+#larqFlow{
+  min-width: 300px;
+}

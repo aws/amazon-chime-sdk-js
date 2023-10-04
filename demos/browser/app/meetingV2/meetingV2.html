@@ -14,9 +14,8 @@
   <!-- Login Page -->
 <div class="login container" id="login-container" style="display:block">
     <div class="center">
-        <h1>Welcome to 
-          
-    <svg viewbox="0 0 100 20">
+        <h1>Welcome to         
+    <svg viewbox="0 0 100 20" id="larqFlow">
       <defs>
         <linearGradient id="gradient">
           <stop color="#000"/>
@@ -38,8 +37,6 @@
       <text text-anchor="middle" x="50" y="15" font-size="17" fill="#7126d9" fill-opacity="0.6">LARQ</text>
 
     </svg>
-
-
         </h1>
         <form id="loginForm">
           <div class="txt_field">
@@ -52,39 +49,16 @@
               <span></span>
               <label>Password</label>
           </div>
-          <div class="pass">Forget Password?</div>
+          <div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div>
           <input name="submit" type="Submit" value="Login">
           <div class="signup_link" id="register">
               Not a Member ? <a href="">Signup</a><br>Or <a href="">Join Meeting As Guest</a>
           </div>
       </form>
-      
-    </div>
-  </div>
-  
-    <!-- Registration Page -->
+
+          <!-- Registration Page -->
 <div class="register container" id="register-container" style="display:none">
-  <div class="center">
-      <h1>Register to <svg viewbox="0 0 100 20">
-        <defs>
-          <linearGradient id="gradient">
-            <stop color="#000"/>
-          </linearGradient>
-          <pattern id="wave" x="0" y="-.2" width="100%" height="100%" patternUnits="userSpaceOnUse">
-            <path id="wavePath" d="M-40 9 Q-30 7 -20 9 T0 9 T20 9 T40 9 T60 9 T80 9 T100 9 T120 9 V20 H-40z" mask="url(#mask)" fill="url(#gradient)"> 
-              <animateTransform
-                  attributeName="transform"
-                  begin="0s"
-                  dur="1.5s"
-                  type="translate"
-                  from="0,0"
-                  to="40,0"
-                  repeatCount="indefinite" />
-            </path>
-          </pattern>
-        </defs>
-        <text text-anchor="middle" x="50" y="15" font-size="17" fill="url(#wave)"  fill-opacity="1">LARQ</text>
-        <text text-anchor="middle" x="50" y="15" font-size="17" fill="#7126d9" fill-opacity="0.6">LARQ</text></svg> </h1>
+    <h2>Register</h2>
       <form id="registerForm">
         <div class="txt_field">
             <input type="text" name="username" required>
@@ -108,17 +82,22 @@
       </div>
       <div class="txt_field">
           <input type="text" name="last_name">
-          <span></span>
+          <span></span> 
           <label>Last Name (Optional)</label>
       </div>
 
         <input name="submit" type="Submit" value="Register">
         <div class="login_link" id="login">
-            Already a Member? <a href="">Login</a>
+            Already a Member? <a href="#">Login</a>
         </div>
     </form>
-  </div>
+
 </div>
+
+      
+    </div>
+</div>
+  
 
   <!-- start of joining page - THIS IS THE SECOND PAGE AFTER LOGIN-->
   <div id="joining-page" class="mainBlock" style="display: none;">
