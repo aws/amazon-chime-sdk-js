@@ -2344,7 +2344,7 @@ input[type="Submit"]:hover{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  height:100%;
+  min-height:60%;
   max-width: 600px;
   margin-top:5%;
   /* add shadow to the login box */

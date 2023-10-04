@@ -52,7 +52,9 @@
           <div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div>
           <input name="submit" type="Submit" value="Login">
           <div class="signup_link" id="register">
-              Not a Member ? <a href="">Signup</a><br>Or <a href="">Join Meeting As Guest</a>
+              Not a Member ? <b>Signup</b><br>Or
+                <input type="checkbox" id="join-view-only" class="form-check-input">
+                <label for="join-view-only" class="form-check-label">Join Meeting As Guest</label>
           </div>
       </form>
 
@@ -640,10 +642,10 @@
               <input type="checkbox" checked id="preconnect" class="form-check-input">
               <label for="preconnect" class="form-check-label">Open signaling connection early</label>
             </div>
-            <div class="form-check" style="text-align: left;">
+            <!-- <div class="form-check" style="text-align: left;">
               <input type="checkbox" id="join-view-only" class="form-check-input">
               <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
-            </div>
+            </div> -->
             <div class="form-check" style="text-align: left;">
               <input type="checkbox" id="pause-last-frame" class="form-check-input">
               <label for="pause-last-frame" class="form-check-label">Keep last video frame when paused</label>

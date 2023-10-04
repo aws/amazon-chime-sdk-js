@@ -729,6 +729,7 @@ export class DemoMeetingApp
             options: ['Multiple Choice'],
           },
         ],
+        host: this.meetingSession.configuration.credentials.attendeeId
       };
       const formDataString = JSON.stringify(formData);
       console.log('formDataString:', formDataString);
@@ -1154,7 +1155,6 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
-  alert(base64Credentials);
 
   fetch("https://app.larq.ai:5555/login", {
       method: 'POST',
@@ -2105,6 +2105,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
 
     // DREW SEND END BEGIN
 
+    // SendFormMessage is for after the form has been initialized and set up, now we're sending the quiz.
     const sendFormMessage = (): void => {
       AsyncScheduler.nextTick(() => {
         // const textArea = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
@@ -2122,6 +2123,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
               options: ['Option 1', 'Option 2', 'Option 3'],
             },
           ],
+          host : this.meetingSession.configuration.credentials.attendeeId
         };
         const formDataString = JSON.stringify(formData);
 
@@ -2942,10 +2944,10 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       // const parsedMessage = JSON.parse(dataMessage.text());
 
       // Check if the message has an action to display a form
-      // if (parsedMessage.action === 'displayForm') {
-      //   displayFormPopup(parsedMessage.formData);
-      //   return; // Exit early after displaying the form
-      // }
+      if (parsedMessage.action === 'displayForm') {
+        displayFormPopup(parsedMessage.formData);
+        return; // Exit early after displaying the form
+      }
       // END DREW ADD
 
       // DREW ADD
@@ -5102,6 +5104,8 @@ function showTooltip(event: MouseEvent, content: string) {
   tooltip.textContent = content;
   tooltip.style.top = `${event.clientY + 10}px`;
   tooltip.style.left = `${event.clientX + 10}px`;
+  tooltip.style.position = 'absolute';
+  tooltip.style.zIndex = '100';
   document.body.appendChild(tooltip);
 
   // Hide tooltip on next click anywhere in the document
