@@ -978,53 +978,53 @@ if (loginContainer && loginContainer.style.display === 'block' || registerContai
         const transcriptData = {
             "transcript": transcript
         };
-        const url = "https://app.larq.ai:5555/MakeQuiz";
+        // const url = "https://app.larq.ai:5555/MakeQuiz";
         console.log("TRANSCRIPT DATA:",transcriptData);
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(transcriptData)
-        });
+        // const response = await fetch(url, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(transcriptData)
+        // });
 
-        const quizJson = await response.json();
+        // const quizJson = await response.json();
 
-        //// BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-        // const quizJson = {
-        //   message: {
-        //     quiz_title: 'History 101',
-        //     questions: [
-        //       {
-        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
-        //         correct_answer: '1215',
-        //         question: 'In which year was the Magna Carta sealed?',
-        //         question_number: 1,
-        //         wrong_answers: ['1200', '1230', '1150'],
-        //       },
-        //       {
-        //         answer_reason:
-        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
-        //         correct_answer: 'Revival of classical learning',
-        //         question: 'What was the primary aim of the Renaissance?',
-        //         question_number: 2,
-        //         wrong_answers: [
-        //           'Promotion of modern art',
-        //           'Start of the industrial revolution',
-        //           'Promotion of religious beliefs',
-        //         ],
-        //       },
-        //       {
-        //         answer_reason:
-        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
-        //         correct_answer: 'Galileo Galilei',
-        //         question: 'Who is known as the father of observational astronomy?',
-        //         question_number: 3,
-        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
-        //       },
-        //     ],
-        //   },
-        // };
+        // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
+        const quizJson = {
+          message: {
+            quiz_title: 'History 101',
+            questions: [
+              {
+                answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+                correct_answer: '1215',
+                question: 'In which year was the Magna Carta sealed?',
+                question_number: 1,
+                wrong_answers: ['1200', '1230', '1150'],
+              },
+              {
+                answer_reason:
+                  'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+                correct_answer: 'Revival of classical learning',
+                question: 'What was the primary aim of the Renaissance?',
+                question_number: 2,
+                wrong_answers: [
+                  'Promotion of modern art',
+                  'Start of the industrial revolution',
+                  'Promotion of religious beliefs',
+                ],
+              },
+              {
+                answer_reason:
+                  'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+                correct_answer: 'Galileo Galilei',
+                question: 'Who is known as the father of observational astronomy?',
+                question_number: 3,
+                wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+              },
+            ],
+          },
+        };
 
         console.log('quizJson:', quizJson);
 
@@ -1172,6 +1172,9 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 }).then((data: ResponseData) => {
   if (data.status === 'success') {
     localStorage.setItem('authToken', data.token!);
+    localStorage.setItem('firstName', data.first_name!);
+    localStorage.setItem('lastName', data.last_name!);
+
     document.getElementById('login-container')!.style.display = 'none';
     document.getElementById('joining-page')!.style.display = 'block';
 
@@ -1190,16 +1193,33 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   }
   })
   .catch(error => {
-    alert('Error occurred: ' + error.message);
+    // show #incorrect-pass element 
+    document.getElementById('incorrect-pass')!.style.display = 'block';
     console.error('Error:', error);
   });
 });
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const token: string | null = localStorage.getItem('authToken');
   if (token) {
       document.getElementById('login-container')!.style.display = 'none';
       document.getElementById('joining-page')!.style.display = 'block';
+      const storedFirstName = localStorage.getItem('firstName');
+      const storedLastName = localStorage.getItem('lastName');
+      if (storedFirstName) {
+          const firstNameElements = document.querySelectorAll('.first_name');
+          firstNameElements.forEach(element => {
+              element.textContent = storedFirstName;
+          });
+      }
+      if (storedLastName) {
+          const lastNameElements = document.querySelectorAll('.last_name');
+          lastNameElements.forEach(element => {
+              element.textContent = storedLastName;
+          });
+      }
 
   } else {
       document.getElementById('login-container')!.style.display = 'block';
@@ -1215,6 +1235,13 @@ function logout(): void {
 // if user clicks .logout button class, call logout function
 document.querySelector('.logout')?.addEventListener('click', logout);
 
+// if #join-view-only is clicked add "viewonly" to authToken, show #main-page and hide #login-container:
+document.querySelector('#join-view-only')?.addEventListener('click', () => {
+  localStorage.setItem('authToken', 'viewonly');
+  this.isViewOnly = true;
+  document.getElementById('login-container')!.style.display = 'none';
+  document.getElementById('joining-page')!.style.display = 'block';
+});
 
 
 // END DREW LOGIN
@@ -2110,22 +2137,22 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       AsyncScheduler.nextTick(() => {
         // const textArea = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
 
-        // const formData = {
-        //   title: 'Sample Quiz',
-        //   fields: [
-        //     {
-        //       label: 'Question 1',
-        //       type: 'textarea',
-        //     },
-        //     {
-        //       label: 'Options',
-        //       type: 'dropdown',
-        //       options: ['Option 1', 'Option 2', 'Option 3'],
-        //     },
-        //   ],
-        //   host : this.meetingSession.configuration.credentials.attendeeId
-        // };
-        const formDataString = JSON.stringify(quizJson);
+        const formData = {
+          title: 'Sample Quiz',
+          fields: [
+            {
+              label: 'Question 1',
+              type: 'textarea',
+            },
+            {
+              label: 'Options',
+              type: 'dropdown',
+              options: ['Option 1', 'Option 2', 'Option 3'],
+            },
+          ],
+          host : this.meetingSession.configuration.credentials.attendeeId
+        };
+        const formDataString = JSON.stringify(formData);
 
         const textToSend = formDataString;
         // if (!textToSend) {

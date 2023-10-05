@@ -114,11 +114,7 @@ module.exports = env => {
   headers: {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-    "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
-    "Cross-Origin-Opener-Policy": "same-origin",
-    "Cross-Origin-Embedder-Policy": "require-corp",
-    "Cross-Origin-Resource-Policy": "cross-origin"
-
+    "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
   },
       onListening: (server) => {
         // Just so that the code in server.js isn't confused about

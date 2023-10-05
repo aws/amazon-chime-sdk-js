@@ -479,6 +479,10 @@ function respond(response, statusCode, contentType, body, skipLogging = false) {
   response.statusCode = statusCode;
   response.setHeader('Content-Type', contentType);
   response.setHeader('Access-Control-Allow-Origin', '*');
+  if (contentType.startsWith('image/') || contentType === 'application/javascript') {
+    response.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+}
+
   // enable shared array buffer for videoFxProcessor
   response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   // enable shared array buffer for videoFxProcessor
