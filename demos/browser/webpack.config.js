@@ -42,15 +42,15 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 // csp['script-src'] += host;
 
 const csp = {
-  'default-src': "'self' * data: blob:;",
-  'script-src': "'self' * 'unsafe-inline' 'unsafe-eval' data: blob:;",
-  'style-src': "'self' * 'unsafe-inline' data: blob:;",
-  'img-src': "'self' * data: blob:;",
-  'connect-src': "'self' * data: blob:;",
-  'font-src': "'self' * data: blob:;",
-  'object-src': "'self' * blob:;",
-  'media-src': "'self' * data: blob:;",
-  'frame-src': "'self' * blob:;",
+  'default-src': "* data: blob:;",
+  'script-src': "* 'unsafe-inline' 'unsafe-eval' data: blob:;",
+  'style-src': "* 'unsafe-inline' data: blob:;",
+  'img-src': "* data: blob:;",
+  'connect-src': "* data: blob:;",
+  'font-src': "* data: blob:;",
+  'object-src': "* blob:;",
+  'media-src': "* data: blob:;",
+  'frame-src': "* blob:;",
   'worker-src': "'self' blob:;",
   'child-src': "'self' blob:;"
 };
@@ -87,6 +87,7 @@ const csp = {
 // csp['connect-src'] += " https://larq.ai:*";
 // csp['connect-src'] += " https://larq.ai:8081";
 // csp['connect-src'] += " https://larq.ai:8080";
+// csp['connect-src'] += "https://storage.googleapis.com/";
 
 
 // // 4. Add 'unsafe-eval' because TensorFlow needs it.
@@ -115,9 +116,9 @@ module.exports = env => {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
     "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
-    "Cross-Origin-Opener-Policy": "same-origin",
-    "Cross-Origin-Embedder-Policy": "require-corp",
-    "Cross-Origin-Resource-Policy": "cross-origin"
+    // "Cross-Origin-Opener-Policy": "same-origin",
+    // "Cross-Origin-Embedder-Policy": "require-corp",
+    // "Cross-Origin-Resource-Policy": "cross-origin"
 
   },
       onListening: (server) => {

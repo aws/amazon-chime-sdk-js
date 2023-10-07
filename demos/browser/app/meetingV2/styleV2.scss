@@ -2363,3 +2363,52 @@ input[type="Submit"]:hover{
 #larqFlow{
   min-width: 300px;
 }
+
+
+// Schedule Meeting
+  #scheduleMeetingModal {
+    display: none;
+    position: fixed; /* this ensures the modal stays in the same position even if you scroll */
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%); /* this centers the modal */
+    z-index: 9999; /* this ensures the modal is on top of other elements */
+    width: 300px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center;
+  }
+
+    #scheduleMeetingModal h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    #scheduleMeetingModal p {
+        margin-top: 20px;
+    }
+
+    #meetingScheduleTime {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    #scheduleMeetingSubmit {
+        background-color: #007BFF;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    #scheduleMeetingSubmit:hover {
+        background-color: #0056b3;
+    }

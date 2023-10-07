@@ -481,12 +481,12 @@ function respond(response, statusCode, contentType, body, skipLogging = false) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   if (contentType.startsWith('image/') || contentType === 'application/javascript') {
     response.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-}
+  }
 
   // enable shared array buffer for videoFxProcessor
-  response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  // response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   // enable shared array buffer for videoFxProcessor
-  response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  // response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
   response.end(body);
   if (contentType === 'application/json' && !skipLogging) {
     log(body);

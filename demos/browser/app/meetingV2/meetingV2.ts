@@ -892,12 +892,16 @@ loginButton?.addEventListener('click', _e => {
       y.style.display = 'none';
     }
   } else {
-    if (x) {
-      x.style.display = 'none';
-    }
-    if (y) {
-      y.style.display = 'block';
-    }
+
+  if (x) {
+    x.style.display = 'none';
+  }
+  if (y) {
+    y.style.display = 'block';
+  }
+  updateBodyBackgroundColor(); // Call this at the end of both event listeners
+    
+
   }
 });
 
@@ -914,6 +918,27 @@ if (loginContainer && loginContainer.style.display === 'block' || registerContai
   }
 }
 
+function updateBodyBackgroundColor() {
+  const loginContainer = document.getElementById('login-container');
+  const registerContainer = document.getElementById('register-container');
+  const body = document.getElementById('body');
+
+  if (
+    (loginContainer && loginContainer.style.display === 'block') || 
+    (registerContainer && registerContainer.style.display === 'block')
+  ) {
+    if (body) {
+      body.style.background = '#1e1e1e';
+    }
+  } else {
+    if (body) {
+      body.style.background = '#fff';
+    }
+  }
+}
+
+// Initial call
+updateBodyBackgroundColor();
 
 
     // FAULTY CODE
@@ -978,53 +1003,56 @@ if (loginContainer && loginContainer.style.display === 'block' || registerContai
         const transcriptData = {
             "transcript": transcript
         };
-        // const url = "https://app.larq.ai:5555/MakeQuiz";
+        const url = "https://app.larq.ai:5555/MakeQuiz";
         console.log("TRANSCRIPT DATA:",transcriptData);
-        // const response = await fetch(url, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(transcriptData)
-        // });
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transcriptData)
+        });
 
-        // const quizJson = await response.json();
+        const quizJson = await response.json();
+        console.log('quizJson:', quizJson);
+        // add quizJson to the local storage
+        localStorage.setItem('quizJson', JSON.stringify(quizJson));
 
         // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-        const quizJson = {
-          message: {
-            quiz_title: 'History 101',
-            questions: [
-              {
-                answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
-                correct_answer: '1215',
-                question: 'In which year was the Magna Carta sealed?',
-                question_number: 1,
-                wrong_answers: ['1200', '1230', '1150'],
-              },
-              {
-                answer_reason:
-                  'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
-                correct_answer: 'Revival of classical learning',
-                question: 'What was the primary aim of the Renaissance?',
-                question_number: 2,
-                wrong_answers: [
-                  'Promotion of modern art',
-                  'Start of the industrial revolution',
-                  'Promotion of religious beliefs',
-                ],
-              },
-              {
-                answer_reason:
-                  'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
-                correct_answer: 'Galileo Galilei',
-                question: 'Who is known as the father of observational astronomy?',
-                question_number: 3,
-                wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
-              },
-            ],
-          },
-        };
+        // const quizJson = {
+        //   message: {
+        //     quiz_title: 'History 101',
+        //     questions: [
+        //       {
+        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+        //         correct_answer: '1215',
+        //         question: 'In which year was the Magna Carta sealed?',
+        //         question_number: 1,
+        //         wrong_answers: ['1200', '1230', '1150'],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+        //         correct_answer: 'Revival of classical learning',
+        //         question: 'What was the primary aim of the Renaissance?',
+        //         question_number: 2,
+        //         wrong_answers: [
+        //           'Promotion of modern art',
+        //           'Start of the industrial revolution',
+        //           'Promotion of religious beliefs',
+        //         ],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+        //         correct_answer: 'Galileo Galilei',
+        //         question: 'Who is known as the father of observational astronomy?',
+        //         question_number: 3,
+        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+        //       },
+        //     ],
+        //   },
+        // };
 
         console.log('quizJson:', quizJson);
 
@@ -1128,6 +1156,12 @@ if (loginContainer && loginContainer.style.display === 'block' || registerContai
 if (localStorage.getItem('authToken')) {
   document.getElementById('login-container')!.style.display = 'none';
   document.getElementById('joining-page')!.style.display = 'block';
+  // Update elements with class name "first_name" to display the first_name returned
+  const firstNameElements = document.querySelectorAll('.first_name');
+  firstNameElements.forEach(element => {
+    element.textContent = localStorage.getItem('firstName');
+  });
+  
 }
 else {
   document.getElementById('login-container')!.style.display = 'block';
@@ -1174,19 +1208,15 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
     localStorage.setItem('authToken', data.token!);
     localStorage.setItem('firstName', data.first_name!);
     localStorage.setItem('lastName', data.last_name!);
-
-    document.getElementById('login-container')!.style.display = 'none';
-    document.getElementById('joining-page')!.style.display = 'block';
+    // reload page
+    location.reload();
+    // document.getElementById('login-container')!.style.display = 'none';
+    // document.getElementById('joining-page')!.style.display = 'block';
 
     // Console log user_id and last_name
     console.log("User ID:", data.user_id);
     console.log("Last Name:", data.last_name);
 
-    // Update elements with class name "first_name" to display the first_name returned
-    const firstNameElements = document.querySelectorAll('.first_name');
-    firstNameElements.forEach(element => {
-      element.textContent = data.first_name!;
-    });
 
   } else {
     alert(data.message);
@@ -1198,6 +1228,53 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
     console.error('Error:', error);
   });
 });
+
+
+{/* if #scheduleMeeting is clicked make modal popup with a date/time scheduler*/}
+document.querySelector('#scheduleMeeting')?.addEventListener('click', () => {
+  document.getElementById('scheduleMeetingModal')!.style.display = 'block';
+});
+
+document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () => {
+  const meetingScheduleTime: string = (<HTMLInputElement>document.getElementById('meetingScheduleTime')).value;
+  const meetingScheduleDate: string = (<HTMLInputElement>document.getElementById('meetingScheduleDate')).value;
+  
+  if (!meetingScheduleTime || !meetingScheduleDate) {
+      alert('Please ensure both date and time are selected.');
+      return;  // exit the function if inputs are missing
+  }
+
+  const meetingScheduleDateTime: string = meetingScheduleDate + " " + meetingScheduleTime;
+  console.log(meetingScheduleDateTime);
+
+  fetch("https://app.larq.ai:5555/scheduleMeeting", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          meetingScheduleDateTime: meetingScheduleDateTime
+      })
+  })
+  .then(response => response.json())
+  .then(data => {
+      if (data.status === 'success') {
+          alert(data.message);
+          document.getElementById('scheduleMeetingModal')!.style.display = 'none';
+      } else {
+          alert(data.message);
+      }
+  })
+  .catch(error => {
+      alert('Error occurred: ' + error.message);
+      console.error('Error:', error);
+  });
+});
+
+
+
+
+
 
 
 
@@ -1240,7 +1317,7 @@ document.querySelector('#join-view-only')?.addEventListener('click', () => {
   localStorage.setItem('authToken', 'viewonly');
   this.isViewOnly = true;
   document.getElementById('login-container')!.style.display = 'none';
-  document.getElementById('joining-page')!.style.display = 'block';
+  document.getElementById('main-page')!.style.display = 'block';
 });
 
 
@@ -1258,7 +1335,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   const firstName: string = targetForm.first_name.value;  // Retrieve first name
   const lastName: string = targetForm.last_name.value;    // Retrieve last name
 
-  fetch("https://larq.ai:5555/register", {
+  fetch("https://app.larq.ai:5555/register", {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
@@ -1275,8 +1352,11 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   .then(data => {
       if (data.status === 'success') {
           alert(data.message);
-          document.getElementById('register-container')!.style.display = 'none';
+          document.getElementById('login-container')!.style.display = 'none';
           document.getElementById('joining-page')!.style.display = 'block';
+          localStorage.setItem('firstName', data.first_name!);
+          localStorage.setItem('lastName', data.last_name!);
+          localStorage.setItem('email', data.email!);      
       } else {
           alert(data.message);
       }
@@ -2137,21 +2217,27 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       AsyncScheduler.nextTick(() => {
         // const textArea = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
 
-        const formData = {
-          title: 'Sample Quiz',
-          fields: [
-            {
-              label: 'Question 1',
-              type: 'textarea',
-            },
-            {
-              label: 'Options',
-              type: 'dropdown',
-              options: ['Option 1', 'Option 2', 'Option 3'],
-            },
-          ],
-          host : this.meetingSession.configuration.credentials.attendeeId
-        };
+        // get quizJson from the local storage
+        const quizJson = localStorage.getItem('quizJson');
+        console.log(quizJson);
+        const formData = JSON.parse(quizJson);
+        console.log(formData);
+
+        // const formData = {
+        //   title: 'Sample Quiz',
+        //   fields: [
+        //     {
+        //       label: 'Question 1',
+        //       type: 'textarea',
+        //     },
+        //     {
+        //       label: 'Options',
+        //       type: 'dropdown',
+        //       options: ['Option 1', 'Option 2', 'Option 3'],
+        //     },
+        //   ],
+        //   host : this.meetingSession.configuration.credentials.attendeeId
+        // };
         const formDataString = JSON.stringify(formData);
 
         const textToSend = formDataString;

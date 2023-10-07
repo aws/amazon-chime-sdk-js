@@ -12,7 +12,7 @@
 <body>
 
   <!-- Login Page -->
-<div class="login container" id="login-container" style="display:block">
+<div class="login container" id="login-container" style="display:none">
     <div class="center">
         <h1>Welcome to         
     <svg viewbox="0 0 100 20" id="larqFlow">
@@ -178,7 +178,7 @@
             <div class="btn-group">
               <div class="profileAvater" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <img
-                  src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" />
+                  src="https://storage.googleapis.com/ringledingle/tests/bird.jpg" />
               </div>
 
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-start" aria-labelledby="dropdownMenuButton">
@@ -187,12 +187,12 @@
                     <div class="d-flex">
                       <div class="profileAvater">
                         <img
-                          src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" />
+                          src="https://storage.googleapis.com/ringledingle/tests/bird.jpg" />
                       </div>
                       <div class="d-flex align-items-center">
                         <div class="ms-2 me-2">
                           <h6><b class="first_name">Rebecca</b><b class="last_name">Smith</b></h6>
-                          <p>rebe**@gmail.com</p>
+                          <p class="email">rebe**@gmail.com</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                           <g clip-path="url(#clip0_281_627)">
@@ -275,7 +275,7 @@
 
             <p>Join Meeting</p>
           </div>
-          <div class="buttonBlock">
+          <div class="buttonBlock" id="scheduleMeeting">
             <svg xmlns="http://www.w3.org/2000/svg" width="61" height="61" viewBox="0 0 61 61" fill="none">
               <path
                 d="M13.8882 50.3105L3.61523 11.9712L41.7334 17.167L41.0145 17.3596C39.6167 17.7341 38.3416 18.247 37.1892 18.8982C36.0368 19.5494 34.9564 20.3098 33.948 21.1792L10.3338 17.8757L12.5811 26.2624L27.9214 26.0044L14.5072 33.451L16.7545 41.8378L28.2172 32.8594C28.1439 33.8635 28.1476 34.8359 28.2284 35.7765C28.3092 36.717 28.4782 37.6674 28.7355 38.6275L28.7676 38.7473L13.8882 50.3105ZM48.7193 46.1141C45.4045 47.0023 42.2655 46.5909 39.3021 44.88C36.3388 43.1691 34.4141 40.6569 33.5279 37.3433C32.6397 34.0286 33.0511 30.8895 34.7619 27.9262C36.4728 24.9629 38.9851 23.0381 42.2986 22.152C45.6134 21.2638 48.7524 21.6751 51.7158 23.386C54.6791 25.0969 56.6038 27.6091 57.49 30.9227C58.3782 34.2375 57.9668 37.3765 56.256 40.3398C54.5451 43.3032 52.0328 45.2279 48.7193 46.1141ZM50.9715 38.7047L52.1994 36.5779L46.5786 33.3328L44.7809 26.6234L42.3847 27.2654L44.4393 34.9333L50.9715 38.7047Z"
@@ -283,6 +283,14 @@
             </svg>
             <p>Schedule</p>
           </div>
+        </div>
+        <div id="scheduleMeetingModal" style="display:none">
+          <!-- make a meeting schedule selector -->
+          <h2>Set up a Scheduled Meeting</h2>
+          <input type="datetime-local" id="meetingScheduleTime" /> 
+          <p>Please select a date and time for your meeting.</p>
+          <!-- submit button -->
+          <button id="scheduleMeetingSubmit">Submit</button>
         </div>
         <h6 class="mt-4 mb-4">Quiz Dashboard</h6>
         <div class="quizBlock">
@@ -403,7 +411,7 @@
           </div>
           <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
             <select id="inputRegion" class="form-select" style="width:100%">
-              <option value="us-east-1" selected>United States (N. Virginia)</option>
+              <option value="us-east-1">United States (N. Virginia)</option>
               <option value="ap-northeast-1">Japan (Tokyo)</option>
               <option value="ap-southeast-1">Singapore</option>
               <option value="af-south-1">South Africa (Cape Town)</option>
@@ -418,7 +426,7 @@
               <option value="eu-west-2">United Kingdom (London)</option>
               <option value="eu-west-3">France (Paris)</option>
               <option value="sa-east-1">Brazil (São Paulo)</option>
-              <option value="us-east-2">United States (Ohio)</option>
+              <option value="us-east-2" selected>United States (Ohio)</option>
               <option value="us-west-1">United States (N. California)</option>
               <option value="us-west-2">United States (Oregon)</option>
               <option value="us-gov-west-1">GovCloud (US-West)</option>
@@ -524,6 +532,7 @@
 
       </div>
     </div>
+    <button onclick="history.back()">Go Back</button>
   </div>
 
 
