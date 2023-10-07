@@ -86,7 +86,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="redundantaudioencoder.html#shouldlogdebug" class="tsd-kind-icon">should<wbr>Log<wbr>Debug</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="redundantaudioencoder.html#shouldlog" class="tsd-kind-icon">should<wbr>Log</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="redundantaudioencoder.html#shouldreportstats" class="tsd-kind-icon">should<wbr>Report<wbr>Stats</a></li>
 							</ul>
 						</section>
@@ -100,9 +100,9 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="redundantaudioencoder.html#setuppassthroughtransform" class="tsd-kind-icon">setup<wbr>Passthrough<wbr>Transform</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="redundantaudioencoder.html#setupreceivertransform" class="tsd-kind-icon">setup<wbr>Receiver<wbr>Transform</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="redundantaudioencoder.html#setupsendertransform" class="tsd-kind-icon">setup<wbr>Sender<wbr>Transform</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="redundantaudioencoder.html#debuglog" class="tsd-kind-icon">debug<wbr>Log</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="redundantaudioencoder.html#getnumredundantencodingsforpacketloss" class="tsd-kind-icon">get<wbr>Num<wbr>Redundant<wbr>Encodings<wbr>For<wbr>Packet<wbr>Loss</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="redundantaudioencoder.html#initializeworker" class="tsd-kind-icon">initialize<wbr>Worker</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="redundantaudioencoder.html#log" class="tsd-kind-icon">log</a></li>
 							</ul>
 						</section>
 					</div>
@@ -131,9 +131,9 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="shouldlogdebug" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> should<wbr>Log<wbr>Debug</h3>
-					<div class="tsd-signature tsd-kind-icon">should<wbr>Log<wbr>Debug<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<a name="shouldlog" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> should<wbr>Log</h3>
+					<div class="tsd-signature tsd-kind-icon">should<wbr>Log<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/redundantaudioencoder/RedundantAudioEncoder.ts#L69">src/redundantaudioencoder/RedundantAudioEncoder.ts:69</a></li>
@@ -247,7 +247,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/redundantaudioencoder/RedundantAudioEncoder.ts#L227">src/redundantaudioencoder/RedundantAudioEncoder.ts:227</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/redundantaudioencoder/RedundantAudioEncoder.ts#L225">src/redundantaudioencoder/RedundantAudioEncoder.ts:225</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -360,34 +360,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="debuglog" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> debug<wbr>Log</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">debug<wbr>Log<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/redundantaudioencoder/RedundantAudioEncoder.ts#L131">src/redundantaudioencoder/RedundantAudioEncoder.ts:131</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Post logs to the main thread</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>msg: <span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="getnumredundantencodingsforpacketloss" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Num<wbr>Redundant<wbr>Encodings<wbr>For<wbr>Packet<wbr>Loss</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -439,6 +411,34 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="log" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> log</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">log<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/redundantaudioencoder/RedundantAudioEncoder.ts#L131">src/redundantaudioencoder/RedundantAudioEncoder.ts:131</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Post logs to the main thread</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>msg: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -460,7 +460,7 @@
 								<a href="redundantaudioencoder.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="redundantaudioencoder.html#shouldlogdebug" class="tsd-kind-icon">should<wbr>Log<wbr>Debug</a>
+								<a href="redundantaudioencoder.html#shouldlog" class="tsd-kind-icon">should<wbr>Log</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
 								<a href="redundantaudioencoder.html#shouldreportstats" class="tsd-kind-icon">should<wbr>Report<wbr>Stats</a>
@@ -487,13 +487,13 @@
 								<a href="redundantaudioencoder.html#setupsendertransform" class="tsd-kind-icon">setup<wbr>Sender<wbr>Transform</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="redundantaudioencoder.html#debuglog" class="tsd-kind-icon">debug<wbr>Log</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="redundantaudioencoder.html#getnumredundantencodingsforpacketloss" class="tsd-kind-icon">get<wbr>Num<wbr>Redundant<wbr>Encodings<wbr>For<wbr>Packet<wbr>Loss</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="redundantaudioencoder.html#initializeworker" class="tsd-kind-icon">initialize<wbr>Worker</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="redundantaudioencoder.html#log" class="tsd-kind-icon">log</a>
 							</li>
 						</ul>
 					</li>

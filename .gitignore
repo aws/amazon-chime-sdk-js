@@ -7,6 +7,7 @@
 .npmrc
 __data*
 build
+config/tsconfig.red.json
 coverage
 demos/browser/logs/
 demos/components/node_modules
