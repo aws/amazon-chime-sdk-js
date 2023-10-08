@@ -1008,7 +1008,7 @@ updateBodyBackgroundColor();
         const transcriptData = {
             "transcript": transcript
         };
-        const url = "https://app.larq.ai:5555/MakeQuiz";
+        const url = "https://app.larq.ai/api/MakeQuiz";
         console.log("TRANSCRIPT DATA:",transcriptData);
         const response = await fetch(url, {
             method: 'POST',
@@ -1350,7 +1350,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   const firstName: string = targetForm.first_name.value;  // Retrieve first name
   const lastName: string = targetForm.last_name.value;    // Retrieve last name
 
-  fetch("https://app.larq.ai:5555/register", {
+  fetch("https://app.larq.ai/api/register", {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
@@ -1372,7 +1372,9 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
           document.getElementById('joining-page')!.style.display = 'block';
           localStorage.setItem('firstName', data.first_name!);
           localStorage.setItem('lastName', data.last_name!);
-          localStorage.setItem('email', data.email!);      
+          localStorage.setItem('email', data.email!);
+          // reload page
+          location.reload(); 
       } else {
           alert(data.message);
       }
