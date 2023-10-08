@@ -49,6 +49,7 @@
               <span></span>
               <label>Password</label>
           </div>
+          <!-- add spinner -->
           <div class="pass" id="incorrect-pass" style="display:none"><label>User or Password is incorrect. Try again.</label></div>
           <div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div>
           <input name="submit" type="Submit" value="Login">
@@ -97,7 +98,10 @@
 
 </div>
 
-      
+                <div class="spinner-border" role="status" id="login-spinner" style="display:none">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+
     </div>
 </div>
   
@@ -411,7 +415,7 @@
           </div>
           <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
             <select id="inputRegion" class="form-select" style="width:100%">
-              <option value="us-east-1">United States (N. Virginia)</option>
+              <option value="us-east-1" selected>United States (N. Virginia)</option>
               <option value="ap-northeast-1">Japan (Tokyo)</option>
               <option value="ap-southeast-1">Singapore</option>
               <option value="af-south-1">South Africa (Cape Town)</option>
@@ -426,7 +430,7 @@
               <option value="eu-west-2">United Kingdom (London)</option>
               <option value="eu-west-3">France (Paris)</option>
               <option value="sa-east-1">Brazil (São Paulo)</option>
-              <option value="us-east-2" selected>United States (Ohio)</option>
+              <option value="us-east-2">United States (Ohio)</option>
               <option value="us-west-1">United States (N. California)</option>
               <option value="us-west-2">United States (Oregon)</option>
               <option value="us-gov-west-1">GovCloud (US-West)</option>
@@ -626,6 +630,10 @@ aria-hidden="true">
               <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
               <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
                 only)</label>
+            </div>
+            <div class="form-check" id="disable-audio-redundancy-checkbox" style="text-align: left; display: block;">
+              <input type="checkbox" id="disable-audio-redundancy" class="form-check-input">
+              <label for="disable-audio-redundancy" class="form-check-label">Disable Audio Redundancy</label>
             </div>
             <div class="form-check" style="text-align: left;">
               <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
@@ -1104,6 +1112,10 @@ aria-hidden="true">
       <div style="display: none" class="d-none" style="position:fixed;right:0;bottom:0;left:0;">
         <div class="row align-items-end">
 
+          <div class="col">
+            <div id="chime-meeting-id" class="text-muted"></div>
+            <div id="desktop-attendee-id" class="text-muted"></div>
+          </div>
           <div class="col">
             <div class="btn-group" role="group" style="width: 100%;">
               <button type="button" id="video-paginate-left" class="btn btn-secondary" style="display: none;">

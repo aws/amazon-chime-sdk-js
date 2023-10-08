@@ -110,8 +110,7 @@ let SHOULD_EARLY_CONNECT = (() => {
 })();
 
 let SHOULD_DIE_ON_FATALS = (() => {
-  const isLocal =
-    document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
+  const isLocal = document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
   const fatalYes = document.location.search.includes('fatal=1');
   const fatalNo = document.location.search.includes('fatal=0');
   return fatalYes || (isLocal && !fatalNo);
@@ -165,7 +164,7 @@ function getVoiceFocusSpec(joinInfo: any): VoiceFocusSpec {
     spec.name = es ? voiceFocusName('ns_es') : voiceFocusName('default');
   }
   return spec;
-}
+};
 
 const MAX_VOICE_FOCUS_COMPLEXITY: VoiceFocusModelComplexity | undefined = undefined;
 
@@ -248,7 +247,7 @@ interface Toggle {
 }
 
 interface TranscriptSegment {
-  contentSpan: HTMLSpanElement;
+  contentSpan: HTMLSpanElement,
   attendee: Attendee;
   startTimeMs: number;
   endTimeMs: number;
@@ -365,7 +364,7 @@ export class DemoMeetingApp
 
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
-  videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig();
+  videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig;
   enablePin = false;
   echoReductionCapability = false;
   usingStereoMusicAudioProfile = false;
@@ -386,6 +385,12 @@ export class DemoMeetingApp
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   lastPacketsSent = 0;
+  lastTotalAudioPacketsExpected = 0;
+  lastTotalAudioPacketsLost = 0;
+  lastTotalAudioPacketsRecoveredRed = 0;
+  lastTotalAudioPacketsRecoveredFec = 0;
+  lastRedRecoveryMetricsReceived = 0;
+
   meetingSessionPOSTLogger: POSTLogger;
   meetingEventPOSTLogger: POSTLogger;
 
@@ -422,7 +427,7 @@ export class DemoMeetingApp
       isEnabled: false,
       backgroundImageURL: null,
       defaultColor: 'black',
-    },
+    }
   };
   videoFxProcessor: VideoFxProcessor | undefined;
   videoFxConfig: VideoFxConfig = this.DEFAULT_VIDEO_FX_CONFIG;
@@ -588,7 +593,7 @@ export class DemoMeetingApp
   async resolveSupportsVideoFX(): Promise<void> {
     const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
     try {
-      this.supportsVideoFx = await VideoFxProcessor.isSupported(logger);
+      this.supportsVideoFx = await VideoFxProcessor.isSupported(logger)
     } catch (e) {
       this.log(`[DEMO] Does not support background blur/background replacement v2: ${e.message}`);
       this.supportsVideoFx = false;
@@ -1182,6 +1187,9 @@ interface ResponseData {
 }
 document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) => {
   event.preventDefault();
+  document.getElementById('incorrect-pass')!.style.display = 'none';
+  const loginSpinner = document.getElementById('login-spinner')!;
+  loginSpinner.style.display = 'block';
 
   const targetForm = <HTMLFormElement>event.target;
   const username: string = targetForm.username.value;
@@ -1190,7 +1198,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
-  fetch("https://app.larq.ai:5555/login", {
+  fetch("https://app.larq.ai/api/login", {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -1208,6 +1216,8 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
     localStorage.setItem('authToken', data.token!);
     localStorage.setItem('firstName', data.first_name!);
     localStorage.setItem('lastName', data.last_name!);
+    // hide #login-spinner
+    document.getElementById('login-spinner')!.style.display = 'none';
     // reload page
     location.reload();
     // document.getElementById('login-container')!.style.display = 'none';
@@ -1221,8 +1231,10 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   } else {
     alert(data.message);
   }
+  loginSpinner.style.display = 'none';
   })
   .catch(error => {
+    loginSpinner.style.display = 'none';
     // show #incorrect-pass element 
     document.getElementById('incorrect-pass')!.style.display = 'block';
     console.error('Error:', error);
@@ -1247,7 +1259,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
   const meetingScheduleDateTime: string = meetingScheduleDate + " " + meetingScheduleTime;
   console.log(meetingScheduleDateTime);
 
-  fetch("https://app.larq.ai:5555/scheduleMeeting", {
+  fetch("https://app.larq.ai/api/scheduleMeeting", {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
@@ -1327,6 +1339,9 @@ document.querySelector('#join-view-only')?.addEventListener('click', () => {
 
 document.querySelector('#registerForm')?.addEventListener('submit', (event: Event) => {
   event.preventDefault();
+  const loginSpinner = document.getElementById('login-spinner')!;
+  loginSpinner.style.display = 'block';
+
 
   const targetForm = <HTMLFormElement>event.target;
   const username: string = targetForm.username.value;
@@ -1351,6 +1366,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   .then(response => response.json())
   .then(data => {
       if (data.status === 'success') {
+        loginSpinner.style.display = 'none';
           alert(data.message);
           document.getElementById('login-container')!.style.display = 'none';
           document.getElementById('joining-page')!.style.display = 'block';
@@ -1362,6 +1378,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       }
   })
   .catch(error => {
+      loginSpinner.style.display = 'none';
       alert('Error occurred: ' + error.message);
       console.error('Error:', error);
   });
@@ -1384,6 +1401,14 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       }
     });
 
+    if (this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
+      // Firefox currently does not support audio redundancy through insertable streams or
+      // script transform so disable the redundancy checkbox
+      (document.getElementById('disable-audio-redundancy') as HTMLInputElement).disabled = true;
+      (document.getElementById('disable-audio-redundancy-checkbox') as HTMLElement).style.display = 'none';
+    }
+
+    
     if (!this.defaultBrowserBehavior.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       document.getElementById('content-simulcast-config').style.display = 'none';
@@ -1433,7 +1458,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
 
     const replicaMeetingInput = document.getElementById('replica-meeting-input');
     replicaMeetingInput.addEventListener('change', async _e => {
-      (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value = '';
+      (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value = "";
     });
 
     document.getElementById('quick-join').addEventListener('click', e => {
@@ -1450,13 +1475,13 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     earlyConnectCheckbox.checked = SHOULD_EARLY_CONNECT;
     earlyConnectCheckbox.onchange = () => {
       SHOULD_EARLY_CONNECT = !!earlyConnectCheckbox.checked;
-    };
+    }
 
     const dieCheckbox = document.getElementById('die') as HTMLInputElement;
     dieCheckbox.checked = SHOULD_DIE_ON_FATALS;
     dieCheckbox.onchange = () => {
       SHOULD_DIE_ON_FATALS = !!dieCheckbox.checked;
-    };
+    }
 
     const speechMonoCheckbox = document.getElementById(
       'fullband-speech-mono-quality'
@@ -1726,7 +1751,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
 
         recorder = new MediaRecorder(mixed, { mimeType: 'video/webm; codecs=vp9' });
         console.info('Setting recorder to', recorder);
-        recorder.ondataavailable = event => {
+        recorder.ondataavailable = (event) => {
           if (event.data.size) {
             chunks.push(event.data);
           }
@@ -1764,7 +1789,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
             await this.openVideoInputFromSelection(camera, false);
             this.audioVideo.startLocalVideoTile();
           } catch (err) {
-            this.toggleButton('button-camera', 'off');
+            this.toggleButton('button-camera', 'off')
             fatal(err);
           }
         } else {
@@ -2315,7 +2340,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
         const pps = (1000 * deltaPackets) / deltaTime;
 
         let overage = 0;
-        if (pps > 52 || pps < 47) {
+        if ((pps > 52) || (pps < 47)) {
           console.error('PPS:', pps, `(${++overage})`);
         } else {
           overage = 0;
@@ -2325,6 +2350,41 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       }
     });
   }
+  logRedRecoveryPercent(clientMetricReport: ClientMetricReport) {
+    const customStatsReports = clientMetricReport.customStatsReports;
+
+    // @ts-ignore
+    customStatsReports.forEach(report => {
+      if (report.type === 'inbound-rtp-red' && report.kind === 'audio') {
+
+        const deltaExpected = report.totalAudioPacketsExpected - this.lastTotalAudioPacketsExpected;
+        const deltaLost = report.totalAudioPacketsLost - this.lastTotalAudioPacketsLost;
+        const deltaRedRecovered = report.totalAudioPacketsRecoveredRed - this.lastTotalAudioPacketsRecoveredRed;
+        const deltaFecRecovered = report.totalAudioPacketsRecoveredFec - this.lastTotalAudioPacketsRecoveredFec;
+        if (this.lastRedRecoveryMetricsReceived === 0) this.lastRedRecoveryMetricsReceived = report.timestamp;
+        const deltaTime = report.timestamp - this.lastRedRecoveryMetricsReceived;
+        this.lastRedRecoveryMetricsReceived = report.timestamp;
+        this.lastTotalAudioPacketsExpected = report.totalAudioPacketsExpected;
+        this.lastTotalAudioPacketsLost = report.totalAudioPacketsLost;
+        this.lastTotalAudioPacketsRecoveredRed = report.totalAudioPacketsRecoveredRed;
+        this.lastTotalAudioPacketsRecoveredFec = report.totalAudioPacketsRecoveredFec;
+
+        let lossPercent = 0;
+        if (deltaExpected > 0) {
+          lossPercent = 100 * (deltaLost / deltaExpected);
+        }
+        let redRecoveryPercent = 0;
+        let fecRecoveryPercent = 0;
+        if (deltaLost > 0) {
+          redRecoveryPercent = 100 * (deltaRedRecovered / deltaLost);
+          fecRecoveryPercent = 100 * (deltaFecRecovered / deltaLost);
+        }
+        console.debug(`[AudioRed] time since last report = ${deltaTime/1000}s, loss % = ${lossPercent}, red recovery % = ${redRecoveryPercent}, fec recovery % = ${fecRecoveryPercent}, total expected = ${report.totalAudioPacketsExpected}, total lost = ${report.totalAudioPacketsLost}, total red recovered  = ${report.totalAudioPacketsRecoveredRed}, total fec recovered = ${report.totalAudioPacketsRecoveredFec}`);
+      }
+    });
+  }
+
+
 
   getSupportedMediaRegions(): string[] {
     const supportedMediaRegions: string[] = [];
@@ -2380,7 +2440,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     }
     await this.audioVideo
       .promoteToPrimaryMeeting(this.primaryMeetingSessionCredentials)
-      .then(status => {
+        .then((status) => {
         const toastContainer = document.getElementById('toast-container');
         const toast = document.createElement('meeting-toast') as MeetingToast;
         toastContainer.appendChild(toast);
@@ -2601,6 +2661,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     this.logAudioStreamPPS(clientMetricReport);
+    this.logRedRecoveryPercent(clientMetricReport);
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
     this.displayEstimatedUplinkBandwidth(metricReport.availableOutgoingBitrate);
@@ -2798,23 +2859,25 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       new DefaultEventController(configuration, this.meetingLogger, this.eventReporter)
     );
 
+    const enableAudioRedundancy = !((document.getElementById('disable-audio-redundancy') as HTMLInputElement).checked);
+    let audioProfile: AudioProfile = new AudioProfile(null, enableAudioRedundancy);
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
-      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
-      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono());
+      audioProfile = AudioProfile.fullbandSpeechMono(enableAudioRedundancy);
       this.log('Using audio profile fullband-speech-mono-quality');
     } else if (
-      (document.getElementById('fullband-music-mono-quality') as HTMLInputElement).checked
+        (document.getElementById('fullband-music-mono-quality') as HTMLInputElement).checked
     ) {
-      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicMono());
-      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
+      audioProfile = AudioProfile.fullbandMusicMono(enableAudioRedundancy);
       this.log('Using audio profile fullband-music-mono-quality');
     } else if (
-      (document.getElementById('fullband-music-stereo-quality') as HTMLInputElement).checked
+        (document.getElementById('fullband-music-stereo-quality') as HTMLInputElement).checked
     ) {
-      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicStereo());
-      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
+      audioProfile = AudioProfile.fullbandMusicStereo(enableAudioRedundancy);
       this.log('Using audio profile fullband-music-stereo-quality');
     }
+    this.log(`Audio Redundancy Enabled = ${audioProfile.hasRedundancyEnabled()}`);
+    this.meetingSession.audioVideo.setAudioProfile(audioProfile);
+    this.meetingSession.audioVideo.setContentAudioProfile(audioProfile);
     this.audioVideo = this.meetingSession.audioVideo;
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
@@ -3421,7 +3484,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     spaceSpan.classList.add('transcript-content');
     spaceSpan.innerText = '\u00a0';
     return spaceSpan;
-  }
+  };
 
   appendNewSpeakerTranscriptDiv = (
     segment: TranscriptSegment,
@@ -3725,7 +3788,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       });
     }
     if (additionalOptions.length) {
-      this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
+      this.createDropdownMenuItem(menu, '──────────', () => { }).classList.add('text-center');
       for (const additionalOption of additionalOptions) {
         this.createDropdownMenuItem(
           menu,
@@ -3738,7 +3801,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       }
     }
     if (additionalToggles?.length) {
-      this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
+      this.createDropdownMenuItem(menu, '──────────', () => { }).classList.add('text-center');
       for (const { name, oncreate, action } of additionalToggles) {
         const id = `toggle-${elementId}-${name.replace(/\s/g, '-')}`;
         const elem = this.createDropdownMenuItem(menu, name, action, id);
@@ -3746,7 +3809,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       }
     }
     if (!menu.firstElementChild) {
-      this.createDropdownMenuItem(menu, 'Device selection unavailable', () => {});
+      this.createDropdownMenuItem(menu, 'Device selection unavailable', () => { });
     }
   }
 
@@ -3801,7 +3864,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     return {
       paths: BACKGROUND_BLUR_PATHS,
       model: BACKGROUND_BLUR_MODEL,
-      ...BACKGROUND_BLUR_ASSET_SPEC,
+      ...BACKGROUND_BLUR_ASSET_SPEC
     };
   }
 
@@ -3871,8 +3934,8 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
 
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
-    let additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Echo'];
-    const additionalStereoTestDevices = ['L-500Hz R-1000Hz', 'Prerecorded Speech (Stereo)'];
+    let additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Prerecorded Speech Loop (Mono)', 'Echo'];
+    const additionalStereoTestDevices = ['L-500Hz R-1000Hz', 'Prerecorded Speech Loop (Stereo)'];
     const additionalToggles = [];
 
     if (!this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
@@ -4261,8 +4324,11 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     if (value === 'Prerecorded Speech') {
       return new AudioBufferMediaStreamProvider('audio_file').getMediaStream();
     }
+    if (value === 'Prerecorded Speech Loop (Mono)') {
+      return new AudioBufferMediaStreamProvider('audio_file', /*shouldLoop*/ true).getMediaStream();
+    }
 
-    if (value === 'Prerecorded Speech (Stereo)') {
+    if (value === 'Prerecorded Speech Loop (Stereo)') {
       return new AudioBufferMediaStreamProvider('stereo_audio_file', true).getMediaStream();
     }
 
@@ -4334,7 +4400,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, config, this.joinInfo);
     }
 
-    return (this.voiceFocusTransformer = await transformer);
+    return this.voiceFocusTransformer = await transformer;
   }
 
   private async createVoiceFocusDevice(inner: Device): Promise<VoiceFocusTransformDevice | Device> {
@@ -4352,7 +4418,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner);
       if (vf) {
         await vf.observeMeetingAudio(this.audioVideo);
-        return (this.voiceFocusDevice = vf);
+        return this.voiceFocusDevice = vf;
       }
     } catch (e) {
       // Fall through.
@@ -4485,17 +4551,18 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
    * @param videoFilter
    */
   private updateFxConfig(videoFilter: string): void {
-    this.videoFxConfig.backgroundBlur.isEnabled =
+    this.videoFxConfig.backgroundBlur.isEnabled = (
       videoFilter === 'Background Blur 2.0 - Low' ||
       videoFilter === 'Background Blur 2.0 - Medium' ||
-      videoFilter === 'Background Blur 2.0 - High';
+      videoFilter === 'Background Blur 2.0 - High'
+    )
 
-    this.videoFxConfig.backgroundReplacement.isEnabled =
+    this.videoFxConfig.backgroundReplacement.isEnabled = (
       videoFilter === 'Background Replacement 2.0 - (Beach)' ||
       videoFilter === 'Background Replacement 2.0 - (Default)' ||
-      videoFilter === 'Background Replacement 2.0 - (Blue)';
-
-    switch (videoFilter) {
+      videoFilter === 'Background Replacement 2.0 - (Blue)'
+    )
+    switch(videoFilter) {
       case 'Background Blur 2.0 - Low':
         this.videoFxConfig.backgroundBlur.strength = 'low';
         break;
@@ -4993,6 +5060,13 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
           this.switchToFlow('flow-failed-meeting');
           return;
         }
+        (document.getElementById(
+          'meeting-id'
+      ) as HTMLSpanElement).innerText = `${this.meeting} (${this.region})`;
+      (document.getElementById(
+          'chime-meeting-id'
+      ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
+
 
         (document.getElementById(
           'mobile-chime-meeting-id'
@@ -5001,6 +5075,9 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
           'mobile-attendee-id'
         ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
 
+        (document.getElementById(
+          'desktop-attendee-id'
+      ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
         (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
         (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
 
