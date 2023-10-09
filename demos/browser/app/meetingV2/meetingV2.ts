@@ -266,6 +266,23 @@ interface TranscriptionStreamParams {
   vocabularyNames?: string;
   vocabularyFilterNames?: string;
 }
+interface QuizQuestion {
+  answer_reason: string;
+  correct_answer: string;
+  question: string;
+  question_number: number;
+  wrong_answers: string[];
+}
+
+interface QuizMessage {
+  quiz_title: string;
+  questions: QuizQuestion[];
+}
+
+interface QuizJSON {
+  message: QuizMessage;
+}
+
 
 export class DemoMeetingApp
   implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver, VideoDownlinkObserver {
@@ -719,33 +736,37 @@ export class DemoMeetingApp
       } else {
         x.style.display = 'none';
       }
-
-      // DREW PUBLISH FORM ADDITIONS **********
+    
+      // Fetch the stored quiz data
+      const storedQuiz: QuizJSON = JSON.parse(localStorage.getItem('quizJson') || '{}');
+      const quizTitle = storedQuiz.message.quiz_title;
+      const questions = storedQuiz.message.questions;
+    
       const formData = {
-        title: 'Sample Quiz',
+        title: quizTitle,
         fields: [
-          {
-            label: 'Question 1',
-            type: 'textarea',
-          },
-          {
-            label: 'Options',
-            type: 'dropdown',
-            options: ['Multiple Choice'],
-          },
+          { label: 'Quiz Title', type: 'text', value: quizTitle }, 
+          ...questions.map((question: QuizQuestion) => {
+            return {
+              label: question.question,
+              type: 'dropdown',
+              options: [question.correct_answer, ...question.wrong_answers],
+            };
+          })
         ],
         host: this.meetingSession.configuration.credentials.attendeeId
       };
+      
       const formDataString = JSON.stringify(formData);
       console.log('formDataString:', formDataString);
-
+    
       // Send the formData as a stringified JSON
       this.audioVideo.realtimeSendDataMessage(
-        'displayForm', // Adjusted the topic to 'displayForm'
+        'displayForm',
         formDataString,
         DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
       );
-
+    
       this.dataMessageHandler(
         new DataMessage(
           Date.now(),
@@ -756,7 +777,7 @@ export class DemoMeetingApp
         )
       );
     });
-
+    
     // make a function displayForm():
     // Sample data for radio buttons
 
@@ -1004,60 +1025,60 @@ updateBodyBackgroundColor();
         console.log('submit quiz');
 
         // // DREW ADDED CODES
-        const transcript = document.getElementById('transcript-container').innerText;
-        const transcriptData = {
-            "transcript": transcript
-        };
-        const url = "https://app.larq.ai/api/MakeQuiz";
-        console.log("TRANSCRIPT DATA:",transcriptData);
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(transcriptData)
-        });
+        // const transcript = document.getElementById('transcript-container').innerText;
+        // const transcriptData = {
+        //     "transcript": transcript
+        // };
+        // const url = "https://app.larq.ai/api/MakeQuiz";
+        // console.log("TRANSCRIPT DATA:",transcriptData);
+        // const response = await fetch(url, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(transcriptData)
+        // });
 
-        const quizJson = await response.json();
+        // const quizJson = await response.json();
+
+        // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
+        const quizJson = {
+          message: {
+            quiz_title: 'History 101',
+            questions: [
+              {
+                answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+                correct_answer: '1215',
+                question: 'In which year was the Magna Carta sealed?',
+                question_number: 1,
+                wrong_answers: ['1200', '1230', '1150'],
+              },
+              {
+                answer_reason:
+                  'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+                correct_answer: 'Revival of classical learning',
+                question: 'What was the primary aim of the Renaissance?',
+                question_number: 2,
+                wrong_answers: [
+                  'Promotion of modern art',
+                  'Start of the industrial revolution',
+                  'Promotion of religious beliefs',
+                ],
+              },
+              {
+                answer_reason:
+                  'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+                correct_answer: 'Galileo Galilei',
+                question: 'Who is known as the father of observational astronomy?',
+                question_number: 3,
+                wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+              },
+            ],
+          },
+        };
         console.log('quizJson:', quizJson);
         // add quizJson to the local storage
         localStorage.setItem('quizJson', JSON.stringify(quizJson));
-
-        // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-        // const quizJson = {
-        //   message: {
-        //     quiz_title: 'History 101',
-        //     questions: [
-        //       {
-        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
-        //         correct_answer: '1215',
-        //         question: 'In which year was the Magna Carta sealed?',
-        //         question_number: 1,
-        //         wrong_answers: ['1200', '1230', '1150'],
-        //       },
-        //       {
-        //         answer_reason:
-        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
-        //         correct_answer: 'Revival of classical learning',
-        //         question: 'What was the primary aim of the Renaissance?',
-        //         question_number: 2,
-        //         wrong_answers: [
-        //           'Promotion of modern art',
-        //           'Start of the industrial revolution',
-        //           'Promotion of religious beliefs',
-        //         ],
-        //       },
-        //       {
-        //         answer_reason:
-        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
-        //         correct_answer: 'Galileo Galilei',
-        //         question: 'Who is known as the father of observational astronomy?',
-        //         question_number: 3,
-        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
-        //       },
-        //     ],
-        //   },
-        // };
 
         console.log('quizJson:', quizJson);
 
@@ -2242,61 +2263,52 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     // SendFormMessage is for after the form has been initialized and set up, now we're sending the quiz.
     const sendFormMessage = (): void => {
       AsyncScheduler.nextTick(() => {
-        // const textArea = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
-
-        // get quizJson from the local storage
-        const quizJson = localStorage.getItem('quizJson');
-        console.log(quizJson);
-        const formData = JSON.parse(quizJson);
-        console.log(formData);
-
-        // const formData = {
-        //   title: 'Sample Quiz',
-        //   fields: [
-        //     {
-        //       label: 'Question 1',
-        //       type: 'textarea',
-        //     },
-        //     {
-        //       label: 'Options',
-        //       type: 'dropdown',
-        //       options: ['Option 1', 'Option 2', 'Option 3'],
-        //     },
-        //   ],
-        //   host : this.meetingSession.configuration.credentials.attendeeId
-        // };
+    
+        // Fetch the stored quiz data
+        const storedQuiz: QuizJSON = JSON.parse(localStorage.getItem('quizJson') || '{}');
+        const quizTitle = storedQuiz.message.quiz_title;
+        const questions = storedQuiz.message.questions;
+    
+        const formData = {
+          title: quizTitle,
+          fields: [
+            { label: 'Quiz Title', type: 'text', value: quizTitle }, 
+            ...questions.map((question: QuizQuestion) => {
+              return {
+                label: question.question,
+                type: 'dropdown',
+                options: [question.correct_answer, ...question.wrong_answers],
+              };
+            })
+          ],
+          host: this.meetingSession.configuration.credentials.attendeeId
+        };
         const formDataString = JSON.stringify(formData);
-
+    
         const textToSend = formDataString;
-        // if (!textToSend) {
-        //   return;
-        // }
-        // textArea.value = '';
         this.audioVideo.realtimeSendDataMessage(
           'displayForm',
           textToSend,
           DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
         );
         // echo the message to the handler
-        this.dataMessageHandler(
-          new DataMessage(
-            Date.now(),
-            'displayForm',
-            new TextEncoder().encode(textToSend),
-            this.meetingSession.configuration.credentials.attendeeId,
-            this.meetingSession.configuration.credentials.externalUserId
-          )
-        );
+        // this.dataMessageHandler(
+        //   new DataMessage(
+        //     Date.now(),
+        //     'displayForm',
+        //     new TextEncoder().encode(textToSend),
+        //     this.meetingSession.configuration.credentials.attendeeId,
+        //     this.meetingSession.configuration.credentials.externalUserId
+        //   )
+        // );
       });
     };
-
-    const textAreaSendFormMessage = document.getElementById(
-      'publish-quiz-button'
-    ) as HTMLTextAreaElement;
+    
+    const textAreaSendFormMessage = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
     textAreaSendFormMessage.addEventListener('click', e => {
       sendFormMessage();
     });
-
+    
     // DREW SEND END
 
     const buttonMeetingEnd = document.getElementById('button-meeting-end');
