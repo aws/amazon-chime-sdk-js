@@ -677,6 +677,20 @@ export class DemoMeetingApp
         joining_page.style.display = 'flex';
       }
     });
+    // do the exact same for new-meeting button
+    const buttonNewMeeting = document.getElementById('new-meeting') as HTMLButtonElement;
+    buttonNewMeeting.addEventListener('click', _e => {
+      var x = document.getElementById('joining-page');
+      var joining_page = document.getElementById('main-page');
+      if (x.style.display === 'none') {
+        x.style.display = 'block';
+      } else {
+        x.style.display = 'none';
+        joining_page.style.display = 'flex';
+      }
+    }
+    );
+
     const buttonJoin = document.getElementById('host-meeting') as HTMLButtonElement;
     buttonJoin.addEventListener('click', _e => {
       var x = document.getElementById('landing-page');
@@ -1312,6 +1326,9 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  this.enableLiveTranscription = false;
+  this.noWordSeparatorForTranscription = false;
+  this.updateLiveTranscriptionDisplayState();
   const token: string | null = localStorage.getItem('authToken');
   if (token) {
       document.getElementById('login-container')!.style.display = 'none';

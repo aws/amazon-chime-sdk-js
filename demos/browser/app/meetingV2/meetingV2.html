@@ -249,7 +249,7 @@
 
 
         </div>
-        <div class="meetingButtonBlock">
+        <div class="meetingButtonBlock" id="new-meeting">
           <div class="buttonBlock" style="background-color: #8e509c">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
               <path d="M24 32H32M32 32H40M32 32V24M32 32V40" stroke="white" stroke-width="4" stroke-linecap="round"
@@ -413,8 +413,8 @@
             <input type="name" id="inputName" class="form-control" placeholder="Your Name" required>
             <label for="inputName" style="text-align: left;">Your Name</label>
           </div>
-          <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
-            <select id="inputRegion" class="form-select" style="width:100%">
+          <div class="form-floating row mt-3" style="display:none" title="Used only for meeting creation. Ignored if meeting already exists">
+            <select id="inputRegion" class="form-select" style="width:100%;">
               <option value="us-east-1" selected>United States (N. Virginia)</option>
               <option value="ap-northeast-1">Japan (Tokyo)</option>
               <option value="ap-southeast-1">Singapore</option>
