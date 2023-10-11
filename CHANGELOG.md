@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Save the redundant audio worker code during build time so that the worker code stays intact and is able to be loaded
 
 ## [3.18.1] - 2023-09-29
 

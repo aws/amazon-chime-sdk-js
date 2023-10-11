@@ -107,11 +107,11 @@ describe('DefaultTransceiverController', () => {
     tc = new DefaultTransceiverController(logger, context.browserBehavior, context);
 
     // Enable logging for the RED worker since the worker code at the URL is not actually executed.
-    if (tc['logger'].getLogLevel() === LogLevel.DEBUG) RedundantAudioEncoder.shouldLogDebug = true;
+    RedundantAudioEncoder.shouldLog = true;
   });
 
   afterEach(() => {
-    RedundantAudioEncoder.shouldLogDebug = false;
+    RedundantAudioEncoder.shouldLog = false;
     delete self.onmessage;
     delete self.postMessage;
     // @ts-ignore
@@ -231,7 +231,7 @@ describe('DefaultTransceiverController', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection({ encodedInsertableStreams: true });
       tc.setPeer(peer);
 
-      const logSpy = sinon.spy(tc['logger'], 'debug');
+      const logSpy = sinon.spy(tc['logger'], 'info');
       tc.setupLocalTransceivers();
       expect(logSpy.calledWith('[AudioRed] Setting up sender RED transform')).to.be.true;
       // The `rtctransform` event is defined since `RTCRtpScriptTransform` is supported.
@@ -259,7 +259,7 @@ describe('DefaultTransceiverController', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection({ encodedInsertableStreams: true });
       tc.setPeer(peer);
 
-      const logSpy = sinon.spy(tc['logger'], 'debug');
+      const logSpy = sinon.spy(tc['logger'], 'info');
       tc.setupLocalTransceivers();
       expect(logSpy.calledWith('[AudioRed] Setting up sender RED transform')).to.be.true;
       // The `rtctransform` event is not defined since `RTCRtpScriptTransform` is not supported.
@@ -300,7 +300,7 @@ describe('DefaultTransceiverController', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
 
-      const logSpy = sinon.spy(tc['logger'], 'debug');
+      const logSpy = sinon.spy(tc['logger'], 'info');
       expect(() => {
         tc.setupLocalTransceivers();
       }).to.throw(
@@ -323,24 +323,6 @@ describe('DefaultTransceiverController', () => {
       RTCRtpReceiver.prototype.createEncodedStreams = receiverCreateEncodedStreams;
       // @ts-ignore
       RTCRtpSender.prototype.createEncodedStreams = senderCreateEncodedStreams;
-    });
-
-    it('can set up the RED worker without debug logging', () => {
-      const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
-
-      // Disable RED worker debug logging.
-      tc['logger'] = new NoOpLogger(LogLevel.INFO);
-      RedundantAudioEncoder.shouldLogDebug = false;
-
-      const logSpy = sinon.spy(tc['logger'], 'debug');
-      tc.setupLocalTransceivers();
-      expect(logSpy.calledWith('[AudioRed] Setting up sender RED transform')).to.be.false;
-      // The `rtctransform` event is defined since `RTCRtpScriptTransform` is supported.
-      // @ts-ignore
-      expect(self.onrtctransform).to.not.be.undefined;
-
-      logSpy.restore();
     });
   });
 
@@ -1146,7 +1128,7 @@ describe('DefaultTransceiverController', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
 
-      const logSpy = sinon.spy(tc['logger'], 'debug');
+      const logSpy = sinon.spy(tc['logger'], 'info');
       tc.setupLocalTransceivers();
       tc.setAudioPayloadTypes(
         new Map([
@@ -1163,7 +1145,7 @@ describe('DefaultTransceiverController', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
 
-      const logSpy = sinon.spy(tc['logger'], 'debug');
+      const logSpy = sinon.spy(tc['logger'], 'info');
       tc.setAudioPayloadTypes(
         new Map([
           ['red', 63],
