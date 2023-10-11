@@ -123,7 +123,7 @@
               </div>
             </div>
           </div>
-          <div class="leftDetailsBlock">
+          <div class="leftDetailsBlock" id="upcomingClasses">
             <p>Upcoming Classes</p>
             <div class="listingBlock mt-3">
               <div class="d-flex justify-content-between align-items-center meeting-calendar-item">
@@ -239,13 +239,13 @@
                   </div>
                 </li>
                 <li class="d-flex mt-3">
-                  <a class="dropdown-item">Automated Summary</a>
+                  <a class="dropdown-item">Automated Summaries</a>
                 </li>
                 <li class="d-flex">
-                  <a class="dropdown-item">Save transcript</a>
+                  <a class="dropdown-item">Saved transcripts</a>
                 </li>
                 <li class="d-flex">
-                  <a class="dropdown-item">Download location</a>
+                  <a class="dropdown-item">User Profile</a>
                 </li>
 
                 <li class="d-flex logout">
@@ -375,12 +375,13 @@
     
 
           </div>
-        </div class="quizBlock dashboard_stats">
+        <div class="quizBlock dashboard_stats">
+          <div class="d-flex justify-content-between"></div>
           <!-- no dashboard stats yet -->
           <h4>Looks like you have no quizzes yet.</h4>
-          <p>Click the button below to create a new quiz.</p>
-          <a href="https://larq.ai/"><button id="createQuiz">Create a New Quiz on Larq</button></a>
-        <div>
+          <p>Join a meeting to create a new quiz, or:</p>
+          <a href="https://larq.ai/"><div class="buttonBlock"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="vuesax/linear/video"><g id="video"><path id="Vector" d="M33.413 54.4533H16.5597C8.13301 54.4533 5.33301 48.8533 5.33301 43.2266V20.7733C5.33301 12.3466 8.13301 9.54663 16.5597 9.54663H33.413C41.8397 9.54663 44.6397 12.3466 44.6397 20.7733V43.2266C44.6397 51.6533 41.813 54.4533 33.413 54.4533Z" stroke="#8E509C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path><path id="Vector_2" d="M52.053 45.6L44.6396 40.4V23.5733L52.053 18.3733C55.6797 15.84 58.6663 17.3867 58.6663 21.84V42.16C58.6663 46.6133 55.6797 48.16 52.053 45.6Z" stroke="#8E509C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path><path id="Vector_3" d="M30.667 29.3334C32.8761 29.3334 34.667 27.5425 34.667 25.3334C34.667 23.1242 32.8761 21.3334 30.667 21.3334C28.4579 21.3334 26.667 23.1242 26.667 25.3334C26.667 27.5425 28.4579 29.3334 30.667 29.3334Z" stroke="#8E509C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></g></g></svg><p>Create Quiz on Larq</p></div></a>
+        </div>
         </div>
         <div class="quizBlock mt-4">
           <h1 class="heading" style="text-decoration: underline">
@@ -1326,23 +1327,23 @@ aria-hidden="true">
                 <div class="quiz-heading">Create an Automated Quiz</div>
                 <div class="questions-num">
                   <h2 class="quiz-title">Number of questions</h2>
-                  <div class="d-flex" style="gap: 20px;">
-                    <div class="numbers-block">
+                  <div class="d-flex" id="numberofQuestions" style="gap: 20px;">
+                    <div class="numbers-block" value="1">
                       1
                     </div>
-                    <div class="numbers-block">
+                    <div class="numbers-block" value="2">
                       2
                     </div>
-                    <div class="numbers-block">
+                    <div class="numbers-block" value="3">
                       3
                     </div>
-                    <div class="numbers-block">
+                    <div class="numbers-block" value="4">
                       4
                     </div>
-                    <div class="numbers-block">
+                    <div class="numbers-block" value="5">
                       5
                     </div>
-                    <div class="numbers-block pe-2 ps-2">
+                    <div class="numbers-block pe-2 ps-2" value="Any">
                       Custom
                     </div>
                   </div>
@@ -1350,11 +1351,8 @@ aria-hidden="true">
                 <div class="questions-block">
                   <div class="quiz-title">Type of Quiz</div>
                   <div class="radio-container" id="radio-container">
-                   
-
-                    <!-- Radio buttons will be generated here -->
-                  </div>
-
+                    <div class="radioBlock"><input type="radio" name="radioOption" value="Multiple Choice"><label class="radio-label" contenteditable="false">Multiple Choice</label></div><div class="radioBlock"><input type="radio" name="radioOption" value="Other"><label class="radio-label">Other</label></div>
+                    </div>
                   <!-- <div class="radioButton col-md-12 col-lg-12 col-12 mb-3">
 
                     <div class="form-check form-check-inline radioBox">
@@ -2119,128 +2117,6 @@ aria-hidden="true">
     </div>
   </div>
 
-
-  <div class="landing-page" id="landing-page" style="display: none;">
-    <div class="headerBlock">
-      <div class="logo">
-        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="55" viewBox="0 0 200 55" fill="none">
-          <path
-            d="M37.8378 54.3601C35.4855 53.8262 33.4001 53.284 31.5816 52.7335C29.7631 52.1996 28.028 51.5907 26.3764 50.9067C24.7414 50.2226 22.9813 49.4052 21.0961 48.4542H19.9199C17.0504 48.4542 14.3977 47.9704 11.962 47.0027C9.54288 46.0184 7.43243 44.6504 5.63063 42.8986C3.84551 41.1469 2.46079 39.0865 1.47648 36.7175C0.492159 34.3484 0 31.7625 0 28.9597C0 26.1569 0.492159 23.571 1.47648 21.2019C2.46079 18.8329 3.84551 16.7725 5.63063 15.0208C7.43243 13.2523 9.54288 11.8843 11.962 10.9167C14.3977 9.93234 17.0587 9.44019 19.9449 9.44019C22.8145 9.44019 25.4588 9.93234 27.8779 10.9167C30.297 11.8843 32.3907 13.2523 34.1592 15.0208C35.9443 16.7725 37.329 18.8329 38.3133 21.2019C39.2976 23.571 39.7898 26.1569 39.7898 28.9597C39.7898 31.3621 39.4144 33.6227 38.6637 35.7415C37.9296 37.8436 36.8869 39.7372 35.5355 41.4222C34.1842 43.0905 32.5742 44.4836 30.7057 45.6013C31.7067 45.7849 32.691 45.9517 33.6587 46.1018C34.643 46.2353 35.6523 46.3438 36.6867 46.4272C37.7211 46.5106 38.8222 46.5773 39.99 46.6274L37.8378 54.3601ZM19.9199 39.8456C21.3046 39.8456 22.5893 39.5703 23.7738 39.0198C24.9583 38.4692 25.9843 37.7018 26.8519 36.7175C27.7361 35.7165 28.4201 34.557 28.9039 33.239C29.4044 31.921 29.6547 30.4946 29.6547 28.9597C29.6547 27.4248 29.4044 25.9984 28.9039 24.6804C28.4201 23.3624 27.7361 22.2113 26.8519 21.227C25.9843 20.226 24.9583 19.4502 23.7738 18.8996C22.5893 18.3491 21.3046 18.0738 19.9199 18.0738C18.5352 18.0738 17.2422 18.3491 16.041 18.8996C14.8565 19.4502 13.8222 20.226 12.9379 21.227C12.0537 22.2113 11.3614 23.3624 10.8609 24.6804C10.377 25.9984 10.1351 27.4248 10.1351 28.9597C10.1351 30.4946 10.377 31.921 10.8609 33.239C11.3614 34.557 12.0537 35.7165 12.9379 36.7175C13.8222 37.7018 14.8565 38.4692 16.041 39.0198C17.2422 39.5703 18.5352 39.8456 19.9199 39.8456Z"
-            fill="#353535" />
-          <path
-            d="M69.4945 47.7285H62.1872L61.8869 43.7495C61.0193 45.2176 59.8682 46.3354 58.4334 47.1028C56.9987 47.8536 55.322 48.229 53.4034 48.229C50.3003 48.229 47.8729 47.2613 46.1211 45.3261C44.3694 43.3908 43.4935 40.7131 43.4935 37.293V22.7034H52.7277V34.7655C52.7277 36.4338 53.0447 37.7185 53.6787 38.6194C54.3293 39.5203 55.2469 39.9707 56.4314 39.9707C57.6493 39.9707 58.5919 39.5203 59.2593 38.6194C59.9266 37.7018 60.2603 36.4172 60.2603 34.7655V22.7034H69.4945V47.7285Z"
-            fill="#353535" />
-          <path
-            d="M113.764 47.7285H87.5375V43.224L98.023 30.9617H88.1632V22.7034H112.713V26.4572L101.602 39.4702H113.764V47.7285Z"
-            fill="#353535" />
-          <path
-            d="M163.463 48.229C160.827 48.229 158.475 47.6701 156.406 46.5523C154.354 45.4178 152.736 43.8746 151.552 41.9227C150.384 39.954 149.8 37.7185 149.8 35.216C149.8 32.7135 150.384 30.4862 151.552 28.5343C152.736 26.5656 154.354 25.0224 156.406 23.9046C158.475 22.7702 160.827 22.2029 163.463 22.2029C166.083 22.2029 168.41 22.7702 170.445 23.9046C172.497 25.0224 174.107 26.5656 175.275 28.5343C176.443 30.4862 177.027 32.7135 177.027 35.216C177.027 37.7185 176.443 39.954 175.275 41.9227C174.107 43.8746 172.497 45.4178 170.445 46.5523C168.41 47.6701 166.083 48.229 163.463 48.229ZM163.413 39.9707C164.214 39.9707 164.923 39.7705 165.541 39.3701C166.174 38.953 166.667 38.3858 167.017 37.6684C167.384 36.9343 167.568 36.1002 167.568 35.1659C167.568 34.265 167.384 33.4642 167.017 32.7635C166.667 32.0461 166.174 31.4872 165.541 31.0868C164.923 30.6697 164.214 30.4612 163.413 30.4612C162.613 30.4612 161.895 30.6697 161.261 31.0868C160.644 31.4872 160.152 32.0461 159.785 32.7635C159.434 33.4642 159.259 34.265 159.259 35.1659C159.259 36.1002 159.434 36.9343 159.785 37.6684C160.152 38.3858 160.644 38.953 161.261 39.3701C161.895 39.7705 162.613 39.9707 163.413 39.9707Z"
-            fill="#353535" />
-          <path
-            d="M200 47.0278C197.898 47.8286 195.871 48.229 193.919 48.229C191.8 48.229 189.932 47.7869 188.313 46.9026C186.695 46.0184 185.427 44.7922 184.51 43.224C183.609 41.639 183.158 39.8122 183.158 37.7435V30.9367H178.779V22.7034H183.659V16.4472H192.392V22.7034H198.974V30.9367H192.392V36.0668C192.392 37.3514 192.751 38.3274 193.468 38.9947C194.186 39.6454 195.028 39.9707 195.996 39.9707C196.98 39.9707 197.931 39.6537 198.849 39.0198L200 47.0278Z"
-            fill="#353535" />
-          <path d="M83.516 47.8138L74.2832 47.6526L74.7871 18.7812L84.0199 18.9424L83.516 47.8138Z" fill="#353535" />
-          <path
-            d="M83.9363 23.7742L74.7035 23.613L74.786 18.8882C74.7952 18.3575 75.233 17.9348 75.7637 17.944L83.0746 18.0716C83.6053 18.0809 84.0281 18.5186 84.0188 19.0493L83.9363 23.7742Z"
-            fill="#C9C9C9" />
-          <path d="M83.5155 47.8138L74.2827 47.6527L74.334 44.7146L83.5668 44.8758L83.5155 47.8138Z" fill="#353535" />
-          <path
-            d="M116.54 46.5355L123.717 9.396L137.855 12.1279C142.13 12.954 145.264 14.4585 147.256 16.6414C149.249 18.8243 149.939 21.5004 149.326 24.6696C148.985 26.4358 148.284 27.9356 147.224 29.1691C146.167 30.386 144.887 31.2516 143.383 31.7659C145.269 32.8152 146.622 34.1896 147.441 35.8889C148.26 37.5881 148.46 39.519 148.042 41.6813C147.628 43.8271 146.747 45.5919 145.401 46.9756C144.058 48.3427 142.345 49.2787 140.261 49.7836C138.181 50.2719 135.836 50.2641 133.228 49.7602L116.54 46.5355ZM130.688 26.7632L134.291 26.9783C135.695 27.2494 136.83 27.1777 137.698 26.7632C138.585 26.3354 139.131 25.5933 139.335 24.5369C139.523 23.563 139.284 22.7205 138.616 22.0094C137.949 21.2982 136.922 20.8087 135.535 20.5408L130.688 19.7085L130.688 26.7632ZM127.996 39.888L132.329 40.7253C133.451 40.9422 134.432 41.0034 135.272 40.9089C136.116 40.7979 136.79 40.5429 137.295 40.144C137.804 39.7285 138.125 39.1742 138.259 38.4809C138.393 37.7876 138.323 37.1748 138.049 36.6424C137.778 36.0936 137.31 35.635 136.645 35.2668C136 34.8852 135.174 34.5972 134.167 34.4026L130.688 33.4652L127.996 39.888Z"
-            fill="#8E509C" />
-          <path
-            d="M78.147 5.61441L74.7622 5.03656C74.4881 4.99002 74.2062 5.0285 73.9546 5.14683C73.703 5.26516 73.4935 5.45767 73.3545 5.69849C73.2155 5.93931 73.1535 6.21692 73.1768 6.49401C73.2001 6.7711 73.3077 7.0344 73.4851 7.24854L75.6779 9.89092L75.0999 13.2759C75.054 13.5498 75.0929 13.8312 75.2114 14.0825C75.3299 14.3337 75.5223 14.5427 75.7628 14.6816C76.0033 14.8204 76.2806 14.8825 76.5574 14.8595C76.8342 14.8365 77.0973 14.7295 77.3117 14.5529L79.9541 12.3598L83.3378 12.937C83.6121 12.9843 83.8944 12.9463 84.1464 12.8281C84.3985 12.7099 84.6083 12.5173 84.7475 12.2762C84.8867 12.0351 84.9486 11.7571 84.9249 11.4798C84.9012 11.2024 84.793 10.939 84.6149 10.725L82.4231 8.08325L83.0012 4.6983C83.0485 4.42395 83.0105 4.14171 82.8924 3.88963C82.7742 3.63756 82.5816 3.42778 82.3405 3.2886C82.0995 3.14941 81.8215 3.08751 81.5441 3.11124C81.2668 3.13497 81.0033 3.24319 80.7894 3.42131L78.147 5.61441Z"
-            fill="#FFAC33" />
-        </svg>
-      </div>
-      <div class="rightBlock">
-        <button class="btn" style="color: rgba(63, 65, 73, 1)">
-          Quiz Generator
-        </button>
-        <button id="host-meeting" class="btn" style="background-color: #8e509c">
-          Host a meeting
-        </button>
-      </div>
-    </div>
-    <div class="card-wrapper">
-      <div class="card-box">
-        <div class="card">
-          <div class="overlay">
-            <div class="card-body">
-              <h2>Test the effectiveness of your live tutoring session</h2>
-              <h3 class="mt-2">
-                Automatically create engaging quiz from a live tutor session based
-                on you say during the remote learning session.
-              </h3>
-              <div class="cardFooter mt-4">
-                <button class="btn hostMeeting">Host a meeting</button>
-                <button class="btn createMeeting">Try Creating a quiz</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-center">
-      <h1>How does it work?</h1>
-    </div>
-    <div class="row">
-      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
-        <h1>🌐 This is how Quizbot works:</h1>
-        <h4>
-          Host remote sessions and watch knowledge travel the world faster than a
-          jetsetter on caffeine.
-        </h4>
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 d-flex justify-content-end">
-        <!-- <img src="../../image/first.png" /> -->
-      </div>
-
-      <div class="col-lg-6 col-md-6 col-12">
-        <!-- <img src="../../image/second.png" /> -->
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
-        <h1>Create an automated quiz 🧠</h1>
-        <h4>
-          Turn your tutoring gold into captivating quizzes with the ease of a
-          magician's sleight of hand.
-        </h4>
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 detailsBlock">
-        <h1>📈 Test the effectiveness</h1>
-        <h4>
-          Test the tutoring waters and measure your success waves with analytical
-          precision that would make a scientist proud.
-        </h4>
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 d-flex justify-content-end">
-        <!-- <img src="../../image/third.png" /> -->
-      </div>
-    </div>
-    <div class="d-flex justify-content-between">
-      <!-- <img src="../../image/left.png" /> -->
-      <!-- <img src="../../image/right.png" /> -->
-    </div>
-    <div class="bottomBlock">
-      <h1>Turning Tutor-Talk into Quiz-Whiz</h1>
-      <h6 class="mt-3">Embark on a journey of enlightening education</h6>
-      <div class="d-flex align-items-center mt-4" style="gap: 10px">
-        <button class="btn hostMeeting">Host a meeting</button>
-        <button class="btn createMeeting">Try Creating a quiz</button>
-      </div>
-    </div>
-    <div class="row">
-      <div class="footerBlock">
-        <div class="col-lg-6 col-md-6 col-12 ps-5">
-          <a>All rights reserved @ QuizBot</a>
-        </div>
-        <div class="col-lg-6 col-md-6 col-12">
-          <a class="me-5">Privacy Policy</a>
-          <a>Terms & Conditions</a>
-        </div>
-      </div>
-    </div>
-  </div>
 
 
 </body>

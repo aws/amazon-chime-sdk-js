@@ -691,17 +691,7 @@ export class DemoMeetingApp
     }
     );
 
-    const buttonJoin = document.getElementById('host-meeting') as HTMLButtonElement;
-    buttonJoin.addEventListener('click', _e => {
-      var x = document.getElementById('landing-page');
-      var joining_page = document.getElementById('joining-page');
-      if (x.style.display === 'none') {
-        x.style.display = 'block';
-      } else {
-        x.style.display = 'none';
-        joining_page.style.display = 'block';
-      }
-    });
+
     const buttonQueriesTabs = document.getElementById('queries') as HTMLButtonElement;
     buttonQueriesTabs.addEventListener('click', _e => {
       var participants_block = document.getElementById('participants-block');
@@ -801,7 +791,7 @@ export class DemoMeetingApp
 for (let i = 0; i < buttonQuizBot.length; i++) {
   buttonQuizBot[i].addEventListener('click', _e => {
     const radioOptions = ['Multiple Choice', 'Other'];
-    const container = document.getElementById('radio-container');
+    const container = document.getElementById('quiz-options');
 
     if (container) {
       radioOptions.forEach((option, index) => {
@@ -1037,59 +1027,62 @@ updateBodyBackgroundColor();
 
 
         console.log('submit quiz');
+        const transcript = document.getElementById('transcript-container').innerText;
 
-        // // DREW ADDED CODES
-        // const transcript = document.getElementById('transcript-container').innerText;
-        // const transcriptData = {
-        //     "transcript": transcript
-        // };
-        // const url = "https://app.larq.ai/api/MakeQuiz";
-        // console.log("TRANSCRIPT DATA:",transcriptData);
-        // const response = await fetch(url, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(transcriptData)
-        // });
-
-        // const quizJson = await response.json();
+        const transcriptData: any = {
+            "transcript": transcript
+        };
+        
+        if (selectedNumber) {
+            transcriptData.num_questions = selectedNumber;
+        }
+        
+        const url = "https://app.larq.ai/api/MakeQuiz";
+        console.log("TRANSCRIPT DATA:", transcriptData);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transcriptData)
+        });
+        const quizJson = await response.json();
 
         // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-        const quizJson = {
-          message: {
-            quiz_title: 'History 101',
-            questions: [
-              {
-                answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
-                correct_answer: '1215',
-                question: 'In which year was the Magna Carta sealed?',
-                question_number: 1,
-                wrong_answers: ['1200', '1230', '1150'],
-              },
-              {
-                answer_reason:
-                  'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
-                correct_answer: 'Revival of classical learning',
-                question: 'What was the primary aim of the Renaissance?',
-                question_number: 2,
-                wrong_answers: [
-                  'Promotion of modern art',
-                  'Start of the industrial revolution',
-                  'Promotion of religious beliefs',
-                ],
-              },
-              {
-                answer_reason:
-                  'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
-                correct_answer: 'Galileo Galilei',
-                question: 'Who is known as the father of observational astronomy?',
-                question_number: 3,
-                wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
-              },
-            ],
-          },
-        };
+        // const quizJson = {
+        //   message: {
+        //     quiz_title: 'History 101',
+        //     questions: [
+        //       {
+        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+        //         correct_answer: '1215',
+        //         question: 'In which year was the Magna Carta sealed?',
+        //         question_number: 1,
+        //         wrong_answers: ['1200', '1230', '1150'],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+        //         correct_answer: 'Revival of classical learning',
+        //         question: 'What was the primary aim of the Renaissance?',
+        //         question_number: 2,
+        //         wrong_answers: [
+        //           'Promotion of modern art',
+        //           'Start of the industrial revolution',
+        //           'Promotion of religious beliefs',
+        //         ],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+        //         correct_answer: 'Galileo Galilei',
+        //         question: 'Who is known as the father of observational astronomy?',
+        //         question_number: 3,
+        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+        //       },
+        //     ],
+        //   },
+        // };
         console.log('quizJson:', quizJson);
         // add quizJson to the local storage
         localStorage.setItem('quizJson', JSON.stringify(quizJson));
