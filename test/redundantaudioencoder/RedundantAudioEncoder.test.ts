@@ -200,7 +200,7 @@ describe('RedundantAudioEncoder', () => {
     const behavior: DOMMockBehavior = new DOMMockBehavior();
 
     beforeEach(() => {
-      RedundantAudioEncoder.shouldLogDebug = true;
+      RedundantAudioEncoder.shouldLog = true;
       domMockBuilder = new DOMMockBuilder(behavior);
 
       // Wrap the mock worker to initialize the RED worker since the worker code at the URL is not actually executed.
@@ -221,7 +221,7 @@ describe('RedundantAudioEncoder', () => {
     });
 
     afterEach(() => {
-      RedundantAudioEncoder.shouldLogDebug = false;
+      RedundantAudioEncoder.shouldLog = false;
       delete self.onmessage;
       delete self.postMessage;
       // @ts-ignore
@@ -236,8 +236,8 @@ describe('RedundantAudioEncoder', () => {
       // Create a logger for the RED worker to post messages to.
       const logger = new NoOpDebugLogger();
       audioRedWorker.onmessage = (event: MessageEvent) => {
-        if (event.data.type === 'REDWorkerDebugLog') {
-          logger.debug(event.data.log);
+        if (event.data.type === 'REDWorkerLog') {
+          logger.info(event.data.log);
         }
       };
 
@@ -286,7 +286,7 @@ describe('RedundantAudioEncoder', () => {
         // @ts-ignore
         workerOnMessage(event);
 
-        if (event.data.type === 'REDWorkerDebugLog') {
+        if (event.data.type === 'REDWorkerLog') {
           validMessage = true;
           if (event.data.log.includes('red payload type set to')) {
             newRedPayloadType = Number(event.data.log.match(/.*red payload type set to (\d+)/)[1]);
@@ -360,8 +360,8 @@ describe('RedundantAudioEncoder', () => {
       // Create a logger for the RED worker to post messages to.
       const logger = new NoOpDebugLogger();
       audioRedWorker.onmessage = (event: MessageEvent) => {
-        if (event.data.type === 'REDWorkerDebugLog') {
-          logger.debug(event.data.log);
+        if (event.data.type === 'REDWorkerLog') {
+          logger.info(event.data.log);
         }
       };
 
@@ -410,7 +410,7 @@ describe('RedundantAudioEncoder', () => {
         // @ts-ignore
         workerOnMessage(event);
 
-        if (event.data.type === 'REDWorkerDebugLog') {
+        if (event.data.type === 'REDWorkerLog') {
           validMessage = true;
           if (event.data.log.includes('red payload type set to')) {
             newRedPayloadType = Number(event.data.log.match(/.*red payload type set to (\d+)/)[1]);

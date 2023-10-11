@@ -66,7 +66,7 @@ export default class RedundantAudioEncoder {
   // This is a workaround for unit testing due to issues with mocking `self`
   // which is a part of DedicatedWorker scope and is currently used to post
   // messages to the main thread
-  static shouldLogDebug: boolean = false;
+  static shouldLog: boolean = false;
 
   // This is a workaround for unit testing due to issues with mocking `self`
   // which is a part of DedicatedWorker scope and is currently used to post
@@ -84,7 +84,7 @@ export default class RedundantAudioEncoder {
    * Creates an instance of RedundantAudioEncoder and sets up callbacks.
    */
   static initializeWorker(): void {
-    RedundantAudioEncoder.debugLog('Initializing RedundantAudioEncoder');
+    RedundantAudioEncoder.log('Initializing RedundantAudioEncoder');
     const encoder = new RedundantAudioEncoder();
 
     // RED encoding is done using WebRTC Encoded Transform
@@ -128,11 +128,11 @@ export default class RedundantAudioEncoder {
   /**
    * Post logs to the main thread
    */
-  static debugLog(msg: string): void {
-    if (RedundantAudioEncoder.shouldLogDebug) {
+  static log(msg: string): void {
+    if (RedundantAudioEncoder.shouldLog) {
       // @ts-ignore
       self.postMessage({
-        type: 'REDWorkerDebugLog',
+        type: 'REDWorkerLog',
         log: `[AudioRed] ${msg}`,
       });
     }
@@ -163,7 +163,7 @@ export default class RedundantAudioEncoder {
    * Sets up a passthrough (no-op) transform for the given streams.
    */
   setupPassthroughTransform(readable: ReadableStream, writable: WritableStream): void {
-    RedundantAudioEncoder.debugLog('Setting up passthrough transform');
+    RedundantAudioEncoder.log('Setting up passthrough transform');
     readable.pipeTo(writable);
   }
 
@@ -171,7 +171,7 @@ export default class RedundantAudioEncoder {
    * Sets up the transform stream and pipes the outgoing encoded audio frames through the transform function.
    */
   setupSenderTransform(readable: ReadableStream, writable: WritableStream): void {
-    RedundantAudioEncoder.debugLog('Setting up sender RED transform');
+    RedundantAudioEncoder.log('Setting up sender RED transform');
     const transformStream = new TransformStream({
       transform: this.senderTransform.bind(this),
     });
@@ -183,7 +183,7 @@ export default class RedundantAudioEncoder {
    * Sets up the transform stream and pipes the received encoded audio frames through the transform function.
    */
   setupReceiverTransform(readable: ReadableStream, writable: WritableStream): void {
-    RedundantAudioEncoder.debugLog('Setting up receiver RED transform');
+    RedundantAudioEncoder.log('Setting up receiver RED transform');
     const transformStream = new TransformStream({
       transform: this.receivePacketLogTransform.bind(this),
     });
@@ -196,7 +196,7 @@ export default class RedundantAudioEncoder {
    */
   setRedPayloadType(payloadType: number): void {
     this.redPayloadType = payloadType;
-    RedundantAudioEncoder.debugLog(`red payload type set to ${this.redPayloadType}`);
+    RedundantAudioEncoder.log(`red payload type set to ${this.redPayloadType}`);
   }
 
   /**
@@ -204,7 +204,7 @@ export default class RedundantAudioEncoder {
    */
   setOpusPayloadType(payloadType: number): void {
     this.opusPayloadType = payloadType;
-    RedundantAudioEncoder.debugLog(`opus payload type set to ${this.opusPayloadType}`);
+    RedundantAudioEncoder.log(`opus payload type set to ${this.opusPayloadType}`);
   }
 
   /**
@@ -215,9 +215,7 @@ export default class RedundantAudioEncoder {
     if (this.numRedundantEncodings > this.maxRedEncodings) {
       this.numRedundantEncodings = this.maxRedEncodings;
     }
-    RedundantAudioEncoder.debugLog(
-      `Updated numRedundantEncodings to ${this.numRedundantEncodings}`
-    );
+    RedundantAudioEncoder.log(`Updated numRedundantEncodings to ${this.numRedundantEncodings}`);
   }
 
   /**
@@ -226,7 +224,7 @@ export default class RedundantAudioEncoder {
    */
   setRedundancyEnabled(enabled: boolean): void {
     this.redundancyEnabled = enabled;
-    RedundantAudioEncoder.debugLog(`redundancy ${this.redundancyEnabled ? 'enabled' : 'disabled'}`);
+    RedundantAudioEncoder.log(`redundancy ${this.redundancyEnabled ? 'enabled' : 'disabled'}`);
   }
 
   /**
@@ -863,7 +861,7 @@ export default class RedundantAudioEncoder {
     // | config  |s| c |
     // +-+-+-+-+-+-+-+-+
 
-    // Since CELT-only packets are represented using configurations 16 to 31, the highest "config" bit will always be 1
+    // Since CELT-only packets are represented using configurations 16 to 31, the highest 'config' bit will always be 1
     // for CELT-only packets.
     return !!(packet.getUint8(0) & 0x80);
   }
@@ -893,7 +891,7 @@ export default class RedundantAudioEncoder {
 
     // Case for CELT-only packet.
     if (this.opusPacketIsCeltOnly(packet)) {
-      // The lower 3 "config" bits indicate the frame size option.
+      // The lower 3 'config' bits indicate the frame size option.
       frameSizeOption = (packet.getUint8(0) >> 3) & 0x3;
 
       // The frame size options 0, 1, 2, 3 correspond to frame sizes of 2.5, 5, 10, 20 ms. Notice that the frame sizes
@@ -920,7 +918,7 @@ export default class RedundantAudioEncoder {
     }
     // Case for SILK-only packet.
     else {
-      // The lower 3 "config" bits indicate the frame size option for SILK-only packets.
+      // The lower 3 'config' bits indicate the frame size option for SILK-only packets.
       frameSizeOption = (packet.getUint8(0) >> 3) & 0x3;
 
       if (frameSizeOption === 3) {
@@ -990,7 +988,7 @@ export default class RedundantAudioEncoder {
     // | config  |s| c |
     // +-+-+-+-+-+-+-+-+
 
-    // The "s" bit indicates mono or stereo audio, with 0 indicating mono and 1 indicating stereo.
+    // The 's' bit indicates mono or stereo audio, with 0 indicating mono and 1 indicating stereo.
     return packet.getUint8(0) & 0x4 ? 2 : 1;
   }
 
@@ -1150,7 +1148,7 @@ export default class RedundantAudioEncoder {
         const frameCountByte = data.getUint8(byteOffset++);
         --remainingBytes;
 
-        // Read the "M" bits of the frame count byte, which encode the number of frames.
+        // Read the 'M' bits of the frame count byte, which encode the number of frames.
         numFrames = frameCountByte & 0x3f;
 
         // The number of frames in a code 3 packet must not be 0.
@@ -1163,7 +1161,7 @@ export default class RedundantAudioEncoder {
         // exceed 2880 * 2 = 5760.
         if (samplesPerFrame * numFrames > 5760) return this.OPUS_INVALID_PACKET;
 
-        // Parse padding bytes if the "p" bit is 1.
+        // Parse padding bytes if the 'p' bit is 1.
         if (frameCountByte & 0x40) {
           let paddingCountByte: number;
           let numPaddingBytes: number;
@@ -1191,7 +1189,7 @@ export default class RedundantAudioEncoder {
         // Sanity check that the remaining number of bytes is not negative after removing the padding.
         if (remainingBytes < 0) return this.OPUS_INVALID_PACKET;
 
-        // Read the "v" bit (i.e. VBR bit).
+        // Read the 'v' bit (i.e. VBR bit).
         cbr = !(frameCountByte & 0x80);
 
         // VBR case
