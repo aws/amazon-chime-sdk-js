@@ -12,31 +12,44 @@
         return monthNames[monthIndex] + ' ' + day + ', ' + year;
     }
 
-    // Function to format the time
-    function formatTime(date: any) {
+      function formatTime(date: any) {
         let hours = date.getHours();
         let minutes = date.getMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12; // the hour '0' should be '12'
-        minutes = minutes < 10 ? '0' + minutes : minutes;
+        minutes = checkTime(minutes);
         return hours + ':' + minutes + ' ' + ampm;
     }
-
-    // Get the current date and time
-    const now = new Date();
-
-    // Update the content of the elements with class 'currentDate'
-    const dateElements = document.querySelectorAll('.currentDate');
-    dateElements.forEach(element => {
-        element.textContent = formatDate(now);
-    });
-
-    // Update the content of the elements with class 'currentTime'
-    const timeElements = document.querySelectorAll('.currentTime');
-    timeElements.forEach(element => {
-        element.textContent = formatTime(now);
-    });
+    
+    function checkTime(i:any) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
+    
+    function updateDateTime() {
+        const now = new Date();
+    
+        // Update the content of the elements with class 'currentDate'
+        const dateElements = document.querySelectorAll('.currentDate');
+        dateElements.forEach(element => {
+            element.textContent = formatDate(now);  // Assuming you have a formatDate function similar to formatTime
+        });
+    
+        // Update the content of the elements with class 'currentTime'
+        const timeElements = document.querySelectorAll('.currentTime');
+        timeElements.forEach(element => {
+            element.textContent = formatTime(now);
+        });
+    
+        setTimeout(updateDateTime, 1000);
+    }
+    
+    // Call the function to start the update loop
+    updateDateTime();
+  
   });
     // END TIME CHANGES
 
@@ -137,6 +150,7 @@ function showTooltip(event: MouseEvent, content: string) {
   tooltip.style.position = 'absolute';
   tooltip.style.zIndex = '100';
   document.body.appendChild(tooltip);
+
 
   // Hide tooltip on next click anywhere in the document
   document.addEventListener('click', function hideTooltip() {

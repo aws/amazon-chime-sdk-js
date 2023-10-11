@@ -12,7 +12,7 @@
 <body>
 
   <!-- Login Page -->
-<div class="login container" id="login-container" style="display:none">S
+<div class="login container" id="login-container" style="display:none">
     <div class="center">
         <h1>Welcome to         
     <svg viewbox="0 0 100 20" id="larqFlow">
@@ -107,7 +107,7 @@
   
 
   <!-- start of joining page - THIS IS THE SECOND PAGE AFTER LOGIN-->
-  <div id="joining-page" class="mainBlock" style="display: block;">
+  <div id="joining-page" class="mainBlock" style="display: none;">
     <div class="row">
       <div class="col-lg-4 col-md-12 col-12">
         <div class="leftBlock mb-3">
@@ -172,12 +172,21 @@
               </div>
             </div>
           </div>
+   <div class="tooltip" style="display:none">
+     <div class="tooltip-content" id="calendar-tooltip-content">
+       <div class="tooltip-title" id="calendar-tooltip-title">Meeting with Ryan</div>
+      <div class="tooltip-time" id="calendar-tooltip-time">10:00 AM</div>
+      <div class="tooltip-meetingname" id="calendar-tooltip-meetname">Ryan-meeting-1</div>
+      </div>
+    <div class="tooltip-arrow"></div>
+    </div>
+
 
         </div>
       </div>
       <div class="col-lg-8 col-md-12 col-12">
         <div class="d-flex justify-content-between">
-          <h2 class="title">Good afternoon, <b class="first_name">Rebecca</b></h2>
+          <h2 class="title">Good afternoon, <b class="first_name" id="greetingFirstName">Rebecca</b></h2>
           <div class="dropdown-block">
             <div class="btn-group">
               <div class="profileAvater" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -195,7 +204,7 @@
                       </div>
                       <div class="d-flex align-items-center">
                         <div class="ms-2 me-2">
-                          <h6><b class="first_name">Rebecca</b><b class="last_name">Smith</b></h6>
+                          <h6><b class="first_name" id="dropdownFirstName">Rebecca</b><b class="last_name" id="dropdownLastName">Smith</b></h6>
                           <p class="email">rebe**@gmail.com</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -249,8 +258,8 @@
 
 
         </div>
-        <div class="meetingButtonBlock" id="new-meeting">
-          <div class="buttonBlock" style="background-color: #8e509c">
+        <div class="meetingButtonBlock">
+          <div class="buttonBlock" style="background-color: #8e509c" id="new-meeting">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
               <path d="M24 32H32M32 32H40M32 32V24M32 32V40" stroke="white" stroke-width="4" stroke-linecap="round"
                 stroke-linejoin="round" />
@@ -297,7 +306,7 @@
           <button id="scheduleMeetingSubmit">Submit</button>
         </div>
         <h6 class="mt-4 mb-4">Quiz Dashboard</h6>
-        <div class="quizBlock">
+        <div class="quizBlock dashboard_stats" style="display:none">
           <div class="d-flex justify-content-between">
             <a class="heading">Science: Chapter 1 - Photosynthesis</a>
             <p class="link">
@@ -312,31 +321,21 @@
           </div>
           <div class="row">
             <div class="col-lg-6 col-md-6 col-12">
-              <div class="sub-header">Class Average: <span>3.75</span></div>
-              <div class="listingBlock">
-                <h5>Most Difficult Question:</h5>
-                <div class="lists">
+              <div class="sub-header">Class Average: <span id="classAverage">3.75</span></div>
+              <h5>Most Difficult Question:</h5>
+              <div class="lists" id="mostDifficultQuestion">
                   <p>At night, plants breathe in ______________</p>
-                </div>
               </div>
-              <div class="listingBlock">
-                <h5>Top Performer:</h5>
-                <div class="lists">
+              <h5>Top Performer:</h5>
+              <div class="lists" id="topPerformer">
                   <p>Maria <span>5/5</span></p>
-                  <p class="mt-3">Drew <span>(5/5)</span></p>
-                </div>
               </div>
-              <div class="listingBlock">
-                <h5>Needs Attention:</h5>
-                <div class="lists">
+              <h5>Needs Attention:</h5>
+              <div class="lists" id="needsAttention">
                   <p>Somya <span>(2/5)</span></p>
-                </div>
               </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-12">
-              <div class="listingBlock">
-                <div class="sub-header">Completed (<span>6</span>)</div>
-                <div class="listingBlock">
+              <div class="sub-header">Completed (<span id="completedCount">6</span>)</div>
+              <div class="listingBlock" id="completedList">
                   <div class="lists">
                     <div class="d-flex justify-content-between mb-3">
                       <p>Somya <span>(2/5)</span></p>
@@ -362,8 +361,8 @@
                 </div>
               </div>
               <div class="listingBlock">
-                <div class="sub-header">Did not complete (<span>2</span>)</div>
-                <div class="listingBlock">
+                <div class="sub-header">Did not complete (<span id="notCompletedCount">2</span>)</div>
+                <div class="listingBlock" id="notCompletedList">
                   <div class="lists">
                     <div class="d-flex justify-content-between">
                       <p>Maria<span>(2/5)</span></p>
@@ -373,7 +372,15 @@
                 </div>
               </div>
             </div>
+    
+
           </div>
+        </div class="quizBlock dashboard_stats">
+          <!-- no dashboard stats yet -->
+          <h4>Looks like you have no quizzes yet.</h4>
+          <p>Click the button below to create a new quiz.</p>
+          <a href="https://larq.ai/"><button id="createQuiz">Create a New Quiz on Larq</button></a>
+        <div>
         </div>
         <div class="quizBlock mt-4">
           <h1 class="heading" style="text-decoration: underline">

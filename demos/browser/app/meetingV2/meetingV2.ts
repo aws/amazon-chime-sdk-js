@@ -1193,20 +1193,20 @@ updateBodyBackgroundColor();
 // DREW LOGIN
 
 // if you have localStorage.getItem('authToken') then hide the login form and show the joining page:
-// if (localStorage.getItem('authToken')) {
-//   document.getElementById('login-container')!.style.display = 'none';
-//   document.getElementById('joining-page')!.style.display = 'block';
-//   // Update elements with class name "first_name" to display the first_name returned
-//   const firstNameElements = document.querySelectorAll('.first_name');
-//   firstNameElements.forEach(element => {
-//     element.textContent = localStorage.getItem('firstName');
-//   });
+if (localStorage.getItem('authToken')) {
+  document.getElementById('login-container')!.style.display = 'none';
+  document.getElementById('joining-page')!.style.display = 'block';
+  // Update elements with class name "first_name" to display the first_name returned
+  const firstNameElements = document.querySelectorAll('.first_name');
+  firstNameElements.forEach(element => {
+    element.textContent = localStorage.getItem('firstName');
+  });
   
-// }
-// else {
-//   document.getElementById('login-container')!.style.display = 'block';
-//   document.getElementById('joining-page')!.style.display = 'none';
-// }
+}
+else {
+  document.getElementById('login-container')!.style.display = 'block';
+  document.getElementById('joining-page')!.style.display = 'none';
+}
 
 
 // Assuming you have a type definition for the response data structure. 
@@ -1248,9 +1248,12 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
     return response.json();
 }).then((data: ResponseData) => {
   if (data.status === 'success') {
+    console.log('Success:', data);
     localStorage.setItem('authToken', data.token!);
     localStorage.setItem('firstName', data.first_name!);
     localStorage.setItem('lastName', data.last_name!);
+    localStorage.setItem('userId', data.user_id!);
+    localStorage.setItem('data', JSON.stringify(data));
     // hide #login-spinner
     document.getElementById('login-spinner')!.style.display = 'none';
     // reload page
@@ -1261,6 +1264,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
     // Console log user_id and last_name
     console.log("User ID:", data.user_id);
     console.log("Last Name:", data.last_name);
+    // console.log("Dashboard Stats:", data.dashboard_stats);
 
 
   } else {
@@ -1331,22 +1335,31 @@ document.addEventListener('DOMContentLoaded', () => {
   this.updateLiveTranscriptionDisplayState();
   const token: string | null = localStorage.getItem('authToken');
   if (token) {
-      document.getElementById('login-container')!.style.display = 'none';
-      document.getElementById('joining-page')!.style.display = 'block';
-      const storedFirstName = localStorage.getItem('firstName');
-      const storedLastName = localStorage.getItem('lastName');
-      if (storedFirstName) {
-          const firstNameElements = document.querySelectorAll('.first_name');
-          firstNameElements.forEach(element => {
-              element.textContent = storedFirstName;
-          });
-      }
-      if (storedLastName) {
-          const lastNameElements = document.querySelectorAll('.last_name');
-          lastNameElements.forEach(element => {
-              element.textContent = storedLastName;
-          });
-      }
+    const data = JSON.parse(localStorage.getItem('data') || '{}');
+
+    if (data) {
+        const firstName = data.first_name;
+        const lastName = data.last_name;
+
+        // Populate first name and last name
+        document.getElementById('greetingFirstName').textContent = firstName;
+        document.getElementById('dropdownFirstName').textContent = firstName;
+        document.getElementById('dropdownLastName').textContent = lastName;
+
+        // For demonstration purposes, I'm populating static values. 
+        // In reality, you'd fetch these from your data object.
+        
+        const lastAttemptScore = data.dashboard_stats.last_attempts[0].score;
+        document.getElementById('classAverage').textContent = lastAttemptScore;
+          document.getElementById('mostDifficultQuestion').textContent = "At night, plants breathe in ______________";  // Replace with actual data
+        document.getElementById('topPerformer').textContent = "Maria (5/5)";  // Replace with actual data
+        document.getElementById('needsAttention').textContent = "Somya (2/5)";  // Replace with actual data
+        document.getElementById('completedCount').textContent = data.dashboard_stats.recent_quizzes.length.toString();
+        document.getElementById('notCompletedCount').textContent = "2";  // Replace with actual data
+
+        // If you have a list of students for "Completed" and "Did not complete", you'd loop through the data and create elements dynamically
+    }
+
 
   } else {
       document.getElementById('login-container')!.style.display = 'block';
