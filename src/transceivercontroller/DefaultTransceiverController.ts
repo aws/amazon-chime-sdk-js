@@ -8,8 +8,8 @@ import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import RedundantAudioRecoveryMetricReport from '../clientmetricreport/RedundantAudioRecoveryMetricReport';
 import Logger from '../logger/Logger';
+import LogLevel from '../logger/LogLevel';
 import RedundantAudioEncoder from '../redundantaudioencoder/RedundantAudioEncoder';
-import RedundantAudioEncoderWorkerCode from '../redundantaudioencoderworkercode/RedundantAudioEncoderWorkerCode';
 import RedundantAudioRecoveryMetricsObserver from '../redundantaudiorecoverymetricsobserver/RedundantAudioRecoveryMetricsObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
@@ -474,7 +474,9 @@ export default class DefaultTransceiverController
 
     if (supportsRTCScriptTransform) {
       // This is the prefered approach according to
-      // https://github.com/w3c/webrtc-encoded-transform/blob/main/explainer.md.
+      // https://github.com/w3c/webrtc-encoded-transform/blob/main/explainer.md
+      // but chrome doesn't seem to support it as of chrome 111.0
+      // Safari 16.3 seems to support this.
       this.logger.info(
         '[AudioRed] Supports encoded insertable streams using RTCRtpScriptTransform'
       );
@@ -491,15 +493,25 @@ export default class DefaultTransceiverController
       );
     }
 
-    // Run the entire redundant audio worker setup in a `try` block to allow any errors to trigger a reconnect with
-    // audio redundancy disabled.
+    // Stringify the `RedundantAudioEncoder` class code and get the new name of the `RedundantAudioEncoder` class since
+    // its name is changed in the browser.
+    const redWorkerCode = RedundantAudioEncoder.toString();
+    const redClassName = redWorkerCode.match(/class\s*(\w+)\s*\{/)[1];
+
+    const blobParts: BlobPart[] = [redWorkerCode];
+    if (this.logger.getLogLevel() === LogLevel.DEBUG) {
+      blobParts.push(`${redClassName}.shouldLogDebug=1;`);
+    }
+    blobParts.push(`${redClassName}.shouldReportStats=1;`);
+    blobParts.push(`${redClassName}.initializeWorker();`);
+
+    this.audioRedWorkerURL = URL.createObjectURL(
+      new Blob(blobParts, {
+        type: 'application/javascript',
+      })
+    );
+    this.logger.info(`[AudioRed] Redundant audio worker URL ${this.audioRedWorkerURL}`);
     try {
-      this.audioRedWorkerURL = URL.createObjectURL(
-        new Blob([RedundantAudioEncoderWorkerCode], {
-          type: 'application/javascript',
-        })
-      );
-      this.logger.info(`[AudioRed] Redundant audio worker URL ${this.audioRedWorkerURL}`);
       this.audioRedWorker = new Worker(this.audioRedWorkerURL);
     } catch (error) {
       this.logger.error(`[AudioRed] Unable to create audio red worker due to ${error}`);
@@ -523,8 +535,8 @@ export default class DefaultTransceiverController
     // to the main thread for logging
     this.audioRedWorker.onmessage = (event: MessageEvent) => {
       /* istanbul ignore else */
-      if (event.data.type === 'REDWorkerLog') {
-        this.logger.info(event.data.log);
+      if (event.data.type === 'REDWorkerDebugLog') {
+        this.logger.debug(event.data.log);
       } /* istanbul ignore next */ else if (event.data.type === 'RedundantAudioEncoderStats') {
         const redMetricReport = new RedundantAudioRecoveryMetricReport();
         redMetricReport.currentTimestampMs = Date.now();

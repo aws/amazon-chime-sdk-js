@@ -39,7 +39,7 @@ function runCommandWithLogs(command) {
 runCommandWithLogs('npm run prebuild');
 
 // Transpile `RedundantAudioEncoder.ts`.
-runCommandWithLogs('./node_modules/typescript/bin/tsc --build config/tsconfig.red.json');
+runCommandWithLogs('npx tsc --build config/tsconfig.red.json');
 
 // Remove the temporary tsconfig file.
 fs.unlinkSync(`${configDir}/${redTsconfig}`);

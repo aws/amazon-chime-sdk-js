@@ -1106,7 +1106,7 @@ updateBodyBackgroundColor();
                       let answerselectorLabel = document.createElement('label');
                       answerselectorLabel.className = 'btn btn-outline-primary';
                       answerselectorLabel.htmlFor = optionInput.id;
-                      answerselectorLabel.innerText = "X";
+                      answerselectorLabel.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12L9 16L19 6" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
                       let answerLabel = document.createElement('input');
                       answerLabel.className = 'form-control answer-text';

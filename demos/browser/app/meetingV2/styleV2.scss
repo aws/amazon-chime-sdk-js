@@ -1419,7 +1419,7 @@ input[type='radio'] {
   }
 }
 .deleteButton {
-  height: 45px;
+  min-height: 45px;
   width: 100%;
   padding: 0 17px;
   background: transparent;
@@ -2472,7 +2472,7 @@ input[type="Submit"]:hover{
     }
     .form-check-inline{
       width:100%;
-      padding:5px
+      padding:10px
     }
     .correct-marker{
       border-top-right-radius: 0px;

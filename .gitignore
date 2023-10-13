@@ -24,3 +24,7 @@ integration/kite-allure-reports
 integration/logs
 node_modules
 src/versioning/version.ts
+demos/browser/node_modules-old/
+demos/browser/node_modules
+node_modules-old
+node_modulesgone
