@@ -10,8 +10,8 @@ $gray-800: #343a40;
 $gray-900: #212529;
 $black: #000;
 $blue: #2c3e50;
-$indigo: #6610f2;
-$purple: #6f42c1;
+$indigo: #8e509c;
+$purple: #8e509c;
 $pink: #e83e8c;
 $red: #e74c3c;
 $orange: #fd7e14;
@@ -1039,12 +1039,12 @@ a.markdown:active {
 }
 
 .scrollbar-new-design::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
   background-color: transparent;
 }
 
 .scrollbar-new-design:hover::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
   background-color: transparent;
 }
 
@@ -1057,6 +1057,46 @@ a.markdown:active {
   width: 10px;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
+// scrollbar y-design
+.scrollbar-y-design {
+  overflow-y: auto; /* or overflow-y: scroll; */
+}
+
+.scrollbar-y-design:hover::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background-color: #f5f5f5;
+}
+
+.scrollbar-y-design::-webkit-scrollbar {
+  width: 4px;
+  background-color: transparent;
+}
+
+.scrollbar-y-design:hover::-webkit-scrollbar {
+  width: 4px; /* This is redundant since the width is the same whether it's hovered or not */
+  background-color: transparent;
+}
+
+.scrollbar-y-design:hover::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.scrollbar-y-design:hover::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.scrollbar-y-design {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) #f5f5f5;
+}
+
+.scrollbar-y-design:hover {
+  scrollbar-color: rgba(0, 0, 0, 0.5) #f5f5f5;
+}
+
+
 
 .transcript {
   white-space: nowrap;
@@ -2411,4 +2451,26 @@ input[type="Submit"]:hover{
 
     #scheduleMeetingSubmit:hover {
         background-color: #0056b3;
+    }
+
+    #myDIV{
+      min-width:300px
+    }
+
+    #quiz-options{
+      padding:5px
+    }
+
+    .correct-answer{
+      background-color: #40cf70c3;
+      color: #fff;
+      padding: 5px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .form-check-inline{
+      width:100%;
+      padding:5px
     }

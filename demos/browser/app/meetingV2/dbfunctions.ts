@@ -139,6 +139,16 @@ document.addEventListener('DOMContentLoaded', function () {
   nextMonthButton.addEventListener('click', showNextMonth);
 
   generateCalendar();
+
+    
+  // if click #close-quiz button, then hide #myDIV
+  // const closeQuiz = document.getElementById('close-quiz');
+  // const quiz = document.getElementById('myDIV'); 
+
+  // closeQuiz.addEventListener('click', function () {
+  //   quiz.style.display = 'none';
+  // }
+  // );
 });
 
 function showTooltip(event: MouseEvent, content: string) {
@@ -158,3 +168,11 @@ function showTooltip(event: MouseEvent, content: string) {
     document.removeEventListener('click', hideTooltip);
   }, { once: true });
 }
+
+
+
+// ********** VUE CODE **********
+// ******************************
+// ******************************
+
+  

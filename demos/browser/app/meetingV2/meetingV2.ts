@@ -274,13 +274,11 @@ interface QuizQuestion {
   wrong_answers: string[];
 }
 
-interface QuizMessage {
+interface QuizJSON {
   quiz_title: string;
   questions: QuizQuestion[];
-}
+  status: string;
 
-interface QuizJSON {
-  message: QuizMessage;
 }
 
 
@@ -721,8 +719,10 @@ export class DemoMeetingApp
       var x = document.getElementById('transcript-container');
       if (x.style.display === 'none') {
         x.style.display = 'block';
+        this.toggleButton('button-live-transcription');
       } else {
         x.style.display = 'none';
+        this.toggleButton('button-live-transcription');
       }
     });
 
@@ -733,34 +733,46 @@ export class DemoMeetingApp
     const buttonPublishQuiz = document.getElementById('publish-quiz-button') as HTMLButtonElement;
     buttonPublishQuiz.addEventListener('click', _e => {
       var x = document.getElementById('quiz_in_progress');
-      var delete_quiz = document.getElementById('quiz_question');
-      if (x.style.display === 'none') {
+      var html_quiz_question = document.getElementById('quiz_question');
+      if (x) {
         x.style.display = 'block';
-        delete_quiz.style.display = 'none';
-      } else {
-        x.style.display = 'none';
-      }
+        html_quiz_question.style.display = 'none';
+      } 
     
       // Fetch the stored quiz data
       const storedQuiz: QuizJSON = JSON.parse(localStorage.getItem('quizJson') || '{}');
-      const quizTitle = storedQuiz.message.quiz_title;
-      const questions = storedQuiz.message.questions;
+
+      // DREW ADDITIONS
+
+      const generateFormData = (quiz: QuizJSON) => {
+        const questions: QuizQuestion[] = quiz.questions;
     
-      const formData = {
-        title: quizTitle,
-        fields: [
-          { label: 'Quiz Title', type: 'text', value: quizTitle }, 
-          ...questions.map((question: QuizQuestion) => {
-            return {
-              label: question.question,
-              type: 'dropdown',
-              options: [question.correct_answer, ...question.wrong_answers],
-            };
-          })
-        ],
-        host: this.meetingSession.configuration.credentials.attendeeId
-      };
-      
+        const formData = {
+            title: quiz.quiz_title,
+            fields: [
+                { label: 'Quiz Title', type: 'text', value: quiz.quiz_title }, 
+                ...questions.map((question) => {
+                    return {
+                        label: question.question,
+                        type: 'dropdown',
+                        options: [question.correct_answer, ...question.wrong_answers],
+                    };
+                })
+            ],
+            host: this.meetingSession.configuration.credentials.attendeeId
+        };
+    
+        return formData;
+    }
+    
+    const formData = generateFormData(storedQuiz);
+    console.log(formData);
+    
+
+      // END DREW ADDITIONS
+
+
+
       const formDataString = JSON.stringify(formData);
       console.log('formDataString:', formDataString);
     
@@ -786,84 +798,7 @@ export class DemoMeetingApp
     // Sample data for radio buttons
 
 
-    // FAULTY CODE
-    const buttonQuizBot = document.getElementsByClassName('cancel-button');
-for (let i = 0; i < buttonQuizBot.length; i++) {
-  buttonQuizBot[i].addEventListener('click', _e => {
-    const radioOptions = ['Multiple Choice', 'Other'];
-    const container = document.getElementById('quiz-options');
-
-    if (container) {
-      radioOptions.forEach((option, index) => {
-        const label = document.createElement('label');
-        const input = document.createElement('input');
-        const radioBlock = document.createElement('div');
-        radioBlock.classList.add('radioBlock');
-
-        input.type = 'radio';
-        input.name = 'radioOption';
-        input.value = option;
-
-        label.className = 'radio-label';
-        radioBlock.appendChild(input);
-        label.appendChild(document.createTextNode(option));
-
-        label.addEventListener('dblclick', () => {
-          label.contentEditable = 'true';
-          label.classList.add('editing');
-          const originalText = label.textContent;
-
-          label.addEventListener('blur', () => {
-            const newText = label.textContent?.trim() || '';
-            label.contentEditable = 'false';
-            label.classList.remove('editing');
-
-            if (newText !== originalText) {
-              input.value = newText;
-            }
-
-            if (newText === '') {
-              label.textContent = option;
-            }
-          });
-        });
-
-        radioBlock.appendChild(label);
-        container.appendChild(radioBlock);
-      });
-    }
-
-    console.log('button-quizbot');
-    const quiz_question = document.getElementById('quiz_question');
-    const quiz_in_progress = document.getElementById('quiz_in_progress');
-    const create_quiz = document.getElementById('create-quiz');
-    const x = document.getElementById('myDIV');
-    const transcript_container = document.getElementById('tile-transcript-container');
-
-    if (x && x.style.display === 'none') {
-      x.style.display = 'block';
-      if (transcript_container) {
-        transcript_container.style.width = '100%';
-      }
-    } else {
-      if (create_quiz) {
-        create_quiz.style.display = 'block';
-      }
-      if (x) {
-        x.style.display = 'none';
-      }
-      if (quiz_question) {
-        quiz_question.style.display = 'none';
-      }
-      if (quiz_in_progress) {
-        quiz_in_progress.style.display = 'none';
-      }
-      if (transcript_container) {
-        transcript_container.style.width = '100%';
-      }
-    }
-  });
-}
+  
 
 const buttonChat = document.getElementById('button-chat') as HTMLButtonElement | null;
 buttonChat?.addEventListener('click', _e => {
@@ -1015,15 +950,17 @@ updateBodyBackgroundColor();
       'click',
       async (): Promise<void> => {
 
-        var create_quiz = document.getElementById('create-quiz');
-        var generating_quiz = document.getElementById('generating-quiz');
 
-        if (generating_quiz.style.display === 'none') {
+
+
+        // STEP 1: CONFIGURATION FORM
+        const create_quiz = document.getElementById('create-quiz');
+        var generating_quiz = document.getElementById('generating-quiz');
+        var html_quiz_question = document.getElementById('quiz_question'); 
+        if (generating_quiz) {
           create_quiz.style.display = 'none';
           generating_quiz.style.display = 'block';
-        } else {
-          create_quiz.style.display = 'none';
-        }
+        } 
 
 
         console.log('submit quiz');
@@ -1031,11 +968,16 @@ updateBodyBackgroundColor();
 
         const transcriptData: any = {
             "transcript": transcript
-        };
-        
+            // "transcript" : "This is a test transcript, I want to see if this works. There are 5 questions in this quiz. This quiz was made on October 11th 2023. We will be quizzing on this content."
+          };
+
+        let selectedNumber = localStorage.getItem('selectedNumber')
         if (selectedNumber) {
             transcriptData.num_questions = selectedNumber;
+            console.log('selectedNumber:', selectedNumber);
         }
+
+  
         
         const url = "https://app.larq.ai/api/MakeQuiz";
         console.log("TRANSCRIPT DATA:", transcriptData);
@@ -1045,12 +987,14 @@ updateBodyBackgroundColor();
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(transcriptData)
-        });
+        })
+        // on response, show #html_quiz_question:
         const quizJson = await response.json();
+        html_quiz_question.style.display = 'block';
+        generating_quiz.style.display = 'none';
 
         // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
         // const quizJson = {
-        //   message: {
         //     quiz_title: 'History 101',
         //     questions: [
         //       {
@@ -1080,22 +1024,24 @@ updateBodyBackgroundColor();
         //         question_number: 3,
         //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
         //       },
-        //     ],
-        //   },
+        //     ]
         // };
         console.log('quizJson:', quizJson);
         // add quizJson to the local storage
         localStorage.setItem('quizJson', JSON.stringify(quizJson));
 
-        console.log('quizJson:', quizJson);
-
-        const quizTitle = quizJson.message.quiz_title;
+        const quizTitle = quizJson.quiz_title;
         console.log(quizTitle);
 
-        const questions = quizJson.message.questions;
+        const quizTitleHTML = document.getElementById('quiz-title') as HTMLElement;
+        quizTitleHTML.innerText = quizTitle;
+
+        const questions = quizJson.questions;
         console.log(questions);
 
         const quizNumbers = document.getElementById('quiz-numbers') as HTMLElement;
+        // clear html of quizNumbers
+        quizNumbers.innerHTML = '';
         const quizQuestionElement = document.getElementById('quiz-question') as HTMLElement;
         const quizOptions = document.getElementById('quiz-options') as HTMLElement;
 
@@ -1121,75 +1067,304 @@ updateBodyBackgroundColor();
             questionBlock.addEventListener('click', function () {
               // Display the selected question and its options
 
-              console.log('questionNumber', questionNumber);
-              const currentActive = document.querySelector('.numbers-block.active-numbers-block');
-              if (currentActive) {
-                currentActive.classList.remove('active-numbers-block');
-              }
-              questionBlock.classList.add('active-numbers-block');
+                    console.log('questionNumber', questionNumber);
+                    const currentActive = document.querySelector('.numbers-block.active-numbers-block');
+                    if (currentActive) {
+                      currentActive.classList.remove('active-numbers-block');
+                    }
+                    questionBlock.classList.add('active-numbers-block');
 
-              quizQuestionElement.innerText = question.question;
-              quizOptions.innerHTML = ''; // Clear previous options
+                    quizQuestionElement.innerText = question.question;
+                    quizOptions.innerHTML = ''; // Clear previous options
 
-              let correctAnswer = question.correct_answer;
-              let wrongAnswers = question.wrong_answers;
-              let allAnswers = [correctAnswer, ...wrongAnswers]; // No randomization
+                    let correctAnswer = question.correct_answer;
+                    let wrongAnswers = question.wrong_answers;
+                    let allAnswers = [correctAnswer, ...wrongAnswers]; // No randomization
 
-              allAnswers.forEach((answer, ansIndex) => {
-                let optionLabel = document.createElement('label');
-                optionLabel.className = 'form-check form-check-inline radioBox';
+                    allAnswers.forEach((answer, ansIndex) => {
+                      let optionLabel = document.createElement('label');
+                      optionLabel.className = 'form-check form-check-inline';
+                      
+                      let optionInput = document.createElement('input');
+                      optionInput.type = 'radio';
+                      optionInput.id = `option-${index}-${ansIndex}`;
+                      optionInput.name = 'option';
+                      optionInput.value = `${ansIndex}`;
+                      optionInput.className = 'btn-check form-check-input';
 
-                let optionInput = document.createElement('input');
-                optionInput.type = 'radio';
-                optionInput.id = `option-${index}-${ansIndex}`;
-                optionInput.name = 'option';
-                optionInput.value = `${ansIndex}`;
+                      if (answer === correctAnswer) {
+                        // Check the correct answer
+                        optionInput.checked = true;
+                        optionLabel.classList.add('correct-answer');
+                      }
+                      else{
+                        optionLabel.classList.remove('correct-answer');
+                      }
 
-                if (answer === correctAnswer) {
-                  // Check the correct answer
-                  optionInput.checked = true;
-                }
+                      let answerLabel = document.createElement('label');
+                      answerLabel.className = 'btn btn-outline-primary  form-control';
+                      answerLabel.htmlFor = optionInput.id;
+                      answerLabel.innerText = answer;
 
-                let answerLabel = document.createElement('label');
-                answerLabel.className = 'form-check-label';
-                answerLabel.htmlFor = optionInput.id;
-                answerLabel.innerText = answer;
+                      optionLabel.appendChild(optionInput);
+                      optionLabel.appendChild(answerLabel);
+                      quizOptions.appendChild(optionLabel);
+                      
+                    quizQuestionElement.addEventListener('click', function () {
+                                this.contentEditable = 'true';
+                                // click on the object again now that its editable
+                                this.focus();
+                                const originalText = this.textContent;
+                        
+                                this.addEventListener('blur', function () {
+                                    const newText = this.textContent?.trim() || '';
+                                    this.contentEditable = 'false';
+                        
+                                    if (newText !== originalText) {
+                                        question.question = newText;
+                                        localStorage.setItem('quizJson', JSON.stringify(quizJson));
+                                        console.log('quizJson in localstorage:', quizJson);
+                                    }
+                                }, { once: true });
+                              // End of questionElement.addEventListener
+                      });
+  
+                      quizTitleHTML.addEventListener('click', function () {
+                        this.contentEditable = 'true';
+                        this.focus();
+                        const originalText = this.textContent;
+                
+                        this.addEventListener('blur', function () {
+                            const newText = this.textContent?.trim() || '';
+                            this.contentEditable = 'false';
+                
+                            if (newText !== originalText) {
+                                // Assuming you have a title field in your quizJson.
+                                quizJson.quiz_title = newText;
+                                localStorage.setItem('quizJson', JSON.stringify(quizJson));
+                                console.log('quizJson in localstorage:', quizJson);
+                            }
+                        }, { once: true });
+                    });
+                
 
-                optionLabel.appendChild(optionInput);
-                optionLabel.appendChild(answerLabel);
-                quizOptions.appendChild(optionLabel);
-              });
+                    optionLabel.addEventListener('dbclick', () => {
+                                answerLabel.contentEditable = 'true';
+                                optionLabel.classList.add('editing');
+                                optionLabel.classList.add('form-control');
+                                this.focus();
+                                const originalText = answerLabel.textContent;
+                
+                                answerLabel.addEventListener('blur', () => {
+                                  const newText = answerLabel.textContent?.trim() || '';
+                                    answerLabel.contentEditable = 'false';
+                                    optionLabel.classList.remove('editing');
+                                    optionLabel.classList.remove('form-control');
+                    
+                                        if (newText === '') {
+                                          optionLabel.textContent = answer;
+                                        }
+                                      
+                                        if (newText !== originalText) {
+                                          // Update the answer label in the DOM
+                                          answerLabel.innerText = newText;
+                                      }
+                                      if (optionInput.checked) {
+                                        // If this option is checked, update the correct answer
+                                        question.correct_answer = newText;
+                                           } else {
+                                        // Update a wrong answer
+                                        question.wrong_answers[ansIndex - 1] = newText;
+                                          }
+                                                          
+                                        localStorage.setItem('quizJson', JSON.stringify(quizJson));
+                                        console.log('quizJson in localstorage:', quizJson);
+  
+                          }, { once: true }); // Ensure the blur event only fires once per editing session
+                         
+                          // if there has been a click that is not the option label, then remove the editing class
+                          document.addEventListener('click', (event) => {
+                            const target = event.target as HTMLElement;
+                            if (!target.classList.contains('editing')) {
+                              optionLabel.classList.remove('editing');
+                              optionLabel.classList.remove('form-control');
+                            }
+                          });
+                         
+                          optionInput.addEventListener('change', () => {
+                            if (optionInput.checked) {
+                              optionLabel.classList.add('correct-answer');
+                              // remove the correct-answer class from all other options
+                              const allOptionLabels = document.querySelectorAll('.form-check.form-check-inline');
+                              allOptionLabels.forEach((label) => {
+                                if (label !== optionLabel) {
+                                  label.classList.remove('correct-answer');
+                                }
+                              });
+                              
+                                // Update the correct answer.
+                                question.correct_answer = answerLabel.innerText;
+                                localStorage.setItem('quizJson', JSON.stringify(quizJson));
+                                console.log('quizJson in localstorage:', quizJson);
+                            }
+                           });
+                
+                
+                    
+                          
+                            // End of optionLabel.addEventListener 
+                          });
+                      // End of allAnswers.forEach
+                    });
+                    // End of Click form
+                  });
+                  if (index === 0) {
+                    (questionBlock as HTMLElement).click();
+                  }
+        
+              // End of questions.forEach
             });
+          
+          // Promise and quizbot
+          
+
+
           }
         );
 
         // DREW CODE END
+        // document.addEventListener('DOMContentLoaded', function() {
+                // Get the form element
+                console.log("Dom loaded");
+                const myDIV = document.getElementById('myDIV');
+            
+                // Function to close the form (hide it in this case)
+                function closeForm() {
+                    if (myDIV) {
+                        myDIV.style.display = 'none';
+                    }
+                }
+            
+                // Listen to clicks on elements with class .btn-close and .cancel-button
+                document.querySelectorAll('.cancel-button').forEach(button => {
+                        button.addEventListener('click', closeForm);
+                });
 
-      }
-    );
-    const deleteQuizBot = document.getElementById('delete-quiz') as HTMLButtonElement;
-    deleteQuizBot.addEventListener('click', _e => {
-      console.log('delete_quiz');
+                document.querySelectorAll('.deleteButton').forEach(button => {
+                      button.addEventListener('click', function(){
 
-      var delete_quiz = document.getElementById('quiz_question');
-      var generating_quiz = document.getElementById('generating-quiz');
+                        var html_create_quiz = document.getElementById('create-quiz');
+                        var html_quiz_question = document.getElementById('quiz_question');
+                        var generating_quiz = document.getElementById('generating-quiz');
+                        html_create_quiz.style.display = 'block';
+                          html_quiz_question.style.display = 'none';
+                          generating_quiz.style.display = 'none';
+                  
+                });
+        });
+        
 
-      if (delete_quiz.style.display === 'none') {
-        delete_quiz.style.display = 'block';
-        generating_quiz.style.display = 'none';
-      } else {
-        delete_quiz.style.display = 'none';
-      }
-    });
-
+        // Set a function for clicking #quiz-button to toggle #myDIV:
     
+        const x = document.getElementById('myDIV');
+        const quizButton = document.getElementById('quiz-button');
+
+        quizButton?.addEventListener('click', function() {
+            if (x) {
+              const create_quiz = document.getElementById('create-quiz');
+
+              console.log('button-quizbot');
+              const quiz_question = document.getElementById('quiz_question');
+              const quiz_in_progress = document.getElementById('quiz_in_progress');
+              const transcript_container = document.getElementById('tile-transcript-container');
+      
+          if (x && x.style.display === 'none') {
+            x.style.display = 'block';
+            if (transcript_container) {
+              transcript_container.style.width = '100%';
+            }
+          } else {
+            if (create_quiz) {
+              create_quiz.style.display = 'block';
+            }
+            if (x) {
+              x.style.display = 'none';
+            }
+            if (quiz_question) {
+              quiz_question.style.display = 'none';
+            }
+            if (quiz_in_progress) {
+              quiz_in_progress.style.display = 'none';
+            }
+            if (transcript_container) {
+              transcript_container.style.width = '100%';
+            }
+          }
+            }
+        });
+
+
+
+
+        // FIRST FORM NUMBER OF QUESTIONS
+          let selectedNumber: string | null = null;
+      
+          const numberContainer = document.getElementById('numberofQuestions');
+      
+          if (numberContainer) {
+              numberContainer.addEventListener('click', (event) => {
+                  const target = event.target as HTMLElement;
+      
+                  if (target.classList.contains('numbers-block')) {
+                      // Remove active-numbers-block class from all children
+                      Array.from(numberContainer.children).forEach(child => {
+                          (child as HTMLElement).classList.remove('active-numbers-block');
+                      });
+      
+                      selectedNumber = target.getAttribute('value');
+                      // console.log('selectedNumber:', selectedNumber);
+                      // add active-numbers-block class
+                      target.classList.add('active-numbers-block');
+                      // save it to localstorage
+                      localStorage.setItem('selectedNumber', selectedNumber);
+                        }
+                    });
+                }
+      
+      
+
+
+
+
+          
+      // });
+    // END QUIZBOT
+   // *****************************
+    // *****************************
+    // *****************************
+    // load the js file quizbot.js
+
+
+
+
+    var tc = document.getElementById('transcript-container');
+    if (tc) {
+      tc.style.display = 'block';
+      this.toggleButton('button-live-transcription');
+    }
+
+
+
+
+
+
 // DREW LOGIN
 
 // if you have localStorage.getItem('authToken') then hide the login form and show the joining page:
 if (localStorage.getItem('authToken')) {
   document.getElementById('login-container')!.style.display = 'none';
   document.getElementById('joining-page')!.style.display = 'block';
-  // Update elements with class name "first_name" to display the first_name returned
+//   // Update elements with class name "first_name" to display the first_name returned
   const firstNameElements = document.querySelectorAll('.first_name');
   firstNameElements.forEach(element => {
     element.textContent = localStorage.getItem('firstName');
@@ -1199,6 +1374,8 @@ if (localStorage.getItem('authToken')) {
 else {
   document.getElementById('login-container')!.style.display = 'block';
   document.getElementById('joining-page')!.style.display = 'none';
+  document.getElementById('flow-meeting')!.style.display = 'none';
+  
 }
 
 
@@ -1320,7 +1497,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
 
 
 
-
+{/* UNCOMMENT FOR DASH STATS */}
 
 document.addEventListener('DOMContentLoaded', () => {
   this.enableLiveTranscription = false;
@@ -1683,6 +1860,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
 
     document.getElementById('form-devices').addEventListener('submit', e => {
       e.preventDefault();
+   
       AsyncScheduler.nextTick(async () => {
         try {
           this.showProgress('progress-join');
@@ -2280,6 +2458,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
         }
       }
     });
+    
 
     // DREW SEND END BEGIN
 
@@ -2289,8 +2468,8 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     
         // Fetch the stored quiz data
         const storedQuiz: QuizJSON = JSON.parse(localStorage.getItem('quizJson') || '{}');
-        const quizTitle = storedQuiz.message.quiz_title;
-        const questions = storedQuiz.message.questions;
+        const quizTitle = storedQuiz.quiz_title;
+        const questions = storedQuiz.questions;
     
         const formData = {
           title: quizTitle,

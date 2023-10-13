@@ -37,6 +37,7 @@
     "amazon-chime-sdk-js": "file:../..",
     "aws-cli": "^0.0.2",
     "aws-sdk": "^2.1376.0",
+    "axios": "^1.5.1",
     "bootstrap": "^5.1.3",
     "browserify-zlib": "^0.2.0",
     "compression": "^1.7.4",
@@ -49,7 +50,10 @@
     "mongoose": "^7.5.1",
     "popper.js": "^1.15.0",
     "stream-http": "^3.2.0",
-    "util": "^0.12.4"
+    "util": "^0.12.4",
+    "vue": "^3.3.4",
+    "vue-axios": "^3.5.2",
+    "vuesax": "^4.0.1-alpha.25"
   },
   "license": "Apache-2.0",
   "repository": {

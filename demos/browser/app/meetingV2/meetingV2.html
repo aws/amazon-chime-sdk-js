@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuesax/dist/vuesax.css"> Vuesax styles -->
 
   <title>Meeting Demo</title>
 </head>
@@ -13,6 +14,8 @@
 
   <!-- Login Page -->
 <div class="login container" id="login-container" style="display:none">
+
+  <!-- END TEST -->
     <div class="center">
         <h1>Welcome to         
     <svg viewbox="0 0 100 20" id="larqFlow">
@@ -107,7 +110,7 @@
   
 
   <!-- start of joining page - THIS IS THE SECOND PAGE AFTER LOGIN-->
-  <div id="joining-page" class="mainBlock" style="display: none;">
+  <div id="joining-page" class="mainBlock" style="display: flex;">
     <div class="row">
       <div class="col-lg-4 col-md-12 col-12">
         <div class="leftBlock mb-3">
@@ -379,8 +382,8 @@
           <div class="d-flex justify-content-between"></div>
           <!-- no dashboard stats yet -->
           <h4>Looks like you have no quizzes yet.</h4>
-          <p>Join a meeting to create a new quiz, or:</p>
-          <a href="https://larq.ai/"><div class="buttonBlock"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="vuesax/linear/video"><g id="video"><path id="Vector" d="M33.413 54.4533H16.5597C8.13301 54.4533 5.33301 48.8533 5.33301 43.2266V20.7733C5.33301 12.3466 8.13301 9.54663 16.5597 9.54663H33.413C41.8397 9.54663 44.6397 12.3466 44.6397 20.7733V43.2266C44.6397 51.6533 41.813 54.4533 33.413 54.4533Z" stroke="#8E509C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path><path id="Vector_2" d="M52.053 45.6L44.6396 40.4V23.5733L52.053 18.3733C55.6797 15.84 58.6663 17.3867 58.6663 21.84V42.16C58.6663 46.6133 55.6797 48.16 52.053 45.6Z" stroke="#8E509C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path><path id="Vector_3" d="M30.667 29.3334C32.8761 29.3334 34.667 27.5425 34.667 25.3334C34.667 23.1242 32.8761 21.3334 30.667 21.3334C28.4579 21.3334 26.667 23.1242 26.667 25.3334C26.667 27.5425 28.4579 29.3334 30.667 29.3334Z" stroke="#8E509C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></g></g></svg><p>Create Quiz on Larq</p></div></a>
+          <p>Join a meeting to create a new quiz, or...</p>
+          <a href="https://larq.ai/" style="text-decoration: none;"><div class="buttonBlock"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="vuesax/linear/video"><g id="video"><path id="Vector" d="M33.413 54.4533H16.5597C8.13301 54.4533 5.33301 48.8533 5.33301 43.2266V20.7733C5.33301 12.3466 8.13301 9.54663 16.5597 9.54663H33.413C41.8397 9.54663 44.6397 12.3466 44.6397 20.7733V43.2266C44.6397 51.6533 41.813 54.4533 33.413 54.4533Z" stroke="#8E509C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path><path id="Vector_2" d="M52.053 45.6L44.6396 40.4V23.5733L52.053 18.3733C55.6797 15.84 58.6663 17.3867 58.6663 21.84V42.16C58.6663 46.6133 55.6797 48.16 52.053 45.6Z" stroke="#8E509C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path><path id="Vector_3" d="M30.667 29.3334C32.8761 29.3334 34.667 27.5425 34.667 25.3334C34.667 23.1242 32.8761 21.3334 30.667 21.3334C28.4579 21.3334 26.667 23.1242 26.667 25.3334C26.667 27.5425 28.4579 29.3334 30.667 29.3334Z" stroke="#8E509C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></g></g></svg><p>Create Quiz on Larq</p></div></a>
         </div>
         </div>
         <div class="quizBlock mt-4">
@@ -547,6 +550,55 @@
     <button onclick="history.back()">Go Back</button>
   </div>
 
+  <!-- SCHEDULING NOT AVAILABLE AT THIS TIME? -->
+  <div class="modal fade" id="schedule-quiz-modal" tabindex="-1" aria-labelledby="schedule-quiz-modal-label"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="schedule-quiz-modal-label">Schedule Quiz</h5>
+        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+      </div>
+      <div class="modal-body">
+        Scheduling a quiz is not available at this time. Send now? 
+      </div>
+      <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
+          aria-label="Close">Cancel</button>
+        <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
+          data-bs-target="#quiz-sent-modal" id="schedule-quiz-button">Publish the Quiz</button>
+      </div>
+
+    </div>
+  </div>
+  <button onclick="history.back()">Go Back</button>
+</div>
+
+
+
+  
+<!-- ARE YOU SURE YOU WISH TO CANCEL? -->
+  <div class="modal fade" id="end-quiz-modal" tabindex="-1" aria-labelledby="end-quiz-modal-label"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="end-quiz-modal-label">End Quiz</h5>
+        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+      </div>
+      <div class="modal-body">
+        You are about to end the Quiz in your classroom. Do you confirm?
+      </div>
+      <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
+          aria-label="Close">Cancel</button>
+        <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
+          data-bs-target="#quiz-sent-modal" id="end-quiz-button">End the Quiz</button>
+      </div>
+
+    </div>
+  </div>
+  <button onclick="history.back()">Go Back</button>
+</div>
+
 
 <!-- QUIZ HAS BEEN SENT MODAL (FOR HOST) -->
 
@@ -562,7 +614,7 @@ aria-hidden="true">
       Your quiz has been submitted to students...
     </div>
     <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
-        aria-label="Close">View Stats</button>
+        aria-label="Close">Continue</button>
     </div>
 
   </div>
@@ -902,7 +954,8 @@ aria-hidden="true">
 
   <!-- In-meeting screen -->
 
-  <div id="flow-meeting" class="flow" style="position:absolute;left:0;top:0;bottom:55px;right:0">
+  <!-- DREW FORM TESTS : REMOVE DISPLAY BLOCK AND ADD CLASS FLOW -->
+  <div id="flow-meeting" class="flow" style="display:none; position:absolute;left:0;top:0;bottom:55px;right:0">
     <div id="live-transcription-modal" class="modal">
       <div id="live-transcription-modal-content" class="modal-content">
         <div class="modal-content-header">
@@ -1108,10 +1161,10 @@ aria-hidden="true">
             <option value="SSN">SSN</option>
           </select>
         </div>
-        <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
+        <!-- <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
           data-bs-toggle="button" aria-pressed="true" autocomplete="off">
           <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
-        </button>
+        </button> -->
       </div>
     </div>
 
@@ -1316,13 +1369,14 @@ aria-hidden="true">
             </div>
           </div>
         </div>
-        <div id="myDIV" class=" my-4 my-sm-0 quizBlock" style="display:none;width: 25%;">
+          <!-- DREW FORM TESTS : REMOVE DISPLAY BLOCKS -->
+        <div id="myDIV" class=" my-4 my-sm-0 quizBlock" style="display:none;">
           <div id="create-quiz" style="display: block;" class="h-100">
             <div class="d-flex flex-column justify-content-between h-100 scrollbar-new-design"
               style="overflow-y: overlay;">
               <div>
                 <div class="d-flex justify-content-end mb-3">
-                  <button type="button" class="btn-close cancel-button"></button>
+                  <button type="button" class="btn-close cancel-button"  id="close-quiz" ></button>
                 </div>
                 <div class="quiz-heading">Create an Automated Quiz</div>
                 <div class="questions-num">
@@ -1337,21 +1391,18 @@ aria-hidden="true">
                     <div class="numbers-block" value="3">
                       3
                     </div>
-                    <div class="numbers-block" value="4">
-                      4
-                    </div>
                     <div class="numbers-block" value="5">
                       5
                     </div>
-                    <div class="numbers-block pe-2 ps-2" value="Any">
-                      Custom
-                    </div>
+                    <!-- <div class="numbers-block pe-2 ps-2" value="Any">
+                      <input type="number" style="width:100%" placeholder="Other">
+                    </div> -->
                   </div>
                 </div>
                 <div class="questions-block">
                   <div class="quiz-title">Type of Quiz</div>
                   <div class="radio-container" id="radio-container">
-                    <div class="radioBlock"><input type="radio" name="radioOption" value="Multiple Choice"><label class="radio-label" contenteditable="false">Multiple Choice</label></div><div class="radioBlock"><input type="radio" name="radioOption" value="Other"><label class="radio-label">Other</label></div>
+                    <div class="radioBlock"><input type="radio" name="radioOption" value="Multiple Choice" checked=true disabled><label class="radio-label" contenteditable="false">Multiple Choice</label></div><div class="radioBlock"><input type="radio" name="radioOption" value="Other" disabled><label class="radio-label">Other</label></div>
                     </div>
                   <!-- <div class="radioButton col-md-12 col-lg-12 col-12 mb-3">
 
@@ -1424,7 +1475,7 @@ aria-hidden="true">
                 </h4>
               </div>
               <div class="d-flex flex-column h-50 justify-content-end" style="width: 100%;">
-                <button class="deleteButton" type="button" id="delete-quiz">
+                <button class="deleteButton" type="button">
                   Stop generating
                 </button>
               </div>
@@ -1432,7 +1483,7 @@ aria-hidden="true">
             </div>
           </div>
           <div id="quiz_question" class="h-100" style="display: none;">
-            <div class="d-flex flex-column justify-content-between h-100">
+            <div class="d-flex flex-column justify-content-between h-100 scrollbar-y-design">
               <div>
                 <div class="d-flex justify-content-end mb-3">
                   <button type="button" class="btn-close cancel-button"></button>
@@ -1442,7 +1493,8 @@ aria-hidden="true">
                   <button id="publish-quiz" type="button" class="customButton" data-bs-toggle="modal"
                     data-bs-target="#publish-quiz-modal">Publish the Quiz</button>
                   <button class="btn" style="border-radius: 8px;
-                    border: 3px solid #8E509C;">
+                    border: 3px solid #8E509C;" data-bs-toggle="modal"
+                    data-bs-target="#publish-quiz-modal">
 
                     <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 0 32 32" fill="none">
                       <path
@@ -1454,60 +1506,29 @@ aria-hidden="true">
                 </div>
                 <div class="quiz-heading mt-3">Quiz (Draft)</div>
                 <div class="questions-num mt-2">
-                  <h2 class="quiz-title" id="quiz-title">Chapter 1-Photosynthesis</h2>
+                  <h2 class="quiz-title form-control" id="quiz-title">Chapter 1-Photosynthesis</h2>
+                  <p>Click a number to view the question</p>
                   <div class="d-flex" style="gap: 20px;" id="quiz-numbers">
                     <!-- <div class="numbers-block">
                       1
                     </div> -->
                     <!-- <div class="numbers-block">
                       2
-                    </div>
-                    <div class="numbers-block">
-                      3
-                    </div>
-                    <div class="numbers-block">
-                      4
-                    </div>
-                    <div class="numbers-block">
-                      5
-                    </div>
-                    <div class="numbers-block">
-                      +
                     </div> -->
                   </div>
                 </div>
                 <div class="questions-block">
-                  <!-- <div class="quiz-title" id="quiz-question">What is Photosynthesis?</div>
-                  <div class="radioButton col-md-12 col-lg-12 col-12 mb-3" id="quiz-options">
-                    <div class="form-check form-check-inline radioBox">
-                      <input type="radio" id="kg" name="weightUnit" [value]="1" />
-                      <label class="form-check-label" for="kg">Process in which plants make their own food</label>
-                    </div>
-  
-                    <div class="form-check form-check-inline radioBox">
-                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
-                      <label class="form-check-label" for="lbs">Process used for agriculture</label>
-                    </div>
-                    <div class="form-check form-check-inline radioBox">
-                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
-                      <label class="form-check-label" for="lbs">Feeding good amount of water to plants</label>
-                    </div>
-                    <div class="form-check form-check-inline radioBox">
-                      <input type="radio" id="lbs" name="weightUnit" [value]="2" checked />
-                      <label class="form-check-label" for="lbs">None of the above</label>
-                    </div>
-                  </div> -->
                   <div id="quiz-title"></div>
-                  <div class="mb-2" id="quiz-numbers"></div>
-                  <div id="quiz-question"></div>
+                  <div class="mb-2"></div>
+                  <p>Question:</p><div id="quiz-question" class="form-control"></div>
                   <div id="quiz-options"></div>
 
-                  <p class="note"><span>Note:</span>Selected answer above is marked as correct.</p>
+                  <p class="note"><span>Note: </span>Selected answer above is marked as correct.</p>
 
                 </div>
               </div>
-              <button class="deleteButton cancel-button" type="button">
-                Stop generating
+              <button class="deleteButton" id="end-quiz" type="button">
+                Delete Quiz
               </button>
             </div>
 
@@ -1521,8 +1542,8 @@ aria-hidden="true">
                 <div class="d-flex align-items-center justify-content-between" style="gap:10px">
 
                   <div class="quiz-heading">Quiz (Draft)</div>
-                  <button id="publish-quiz" type="button" class="customButton" style="width: 40%;"
-                    data-bs-toggle="modal" data-bs-target="#publish-quiz-modal">End Quiz</button>
+                  <button id="end-quiz" type="button" class="customButton" style="width: 40%;"
+                    data-bs-toggle="modal" data-bs-target="#end-quiz-modal">End Quiz</button>
                 </div>
                 <div class="tabs-block">
                   <p id="participants" class="activeTabs">Participants</p>
@@ -1574,7 +1595,7 @@ aria-hidden="true">
                     <h5>I cannot seem to understand the question.</h5>
                     <div class="customInput">
                       <input type="text" placeholder="Respond" />
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
                         <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />
                         <path
                           d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472"
@@ -1586,7 +1607,7 @@ aria-hidden="true">
 
                 </div>
               </div>
-              <button class="deleteButton cancel-button" type="button">
+              <button class="deleteButton" type="button" data-bs-toggle="modal" data-bs-target="#end-quiz-modal">
                 Cancel Quiz
               </button>
             </div>
@@ -1754,9 +1775,9 @@ aria-hidden="true">
               <p>Chat</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle microphone">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle quiz">
             <div class="iconButton">
-              <button class="cancel-button" type="button" title="Toggle microphone">
+              <button id="quiz-button" class="cancel-button" type="button" title="Toggle Quiz">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
                   <path
                     d="M9.6 13H38.4C40.0443 13 41 14.0465 41 14.8889V35.1111C41 35.9535 40.0443 37 38.4 37H9.6C7.95565 37 7 35.9535 7 35.1111V14.8889C7 14.0465 7.95565 13 9.6 13Z"
@@ -1802,6 +1823,24 @@ aria-hidden="true">
             </div>
           </div>
           <div id="toggle-icons" style="display: none;">
+
+            
+        <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Transcription">
+          <div class="iconButton">
+            <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
+            data-bs-toggle="button" aria-pressed="true" autocomplete="off">
+            <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
+          </button>
+          </div>
+          <button style="height: 32px;" id="button-video-filter-drop" type="button"
+            class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+          <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
+            <a class="dropdown-item" href="#">No filter</a>
+          </div>
+        </div>
+
             <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Apply filter">
               <div class="iconButton">
                 <button id="button-video-filter" type="button" title="Apply filter">
