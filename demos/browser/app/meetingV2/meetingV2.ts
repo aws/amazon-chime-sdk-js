@@ -544,7 +544,7 @@ export class DemoMeetingApp
       document.getElementById('stack').innerText = '' + e;
     }
 
-    this.switchToFlow('flow-fatal');
+    // this.switchToFlow('flow-fatal');
   }
 
   initParameters(): void {
@@ -766,6 +766,8 @@ export class DemoMeetingApp
     }
     
     const formData = generateFormData(storedQuiz);
+    console.log("Checkpoint 2 Form Data", formData);
+
     console.log(formData);
     
 
@@ -774,7 +776,7 @@ export class DemoMeetingApp
 
 
       const formDataString = JSON.stringify(formData);
-      console.log('formDataString:', formDataString);
+      console.log('Checkpoint 3 formDataString:', formDataString);
     
       // Send the formData as a stringified JSON
       this.audioVideo.realtimeSendDataMessage(
@@ -950,9 +952,6 @@ updateBodyBackgroundColor();
       'click',
       async (): Promise<void> => {
 
-
-
-
         // STEP 1: CONFIGURATION FORM
         const create_quiz = document.getElementById('create-quiz');
         var generating_quiz = document.getElementById('generating-quiz');
@@ -1036,6 +1035,9 @@ updateBodyBackgroundColor();
         const quizTitleHTML = document.getElementById('quiz-title') as HTMLElement;
         quizTitleHTML.innerText = quizTitle;
 
+        const quizFormTitleHTML = document.getElementById('quiz-form-title') as HTMLElement;
+        quizFormTitleHTML.innerText = quizTitle;
+
         const questions = quizJson.questions;
         console.log(questions);
 
@@ -1101,12 +1103,18 @@ updateBodyBackgroundColor();
                         optionLabel.classList.remove('correct-answer');
                       }
 
-                      let answerLabel = document.createElement('label');
-                      answerLabel.className = 'btn btn-outline-primary  form-control';
-                      answerLabel.htmlFor = optionInput.id;
-                      answerLabel.innerText = answer;
+                      let answerselectorLabel = document.createElement('label');
+                      answerselectorLabel.className = 'btn btn-outline-primary';
+                      answerselectorLabel.htmlFor = optionInput.id;
+                      answerselectorLabel.innerText = "X";
+
+                      let answerLabel = document.createElement('input');
+                      answerLabel.className = 'form-control answer-text';
+                      // answerLabel.htmlFor = optionInput.id;
+                      answerLabel.value = answer;
 
                       optionLabel.appendChild(optionInput);
+                      optionLabel.appendChild(answerselectorLabel);
                       optionLabel.appendChild(answerLabel);
                       quizOptions.appendChild(optionLabel);
                       
@@ -1148,26 +1156,26 @@ updateBodyBackgroundColor();
                     });
                 
 
-                    optionLabel.addEventListener('dbclick', () => {
+                    optionLabel.addEventListener('click', () => {
                                 answerLabel.contentEditable = 'true';
                                 optionLabel.classList.add('editing');
-                                optionLabel.classList.add('form-control');
+                                // optionLabel.classList.add('form-control');
                                 this.focus();
-                                const originalText = answerLabel.textContent;
+                                const originalText = answerLabel.value;
                 
                                 answerLabel.addEventListener('blur', () => {
-                                  const newText = answerLabel.textContent?.trim() || '';
+                                  const newText = answerLabel.value?.trim() || '';
                                     answerLabel.contentEditable = 'false';
                                     optionLabel.classList.remove('editing');
-                                    optionLabel.classList.remove('form-control');
+                                    // optionLabel.classList.remove('form-control');
                     
                                         if (newText === '') {
-                                          optionLabel.textContent = answer;
+                                          answerLabel.value = answer;
                                         }
                                       
                                         if (newText !== originalText) {
                                           // Update the answer label in the DOM
-                                          answerLabel.innerText = newText;
+                                          answerLabel.value = newText;
                                       }
                                       if (optionInput.checked) {
                                         // If this option is checked, update the correct answer
@@ -1187,7 +1195,7 @@ updateBodyBackgroundColor();
                             const target = event.target as HTMLElement;
                             if (!target.classList.contains('editing')) {
                               optionLabel.classList.remove('editing');
-                              optionLabel.classList.remove('form-control');
+                              // optionLabel.classList.remove('form-control');
                             }
                           });
                          
@@ -1237,11 +1245,14 @@ updateBodyBackgroundColor();
                 // Get the form element
                 console.log("Dom loaded");
                 const myDIV = document.getElementById('myDIV');
-            
+                const starting_quiz_container = document.getElementById('starting_quiz_container');
                 // Function to close the form (hide it in this case)
                 function closeForm() {
                     if (myDIV) {
                         myDIV.style.display = 'none';
+                    }
+                    if (starting_quiz_container){
+                      starting_quiz_container.style.display = 'none';
                     }
                 }
             
@@ -1344,7 +1355,14 @@ updateBodyBackgroundColor();
     // *****************************
     // load the js file quizbot.js
 
-
+    // when you click #joinButton, also click #button-start-transcription:
+    const joinButton = document.getElementById('joinButton');
+    joinButton?.addEventListener('click', function() {
+      var startTranscription = document.getElementById('button-start-transcription');
+      if (startTranscription) {
+        (startTranscription as HTMLElement).click();
+      }
+    });
 
 
     var tc = document.getElementById('transcript-container');
@@ -2463,53 +2481,53 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     // DREW SEND END BEGIN
 
     // SendFormMessage is for after the form has been initialized and set up, now we're sending the quiz.
-    const sendFormMessage = (): void => {
-      AsyncScheduler.nextTick(() => {
+    // const sendFormMessage = (): void => {
+    //   AsyncScheduler.nextTick(() => {
     
-        // Fetch the stored quiz data
-        const storedQuiz: QuizJSON = JSON.parse(localStorage.getItem('quizJson') || '{}');
-        const quizTitle = storedQuiz.quiz_title;
-        const questions = storedQuiz.questions;
+    //     // Fetch the stored quiz data
+    //     const storedQuiz: QuizJSON = JSON.parse(localStorage.getItem('quizJson') || '{}');
+    //     const quizTitle = storedQuiz.quiz_title;
+    //     const questions = storedQuiz.questions;
     
-        const formData = {
-          title: quizTitle,
-          fields: [
-            { label: 'Quiz Title', type: 'text', value: quizTitle }, 
-            ...questions.map((question: QuizQuestion) => {
-              return {
-                label: question.question,
-                type: 'dropdown',
-                options: [question.correct_answer, ...question.wrong_answers],
-              };
-            })
-          ],
-          host: this.meetingSession.configuration.credentials.attendeeId
-        };
-        const formDataString = JSON.stringify(formData);
+    //     const formData = {
+    //       title: quizTitle,
+    //       fields: [
+    //         { label: 'Quiz Title', type: 'text', value: quizTitle }, 
+    //         ...questions.map((question: QuizQuestion) => {
+    //           return {
+    //             label: question.question,
+    //             type: 'dropdown',
+    //             options: [question.correct_answer, ...question.wrong_answers],
+    //           };
+    //         })
+    //       ],
+    //       host: this.meetingSession.configuration.credentials.attendeeId
+    //     };
+    //     const formDataString = JSON.stringify(formData);
+    //     console.log("Checkpoint 1 Form Data String", formDataString)
+    //     const textToSend = formDataString;
+    //     this.audioVideo.realtimeSendDataMessage(
+    //       'displayForm',
+    //       textToSend,
+    //       DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+    //     );
+    //     // echo the message to the handler
+    //     // this.dataMessageHandler(
+    //     //   new DataMessage(
+    //     //     Date.now(),
+    //     //     'displayForm',
+    //     //     new TextEncoder().encode(textToSend),
+    //     //     this.meetingSession.configuration.credentials.attendeeId,
+    //     //     this.meetingSession.configuration.credentials.externalUserId
+    //     //   )
+    //     // );
+    //   });
+    // };
     
-        const textToSend = formDataString;
-        this.audioVideo.realtimeSendDataMessage(
-          'displayForm',
-          textToSend,
-          DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-        );
-        // echo the message to the handler
-        // this.dataMessageHandler(
-        //   new DataMessage(
-        //     Date.now(),
-        //     'displayForm',
-        //     new TextEncoder().encode(textToSend),
-        //     this.meetingSession.configuration.credentials.attendeeId,
-        //     this.meetingSession.configuration.credentials.externalUserId
-        //   )
-        // );
-      });
-    };
-    
-    const textAreaSendFormMessage = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
-    textAreaSendFormMessage.addEventListener('click', e => {
-      sendFormMessage();
-    });
+    // const textAreaSendFormMessage = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
+    // textAreaSendFormMessage.addEventListener('click', e => {
+    //   sendFormMessage();
+    // });
     
     // DREW SEND END
 

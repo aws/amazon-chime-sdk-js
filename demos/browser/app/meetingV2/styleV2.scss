@@ -2474,3 +2474,38 @@ input[type="Submit"]:hover{
       width:100%;
       padding:5px
     }
+    .correct-marker{
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      height: 100%;
+      margin-right: -5px;
+      padding: 10px;
+      z-index: 100;
+      position: relative;
+      font-weight: 900;
+      background: #2c3e50;
+      color: white;
+    }
+
+    .correct-marker:hover{
+      background-color: #40cf70c3;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .answer-text{
+      width: 85%;
+      display: inline-block;
+      height: 100%;
+      padding: 8px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      padding-left: 10px;
+    }
+
+    #quiz-question{
+      margin-top: -10px;
+      width: 100%;
+      font-size: 18px;
+    }

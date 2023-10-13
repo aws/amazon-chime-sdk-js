@@ -300,14 +300,37 @@
             <p>Schedule</p>
           </div>
         </div>
-        <div id="scheduleMeetingModal" style="display:none">
-          <!-- make a meeting schedule selector -->
-          <h2>Set up a Scheduled Meeting</h2>
-          <input type="datetime-local" id="meetingScheduleTime" /> 
-          <p>Please select a date and time for your meeting.</p>
-          <!-- submit button -->
-          <button id="scheduleMeetingSubmit">Submit</button>
-        </div>
+
+
+                  
+            <!-- SCHEDULING MEETING AT THIS TIME? -->
+            <div class="modal fade" id="schedule-meeting-modal" tabindex="-1" aria-labelledby="schedule-meeting-modal-label"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="schedule-meeting-modal-label">Schedule Quiz</h5>
+                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+                <div class="modal-body">
+                  Scheduling a meeting is not available at this time. Send now? 
+                <h2>Set up a Scheduled Meeting</h2>
+                <input type="datetime-local" id="meetingScheduleTime" /> 
+                <p>Please select a date and time for your meeting.</p>
+                <!-- submit button -->
+                </div>
+                <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
+                    aria-label="Close">Cancel</button>
+                  <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
+                    data-bs-target="#quiz-sent-modal" id="scheduleMeetingSubmit">Submit</button>
+                </div>
+
+              </div>
+            </div>
+            <button onclick="history.back()">Go Back</button>
+          </div>
+
+
         <h6 class="mt-4 mb-4">Quiz Dashboard</h6>
         <div class="quizBlock dashboard_stats" style="display:none">
           <div class="d-flex justify-content-between">
@@ -397,7 +420,7 @@
   <!-- End of joining page -->
 
 
-  <div id="flow-fatal" class="flow">
+  <!-- <div id="flow-fatal" class="flow">
     <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
       <h1>Fatal error</h1>
       <p>An error was thrown that should not occur in ordinary use. This should be considered a fatal error for testing
@@ -406,7 +429,7 @@
         based on this demo.</p>
       <code id="stack"></code>
     </div>
-  </div>
+  </div> -->
 
   <!-- Initial meeting authentication screen with meeting and name inputs -->
   <div id="main-page" class="main-page" style="display: none;">
@@ -513,7 +536,7 @@
         <div class="modal-body ">
           <div class="modal-details">
             The teacher is inviting you to take a quiz.
-            <span>Chapter 1 - Photosynthesis</span>
+            <span id="quiz-form-title">Chapter 1 - Photosynthesis</span>
 
           </div>
 
@@ -590,7 +613,7 @@
       </div>
       <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
           aria-label="Close">Cancel</button>
-        <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
+        <button type="button" class="customButton cancel-button" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
           data-bs-target="#quiz-sent-modal" id="end-quiz-button">End the Quiz</button>
       </div>
 
@@ -1200,10 +1223,7 @@ aria-hidden="true">
       <div id="starting_quiz_container" style="gap: 20px;display: none;">
         <div class="quizContainer h-100" style="width: 70%;">
           <div class="d-flex justify-content-end mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M15 3H21M21 3V9M21 3L14.5 9.5M9 3H3V9M15 21H21V15M9 21H3M3 21V15M3 21L9.5 14.5" stroke="#3F4149"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+            <button type="button" class="btn-close cancel-button"></button>
           </div>
           <div>
             <div class="d-flex flex-column justify-content-between h-100 scrollbar-new-design"
@@ -1494,7 +1514,7 @@ aria-hidden="true">
                     data-bs-target="#publish-quiz-modal">Publish the Quiz</button>
                   <button class="btn" style="border-radius: 8px;
                     border: 3px solid #8E509C;" data-bs-toggle="modal"
-                    data-bs-target="#publish-quiz-modal">
+                    data-bs-target="#schedule-quiz-modal">
 
                     <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 0 32 32" fill="none">
                       <path
