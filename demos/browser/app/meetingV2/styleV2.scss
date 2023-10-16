@@ -449,14 +449,14 @@ body {
 .svg-active {
   fill: lighten($secondary, 15%);
   g {
-    fill: lightgray;
+    fill: rgb(74, 74, 74);
   }
 }
 
 .svg-inactive {
   fill: $white;
   g {
-    fill: gray;
+    fill: rgb(236, 236, 236);
   }
 }
 
@@ -1177,6 +1177,10 @@ a.markdown:active {
   text-decoration-color: red;
 }
 
+#receive-message{
+  padding-top: 5px;
+}
+
 .entity-color {
   color: green;
   font-weight: bold;
@@ -1847,7 +1851,7 @@ input[type='radio'] {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 180px;
+    min-height: 180px;
   }
   .card .overlay {
     display: flex;
@@ -2509,3 +2513,16 @@ input[type="Submit"]:hover{
       width: 100%;
       font-size: 18px;
     }
+
+    .header-row{
+      padding-bottom:15px
+    }
+
+    ::selection {
+      background: var(--highlight-color);
+    }
+
+    .correct-answer .btn-outline-primary{
+      background:green
+    }
+    

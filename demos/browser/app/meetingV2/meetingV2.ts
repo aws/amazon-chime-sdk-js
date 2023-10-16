@@ -281,6 +281,31 @@ interface QuizJSON {
 
 }
 
+interface QuizAttempt {
+  quiz_id: string;
+  timestamp: string;
+  user_id: string;
+  score: number;
+  correct: number[];
+  incorrect: number[];
+}
+
+type Field = {
+  label: string;
+  type: string;
+  value?: string;
+  options?: string[];
+  correct_answer?: string;
+};
+
+type FormData = {
+  title: string;
+  fields: Field[];
+  host: string;
+  quiz_id?: string; // Assuming quiz_id is a field in the quizJson
+};
+
+
 
 export class DemoMeetingApp
   implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver, VideoDownlinkObserver {
@@ -364,6 +389,7 @@ export class DemoMeetingApp
     'button-record-self': 'off',
     'button-record-cloud': 'off',
     'button-live-connector': 'off',
+    'quiz-button':'off'
   };
 
   isViewOnly = false;
@@ -756,6 +782,7 @@ export class DemoMeetingApp
                         label: question.question,
                         type: 'dropdown',
                         options: [question.correct_answer, ...question.wrong_answers],
+                        correct_answer: question.correct_answer,
                     };
                 })
             ],
@@ -1281,7 +1308,8 @@ updateBodyBackgroundColor();
         const quizButton = document.getElementById('quiz-button');
 
         quizButton?.addEventListener('click', function() {
-            if (x) {
+          // this.toggleButton('quiz-button');
+          if (x) {
               const create_quiz = document.getElementById('create-quiz');
 
               console.log('button-quizbot');
@@ -1414,7 +1442,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   const loginSpinner = document.getElementById('login-spinner')!;
   loginSpinner.style.display = 'block';
 
-  const targetForm = <HTMLFormElement>event.target;
+  const targetForm = event.target as HTMLFormElement;
   const username: string = targetForm.username.value;
   const password: string = targetForm.password.value;
 
@@ -2477,60 +2505,6 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       }
     });
     
-
-    // DREW SEND END BEGIN
-
-    // SendFormMessage is for after the form has been initialized and set up, now we're sending the quiz.
-    // const sendFormMessage = (): void => {
-    //   AsyncScheduler.nextTick(() => {
-    
-    //     // Fetch the stored quiz data
-    //     const storedQuiz: QuizJSON = JSON.parse(localStorage.getItem('quizJson') || '{}');
-    //     const quizTitle = storedQuiz.quiz_title;
-    //     const questions = storedQuiz.questions;
-    
-    //     const formData = {
-    //       title: quizTitle,
-    //       fields: [
-    //         { label: 'Quiz Title', type: 'text', value: quizTitle }, 
-    //         ...questions.map((question: QuizQuestion) => {
-    //           return {
-    //             label: question.question,
-    //             type: 'dropdown',
-    //             options: [question.correct_answer, ...question.wrong_answers],
-    //           };
-    //         })
-    //       ],
-    //       host: this.meetingSession.configuration.credentials.attendeeId
-    //     };
-    //     const formDataString = JSON.stringify(formData);
-    //     console.log("Checkpoint 1 Form Data String", formDataString)
-    //     const textToSend = formDataString;
-    //     this.audioVideo.realtimeSendDataMessage(
-    //       'displayForm',
-    //       textToSend,
-    //       DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-    //     );
-    //     // echo the message to the handler
-    //     // this.dataMessageHandler(
-    //     //   new DataMessage(
-    //     //     Date.now(),
-    //     //     'displayForm',
-    //     //     new TextEncoder().encode(textToSend),
-    //     //     this.meetingSession.configuration.credentials.attendeeId,
-    //     //     this.meetingSession.configuration.credentials.externalUserId
-    //     //   )
-    //     // );
-    //   });
-    // };
-    
-    // const textAreaSendFormMessage = document.getElementById('publish-quiz-button') as HTMLTextAreaElement;
-    // textAreaSendFormMessage.addEventListener('click', e => {
-    //   sendFormMessage();
-    // });
-    
-    // DREW SEND END
-
     const buttonMeetingEnd = document.getElementById('button-meeting-end');
     buttonMeetingEnd.addEventListener('click', _e => {
       const confirmEnd = new URL(window.location.href).searchParams.get('confirm-end') === 'true';
@@ -3350,21 +3324,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
         return;
       }
       this.lastReceivedMessageTimestamp = dataMessage.timestampMs;
-      // Drew ADD FORM POPUP END SEND END
-      // const parsedMessage = JSON.parse(dataMessage.text());
-
-      // Check if the message has an action to display a form
-      // if parsedMessage.action === 'displayForm'  and dataMessage.senderAttendeeId !== this.meetingSession.configuration.credentials.attendeeId
-      // if (parsedMessage.action === 'displayForm' && !isSelf) {
-      // // if (parsedMessage.action === 'displayForm') {
-      //   // show the #challenge-modal:
-
-      //   // displayFormPopup(parsedMessage.formData);
-
-      //   return; // Exit early after displaying the form
-      // }
-      // END DREW ADD
-
+     
       // DREW ADD
 
       // console.log("*************************message:", dataMessage);
@@ -3373,6 +3333,137 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
         console.log('*************************RUNNNING DISPLAYFORM:');
         console.log('Received message:', dataMessage.text());
     
+
+
+
+        
+        // ***************************
+        // QUIZ RECEIVED HANDLER START
+
+        const userId = localStorage.getItem('user_id') || '';
+      
+      const QuizAttempts: QuizAttempt = {
+          quiz_id: '',
+          timestamp: new Date().toISOString(),
+          user_id: userId,
+          score: 0,
+          correct: [],
+          incorrect: []
+      };
+            populateQuiz(dataMessage.text());
+
+      function populateQuiz(dataString: string) {
+        const data: FormData = JSON.parse(dataString);
+        
+        document.getElementById("quiz-form-title")!.textContent = data.title;
+    
+        // Clear previous question
+        const questionBlock = document.getElementById("quiz-taker-question");
+        const answerBlock = document.getElementById("quiz-taker-answers");
+        answerBlock.innerHTML = "";
+        if (questionBlock && answerBlock) {
+            questionBlock.innerHTML = "";
+            answerBlock.innerHTML = "";
+        }
+    
+        data.fields.forEach((field, index) => {
+            if (field.type === "dropdown") {
+                const question = document.createElement("div");
+                question.className = "quiz-title";
+                question.style.fontSize = "24px";
+                question.textContent = field.label;
+                questionBlock?.appendChild(question);
+    
+                field.options?.forEach((option, optionIndex) => {
+                    const answerOption = document.createElement("div");
+                    answerOption.className = "form-check form-check-inline radioBox";
+    
+                    const input = document.createElement("input");
+                    input.type = "radio";
+                    input.id = `answer-${index}-${optionIndex}`;
+                    input.name = `question-${index}`;
+                    input.value = option;
+                    input.addEventListener("click", () => {
+                        const correctAnswer = field.correct_answer;
+                        if (option === correctAnswer) {
+                            QuizAttempts.correct.push(index);
+                        } else {
+                            QuizAttempts.incorrect.push(index);
+                        }
+                    });
+    
+                    const label = document.createElement("label");
+                    label.className = "form-check-label";
+                    label.htmlFor = input.id;
+                    label.textContent = option;
+    
+                    answerOption.appendChild(input);
+                    answerOption.appendChild(label);
+                    answerBlock?.appendChild(answerOption);
+                });
+            }
+        });
+        
+
+        
+          
+            
+
+
+      let currentQuestionIndex = 0; // To track which question is currently displayed
+      
+      function displayQuestion(index: number) {
+        const question = data.fields[index];
+        if (question.type === "dropdown") {
+            document.getElementById("quiz-taker-question")!.textContent = question.label;
+
+            const answersContainer = document.getElementById("quiz-taker-answers")!;
+            answersContainer.innerHTML = ""; // Clear previous answers
+            question.options.forEach((option, optionIndex) => {
+                const radioDiv = document.createElement("div");
+                radioDiv.className = "form-check form-check-inline radioBox";
+
+                const input = document.createElement("input");
+                input.type = "radio";
+                input.id = `answer_${index}_${optionIndex}`;
+                input.name = `question_${index}`;
+
+                const label = document.createElement("label");
+                label.className = "form-check-label";
+                label.setAttribute("for", input.id);
+                label.textContent = option;
+
+                radioDiv.appendChild(input);
+                radioDiv.appendChild(label);
+                answersContainer.appendChild(radioDiv);
+            });
+        }
+    }
+
+
+
+      document.getElementById("quiz-taker-next")!.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < data.fields.length) {
+            displayQuestion(currentQuestionIndex);
+        } else {
+            // You can redirect or show results here when all questions are done.
+            alert("Quiz completed!");
+            localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
+            submitQuizAttempts();
+
+        }
+    });
+
+    displayQuestion(currentQuestionIndex); // Display the first question initially
+  }
+
+
+
+
+
+        // QUIZ RECEIVED HANDLER END
+
         let myModalEl = document.getElementById('challenge-modal');
         if (myModalEl) {
             let myModal = new Modal(myModalEl);
@@ -3382,7 +3473,13 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
         // const parsedMessage = JSON.parse(messageContent);
         // const receivedData = JSON.parse(dataMessage.text());
         // this.displayForm(receivedData);
+        return;
       }
+
+
+
+
+
       // DREW ADD END
 
       const messageDiv = document.getElementById('receive-message') as HTMLDivElement;
@@ -3432,88 +3529,6 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       }
     );
   }
-
-  // DRew FORM FUNCTION ********************
-
-  // async displayForm(displayformData: any): Promise<void> {
-  //   // Parse the received message
-  //   // const displayformData = JSON.parse(dataMessage.text());
-  //   console.log('*************************RUNNNING DISPLAYFORM!!!!');
-  //   // const displayformData = dataMessage;
-  //   // Call the function to display the form with the received data
-  //   // if element with ID of quiz-form exists, remove it
-  //   const existingFormElement = document.getElementById('quiz-form');
-  //   if (existingFormElement) {
-  //     existingFormElement.remove();
-  //   }
-
-  //   const formElement = document.createElement('form');
-  //   // give it ID of quiz-form
-  //   formElement.id = 'quiz-form';
-  //   // set its z-index to 1000 so it appears on top of everything else
-  //   formElement.style.zIndex = '1000';
-  //   // set its position to fixed so it appears in the top left corner
-  //   formElement.style.position = 'fixed';
-  //   // set its top and left to 0 so it appears in the top left corner
-  //   formElement.style.top = '20%';
-  //   // and background white so it's visible
-  //   formElement.style.background = 'white';
-  //   // set its width and height to 100% so it takes up the whole screen
-  //   formElement.style.width = '80%';
-  //   // center the form
-  //   formElement.style.left = '10%';
-  //   // padding to 20px so it's not right up against the edge
-  //   formElement.style.padding = '20px';
-  //   // add a cancel button to the form so the user can close it
-  //   const cancelButton = document.createElement('button');
-  //   cancelButton.innerText = 'Cancel';
-  //   cancelButton.addEventListener('click', () => {
-  //     formElement.remove();
-  //   });
-  //   formElement.appendChild(cancelButton);
-
-  //   const titleElement = document.createElement('h2');
-  //   titleElement.innerText = displayformData.title;
-
-  //   formElement.appendChild(titleElement);
-
-  //   displayformData.fields.forEach((field: { label: string; type: string; options?: string[] }) => {
-  //     const labelElement = document.createElement('label');
-  //     labelElement.innerText = field.label;
-  //     formElement.appendChild(labelElement);
-
-  //     let inputElement: HTMLSelectElement | HTMLTextAreaElement;
-  //     switch (field.type) {
-  //       case 'dropdown':
-  //         inputElement = document.createElement('select');
-  //         field.options?.forEach(option => {
-  //           const optionElement = document.createElement('option');
-  //           optionElement.value = option;
-  //           optionElement.innerText = option;
-  //           inputElement.appendChild(optionElement);
-  //         });
-  //         break;
-  //       case 'textarea':
-  //         inputElement = document.createElement('textarea');
-  //         break;
-  //     }
-
-  //     formElement.appendChild(inputElement);
-  //   });
-
-  //   const submitButton = document.createElement('button');
-  //   submitButton.innerText = 'Submit';
-  //   formElement.appendChild(submitButton);
-
-  //   // Append the form to your modal or popup container
-  //   const modalContainer: HTMLElement = document.getElementById('meeting-container')!;
-  //   modalContainer.appendChild(formElement);
-
-  //   // Display the modal or popup
-  //   modalContainer.style.display = 'block';
-  // }
-
-  // END DREW FORM FUNCTION ***************
 
   transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
     if (!this.enableLiveTranscription) {
@@ -5447,4 +5462,39 @@ window.addEventListener('click', event => {
     liveTranscriptionModal.style.display = 'none';
   }
 });
+const defaultQuizAttempt = {
+  _id: "", // You will fill this in when saving the attempt.
+  quiz_id: "", // You will update this from your quiz data.
+  timestamp: new Date().toISOString(),
+  user_id: localStorage.getItem('user_id') || "", // If there's no user_id, it defaults to an empty string.
+  score: 0,
+  correct: [] as string[], // This asserts that 'correct' is an array of strings.
+  incorrect: [] as string[], // Similarly, this asserts that 'incorrect' is an array of strings.
+};
+
+
+function submitQuizAttempts() {
+  const url = "https://app.larq.ai/api/MakeQuizAttempt";
+  const storedData = localStorage.getItem('QuizAttempts');
+  const QuizAttempts = storedData ? JSON.parse(storedData) : defaultQuizAttempt;
+  const totalQuestions = (QuizAttempts as any).correct.length + (QuizAttempts as any).incorrect.length;
+  QuizAttempts.score = QuizAttempts.correct.length / totalQuestions;
+
+  fetch(url, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(QuizAttempts)
+  }).then(response => {
+      if (!response.ok) {
+          return response.text().then(text => {
+              throw new Error(`Server responded with status ${response.status}: ${text}`);
+          });
+      }
+      console.log("Quiz attempt submitted successfully.");
+  });
+}
+
+
 
