@@ -3356,7 +3356,8 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
         const data: FormData = JSON.parse(dataString);
         
         document.getElementById("quiz-form-title")!.textContent = data.title;
-    
+        document.getElementById("quiz-taker-title")!.textContent = data.title;
+        
         // Clear previous question
         const questionBlock = document.getElementById("quiz-taker-question");
         const answerBlock = document.getElementById("quiz-taker-answers");
