@@ -3373,24 +3373,39 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
                 question.style.fontSize = "24px";
                 question.textContent = field.label;
                 questionBlock?.appendChild(question);
+
+                let answerSelected = false; // New variable to track if an answer has been selected for this question
     
                 field.options?.forEach((option, optionIndex) => {
                     const answerOption = document.createElement("div");
-                    answerOption.className = "form-check form-check-inline radioBox";
+                    answerOption.className = "form-check form-check-inline radioBox btn-outline-primary"; // Added btn-outline-primary here
     
                     const input = document.createElement("input");
-                    input.type = "radio";
+                    input.type = "checkbox";
                     input.id = `answer-${index}-${optionIndex}`;
                     input.name = `question-${index}`;
                     input.value = option;
+                    input.className = "btn btn-outline-primary";
                     input.addEventListener("click", () => {
-                        const correctAnswer = field.correct_answer;
-                        if (option === correctAnswer) {
-                            QuizAttempts.correct.push(index);
-                        } else {
-                            QuizAttempts.incorrect.push(index);
-                        }
-                    });
+                      if (!answerSelected) {
+                          const correctAnswer = field.correct_answer;
+                          if (option === correctAnswer) {
+                              QuizAttempts.correct.push(index);
+                              answerOption.classList.add('correct-answer'); // Instead of green outline, add .correct-answer
+                          } else {
+                              QuizAttempts.incorrect.push(index);
+                          }
+                          answerSelected = true; // Mark that an answer has been selected
+      
+                          // Disable all other options for this question
+                          field.options?.forEach((_, otherOptionIndex) => {
+                              if (optionIndex !== otherOptionIndex) {
+                                (document.getElementById(`answer-${index}-${otherOptionIndex}`) as HTMLInputElement).disabled = true; 
+                              }
+                          });
+                      }
+                  });
+      
     
                     const label = document.createElement("label");
                     label.className = "form-check-label";
@@ -3412,41 +3427,61 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
 
       let currentQuestionIndex = 0; // To track which question is currently displayed
       
+
+      function clearPreviousQuestions() {
+        const questionBlock = document.getElementById("quiz-taker-question");
+        const answerBlock = document.getElementById("quiz-taker-answers");
+        if (questionBlock && answerBlock) {
+          questionBlock.innerHTML = "";
+          answerBlock.innerHTML = "";
+        }
+      }
+      
       function displayQuestion(index: number) {
+        clearPreviousQuestions(); // Clear previous question and answers
+      
         const question = data.fields[index];
         if (question.type === "dropdown") {
-            document.getElementById("quiz-taker-question")!.textContent = question.label;
-
-            const answersContainer = document.getElementById("quiz-taker-answers")!;
-            answersContainer.innerHTML = ""; // Clear previous answers
-            question.options.forEach((option, optionIndex) => {
-                const radioDiv = document.createElement("div");
-                radioDiv.className = "form-check form-check-inline radioBox";
-
-                const input = document.createElement("input");
-                input.type = "radio";
-                input.id = `answer_${index}_${optionIndex}`;
-                input.name = `question_${index}`;
-
-                const label = document.createElement("label");
-                label.className = "form-check-label";
-                label.setAttribute("for", input.id);
-                label.textContent = option;
-
-                radioDiv.appendChild(input);
-                radioDiv.appendChild(label);
-                answersContainer.appendChild(radioDiv);
+          document.getElementById("quiz-taker-question")!.textContent = question.label;
+      
+          const answersContainer = document.getElementById("quiz-taker-answers")!;
+          question.options.forEach((option, optionIndex) => {
+            const radioDiv = document.createElement("div");
+            radioDiv.className = "form-check form-check-inline radioBox";
+      
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.id = `answer_${index}_${optionIndex}`;
+            input.name = `question_${index}`;
+            input.addEventListener("change", () => {
+              const correctAnswer = question.correct_answer;
+              if (option === correctAnswer) {
+                QuizAttempts.correct.push(index);
+                radioDiv.style.outline = "2px solid green"; // Highlight correct answer with green outline
+              } else {
+                QuizAttempts.incorrect.push(index);
+              }
             });
+      
+            const label = document.createElement("label");
+            label.className = "form-check-label";
+            label.setAttribute("for", input.id);
+            label.textContent = option;
+      
+            radioDiv.appendChild(input);
+            radioDiv.appendChild(label);
+            answersContainer.appendChild(radioDiv);
+          });
         }
-    }
-
-
-
+      }
+      
+      // When the next button is clicked
       document.getElementById("quiz-taker-next")!.addEventListener("click", () => {
         currentQuestionIndex++;
         if (currentQuestionIndex < data.fields.length) {
-            displayQuestion(currentQuestionIndex);
+          displayQuestion(currentQuestionIndex);
         } else {
+          QuizAttempts.score = QuizAttempts.correct.length; // Update the score when the quiz is completed
             // You can redirect or show results here when all questions are done.
             alert("Quiz completed!");
             localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
@@ -3456,6 +3491,8 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     });
 
     displayQuestion(currentQuestionIndex); // Display the first question initially
+
+    
   }
 
 
@@ -5477,6 +5514,7 @@ function submitQuizAttempts() {
   const url = "https://app.larq.ai/api/MakeQuizAttempt";
   const storedData = localStorage.getItem('QuizAttempts');
   const QuizAttempts = storedData ? JSON.parse(storedData) : defaultQuizAttempt;
+  console.log("QuizAttempts to sent to larq API:",QuizAttempts);
   const totalQuestions = (QuizAttempts as any).correct.length + (QuizAttempts as any).incorrect.length;
   QuizAttempts.score = QuizAttempts.correct.length / totalQuestions;
 
