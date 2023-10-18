@@ -8,10 +8,10 @@ const https = require('https');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 
-// const privateKey = fs.readFileSync('/etc/letsencrypt/live/larq.ai/privkey.pem', 'utf8');
-// const certificate = fs.readFileSync('/etc/letsencrypt/live/larq.ai/fullchain.pem', 'utf8');
-const privateKey = fs.readFileSync('key.pem', 'utf-8')
-const certificate = fs.readFileSync('cert.pem', 'utf-8')
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/larq.ai/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/larq.ai/fullchain.pem', 'utf8');
+// const privateKey = fs.readFileSync('key.pem', 'utf-8')
+// const certificate = fs.readFileSync('cert.pem', 'utf-8')
 
 const credentials = {
   key: privateKey,
