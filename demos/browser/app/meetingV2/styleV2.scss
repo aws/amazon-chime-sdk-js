@@ -1909,6 +1909,7 @@ input[type='radio'] {
   .profileAvater {
     img {
       width: 60px;
+      padding:5px;
       height: 60px;
       border-radius: 60px;
     }
@@ -2127,14 +2128,13 @@ input[type='radio'] {
   text-align: center;
   font-size: 1.5rem;
 }
+
 .calendar-day {
   width: 54px;
   height: 54px;
   text-align: center;
-
   border: 1px solid #eee;
   display: inline-block;
-  margin: 2px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
   color: #3f4149;
@@ -2142,7 +2142,17 @@ input[type='radio'] {
   font-style: normal;
   font-weight: 600;
   line-height: 53px;
+  flex-shrink: 0;
+
 }
+.calendar-days div{
+  border: none;
+}
+.calendar-days {
+  display: flex;
+  flex-direction: row; /* Align children (i.e., days) in a row; this is the default value and could be omitted */
+}
+
 .calendar-day:hover {
   background-color: rgba(142, 80, 156, 1);
   color: #fff;
@@ -2529,4 +2539,13 @@ input[type="Submit"]:hover{
     #quiz-taker-answers{
       margin-left: 30px;
       padding-right:30px;
+    }
+
+    #tile-area{
+    background-image: url(https://framerusercontent.com/images/WYMAEVsumDQ1avAqUxdNC9tfHwQ.png);
+    background-repeat: no-repeat;
+    background-color: #1e1e1e;
+    background-size: auto;  
+    background-position: center center;
+
     }
