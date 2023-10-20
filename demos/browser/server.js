@@ -8,10 +8,47 @@ const https = require('https');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/larq.ai/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/larq.ai/fullchain.pem', 'utf8');
-// const privateKey = fs.readFileSync('key.pem', 'utf-8')
-// const certificate = fs.readFileSync('cert.pem', 'utf-8')
+function getKeyAndCertPaths() {
+  const remoteKeyPath = '/etc/letsencrypt/live/larq.ai/privkey.pem';
+  const remoteCertPath = '/etc/letsencrypt/live/larq.ai/fullchain.pem';
+
+  const localKeyPath = 'key.pem';
+  const localCertPath = 'cert.pem';
+
+  try {
+    if (fs.existsSync(remoteKeyPath) && fs.existsSync(remoteCertPath)) {
+      return {
+        keyPath: remoteKeyPath,
+        certPath: remoteCertPath
+      };
+    }
+  } catch(err) {
+    console.error('Error reading remote key/cert:', err);
+  }
+
+  try {
+    if (fs.existsSync(localKeyPath) && fs.existsSync(localCertPath)) {
+      return {
+        keyPath: localKeyPath,
+        certPath: localCertPath
+      };
+    }
+  } catch(err) {
+    console.error('Error reading local key/cert:', err);
+  }
+
+  throw new Error('Key and Cert files not found in both remote and local paths.');
+}
+let paths;
+try {
+  paths = getKeyAndCertPaths();
+} catch (error) {
+  console.error('Failed to get key and cert paths:', error);
+  process.exit(1);
+}
+
+const privateKey = fs.readFileSync(paths.keyPath, 'utf8');
+const certificate = fs.readFileSync(paths.certPath, 'utf8');
 
 const credentials = {
   key: privateKey,

@@ -78,6 +78,95 @@ $overlay-z-index: 10;
 
 // Navbar =======================================================================
 
+a:hover {
+  cursor: pointer;
+}
+
+@media (max-width: 575px) {
+  #tile-area {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #tile-area > div {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    height: auto !important;
+  }
+
+  #tile-area > video-tile {
+    width: 50% !important;
+    padding-bottom: 33% !important;
+  }
+
+  #tile-area > video-tile > video {
+    object-fit: cover;
+  }
+
+  #tile-area > video-tile > div,
+  #tile-area > video-tile > button {
+    display: none !important;
+  }
+
+  #content-share-video {
+    display: none !important;
+  }
+
+  #meeting-container {
+    height: auto !important;
+  }
+
+  #roster-tile-container {
+    height: auto !important;
+  }
+
+  #roster-message-container {
+    height: auto !important;
+  }
+
+  #tile-transcript-container {
+    height: auto !important;
+  }
+
+  .bs-component {
+    max-height: 210px;
+    height: auto !important;
+  }
+
+  .message {
+    max-height: 210px;
+    height: 210px !important;
+  }
+
+  .video-preview {
+    max-width: 100%;
+    max-height: 180px;
+    margin-top: 7px;
+  }
+
+  #video-preview {
+    max-height: 180px;
+  }
+}
+
+@media (min-width: 576px) {
+  .video-preview {
+    width: 100%;
+    max-height: 300px;
+    margin-left: 0;
+    margin-top: 0;
+  }
+
+  #video-preview {
+    max-height: 300px;
+  }
+}
+
+
+
 .bg-primary {
   .navbar-nav .active > .nav-link {
     color: $success !important;
@@ -493,94 +582,12 @@ body {
   min-width: 320px;
 }
 
-@media (max-width: 575px) {
-  #tile-area {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  #tile-area > div {
-    position: relative !important;
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: auto !important;
-    height: auto !important;
-  }
-
-  #tile-area > video-tile {
-    width: 50% !important;
-    padding-bottom: 33% !important;
-  }
-
-  #tile-area > video-tile > video {
-    object-fit: cover;
-  }
-
-  #tile-area > video-tile > div,
-  #tile-area > video-tile > button {
-    display: none !important;
-  }
-
-  #content-share-video {
-    display: none !important;
-  }
-
-  #meeting-container {
-    height: auto !important;
-  }
-
-  #roster-tile-container {
-    height: auto !important;
-  }
-
-  #roster-message-container {
-    height: auto !important;
-  }
-
-  #tile-transcript-container {
-    height: auto !important;
-  }
-
-  .bs-component {
-    max-height: 210px;
-    height: auto !important;
-  }
-
-  .message {
-    max-height: 210px;
-    height: 210px !important;
-  }
-
-  .video-preview {
-    max-width: 100%;
-    max-height: 180px;
-    margin-top: 7px;
-  }
-
-  #video-preview {
-    max-height: 180px;
-  }
-}
 
 // The following CSS is added to overcome the vertical overlapping caused by the body:100% style.
 // body: 100% should be removed from the stylesheet as it causes vertical overlapping of content on the page and once that is removed the following fix should be no longer needed.
 #form-devices {
   height: 100vh;
   padding-top: 10px;
-}
-
-@media (min-width: 576px) {
-  .video-preview {
-    width: 100%;
-    max-height: 300px;
-    margin-left: 0;
-    margin-top: 0;
-  }
-
-  #video-preview {
-    max-height: 300px;
-  }
 }
 
 .markdown {
@@ -1025,7 +1032,6 @@ a.markdown:active {
 .transcript-container {
   max-height: 210px;
   overflow-y: scroll;
-  margin-top: -114px;
   padding: 0.2rem 1rem;
   z-index: 20;
   border-radius: 24px 24px 0px 0px;
@@ -1179,6 +1185,7 @@ a.markdown:active {
 
 #receive-message{
   padding-top: 5px;
+  margin-right: 5px;
 }
 
 .entity-color {
@@ -1765,6 +1772,10 @@ input[type='radio'] {
     }
   }
 
+  .buttonBlock:hover {
+    cursor: pointer;
+  }
+
   .quizBlock {
     border-radius: 22px;
     border: 1px solid #e6e6e6;
@@ -2088,6 +2099,7 @@ input[type='radio'] {
 .meetingButtonBlock {
   display: flex;
   gap: 40px;
+  justify-content: center;
 }
 .message-details {
   color: #3f4149;
@@ -2098,10 +2110,9 @@ input[type='radio'] {
   line-height: 150%;
 }
 .send-message {
-  padding: 13px;
+  padding: 5px;
   border-radius: 8px;
-  border: 1px solid #e6e6e6;
-  background: #fff;
+  width:100%
 }
 
 .calendar {
@@ -2547,5 +2558,100 @@ input[type="Submit"]:hover{
     background-color: #1e1e1e;
     background-size: auto;  
     background-position: center center;
-
     }
+
+    #button-content-share-drop, #button-camera-drop, #button-microphone-drop {
+      border:solid 1px #d4d4d44d;
+        }
+
+
+  #quiz-taker-answers{
+// Learn about this technique:
+// @link https://moderncss.dev/pure-css-custom-styled-radio-buttons/
+
+:root {
+  --form-control-color: #8e509c;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+form {
+  display: grid;
+  place-content: center;
+  min-height: 100vh;
+}
+
+.form-control {
+  font-family: system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1.1;
+  display: grid;
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
+}
+
+.form-control + .form-control {
+  margin-top: 1em;
+}
+
+.form-control:focus-within {
+  color: var(--form-control-color);
+}
+
+input[type="radio"] {
+  /* Add if not using autoprefixer */
+  -webkit-appearance: none;
+  /* Remove most all native input styles */
+  appearance: none;
+  /* For iOS < 15 */
+  background-color: var(--form-background);
+  /* Not removed via appearance */
+  margin: 0;
+
+  font: inherit;
+  color: currentColor;
+  width: 1.15em;
+  height: 1.15em;
+  border: 0.15em solid currentColor;
+  border-radius: 50%;
+  transform: translateY(-0.075em);
+
+  display: grid;
+  place-content: center;
+}
+
+input[type="radio"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--form-control-color);
+  /* Windows High Contrast Mode */
+  background-color: CanvasText;
+}
+
+input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+input[type="radio"]:focus {
+  outline: max(2px, 0.15em) solid currentColor;
+  outline-offset: max(2px, 0.15em);
+}
+
+  }
+
+  #toggle-icons path{
+    stroke: #95a5a6;
+  }

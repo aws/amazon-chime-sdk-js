@@ -388,8 +388,7 @@ export class DemoMeetingApp
     'button-video-recording-drop': 'off',
     'button-record-self': 'off',
     'button-record-cloud': 'off',
-    'button-live-connector': 'off',
-    'quiz-button':'off'
+    'button-live-connector': 'off'
   };
 
   isViewOnly = false;
@@ -412,14 +411,14 @@ export class DemoMeetingApp
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
-  joinMuted = false;
+  joinMuted = true;
   voiceFocusIsActive = false;
 
-  supportsBackgroundBlur = false;
-  supportsBackgroundReplacement = false;
+  supportsBackgroundBlur = true;
+  supportsBackgroundReplacement = false; 
   supportsVideoFx = false;
 
-  enableLiveTranscription = false;
+  enableLiveTranscription = true;
   noWordSeparatorForTranscription = false;
 
   markdown = require('markdown-it')({ linkify: true });
@@ -1273,12 +1272,16 @@ updateBodyBackgroundColor();
                 console.log("Dom loaded");
                 const myDIV = document.getElementById('myDIV');
                 const starting_quiz_container = document.getElementById('starting_quiz_container');
+                const meeting_container = document.getElementById('meeting-container');
                 // Function to close the form (hide it in this case)
                 function closeForm() {
                     if (myDIV) {
-                        myDIV.style.display = 'none';
+                      meeting_container.style.display = 'block';  
+                      myDIV.style.display = 'none';
+
                     }
                     if (starting_quiz_container){
+                      meeting_container.style.display = 'block';  
                       starting_quiz_container.style.display = 'none';
                     }
                 }
@@ -1653,8 +1656,61 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   });
 });
 
-// END DREW REGISTRATION
+
+
+{/* VECTOR BUTTONS */}
+
+async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
+    const formData = new FormData();
+    formData.append('pdf', pdfFile);
+    formData.append('user_id', userId);
     
+    try {
+        const response = await fetch('/vectorize', {
+            method: 'POST',
+            body: formData,
+        });
+        
+        const result = await response.json();
+        
+        // Update the button text with the store_name from the response
+        if (result.status === "success" && result.store_name) {
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (uploadBtn) {
+                uploadBtn.textContent = result.store_name;
+            }
+        }
+        
+        return result;
+    } catch (error) {
+        console.error("Error uploading PDF:", error);
+        throw error;
+    }
+}
+
+// Add event listener to the upload button
+document.getElementById('uploadBtn')?.addEventListener('click', () => {
+    const pdfFile = (document.querySelector('#pdfInput') as HTMLInputElement).files![0];
+    const userId = "yourUserId";  // Retrieve user ID as needed
+
+    if (pdfFile) {
+        uploadPDF(pdfFile, userId)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    } else {
+        console.warn("Please select a PDF file first.");
+    }
+});
+
+
+
+
+
+
     // END QUIZBOT
     // *****************************
     // *****************************
@@ -3458,7 +3514,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
               const correctAnswer = question.correct_answer;
               if (option === correctAnswer) {
                 QuizAttempts.correct.push(index);
-                radioDiv.style.outline = "2px solid green"; // Highlight correct answer with green outline
+                radioDiv.className = "form-check form-check-inline radioBox correct-answer"; // Highlight correct answer with green outline
               } else {
                 QuizAttempts.incorrect.push(index);
               }

@@ -189,7 +189,7 @@
       </div>
       <div class="col-lg-8 col-md-12 col-12">
         <div class="d-flex justify-content-between header-row">
-          <h2 class="title">Good afternoon, <b class="first_name" id="greetingFirstName">Rebecca</b></h2>
+          <h2 class="title">Good afternoon, <b class="first_name" id="greetingFirstName"></b></h2>
           <div class="dropdown-block">
             <div class="btn-group">
               <div class="profileAvater" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -207,7 +207,7 @@
                       </div>
                       <div class="d-flex align-items-center">
                         <div class="ms-2 me-2">
-                          <h6><b class="first_name" id="dropdownFirstName">Rebecca</b><b class="last_name" id="dropdownLastName">Smith</b></h6>
+                          <h6><b class="first_name" id="dropdownFirstName">Rebecca</b> <b class="last_name" id="dropdownLastName"> </b></h6>
                           <p class="email">rebe**@gmail.com</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -406,13 +406,22 @@
           <!-- no dashboard stats yet -->
           <h4>Looks like you have no quizzes yet.</h4>
           <p>Join a meeting to create a new quiz, or...</p>
-          <a href="https://larq.ai/" style="text-decoration: none;"><div class="buttonBlock"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="vuesax/linear/video"><g id="video"><path id="Vector" d="M33.413 54.4533H16.5597C8.13301 54.4533 5.33301 48.8533 5.33301 43.2266V20.7733C5.33301 12.3466 8.13301 9.54663 16.5597 9.54663H33.413C41.8397 9.54663 44.6397 12.3466 44.6397 20.7733V43.2266C44.6397 51.6533 41.813 54.4533 33.413 54.4533Z" stroke="#8E509C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path><path id="Vector_2" d="M52.053 45.6L44.6396 40.4V23.5733L52.053 18.3733C55.6797 15.84 58.6663 17.3867 58.6663 21.84V42.16C58.6663 46.6133 55.6797 48.16 52.053 45.6Z" stroke="#8E509C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path><path id="Vector_3" d="M30.667 29.3334C32.8761 29.3334 34.667 27.5425 34.667 25.3334C34.667 23.1242 32.8761 21.3334 30.667 21.3334C28.4579 21.3334 26.667 23.1242 26.667 25.3334C26.667 27.5425 28.4579 29.3334 30.667 29.3334Z" stroke="#8E509C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></g></g></svg><p>Create Quiz on Larq</p></div></a>
+          <a href="https://larq.ai/" style="text-decoration: none;"><div class="buttonBlock"><p>Create Quiz on Larq</p></div></a>        
         </div>
         </div>
         <div class="quizBlock mt-4">
           <h1 class="heading" style="text-decoration: underline">
-            View Previous Quizzes
+            <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+              View Previous Quizzes
+            </a>
           </h1>
+
+          <div class="collapse" id="collapseExample">
+            <div class="card card-body">
+              No previous quizzes yet. <a href="https://larq.ai/" style="text-decoration: none;">Create a quiz on Larq</a> or join a meeting to create a new quiz.
+            </div>
+          </div>          
+
         </div>
       </div>
     </div>
@@ -1441,10 +1450,29 @@ aria-hidden="true">
                       </label>
                     </div>
                   </div>
-                  <div class="quiz-title">Continue on drafts</div>
-                  <div class="chapters">
-                    Chapter 1- Photosynthesis
+                  
+                <!-- VECTOR SAMPLE -->
+        
+                <div class="container" id="upload-pdf">
+                  <div class="row">
+                          <!-- Upload Button -->
+                          <div class="input-group mb-3">
+                              <div class="custom-file">
+                                  <input type="file" class="custom-file-input" id="pdfInput">
+                                  <label class="custom-file-label btn btn-outline-secondary" for="pdfInput">Choose PDF</label>
+                              </div>
+                              <div class="input-group-append">
+                                  <button class="btn btn-outline-secondary" type="button" id="uploadBtn">Upload</button>
+                              </div>
+                          </div>
                   </div>
+              </div>
+      
+        
+              <!-- END VECTOR SAMPLE -->
+
+
+
                 </div>
               </div>
               <button type="button" class="customButton" id="submit-quiz">
