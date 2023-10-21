@@ -406,7 +406,8 @@
           <!-- no dashboard stats yet -->
           <h4>Looks like you have no quizzes yet.</h4>
           <p>Join a meeting to create a new quiz, or...</p>
-          <a href="https://larq.ai/" style="text-decoration: none;"><div class="buttonBlock"><p>Create Quiz on Larq</p></div></a>        
+          <div class="btn btn-outline-primary m-3"><a href="https://larq.ai/" style="text-decoration: none;"><p class="text-info">Create Quiz on Larq</p></a></div>               
+
         </div>
         </div>
         <div class="quizBlock mt-4">
@@ -1438,7 +1439,8 @@ aria-hidden="true">
                     </div>
 
                   </div> -->
-                  <div class="col-md-12 col-lg-12 col-12 mt-3">
+                  <!-- HIGHLIGHTS PRIORITIZE -->
+                  <!-- <div class="col-md-12 col-lg-12 col-12 mt-3">
                     <div class="form-check form-check-inline checkBox">
                       <label class="customCheckBox">
                         <input type="checkbox" name="optInToEmails" />
@@ -1449,21 +1451,25 @@ aria-hidden="true">
                         Prioritize my highlights
                       </label>
                     </div>
-                  </div>
+                  </div> -->
                   
                 <!-- VECTOR SAMPLE -->
         
-                <div class="container" id="upload-pdf">
+                <div class="container pt-5" id="upload-pdf">
                   <div class="row">
                           <!-- Upload Button -->
                           <div class="input-group mb-3">
-                              <div class="custom-file">
+                            <p>(Optional) Upload a PDF of your textbook.</p>
+                              <div class=" m-2">
                                   <input type="file" class="custom-file-input" id="pdfInput">
-                                  <label class="custom-file-label btn btn-outline-secondary" for="pdfInput">Choose PDF</label>
+                                  <label class="btn btn-outline-primary" for="pdfInput">Choose PDF</label>
                               </div>
-                              <div class="input-group-append">
+                              <div class="input-group-append m-2">
                                   <button class="btn btn-outline-secondary" type="button" id="uploadBtn">Upload</button>
                               </div>
+                              <div class="d-none alert alert-warning p-2 text-center col-12" role="alert" id="pdf-alert">
+                                Please select a PDF first.
+                                </div>
                           </div>
                   </div>
               </div>
@@ -1559,7 +1565,7 @@ aria-hidden="true">
 
                 </div>
               </div>
-              <button class="deleteButton" id="end-quiz" type="button">
+              <button class="deleteButton" type="button">
                 Delete Quiz
               </button>
             </div>

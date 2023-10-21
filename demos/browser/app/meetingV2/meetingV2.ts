@@ -1001,7 +1001,11 @@ updateBodyBackgroundColor();
             transcriptData.num_questions = selectedNumber;
             console.log('selectedNumber:', selectedNumber);
         }
-
+        let vectorID = localStorage.getItem('vectorID')
+        if (vectorID) {
+            transcriptData.vector_id = vectorID;
+            console.log('vector_id:', vectorID);
+        }
   
         
         const url = "https://app.larq.ai/api/MakeQuiz";
@@ -1666,7 +1670,7 @@ async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
     formData.append('user_id', userId);
     
     try {
-        const response = await fetch('/vectorize', {
+        const response = await fetch('https://app.larq.ai/api/vectorize', {
             method: 'POST',
             body: formData,
         });
@@ -1676,9 +1680,15 @@ async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
         // Update the button text with the store_name from the response
         if (result.status === "success" && result.store_name) {
             const uploadBtn = document.getElementById('uploadBtn');
+            const storeName = document.getElementById('store-name');
             if (uploadBtn) {
                 uploadBtn.textContent = result.store_name;
+                uploadBtn.classList.add('btn btn-outline-success');
+                storeName.innerText = result.store_name;
+                
             }
+            localStorage.setItem('storeName', result.store_name);
+            localStorage.setItem('vectorID', result.vector);
         }
         
         return result;
@@ -1691,18 +1701,28 @@ async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
 // Add event listener to the upload button
 document.getElementById('uploadBtn')?.addEventListener('click', () => {
     const pdfFile = (document.querySelector('#pdfInput') as HTMLInputElement).files![0];
-    const userId = "yourUserId";  // Retrieve user ID as needed
+    const userId = localStorage.getItem('userId');
+    const uploadBtn = document.getElementById('uploadBtn');
 
-    if (pdfFile) {
+
+    if (pdfFile && userId) {
         uploadPDF(pdfFile, userId)
             .then(response => {
                 console.log(response);
+                uploadBtn.classList.add('btn-success');
             })
             .catch(error => {
                 console.error(error);
             });
     } else {
-        console.warn("Please select a PDF file first.");
+        console.warn("Please select a PDF file first. userId:", userId);
+        // make button glow and under it put the error:
+        const pdfalert = document.getElementById('pdf-alert');
+        uploadBtn?.classList.add('btn-danger');
+        uploadBtn?.classList.add('btn');
+        uploadBtn?.classList.add('text-white');
+        pdfalert?.classList.remove('d-none');
+
     }
 });
 
