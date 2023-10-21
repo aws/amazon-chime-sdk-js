@@ -2654,3 +2654,12 @@ input[type="radio"]:focus {
   #toggle-icons path{
     stroke: #95a5a6;
   }
+
+  .buttonfooter{
+    position: fixed;
+    /* margin-bottom: 20px; */
+    bottom: 0px;
+    padding-top: 10px;
+    z-index: 100;
+    background: white;
+  }
