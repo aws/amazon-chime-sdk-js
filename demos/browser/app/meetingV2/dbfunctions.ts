@@ -1,4 +1,6 @@
-  // TIME CHANGES
+import * as bootstrap from 'bootstrap';
+
+// TIME CHANGES
   document.addEventListener("DOMContentLoaded", function() {
     // Function to format the date
     function formatDate(date: any) {
@@ -103,10 +105,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const eventElement = document.createElement('div');
         eventElement.classList.add('calendar-event');
 
-        // eventElement.textContent = events[eventDate];
         dateElement.appendChild(eventElement);
-        // Add an event listener to show the tooltip on click
-        dateElement.addEventListener('click', (e) => showTooltip(e, events[eventDate]));
+        // Add an event listener to show the modal on click
+        dateElement.addEventListener('click', () => showEventModal(events[eventDate]));
 
       }
 
@@ -149,25 +150,30 @@ document.addEventListener('DOMContentLoaded', function () {
   //   quiz.style.display = 'none';
   // }
   // );
+
+const modalElement = document.getElementById('eventModal');
+const modalContentElement = document.getElementById('eventModalContent');
+
+function showEventModal(content: string) {
+    if (!modalElement || !modalContentElement) {
+        console.error("Modal elements not found");
+        return;
+    }
+    const modal = new bootstrap.Modal(modalElement);
+    modalContentElement.textContent = content;
+    modal.show();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.calendar-day .calendar-event').forEach(eventDay => {
+    eventDay.parentElement?.addEventListener('click', function() {
+      const content = "Your event details here";  // Replace with actual event details
+      showEventModal(content);
+    });
+  });
 });
 
-function showTooltip(event: MouseEvent, content: string) {
-  const tooltip = document.createElement('div');
-  tooltip.classList.add('tooltip');
-  tooltip.textContent = content;
-  tooltip.style.top = `${event.clientY + 10}px`;
-  tooltip.style.left = `${event.clientX + 10}px`;
-  tooltip.style.position = 'absolute';
-  tooltip.style.zIndex = '100';
-  document.body.appendChild(tooltip);
 
-
-  // Hide tooltip on next click anywhere in the document
-  document.addEventListener('click', function hideTooltip() {
-    tooltip.remove();
-    document.removeEventListener('click', hideTooltip);
-  }, { once: true });
-}
 
   const transcriptContainer = document.getElementById("transcript-container");
   
@@ -193,6 +199,7 @@ function showTooltip(event: MouseEvent, content: string) {
 }
   
 
+});
 
 // ********** VUE CODE **********
 // ******************************

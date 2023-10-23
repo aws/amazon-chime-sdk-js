@@ -290,6 +290,15 @@ interface QuizAttempt {
   incorrect: number[];
 }
 
+interface QuizForumQuestion {
+  quiz_id: string;
+  timestamp: string;
+  user_id: string;
+  host_id: string;
+  question: string;
+}
+
+
 type Field = {
   label: string;
   type: string;
@@ -303,6 +312,13 @@ type FormData = {
   fields: Field[];
   host: string;
   quiz_id?: string; // Assuming quiz_id is a field in the quizJson
+};
+type Meeting = {
+  _id: { $oid: string };
+  host_id: string;
+  users: number[];
+  timestamp: string;
+  duration: number;
 };
 
 
@@ -826,7 +842,20 @@ export class DemoMeetingApp
     // Sample data for radio buttons
 
 
+
+
+    // this.dataMessageHandler(
+    //   new DataMessage(
+    //     Date.now(),
+    //     'displayForm',
+    //     new TextEncoder().encode(formDataString),
+    //     this.meetingSession.configuration.credentials.attendeeId,
+    //     this.meetingSession.configuration.credentials.externalUserId
+    //   )
+    // );
   
+
+
 
 const buttonChat = document.getElementById('button-chat') as HTMLButtonElement | null;
 buttonChat?.addEventListener('click', _e => {
@@ -1123,7 +1152,7 @@ updateBodyBackgroundColor();
                       optionInput.name = 'option';
                       optionInput.value = `${ansIndex}`;
                       optionInput.className = 'btn-check form-check-input';
-
+                      // DRAFT ANSWERS (FOR REFERENCE)
                       if (answer === correctAnswer) {
                         // Check the correct answer
                         optionInput.checked = true;
@@ -1275,17 +1304,21 @@ updateBodyBackgroundColor();
                 // Get the form element
                 console.log("Dom loaded");
                 const myDIV = document.getElementById('myDIV');
+            
+                const video_container = document.getElementById('content-share-video');
                 const starting_quiz_container = document.getElementById('starting_quiz_container');
                 const meeting_container = document.getElementById('meeting-container');
                 // Function to close the form (hide it in this case)
                 function closeForm() {
                     if (myDIV) {
                       meeting_container.style.display = 'block';  
+                      video_container.style.display = 'block',
                       myDIV.style.display = 'none';
 
                     }
                     if (starting_quiz_container){
                       meeting_container.style.display = 'block';  
+                      video_container.style.display = 'block',
                       starting_quiz_container.style.display = 'none';
                     }
                 }
@@ -1550,15 +1583,124 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
 
 
 
-{/* UNCOMMENT FOR DASH STATS */}
 
-document.addEventListener('DOMContentLoaded', () => {
+
+
+  // Drew take 2
+    // Retrieve data from localStorage
+    const data = JSON.parse(localStorage.getItem('data')).dashboard_stats;
+    const emptyDash = document.getElementById('empty-dash') as HTMLElement;
+    const fullDash = document.getElementById('full-dash') as HTMLElement;
+    // Check if data exists and has recent_quizzes
+    if (data && data.recent_quizzes && data.recent_quizzes.length > 0) {
+        if (emptyDash && fullDash) {
+          fullDash.style.display = 'block';
+          emptyDash.style.display = 'none';
+        }
+      
+
+        // Populate the dashboard with real data
+
+        // Calculate the Class Average
+        const average = data.last_attempts.reduce((acc: number, curr: { score: number }) => acc + curr.score, 0) / data.last_attempts.length;
+        document.getElementById('classAverage').textContent = average.toFixed(2);
+
+        // Assuming the most difficult question is the one most frequently answered incorrectly
+        // This is just a placeholder, you'll need to replace with actual logic
+        document.getElementById('mostDifficultQuestion').innerHTML = '<p>Sample Difficult Question</p>';
+
+        // Find the top performer and the one needing attention
+        const sortedAttempts = [...data.last_attempts].sort((a, b) => b.score - a.score);
+        
+        const topPerformer = sortedAttempts[0];
+        const needsAttention = sortedAttempts[sortedAttempts.length - 1];
+
+        document.getElementById('topPerformer').innerHTML = `<p>${topPerformer.user_id} <span>${(topPerformer.score * 100).toFixed(0)}%</span></p>`;
+        document.getElementById('needsAttention').innerHTML = `<p>${needsAttention.user_id} <span>${(needsAttention.score * 100).toFixed(0)}%</span></p>`;
+        
+        // You can continue populating other sections similarly...
+
+    } else {
+        // Hide the detailed dashboard and show the "no quizzes" message
+
+        if (emptyDash && fullDash) {
+          fullDash.style.display = 'none';
+          emptyDash.style.display = 'block';
+        }
+    }
+
+    // UPCOMING CLASSES ON LEFT OF DASH
+    const upcomingClassesContainer = document.getElementById('upcomingClasses');
+    // Clear any existing listings (you might want to keep headers or static content)
+    upcomingClassesContainer.innerHTML = '<p>Upcoming Classes</p>';
+
+        // Check if data exists and has next_meetings
+        if (data && data.next_meetings && data.next_meetings.length > 0) {
+  
+          data.next_meetings.forEach((meeting: Meeting) => {
+            // Convert the timestamp string to a Date object
+              const meetingDate = new Date(meeting.timestamp);
+              const today = new Date();
+  
+              let dateString;
+              if (meetingDate.toDateString() === today.toDateString()) {
+                  dateString = `${meetingDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}, Today`;
+              } else {
+                  dateString = `${meetingDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}, ${meetingDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`;
+              }
+  
+              // Construct the listing block for this meeting
+              const meetingBlock = document.createElement('div');
+              meetingBlock.classList.add('listingBlock', 'mt-3', 'mb-3');
+  
+              meetingBlock.innerHTML = `
+                  <div class="d-flex justify-content-between align-items-center meeting-calendar-item">
+                      <div>
+                          <h5>${meeting.host_id}</h5>  <!-- Adjust this if you have a more appropriate title for the meeting -->
+                          <p>${dateString}</p>
+                      </div>
+                      <a href="?m=${meeting.host_id}">(Start the Meeting)</a>
+                  </div>
+              `;
+  
+              upcomingClassesContainer.appendChild(meetingBlock);
+          });
+  
+      } else {
+
+        const meetingBlock = document.createElement('div');
+        meetingBlock.classList.add('listingBlock', 'mt-3', 'mb-3');
+
+        meetingBlock.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center meeting-calendar-item">
+                <div>
+                    <h5>No Meetings Yet</h5> 
+                    <p>Schedule and make a meeting to begin.</p>
+                </div>
+            </div>
+        `;
+
+        upcomingClassesContainer.appendChild(meetingBlock);
+
+          // Handle the case where there are no upcoming meetings, if needed
+      }
+  
+
+
+  
+  
+  // Drew take 2 end
+
+
+
+
+
   this.enableLiveTranscription = false;
   this.noWordSeparatorForTranscription = false;
   this.updateLiveTranscriptionDisplayState();
   const token: string | null = localStorage.getItem('authToken');
   if (token) {
-    const data = JSON.parse(localStorage.getItem('data') || '{}');
+    const data = JSON.parse(localStorage.getItem('data') || '{}').dashboard_stats;
 
     if (data) {
         const firstName = data.first_name;
@@ -1569,16 +1711,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('dropdownFirstName').textContent = firstName;
         document.getElementById('dropdownLastName').textContent = lastName;
 
-        // For demonstration purposes, I'm populating static values. 
-        // In reality, you'd fetch these from your data object.
-        
-        const lastAttemptScore = data.dashboard_stats.last_attempts[0].score;
-        document.getElementById('classAverage').textContent = lastAttemptScore;
-          document.getElementById('mostDifficultQuestion').textContent = "At night, plants breathe in ______________";  // Replace with actual data
-        document.getElementById('topPerformer').textContent = "Maria (5/5)";  // Replace with actual data
-        document.getElementById('needsAttention').textContent = "Somya (2/5)";  // Replace with actual data
-        document.getElementById('completedCount').textContent = data.dashboard_stats.recent_quizzes.length.toString();
-        document.getElementById('notCompletedCount').textContent = "2";  // Replace with actual data
 
         // If you have a list of students for "Completed" and "Did not complete", you'd loop through the data and create elements dynamically
     }
@@ -1588,7 +1720,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('login-container')!.style.display = 'block';
       document.getElementById('joining-page')!.style.display = 'none';
   }
-});
+
 
 
 function logout(): void {
@@ -1728,6 +1860,17 @@ document.getElementById('uploadBtn')?.addEventListener('click', () => {
 
 
 
+// add a listener for #end-quiz-button that when clicked will set #quiz_in_progress to display none and #create-quiz to display block
+document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
+  const quiz_in_progress = document.getElementById('quiz_in_progress');
+  const create_quiz = document.getElementById('create-quiz');
+  
+  if (quiz_in_progress && create_quiz) {
+    quiz_in_progress.style.display = 'none';
+    create_quiz.style.display = 'block';
+  }
+ 
+});
 
 
 
@@ -3405,184 +3548,64 @@ document.getElementById('uploadBtn')?.addEventListener('click', () => {
 
       // console.log("*************************message:", dataMessage);
       // console.log("*************************message.TYPE:", dataMessage.topic);
-      if (dataMessage.topic === 'displayForm' && !isSelf) {
-        console.log('*************************RUNNNING DISPLAYFORM:');
-        console.log('Received message:', dataMessage.text());
-    
+
+      if (dataMessage.topic === 'quizForumQuestion' && !isSelf) {
+      console.log("quiz forum question");
+      const quizForumQuestion : QuizForumQuestion = {
+        quiz_id: '',
+        timestamp: new Date().toISOString(),
+        user_id: dataMessage.senderAttendeeId,
+        host_id: this.meetingSession.configuration.credentials.attendeeId,
+        question: dataMessage.text()
+      } 
 
 
+      // UPDATE THE HTML HERE WITH THE QUIZFORUMQUESTION
 
-        
-        // ***************************
-        // QUIZ RECEIVED HANDLER START
-
-        const userId = localStorage.getItem('user_id') || '';
-      
-      const QuizAttempts: QuizAttempt = {
-          quiz_id: '',
-          timestamp: new Date().toISOString(),
-          user_id: userId,
-          score: 0,
-          correct: [],
-          incorrect: []
-      };
-            populateQuiz(dataMessage.text());
-
-      function populateQuiz(dataString: string) {
-        const data: FormData = JSON.parse(dataString);
-        
-        document.getElementById("quiz-form-title")!.textContent = data.title;
-        document.getElementById("quiz-taker-title")!.textContent = data.title;
-        
-        // Clear previous question
-        const questionBlock = document.getElementById("quiz-taker-question");
-        const answerBlock = document.getElementById("quiz-taker-answers");
-        answerBlock.innerHTML = "";
-        if (questionBlock && answerBlock) {
-            questionBlock.innerHTML = "";
-            answerBlock.innerHTML = "";
-        }
-    
-        data.fields.forEach((field, index) => {
-            if (field.type === "dropdown") {
-                const question = document.createElement("div");
-                question.className = "quiz-title";
-                question.style.fontSize = "24px";
-                question.textContent = field.label;
-                questionBlock?.appendChild(question);
-
-                let answerSelected = false; // New variable to track if an answer has been selected for this question
-    
-                field.options?.forEach((option, optionIndex) => {
-                    const answerOption = document.createElement("div");
-                    answerOption.className = "form-check form-check-inline radioBox btn-outline-primary"; // Added btn-outline-primary here
-    
-                    const input = document.createElement("input");
-                    input.type = "checkbox";
-                    input.id = `answer-${index}-${optionIndex}`;
-                    input.name = `question-${index}`;
-                    input.value = option;
-                    input.className = "btn btn-outline-primary";
-                    input.addEventListener("click", () => {
-                      if (!answerSelected) {
-                          const correctAnswer = field.correct_answer;
-                          if (option === correctAnswer) {
-                              QuizAttempts.correct.push(index);
-                              answerOption.classList.add('correct-answer'); // Instead of green outline, add .correct-answer
-                          } else {
-                              QuizAttempts.incorrect.push(index);
-                          }
-                          answerSelected = true; // Mark that an answer has been selected
-      
-                          // Disable all other options for this question
-                          field.options?.forEach((_, otherOptionIndex) => {
-                              if (optionIndex !== otherOptionIndex) {
-                                (document.getElementById(`answer-${index}-${otherOptionIndex}`) as HTMLInputElement).disabled = true; 
-                              }
-                          });
-                      }
-                  });
-      
-    
-                    const label = document.createElement("label");
-                    label.className = "form-check-label";
-                    label.htmlFor = input.id;
-                    label.textContent = option;
-    
-                    answerOption.appendChild(input);
-                    answerOption.appendChild(label);
-                    answerBlock?.appendChild(answerOption);
-                });
-            }
-        });
-        
-
-        
+          // Access the DOM elements
+          const queriesBlock = document.getElementById('queries-block');
+          const queriesSection = queriesBlock.querySelector('.queries-section');
           
-            
+          // Create a new query element and populate it with data from quizForumQuestion
+          const newQuery = document.createElement('div');
+          newQuery.innerHTML = `
+              <div class="d-flex">
+                  <p class="pe-3">${quizForumQuestion.user_id}</p> 
+                  <p>Question <span>✋</span></p>
+              </div>
+              <h5>${quizForumQuestion.question}</h5>
+              <div class="customInput">
+                  <input type="text" placeholder="Respond" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
+                      <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />
+                      <path d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472" stroke="#3F4149" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+              </div>
+          `;
+
+          // Append the new query element to the queries section
+          queriesSection.appendChild(newQuery);
+          
+          // Optionally, you can make the 'queries-block' section visible
+          queriesBlock.style.display = 'block';
 
 
-      let currentQuestionIndex = 0; // To track which question is currently displayed
-      
 
-      function clearPreviousQuestions() {
-        const questionBlock = document.getElementById("quiz-taker-question");
-        const answerBlock = document.getElementById("quiz-taker-answers");
-        if (questionBlock && answerBlock) {
-          questionBlock.innerHTML = "";
-          answerBlock.innerHTML = "";
-        }
+
       }
-      
-      function displayQuestion(index: number) {
-        clearPreviousQuestions(); // Clear previous question and answers
-      
-        const question = data.fields[index];
-        if (question.type === "dropdown") {
-          document.getElementById("quiz-taker-question")!.textContent = question.label;
-      
-          const answersContainer = document.getElementById("quiz-taker-answers")!;
-          question.options.forEach((option, optionIndex) => {
-            const radioDiv = document.createElement("div");
-            radioDiv.className = "form-check form-check-inline radioBox";
-      
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.id = `answer_${index}_${optionIndex}`;
-            input.name = `question_${index}`;
-            input.addEventListener("change", () => {
-              const correctAnswer = question.correct_answer;
-              if (option === correctAnswer) {
-                QuizAttempts.correct.push(index);
-                radioDiv.className = "form-check form-check-inline radioBox correct-answer"; // Highlight correct answer with green outline
-              } else {
-                QuizAttempts.incorrect.push(index);
-              }
-            });
-      
-            const label = document.createElement("label");
-            label.className = "form-check-label";
-            label.setAttribute("for", input.id);
-            label.textContent = option;
-      
-            radioDiv.appendChild(input);
-            radioDiv.appendChild(label);
-            answersContainer.appendChild(radioDiv);
-          });
-        }
+
+
+      if (dataMessage.topic === 'displayForm') {
+      console.log('*************************RUNNNING DISPLAYFORM:');
+      console.log('Received message:', dataMessage.text());        
+      populateQuiz(dataMessage.text());
+      // QUIZ RECEIVED HANDLER END
+
+      let myModalEl = document.getElementById('challenge-modal');
+      if (myModalEl) {
+          let myModal = new Modal(myModalEl);
+          myModal.show();
       }
-      
-      // When the next button is clicked
-      document.getElementById("quiz-taker-next")!.addEventListener("click", () => {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < data.fields.length) {
-          displayQuestion(currentQuestionIndex);
-        } else {
-          QuizAttempts.score = QuizAttempts.correct.length; // Update the score when the quiz is completed
-            // You can redirect or show results here when all questions are done.
-            alert("Quiz completed!");
-            localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
-            submitQuizAttempts();
-
-        }
-    });
-
-    displayQuestion(currentQuestionIndex); // Display the first question initially
-
-    
-  }
-
-
-
-
-
-        // QUIZ RECEIVED HANDLER END
-
-        let myModalEl = document.getElementById('challenge-modal');
-        if (myModalEl) {
-            let myModal = new Modal(myModalEl);
-            myModal.show();
-        }
         // const messageContent = new TextDecoder().decode(dataMessage.data);
         // const parsedMessage = JSON.parse(messageContent);
         // const receivedData = JSON.parse(dataMessage.text());
@@ -3643,6 +3666,16 @@ document.getElementById('uploadBtn')?.addEventListener('click', () => {
       }
     );
   }
+
+  setupDataQuestionForumMessage(): void {
+    this.audioVideo.realtimeSubscribeToReceiveDataMessage(
+      'quizForumQuestion',
+      (dataMessage: DataMessage) => {
+        this.dataMessageHandler(dataMessage);
+      }
+    );
+  }
+
 
   transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
     if (!this.enableLiveTranscription) {
@@ -5587,6 +5620,10 @@ const defaultQuizAttempt = {
 };
 
 
+// *****************
+// DREW FUNCTIONS
+
+// FUNCTION 1 - SUBMIT QUIZ ATTEMPTS
 function submitQuizAttempts() {
   const url = "https://app.larq.ai/api/MakeQuizAttempt";
   const storedData = localStorage.getItem('QuizAttempts');
@@ -5613,3 +5650,238 @@ function submitQuizAttempts() {
 
 
 
+// DREW FUNCTION VARIABLES
+
+const userId = localStorage.getItem('user_id') || '';
+const existingAttempts = localStorage.getItem('QuizAttempts');
+
+const QuizAttempts: QuizAttempt = existingAttempts 
+    ? JSON.parse(existingAttempts) 
+    : {
+        quiz_id: '',
+        timestamp: new Date().toISOString(),
+        user_id: userId,
+        score: 0,
+        correct: [],
+        incorrect: []
+    };
+
+
+// FUNCTION 1 - CLEAR PREVIOUS QUESTIONS
+function clearPreviousQuestions() {
+    const questionBlock = document.getElementById("quiz-taker-question");
+    const answerBlock = document.getElementById("quiz-taker-answers");
+    
+    if (questionBlock && answerBlock) {
+        questionBlock.innerHTML = "";
+        answerBlock.innerHTML = "";
+    }
+}
+
+// FUNCTION 2 - DISPLAY QUESTIONS IN QUIZ HANDLER
+function displayQuestion(index: number, data: FormData) {
+  clearPreviousQuestions(); // Clear previous question and answers
+
+  const question = data.fields[index];
+  if (question.type === "dropdown") {
+    document.getElementById("quiz-taker-question")!.textContent = question.label;
+
+    const answersContainer = document.getElementById("quiz-taker-answers")!;
+    question.options.forEach((option, optionIndex) => {
+      const radioDiv = document.createElement("div");
+      radioDiv.className = "form-check form-check-inline radioBox";
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.id = `answer_${index}_${optionIndex}`;
+      input.name = `question_${index}`;
+      input.addEventListener("change", () => {
+        const correctAnswer = question.correct_answer;
+        if (option === correctAnswer) {
+          // push correct answer to QuizAttempts, unless it's already there
+          if (!QuizAttempts.correct.includes(index)) {
+          QuizAttempts.correct.push(index);
+          }
+          radioDiv.className = "form-check form-check-inline radioBox correct-answer"; // Highlight correct answer with green outline
+        } else {
+          if (!QuizAttempts.incorrect.includes(index)) {
+
+          QuizAttempts.incorrect.push(index);}
+        }
+      });
+
+      const label = document.createElement("label");
+      label.className = "form-check-label";
+      label.setAttribute("for", input.id);
+      label.textContent = option;
+
+      radioDiv.appendChild(input);
+      radioDiv.appendChild(label);
+      answersContainer.appendChild(radioDiv);
+    });
+  }
+}
+
+
+// FUNCTION 3 - POPULATE THE QUIZ HANDLER
+function populateQuiz(dataString: string) {
+        const data: FormData = JSON.parse(dataString);
+        
+        document.getElementById("quiz-form-title")!.textContent = data.title;
+        document.getElementById("quiz-taker-title")!.textContent = data.title;
+        
+        // Clear previous question
+        const questionBlock = document.getElementById("quiz-taker-question");
+        const answerBlock = document.getElementById("quiz-taker-answers");
+        answerBlock.innerHTML = "";
+        if (questionBlock && answerBlock) {
+            questionBlock.innerHTML = "";
+            answerBlock.innerHTML = "";
+        }
+    
+        data.fields.forEach((field, index) => {
+            if (field.type === "dropdown") {
+                const question = document.createElement("div");
+                question.className = "quiz-title";
+                question.style.fontSize = "24px";
+                question.textContent = field.label;
+                questionBlock?.appendChild(question);
+
+                let answerSelected = false; // New variable to track if an answer has been selected for this question
+    
+                field.options?.forEach((option, optionIndex) => {
+                    const answerOption = document.createElement("div");
+                    answerOption.className = "form-check form-check-inline radioBox btn-outline-primary"; // Added btn-outline-primary here
+    
+                    const input = document.createElement("input");
+                    input.type = "checkbox";
+                    input.id = `answer-${index}-${optionIndex}`;
+                    input.name = `question-${index}`;
+                    input.value = option;
+                    console.log("populating field ", option);
+                    input.className = "btn btn-outline-primary";
+                    input.addEventListener("click", () => {
+                      if (!answerSelected) {
+                        answerSelected = true; // Mark that an answer has been selected
+                        const correctAnswer = field.correct_answer;
+                          if (option === correctAnswer) {
+                            if (!QuizAttempts.correct.includes(index)) {
+                            QuizAttempts.correct.push(index);
+                            }
+                            answerOption.classList.add('correct-answer'); // Instead of green outline, add .correct-answer
+                          } else {
+                            answerOption.classList.add('incorrect-answer'); // Instead of green outline, add .correct-answer
+                            // push incorrect answer to QuizAttempts, unles it's already there
+                            if (!QuizAttempts.incorrect.includes(index)) {
+                              QuizAttempts.incorrect.push(index);
+                            }
+                              
+                          }
+      
+                          // Disable all other options for this question
+                          field.options?.forEach((_, otherOptionIndex) => {
+                              if (optionIndex !== otherOptionIndex) {
+                                (document.getElementById(`answer-${index}-${otherOptionIndex}`) as HTMLInputElement).disabled = true; 
+                              }
+                          });
+                      }
+                  });
+      
+    
+                    const label = document.createElement("label");
+                    label.className = "form-check-label";
+                    label.htmlFor = input.id;
+                    label.textContent = option;
+    
+                    answerOption.appendChild(input);
+                    answerOption.appendChild(label);
+                    answerBlock?.appendChild(answerOption);
+                });
+            }
+        });
+
+
+      let currentQuestionIndex = 0; // To track which question is currently displayed
+      
+
+      // When the next button is clicked
+      document.getElementById("quiz-taker-next")!.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < data.fields.length) {
+          displayQuestion(currentQuestionIndex, data);
+        } else {
+          QuizAttempts.score = QuizAttempts.correct.length; // Update the score when the quiz is completed
+            // You can redirect or show results here when all questions are done.
+            alert("Quiz completed!");
+            localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
+            submitQuizAttempts();
+
+        }
+    });
+
+    displayQuestion(currentQuestionIndex, data); // Display the first question initially
+
+    
+  }
+
+function sendQuizForumQuestion(question: string) {  
+  console.log('QuizForum Question:', question);
+
+  // Send the formData as a stringified JSON
+  this.audioVideo.realtimeSendDataMessage(
+    'quizForumQuestion',
+    question,
+    DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+  );
+
+  this.dataMessageHandler(
+    new DataMessage(
+      Date.now(),
+      'question',
+      new TextEncoder().encode(question),
+      this.meetingSession.configuration.credentials.attendeeId,
+      this.meetingSession.configuration.credentials.externalUserId
+    )
+  );
+    }
+
+
+console.log("Bottom part of script loaded");
+// FUNCTION TO ADD LISTENER TO QUIZFORUM QUESTION
+// Get the textarea and messaging container elements
+const textarea = document.getElementById('forumContainer') as HTMLTextAreaElement;
+const messagingContainer = document.querySelector('.messagingContainer');
+if (!textarea || !messagingContainer) {
+  console.error("Required elements not found.");
+}
+
+// Listen for the 'keydown' event on the textarea
+textarea.addEventListener('keydown', function(event) {
+  const keyboardEvent = event as KeyboardEvent;
+  const key = keyboardEvent.keyCode || keyboardEvent.which;  // Handle both keyCode and which
+
+  console.log("event keycode", keyboardEvent.keyCode);
+    // Check if the 'Enter' key was pressed
+    if (key === 13 && !keyboardEvent.shiftKey) {
+      event.preventDefault();  // Prevent newline from being added in textarea
+        
+        // Call the sendQuizForumQuestion function with the content of the textarea
+        sendQuizForumQuestion(textarea.value);  // <-- Use the asserted textarea here
+        
+        // Create a new message row with the content and timestamp
+        const currentTime = new Date();
+        const formattedTime = currentTime.getHours() + ':' + String(currentTime.getMinutes()).padStart(2, '0') + ' PM';  // Format time as HH:mm PM
+        const messageRow = `
+            <div class="send-message">
+                <h4 class="message-heading">You<span>${formattedTime}</span></h4>
+                <p class="message-details">${textarea.value}</p>  // <-- Use the asserted textarea here
+            </div>
+        `;
+        
+        // Append the new message row to the messaging container
+        messagingContainer.innerHTML += messageRow;
+        
+        // Clear the textarea
+        textarea.value = '';  // <-- Use the asserted textarea here
+    }
+});

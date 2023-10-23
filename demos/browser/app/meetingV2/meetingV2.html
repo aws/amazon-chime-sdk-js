@@ -146,8 +146,6 @@
                   <a>(Start the Meeting)</a>
                 </div>
               </div>
-
-              <p>Upcoming Classes</p>
             </div>
 
 
@@ -294,37 +292,10 @@
         </div>
 
 
-                  
-            <!-- SCHEDULING MEETING AT THIS TIME? -->
-            <div class="modal fade" id="schedule-meeting-modal" tabindex="-1" aria-labelledby="schedule-meeting-modal-label"
-            aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="schedule-meeting-modal-label">Schedule Quiz</h5>
-                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-                </div>
-                <div class="modal-body">
-                  Scheduling a meeting is not available at this time. Send now? 
-                <h2>Set up a Scheduled Meeting</h2>
-                <input type="datetime-local" id="meetingScheduleTime" /> 
-                <p>Please select a date and time for your meeting.</p>
-                <!-- submit button -->
-                </div>
-                <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
-                    aria-label="Close">Cancel</button>
-                  <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
-                    data-bs-target="#quiz-sent-modal" id="scheduleMeetingSubmit">Submit</button>
-                </div>
-
-              </div>
-            </div>
-            <button onclick="history.back()">Go Back</button>
-          </div>
 
 
         <h6 class="mt-4 mb-4">Quiz Dashboard</h6>
-        <div class="quizBlock dashboard_stats" style="display:none">
+        <div class="quizBlock dashboard_stats" id="full-dash" style="display:none">
           <div class="d-flex justify-content-between">
             <a class="heading">Science: Chapter 1 - Photosynthesis</a>
             <p class="link">
@@ -363,18 +334,6 @@
                       <p>Somya <span>(2/5)</span></p>
                       <a>(View Score)</a>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                      <p>Somya <span>(2/5)</span></p>
-                      <a>(View Score)</a>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3">
-                      <p>Somya <span>(2/5)</span></p>
-                      <a>(View Score)</a>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3">
-                      <p>Somya <span>(2/5)</span></p>
-                      <a>(View Score)</a>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -393,7 +352,7 @@
     
 
           </div>
-        <div class="quizBlock dashboard_stats">
+        <div class="quizBlock dashboard_stats" id="empty-dash">
           <div class="d-flex justify-content-between"></div>
           <!-- no dashboard stats yet -->
           <h4>Looks like you have no quizzes yet.</h4>
@@ -410,7 +369,7 @@
           </h1>
 
           <div class="collapse" id="collapseExample">
-            <div class="card card-body">
+            <div class="card card-body p-3">
               No previous quizzes yet. <a href="https://larq.ai/" style="text-decoration: none;">Create a quiz on Larq</a> or join a meeting to create a new quiz.
             </div>
           </div>          
@@ -491,6 +450,11 @@
           <div class="row mt-3">
             <p>Anyone with access to the meeting link can join.</p>
           </div>
+          
+          <!-- make a back() button -->
+          <div class="row mt-3">
+            <a id="back-button" href="/">Back to Dashboard</a></div>
+
           <div class="row mt-3" style="display: none;">
             <a id="to-sip-flow" href="#">Joining via SIP? Click here.</a>
           </div>
@@ -504,312 +468,7 @@
       </div>
     </div>
   </div>
-  <!-- Quiz Submission Modal Pop-Up -->
-  <div class="modal fade" id="submit-modal" tabindex="-1" aria-labelledby="submit-modal-label" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="submit-modal-label">Confirm submission</h5>
-          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-        </div>
-        <div class="modal-body ">
-          <div class="modal-details">
-            Do you want to submit your quiz -
-            <span>Chapter 1 - Photosynthesis?</span>
-
-          </div>
-
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-          <button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Submit</button>
-          <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;">Keep working</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Challenge Modal Pop-Up -->
-  <div class="modal fade" id="challenge-modal" tabindex="-1" aria-labelledby="challenge-modal-label" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="challenge-modal-label">Challenge your understanding</h5>
-          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-        </div>
-        <div class="modal-body ">
-          <div class="modal-details">
-            The teacher is inviting you to take a quiz.
-            <span id="quiz-form-title">Chapter 1 - Photosynthesis</span>
-
-          </div>
-
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="timing-details">Will automatically start in 00:56 seconds</div>
-          <button id="starting-quiz" type="button" class="customButton" data-bs-dismiss="modal"
-            style="width: 40%;">Start the Quiz</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- publish Quiz -->
-
-  <div class="modal fade" id="publish-quiz-modal" tabindex="-1" aria-labelledby="publish-quiz-modal-label"
-    aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="publish-quiz-modal-label">Publish Quiz</h5>
-          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-        </div>
-        <div class="modal-body">
-          You are about to publish the Quiz to your classroom. Do you confirm?
-        </div>
-        <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
-            aria-label="Close">Cancel</button>
-          <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
-            data-bs-target="#quiz-sent-modal" id="publish-quiz-button">Publish the Quiz</button>
-        </div>
-
-      </div>
-    </div>
-    <button onclick="history.back()">Go Back</button>
-  </div>
-
-  <!-- SCHEDULING NOT AVAILABLE AT THIS TIME? -->
-  <div class="modal fade" id="schedule-quiz-modal" tabindex="-1" aria-labelledby="schedule-quiz-modal-label"
-  aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="schedule-quiz-modal-label">Schedule Quiz</h5>
-        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-      </div>
-      <div class="modal-body">
-        Scheduling a quiz is not available at this time. Send now? 
-      </div>
-      <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
-          aria-label="Close">Cancel</button>
-        <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
-          data-bs-target="#quiz-sent-modal" id="schedule-quiz-button">Publish the Quiz</button>
-      </div>
-
-    </div>
-  </div>
-  <button onclick="history.back()">Go Back</button>
-</div>
-
-
-
   
-<!-- ARE YOU SURE YOU WISH TO CANCEL? -->
-  <div class="modal fade" id="end-quiz-modal" tabindex="-1" aria-labelledby="end-quiz-modal-label"
-  aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="end-quiz-modal-label">End Quiz</h5>
-        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-      </div>
-      <div class="modal-body">
-        You are about to end the Quiz in your classroom. Do you confirm?
-      </div>
-      <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
-          aria-label="Close">Cancel</button>
-        <button type="button" class="customButton cancel-button" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
-          data-bs-target="#quiz-sent-modal" id="end-quiz-button">End the Quiz</button>
-      </div>
-
-    </div>
-  </div>
-  <button onclick="history.back()">Go Back</button>
-</div>
-
-
-<!-- QUIZ HAS BEEN SENT MODAL (FOR HOST) -->
-
-<div class="modal fade" id="quiz-sent-modal" tabindex="-1" aria-labelledby="quiz-sent-modal-label"
-aria-hidden="true">
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="quiz-sent-modal-label">Quiz has been Sent!</h5>
-      <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-    </div>
-    <div class="modal-body">
-      Your quiz has been submitted to students...
-    </div>
-    <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
-        aria-label="Close">Continue</button>
-    </div>
-
-  </div>
-</div>
-</div>
-
-  <!-- Additional options modal -->
-
-  <div class="modal fade" id="additional-options-modal" tabindex="-1" aria-labelledby="additional-options-modal-label"
-    aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="additional-options-modal-label">Additional Options</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <fieldset>
-            <div class="form-floating mb-3" style="text-align: left;">
-              <select name="logLevel" class="form-select" id="logLevelSelect">
-                <option value="debug">Debug</option>
-                <option value="info">Info</option>
-                <option value="warn">Warn</option>
-                <option value="error">Error</option>
-                <option value="off">Off</option>
-              </select>
-              <label for="logLevel" style="text-align: left;">Log Level:</label>
-            </div>
-            <div class="form-floating mb-3">
-              <select name="videoCodec" class="form-select" id="videoCodecSelect">
-                <option value="default">Meeting Default</option>
-                <option value="vp8">VP8</option>
-                <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
-              </select>
-              <label for="videoCodec" style="text-align: left;">Preferred Video Send Codec:</label>
-            </div>
-            <div class="form-floating mb-3">
-              <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
-                <option value="SendReceive">SendReceive</option>
-                <option value="Send">Send</option>
-                <option value="Receive">Receive</option>
-                <option value="None">None</option>
-              </select>
-              <label for="audioCapability" style="text-align: left;">Audio capability:</label>
-            </div>
-            <div class="form-floating mb-3">
-              <select name="videoCapability" class="form-select" id="videoCapabilitySelect">
-                <option value="SendReceive">SendReceive</option>
-                <option value="Send">Send</option>
-                <option value="Receive">Receive</option>
-                <option value="None">None</option>
-              </select>
-              <label for="videoCapability" style="text-align: left;">Video capability:</label>
-            </div>
-            <div class="form-floating mb-3">
-              <select name="contentCapability" class="form-select" id="contentCapabilitySelect">
-                <option value="SendReceive">SendReceive</option>
-                <option value="Send">Send</option>
-                <option value="Receive">Receive</option>
-                <option value="None">None</option>
-              </select>
-              <label for="contentCapability" style="text-align: left;">Content capability:</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="join-muted" class="form-check-input"></input>
-              <label for="join-muted-setting" class="form-check-label">Join Muted</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="webaudio" class="form-check-input">
-              <label for="webaudio" class="form-check-label">Use WebAudio</label>
-            </div>
-            <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
-              <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
-              <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
-                only)</label>
-            </div>
-            <div class="form-check" id="disable-audio-redundancy-checkbox" style="text-align: left; display: block;">
-              <input type="checkbox" id="disable-audio-redundancy" class="form-check-input">
-              <label for="disable-audio-redundancy" class="form-check-label">Disable Audio Redundancy</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
-              <label for="fullband-speech-mono-quality" class="form-check-label">Set fullband speech (mono)
-                quality</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="fullband-music-mono-quality" class="form-check-input">
-              <label for="fullband-music-mono-quality" class="form-check-label">Set fullband music (mono)
-                quality</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="fullband-music-stereo-quality" class="form-check-input">
-              <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
-                quality</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="simulcast" class="form-check-input">
-              <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
-              <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
-                Policy</label>
-            </div>
-            <lable id="server-side-network-adaption-title" for="server-side-network-adaption"
-              style="display: none; padding-top:5px">Server Side Network Adaption</lable>
-            <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
-              <option value="default">Default</option>
-              <option value="none">None (Deprecated)</option>
-              <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
-              <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video
-                Quality Adaption</option>
-            </select>
-            <label id="pagination-title" for="pagination-page-size" style="display: none; padding-top:5px">Paginate
-              displayed video tiles</label>
-            <select id="pagination-page-size" class="form-select" style="width:100%; display: none;">
-              <option value="2">2</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="25" selected>25</option>
-            </select>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" checked id="preconnect" class="form-check-input">
-              <label for="preconnect" class="form-check-label">Open signaling connection early</label>
-            </div>
-            <!-- <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="join-view-only" class="form-check-input">
-              <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
-            </div> -->
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="pause-last-frame" class="form-check-input">
-              <label for="pause-last-frame" class="form-check-label">Keep last video frame when paused</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="event-reporting" class="form-check-input">
-              <label for="event-reporting" class="form-check-label">Enable event reporting</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="replica-meeting-input" class="form-check-input">
-              <label for="replica-meeting-input" class="form-check-label">Create meeting as replica</label>
-              <input type="name" id="primary-meeting-external-id" class="form-control"
-                placeholder="Primary Meeting Title or ID">
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="delete-attendee" class="form-check-input">
-              <label for="delete-attendee" class="form-check-label">Delete own attendee to leave</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="disable-content-keyframe" class="form-check-input">
-              <label for="disable-content-keyframe" class="form-check-label">Disable periodic keyframe request to
-                content senders</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="allow-attendee-capabilities" class="form-check-input">
-              <label for="allow-attendee-capabilities" class="form-check-label">Allow updating of attendee capabilities
-                after start</label>
-            </div>
-            <div class="form-check" style="text-align: left;">
-              <input type="checkbox" id="die" class="form-check-input" checked=true>
-              <label for="die" class="form-check-label">Abort on fatal errors</label>
-            </div>
-          </fieldset>
-        </div>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-          id="additional-options-save-button">Save</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Authenticate for SIP with meeting and voice connector ID -->
 
@@ -1223,14 +882,14 @@ aria-hidden="true">
     <audio id="meeting-audio" style="display:none"></audio>
     <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column;">
       <div id="starting_quiz_container" style="gap: 20px;display: none;">
-        <div class="quizContainer h-100" style="width: 70%;">
+        <div class="quizContainer h-90 shadow" style="width: 70%;">
           <div class="d-flex justify-content-end mb-3">
             <button type="button" class="btn-close cancel-button"></button>
           </div>
           <div>
             <div class="d-flex flex-column justify-content-between h-100 scrollbar-new-design"
               style="overflow-y: overlay;">
-              <div>
+              <div class="w-75">
 
                 <div class="quiz-heading">Challenge your understanding</div>
                 <div class="questions-num">
@@ -1270,12 +929,12 @@ aria-hidden="true">
             </div>
           </div>
         </div>
-        <div class="messagingContainer h-100" style="width: 30%;">
+        <div class="messagingContainer h-90 shadow" style="width: 30%;">
           <p class="heading">Ask for help ✋</p>
-          <textarea placeholder="Please write down your queries"></textarea>
+          <textarea id="forumContainer" class="scrollbar-new-design border outline-none" placeholder="Please write down your queries"></textarea>
 
           <hr />
-          <div class="me-2">
+          <!-- <div class="me-2">
             <h4 class="message-heading">
               Dr. Robinson<span>15:23 PM</span>
             </h4>
@@ -1286,7 +945,7 @@ aria-hidden="true">
               You<span>15:23 PM</span>
             </h4>
             <p class="message-details">Question 1 - Do we consider indirect effects of photosynthesis?</p>
-          </div>
+          </div> -->
         </div>
       </div>
       <div id="roster-tile-container" class="d-flex flex-sm-grow-1 overflow-hidden h-100 p-3"
@@ -1345,7 +1004,7 @@ aria-hidden="true">
         <div id="tile-transcript-container" class="d-flex flex-column  my-4 my-sm-0 h-100"
           style="overflow-y: scrolll;width: 100%;">
           <div id="tile-area" class="v-grid"></div>
-          <div id="transcript-container" class="transcript-container scrollbar-new-design" style="display:none">
+          <div id="transcript-container" class="transcript-container scrollbar-new-design pb-5" style="display:none">
    
             <div class="d-flex justify-content-center mt-3 mb-3" id="transcription-button">
               <svg xmlns="http://www.w3.org/2000/svg" width="33" height="31" viewBox="0 0 33 31" fill="none">
@@ -1378,7 +1037,7 @@ aria-hidden="true">
           <!-- DREW FORM TESTS : REMOVE DISPLAY BLOCKS -->
         <div id="myDIV" class=" my-4 my-sm-0 quizBlock" style="display:none;">
           <div id="create-quiz" style="display: block;" class="h-100">
-            <div class="d-flex flex-column justify-content-between h-100 scrollbar-new-design"
+            <div class="d-flex flex-column h-100 scrollbar-new-design"
               style="overflow-y: overlay;">
               <div>
                 <div class="d-flex justify-content-end mb-3">
@@ -1405,7 +1064,7 @@ aria-hidden="true">
                     </div> -->
                   </div>
                 </div>
-                <div class="questions-block">
+                <div class="questions-block pb-5">
                   <div class="quiz-title">Type of Quiz</div>
                   <div class="radio-container m-2" id="radio-container">
                     <div class="radioBlock"><input type="radio" name="radioOption" value="Multiple Choice" checked=true disabled><label class="radio-label" contenteditable="false">Multiple Choice</label></div><div class="radioBlock"><input type="radio" name="radioOption" value="Other" disabled><label class="radio-label">Other</label></div>
@@ -1471,7 +1130,6 @@ aria-hidden="true">
 
 
 
-                </div>
               </div>
               <button type="button" class="customButton" id="submit-quiz">
                 Generate Quiz
@@ -1479,11 +1137,12 @@ aria-hidden="true">
             </div>
 
           </div>
+          </div>
           <div id="generating-quiz" class="h-100" style="display: none;">
             <div class="loading-block justify-content-between">
               <div class="d-flex flex-column align-items-center justify-content-end h-50">
 
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" class="animated bounce infinite">
                   <path
                     d="M6.94793 38.0859L38.1721 6.86047C38.6368 6.39582 41.6041 9.36435 41.1395 9.82781L9.91527 41.0532C9.45181 41.5179 6.48328 38.5493 6.94793 38.0859Z"
                     fill="#292F33" />
@@ -1504,7 +1163,7 @@ aria-hidden="true">
                   Generating your quiz. Please wait..
                 </h4>
               </div>
-              <div class="d-flex flex-column h-50 justify-content-end" style="width: 100%;">
+              <div class="d-flex flex-column h-50" style="width: 100%;">
                 <button class="deleteButton" type="button">
                   Stop generating
                 </button>
@@ -1513,7 +1172,7 @@ aria-hidden="true">
             </div>
           </div>
           <div id="quiz_question" class="h-100" style="display: none;">
-            <div class="d-flex flex-column justify-content-between h-100 scrollbar-y-design">
+            <div class="d-flex flex-column h-100 scrollbar-y-design">
               <div>
                 <div class="d-flex justify-content-end mb-3">
                   <button type="button" class="btn-close cancel-button"></button>
@@ -1618,11 +1277,11 @@ aria-hidden="true">
                 </div>
                 <div id="queries-block" class="tab-sections" style="display: none;">
                   <div class="queries-section">
-                    <div class="d-flex">
+                    <!-- <div class="d-flex">
                       <p class="pe-3">Maria</p>
                       <p>Question 2 <span>✋</span></p>
-                    </div>
-                    <h5>I cannot seem to understand the question.</h5>
+                    </div> -->
+                    <!-- <h5>I cannot seem to understand the question.</h5>
                     <div class="customInput">
                       <input type="text" placeholder="Respond" />
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
@@ -1631,7 +1290,7 @@ aria-hidden="true">
                           d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472"
                           stroke="#3F4149" stroke-linecap="round" stroke-linejoin="round" />
                       </svg>
-                    </div>
+                    </div> -->
 
                   </div>
 
@@ -1659,7 +1318,7 @@ aria-hidden="true">
             style="font-size:0.65rem;">
           </div>
         </div>
-        <div class="col-8 col-lg-12 col-md-12 order-2 order-lg-2 text-left text-lg-center buttonfooter">
+        <div class="col-8 col-lg-12 col-md-12 order-2 order-lg-2 text-left text-lg-center buttonfooter shadow">
           <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle microphone">
             <div class="iconButton">
               <button id="button-microphone" type="button" title="Toggle microphone">
@@ -2186,6 +1845,385 @@ aria-hidden="true">
     </div>
   </div>
 
+  <div class="modal fade" id="done-modal" tabindex="-1" aria-labelledby="schedule-meeting-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">All Set</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+        <div class="modal-body ">
+          <div class="modal-details">
+            Submitted Successfully!
+          </div>
+
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">OK</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+
+                    
+            <!-- SCHEDULING MEETING AT THIS TIME? -->
+            <div class="modal fade" id="schedule-meeting-modal" tabindex="-1" aria-labelledby="schedule-meeting-modal-label"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content p-5"><div class="modal-header"><h5 class="modal-title" id="schedule-meeting-modal-label">Schedule Quiz</h5></div><div class="modal-body"><h2 class="display-4 text-center pb-5">Set up a Scheduled Meeting</h2><input class="text-lg" type="datetime-local" id="meetingScheduleTime"><p class="lead">Please select a date and time for your meeting.</p></div><div class="d-flex justify-content-between"><button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Cancel</button> <button type="button" class="customButton text-lg" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal" data-bs-target="#done-modal" id="scheduleMeetingSubmit">Submit</button></div></div>
+            </div>
+            <button onclick="history.back()">Go Back</button>
+          </div>
+
+          <div class="modal fade" id="submit-modal" tabindex="-1" aria-labelledby="submit-modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="submit-modal-label">Confirm submission</h5>
+                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+                <div class="modal-body ">
+                  <div class="modal-details">
+                    Do you want to submit your quiz -
+                    <span>Chapter 1 - Photosynthesis?</span>
+        
+                  </div>
+        
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Submit</button>
+                  <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;">Keep working</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <!-- Quiz Submission Modal Pop-Up -->
+  <div class="modal fade" id="submit-modal" tabindex="-1" aria-labelledby="submit-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="submit-modal-label">Confirm submission</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+        <div class="modal-body ">
+          <div class="modal-details">
+            Do you want to submit your quiz -
+            <span>Chapter 1 - Photosynthesis?</span>
+
+          </div>
+
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Submit</button>
+          <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;">Keep working</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Challenge Modal Pop-Up -->
+  <div class="modal fade" id="challenge-modal" tabindex="-1" aria-labelledby="challenge-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="challenge-modal-label">Challenge your understanding</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+        <div class="modal-body ">
+          <div class="modal-details">
+            The teacher is inviting you to take a quiz.
+            <span id="quiz-form-title">Chapter 1 - Photosynthesis</span>
+
+          </div>
+
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="timing-details">Will automatically start in 00:56 seconds</div>
+          <button id="starting-quiz" type="button" class="customButton" data-bs-dismiss="modal"
+            style="width: 40%;">Start the Quiz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- publish Quiz -->
+
+  <div class="modal fade" id="publish-quiz-modal" tabindex="-1" aria-labelledby="publish-quiz-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="publish-quiz-modal-label">Publish Quiz</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+        <div class="modal-body">
+          You are about to publish the Quiz to your classroom. Do you confirm?
+        </div>
+        <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
+            aria-label="Close">Cancel</button>
+          <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
+            data-bs-target="#quiz-sent-modal" id="publish-quiz-button">Publish the Quiz</button>
+        </div>
+
+      </div>
+    </div>
+    <button onclick="history.back()">Go Back</button>
+  </div>
+
+  <!-- SCHEDULING NOT AVAILABLE AT THIS TIME? -->
+  <div class="modal fade" id="schedule-quiz-modal" tabindex="-1" aria-labelledby="schedule-quiz-modal-label"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="schedule-quiz-modal-label">Schedule Quiz</h5>
+        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+      </div>
+      <div class="modal-body">
+        Scheduling a quiz is not available at this time. Send now? 
+      </div>
+      <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
+          aria-label="Close">Cancel</button>
+        <button type="button" class="customButton" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal"
+          data-bs-target="#quiz-sent-modal" id="schedule-quiz-button">Publish the Quiz</button>
+      </div>
+
+    </div>
+  </div>
+  <button onclick="history.back()">Go Back</button>
+</div>
+
+
+
+  
+<!-- ARE YOU SURE YOU WISH TO CANCEL? -->
+  <div class="modal fade" id="end-quiz-modal" tabindex="-1" aria-labelledby="end-quiz-modal-label"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="end-quiz-modal-label">End Quiz</h5>
+        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+      </div>
+      <div class="modal-body">
+        You are about to end the Quiz in your classroom. Do you confirm?
+      </div>
+      <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
+          aria-label="Close">Cancel</button>
+        <button type="button" class="customButton cancel-button" style="width: 40%;" id="end-quiz-button">End the Quiz</button>
+      </div>
+
+    </div>
+  </div>
+  <button onclick="history.back()">Go Back</button>
+</div>
+
+
+<!-- QUIZ HAS BEEN SENT MODAL (FOR HOST) -->
+
+<div class="modal fade" id="quiz-sent-modal" tabindex="-1" aria-labelledby="quiz-sent-modal-label"
+aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="quiz-sent-modal-label">Quiz has been Sent!</h5>
+      <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+    </div>
+    <div class="modal-body">
+      Your quiz has been submitted to students...
+    </div>
+    <div class="d-flex justify-content-between"> <button type="button" class="cancelButton" data-bs-dismiss="modal"
+        aria-label="Close">Continue</button>
+    </div>
+
+  </div>
+</div>
+</div>
+
+  <!-- Additional options modal -->
+
+  <div class="modal fade" id="additional-options-modal" tabindex="-1" aria-labelledby="additional-options-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="additional-options-modal-label">Additional Options</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+            <div class="form-floating mb-3" style="text-align: left;">
+              <select name="logLevel" class="form-select" id="logLevelSelect">
+                <option value="debug">Debug</option>
+                <option value="info">Info</option>
+                <option value="warn">Warn</option>
+                <option value="error">Error</option>
+                <option value="off">Off</option>
+              </select>
+              <label for="logLevel" style="text-align: left;">Log Level:</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select name="videoCodec" class="form-select" id="videoCodecSelect">
+                <option value="default">Meeting Default</option>
+                <option value="vp8">VP8</option>
+                <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
+              </select>
+              <label for="videoCodec" style="text-align: left;">Preferred Video Send Codec:</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select name="audioCapability" class="form-select" id="audioCapabilitySelect">
+                <option value="SendReceive">SendReceive</option>
+                <option value="Send">Send</option>
+                <option value="Receive">Receive</option>
+                <option value="None">None</option>
+              </select>
+              <label for="audioCapability" style="text-align: left;">Audio capability:</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select name="videoCapability" class="form-select" id="videoCapabilitySelect">
+                <option value="SendReceive">SendReceive</option>
+                <option value="Send">Send</option>
+                <option value="Receive">Receive</option>
+                <option value="None">None</option>
+              </select>
+              <label for="videoCapability" style="text-align: left;">Video capability:</label>
+            </div>
+            <div class="form-floating mb-3">
+              <select name="contentCapability" class="form-select" id="contentCapabilitySelect">
+                <option value="SendReceive">SendReceive</option>
+                <option value="Send">Send</option>
+                <option value="Receive">Receive</option>
+                <option value="None">None</option>
+              </select>
+              <label for="contentCapability" style="text-align: left;">Content capability:</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="join-muted" class="form-check-input"></input>
+              <label for="join-muted-setting" class="form-check-label">Join Muted</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="webaudio" class="form-check-input">
+              <label for="webaudio" class="form-check-label">Use WebAudio</label>
+            </div>
+            <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
+              <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
+              <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
+                only)</label>
+            </div>
+            <div class="form-check" id="disable-audio-redundancy-checkbox" style="text-align: left; display: block;">
+              <input type="checkbox" id="disable-audio-redundancy" class="form-check-input">
+              <label for="disable-audio-redundancy" class="form-check-label">Disable Audio Redundancy</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="fullband-speech-mono-quality" class="form-check-input">
+              <label for="fullband-speech-mono-quality" class="form-check-label">Set fullband speech (mono)
+                quality</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="fullband-music-mono-quality" class="form-check-input">
+              <label for="fullband-music-mono-quality" class="form-check-label">Set fullband music (mono)
+                quality</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="fullband-music-stereo-quality" class="form-check-input">
+              <label for="fullband-music-stereo-quality" class="form-check-label">Set fullband music (stereo)
+                quality</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="simulcast" class="form-check-input">
+              <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
+              <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
+                Policy</label>
+            </div>
+            <lable id="server-side-network-adaption-title" for="server-side-network-adaption"
+              style="display: none; padding-top:5px">Server Side Network Adaption</lable>
+            <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
+              <option value="default">Default</option>
+              <option value="none">None (Deprecated)</option>
+              <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
+              <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video
+                Quality Adaption</option>
+            </select>
+            <label id="pagination-title" for="pagination-page-size" style="display: none; padding-top:5px">Paginate
+              displayed video tiles</label>
+            <select id="pagination-page-size" class="form-select" style="width:100%; display: none;">
+              <option value="2">2</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25" selected>25</option>
+            </select>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" checked id="preconnect" class="form-check-input">
+              <label for="preconnect" class="form-check-label">Open signaling connection early</label>
+            </div>
+            <!-- <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="join-view-only" class="form-check-input">
+              <label for="join-view-only" class="form-check-label">Join with view-only mode</label>
+            </div> -->
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="pause-last-frame" class="form-check-input">
+              <label for="pause-last-frame" class="form-check-label">Keep last video frame when paused</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="event-reporting" class="form-check-input">
+              <label for="event-reporting" class="form-check-label">Enable event reporting</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="replica-meeting-input" class="form-check-input">
+              <label for="replica-meeting-input" class="form-check-label">Create meeting as replica</label>
+              <input type="name" id="primary-meeting-external-id" class="form-control"
+                placeholder="Primary Meeting Title or ID">
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="delete-attendee" class="form-check-input">
+              <label for="delete-attendee" class="form-check-label">Delete own attendee to leave</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="disable-content-keyframe" class="form-check-input">
+              <label for="disable-content-keyframe" class="form-check-label">Disable periodic keyframe request to
+                content senders</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="allow-attendee-capabilities" class="form-check-input">
+              <label for="allow-attendee-capabilities" class="form-check-label">Allow updating of attendee capabilities
+                after start</label>
+            </div>
+            <div class="form-check" style="text-align: left;">
+              <input type="checkbox" id="die" class="form-check-input" checked=true>
+              <label for="die" class="form-check-label">Abort on fatal errors</label>
+            </div>
+          </fieldset>
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+          id="additional-options-save-button">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar Event Modal -->
+  <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+          <p id="eventModalContent"></p>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Event content will go here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 </body>
