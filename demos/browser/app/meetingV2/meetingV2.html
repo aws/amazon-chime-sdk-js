@@ -101,7 +101,7 @@
 
 </div>
 
-                <div class="spinner-border" role="status" id="login-spinner" style="display:none">
+                <div class="spinner-border p-4 position-absolute top-50 end-50" role="status" id="login-spinner" style="display:none">
             <span class="visually-hidden">Loading...</span>
           </div>
 
@@ -179,7 +179,7 @@
       </div>
       <div class="col-lg-8 col-md-12 col-12">
         <div class="d-flex justify-content-between header-row">
-          <h2 class="title">Good afternoon, <b class="first_name" id="greetingFirstName"></b></h2>
+          <h2 class="title text-white">Good afternoon, <b class="first_name" id="greetingFirstName"></b></h2>
           <div class="dropdown-block">
             <div class="btn-group">
               <div class="profileAvater" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -262,7 +262,7 @@
             </svg>
             <p style="color: #fff">New Meeting</p>
           </div>
-          <div class="buttonBlock" id="join-meeting">
+          <div class="buttonBlock bg-white" id="join-meeting">
             <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="vuesax/linear/video">
                 <g id="video">
@@ -281,7 +281,7 @@
 
             <p>Join Meeting</p>
           </div>
-          <div class="buttonBlock" id="scheduleMeeting" data-bs-toggle="modal" data-bs-target="#schedule-meeting-modal">
+          <div class="buttonBlock bg-white" id="scheduleMeeting" data-bs-toggle="modal" data-bs-target="#schedule-meeting-modal">
             <svg xmlns="http://www.w3.org/2000/svg" width="61" height="61" viewBox="0 0 61 61" fill="none">
               <path
                 d="M13.8882 50.3105L3.61523 11.9712L41.7334 17.167L41.0145 17.3596C39.6167 17.7341 38.3416 18.247 37.1892 18.8982C36.0368 19.5494 34.9564 20.3098 33.948 21.1792L10.3338 17.8757L12.5811 26.2624L27.9214 26.0044L14.5072 33.451L16.7545 41.8378L28.2172 32.8594C28.1439 33.8635 28.1476 34.8359 28.2284 35.7765C28.3092 36.717 28.4782 37.6674 28.7355 38.6275L28.7676 38.7473L13.8882 50.3105ZM48.7193 46.1141C45.4045 47.0023 42.2655 46.5909 39.3021 44.88C36.3388 43.1691 34.4141 40.6569 33.5279 37.3433C32.6397 34.0286 33.0511 30.8895 34.7619 27.9262C36.4728 24.9629 38.9851 23.0381 42.2986 22.152C45.6134 21.2638 48.7524 21.6751 51.7158 23.386C54.6791 25.0969 56.6038 27.6091 57.49 30.9227C58.3782 34.2375 57.9668 37.3765 56.256 40.3398C54.5451 43.3032 52.0328 45.2279 48.7193 46.1141ZM50.9715 38.7047L52.1994 36.5779L46.5786 33.3328L44.7809 26.6234L42.3847 27.2654L44.4393 34.9333L50.9715 38.7047Z"
@@ -294,7 +294,7 @@
 
 
 
-        <h6 class="mt-4 mb-4">Quiz Dashboard</h6>
+        <h6 class="mt-4 mb-4 text-white">Quiz Dashboard</h6>
         <div class="quizBlock dashboard_stats" id="full-dash" style="display:none">
           <div class="d-flex justify-content-between">
             <a class="heading">Science: Chapter 1 - Photosynthesis</a>
@@ -395,10 +395,10 @@
   <!-- Initial meeting authentication screen with meeting and name inputs -->
   <div id="main-page" class="main-page" style="display: none;">
     <div id="flow-authenticate" class="flow text-center p-2 align-items-center flow text-center p-2 " style="margin-top: 139px;">
-      <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
+      <div class="text-muted" style="position:fixed;right:3px;bottom:3px">Copyright ©2023 Larq.ai</div>
       <div class="container">
         <form id="form-authenticate">
-          <h1 class="h3 mb-3 fw-normal">Join a meeting</h1>
+          <h1 class="h3 mb-3 fw-normal text-white">Join a meeting</h1>
           <div class="form-floating row mt-3">
             <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required
               autofocus>
@@ -434,20 +434,20 @@
             <label for="inputRegion" style="text-align: left;"> Media Region</label>
           </div>
           <div class="row mt-3">
-            <button type="button" class="btn btn-outline-secondary h-50 d-sm-block" data-bs-toggle="modal"
+            <button type="button" class="btn btn-secondary h-50 d-sm-block" data-bs-toggle="modal"
               id="additional-options-button" data-bs-target="#additional-options-modal">
               Additional Options
             </button>
           </div>
           <div class="row mt-3">
             <div class="btn-group p-0" role="group">
-              <button id="authenticate" class="btn btn-lg btn-secondary w-100" type="submit">Continue</button>
-              <button id="quick-join" class="btn btn-lg btn-success" title="Skip Device Selection">
+              <button id="authenticate" class="btn btn-lg btn-success w-100" type="submit">Continue</button>
+              <button id="quick-join" class="btn btn-lg btn-primary" title="Skip Device Selection">
                 <%= require('../../node_modules/open-iconic/svg/bolt.svg') %>
               </button>
             </div>
           </div>
-          <div class="row mt-3">
+          <div class="row mt-3 text-white">
             <p>Anyone with access to the meeting link can join.</p>
           </div>
           
@@ -929,11 +929,14 @@
             </div>
           </div>
         </div>
-        <div class="messagingContainer h-90 shadow" style="width: 30%;">
+        <div id="messagingContainer" class="messagingContainer h-90 shadow" style="width: 30%;">
           <p class="heading">Ask for help ✋</p>
           <textarea id="forumContainer" class="scrollbar-new-design border outline-none" placeholder="Please write down your queries"></textarea>
 
           <hr />
+          <div id="queries-block" class="queries-block" style="display: block;"><div class="queries-section">
+          </div></div>
+
           <!-- <div class="me-2">
             <h4 class="message-heading">
               Dr. Robinson<span>15:23 PM</span>
@@ -1275,7 +1278,7 @@
                     </div>
                   </div>
                 </div>
-                <div id="queries-block" class="tab-sections" style="display: none;">
+                <div id="queries-block" class="queries-block tab-sections" style="display: none;">
                   <div class="queries-section">
                     <!-- <div class="d-flex">
                       <p class="pe-3">Maria</p>
@@ -1511,177 +1514,176 @@
 
             </div>
           </div>
-          <div id="toggle-icons" style="display: none;">
-
-            
-        <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Transcription">
-          <div class="iconButton">
-            <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
-            data-bs-toggle="button" aria-pressed="true" autocomplete="off">
-            <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
-          </button>
-          </div>
-          <button style="height: 32px;" id="button-video-filter-drop" type="button"
-            class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
-          <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
-            <a class="dropdown-item" href="#">No filter</a>
-          </div>
         </div>
 
-            <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Apply filter">
-              <div class="iconButton">
-                <button id="button-video-filter" type="button" title="Apply filter">
-                  <svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1"
-                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 490 490"
-                    xml:space="preserve">
-                    <g>
-                      <path d="M490,245C490,109.9,380.1,0,245,0S0,109.9,0,245s109.9,245,245,245S490,380.1,490,245z M245,79c91.5,0,166,74.5,166,166
-                 s-74.5,166-166,166V79z" />
-                    </g>
-                  </svg>
-                </button>
-              </div>
-              <button style="height: 32px;" id="button-video-filter-drop" type="button"
-                class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
-              <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
-                <a class="dropdown-item" href="#">No filter</a>
-              </div>
-            </div>
-            <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle content share">
-              <div class="iconButton">
-                <button id="button-content-share" type="button" title="Toggle content share">
-                  <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z"
-                      stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path
-                      d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z"
-                      stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </button>
-              </div>
-              <button style="height: 32px;" id="button-content-share-drop" type="button"
-                class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false" title="Select content to share"></button>
-              <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-content-share-drop" x-placement="bottom-start"
-                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-                <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
-                  data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content
-                  Sharing</a>
-                <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item"
-                  href="#">Pause
-                  Content Share</a>
-                <hr class="dropdown-divider">
-                <a id="dropdown-item-content-share-screen-capture"
-                  class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
-                <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option"
-                  href="#">Test Video</a>
-                <a id="dropdown-item-content-share-test-mono-audio-speech"
-                  class="dropdown-item content-share-source-option" href="#">Test Mono
-                  Audio Speech</a>
-                <a id="dropdown-item-content-share-test-stereo-audio-speech"
-                  class="dropdown-item content-share-source-option" href="#">Test Stereo
-                  Audio Speech</a>
-                <a id="dropdown-item-content-share-test-stereo-audio-tone"
-                  class="dropdown-item content-share-source-option" href="#">Test Stereo
-                  Tone (L-500Hz R-1000Hz)</a>
-                <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option"
-                  for="content-share-item">Local file</label>
-                <input id="content-share-item" type="file">
-              </div>
-            </div>
-            <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle speaker"
-              style="display: none;">
-              <div class="iconButton">
-                <button id="button-speaker" type="button" title="Toggle speaker">
-                  <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path opacity="0.15"
-                      d="M13 3L7 8H5C3.89543 8 3 8.89543 3 10V14C3 15.1046 3.89543 16 5 16H7L13 21V3Z" fill="#000000" />
-                    <path
-                      d="M16 8.99998C16.5 9.49998 17 10.5 17 12C17 13.5 16.5 14.5 16 15M13 3L7 8H5C3.89543 8 3 8.89543 3 10V14C3 15.1046 3.89543 16 5 16H7L13 21V3Z"
-                      stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </button>
-
-              </div>
-              <button style="height: 32px;" id="button-speaker-drop" type="button"
-                class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
-              <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-speaker-drop" x-placement="bottom-start"
-                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-                <a class="dropdown-item" href="#">Default speaker</a>
-              </div>
-            </div>
-            <!-- <button id="button-live-transcription" type="button" style="display: none !important;"
-              class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle live transcription display" data-bs-toggle="button"
-              aria-pressed="false" autocomplete="off" style="display: none">
-              <%= require('../../node_modules/open-iconic/svg/code.svg') %>
-            </button> -->
+        <!-- TOGGLE ICONS -->
+        <div id="toggle-icons" class="text-center bg-primary bottom-0 position-fixed" style="display: none;z-index: 100;">
+          <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Transcription">
             <div class="iconButton">
-              <button id="button-video-stats" type="button" class="mx-1 mx-xl-2 my-2"
-                title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false"
-                autocomplete="off">
-                <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 20V19M8 20V16M12 20V12M16 20V8" stroke="#000000" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
-              </button>
+              <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
+              data-bs-toggle="button" aria-pressed="true" autocomplete="off">
+              <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
+            </button>
             </div>
-
-            <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Select destination">
-              <div class="btn-group" role="group">
+            <button style="height: 32px;" id="button-video-filter-drop" type="button"
+              class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+            <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
+              <a class="dropdown-item" href="#">No filter</a>
+            </div>
+          </div>
+  
+              <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Apply filter">
                 <div class="iconButton">
-                  <button id="button-video-recording-drop" type="button" class="dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
-                    <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
+                  <button id="button-video-filter" type="button" title="Apply filter">
+                    <svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1"
+                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 490 490"
+                      xml:space="preserve">
+                      <g>
+                        <path d="M490,245C490,109.9,380.1,0,245,0S0,109.9,0,245s109.9,245,245,245S490,380.1,490,245z M245,79c91.5,0,166,74.5,166,166
+                   s-74.5,166-166,166V79z" />
+                      </g>
+                    </svg>
+                  </button>
+                </div>
+                <button style="height: 32px;" id="button-video-filter-drop" type="button"
+                  class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+                <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
+                  <a class="dropdown-item" href="#">No filter</a>
+                </div>
+              </div>
+              <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle content share">
+                <div class="iconButton">
+                  <button id="button-content-share" type="button" title="Toggle content share">
+                    <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
-                        d="M3 13.6493C3 16.6044 5.41766 19 8.4 19L16.5 19C18.9853 19 21 16.9839 21 14.4969C21 12.6503 19.8893 10.9449 18.3 10.25C18.1317 7.32251 15.684 5 12.6893 5C10.3514 5 8.34694 6.48637 7.5 8.5C4.8 8.9375 3 11.2001 3 13.6493Z"
+                        d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z"
+                        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      <path
+                        d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z"
                         stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                   </button>
                 </div>
-                <div style="height: 32px;" id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
-                  aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
-                  <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                    title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                    <svg class="svg">
-                      <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
-                    </svg>
-                    Capture Media to Device
-                  </button>
-                  <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                    title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false"
-                    autocomplete="off">
-                    <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
-                      Capture Media to S3
-                  </button>
-                  <button id="button-live-connector" type="button"
-                    class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                    title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false"
-                    autocomplete="off">
-                    <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
-                      Broadcast Media to IVS
-                  </button>
+                <button style="height: 32px;" id="button-content-share-drop" type="button"
+                  class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false" title="Select content to share"></button>
+                <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="button-content-share-drop" x-placement="bottom-start"
+                  style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                  <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
+                    data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content
+                    Sharing</a>
+                  <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item"
+                    href="#">Pause
+                    Content Share</a>
+                  <hr class="dropdown-divider">
+                  <a id="dropdown-item-content-share-screen-capture"
+                    class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
+                  <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option"
+                    href="#">Test Video</a>
+                  <a id="dropdown-item-content-share-test-mono-audio-speech"
+                    class="dropdown-item content-share-source-option" href="#">Test Mono
+                    Audio Speech</a>
+                  <a id="dropdown-item-content-share-test-stereo-audio-speech"
+                    class="dropdown-item content-share-source-option" href="#">Test Stereo
+                    Audio Speech</a>
+                  <a id="dropdown-item-content-share-test-stereo-audio-tone"
+                    class="dropdown-item content-share-source-option" href="#">Test Stereo
+                    Tone (L-500Hz R-1000Hz)</a>
+                  <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option"
+                    for="content-share-item">Local file</label>
+                  <input id="content-share-item" type="file">
                 </div>
               </div>
+              <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle speaker"
+                style="display: none;">
+                <div class="iconButton">
+                  <button id="button-speaker" type="button" title="Toggle speaker">
+                    <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path opacity="0.15"
+                        d="M13 3L7 8H5C3.89543 8 3 8.89543 3 10V14C3 15.1046 3.89543 16 5 16H7L13 21V3Z" fill="#000000" />
+                      <path
+                        d="M16 8.99998C16.5 9.49998 17 10.5 17 12C17 13.5 16.5 14.5 16 15M13 3L7 8H5C3.89543 8 3 8.89543 3 10V14C3 15.1046 3.89543 16 5 16H7L13 21V3Z"
+                        stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+  
+                </div>
+                <button style="height: 32px;" id="button-speaker-drop" type="button"
+                  class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
+                <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="button-speaker-drop" x-placement="bottom-start"
+                  style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                  <a class="dropdown-item" href="#">Default speaker</a>
+                </div>
+              </div>
+              <!-- <button id="button-live-transcription" type="button" style="display: none !important;"
+                class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle live transcription display" data-bs-toggle="button"
+                aria-pressed="false" autocomplete="off" style="display: none">
+                <%= require('../../node_modules/open-iconic/svg/code.svg') %>
+              </button> -->
+              <div class="iconButton d-inline w-fit-content">
+                <button id="button-video-stats" type="button" class="mx-1 mx-xl-2 my-2"
+                  title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false"
+                  autocomplete="off">
+                  <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 20V19M8 20V16M12 20V12M16 20V8" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+  
+              <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Select destination">
+                <div class="btn-group" role="group">
+                  <div class="iconButton">
+                    <button id="button-video-recording-drop" type="button" class="dropdown-toggle"
+                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
+                      <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M3 13.6493C3 16.6044 5.41766 19 8.4 19L16.5 19C18.9853 19 21 16.9839 21 14.4969C21 12.6503 19.8893 10.9449 18.3 10.25C18.1317 7.32251 15.684 5 12.6893 5C10.3514 5 8.34694 6.48637 7.5 8.5C4.8 8.9375 3 11.2001 3 13.6493Z"
+                          stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div style="height: 32px;" id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
+                    aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
+                    <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                      <svg class="svg">
+                        <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
+                      </svg>
+                      Capture Media to Device
+                    </button>
+                    <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false"
+                      autocomplete="off">
+                      <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
+                        Capture Media to S3
+                    </button>
+                    <button id="button-live-connector" type="button"
+                      class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false"
+                      autocomplete="off">
+                      <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
+                        Broadcast Media to IVS
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2"
+                style="margin:10px 0px;" title="Promote to or demote from Primary meeting" data-bs-toggle="button"
+                aria-pressed="false" autocomplete="off">
+                <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
+              </button>
+              <p class="text-white">Click outside the form to exit</p>
             </div>
-            <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2"
-              style="margin:10px 0px;" title="Promote to or demote from Primary meeting" data-bs-toggle="button"
-              aria-pressed="false" autocomplete="off">
-              <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
-            </button>
-          </div>
 
-
-
-        </div>
         <div class="col-4 col-lg-3 order-3 order-lg-3 text-end text-lg-right" style="display: none;">
           <!-- <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4"
             title="Leave meeting">
@@ -1774,6 +1776,7 @@
           aria-pressed="false" autocomplete="off">
           Save
         </button>
+      <p id="sdk-version"></p>
       </div>
     </div>
   </div>

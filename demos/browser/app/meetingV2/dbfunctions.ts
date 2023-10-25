@@ -188,11 +188,23 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   transcriptContainer.addEventListener("mousedown", () => {
-    // Apply the highlight color
+    
+    // find the target text
+    const selection = window.getSelection();
+    const selectedText = selection?.toString(); 
+    if (!selectedText) {
+        return;
+    }
+    // Apply the highlight color to the selected text
     transcriptContainer.style.backgroundColor = '#ffff00';
 
-    // Save the highlighted text to localStorage
-    localStorage.setItem("highlighted_text", '#ffff00');
+
+    // Save the highlighted text's content to localStorage
+    localStorage.setItem("highlighted_text", selectedText);
+
+    
+
+
   });
 
 

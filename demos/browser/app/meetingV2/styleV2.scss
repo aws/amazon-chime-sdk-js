@@ -475,7 +475,8 @@ a:hover {
   align-items: center;
   -webkit-box-pack: center;
   justify-content: center;
-  background-color: #f5f5f5;
+  // background-color: #f5f5f5;
+  background-color: #1e1e1e;
 }
 .modal-backdrop {
   z-index: -1;
@@ -522,7 +523,8 @@ body {
   // align-items: center;
   -webkit-box-pack: center;
   justify-content: center;
-  background-color: #f5f5f5;
+  // background-color: #f5f5f5;
+  background-color: #1e1e1e;
 }
 
 // svg {
@@ -2660,11 +2662,15 @@ input[type="radio"]:focus {
     position: fixed;
     bottom: 0px;
     width: 100%;
-    max-height: 120px;
+    max-height: 100px;
     /* padding-top: 10px; */
     z-index: 100;
     background: var(--bs-body-bg);
 }
   div#starting_quiz_container label {
     padding-left: 15px;
+}
+
+#roster-message-container{
+  max-height: 92%;
 }

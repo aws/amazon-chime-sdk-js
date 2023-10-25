@@ -874,16 +874,34 @@ buttonChat?.addEventListener('click', _e => {
 });
 
 const toggleMenuButton = document.getElementById('toggle-menu') as HTMLButtonElement | null;
-toggleMenuButton?.addEventListener('click', _e => {
+// add a document listener to close the menu if the user clicks outside of it
+document.addEventListener('click', (e) => {
   const x = document.getElementById('toggle-icons');
-  if (x && x.style.display === 'none') {
-    x.style.display = 'inline-flex';
-  } else {
+  if (e.target ==  toggleMenuButton){
     if (x) {
-      x.style.display = 'none';
+      x.style.display = 'block';
+    }
+  }
+  else if (x && e.target !== x) {
+    x.style.display = 'none';
+  }
+  else {
+    if (x) {
+      x.style.display = 'block';
     }
   }
 });
+
+// toggleMenuButton?.addEventListener('click', _e => {
+//   const x = document.getElementById('toggle-icons');
+//   if (x && x.style.display === 'none') {
+//     x.style.display = 'block';
+//   } else {
+//     if (x) {
+//       x.style.display = 'none';
+//     }
+//   }
+// });
 
 const registerButton = document.getElementById('register') as HTMLButtonElement | null;
 registerButton?.addEventListener('click', _e => {
@@ -3549,7 +3567,8 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       // console.log("*************************message:", dataMessage);
       // console.log("*************************message.TYPE:", dataMessage.topic);
 
-      if (dataMessage.topic === 'quizForumQuestion' && !isSelf) {
+      if (dataMessage.topic === 'quizForumQuestion') {
+        // If you've received a message
       console.log("quiz forum question");
       const quizForumQuestion : QuizForumQuestion = {
         quiz_id: '',
@@ -3563,7 +3582,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       // UPDATE THE HTML HERE WITH THE QUIZFORUMQUESTION
 
           // Access the DOM elements
-          const queriesBlock = document.getElementById('queries-block');
+          const queriesBlock = document.querySelector('.queries-block') as HTMLElement;
           const queriesSection = queriesBlock.querySelector('.queries-section');
           
           // Create a new query element and populate it with data from quizForumQuestion
@@ -3595,7 +3614,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       }
 
 
-      if (dataMessage.topic === 'displayForm') {
+      if (dataMessage.topic === 'displayForm' && !isSelf) {
       console.log('*************************RUNNNING DISPLAYFORM:');
       console.log('Received message:', dataMessage.text());        
       populateQuiz(dataMessage.text());
@@ -5845,14 +5864,18 @@ function sendQuizForumQuestion(question: string) {
   );
     }
 
+  document.addEventListener('DOMContentLoaded', () => {
 
 console.log("Bottom part of script loaded");
 // FUNCTION TO ADD LISTENER TO QUIZFORUM QUESTION
 // Get the textarea and messaging container elements
 const textarea = document.getElementById('forumContainer') as HTMLTextAreaElement;
-const messagingContainer = document.querySelector('.messagingContainer');
-if (!textarea || !messagingContainer) {
-  console.error("Required elements not found.");
+const messagingContainer = document.getElementById('messagingContainer');
+if (!textarea ) {
+  console.error("Textarea not found.");
+}
+if (!messagingContainer) {
+  console.error("Messaging container not found.");
 }
 
 // Listen for the 'keydown' event on the textarea
@@ -5885,3 +5908,4 @@ textarea.addEventListener('keydown', function(event) {
         textarea.value = '';  // <-- Use the asserted textarea here
     }
 });
+  });
