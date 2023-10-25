@@ -34,11 +34,10 @@ The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) ca
 ## Resources
 
 - [Amazon Chime SDK Overview](https://aws.amazon.com/chime/chime-sdk/)
-- [Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
+- [Pricing](https://aws.amazon.com/chime/chime-sdk/pricing/)
 - [Supported Browsers](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers)
 - [Getting Started Guides](guides/20_Builders_Journey.md)
 - [Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html)
-- [PSTN Audio Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html)
 - [Control Plane API Reference](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/welcome.html)
 - [Frequently Asked Questions (FAQ)](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
 
@@ -61,7 +60,6 @@ In addition to the below, here is a list of [all blog posts about the Amazon Chi
 - [Capturing Amazon Chime SDK Meeting Content](https://aws.amazon.com/blogs/business-productivity/capture-amazon-chime-sdk-meetings-using-media-capture-pipelines/)
 - [Monitoring and Troubleshooting With Amazon Chime SDK Meeting Events](https://aws.amazon.com/blogs/business-productivity/monitoring-and-troubleshooting-with-amazon-chime-sdk-meeting-events/)
 - [Build Meetings features into your Amazon Chime SDK messaging application](https://aws.amazon.com/blogs/business-productivity/build-meeting-features-into-your-amazon-chime-sdk-messaging-application/)
-- [Integrating PSTN callers with Amazon Chime SDK meetings](https://aws.amazon.com/blogs/business-productivity/integrating-pstn-callers-with-amazon-chime-sdk-meetings/)
 - [Using the Amazon Chime SDK to Create Automated Outbound Call Notifications](https://aws.amazon.com/blogs/business-productivity/using-the-amazon-chime-sdk-to-create-automated-outbound-call-notifications/)
 - [Building voice menus and call routing with the Amazon Chime SDK](https://aws.amazon.com/blogs/business-productivity/building-voice-menus-and-call-routing-with-the-amazon-chime-sdk/)
 
@@ -112,7 +110,6 @@ The following developer guides cover specific topics for a technical audience.
 
 The following developer guides cover the Amazon Chime SDK more broadly.
 
-- [PSTN Audio developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html)
 - [Messaging developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html)
 - [Media Pipelines developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-pipelines.html)
 
