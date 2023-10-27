@@ -6,8 +6,10 @@ export default class RedundantAudioEncoder {
   private readonly maxRedPacketSizeBytes = 1 << 10;
 
   // Limit payload to 1000 bytes to handle small MTU. 1000 is chosen because in Chromium-based browsers, writing audio
-  // frames larger than 1000 bytes will cause an error to be thrown. See https://crbug.com/1248479.
-  private readonly maxAudioRtpPacketSizeBytes = 1000;
+  // payloads larger than 1000 bytes using the WebRTC Insertable Streams API (which is used to enable dynamic audio
+  // redundancy) will cause an error to be thrown and cause audio flow to permanently stop. See
+  // https://crbug.com/1248479.
+  private readonly maxAudioPayloadSizeBytes = 1000;
 
   // Each payload can encode a timestamp delta of 14 bits
   private readonly maxRedTimestampOffset = 1 << 14;
@@ -228,6 +230,21 @@ export default class RedundantAudioEncoder {
   }
 
   /**
+   * Helper function to only enqueue audio frames if they do not exceed the audio payload byte limit imposed by
+   * Chromium-based browsers. Chromium will throw an error (https://crbug.com/1248479) if an audio payload larger than
+   * 1000 bytes is enqueued. Any controller that attempts to enqueue an audio payload larger than 1000 bytes will
+   * encounter this error and will permanently stop sending or receiving audio.
+   */
+  private enqueueAudioFrameIfPayloadSizeIsValid(
+    // @ts-ignore
+    frame: RTCEncodedAudioFrame,
+    controller: TransformStreamDefaultController
+  ): void {
+    if (frame.data.byteLength > this.maxAudioPayloadSizeBytes) return;
+    controller.enqueue(frame);
+  }
+
+  /**
    * Receives encoded frames and modifies as needed before sending to transport.
    */
   private senderTransform(
@@ -238,22 +255,22 @@ export default class RedundantAudioEncoder {
     const frameMetadata = frame.getMetadata();
     // @ts-ignore
     if (frameMetadata.payloadType !== this.redPayloadType) {
-      controller.enqueue(frame);
+      this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
       return;
     }
     const primaryPayloadBuffer = this.getPrimaryPayload(frame.timestamp, frame.data);
     if (!primaryPayloadBuffer) {
-      controller.enqueue(frame);
+      this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
       return;
     }
     const encodedBuffer = this.encode(frame.timestamp, primaryPayloadBuffer);
     /* istanbul ignore next */
     if (!encodedBuffer) {
-      controller.enqueue(frame);
+      this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
       return;
     }
     frame.data = encodedBuffer;
-    controller.enqueue(frame);
+    this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
     return;
   }
 
@@ -403,7 +420,7 @@ export default class RedundantAudioEncoder {
     if (
       primaryPayloadSize === 0 ||
       primaryPayloadSize >= this.maxRedPacketSizeBytes ||
-      primaryPayloadSize >= this.maxAudioRtpPacketSizeBytes
+      primaryPayloadSize >= this.maxAudioPayloadSizeBytes
     ) {
       return null;
     }
@@ -411,7 +428,7 @@ export default class RedundantAudioEncoder {
     const numRedundantEncodings = this.numRedundantEncodings;
     let headerSizeBytes = this.redLastHeaderSizeBytes;
     let payloadSizeBytes = primaryPayloadSize;
-    let bytesAvailable = this.maxAudioRtpPacketSizeBytes - primaryPayloadSize - headerSizeBytes;
+    let bytesAvailable = this.maxAudioPayloadSizeBytes - primaryPayloadSize - headerSizeBytes;
     const redundantEncodingTimestamps: Array<number> = new Array();
     const redundantEncodingPayloads: Array<ArrayBuffer> = new Array();
 
@@ -618,7 +635,7 @@ export default class RedundantAudioEncoder {
     const frameMetadata = frame.getMetadata();
     // @ts-ignore
     if (frameMetadata.payloadType !== this.redPayloadType) {
-      controller.enqueue(frame);
+      this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
       return;
     }
     // @ts-ignore
@@ -629,7 +646,7 @@ export default class RedundantAudioEncoder {
       frameMetadata.sequenceNumber
     );
     if (!encodings) {
-      controller.enqueue(frame);
+      this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
       return;
     }
     for (let i = encodings.length - 1; i >= 0; i--) {
@@ -642,7 +659,7 @@ export default class RedundantAudioEncoder {
       encodings[encodings.length - 1].timestamp,
       frameMetadata.synchronizationSource
     );
-    controller.enqueue(frame);
+    this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
   }
 
   /**
