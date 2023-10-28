@@ -1556,21 +1556,22 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 
 
 {/* if #scheduleMeeting is clicked make modal popup with a date/time scheduler*/}
-document.querySelector('#scheduleMeeting')?.addEventListener('click', () => {
-  document.getElementById('scheduleMeetingModal')!.style.display = 'block';
-});
+// document.querySelector('#scheduleMeeting')?.addEventListener('click', () => {
+//   document.getElementById('scheduleMeetingModal')!.style.display = 'block';
+// });
 
 document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () => {
-  const meetingScheduleTime: string = (<HTMLInputElement>document.getElementById('meetingScheduleTime')).value;
-  const meetingScheduleDate: string = (<HTMLInputElement>document.getElementById('meetingScheduleDate')).value;
-  
-  if (!meetingScheduleTime || !meetingScheduleDate) {
+  //get date and time from datetime-local input #meetingScheduleTime
+  const meetingScheduleTime: string = (document.getElementById('meetingScheduleTime') as HTMLInputElement).value;
+
+  if (!meetingScheduleTime) {
       alert('Please ensure both date and time are selected.');
       return;  // exit the function if inputs are missing
   }
 
-  const meetingScheduleDateTime: string = meetingScheduleDate + " " + meetingScheduleTime;
-  console.log(meetingScheduleDateTime);
+  // get user_id from local storage
+  const userId = localStorage.getItem('userId');
+
 
   fetch("https://app.larq.ai/api/scheduleMeeting", {
       method: 'POST',
@@ -1578,14 +1579,15 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
           'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-          meetingScheduleDateTime: meetingScheduleDateTime
+        'timestamp': meetingScheduleTime,
+        'host_id': userId
       })
   })
   .then(response => response.json())
   .then(data => {
       if (data.status === 'success') {
           alert(data.message);
-          document.getElementById('scheduleMeetingModal')!.style.display = 'none';
+          // document.getElementById('scheduleMeetingModal')!.style.display = 'none';
       } else {
           alert(data.message);
       }
@@ -5632,7 +5634,7 @@ const defaultQuizAttempt = {
   _id: "", // You will fill this in when saving the attempt.
   quiz_id: "", // You will update this from your quiz data.
   timestamp: new Date().toISOString(),
-  user_id: localStorage.getItem('user_id') || "", // If there's no user_id, it defaults to an empty string.
+  user_id: localStorage.getItem('userId') || "", // If there's no user_id, it defaults to an empty string.
   score: 0,
   correct: [] as string[], // This asserts that 'correct' is an array of strings.
   incorrect: [] as string[], // Similarly, this asserts that 'incorrect' is an array of strings.
@@ -5671,13 +5673,14 @@ function submitQuizAttempts() {
 
 // DREW FUNCTION VARIABLES
 
-const userId = localStorage.getItem('user_id') || '';
+const userId = localStorage.getItem('userId') || '';
 const existingAttempts = localStorage.getItem('QuizAttempts');
+const QuizId = localStorage.getItem('QuizId');
 
 const QuizAttempts: QuizAttempt = existingAttempts 
     ? JSON.parse(existingAttempts) 
     : {
-        quiz_id: '',
+        quiz_id: QuizId,
         timestamp: new Date().toISOString(),
         user_id: userId,
         score: 0,
