@@ -3,10 +3,12 @@
 
 import Logger from '../logger/Logger';
 import CanvasVideoFrameBuffer from './CanvasVideoFrameBuffer';
+import DefaultVideoFrameProcessorTimer from './DefaultVideoFrameProcessorTimer';
 import VideoFrameBuffer from './VideoFrameBuffer';
 import VideoFrameProcessor from './VideoFrameProcessor';
 import VideoFrameProcessorPipeline from './VideoFrameProcessorPipeline';
 import VideoFrameProcessorPipelineObserver from './VideoFrameProcessorPipelineObserver';
+import VideoFrameProcessorTimer from './VideoFrameProcessorTimer';
 
 const DEFAULT_FRAMERATE = 15;
 
@@ -44,52 +46,14 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
   >();
 
   private hasStarted: boolean = false;
-  private lastTimeOut: ReturnType<typeof setTimeout> | undefined;
-  // Timer on worker thread to overcome background throttling
-  private workerTimer: Worker;
-  private isWorkerTimerSupported: boolean = true;
+  private timer: VideoFrameProcessorTimer;
 
-  constructor(private logger: Logger, private stages: VideoFrameProcessor[]) {
-    this.workerTimer = this.createWorkerTimer();
-  }
-
-  /**
-   * Create a timer that exists within a web worker. This timer will be used to
-   * retrigger the process call whenever time expires.
-   */
-  private createWorkerTimer(): Worker {
-    try {
-      // Blob representing a script that will start a timer for the length
-      // of the message posted to it. After timer expiration, it will post
-      // a message back to the main thread holding the timerID
-      const timerBlob = new Blob(
-        [
-          `self.onmessage = async function(e){ 
-            var timerID = null;
-            const awaitTimeout = delay => new Promise( resolve => {
-              timerID = setTimeout(resolve, delay);
-            })
-            await awaitTimeout(e.data);
-            postMessage(timerID);
-          }`,
-        ],
-        { type: 'application/javascript' }
-      );
-      // Create the worker and link our process call to execute on
-      // every message it posts
-      const worker = new Worker(window.URL.createObjectURL(timerBlob));
-      worker.onmessage = event => {
-        // Store used timer so we can clear it during device closure
-        this.lastTimeOut = event.data;
-        // Reprocess a new frame on every timer completion
-        this.process(event);
-      };
-      return worker;
-      // If blob: is not passed as a worker-src to csp, then the
-      // worker timer will fail... therefore no support
-    } catch (error) {
-      this.isWorkerTimerSupported = false;
-    }
+  constructor(
+    private logger: Logger,
+    private stages: VideoFrameProcessor[],
+    timer: VideoFrameProcessorTimer = new DefaultVideoFrameProcessorTimer()
+  ) {
+    this.timer = timer;
   }
 
   destroy(): void {
@@ -99,7 +63,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
         stage.destroy();
       }
     }
-    this.workerTimer?.terminate();
+    this.timer.destroy();
   }
 
   get framerate(): number {
@@ -128,11 +92,6 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
       for (const track of this.outputMediaStream.getVideoTracks()) {
         track.stop();
       }
-    }
-
-    if (this.lastTimeOut) {
-      clearTimeout(this.lastTimeOut);
-      this.lastTimeOut = undefined;
     }
 
     if (this.hasStarted) {
@@ -331,14 +290,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
       });
     }
 
-    // Post frame delay as message to worker timer to maintain desired fps
-    if (this.isWorkerTimerSupported) {
-      this.workerTimer.postMessage(nextFrameDelay);
-      // If the worker isn't supported, use the timer on main thread
-    } else {
-      /* @ts-ignore */
-      this.lastTimeOut = setTimeout(this.process, nextFrameDelay);
-    }
+    this.timer.start(nextFrameDelay, this.process.bind(this));
   };
 
   private forEachObserver(
