@@ -8,7 +8,6 @@ import VideoTransformDevice from '../devicecontroller/VideoTransformDevice';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import DefaultVideoFrameProcessorPipeline from './DefaultVideoFrameProcessorPipeline';
-import DefaultVideoFrameProcessorTimer from './DefaultVideoFrameProcessorTimer';
 import DefaultVideoTransformDeviceObserver from './DefaultVideoTransformDeviceObserver';
 import VideoFrameProcessor from './VideoFrameProcessor';
 import VideoFrameProcessorPipeline from './VideoFrameProcessorPipeline';
@@ -32,11 +31,7 @@ export default class DefaultVideoTransformDevice
     private processors: VideoFrameProcessor[],
     private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior()
   ) {
-    this.pipe = new DefaultVideoFrameProcessorPipeline(
-      this.logger,
-      this.processors,
-      new DefaultVideoFrameProcessorTimer()
-    );
+    this.pipe = new DefaultVideoFrameProcessorPipeline(this.logger, this.processors);
     this.pipe.addObserver(this);
   }
 

@@ -42,7 +42,7 @@ export default class DefaultVideoFrameProcessorTimer implements VideoFrameProces
     }
   }
 
-  start(delay: number, callback: () => void): void {
+  async start(delay: number, callback: () => void): Promise<void> {
     this.callback = callback;
 
     if (this.workerTimer) {
@@ -58,13 +58,15 @@ export default class DefaultVideoFrameProcessorTimer implements VideoFrameProces
     }
   }
 
-  destroy(): void {
+  async destroy(): Promise<void> {
+    this.callback = undefined;
     if (this.lastTimeout) {
       clearTimeout(this.lastTimeout);
       this.lastTimeout = undefined;
     }
     if (this.workerTimer) {
       this.workerTimer.terminate();
+      this.workerTimer = undefined;
     }
   }
 }

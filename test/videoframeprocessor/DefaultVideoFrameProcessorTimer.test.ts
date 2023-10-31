@@ -17,11 +17,16 @@ describe('DefaultVideoFrameProcessorTimer', () => {
   let domMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let previousWorker: any;
+
   beforeEach(() => {
     fakeClock = sandbox.useFakeTimers();
 
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+    previousWorker = globalThis.Worker;
   });
 
   afterEach(() => {
@@ -29,6 +34,8 @@ describe('DefaultVideoFrameProcessorTimer', () => {
     fakeClock.restore();
 
     domMockBuilder.cleanup();
+
+    globalThis.Worker = previousWorker;
   });
 
   describe('using worker thread timer', () => {
@@ -56,7 +63,6 @@ describe('DefaultVideoFrameProcessorTimer', () => {
     beforeEach(() => {
       globalThis.Worker = null;
     });
-
     runTests();
   });
 

@@ -290,7 +290,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
       });
     }
 
-    this.timer.start(nextFrameDelay, this.process.bind(this));
+    await this.timer.start(nextFrameDelay, this.process.bind(this));
   };
 
   private forEachObserver(
