@@ -1033,6 +1033,7 @@ a.markdown:active {
 
 .transcript-container {
   max-height: 210px;
+  margin-bottom:5%;
   overflow-y: scroll;
   padding: 0.2rem 1rem;
   z-index: 20;
@@ -2672,5 +2673,5 @@ input[type="radio"]:focus {
 }
 
 #roster-message-container{
-  max-height: 92%;
+  max-height: 90%;
 }
