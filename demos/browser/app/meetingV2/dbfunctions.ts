@@ -66,14 +66,18 @@ document.addEventListener('DOMContentLoaded', function () {
   const currentMonthElement = document.getElementById('current-month');
 
   // Sample JSON structure for events
-  const events: { [key: string]: string } = {
-    '2023-10-03': 'Teachserv Meeting',
-    '2023-10-06': 'Meeting with Ryan',
-    '2023-10-15': 'Meeting with Ryan',
-    '2023-10-26': 'Meeting with Ryan',
-    '2023-10-27': 'Meetings with team leads',
-    // Add more events as needed
-  };
+  // const events: { [key: string]: string } = {
+  //   '2023-10-03': 'Teachserv Meeting',
+  //   '2023-10-06': 'Meeting with Ryan',
+  //   '2023-10-15': 'Meeting with Ryan',
+  //   '2023-10-26': 'Meeting with Ryan',
+  //   '2023-10-27': 'Meetings with team leads',
+  //   // Add more events as needed
+  // };
+
+  const events:any[] = JSON.parse(localStorage.getItem('data')).dashboard_stats.next_meetings;
+
+
 
   function generateCalendar() {
     const firstDay = new Date(currentYear, currentMonth, 1);
@@ -86,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     calendarDates.innerHTML = '';
 
     // Add padding for days before the first day of the month
-    for (let i = 0; i < firstDay.getDay(); i++) {
+    for (let day = 1; day <= daysInMonth; day++) {
       const paddingElement = document.createElement('div');
       paddingElement.classList.add('calendar-day', 'inactive');
       calendarDates.appendChild(paddingElement);
@@ -97,21 +101,22 @@ document.addEventListener('DOMContentLoaded', function () {
       dateElement.classList.add('calendar-day');
       dateElement.textContent = day.toString();
 
-      // Check if there's an event for this day
-      const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(
-        day
-      ).padStart(2, '0')}`;
-      if (events[eventDate]) {
-        const eventElement = document.createElement('div');
-        eventElement.classList.add('calendar-event');
-
-        dateElement.appendChild(eventElement);
-        // Add an event listener to show the modal on click
-        dateElement.addEventListener('click', () => showEventModal(events[eventDate]));
-
-      }
-
-      calendarDates.appendChild(dateElement);
+    // Check if there's an event for this day
+    const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(
+      day
+    ).padStart(2, '0')}`;
+    
+    const foundEvent = events.find(event => event.timestamp.startsWith(eventDate));
+    
+    if (foundEvent) {
+      const eventElement = document.createElement('div');
+      eventElement.classList.add('calendar-event');
+  
+      dateElement.appendChild(eventElement);
+      dateElement.addEventListener('click', () => showEventModal(foundEvent.meeting_name));
+    }
+    
+    calendarDates.appendChild(dateElement);
     }
   }
 

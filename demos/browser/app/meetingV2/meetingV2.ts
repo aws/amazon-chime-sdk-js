@@ -319,8 +319,8 @@ type Meeting = {
   users: number[];
   timestamp: string;
   duration: number;
+  meeting_name:string;
 };
-
 
 
 export class DemoMeetingApp
@@ -1676,7 +1676,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
               meetingBlock.innerHTML = `
                   <div class="d-flex justify-content-between align-items-center meeting-calendar-item">
                       <div>
-                          <h5>${meeting.host_id}</h5>  <!-- Adjust this if you have a more appropriate title for the meeting -->
+                          <h5>${meeting.meeting_name}</h5>  <!-- Adjust this if you have a more appropriate title for the meeting -->
                           <p>${dateString}</p>
                       </div>
                       <a href="?m=${meeting.host_id}">(Start the Meeting)</a>
@@ -1720,7 +1720,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
   this.updateLiveTranscriptionDisplayState();
   const token: string | null = localStorage.getItem('authToken');
   if (token) {
-    const data = JSON.parse(localStorage.getItem('data') || '{}').dashboard_stats;
+    const data = JSON.parse(localStorage.getItem('data') || '{}');
 
     if (data) {
         const firstName = data.first_name;
@@ -1730,6 +1730,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
         document.getElementById('greetingFirstName').textContent = firstName;
         document.getElementById('dropdownFirstName').textContent = firstName;
         document.getElementById('dropdownLastName').textContent = lastName;
+        document.getElementById('dropdownEmail').textContent = data.email;
 
 
         // If you have a list of students for "Completed" and "Did not complete", you'd loop through the data and create elements dynamically
