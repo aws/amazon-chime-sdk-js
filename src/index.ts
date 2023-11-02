@@ -103,6 +103,7 @@ import DefaultTranscriptionController from './transcript/DefaultTranscriptionCon
 import DefaultUserAgentParser from './useragentparser/DefaultUserAgentParser';
 import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoFrameProcessorPipeline from './videoframeprocessor/DefaultVideoFrameProcessorPipeline';
+import DefaultVideoFrameProcessorTimer from './videoframeprocessor/DefaultVideoFrameProcessorTimer';
 import DefaultVideoStreamIdSet from './videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from './videostreamindex/DefaultVideoStreamIndex';
 import DefaultVideoTile from './videotile/DefaultVideoTile';
@@ -294,6 +295,7 @@ import VideoFrameBuffer from './videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from './videoframeprocessor/VideoFrameProcessor';
 import VideoFrameProcessorPipeline from './videoframeprocessor/VideoFrameProcessorPipeline';
 import VideoFrameProcessorPipelineObserver from './videoframeprocessor/VideoFrameProcessorPipelineObserver';
+import VideoFrameProcessorTimer from './videoframeprocessor/VideoFrameProcessorTimer';
 import VideoFxBlurStrength from './videofx/VideoFxBlurStrength';
 import VideoFxConfig from './videofx/VideoFxConfig';
 import VideoFxProcessor from './videofx/VideoFxProcessor';
@@ -443,6 +445,7 @@ export {
   DefaultUserAgentParser,
   DefaultVideoCaptureAndEncodeParameter,
   DefaultVideoFrameProcessorPipeline,
+  DefaultVideoFrameProcessorTimer,
   DefaultVideoStreamIdSet,
   DefaultVideoStreamIndex,
   DefaultVideoTile,
@@ -641,6 +644,7 @@ export {
   VideoFrameProcessor,
   VideoFrameProcessorPipeline,
   VideoFrameProcessorPipelineObserver,
+  VideoFrameProcessorTimer,
   VideoFxBlurStrength,
   VideoFxConfig,
   VideoFxProcessor,

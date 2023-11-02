@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Do not display a warning message when invoking `meetingSession.audioVideo.setVideoCodecSendPreferences` prior to the start of the session.
+- Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
 
 ## [3.16.0] - 2023-06-26
 
