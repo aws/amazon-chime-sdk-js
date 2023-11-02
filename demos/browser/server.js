@@ -2,6 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 
 const AWS = require('aws-sdk');
+
+const {
+  Chime
+} = require("@aws-sdk/client-chime");
+
+const {
+  ChimeSDKMediaPipelines
+} = require("@aws-sdk/client-chime-sdk-media-pipelines");
+
+const {
+  ChimeSDKMeetings
+} = require("@aws-sdk/client-chime-sdk-meetings");
+
+const {
+  STS
+} = require("@aws-sdk/client-sts");
+
 const compression = require('compression');
 const fs = require('fs');
 const http = require('http');
@@ -27,18 +44,26 @@ const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || 'true';
 // Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
-const chime = new AWS.Chime({ region: 'us-east-1' });
+const chime = new Chime({
+  region: 'us-east-1'
+});
 
-const chimeSDKMediaPipelinesRegional = new AWS.ChimeSDKMediaPipelines({region: 'us-east-1'});
+const chimeSDKMediaPipelinesRegional = new ChimeSDKMediaPipelines({
+  region: 'us-east-1'
+});
 chimeSDKMediaPipelinesRegional.endpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com"
 chime.endpoint = endpoint;
 
-const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
+const chimeSDKMeetings = new ChimeSDKMeetings({
+  region: currentRegion
+});
 if (endpoint !== 'https://service.chime.aws.amazon.com') {
   chimeSDKMeetings.endpoint = endpoint;
 }
 
-const sts = new AWS.STS({ region: 'us-east-1' })
+const sts = new STS({
+  region: 'us-east-1'
+})
 
 const captureS3Destination = process.env.CAPTURE_S3_DESTINATION;
 if (captureS3Destination) {
@@ -216,13 +241,13 @@ function serve(host = '127.0.0.1:8080') {
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/startCapture') {
         if (captureS3Destination) {
-          const callerInfo = await sts.getCallerIdentity().promise()
+          const callerInfo = await sts.getCallerIdentity()
           pipelineInfo = await chime.createMediaCapturePipeline({
             SourceType: "ChimeSdkMeeting",
             SourceArn: `arn:aws:chime::${callerInfo.Account}:meeting:${meetingTable[requestUrl.query.title].Meeting.MeetingId}`,
             SinkType: "S3Bucket",
             SinkArn: captureS3Destination,
-          }).promise();
+          });
           meetingTable[requestUrl.query.title].Capture = pipelineInfo.MediaCapturePipeline;
           respond(response, 201, 'application/json', JSON.stringify(pipelineInfo));
         } else {
@@ -232,7 +257,7 @@ function serve(host = '127.0.0.1:8080') {
       } else if (request.method === 'POST' && requestUrl.pathname === '/startLiveConnector') {
         if (ivsEndpoint) {
           try {
-            const callerInfo = await sts.getCallerIdentity().promise()
+            const callerInfo = await sts.getCallerIdentity()
             liveConnectorPipelineInfo = await chimeSDKMediaPipelinesRegional.createMediaLiveConnectorPipeline({
               Sinks: [
                 {
@@ -260,7 +285,7 @@ function serve(host = '127.0.0.1:8080') {
                   SourceType: "ChimeSdkMeeting"
                 }
               ]
-            }).promise();
+            });
             meetingTable[requestUrl.query.title].LiveConnector = liveConnectorPipelineInfo.MediaLiveConnectorPipeline;
             respond(response, 201, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
           }
@@ -276,7 +301,7 @@ function serve(host = '127.0.0.1:8080') {
           liveConnectorPipelineId = meetingTable[requestUrl.query.title].LiveConnector.MediaPipelineId;
           liveConnectorPipelineInfo = await chimeSDKMediaPipelinesRegional.deleteMediaPipeline({
             MediaPipelineId: liveConnectorPipelineId
-          }).promise();
+          });
           meetingTable[requestUrl.query.title].LiveConnector = undefined;
           respond(response, 200, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
         } else {
@@ -304,7 +329,7 @@ function serve(host = '127.0.0.1:8080') {
           pipelineInfo = meetingTable[requestUrl.query.title].Capture;
           await chime.deleteMediaCapturePipeline({
             MediaPipelineId: pipelineInfo.MediaPipelineId
-          }).promise();
+          });
           meetingTable[requestUrl.query.title].Capture = undefined;
           respond(response, 200, 'application/json', JSON.stringify({}));
         } else {
