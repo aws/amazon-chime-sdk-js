@@ -235,6 +235,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     try {
       imageSource = await this.destBuffers[0].asCanvasImageSource();
     } catch (error) {
+      /* istanbul ignore else: Check exists incase stop is interleaved with async function calls; hard to mock */
       if (this.inputVideoStream) {
         this.logger.info('buffers are destroyed and pipeline could not start');
         this.forEachObserver(obs => {
