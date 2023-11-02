@@ -2716,9 +2716,7 @@ div#calendar-dates {
   line-height: 17px;
   border-radius: 0px;
 }
-div#empty-dash {
-  display: none !important;
-}
+
 .calendar-days {
   display: flex !important;
   flex-direction: row !important;
@@ -2765,22 +2763,7 @@ div#calendar-dates {
     flex-direction: row;
     justify-content: flex-start;
 }
-.modal-title {
-  font-size: 32px;
-  color: #3F4149;
-  padding: 0;
-  font-weight: 700;
-  /* font-family: inter; */
-  line-height: 0;
-  display: block;
-}
 
-.modal-header {
-  border: none !important;
-}
-.btn-close {
-  display: none;
-}
 
 .modal-content {
   background-color: #fff;
@@ -2814,7 +2797,8 @@ border-radius: 50%;
 
   #joining-page   .leftBlock{
     border:1px solid #f7f7fc  !important;
-    border-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
     margin-bottom:0px !important; 
     }
 

@@ -295,10 +295,10 @@
 
 
         <h6 class="mt-4 mb-4 text-white">Quiz Dashboard</h6>
-        <div class="quizBlock dashboard_stats" id="full-dash" style="display:none">
+        <div class="quizBlock dashboard_stats" id="full-dash" style="display: none;">
           <div class="d-flex justify-content-between">
-            <a class="heading">Science: Chapter 1 - Photosynthesis</a>
-            <p class="link">
+              <a class="heading" id="recentQuizTitle">Science: Chapter X</a>
+              <p class="link">
               Download detailed summary
               <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path
@@ -310,7 +310,7 @@
           </div>
           <div class="row">
             <div class="col-lg-6 col-md-6 col-12">
-              <div class="sub-header">Class Average: <span id="classAverage">3.75</span></div>
+            <div class="sub-header">Class Average: <span id="recentClassAverage">0.73</span></div>
               <h5>Most Difficult Question:</h5>
               <div class="lists" id="mostDifficultQuestion">
                   <p>At night, plants breathe in ______________</p>
@@ -934,7 +934,8 @@
           <textarea id="forumContainer" class="scrollbar-new-design border outline-none" placeholder="Please write down your queries"></textarea>
 
           <hr />
-          <div id="queries-block" class="queries-block" style="display: block;"><div class="queries-section">
+          <div id="queries-block2" class="queries-block" style="display: block;">
+            <div class="queries-section">
           </div></div>
 
           <!-- <div class="me-2">
@@ -1494,7 +1495,7 @@
               <p>Leave Session</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="End Meeting">
+          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle Menu">
             <div class="iconButton">
               <button type="button" id="toggle-menu" title="See More">
                 <svg width="800px" height="800px" viewBox="0 0 24 24" id="three-dots"
@@ -1874,7 +1875,13 @@
             <div class="modal fade" id="schedule-meeting-modal" tabindex="-1" aria-labelledby="schedule-meeting-modal-label"
             aria-hidden="true">
             <div class="modal-dialog">
-              <div class="modal-content p-5"><div class="modal-header"><h5 class="modal-title" id="schedule-meeting-modal-label">Schedule Quiz</h5></div><div class="modal-body"><h2 class="display-4 text-center pb-5">Set up a Scheduled Meeting</h2><input class="text-lg" type="datetime-local" id="meetingScheduleTime"><p class="lead">Please select a date and time for your meeting.</p></div><div class="d-flex justify-content-between"><button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Cancel</button> <button type="button" class="customButton text-lg" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal" data-bs-target="#done-modal" id="scheduleMeetingSubmit">Submit</button></div></div>
+              <div class="modal-content p-5"><div class="modal-header"><h5 class="modal-title" id="schedule-meeting-modal-label">Schedule Quiz</h5></div><div class="modal-body"><h1 class="text-center p-5">Set up a Scheduled Meeting</h2>
+                <!-- input fields for meeting name -->
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="meetingName" placeholder="Meeting Name">
+                  <label for="meetingName">Meeting Name</label>
+                </div>
+                <input class="text-lg" type="datetime-local" id="meetingScheduleTime"><p class="lead">Please select a date and time for your meeting.</p></div><div class="d-flex justify-content-between"><button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Cancel</button> <button type="button" class="customButton text-lg" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal" data-bs-target="#done-modal" id="scheduleMeetingSubmit">Submit</button></div></div>
             </div>
             <button onclick="history.back()">Go Back</button>
           </div>

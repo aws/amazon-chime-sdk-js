@@ -393,7 +393,7 @@ export class DemoMeetingApp
   currentAudioInputDevice: AudioInputDevice | undefined;
 
   buttonStates: { [key: string]: ButtonState } = {
-    'button-microphone': 'on',
+    'button-microphone': 'off',
     'button-camera': 'off',
     'button-speaker': 'on',
     'button-content-share': 'off',
@@ -730,6 +730,21 @@ export class DemoMeetingApp
     }
     );
 
+    // do the same functions if ?m= is in the url (instead of clicking):
+    const meeting:any = new URL(window.location.href).searchParams.get('m');
+    if (meeting && localStorage.getItem('authToken')) {
+      var join_button = document.getElementById('joining-page');
+      var joining_page = document.getElementById('main-page');
+      if (join_button.style.display === 'none') {
+        join_button.style.display = 'block';
+      } else {
+        join_button.style.display = 'none';
+        joining_page.style.display = 'flex';
+      }
+    };
+
+
+
 
     const buttonQueriesTabs = document.getElementById('queries') as HTMLButtonElement;
     buttonQueriesTabs.addEventListener('click', _e => {
@@ -875,33 +890,24 @@ buttonChat?.addEventListener('click', _e => {
 
 const toggleMenuButton = document.getElementById('toggle-menu') as HTMLButtonElement | null;
 // add a document listener to close the menu if the user clicks outside of it
-document.addEventListener('click', (e) => {
+toggleMenuButton?.addEventListener('click', (e) => {
+  console.log('toggle menu clicked');
   const x = document.getElementById('toggle-icons');
-  if (e.target ==  toggleMenuButton){
     if (x) {
       x.style.display = 'block';
+      // click outside the toggle icons to close the menu
+      document.addEventListener('click', (e) => {
+        if (
+          // if target does not contain toggle-icons
+          !(e.target as HTMLElement)?.classList.contains('toggle-icons')
+          ) {
+          x.style.display = 'none';
+        }
+      });
     }
-  }
-  else if (x && e.target !== x) {
-    x.style.display = 'none';
-  }
-  else {
-    if (x) {
-      x.style.display = 'block';
-    }
-  }
+
 });
 
-// toggleMenuButton?.addEventListener('click', _e => {
-//   const x = document.getElementById('toggle-icons');
-//   if (x && x.style.display === 'none') {
-//     x.style.display = 'block';
-//   } else {
-//     if (x) {
-//       x.style.display = 'none';
-//     }
-//   }
-// });
 
 const registerButton = document.getElementById('register') as HTMLButtonElement | null;
 registerButton?.addEventListener('click', _e => {
@@ -1566,6 +1572,9 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
 
   if (!meetingScheduleTime) {
       alert('Please ensure both date and time are selected.');
+      // prevent any further code from running:
+      stop();
+
       return;  // exit the function if inputs are missing
   }
 
@@ -1599,25 +1608,26 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
 });
 
 
-
-
-
-
-
-
-
   // Drew take 2
     // Retrieve data from localStorage
     const data = JSON.parse(localStorage.getItem('data')).dashboard_stats;
     const emptyDash = document.getElementById('empty-dash') as HTMLElement;
     const fullDash = document.getElementById('full-dash') as HTMLElement;
+
     // Check if data exists and has recent_quizzes
     if (data && data.recent_quizzes && data.recent_quizzes.length > 0) {
-        if (emptyDash && fullDash) {
+        const recentQuiz = data.recent_quizzes[0];  // Most recent quiz
+        if (fullDash && emptyDash) {
           fullDash.style.display = 'block';
-          emptyDash.style.display = 'none';
+            emptyDash.style.display = 'none';
+
         }
-      
+        document.getElementById('recentQuizTitle').textContent = `Science: Chapter ${recentQuiz.meeting_id}`;
+            // Calculate the Class Average for the recent quiz
+        const recentQuizAttempts = data.last_attempts.filter((attempt: { quiz_id: any[] }) => attempt.quiz_id === recentQuiz.meeting_id);
+        const recentAverage = recentQuizAttempts.reduce((acc: number, curr: { score: number }) => acc + curr.score, 0) / recentQuizAttempts.length;
+        document.getElementById('recentClassAverage').textContent = recentAverage.toFixed(2);
+
 
         // Populate the dashboard with real data
 
@@ -1801,8 +1811,15 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
           localStorage.setItem('lastName', data.last_name!);
           localStorage.setItem('email', data.email!);
           // reload page
-          location.reload(); 
+          document.querySelector<HTMLInputElement>('#loginForm input[name="username"]')!.value = username;
+          document.querySelector<HTMLInputElement>('#loginForm input[name="password"]')!.value = password;
+          document.getElementById('login-container')!.style.display = 'block';
+          document.getElementById('joining-page')!.style.display = 'none';
+          document.getElementById('flow-meeting')!.style.display = 'none';
+
+          // location.reload(); 
       } else {
+        loginSpinner.style.display = 'none';
           alert(data.message);
       }
   })
@@ -2745,6 +2762,60 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       }
     });
     
+    const sendForumMessage = (): void => {
+      AsyncScheduler.nextTick(() => {
+        const textArea = document.getElementById('queries-block') as HTMLTextAreaElement;
+        const textToSend = textArea.value.trim();
+        if (!textToSend) {
+          return;
+        }
+        textArea.value = '';
+        this.audioVideo.realtimeSendDataMessage(
+          'quizForumQuestion',
+          textToSend,
+          DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+        );
+        // echo the message to the handler
+        // this.dataMessageHandler(
+        //   new DataMessage(
+        //     Date.now(),
+        //     'quizForumQuestion',
+        //     new TextEncoder().encode(textToSend),
+        //     this.meetingSession.configuration.credentials.attendeeId,
+        //     this.meetingSession.configuration.credentials.externalUserId
+        //   )
+        // );
+      });
+    };
+
+    const textAreaSendForumMessage = document.getElementById('queries-block') as HTMLTextAreaElement;
+    textAreaSendForumMessage.addEventListener('keydown', e => {
+      if (e.keyCode === 13) {
+        if (e.shiftKey) {
+          textAreaSendForumMessage.rows++;
+        } else {
+          e.preventDefault();
+          sendForumMessage();
+          textAreaSendForumMessage.rows = 1;
+        }
+      }
+    });
+    const textAreaSendForumMessage2 = document.getElementById('queries-block2') as HTMLTextAreaElement;
+    textAreaSendForumMessage2.addEventListener('keydown', e => {
+      if (e.keyCode === 13) {
+        if (e.shiftKey) {
+          textAreaSendForumMessage2.rows++;
+        } else {
+          e.preventDefault();
+          sendForumMessage();
+          textAreaSendForumMessage2.rows = 1;
+        }
+      }
+    });
+
+
+
+
     const buttonMeetingEnd = document.getElementById('button-meeting-end');
     buttonMeetingEnd.addEventListener('click', _e => {
       const confirmEnd = new URL(window.location.href).searchParams.get('confirm-end') === 'true';
@@ -5847,69 +5918,69 @@ function populateQuiz(dataString: string) {
     
   }
 
-function sendQuizForumQuestion(question: string) {  
-  console.log('QuizForum Question:', question);
 
-  // Send the formData as a stringified JSON
-  this.audioVideo.realtimeSendDataMessage(
-    'quizForumQuestion',
-    question,
-    DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-  );
 
-  this.dataMessageHandler(
-    new DataMessage(
-      Date.now(),
-      'question',
-      new TextEncoder().encode(question),
-      this.meetingSession.configuration.credentials.attendeeId,
-      this.meetingSession.configuration.credentials.externalUserId
-    )
-  );
-    }
+// document.addEventListener('DOMContentLoaded', () => {
 
-  document.addEventListener('DOMContentLoaded', () => {
+// console.log("Bottom part of script loaded");
+// // FUNCTION TO ADD LISTENER TO QUIZFORUM QUESTION
+// // Get the textarea and messaging container elements
+// const textarea = document.getElementById('forumContainer') as HTMLTextAreaElement;
+// const messagingContainer = document.getElementById('messagingContainer');
+// if (!textarea ) {
+//   console.error("Textarea not found.");
+// }
+// if (!messagingContainer) {
+//   console.error("Messaging container not found.");
+// }
 
-console.log("Bottom part of script loaded");
-// FUNCTION TO ADD LISTENER TO QUIZFORUM QUESTION
-// Get the textarea and messaging container elements
-const textarea = document.getElementById('forumContainer') as HTMLTextAreaElement;
-const messagingContainer = document.getElementById('messagingContainer');
-if (!textarea ) {
-  console.error("Textarea not found.");
-}
-if (!messagingContainer) {
-  console.error("Messaging container not found.");
-}
+// // Listen for the 'keydown' event on the textarea
+// textarea.addEventListener('keydown', (event) => {
+//   const keyboardEvent = event as KeyboardEvent;
+//   const key = keyboardEvent.keyCode || keyboardEvent.which;  // Handle both keyCode and which
 
-// Listen for the 'keydown' event on the textarea
-textarea.addEventListener('keydown', function(event) {
-  const keyboardEvent = event as KeyboardEvent;
-  const key = keyboardEvent.keyCode || keyboardEvent.which;  // Handle both keyCode and which
-
-  console.log("event keycode", keyboardEvent.keyCode);
-    // Check if the 'Enter' key was pressed
-    if (key === 13 && !keyboardEvent.shiftKey) {
-      event.preventDefault();  // Prevent newline from being added in textarea
+//   console.log("event keycode", keyboardEvent.keyCode);
+//     // Check if the 'Enter' key was pressed
+//     if (key === 13 && !keyboardEvent.shiftKey) {
+//       event.preventDefault();
+      
+//       const question: string = textarea.value;  
+//       console.log('QuizForum Question:', question);
+    
+//       AsyncScheduler.nextTick(() => {
+//         // Ensure you're calling these on the correct object, e.g., `this`
+//         this.audioVideo.realtimeSendDataMessage(
+//           'quizForumQuestion',
+//           question,
+//           DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+//         );
+    
+//         this.dataMessageHandler(
+//           new DataMessage(
+//             Date.now(),
+//             'quizForumQuestion',
+//             new TextEncoder().encode(question),
+//             this.meetingSession.configuration.credentials.attendeeId,
+//             this.meetingSession.configuration.credentials.externalUserId
+//           )
+//         );
+//       });
+//     }
+    
+//         // Create a new message row with the content and timestamp
+//         const currentTime = new Date();
+//         const formattedTime = currentTime.getHours() + ':' + String(currentTime.getMinutes()).padStart(2, '0') + ' PM';  // Format time as HH:mm PM
+//         const messageRow = `
+//             <div class="send-message">
+//                 <h4 class="message-heading">You<span>${formattedTime}</span></h4>
+//                 <p class="message-details">${textarea.value}</p>  // <-- Use the asserted textarea here
+//             </div>
+//         `;
         
-        // Call the sendQuizForumQuestion function with the content of the textarea
-        sendQuizForumQuestion(textarea.value);  // <-- Use the asserted textarea here
+//         // Append the new message row to the messaging container
+//         messagingContainer.innerHTML += messageRow;
         
-        // Create a new message row with the content and timestamp
-        const currentTime = new Date();
-        const formattedTime = currentTime.getHours() + ':' + String(currentTime.getMinutes()).padStart(2, '0') + ' PM';  // Format time as HH:mm PM
-        const messageRow = `
-            <div class="send-message">
-                <h4 class="message-heading">You<span>${formattedTime}</span></h4>
-                <p class="message-details">${textarea.value}</p>  // <-- Use the asserted textarea here
-            </div>
-        `;
-        
-        // Append the new message row to the messaging container
-        messagingContainer.innerHTML += messageRow;
-        
-        // Clear the textarea
-        textarea.value = '';  // <-- Use the asserted textarea here
-    }
-});
-  });
+//         // Clear the textarea
+//         textarea.value = '';  // <-- Use the asserted textarea here
+//     });
+// });

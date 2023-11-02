@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
   //   // Add more events as needed
   // };
 
-  const events:any[] = JSON.parse(localStorage.getItem('data')).dashboard_stats.next_meetings;
+  const events:any[] = JSON.parse(localStorage.getItem('data')).dashboard_stats.this_month_meetings;
 
 
 
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
       eventElement.classList.add('calendar-event');
   
       dateElement.appendChild(eventElement);
-      dateElement.addEventListener('click', () => showEventModal(foundEvent.meeting_name));
+      dateElement.addEventListener('click', () => showEventModal(foundEvent.meeting_name, foundEvent.timestamp, foundEvent._id, foundEvent.duration));
     }
     
     calendarDates.appendChild(dateElement);
@@ -159,21 +159,48 @@ document.addEventListener('DOMContentLoaded', function () {
 const modalElement = document.getElementById('eventModal');
 const modalContentElement = document.getElementById('eventModalContent');
 
-function showEventModal(content: string) {
+function showEventModal(content: string, timestamp: string, id: string, duration: string) {
     if (!modalElement || !modalContentElement) {
         console.error("Modal elements not found");
         return;
     }
     const modal = new bootstrap.Modal(modalElement);
-    modalContentElement.textContent = content;
+    const date = new Date(timestamp);
+    const formattedDate = date.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
+    const formattedTime = date.toLocaleString('default', { hour: 'numeric', minute: 'numeric', hour12: true });
+    const formattedTimestamp = `${formattedDate}<br>At ${formattedTime}`;
+    modalContentElement.innerHTML = ""
+    modalContentElement.innerHTML += `<div class="text-center><h3>${content}</h3><br><br><small>Event on ${formattedTimestamp}</small><br><br><i>Duration: ${duration} minutes</i>`;
+
+    modalContentElement.innerHTML += `<br><br><button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://app.larq.ai?m=${id}', '_blank')">Go to Meeting</button>`;
+    // add a copy meeting link(should copy: https://app.larq.ai?m=[ID]) button to the modal:
+    modalContentElement.innerHTML += `<button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://app.larq.ai?m=${id}')">Copy Meeting Link</button></div>`;
+    // copy to clipboard function doesn't work yet but it should be something like this:
+    // function copyToClipboard(text) {
+    //   var inputc = document.body.appendChild(document.createElement("input"));
+    //   inputc.value = text;
+    //   inputc.focus();
+    //   inputc.select();
+    //   document.execCommand('copy');
+    //   inputc.parentNode.removeChild(inputc);
+    //   alert("Copied the text: " + inputc.value);
+    // }
+
+    
+
+
+    
     modal.show();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.calendar-day .calendar-event').forEach(eventDay => {
     eventDay.parentElement?.addEventListener('click', function() {
-      const content = "Your event details here";  // Replace with actual event details
-      showEventModal(content);
+      const content = "Test Event";  // Replace with actual event details
+      const timestamp = "2023-10-03T14:00:00.000Z";  // Replace with actual timestamp
+      const id = "1234"; // Replace with actual id
+      const duration = "60"; // Replace with actual duration
+      showEventModal(content, timestamp, id, duration);
     });
   });
 });
