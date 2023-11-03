@@ -2,22 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 const AWS = require('aws-sdk');
-
-const {
-  Chime
-} = require("@aws-sdk/client-chime");
-
-const {
-  ChimeSDKMediaPipelines
-} = require("@aws-sdk/client-chime-sdk-media-pipelines");
-
-const {
-  ChimeSDKMeetings
-} = require("@aws-sdk/client-chime-sdk-meetings");
-
-const {
-  STS
-} = require("@aws-sdk/client-sts");
+const { Chime } = require('@aws-sdk/client-chime');
+const { ChimeSDKMediaPipelines } = require('@aws-sdk/client-chime-sdk-media-pipelines');
+const { ChimeSDKMeetings } = require('@aws-sdk/client-chime-sdk-meetings');
+const { STS } = require('@aws-sdk/client-sts');
 
 const compression = require('compression');
 const fs = require('fs');
