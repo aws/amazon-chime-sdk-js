@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuesax/dist/vuesax.css"> Vuesax styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
   <title>Meeting Demo</title>
 </head>
@@ -13,7 +14,7 @@
 <body>
 
   <!-- Login Page -->
-<div class="login container" id="login-container" style="display:block">
+<div class="login container animate__animated animate__fadeInDown" id="login-container" style="display:none">
 
   <!-- END TEST -->
     <div class="center">
@@ -110,7 +111,7 @@
   
 
   <!-- start of joining page - THIS IS THE SECOND PAGE AFTER LOGIN-->
-  <div id="joining-page" class="mainBlock" style="display: none;">
+  <div id="joining-page" class="mainBlock" style="display: flex;">
     <div class="row">
       <div class="col-lg-4 col-md-12 col-12">
         <div class="leftBlock mb-3">
@@ -187,7 +188,7 @@
                   src="https://storage.googleapis.com/ringledingle/tests/bird.jpg" />
               </div>
 
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-start" aria-labelledby="dropdownMenuButton">
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-start container mt-5" aria-labelledby="dropdownMenuButton">
                 <li class="d-flex">
                   <div>
                     <div class="d-flex">
@@ -394,7 +395,7 @@
 
   <!-- Initial meeting authentication screen with meeting and name inputs -->
   <div id="main-page" class="main-page" style="display: none;">
-    <div id="flow-authenticate" class="flow text-center p-2 align-items-center flow text-center p-2 " style="margin-top: 139px;">
+    <div id="flow-authenticate" class="flow text-center p-2 align-items-center flow text-center p-2" style="margin-top: 139px;">
       <div class="text-muted" style="position:fixed;right:3px;bottom:3px">Copyright ©2023 Larq.ai</div>
       <div class="container">
         <form id="form-authenticate">
@@ -469,7 +470,6 @@
     </div>
   </div>
   
-
   <!-- Authenticate for SIP with meeting and voice connector ID -->
 
   <div id="flow-sip-authenticate" class="flow text-center">
@@ -1146,7 +1146,7 @@
             <div class="loading-block justify-content-between">
               <div class="d-flex flex-column align-items-center justify-content-end h-50">
 
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" class="animated bounce infinite">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" class="animate__animated animate__bounce animate__infinite">
                   <path
                     d="M6.94793 38.0859L38.1721 6.86047C38.6368 6.39582 41.6041 9.36435 41.1395 9.82781L9.91527 41.0532C9.45181 41.5179 6.48328 38.5493 6.94793 38.0859Z"
                     fill="#292F33" />
@@ -1881,7 +1881,7 @@
                   <input type="text" class="form-control" id="meetingName" placeholder="Meeting Name">
                   <label for="meetingName">Meeting Name</label>
                 </div>
-                <input class="text-lg" type="datetime-local" id="meetingScheduleTime"><p class="lead">Please select a date and time for your meeting.</p></div><div class="d-flex justify-content-between"><button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Cancel</button> <button type="button" class="customButton text-lg" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal" data-bs-target="#done-modal" id="scheduleMeetingSubmit">Submit</button></div></div>
+                <input type="datetime-local" id="meetingScheduleTime"><p class="lead">Please select a date and time for your meeting.</p></div><div class="d-flex justify-content-between"><button type="button" class="cancelButton" data-bs-dismiss="modal" aria-label="Close">Cancel</button> <button type="button" class="customButton text-lg" data-bs-dismiss="modal" style="width: 40%;" data-bs-toggle="modal" data-bs-target="#done-modal" id="scheduleMeetingSubmit">Submit</button></div></div>
             </div>
             <button onclick="history.back()">Go Back</button>
           </div>

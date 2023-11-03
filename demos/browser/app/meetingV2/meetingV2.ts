@@ -714,6 +714,7 @@ export class DemoMeetingApp
       } else {
         x.style.display = 'none';
         joining_page.style.display = 'flex';
+        this.switchToFlow('flow-authenticate');
       }
     });
     // do the exact same for new-meeting button
@@ -1471,17 +1472,7 @@ updateBodyBackgroundColor();
 // DREW LOGIN
 
 // if you have localStorage.getItem('authToken') then hide the login form and show the joining page:
-if (localStorage.getItem('authToken')) {
-  document.getElementById('login-container')!.style.display = 'none';
-  document.getElementById('joining-page')!.style.display = 'block';
-//   // Update elements with class name "first_name" to display the first_name returned
-  const firstNameElements = document.querySelectorAll('.first_name');
-  firstNameElements.forEach(element => {
-    element.textContent = localStorage.getItem('firstName');
-  });
-  
-}
-else {
+if (!localStorage.getItem('authToken')) {
   document.getElementById('login-container')!.style.display = 'block';
   document.getElementById('joining-page')!.style.display = 'none';
   document.getElementById('flow-meeting')!.style.display = 'none';
@@ -1756,6 +1747,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
 
 function logout(): void {
   localStorage.removeItem('authToken');
+  localStorage.removeItem('data');
   location.reload();
 }
 // if user clicks .logout button class, call logout function
@@ -1767,6 +1759,7 @@ document.querySelector('#join-view-only')?.addEventListener('click', () => {
   this.isViewOnly = true;
   document.getElementById('login-container')!.style.display = 'none';
   document.getElementById('main-page')!.style.display = 'block';
+  this.switchToFlow('flow-meeting');
 });
 
 
