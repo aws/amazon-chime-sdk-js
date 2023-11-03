@@ -2161,6 +2161,11 @@ input[type='radio'] {
 .calendar-days div{
   border: none;
 }
+.calendar-days div:hover{
+  border: none;
+  cursor: default;
+  background-color:transparent;
+}
 .calendar-days {
   display: flex;
   flex-direction: row; /* Align children (i.e., days) in a row; this is the default value and could be omitted */
@@ -2930,6 +2935,10 @@ border-radius: 50%;
 }
 .quiz_top_head a img {
     margin-left: 5px;
+}
+
+#form-devices label, #form-devices h1 {
+  color: white;
 }
 
 

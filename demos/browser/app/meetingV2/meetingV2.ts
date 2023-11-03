@@ -727,13 +727,15 @@ export class DemoMeetingApp
       } else {
         x.style.display = 'none';
         joining_page.style.display = 'flex';
+        this.switchToFlow('flow-authenticate');
+
       }
     }
     );
 
     // do the same functions if ?m= is in the url (instead of clicking):
-    const meeting:any = new URL(window.location.href).searchParams.get('m');
-    if (meeting && localStorage.getItem('authToken')) {
+    const meetingParam:any = new URL(window.location.href).searchParams.get('m');
+    if (meetingParam && localStorage.getItem('authToken')) {
       var join_button = document.getElementById('joining-page');
       var joining_page = document.getElementById('main-page');
       if (join_button.style.display === 'none') {
@@ -889,25 +891,9 @@ buttonChat?.addEventListener('click', _e => {
   }
 });
 
-const toggleMenuButton = document.getElementById('toggle-menu') as HTMLButtonElement | null;
-// add a document listener to close the menu if the user clicks outside of it
-toggleMenuButton?.addEventListener('click', (e) => {
-  console.log('toggle menu clicked');
-  const x = document.getElementById('toggle-icons');
-    if (x) {
-      x.style.display = 'block';
-      // click outside the toggle icons to close the menu
-      document.addEventListener('click', (e) => {
-        if (
-          // if target does not contain toggle-icons
-          !(e.target as HTMLElement)?.classList.contains('toggle-icons')
-          ) {
-          x.style.display = 'none';
-        }
-      });
-    }
 
-});
+
+
 
 
 const registerButton = document.getElementById('register') as HTMLButtonElement | null;
@@ -1188,7 +1174,7 @@ updateBodyBackgroundColor();
                       }
 
                       let answerselectorLabel = document.createElement('label');
-                      answerselectorLabel.className = 'btn btn-outline-primary';
+                      answerselectorLabel.className = 'btn btn-outline';
                       answerselectorLabel.htmlFor = optionInput.id;
                       answerselectorLabel.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12L9 16L19 6" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
@@ -1476,7 +1462,7 @@ if (!localStorage.getItem('authToken')) {
   document.getElementById('login-container')!.style.display = 'block';
   document.getElementById('joining-page')!.style.display = 'none';
   document.getElementById('flow-meeting')!.style.display = 'none';
-  
+  // this.switchToFlow('login-container');
 }
 
 
@@ -1615,30 +1601,41 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
         }
         document.getElementById('recentQuizTitle').textContent = `Science: Chapter ${recentQuiz.meeting_id}`;
             // Calculate the Class Average for the recent quiz
-        const recentQuizAttempts = data.last_attempts.filter((attempt: { quiz_id: any[] }) => attempt.quiz_id === recentQuiz.meeting_id);
-        const recentAverage = recentQuizAttempts.reduce((acc: number, curr: { score: number }) => acc + curr.score, 0) / recentQuizAttempts.length;
+            const recentQuizAttempts = (data.last_attempts && Array.isArray(data.last_attempts)) ? 
+            data.last_attempts.filter((attempt: { quiz_id: any[] }) => attempt.quiz_id === recentQuiz.meeting_id) : [];
+            const recentAverage = recentQuizAttempts.reduce((acc: number, curr: { score: number }) => acc + curr.score, 0) / recentQuizAttempts.length;
         document.getElementById('recentClassAverage').textContent = recentAverage.toFixed(2);
 
 
         // Populate the dashboard with real data
 
         // Calculate the Class Average
-        const average = data.last_attempts.reduce((acc: number, curr: { score: number }) => acc + curr.score, 0) / data.last_attempts.length;
-        document.getElementById('classAverage').textContent = average.toFixed(2);
+        const average = (data.last_attempts && Array.isArray(data.last_attempts)) ? 
+        data.last_attempts.reduce((acc: number, curr: { score: number }) => acc + curr.score, 0) / data.last_attempts.length : 0;
+        const classAverageElem = document.getElementById('classAverage');
+      if(classAverageElem) {
+          classAverageElem.textContent = average.toFixed(2);
+        }
+
 
         // Assuming the most difficult question is the one most frequently answered incorrectly
         // This is just a placeholder, you'll need to replace with actual logic
         document.getElementById('mostDifficultQuestion').innerHTML = '<p>Sample Difficult Question</p>';
 
         // Find the top performer and the one needing attention
-        const sortedAttempts = [...data.last_attempts].sort((a, b) => b.score - a.score);
+        const sortedAttempts = (data.last_attempts && Array.isArray(data.last_attempts)) ? 
+        [...data.last_attempts].sort((a, b) => b.score - a.score) : [];
+            
+        const topPerformer = sortedAttempts.length > 0 ? sortedAttempts[0] : null;
+        const needsAttention = sortedAttempts.length > 0 ? sortedAttempts[sortedAttempts.length - 1] : null;
         
-        const topPerformer = sortedAttempts[0];
-        const needsAttention = sortedAttempts[sortedAttempts.length - 1];
-
-        document.getElementById('topPerformer').innerHTML = `<p>${topPerformer.user_id} <span>${(topPerformer.score * 100).toFixed(0)}%</span></p>`;
-        document.getElementById('needsAttention').innerHTML = `<p>${needsAttention.user_id} <span>${(needsAttention.score * 100).toFixed(0)}%</span></p>`;
-        
+      if(topPerformer) {
+          document.getElementById('topPerformer').innerHTML = `<p>${topPerformer.user_id} <span>${(topPerformer.score * 100).toFixed(0)}%</span></p>`;
+      }
+      
+      if(needsAttention) {
+          document.getElementById('needsAttention').innerHTML = `<p>${needsAttention.user_id} <span>${(needsAttention.score * 100).toFixed(0)}%</span></p>`;
+      }              
         // You can continue populating other sections similarly...
 
     } else {
@@ -5913,67 +5910,80 @@ function populateQuiz(dataString: string) {
 
 
 
-// document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
 
-// console.log("Bottom part of script loaded");
-// // FUNCTION TO ADD LISTENER TO QUIZFORUM QUESTION
-// // Get the textarea and messaging container elements
-// const textarea = document.getElementById('forumContainer') as HTMLTextAreaElement;
-// const messagingContainer = document.getElementById('messagingContainer');
-// if (!textarea ) {
-//   console.error("Textarea not found.");
-// }
-// if (!messagingContainer) {
-//   console.error("Messaging container not found.");
-// }
+console.log("Bottom part of script loaded");
+// FUNCTION TO ADD LISTENER TO QUIZFORUM QUESTION
+// Get the textarea and messaging container elements
+const textarea = document.getElementById('forumContainer') as HTMLTextAreaElement;
+const messagingContainer = document.getElementById('messagingContainer');
+if (!textarea ) {
+  console.error("Textarea not found.");
+}
+if (!messagingContainer) {
+  console.error("Messaging container not found.");
+}
 
-// // Listen for the 'keydown' event on the textarea
-// textarea.addEventListener('keydown', (event) => {
-//   const keyboardEvent = event as KeyboardEvent;
-//   const key = keyboardEvent.keyCode || keyboardEvent.which;  // Handle both keyCode and which
+// line 5927
+// Listen for the 'keydown' event on the textarea
+textarea.addEventListener('keydown', function(event:any) {
+  const keyboardEvent = event as KeyboardEvent;
+  const key = keyboardEvent.keyCode || keyboardEvent.which;  // Handle both keyCode and which
 
-//   console.log("event keycode", keyboardEvent.keyCode);
-//     // Check if the 'Enter' key was pressed
-//     if (key === 13 && !keyboardEvent.shiftKey) {
-//       event.preventDefault();
+  console.log("event keycode", keyboardEvent.keyCode);
+    // Check if the 'Enter' key was pressed
+    
+    if (key === 13 && !keyboardEvent.shiftKey) {
+      event.preventDefault();
       
-//       const question: string = textarea.value;  
-//       console.log('QuizForum Question:', question);
+      const question: string = textarea.value;  
+      console.log('QuizForum Question:', question);
     
-//       AsyncScheduler.nextTick(() => {
-//         // Ensure you're calling these on the correct object, e.g., `this`
-//         this.audioVideo.realtimeSendDataMessage(
-//           'quizForumQuestion',
-//           question,
-//           DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-//         );
+      // AsyncScheduler.nextTick(() => {
+        // Ensure you're calling these on the correct object, e.g., `this`
+        if (this?.audioVideo && this?.dataMessageHandler && this?.meetingSession) {
+          this.audioVideo.realtimeSendDataMessage(
+            'quizForumQuestion',
+            question,
+            DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+          );
+      
+          const attendeeId = this.meetingSession.configuration.credentials.attendeeId;
+          const externalUserId = this.meetingSession.configuration.credentials.externalUserId;
+      
+          this.dataMessageHandler(
+            new DataMessage(
+              Date.now(),
+              'quizForumQuestion',
+              new TextEncoder().encode(question),
+              attendeeId,
+              externalUserId
+            )
+          );
+        } else {
+          console.error('One or more objects are undefined:', {
+            audioVideo: this?.audioVideo,
+            dataMessageHandler: this?.dataMessageHandler,
+            meetingSession: this?.meetingSession,
+          });
+        }
+            // });
+    }
     
-//         this.dataMessageHandler(
-//           new DataMessage(
-//             Date.now(),
-//             'quizForumQuestion',
-//             new TextEncoder().encode(question),
-//             this.meetingSession.configuration.credentials.attendeeId,
-//             this.meetingSession.configuration.credentials.externalUserId
-//           )
-//         );
-//       });
-//     }
-    
-//         // Create a new message row with the content and timestamp
-//         const currentTime = new Date();
-//         const formattedTime = currentTime.getHours() + ':' + String(currentTime.getMinutes()).padStart(2, '0') + ' PM';  // Format time as HH:mm PM
-//         const messageRow = `
-//             <div class="send-message">
-//                 <h4 class="message-heading">You<span>${formattedTime}</span></h4>
-//                 <p class="message-details">${textarea.value}</p>  // <-- Use the asserted textarea here
-//             </div>
-//         `;
+        // Create a new message row with the content and timestamp
+        const currentTime = new Date();
+        const formattedTime = currentTime.getHours() + ':' + String(currentTime.getMinutes()).padStart(2, '0') + ' PM';  // Format time as HH:mm PM
+        const messageRow = `
+            <div class="send-message">
+                <h4 class="message-heading">You<span>${formattedTime}</span></h4>
+                <p class="message-details">${textarea.value}</p>
+            </div>
+        `;
         
-//         // Append the new message row to the messaging container
-//         messagingContainer.innerHTML += messageRow;
+        // Append the new message row to the messaging container
+        messagingContainer.innerHTML += messageRow;
         
-//         // Clear the textarea
-//         textarea.value = '';  // <-- Use the asserted textarea here
-//     });
-// });
+        // Clear the textarea
+        textarea.value = '';  // <-- Use the asserted textarea here
+    }.bind(this) );
+});

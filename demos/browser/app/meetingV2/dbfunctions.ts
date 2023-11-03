@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const foundEvent = events.find(event => event.timestamp.startsWith(eventDate));
     
     if (foundEvent) {
+      // alert(`FOUND EVENT ${foundEvent.meeting_name}, ${foundEvent.timestamp}, ${foundEvent._id}, ${foundEvent.duration}`);
       const eventElement = document.createElement('div');
       eventElement.classList.add('calendar-event');
   
@@ -165,16 +166,22 @@ function showEventModal(content: string, timestamp: string, id: string, duration
         return;
     }
     const modal = new bootstrap.Modal(modalElement);
-    const date = new Date(timestamp);
-    const formattedDate = date.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
-    const formattedTime = date.toLocaleString('default', { hour: 'numeric', minute: 'numeric', hour12: true });
-    const formattedTimestamp = `${formattedDate}<br>At ${formattedTime}`;
+    let formattedTimestamp = "Invalid Date";
+
+    if (timestamp) {
+        const date = new Date(timestamp);
+        if (!isNaN(date.getTime())) {  // Check if date is valid
+            const formattedDate = date.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
+            const formattedTime = date.toLocaleString('default', { hour: 'numeric', minute: 'numeric', hour12: true });
+            formattedTimestamp = `${formattedDate}<br>At ${formattedTime}`;
+        }
+    }
     modalContentElement.innerHTML = ""
     modalContentElement.innerHTML += `<div class="text-center><h3>${content}</h3><br><br><small>Event on ${formattedTimestamp}</small><br><br><i>Duration: ${duration} minutes</i>`;
 
     modalContentElement.innerHTML += `<br><br><button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://app.larq.ai?m=${id}', '_blank')">Go to Meeting</button>`;
     // add a copy meeting link(should copy: https://app.larq.ai?m=[ID]) button to the modal:
-    modalContentElement.innerHTML += `<button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://app.larq.ai?m=${id}')">Copy Meeting Link</button></div>`;
+    modalContentElement.innerHTML += `<button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://app.larq.ai?m=${id}', this)">Copy Meeting Link</button>`;
     // copy to clipboard function doesn't work yet but it should be something like this:
     // function copyToClipboard(text) {
     //   var inputc = document.body.appendChild(document.createElement("input"));
@@ -192,6 +199,23 @@ function showEventModal(content: string, timestamp: string, id: string, duration
     
     modal.show();
 }
+function copyToClipboard(text: string, buttonElem: HTMLButtonElement) {
+  navigator.clipboard.writeText(text).then(() => {
+      // Change button text
+      const originalText = buttonElem.textContent;
+      buttonElem.textContent = 'Copied!';
+      
+      // Revert back after 5 seconds
+      setTimeout(() => {
+          buttonElem.textContent = originalText;
+      }, 3000);
+  }).catch(err => {
+      console.error('Failed to copy text: ', err);
+  });
+}
+
+(window as any).copyToClipboard = copyToClipboard;
+
 
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.calendar-day .calendar-event').forEach(eventDay => {
@@ -242,6 +266,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
 }
   
+
+
+
+const toggleMenuButton = document.getElementById('toggle-menu') as HTMLButtonElement | null;
+const x = document.getElementById('toggle-icons');
+
+toggleMenuButton?.addEventListener('click', (e) => {
+  console.log('toggle menu clicked');
+  if (x) {
+    x.style.display = x.style.display === 'block' ? 'none' : 'block';
+    e.stopPropagation();  // Prevent this click from being propagated to document
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (x && x.style.display === 'block' && !toggleMenuButton?.contains(e.target as Node) && !x.contains(e.target as Node)) {
+    x.style.display = 'none';
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 });
 

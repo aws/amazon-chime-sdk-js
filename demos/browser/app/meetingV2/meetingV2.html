@@ -954,7 +954,7 @@
       </div>
       <div id="roster-tile-container" class="d-flex flex-sm-grow-1 overflow-hidden h-100 p-3"
         style="flex: unset;gap: 10px; ">
-        <div id="roster-message-container" class="d-flex flex-column h-100" style="width: 20%;">
+        <div id="roster-message-container" class="d-flex flex-column h-100 animate__animated animate__slideInLeft" style="width: 20%;">
           <div id="roster-menu-container" class="justify-content-end py-2 gap-3"
             style="flex: 0 0 auto; border-color: transparent !important;">
             <div id="roster-menu-instruction" class="d-flex align-items-center"></div>
@@ -1008,7 +1008,7 @@
         <div id="tile-transcript-container" class="d-flex flex-column  my-4 my-sm-0 h-100"
           style="overflow-y: scrolll;width: 100%;">
           <div id="tile-area" class="v-grid"></div>
-          <div id="transcript-container" class="transcript-container scrollbar-new-design pb-5" style="display:none">
+          <div id="transcript-container" class="transcript-container scrollbar-new-design pb-5 animate__animated animate__slideInUp" style="display:none">
    
             <div class="d-flex justify-content-center mt-3 mb-3" id="transcription-button">
               <svg xmlns="http://www.w3.org/2000/svg" width="33" height="31" viewBox="0 0 33 31" fill="none">
@@ -1039,7 +1039,7 @@
           </div>
         </div>
           <!-- DREW FORM TESTS : REMOVE DISPLAY BLOCKS -->
-        <div id="myDIV" class=" my-4 my-sm-0 quizBlock" style="display:none;">
+        <div id="myDIV" class=" my-4 my-sm-0 quizBlock animate__animated animate__slideInRight" style="display:none;">
           <div id="create-quiz" style="display: block;" class="h-100">
             <div class="d-flex flex-column h-100 scrollbar-new-design"
               style="overflow-y: overlay;">
@@ -1518,7 +1518,7 @@
         </div>
 
         <!-- TOGGLE ICONS -->
-        <div id="toggle-icons" class="text-center bg-primary bottom-0 position-fixed" style="display: none;z-index: 100;">
+        <div id="toggle-icons" class="text-center bg-primary bottom-0 position-fixed animate__animated animate__fadeInUp" style="display: none;z-index: 100;">
           <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Transcription">
             <div class="iconButton">
               <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
@@ -1877,7 +1877,7 @@
             <div class="modal-dialog">
               <div class="modal-content p-5"><div class="modal-header"><h5 class="modal-title" id="schedule-meeting-modal-label">Schedule Quiz</h5></div><div class="modal-body"><h1 class="text-center p-5">Set up a Scheduled Meeting</h2>
                 <!-- input fields for meeting name -->
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-3 mt-5">
                   <input type="text" class="form-control" id="meetingName" placeholder="Meeting Name">
                   <label for="meetingName">Meeting Name</label>
                 </div>
