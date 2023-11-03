@@ -32,26 +32,18 @@ const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || 'true';
 // Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
-const chime = new Chime({
-  region: 'us-east-1'
-});
+const chime = new Chime({ region: 'us-east-1' });
 
-const chimeSDKMediaPipelinesRegional = new ChimeSDKMediaPipelines({
-  region: 'us-east-1'
-});
+const chimeSDKMediaPipelinesRegional = new ChimeSDKMediaPipelines({ region: 'us-east-1' });
 chimeSDKMediaPipelinesRegional.endpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com"
 chime.endpoint = endpoint;
 
-const chimeSDKMeetings = new ChimeSDKMeetings({
-  region: currentRegion
-});
+const chimeSDKMeetings = new ChimeSDKMeetings({ region: currentRegion });
 if (endpoint !== 'https://service.chime.aws.amazon.com') {
   chimeSDKMeetings.endpoint = endpoint;
 }
 
-const sts = new STS({
-  region: 'us-east-1'
-})
+const sts = new STS({ region: 'us-east-1' });
 
 const captureS3Destination = process.env.CAPTURE_S3_DESTINATION;
 if (captureS3Destination) {
