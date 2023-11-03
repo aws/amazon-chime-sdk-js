@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const AWS = require('aws-sdk');
 const { Chime } = require('@aws-sdk/client-chime');
 const { ChimeSDKMediaPipelines } = require('@aws-sdk/client-chime-sdk-media-pipelines');
 const { ChimeSDKMeetings } = require('@aws-sdk/client-chime-sdk-meetings');
@@ -409,11 +408,7 @@ function serve(host = '127.0.0.1:8080') {
         }).promise();
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'GET' && requestUrl.pathname === '/fetch_credentials') {
-        const awsCredentials = {
-          accessKeyId: AWS.config.credentials.accessKeyId,
-          secretAccessKey: AWS.config.credentials.secretAccessKey,
-          sessionToken: AWS.config.credentials.sessionToken,
-        };
+        const awsCredentials = await client.config.credentials();
         respond(response, 200, 'application/json', JSON.stringify(awsCredentials), true);
       } else if (request.method === 'GET' && (requestUrl.pathname === '/audio_file' || requestUrl.pathname === '/stereo_audio_file')) {
         let filePath = 'dist/speech.mp3';
