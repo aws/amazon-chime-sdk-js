@@ -290,13 +290,13 @@ interface QuizAttempt {
   incorrect: number[];
 }
 
-interface QuizForumQuestion {
-  quiz_id: string;
-  timestamp: string;
-  user_id: string;
-  host_id: string;
-  question: string;
-}
+// interface QuizForumQuestion {
+//   quiz_id: string;
+//   timestamp: string;
+//   user_id: string;
+//   host_id: string;
+//   question: string;
+// }
 
 
 type Field = {
@@ -1319,18 +1319,20 @@ updateBodyBackgroundColor();
                 const video_container = document.getElementById('content-share-video');
                 const starting_quiz_container = document.getElementById('starting_quiz_container');
                 const meeting_container = document.getElementById('meeting-container');
+                const roster_tile_container = document.getElementById('roster-tile-container');
                 // Function to close the form (hide it in this case)
                 function closeForm() {
                     if (myDIV) {
                       meeting_container.style.display = 'block';  
                       video_container.style.display = 'block',
                       myDIV.style.display = 'none';
-
+                      roster_tile_container.style.display = 'block';
                     }
                     if (starting_quiz_container){
                       meeting_container.style.display = 'block';  
                       video_container.style.display = 'block',
                       starting_quiz_container.style.display = 'none';
+                      roster_tile_container.style.display = 'block';
                     }
                 }
             
@@ -1374,11 +1376,13 @@ updateBodyBackgroundColor();
               transcript_container.style.width = '100%';
             }
           } else {
+            // remove animate__slideInRight and add animate__slideOutRight to class
+            x.classList.remove('animate__slideInRight');
+            x.classList.add('animate__slideOutRight');
+            x.style.display = 'none';
+
             if (create_quiz) {
               create_quiz.style.display = 'block';
-            }
-            if (x) {
-              x.style.display = 'none';
             }
             if (quiz_question) {
               quiz_question.style.display = 'none';
@@ -2754,11 +2758,14 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
     
     const sendForumMessage = (): void => {
       AsyncScheduler.nextTick(() => {
-        const textArea = document.getElementById('queries-block') as HTMLTextAreaElement;
+        const textArea = document.getElementById('forumContainer') as HTMLTextAreaElement;
         const textToSend = textArea.value.trim();
         if (!textToSend) {
           return;
         }
+
+        // make a new object with the message, userID of the sender, and the time
+
         textArea.value = '';
         this.audioVideo.realtimeSendDataMessage(
           'quizForumQuestion',
@@ -2766,19 +2773,20 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
         );
         // echo the message to the handler
-        // this.dataMessageHandler(
-        //   new DataMessage(
-        //     Date.now(),
-        //     'quizForumQuestion',
-        //     new TextEncoder().encode(textToSend),
-        //     this.meetingSession.configuration.credentials.attendeeId,
-        //     this.meetingSession.configuration.credentials.externalUserId
-        //   )
-        // );
+        this.dataMessageHandler(
+          new DataMessage(
+            Date.now(),
+            'quizForumQuestion',
+            new TextEncoder().encode(textToSend),
+            this.meetingSession.configuration.credentials.attendeeId,
+            this.meetingSession.configuration.credentials.externalUserId
+          )
+        );
       });
     };
 
-    const textAreaSendForumMessage = document.getElementById('queries-block') as HTMLTextAreaElement;
+    const textAreaSendForumMessage = document.getElementById('forumContainer') as HTMLTextAreaElement;
+    const queries_block = document.getElementById('queries-block2') as HTMLTextAreaElement;
     textAreaSendForumMessage.addEventListener('keydown', e => {
       if (e.keyCode === 13) {
         if (e.shiftKey) {
@@ -2787,6 +2795,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           e.preventDefault();
           sendForumMessage();
           textAreaSendForumMessage.rows = 1;
+          queries_block.innerHTML += `<div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto; border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"><div class="message-bubble-sender">Me</div><div class="message-bubble-self"><p class="markdown">${textAreaSendForumMessage.value.trim()}</p></div></div>`;
         }
       }
     });
@@ -2797,6 +2806,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           textAreaSendForumMessage2.rows++;
         } else {
           e.preventDefault();
+          alert("forum message 2801");
           sendForumMessage();
           textAreaSendForumMessage2.rows = 1;
         }
@@ -3395,6 +3405,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
     this.setupSubscribeToAttendeeIdPresenceHandler();
     this.setupDataMessage();
     this.setupDataFormMessage();
+    this.setupDataQuestionForumMessage();
     this.setupLiveTranscription();
     this.audioVideo.addObserver(this);
     this.meetingSession.eventController.addObserver(this);
@@ -3627,58 +3638,16 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       this.lastReceivedMessageTimestamp = dataMessage.timestampMs;
      
       // DREW ADD
-
       // console.log("*************************message:", dataMessage);
       // console.log("*************************message.TYPE:", dataMessage.topic);
 
-      if (dataMessage.topic === 'quizForumQuestion') {
-        // If you've received a message
-      console.log("quiz forum question");
-      const quizForumQuestion : QuizForumQuestion = {
-        quiz_id: '',
-        timestamp: new Date().toISOString(),
-        user_id: dataMessage.senderAttendeeId,
-        host_id: this.meetingSession.configuration.credentials.attendeeId,
-        question: dataMessage.text()
-      } 
-
-
-      // UPDATE THE HTML HERE WITH THE QUIZFORUMQUESTION
-
-          // Access the DOM elements
-          const queriesBlock = document.querySelector('.queries-block') as HTMLElement;
-          const queriesSection = queriesBlock.querySelector('.queries-section');
-          
-          // Create a new query element and populate it with data from quizForumQuestion
-          const newQuery = document.createElement('div');
-          newQuery.innerHTML = `
-              <div class="d-flex">
-                  <p class="pe-3">${quizForumQuestion.user_id}</p> 
-                  <p>Question <span>✋</span></p>
-              </div>
-              <h5>${quizForumQuestion.question}</h5>
-              <div class="customInput">
-                  <input type="text" placeholder="Respond" />
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
-                      <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />
-                      <path d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472" stroke="#3F4149" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-              </div>
-          `;
-
-          // Append the new query element to the queries section
-          queriesSection.appendChild(newQuery);
-          
-          // Optionally, you can make the 'queries-block' section visible
-          queriesBlock.style.display = 'block';
-
-
-
-
-      }
-
-
-      if (dataMessage.topic === 'displayForm' && !isSelf) {
+      if (dataMessage.topic === 'quizForumQuestion' && !isSelf) {
+        // If you've received a Forum message and it's not from you!
+      alert(`quiz forum question received not by you ${dataMessage.text()}`);
+      const senderName = dataMessage.senderExternalUserId.split('#').slice(-1)[0];
+      showForumQuestion(dataMessage.text(), dataMessage.senderAttendeeId, senderName );
+        return;
+      } else if (dataMessage.topic === 'displayForm' && !isSelf) {
       console.log('*************************RUNNNING DISPLAYFORM:');
       console.log('Received message:', dataMessage.text());        
       populateQuiz(dataMessage.text());
@@ -3689,15 +3658,17 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           let myModal = new Modal(myModalEl);
           myModal.show();
       }
-        // const messageContent = new TextDecoder().decode(dataMessage.data);
-        // const parsedMessage = JSON.parse(messageContent);
-        // const receivedData = JSON.parse(dataMessage.text());
-        // this.displayForm(receivedData);
         return;
-      }
+      } else if (dataMessage.topic === 'displayForm' && isSelf) {
+        // display the "Quiz started at ___ " timestamp on #quiz-timestamp element:
+        const quizTimestamp = document.getElementById('quiz-timestamp');
+        const date = new Date(dataMessage.timestampMs);
+        // display the date object in the #quiz-timestamp element:
+        quizTimestamp.innerText = `Quiz started at: ${date}`;
+      
 
-
-
+        return;        
+      } else {
 
 
       // DREW ADD END
@@ -3726,7 +3697,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       }
       this.lastMessageSender = dataMessage.senderAttendeeId;
       messageDiv.appendChild(messageTextSpan);
-      messageDiv.scrollTop = messageDiv.scrollHeight;
+      messageDiv.scrollTop = messageDiv.scrollHeight; }
     } else {
       this.log('Message is throttled. Please resend');
     }
@@ -3744,6 +3715,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
   setupDataFormMessage(): void {
     this.audioVideo.realtimeSubscribeToReceiveDataMessage(
       'displayForm',
+      // last argument : no callback function:
       (dataMessage: DataMessage) => {
         this.dataMessageHandler(dataMessage);
       }
@@ -3768,7 +3740,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
       // Transcripts view and the button to show and hide it are initially hidden
       // Show them when when live transcription gets enabled, and do not hide afterwards
-      this.setButtonVisibility('button-live-transcription', true, 'on');
+      this.setButtonVisibility('button-live-transcription', true, 'off');
       this.transcriptContainerDiv.style.display = 'block';
     }
 
@@ -5908,7 +5880,67 @@ function populateQuiz(dataString: string) {
     
   }
 
+  // **************************
+  // **************************
+  // FORUM QUESTION HANDLER
+  function showForumQuestion(dataString: string, senderAttendeeId: string, senderName: string) {
+    // Sample datastring: Hi! 
+    // Sample senderAttendeeId: 1f2e3d4c5b6a7z8y9x0w1v2u3t4s5r6q7p8o9n0m1l2k3j4i5h6g7f8e9d0c1b2a3
+    
+    // Display the question in the forum
+    // const data: QuizForumQuestion = JSON.parse(dataString);
+    alert(`Forum question received! ${dataString} from ${senderName} ${senderAttendeeId}`);
 
+
+    
+      // const quizForumQuestion : QuizForumQuestion = {
+      //   quiz_id: '',
+      //   timestamp: new Date().toISOString(),
+      //   user_id: dataMessage.senderAttendeeId,
+      //   host_id: this.meetingSession.configuration.credentials.attendeeId,
+      //   question: dataMessage.text()
+      // } 
+
+      // // if 
+
+
+
+
+      // UPDATE THE HTML HERE WITH THE QUIZFORUMQUESTION
+
+          // Access the DOM elements
+      const queriesBlock = document.getElementById('queries-block') as HTMLElement;
+      // const queriesSection = queriesBlock.querySelector('.queries-section');
+
+          // Create a new query element and populate it with data from quizForumQuestion
+          // const newQuery = document.createElement('div');
+          queriesBlock.innerHTML += `
+              <div class="d-flex" data-user-id="${senderAttendeeId}">
+                  <p class="pe-3" data-user-id="${senderAttendeeId}">${senderName}</p> 
+                  <p>Question <span>✋</span></p>
+              </div>
+              <h5>${dataString}</h5>
+              <div class="customInput">
+                  <input type="text" data-user-id="${senderAttendeeId}" placeholder="Respond" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
+                      <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />
+                      <path d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472" stroke="#3F4149" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+              </div>
+          `;
+          
+          // queriesBlock.appendChild(newQuery);
+          
+          // Optionally, you can make the 'queries-block' section visible
+          queriesBlock.style.display = 'block';
+
+
+
+  }
+
+
+
+// FORUM AND IN QUIZ CHAT FUNCTIONS
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -5926,64 +5958,69 @@ if (!messagingContainer) {
 
 // line 5927
 // Listen for the 'keydown' event on the textarea
-textarea.addEventListener('keydown', function(event:any) {
-  const keyboardEvent = event as KeyboardEvent;
-  const key = keyboardEvent.keyCode || keyboardEvent.which;  // Handle both keyCode and which
+// const textAreaSendMessage = document.getElementById('forumContainer') as HTMLTextAreaElement;
+// textarea.addEventListener('keydown', e => {
+//   if (e.keyCode === 13) {
+//     if (e.shiftKey) {
+//       textAreaSendMessage.rows++;
+//     } else {
+//       e.preventDefault();
+//       sendForumMessage();
+//       alert("sending Forum Question!");
+      
+//       // AsyncScheduler.nextTick(() => {
+//         // Ensure you're calling these on the correct object, e.g., `this`
+//         if (this?.audioVideo && this?.dataMessageHandler && this?.meetingSession) {
+//           this.audioVideo.realtimeSendDataMessage(
+//             'quizForumQuestion',
+//             question,
+//             DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+//           );
+      
+//           const attendeeId = this.meetingSession.configuration.credentials.attendeeId;
+//           const externalUserId = this.meetingSession.configuration.credentials.externalUserId;
+      
+//           this.dataMessageHandler(
+//             new DataMessage(
+//               Date.now(),
+//               'quizForumQuestion',
+//               new TextEncoder().encode(question),
+//               attendeeId,
+//               externalUserId
+//             )
+//           );
+//         } else {
+//           console.error('One or more objects are undefined:', {
+//             audioVideo: this?.audioVideo,
+//             dataMessageHandler: this?.dataMessageHandler,
+//             meetingSession: this?.meetingSession,
+//           });
+//         }
 
-  console.log("event keycode", keyboardEvent.keyCode);
-    // Check if the 'Enter' key was pressed
-    
-    if (key === 13 && !keyboardEvent.shiftKey) {
-      event.preventDefault();
-      
-      const question: string = textarea.value;  
-      console.log('QuizForum Question:', question);
-    
-      // AsyncScheduler.nextTick(() => {
-        // Ensure you're calling these on the correct object, e.g., `this`
-        if (this?.audioVideo && this?.dataMessageHandler && this?.meetingSession) {
-          this.audioVideo.realtimeSendDataMessage(
-            'quizForumQuestion',
-            question,
-            DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-          );
-      
-          const attendeeId = this.meetingSession.configuration.credentials.attendeeId;
-          const externalUserId = this.meetingSession.configuration.credentials.externalUserId;
-      
-          this.dataMessageHandler(
-            new DataMessage(
-              Date.now(),
-              'quizForumQuestion',
-              new TextEncoder().encode(question),
-              attendeeId,
-              externalUserId
-            )
-          );
-        } else {
-          console.error('One or more objects are undefined:', {
-            audioVideo: this?.audioVideo,
-            dataMessageHandler: this?.dataMessageHandler,
-            meetingSession: this?.meetingSession,
-          });
-        }
-            // });
-    }
-    
-        // Create a new message row with the content and timestamp
-        const currentTime = new Date();
-        const formattedTime = currentTime.getHours() + ':' + String(currentTime.getMinutes()).padStart(2, '0') + ' PM';  // Format time as HH:mm PM
-        const messageRow = `
-            <div class="send-message">
-                <h4 class="message-heading">You<span>${formattedTime}</span></h4>
-                <p class="message-details">${textarea.value}</p>
-            </div>
-        `;
+//                 // Create a new message row with the content and timestamp
+//                 const currentTime = new Date();
+//                 const formattedTime = currentTime.getHours() + ':' + String(currentTime.getMinutes()).padStart(2, '0') + ' PM';  // Format time as HH:mm PM
+//                 const messageRow = `
+//                     <div class="send-message">
+//                         <h4 class="message-heading">You<span>${formattedTime}</span></h4>
+//                         <p class="message-details">${textarea.value}</p>
+//                     </div>
+//                 `;
+                
+//                 // Append the new message row to the messaging container
+//                 messagingContainer.innerHTML += messageRow;
+                
+//                 // Clear the textarea
+//                 textarea.value = '';  // <-- Use the asserted textarea here
         
-        // Append the new message row to the messaging container
-        messagingContainer.innerHTML += messageRow;
-        
-        // Clear the textarea
-        textarea.value = '';  // <-- Use the asserted textarea here
-    }.bind(this) );
+
+
+
+
+
+//     }
+//   }
+// });
+
+
 });

@@ -995,9 +995,9 @@
           <div class="bs-component" style="flex: 1 1 auto; overflow-y: auto; height: 30%;">
             <ul id="roster" class="list-group"></ul>
           </div>
-          <div class="message d-flex flex-column pt-3" id="messages"
-            style="flex: 1 1 auto; overflow: hidden; height: 70%;">
-            <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
+          <div class="message d-flex flex-column pt-1" id="messages"
+            style="flex: 1 1 auto; overflow: hidden; height: 100%;">
+            <div class="list-group receive-message scrollbar-new-design" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
             border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
             <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
               <textarea class="form-control shadow-none" id="send-message" rows="1"
@@ -1234,7 +1234,7 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-between" style="gap:10px">
 
-                  <div class="quiz-heading">Quiz (Draft)</div>
+                  <div class="quiz-heading">Quiz Progress</div>
                   <button id="end-quiz" type="button" class="customButton" style="width: 40%;"
                     data-bs-toggle="modal" data-bs-target="#end-quiz-modal">End Quiz</button>
                 </div>
@@ -1280,7 +1280,7 @@
                   </div>
                 </div>
                 <div id="queries-block" class="queries-block tab-sections" style="display: none;">
-                  <div class="queries-section">
+                  <div id="queries-section" class="queries-section">
                     <!-- <div class="d-flex">
                       <p class="pe-3">Maria</p>
                       <p>Question 2 <span>✋</span></p>
@@ -1300,6 +1300,7 @@
 
                 </div>
               </div>
+              <p id="quiz-timestamp"></p>
               <button class="deleteButton" type="button" data-bs-toggle="modal" data-bs-target="#end-quiz-modal">
                 Cancel Quiz
               </button>

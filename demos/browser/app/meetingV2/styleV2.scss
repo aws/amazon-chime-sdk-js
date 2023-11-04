@@ -1033,7 +1033,7 @@ a.markdown:active {
 
 .transcript-container {
   max-height: 210px;
-  margin-bottom:5%;
+  margin-bottom:2%;
   overflow-y: scroll;
   padding: 0.2rem 1rem;
   z-index: 20;
@@ -2487,7 +2487,8 @@ input[type="Submit"]:hover{
     }
 
     #myDIV{
-      min-width:300px
+      min-width:300px;
+      max-height: 85vh;
     }
 
     #quiz-options{
@@ -2679,7 +2680,7 @@ input[type="radio"]:focus {
 }
 
 #roster-message-container{
-  max-height: 90%;
+  max-height: 85vh;
 }
 
 /*Css for dashboard improvement*/
@@ -2937,7 +2938,7 @@ border-radius: 50%;
     margin-left: 5px;
 }
 
-#form-devices label, #form-devices h1 {
+#form-devices label, #form-devices h1, #form-devices p {
   color: white;
 }
 
