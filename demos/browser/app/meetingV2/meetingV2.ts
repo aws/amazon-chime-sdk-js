@@ -1055,53 +1055,53 @@ updateBodyBackgroundColor();
 
 
         
-        // const url = "https://app.larq.ai/api/MakeQuiz";
-        // console.log("TRANSCRIPT DATA:", transcriptData);
-        // const response = await fetch(url, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(transcriptData)
-        // })
-        // // on response, show #html_quiz_question:
-        // const quizJson = await response.json();
+        const url = "https://app.larq.ai/api/MakeQuiz";
+        console.log("TRANSCRIPT DATA:", transcriptData);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transcriptData)
+        })
+        // on response, show #html_quiz_question:
+        const quizJson = await response.json();
         html_quiz_question.style.display = 'block';
         generating_quiz.style.display = 'none';
 
         // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-        const quizJson = {
-            quiz_title: 'History 101',
-            questions: [
-              {
-                answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
-                correct_answer: '1215',
-                question: 'In which year was the Magna Carta sealed?',
-                question_number: 1,
-                wrong_answers: ['1200', '1230', '1150'],
-              },
-              {
-                answer_reason:
-                  'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
-                correct_answer: 'Revival of classical learning',
-                question: 'What was the primary aim of the Renaissance?',
-                question_number: 2,
-                wrong_answers: [
-                  'Promotion of modern art',
-                  'Start of the industrial revolution',
-                  'Promotion of religious beliefs',
-                ],
-              },
-              {
-                answer_reason:
-                  'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
-                correct_answer: 'Galileo Galilei',
-                question: 'Who is known as the father of observational astronomy?',
-                question_number: 3,
-                wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
-              },
-            ]
-        };
+        // const quizJson = {
+        //     quiz_title: 'History 101',
+        //     questions: [
+        //       {
+        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
+        //         correct_answer: '1215',
+        //         question: 'In which year was the Magna Carta sealed?',
+        //         question_number: 1,
+        //         wrong_answers: ['1200', '1230', '1150'],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
+        //         correct_answer: 'Revival of classical learning',
+        //         question: 'What was the primary aim of the Renaissance?',
+        //         question_number: 2,
+        //         wrong_answers: [
+        //           'Promotion of modern art',
+        //           'Start of the industrial revolution',
+        //           'Promotion of religious beliefs',
+        //         ],
+        //       },
+        //       {
+        //         answer_reason:
+        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
+        //         correct_answer: 'Galileo Galilei',
+        //         question: 'Who is known as the father of observational astronomy?',
+        //         question_number: 3,
+        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
+        //       },
+        //     ]
+        // };
         console.log('quizJson:', quizJson);
         // add quizJson to the local storage
         localStorage.setItem('quizJson', JSON.stringify(quizJson));
