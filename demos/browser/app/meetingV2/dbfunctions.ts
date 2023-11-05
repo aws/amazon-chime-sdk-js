@@ -157,14 +157,16 @@ document.addEventListener('DOMContentLoaded', function () {
   // }
   // );
 
-const modalElement = document.getElementById('eventModal');
-const modalContentElement = document.getElementById('eventModalContent');
-
 function showEventModal(content: string, timestamp: string, id: string, duration: string) {
-    if (!modalElement || !modalContentElement) {
+  const modalElement = document.getElementById('eventModal');
+  const modalContentElement = document.getElementById('eventModalContent');
+
+  if (!modalElement || !modalContentElement) {
         console.error("Modal elements not found");
         return;
     }
+    
+    
     const modal = new bootstrap.Modal(modalElement);
     let formattedTimestamp = "Invalid Date";
 
@@ -177,7 +179,7 @@ function showEventModal(content: string, timestamp: string, id: string, duration
         }
     }
     modalContentElement.innerHTML = ""
-    modalContentElement.innerHTML += `<div class="text-center><h3>${content}</h3><br><br><small>Event on ${formattedTimestamp}</small><br><br><i>Duration: ${duration} minutes</i>`;
+    modalContentElement.innerHTML += `<div class="text-center"><h3>${content}</h3><br><br><small>Event on ${formattedTimestamp}</small><br><br><i>Duration: ${duration} minutes</i>`;
 
     modalContentElement.innerHTML += `<br><br><button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://app.larq.ai?m=${id}', '_blank')">Go to Meeting</button>`;
     // add a copy meeting link(should copy: https://app.larq.ai?m=[ID]) button to the modal:
@@ -217,17 +219,17 @@ function copyToClipboard(text: string, buttonElem: HTMLButtonElement) {
 (window as any).copyToClipboard = copyToClipboard;
 
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.calendar-day .calendar-event').forEach(eventDay => {
-    eventDay.parentElement?.addEventListener('click', function() {
-      const content = "Test Event";  // Replace with actual event details
-      const timestamp = "2023-10-03T14:00:00.000Z";  // Replace with actual timestamp
-      const id = "1234"; // Replace with actual id
-      const duration = "60"; // Replace with actual duration
-      showEventModal(content, timestamp, id, duration);
-    });
-  });
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//   document.querySelectorAll('.calendar-day .calendar-event').forEach(eventDay => {
+//     eventDay.parentElement?.addEventListener('click', function() {
+//       // const content = "Test Event";  // Replace with actual event details
+//       // const timestamp = "2023-10-03T14:00:00.000Z";  // Replace with actual timestamp
+//       // const id = "1234"; // Replace with actual id
+//       // const duration = "60"; // Replace with actual duration
+//       // showEventModal(content, timestamp, id, duration);
+//     });
+//   });
+// });
 
 
 
