@@ -1043,8 +1043,8 @@ updateBodyBackgroundColor();
         }
         let vectorID = localStorage.getItem('vectorID')
         if (vectorID) {
-            transcriptData.vector_id = vectorID;
-            console.log('vector_id:', vectorID);
+            transcriptData.vector = vectorID;
+            console.log('vector:', vectorID);
         }
 
         let userID = JSON.parse(localStorage.getItem('data')).user_id;
@@ -1186,7 +1186,7 @@ updateBodyBackgroundColor();
                       answerselectorLabel.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12L9 16L19 6" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
                       let answerLabel = document.createElement('input');
-                      answerLabel.className = 'form-control answer-text';
+                      answerLabel.className = 'form-control answer-text w-75';
                       // answerLabel.htmlFor = optionInput.id;
                       answerLabel.value = answer;
 
@@ -1458,7 +1458,7 @@ updateBodyBackgroundColor();
     var tc = document.getElementById('transcript-container');
     if (tc) {
       tc.style.display = 'block';
-      this.toggleButton('button-live-transcription');
+      // this.toggleButton('button-live-transcription');
     }
 
 
@@ -2810,19 +2810,19 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
         }
       }
     });
-    const textAreaSendForumMessage2 = document.getElementById('queries-block2') as HTMLTextAreaElement;
-    textAreaSendForumMessage2.addEventListener('keydown', e => {
-      if (e.keyCode === 13) {
-        if (e.shiftKey) {
-          textAreaSendForumMessage2.rows++;
-        } else {
-          e.preventDefault();
-          // alert("forum message 2801");
-          sendForumMessage(userId);
-          textAreaSendForumMessage2.rows = 1;
-        }
-      }
-    });
+    // const textAreaSendForumMessage2 = document.getElementById('queries-block2') as HTMLTextAreaElement;
+    // textAreaSendForumMessage2.addEventListener('keydown', e => {
+    //   if (e.keyCode === 13) {
+    //     if (e.shiftKey) {
+    //       textAreaSendForumMessage2.rows++;
+    //     } else {
+    //       e.preventDefault();
+    //       // alert("forum message 2801");
+    //       sendForumMessage(userId);
+    //       textAreaSendForumMessage2.rows = 1;
+    //     }
+    //   }
+    // });
 
 
 
@@ -3654,7 +3654,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
       if (dataMessage.topic === 'quizForumQuestion' && !isSelf) {
         // If you've received a Forum message and it's not from you!
-      // alert(`quiz forum question received not by you ${dataMessage.text()}`);
+      alert(`quiz forum question received not by you ${dataMessage.text()}`);
       const senderName = dataMessage.senderExternalUserId.split('#').slice(-1)[0];
       showForumQuestion(dataMessage.text(), dataMessage.senderAttendeeId, senderName );
         return;
@@ -3676,7 +3676,6 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
         const date = new Date(dataMessage.timestampMs);
         // display the date object in the #quiz-timestamp element:
         quizTimestamp.innerText = `Quiz started at: ${date}`;
-      
 
         return;        
       } else {
@@ -5756,7 +5755,12 @@ function displayQuestion(index: number, data: FormData) {
     document.getElementById("quiz-taker-question")!.textContent = question.label;
 
     const answersContainer = document.getElementById("quiz-taker-answers")!;
-    question.options.forEach((option, optionIndex) => {
+    // Shuffle the options
+    const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+    // Find the correct answer index in the shuffled options
+    const correctAnswerIndex = shuffledOptions.indexOf(question.correct_answer);
+
+    shuffledOptions.forEach((option, optionIndex) => {
       const radioDiv = document.createElement("div");
       radioDiv.className = "form-check form-check-inline radioBox";
 
@@ -5765,6 +5769,7 @@ function displayQuestion(index: number, data: FormData) {
       input.id = `answer_${index}_${optionIndex}`;
       input.name = `question_${index}`;
       let optionSelected = false;
+
       input.addEventListener("change", () => {
         if (!optionSelected) {
           optionSelected = true;
@@ -5780,9 +5785,14 @@ function displayQuestion(index: number, data: FormData) {
           // alert("wrong!");
           radioDiv.className = "form-check form-check-inline radioBox incorrect-answer"; // Highlight correct answer with 
           // find the option with the correct answer and highlight it
-          const correctAnswerIndex = question.options.indexOf(correctAnswer);
+          // const correctAnswerIndex = question.options.indexOf(correctAnswer);
+          // const correctAnswerInput = document.getElementById(`answer_${index}_${correctAnswerIndex}`) as HTMLInputElement;
+
           const correctAnswerInput = document.getElementById(`answer_${index}_${correctAnswerIndex}`) as HTMLInputElement;
           correctAnswerInput.parentElement!.className = "form-check form-check-inline radioBox correct-answer";
+    
+
+          // correctAnswerInput.parentElement!.className = "form-check form-check-inline radioBox correct-answer";
           QuizAttempts.incorrect.push(index);}
         } 
       };
@@ -5891,7 +5901,7 @@ function populateQuiz(dataString: string) {
         } else {
           QuizAttempts.score = QuizAttempts.correct.length; // Update the score when the quiz is completed
             // You can redirect or show results here when all questions are done.
-            alert("Quiz completed!");
+            alert(`Quiz completed! You got ${QuizAttempts.score} right!`);
             localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
             submitQuizAttempts();
             document.getElementById("starting_quiz_container")!.style.display = "none";
@@ -5932,8 +5942,9 @@ function populateQuiz(dataString: string) {
           // Create a new query element and populate it with data from quizForumQuestion
           // const newQuery = document.createElement('div');
           queriesBlock.innerHTML += `
+          <hr>
               <div class="d-flex" data-user-id="${senderAttendeeId}">
-                  <p class="pe-3" data-user-id="${senderAttendeeId}">${senderName}</p> 
+                  <p class="pe-3 fw-bolder" data-user-id="${senderAttendeeId}">${senderName}</p> 
                   <p>Question <span>✋</span></p>
               </div>
               <h5>${data.message}</h5>
@@ -5957,7 +5968,7 @@ function populateQuiz(dataString: string) {
                   if (!textToSend) {
                     return;
                   }
-                  alert(`sending Forum Question! ${textToSend}`);
+                  // alert(`sending Forum Question! ${textToSend}`);
 
                   const messageObject = {
                       message: textToSend,
