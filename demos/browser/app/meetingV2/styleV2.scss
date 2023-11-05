@@ -115,31 +115,25 @@ a:hover {
     display: none !important;
   }
 
-  #meeting-container {
-    height: auto !important;
-  }
+  // #meeting-container {
+  //   height: auto !important;
+  // }
 
-  #roster-tile-container {
-    height: auto !important;
-  }
 
-  #roster-message-container {
-    height: auto !important;
-  }
+  // #tile-transcript-container {
+  //   height: auto !important;
+  // }
 
-  #tile-transcript-container {
-    height: auto !important;
+  #roster-message-container{
+    position: absolute;
+    z-index: 1000;
   }
 
   .bs-component {
-    max-height: 210px;
+    max-height: 80%;
     height: auto !important;
   }
 
-  .message {
-    max-height: 210px;
-    height: 210px !important;
-  }
 
   .video-preview {
     max-width: 100%;
@@ -540,7 +534,8 @@ body {
 .svg-active {
   fill: lighten($secondary, 15%);
   g {
-    fill: rgb(74, 74, 74);
+    // fill: rgb(74, 74, 74);
+    fill: grey;
   }
 }
 
@@ -2681,6 +2676,8 @@ input[type="radio"]:focus {
 
 #roster-message-container{
   max-height: 85vh;
+  min-width: 200px;
+
 }
 
 /*Css for dashboard improvement*/
@@ -2941,7 +2938,10 @@ border-radius: 50%;
 #form-devices label, #form-devices h1, #form-devices p {
   color: white;
 }
-
+#quiz-timestamp{
+  font-weight: 100;
+  font-size: 13px;
+}
 
 @media only screen and (max-width: 767.99px) {
 .main_quiz {
@@ -2962,5 +2962,54 @@ border-radius: 50%;
 
   text-decoration: underline;
 }
+
+
+/* Footer bar */
+.footer-bar {
+  overflow-x: auto;
+  height: 70px; /* Initial height */
+  transition: height 0.3s ease-in-out;
 }
 
+.footer-bar:hover,
+.footer-bar:active {
+  height: 100px; /* Height on hover and click */
+}
+
+/* Horizontal scrollbar design */
+.footer-bar::-webkit-scrollbar {
+  height: 4px;
+  background-color: transparent;
+}
+
+.footer-bar:hover::-webkit-scrollbar {
+  height: 4px;
+  background-color: transparent;
+}
+
+.footer-bar:hover::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background-color: #f5f5f5;
+}
+
+.footer-bar:hover::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.footer-bar:hover::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.footer-bar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) #f5f5f5;
+}
+
+.footer-bar:hover {
+  scrollbar-color: rgba(0, 0, 0, 0.5) #f5f5f5;
+}
+
+
+
+}
