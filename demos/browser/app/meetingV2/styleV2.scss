@@ -2499,6 +2499,15 @@ input[type="Submit"]:hover{
       cursor: pointer;
       transition: background-color 0.3s;
     }
+    .incorrect-answer{
+      background-color: #cf4040c3;
+      color: #fff;
+      padding: 5px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
     .form-check-inline{
       width:100%;
       padding:10px
@@ -2550,7 +2559,9 @@ input[type="Submit"]:hover{
     .correct-answer .btn-outline-primary{
       background:green
     }
-    
+    .incorrect-answer .btn-outline-primary{
+      background:red
+    }
     #quiz-taker-answers{
       margin-left: 30px;
       padding-right:30px;

@@ -1047,7 +1047,7 @@ updateBodyBackgroundColor();
             console.log('vector_id:', vectorID);
         }
 
-        let userID = localStorage.getItem('data').user_id;
+        let userID = JSON.parse(localStorage.getItem('data')).user_id;
         if (userID) {
             transcriptData.user_id = userID;
             console.log('user_id:', userID);
@@ -1567,7 +1567,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
   }
 
   // get user_id from local storage
-  const userId = localStorage.getItem('userId');
+  let userId = localStorage.getItem('userId');
 
 
   fetch("https://app.larq.ai/api/scheduleMeeting", {
@@ -1903,7 +1903,8 @@ document.getElementById('uploadBtn')?.addEventListener('click', () => {
 document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
   const quiz_in_progress = document.getElementById('quiz_in_progress');
   const create_quiz = document.getElementById('create-quiz');
-  
+  const end_quiz_modal = document.getElementById('end-quiz-modal');
+  end_quiz_modal.classList.remove('show');
   if (quiz_in_progress && create_quiz) {
     quiz_in_progress.style.display = 'none';
     create_quiz.style.display = 'block';
@@ -2803,7 +2804,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           textAreaSendForumMessage.rows++;
         } else {
           e.preventDefault();
-          sendForumMessage();
+          sendForumMessage(userId);
           textAreaSendForumMessage.rows = 1;
           queries_block.innerHTML += `<div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto; border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"><div class="message-bubble-sender">Me</div><div class="message-bubble-self"><p class="markdown">${textAreaSendForumMessage.value.trim()}</p></div></div>`;
         }
@@ -2816,8 +2817,8 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           textAreaSendForumMessage2.rows++;
         } else {
           e.preventDefault();
-          alert("forum message 2801");
-          sendForumMessage();
+          // alert("forum message 2801");
+          sendForumMessage(userId);
           textAreaSendForumMessage2.rows = 1;
         }
       }
@@ -3653,7 +3654,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
       if (dataMessage.topic === 'quizForumQuestion' && !isSelf) {
         // If you've received a Forum message and it's not from you!
-      alert(`quiz forum question received not by you ${dataMessage.text()}`);
+      // alert(`quiz forum question received not by you ${dataMessage.text()}`);
       const senderName = dataMessage.senderExternalUserId.split('#').slice(-1)[0];
       showForumQuestion(dataMessage.text(), dataMessage.senderAttendeeId, senderName );
         return;
@@ -5694,6 +5695,8 @@ function submitQuizAttempts() {
   const storedData = localStorage.getItem('QuizAttempts');
   const QuizAttempts = storedData ? JSON.parse(storedData) : defaultQuizAttempt;
   console.log("QuizAttempts to sent to larq API:",QuizAttempts);
+  QuizAttempts['userID'] = localStorage.getItem('userId') || "";
+
   const totalQuestions = (QuizAttempts as any).correct.length + (QuizAttempts as any).incorrect.length;
   QuizAttempts.score = QuizAttempts.correct.length / totalQuestions;
 
@@ -5716,8 +5719,8 @@ function submitQuizAttempts() {
 
 
 // DREW FUNCTION VARIABLES
+let userId = localStorage.getItem('userId') || '';
 
-const userId = localStorage.getItem('userId') || '';
 const existingAttempts = localStorage.getItem('QuizAttempts');
 const QuizId = localStorage.getItem('QuizId');
 
@@ -5744,7 +5747,7 @@ function clearPreviousQuestions() {
     }
 }
 
-// FUNCTION 2 - DISPLAY QUESTIONS IN QUIZ HANDLER
+// FUNCTION 2 - DISPLAY QUESTIONS IN QUIZ HANDLER (TAKING QUIZ)
 function displayQuestion(index: number, data: FormData) {
   clearPreviousQuestions(); // Clear previous question and answers
 
@@ -5761,7 +5764,10 @@ function displayQuestion(index: number, data: FormData) {
       input.type = "radio";
       input.id = `answer_${index}_${optionIndex}`;
       input.name = `question_${index}`;
+      let optionSelected = false;
       input.addEventListener("change", () => {
+        if (!optionSelected) {
+          optionSelected = true;
         const correctAnswer = question.correct_answer;
         if (option === correctAnswer) {
           // push correct answer to QuizAttempts, unless it's already there
@@ -5771,9 +5777,16 @@ function displayQuestion(index: number, data: FormData) {
           radioDiv.className = "form-check form-check-inline radioBox correct-answer"; // Highlight correct answer with green outline
         } else {
           if (!QuizAttempts.incorrect.includes(index)) {
-
+          // alert("wrong!");
+          radioDiv.className = "form-check form-check-inline radioBox incorrect-answer"; // Highlight correct answer with 
+          // find the option with the correct answer and highlight it
+          const correctAnswerIndex = question.options.indexOf(correctAnswer);
+          const correctAnswerInput = document.getElementById(`answer_${index}_${correctAnswerIndex}`) as HTMLInputElement;
+          correctAnswerInput.parentElement!.className = "form-check form-check-inline radioBox correct-answer";
           QuizAttempts.incorrect.push(index);}
-        }
+        } 
+      };
+
       });
 
       const label = document.createElement("label");
@@ -5881,7 +5894,8 @@ function populateQuiz(dataString: string) {
             alert("Quiz completed!");
             localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
             submitQuizAttempts();
-
+            document.getElementById("starting_quiz_container")!.style.display = "none";
+            document.getElementById("roster-tile-container")!.style.display = "block";
         }
     });
 
@@ -5896,12 +5910,11 @@ function populateQuiz(dataString: string) {
   function showForumQuestion(dataString: string, senderAttendeeId: string, senderName: string) {
     // Sample datastring: Hi! 
     // Sample senderAttendeeId: 1f2e3d4c5b6a7z8y9x0w1v2u3t4s5r6q7p8o9n0m1l2k3j4i5h6g7f8e9d0c1b2a3
-    
+    // make datastring json
+    const data = JSON.parse(dataString);
     // Display the question in the forum
     // const data: QuizForumQuestion = JSON.parse(dataString);
-    alert(`Forum question received! ${dataString} from ${senderName} ${senderAttendeeId}`);
-
-
+    // alert(`Forum question received! ${dataString} from ${senderName} ${senderAttendeeId}`);
     
       // const quizForumQuestion : QuizForumQuestion = {
       //   quiz_id: '',
@@ -5910,12 +5923,6 @@ function populateQuiz(dataString: string) {
       //   host_id: this.meetingSession.configuration.credentials.attendeeId,
       //   question: dataMessage.text()
       // } 
-
-      // // if 
-
-
-
-
       // UPDATE THE HTML HERE WITH THE QUIZFORUMQUESTION
 
           // Access the DOM elements
@@ -5929,7 +5936,7 @@ function populateQuiz(dataString: string) {
                   <p class="pe-3" data-user-id="${senderAttendeeId}">${senderName}</p> 
                   <p>Question <span>✋</span></p>
               </div>
-              <h5>${dataString}</h5>
+              <h5>${data.message}</h5>
               <div class="customInput">
                   <input type="text" data-user-id="${senderAttendeeId}" placeholder="Respond" />
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
@@ -5940,11 +5947,45 @@ function populateQuiz(dataString: string) {
           `;
 
 
-          document.querySelectorAll('.customInput input').forEach(input => {
-            input.addEventListener('keypress', (e) => {
-              if (e.key === 'Enter') {
+          document.querySelectorAll('.customInput input').forEach((input: HTMLInputElement) => {  // Specify type here
+            input.addEventListener('keydown', (e: KeyboardEvent) => {
+              if (e.keyCode === 13) {
                 const userId = input.getAttribute('data-user-id');
-                sendForumMessage(userId);
+                AsyncScheduler.nextTick(() => {
+                  const textArea = input;
+                  const textToSend = textArea.value.trim();  // Now TypeScript knows `value` exists
+                  if (!textToSend) {
+                    return;
+                  }
+                  alert(`sending Forum Question! ${textToSend}`);
+
+                  const messageObject = {
+                      message: textToSend,
+                      userId: userId,
+                      time: Date.now()
+                    };
+                
+                    textArea.value = '';
+                    this.audioVideo.realtimeSendDataMessage(
+                      'quizForumQuestion',
+                      JSON.stringify(messageObject),
+                      DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+                    );
+                    this.dataMessageHandler(
+                      new DataMessage(
+                        Date.now(),
+                        'quizForumQuestion',
+                        new TextEncoder().encode(JSON.stringify(messageObject)),
+                        this.meetingSession.configuration.credentials.attendeeId,
+                        this.meetingSession.configuration.credentials.externalUserId
+                      )
+                    );
+                  });
+
+
+
+
+
               }
             });
           });

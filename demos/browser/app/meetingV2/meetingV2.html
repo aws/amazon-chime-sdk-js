@@ -882,12 +882,12 @@
     <audio id="meeting-audio" style="display:none"></audio>
     <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column;">
       <div id="starting_quiz_container" style="gap: 20px;display: none;">
-        <div class="quizContainer h-90 shadow" style="width: 70%;">
+        <div class="quizContainer h-90 shadow scrollbar-y-design" style="width: 70%;">
           <div class="d-flex justify-content-end mb-3">
             <button type="button" class="btn-close cancel-button"></button>
           </div>
           <div>
-            <div class="d-flex flex-column justify-content-between h-100 scrollbar-new-design"
+            <div class="d-flex flex-column justify-content-between h-100 scrollbar-y-design"
               style="overflow-y: overlay;">
               <div class="w-75">
 
@@ -1175,7 +1175,7 @@
             </div>
           </div>
           <div id="quiz_question" class="h-100" style="display: none;">
-            <div class="d-flex flex-column h-100 scrollbar-y-design">
+            <div class="d-flex flex-column h-100">
               <div>
                 <div class="d-flex justify-content-end mb-3">
                   <button type="button" class="btn-close cancel-button"></button>
@@ -1248,23 +1248,23 @@
 
                       <div class="listingBlock">
                         <div class="lists">
-                          <div class="d-flex justify-content-between   mb-3">
+                          <div id="in-progress-list" class="d-flex justify-content-between mb-3">
                             <p>Somya <span>(in progress)</span></p>
-                            <a>(View Score)</a>
+                            <!-- <a>(View Score)</a> -->
                           </div>
                           <div class="d-flex justify-content-between mb-3">
                             <p>Somya <span>(in progress)</span></p>
-                            <a>(View Score)</a>
+                            <!-- <a>(View Score)</a> -->
                           </div>
                           <div class="d-flex justify-content-between mb-3">
                             <p>Somya <span>(in progress)</span></p>
-                            <a>(View Score)</a>
+                            <!-- <a>(View Score)</a> -->
                           </div>
 
                         </div>
                       </div>
                     </div>
-                    <div class="sub-header">Completed (<span>2</span>)</div>
+                    <div class="sub-header" id="completed-list">Completed (<span>2</span>)</div>
                     <div class="listingBlock">
 
                       <div class="listingBlock">
