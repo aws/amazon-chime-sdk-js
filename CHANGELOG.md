@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow
+- Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
 
 ## [3.18.2] - 2023-10-09
 
@@ -68,7 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Do not display a warning message when invoking `meetingSession.audioVideo.setVideoCodecSendPreferences` prior to the start of the session.
-- Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
 
 ## [3.16.0] - 2023-06-26
 
