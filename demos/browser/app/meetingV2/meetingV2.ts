@@ -332,6 +332,31 @@ export class DemoMeetingApp
     location.host,
     location.pathname.replace(/\/*$/, '/').replace('/v2', ''),
   ].join('');
+
+  sendForumMessage = (messageObject: any): void => {
+    AsyncScheduler.nextTick(() => {
+
+      if (!messageObject) {
+        return;
+      }
+  
+  
+      this.audioVideo.realtimeSendDataMessage(
+        'quizForumQuestion',
+        JSON.stringify(messageObject),
+        DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+      );
+      this.dataMessageHandler(
+        new DataMessage(
+          Date.now(),
+          'quizForumQuestion',
+          new TextEncoder().encode(JSON.stringify(messageObject)),
+          this.meetingSession.configuration.credentials.attendeeId,
+          this.meetingSession.configuration.credentials.externalUserId
+        )
+      );
+    });
+  };
   static testVideo: string =
     'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
@@ -1554,6 +1579,8 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 //   document.getElementById('scheduleMeetingModal')!.style.display = 'block';
 // });
 
+// after dom content is loaded, add event listener to #scheduleMeetingSubmit
+
 document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () => {
   //get date and time from datetime-local input #meetingScheduleTime
   const meetingScheduleTime: string = (document.getElementById('meetingScheduleTime') as HTMLInputElement).value;
@@ -1568,7 +1595,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
 
   // get user_id from local storage
   let userId = localStorage.getItem('userId');
-
+  let meeting_name = (document.getElementById('meetingName') as HTMLInputElement).value;
 
   fetch("https://app.larq.ai/api/scheduleMeeting", {
       method: 'POST',
@@ -1577,7 +1604,8 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
       },
       body: JSON.stringify({
         'timestamp': meetingScheduleTime,
-        'host_id': userId
+        'host_id': userId,
+        'meeting_name':meeting_name
       })
   })
   .then(response => response.json())
@@ -1775,6 +1803,8 @@ document.querySelector('#join-view-only')?.addEventListener('click', () => {
 
 // DREW REGISTRATION
 
+// add domcontentloaded event listener to #registerForm
+document.addEventListener('DOMContentLoaded', function() {
 document.querySelector('#registerForm')?.addEventListener('submit', (event: Event) => {
   event.preventDefault();
   const loginSpinner = document.getElementById('login-spinner')!;
@@ -1787,7 +1817,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   const email: string = targetForm.email.value;
   const firstName: string = targetForm.first_name.value;  // Retrieve first name
   const lastName: string = targetForm.last_name.value;    // Retrieve last name
-
+  alert(`${username}, ${password}, ${email}, ${firstName}, ${lastName}`);
   fetch("https://app.larq.ai/api/register", {
       method: 'POST',
       headers: {
@@ -1804,21 +1834,71 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   .then(response => response.json())
   .then(data => {
       if (data.status === 'success') {
-        loginSpinner.style.display = 'none';
+        // loginSpinner.style.display = 'none';
           alert(data.message);
-          document.getElementById('login-container')!.style.display = 'none';
-          document.getElementById('joining-page')!.style.display = 'block';
-          localStorage.setItem('firstName', data.first_name!);
-          localStorage.setItem('lastName', data.last_name!);
-          localStorage.setItem('email', data.email!);
-          // reload page
-          document.querySelector<HTMLInputElement>('#loginForm input[name="username"]')!.value = username;
-          document.querySelector<HTMLInputElement>('#loginForm input[name="password"]')!.value = password;
-          document.getElementById('login-container')!.style.display = 'block';
-          document.getElementById('joining-page')!.style.display = 'none';
-          document.getElementById('flow-meeting')!.style.display = 'none';
+          // document.getElementById('login-container')!.style.display = 'none';
+          // document.getElementById('joining-page')!.style.display = 'block';
+          // localStorage.setItem('firstName', data.first_name!);
+          // localStorage.setItem('lastName', data.last_name!);
+          // localStorage.setItem('email', data.email!);
+          // // reload page
+          // document.querySelector<HTMLInputElement>('#loginForm input[name="username"]')!.value = username;
+          // document.querySelector<HTMLInputElement>('#loginForm input[name="password"]')!.value = password;
+          // document.getElementById('login-container')!.style.display = 'block';
+          // document.getElementById('joining-page')!.style.display = 'none';
+          // document.getElementById('flow-meeting')!.style.display = 'none';
 
-          // location.reload(); 
+          // PASTED FROM LOGIN
+
+            const base64Credentials = btoa(username + ':' + password);
+
+  fetch("https://app.larq.ai/api/login", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + base64Credentials  // Set the Authorization header
+      }
+  }).then(response => {
+    if (!response.ok) {
+      return response.text().then(text => {
+        throw new Error(`Server responded with status ${response.status}: ${text}`);
+    });
+}
+    return response.json();
+}).then((data: ResponseData) => {
+  if (data.status === 'success') {
+    // alert(data.message);
+    console.log('Success:', data);
+    localStorage.setItem('authToken', data.token!);
+    localStorage.setItem('firstName', data.first_name!);
+    localStorage.setItem('lastName', data.last_name!);
+    localStorage.setItem('userId', data.user_id!);
+    localStorage.setItem('data', JSON.stringify(data));
+    // hide #login-spinner
+    document.getElementById('login-spinner')!.style.display = 'none';
+    // reload page
+    // location.reload();
+    // document.getElementById('login-container')!.style.display = 'none';
+    // document.getElementById('joining-page')!.style.display = 'block';
+
+    // Console log user_id and last_name
+    console.log("User ID:", data.user_id);
+    console.log("Last Name:", data.last_name);
+    // console.log("Dashboard Stats:", data.dashboard_stats);
+
+
+  } else {
+    alert(data.message);
+  }
+  loginSpinner.style.display = 'none';
+  })
+  .catch(error => {
+    loginSpinner.style.display = 'none';
+    // show #incorrect-pass element 
+    // document.getElementById('incorrect-pass')!.style.display = 'block';
+    alert(`Error: ${error}`);
+  });
+          // END LOGIN
       } else {
         loginSpinner.style.display = 'none';
           alert(data.message);
@@ -1831,6 +1911,7 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   });
 });
 
+});
 
 
 {/* VECTOR BUTTONS */}
@@ -1839,6 +1920,10 @@ async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
     const formData = new FormData();
     formData.append('pdf', pdfFile);
     formData.append('user_id', userId);
+    // show spinner #uploadPDFBtn
+    const pdfspinner = document.getElementById('pdfspinner');
+    pdfspinner?.classList.add('d-none');
+
     
     try {
         const response = await fetch('https://app.larq.ai/api/vectorize', {
@@ -1850,6 +1935,9 @@ async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
         
         // Update the button text with the store_name from the response
         if (result.status === "success" && result.store_name) {
+            // hide spinner uploadPDFBtn
+            pdfspinner?.classList.remove('d-none');
+            document.getElementById('upload-alert')?.classList.add('d-none');
             const uploadBtn = document.getElementById('uploadBtn');
             const storeName = document.getElementById('store-name');
             if (uploadBtn) {
@@ -1864,6 +1952,8 @@ async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
         
         return result;
     } catch (error) {
+        // hide spinner 
+        pdfspinner?.classList.remove('d-none');
         console.error("Error uploading PDF:", error);
         throw error;
     }
@@ -2764,37 +2854,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       }
     });
     
-    const sendForumMessage = (userId: string): void => {
-      AsyncScheduler.nextTick(() => {
-        const textArea = document.getElementById('forumContainer') as HTMLTextAreaElement;
-        const textToSend = textArea.value.trim();
-        if (!textToSend) {
-          return;
-        }
-    
-        const messageObject = {
-          message: textToSend,
-          userId: userId,
-          time: Date.now()
-        };
-    
-        textArea.value = '';
-        this.audioVideo.realtimeSendDataMessage(
-          'quizForumQuestion',
-          JSON.stringify(messageObject),
-          DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-        );
-        this.dataMessageHandler(
-          new DataMessage(
-            Date.now(),
-            'quizForumQuestion',
-            new TextEncoder().encode(JSON.stringify(messageObject)),
-            this.meetingSession.configuration.credentials.attendeeId,
-            this.meetingSession.configuration.credentials.externalUserId
-          )
-        );
-      });
-    };
+
     
     const textAreaSendForumMessage = document.getElementById('forumContainer') as HTMLTextAreaElement;
     const queries_block = document.getElementById('queries-block2') as HTMLTextAreaElement;
@@ -2804,9 +2864,17 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           textAreaSendForumMessage.rows++;
         } else {
           e.preventDefault();
-          sendForumMessage(userId);
+          const textArea = document.getElementById('forumContainer') as HTMLTextAreaElement;
+          const textToSend = textArea.value.trim();
+          const messageObject = {
+            message: textToSend,
+            userId: userId,
+            time: Date.now()
+          };
+          this.sendForumMessage(messageObject);
           textAreaSendForumMessage.rows = 1;
-          queries_block.innerHTML += `<div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto; border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"><div class="message-bubble-sender">Me</div><div class="message-bubble-self"><p class="markdown">${textAreaSendForumMessage.value.trim()}</p></div></div>`;
+          queries_block.innerHTML += `<div class="list-group receive-message" style="flex: 1 1 auto; overflow-y: auto; border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"><div class="message-bubble-sender">Me</div><div class="message-bubble-self"><p class="markdown">${textAreaSendForumMessage.value.trim()}</p></div></div>`;
+          textArea.value = '';
         }
       }
     });
@@ -3652,12 +3720,17 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       // console.log("*************************message:", dataMessage);
       // console.log("*************************message.TYPE:", dataMessage.topic);
 
-      if (dataMessage.topic === 'quizForumQuestion' && !isSelf) {
-        // If you've received a Forum message and it's not from you!
-      alert(`quiz forum question received not by you ${dataMessage.text()}`);
-      const senderName = dataMessage.senderExternalUserId.split('#').slice(-1)[0];
-      showForumQuestion(dataMessage.text(), dataMessage.senderAttendeeId, senderName );
-        return;
+      if (dataMessage.topic === 'quizForumQuestion') {
+      // If you've received a Forum message and it's not from you!
+      // alert(`quiz forum question received not by you ${dataMessage.text()}`);
+      // const senderName = dataMessage.senderExternalUserId.split('#').slice(-1)[0];
+      // get userid
+      const senderAttendeeId = this.meetingSession.configuration.credentials.attendeeId;
+      showForumQuestion(dataMessage,senderAttendeeId);
+      return;
+      // }
+      // // else if (dataMessage.topic === 'quizForumQuestion' && isSelf) {
+      // //   return;
       } else if (dataMessage.topic === 'displayForm' && !isSelf) {
       console.log('*************************RUNNNING DISPLAYFORM:');
       console.log('Received message:', dataMessage.text());        
@@ -5917,46 +5990,31 @@ function populateQuiz(dataString: string) {
   // **************************
   // **************************
   // FORUM QUESTION HANDLER
-  function showForumQuestion(dataString: string, senderAttendeeId: string, senderName: string) {
-    // Sample datastring: Hi! 
+  function showForumQuestion(dataMessage:any, selfID : string) {
     // Sample senderAttendeeId: 1f2e3d4c5b6a7z8y9x0w1v2u3t4s5r6q7p8o9n0m1l2k3j4i5h6g7f8e9d0c1b2a3
-    // make datastring json
-    const data = JSON.parse(dataString);
-    // Display the question in the forum
-    // const data: QuizForumQuestion = JSON.parse(dataString);
-    // alert(`Forum question received! ${dataString} from ${senderName} ${senderAttendeeId}`);
-    
-      // const quizForumQuestion : QuizForumQuestion = {
-      //   quiz_id: '',
-      //   timestamp: new Date().toISOString(),
-      //   user_id: dataMessage.senderAttendeeId,
-      //   host_id: this.meetingSession.configuration.credentials.attendeeId,
-      //   question: dataMessage.text()
-      // } 
-      // UPDATE THE HTML HERE WITH THE QUIZFORUMQUESTION
-
-          // Access the DOM elements
+    console.log(`showing forum question: ${dataMessage} selfid - ${selfID}` );
+    const data = JSON.parse(dataMessage);
+    // Display the question in the forum 
+      // Access the DOM elements
       const queriesBlock = document.getElementById('queries-block') as HTMLElement;
       // const queriesSection = queriesBlock.querySelector('.queries-section');
-
           // Create a new query element and populate it with data from quizForumQuestion
           // const newQuery = document.createElement('div');
           queriesBlock.innerHTML += `
           <hr>
-              <div class="d-flex" data-user-id="${senderAttendeeId}">
-                  <p class="pe-3 fw-bolder" data-user-id="${senderAttendeeId}">${senderName}</p> 
+              <div class="d-flex" data-user-id="${data.senderAttendeeId}">
+                  <p class="pe-3 fw-bolder" data-user-id="${data.senderAttendeeId}">${dataMessage.senderName}</p> 
                   <p>Question <span>✋</span></p>
               </div>
               <h5>${data.message}</h5>
               <div class="customInput">
-                  <input type="text" data-user-id="${senderAttendeeId}" placeholder="Respond" />
+                  <input type="text" data-user-id="${data.senderAttendeeId}" placeholder="Respond" />
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
                       <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />
                       <path d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472" stroke="#3F4149" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
               </div>
           `;
-
 
           document.querySelectorAll('.customInput input').forEach((input: HTMLInputElement) => {  // Specify type here
             input.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -5965,38 +6023,31 @@ function populateQuiz(dataString: string) {
                 AsyncScheduler.nextTick(() => {
                   const textArea = input;
                   const textToSend = textArea.value.trim();  // Now TypeScript knows `value` exists
+
                   if (!textToSend) {
                     return;
                   }
+                  // remove the div with the input and button
+                  input.parentElement!.remove();
+                  const newReply = document.createElement('p');
+                  newReply.className = "forum-reply d-block w-100";
+                  newReply.textContent = `Me: ${textToSend}`;
+                  input.parentElement!.parentElement!.appendChild(newReply);
+
                   // alert(`sending Forum Question! ${textToSend}`);
 
                   const messageObject = {
                       message: textToSend,
                       userId: userId,
-                      time: Date.now()
+                      time: Date.now(),
+                      senderName: this.meetingSession.configuration.credentials.attendeeId,
                     };
                 
                     textArea.value = '';
-                    this.audioVideo.realtimeSendDataMessage(
-                      'quizForumQuestion',
-                      JSON.stringify(messageObject),
-                      DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-                    );
-                    this.dataMessageHandler(
-                      new DataMessage(
-                        Date.now(),
-                        'quizForumQuestion',
-                        new TextEncoder().encode(JSON.stringify(messageObject)),
-                        this.meetingSession.configuration.credentials.attendeeId,
-                        this.meetingSession.configuration.credentials.externalUserId
-                      )
-                    );
+                    this.sendForumMessage(messageObject, selfID);
+
+
                   });
-
-
-
-
-
               }
             });
           });
@@ -6007,11 +6058,34 @@ function populateQuiz(dataString: string) {
           // Optionally, you can make the 'queries-block' section visible
           queriesBlock.style.display = 'block';
 
+         if (data.userId !== selfID){
+          // if the message's "to" is not the person receiving the receiving the message, don't display it
+          return;
+        } else if (data.userId === selfID){
+          // if the message's "to" is the person receiving the receiving the message, display it
+          // Create a new query element and populate it with data from quizForumQuestion
+          // const newQuery = document.createElement('div');
+          queriesBlock.innerHTML += `
+          <hr>
+              <div class="d-flex" data-user-id="${data.senderAttendeeId}">
+                  <p class="pe-3 fw-bolder" data-user-id="${data.senderAttendeeId}">${data.senderName}</p> 
+                  <p>Question <span>✋</span></p>
+              </div>
+              <h5>${data.message}</h5>
+              <div class="customInput">
+                  <input type="text" data-user-id="${data.senderAttendeeId}" placeholder="Respond" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
+                      <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />`
+
+            const queries_block = document.getElementById('queries-block2') as HTMLTextAreaElement;
+            // add 
+            queries_block.innerHTML += `<div class="list-group receive-message" style="flex: 1 1 auto; overflow-y: auto; border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"><div class="message-bubble-sender">${data.senderName}</div><div class="message-bubble-self"><p class="markdown">${data.message}</p></div></div>`
+            
 
 
   }
 
-
+  };
 
 // FORUM AND IN QUIZ CHAT FUNCTIONS
 

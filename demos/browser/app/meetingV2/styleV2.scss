@@ -1184,6 +1184,7 @@ a.markdown:active {
 #receive-message{
   padding-top: 5px;
   margin-right: 5px;
+  flex:none
 }
 
 .entity-color {
@@ -3019,8 +3020,13 @@ border-radius: 50%;
 
 .footer-bar:hover {
   scrollbar-color: rgba(0, 0, 0, 0.5) #f5f5f5;
+  height: 100px; /* Height on hover */
+
 }
 
+.roster-message-container{
+  display:none
+}
 
 
 }
