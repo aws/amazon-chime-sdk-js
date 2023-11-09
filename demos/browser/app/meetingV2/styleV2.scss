@@ -1840,13 +1840,13 @@ input[type='radio'] {
       text-decoration-line: underline;
     }
     .link {
-      color: #3f4149;
+      color: white;
 
-      font-size: 12px;
+      font-size: 16px;
       font-style: normal;
-      font-weight: 400;
+      font-weight: 600;
       line-height: normal;
-      text-decoration-line: underline;
+      cursor: pointer;
     }
   }
   .card-box {
@@ -2186,6 +2186,10 @@ input[type='radio'] {
     color: none;
   }
 }
+#joining-page > div > div.col-lg-8.col-md-12.col-12 > div.d-flex.justify-content-between.header-row > div > div > ul{
+min-width:230px
+}
+
 @media screen and (max-width: 1024px) {
   .mainBlock {
     padding: 10px;

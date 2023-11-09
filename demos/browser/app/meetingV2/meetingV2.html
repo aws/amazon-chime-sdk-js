@@ -233,10 +233,10 @@
                   </div>
                 </li>
                 <li class="d-flex mt-3">
-                  <a class="dropdown-item">Automated Summaries</a>
+                  <a class="dropdown-item" id="quiz-summaries">Download Summary</a>
                 </li>
                 <li class="d-flex">
-                  <a class="dropdown-item">Saved transcripts</a>
+                  <a class="dropdown-item" id="saved-transcripts">Saved transcripts</a>
                 </li>
                 <li class="d-flex">
                   <a class="dropdown-item">User Profile</a>
@@ -291,7 +291,10 @@
             <p>Schedule</p>
           </div>
         </div>
-
+        <a href="https://teachserv.com" target="_blank"><div class="m-5 alert alert-success alert-dismissible fade show" role="alert">
+          <strong>Want help building a course? 
+          </strong>Check out Teachserv.com and build one for free. Anyone can teach! 
+        </div></a>
 
 
 
@@ -299,12 +302,12 @@
         <div class="quizBlock dashboard_stats" id="full-dash" style="display: none;">
           <div class="d-flex justify-content-between">
               <a class="heading" id="recentQuizTitle">Science: Chapter X</a>
-              <p class="link">
+              <p class="link btn btn-success text-white">
               Download detailed summary
               <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M20.25 10.5V19.5C20.25 19.8978 20.092 20.2793 19.8107 20.5606C19.5294 20.8419 19.1478 21 18.75 21H5.25C4.85218 21 4.47064 20.8419 4.18934 20.5606C3.90804 20.2793 3.75 19.8978 3.75 19.5V10.5C3.75 10.1022 3.90804 9.72062 4.18934 9.43932C4.47064 9.15802 4.85218 8.99998 5.25 8.99998H7.5C7.69891 8.99998 7.88968 9.079 8.03033 9.21965C8.17098 9.3603 8.25 9.55107 8.25 9.74998C8.25 9.94889 8.17098 10.1397 8.03033 10.2803C7.88968 10.421 7.69891 10.5 7.5 10.5H5.25V19.5H18.75V10.5H16.5C16.3011 10.5 16.1103 10.421 15.9697 10.2803C15.829 10.1397 15.75 9.94889 15.75 9.74998C15.75 9.55107 15.829 9.3603 15.9697 9.21965C16.1103 9.079 16.3011 8.99998 16.5 8.99998H18.75C19.1478 8.99998 19.5294 9.15802 19.8107 9.43932C20.092 9.72062 20.25 10.1022 20.25 10.5ZM8.78063 6.53061L11.25 4.06029V12.75C11.25 12.9489 11.329 13.1397 11.4697 13.2803C11.6103 13.421 11.8011 13.5 12 13.5C12.1989 13.5 12.3897 13.421 12.5303 13.2803C12.671 13.1397 12.75 12.9489 12.75 12.75V4.06029L15.2194 6.53061C15.3601 6.67134 15.551 6.7504 15.75 6.7504C15.949 6.7504 16.1399 6.67134 16.2806 6.53061C16.4214 6.38987 16.5004 6.199 16.5004 5.99998C16.5004 5.80096 16.4214 5.61009 16.2806 5.46935L12.5306 1.71935C12.461 1.64962 12.3783 1.5943 12.2872 1.55656C12.1962 1.51882 12.0986 1.49939 12 1.49939C11.9014 1.49939 11.8038 1.51882 11.7128 1.55656C11.6217 1.5943 11.539 1.64962 11.4694 1.71935L7.71937 5.46935C7.57864 5.61009 7.49958 5.80096 7.49958 5.99998C7.49958 6.199 7.57864 6.38987 7.71938 6.5306C7.86011 6.67133 8.05098 6.7504 8.25 6.7504C8.44902 6.7504 8.63989 6.67134 8.78063 6.53061Z"
-                    fill="#3F4149" />
+                    fill="white" />
                 </svg>
               </span>
             </p>
@@ -1279,24 +1282,7 @@
                   </div>
                 </div>
                 <div id="queries-block" class="queries-block tab-sections" style="display: none;">
-                  <textarea id="queries-section" class="queries-section scrollbar-y-design">
-                    <!-- <div class="d-flex">
-                      <p class="pe-3">Maria</p>
-                      <p>Question 2 <span>✋</span></p>
-                    </div> -->
-                    <!-- <h5>I cannot seem to understand the question.</h5>
-                    <div class="customInput">
-                      <input type="text" placeholder="Respond" />
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
-                        <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />
-                        <path
-                          d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472"
-                          stroke="#3F4149" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    </div> -->
-
-                  
-
+                  <!-- <textarea id="queries-section" class="queries-section scrollbar-y-design"> -->
                 </div>
               </div>
               <p id="quiz-timestamp"></p>
