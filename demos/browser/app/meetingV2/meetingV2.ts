@@ -2878,7 +2878,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
             selfID: window.demoMeetingAppInstance.meetingSession.configuration.credentials.attendeeId,
             selfName: window.demoMeetingAppInstance.meetingSession.configuration.credentials.attendeeId.split('#').slice(-1)[0]
           };
-          alert("messageObject : " + JSON.stringify(messageObject));
+          // alert("messageObject : " + JSON.stringify(messageObject));
           window.demoMeetingAppInstance.sendForumMessage(messageObject);
           textAreaSendForumMessage.rows = 1;
           // queries_block.innerHTML += `<div class="list-group receive-message" style="flex: 1 1 auto; overflow-y: auto; border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"><div class="message-bubble-sender">Me</div><div class="message-bubble-self"><p class="markdown">${textAreaSendForumMessage.value.trim()}</p></div></div>`;
@@ -3740,7 +3740,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
         } else {
  
-      alert("Received "+dataMessage.text() + "added senderName to "+ senderName);
+      // alert("Received "+dataMessage.text() + "added senderName to "+ senderName);
       // get userid
       const senderAttendeeId = this.meetingSession.configuration.credentials.attendeeId;
       showForumQuestion(dataMessage.text(),senderAttendeeId, senderName);
