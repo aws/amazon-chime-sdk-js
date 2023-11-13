@@ -1527,7 +1527,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   const targetForm = event.target as HTMLFormElement;
   const username: string = targetForm.username.value;
   const password: string = targetForm.password.value;
-
+  alert("login clicked");
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
@@ -1613,7 +1613,8 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
       body: JSON.stringify({
           timestamp: meetingScheduleTime,
           host_id: userId,
-          meeting_name: meetingName
+          meeting_name: meetingName,
+          duration: 60
       })
   })
   .then(response => response.json())
@@ -1848,72 +1849,6 @@ document.querySelector('#join-view-only')?.addEventListener('click', () => {
 // END DREW LOGIN
 
 // DREW REGISTRATION
-
-// add domcontentloaded event listener to #registerForm
-document.addEventListener('DOMContentLoaded', function() {
-document.querySelector('#registerForm')?.addEventListener('submit', (event: Event) => {
-  event.preventDefault();
-  const loginSpinner = document.getElementById('login-spinner')!;
-  loginSpinner.style.display = 'block';
-
-  const targetForm = event.target as HTMLFormElement;
-  const username: string = targetForm.username.value;
-  const password: string = targetForm.password.value;
-  const email: string = targetForm.email.value;
-  const firstName: string = targetForm.first_name.value;  // Retrieve first name
-  const lastName: string = targetForm.last_name.value;    // Retrieve last name
-  alert(`${username}, ${password}, ${email}, ${firstName}, ${lastName}`);
-  fetch("https://app.larq.ai/api/register", {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-          username: username,
-          password: password,
-          email: email,
-          first_name: firstName,  // Include first name in the request body
-          last_name: lastName     // Include last name in the request body
-      })
-  })
-  .then(response => response.json())
-  .then(data => {
-      if (data.status === 'success') {
-        // loginSpinner.style.display = 'none';
-          alert(data.message);
-    // alert(data.message);
-    console.log('Success:', data);
-    localStorage.setItem('authToken', data.token!);
-    localStorage.setItem('firstName', firstName);
-    localStorage.setItem('lastName', lastName);
-    localStorage.setItem('userId', data.user_id!);
-    localStorage.setItem('data', JSON.stringify(data));
-    // hide #login-spinner
-    document.getElementById('login-spinner')!.style.display = 'none';
-    location.reload();
-
-    // Console log user_id and last_name
-    console.log("User ID:", data.user_id);
-    console.log("Last Name:", data.last_name);
-    // console.log("Dashboard Stats:", data.dashboard_stats);
-
-
-  } else {
-    alert(data.message);
-  }
-  loginSpinner.style.display = 'none';
-  })
-  .catch(error => {
-    loginSpinner.style.display = 'none';
-    // show #incorrect-pass element 
-    // document.getElementById('incorrect-pass')!.style.display = 'block';
-    alert(`Error: ${error}`);
-  });
-
-  })
-
-});
-
 
 
 
@@ -6110,6 +6045,82 @@ function populateQuiz(dataString: string) {
 // FORUM AND IN QUIZ CHAT FUNCTIONS
 
 document.addEventListener('DOMContentLoaded', () => {
+
+// DREW REGISTRATION
+
+const registerButton = document.getElementById('register-button') as HTMLButtonElement;
+const registerForm = document.getElementById('registerForm') as HTMLFormElement;
+const loginSpinner = document.getElementById('login-spinner') as HTMLElement;
+
+if (registerButton && registerForm && loginSpinner) {
+  registerButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    loginSpinner.style.display = 'block';
+
+    // Use 'registerForm' directly instead of 'event.target'
+    const username = registerForm.username.value;
+    const password = registerForm.password.value;
+    const email = registerForm.email.value;
+    const firstName = registerForm.first_name.value;
+    const lastName = registerForm.last_name.value;
+
+
+  fetch("https://app.larq.ai/api/register", {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        username: username,
+        password: password,
+        email: email,
+        first_name: firstName,  // Include first name in the request body
+        last_name: lastName     // Include last name in the request body
+    })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.status === 'success') {
+    // loginSpinner.style.display = 'none';
+    // alert(data.message);
+  // alert(data.message);
+  console.log('Success:', data);
+  localStorage.setItem('authToken', data.token);
+  localStorage.setItem('firstName', firstName);
+  localStorage.setItem('lastName', lastName);
+  localStorage.setItem('userId', data.user_id);
+  localStorage.setItem('data', JSON.stringify(data));
+  // hide #login-spinner
+  document.getElementById('login-spinner').style.display = 'none';
+  location.reload();
+
+  // Console log user_id and last_name
+  console.log("User ID:", data.user_id);
+  console.log("Last Name:", data.last_name);
+  // console.log("Dashboard Stats:", data.dashboard_stats);
+
+
+} else {
+  alert(data.message);
+}
+loginSpinner.style.display = 'none';
+})
+.catch(error => {
+  loginSpinner.style.display = 'none';
+  // show #incorrect-pass element 
+  // document.getElementById('incorrect-pass')!.style.display = 'block';
+  alert(`Error: ${error}`);
+});
+
+});
+}else {
+alert("HELLLLPP");
+console.error("Form or spinner element not found");
+}
+
+// END DREW REGISTRATION
+
+
 
 console.log("Bottom part of script loaded");
 // FUNCTION TO ADD LISTENER TO QUIZFORUM QUESTION
