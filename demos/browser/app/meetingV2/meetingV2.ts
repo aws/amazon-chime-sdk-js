@@ -1656,7 +1656,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
     
 
 
-
+        location.reload();
           // Hide modal if needed
           // document.getElementById('scheduleMeetingModal')!.style.display = 'none';
       } else {
