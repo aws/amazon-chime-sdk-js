@@ -926,7 +926,7 @@ buttonChat?.addEventListener('click', _e => {
 
 
 
-const registerButton = document.getElementById('register') as HTMLButtonElement | null;
+const registerButton = document.getElementById('go-to-register') as HTMLButtonElement | null;
 registerButton?.addEventListener('click', _e => {
   const x = document.getElementById('loginForm');
   const y = document.getElementById('register-container');
@@ -1856,14 +1856,13 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
   const loginSpinner = document.getElementById('login-spinner')!;
   loginSpinner.style.display = 'block';
 
-
-  const targetForm = <HTMLFormElement>event.target;
+  const targetForm = event.target as HTMLFormElement;
   const username: string = targetForm.username.value;
   const password: string = targetForm.password.value;
   const email: string = targetForm.email.value;
   const firstName: string = targetForm.first_name.value;  // Retrieve first name
   const lastName: string = targetForm.last_name.value;    // Retrieve last name
-  {/* alert(`${username}, ${password}, ${email}, ${firstName}, ${lastName}`); */}
+  alert(`${username}, ${password}, ${email}, ${firstName}, ${lastName}`);
   fetch("https://app.larq.ai/api/register", {
       method: 'POST',
       headers: {
@@ -1882,50 +1881,16 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
       if (data.status === 'success') {
         // loginSpinner.style.display = 'none';
           alert(data.message);
-          // document.getElementById('login-container')!.style.display = 'none';
-          // document.getElementById('joining-page')!.style.display = 'block';
-          // localStorage.setItem('firstName', data.first_name!);
-          // localStorage.setItem('lastName', data.last_name!);
-          // localStorage.setItem('email', data.email!);
-          // // reload page
-          // document.querySelector<HTMLInputElement>('#loginForm input[name="username"]')!.value = username;
-          // document.querySelector<HTMLInputElement>('#loginForm input[name="password"]')!.value = password;
-          // document.getElementById('login-container')!.style.display = 'block';
-          // document.getElementById('joining-page')!.style.display = 'none';
-          // document.getElementById('flow-meeting')!.style.display = 'none';
-
-          // PASTED FROM LOGIN
-
-            const base64Credentials = btoa(username + ':' + password);
-
-  fetch("https://app.larq.ai/api/login", {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + base64Credentials  // Set the Authorization header
-      }
-  }).then(response => {
-    if (!response.ok) {
-      return response.text().then(text => {
-        throw new Error(`Server responded with status ${response.status}: ${text}`);
-    });
-}
-    return response.json();
-}).then((data: ResponseData) => {
-  if (data.status === 'success') {
     // alert(data.message);
     console.log('Success:', data);
     localStorage.setItem('authToken', data.token!);
-    localStorage.setItem('firstName', data.first_name!);
-    localStorage.setItem('lastName', data.last_name!);
+    localStorage.setItem('firstName', firstName);
+    localStorage.setItem('lastName', lastName);
     localStorage.setItem('userId', data.user_id!);
     localStorage.setItem('data', JSON.stringify(data));
     // hide #login-spinner
     document.getElementById('login-spinner')!.style.display = 'none';
-    // reload page
-    // location.reload();
-    // document.getElementById('login-container')!.style.display = 'none';
-    // document.getElementById('joining-page')!.style.display = 'block';
+    location.reload();
 
     // Console log user_id and last_name
     console.log("User ID:", data.user_id);
@@ -1944,20 +1909,12 @@ document.querySelector('#registerForm')?.addEventListener('submit', (event: Even
     // document.getElementById('incorrect-pass')!.style.display = 'block';
     alert(`Error: ${error}`);
   });
-          // END LOGIN
-      } else {
-        loginSpinner.style.display = 'none';
-          alert(data.message);
-      }
+
   })
-  .catch(error => {
-      loginSpinner.style.display = 'none';
-      alert('Error occurred: ' + error.message);
-      console.error('Error:', error);
-  });
-});
 
 });
+
+
 
 
 {/* VECTOR BUTTONS */}
