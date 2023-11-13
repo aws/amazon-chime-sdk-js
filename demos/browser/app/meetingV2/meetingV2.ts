@@ -1587,36 +1587,77 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 // after dom content is loaded, add event listener to #scheduleMeetingSubmit
 
 document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () => {
-  //get date and time from datetime-local input #meetingScheduleTime
   const meetingScheduleTime: string = (document.getElementById('meetingScheduleTime') as HTMLInputElement).value;
 
   if (!meetingScheduleTime) {
       alert('Please ensure both date and time are selected.');
-      // prevent any further code from running:
-      stop();
-
-      return;  // exit the function if inputs are missing
+      return;
   }
 
-  // get user_id from local storage
-  let userId = localStorage.getItem('userId');
-  let meeting_name = (document.getElementById('meetingName') as HTMLInputElement).value;
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+      alert('User ID is missing.');
+      return;
+  }
+
+  const meetingName = (document.getElementById('meetingName') as HTMLInputElement).value;
+  // let authToken = localStorage.getItem('authToken');
 
   fetch("https://app.larq.ai/api/scheduleMeeting", {
       method: 'POST',
       headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json' 
+          // Add Authorization header if needed
+          // 'Authorization': `Bearer ${authToken}`
       },
       body: JSON.stringify({
-        'timestamp': meetingScheduleTime,
-        'host_id': userId,
-        'meeting_name':meeting_name
+          timestamp: meetingScheduleTime,
+          host_id: userId,
+          meeting_name: meetingName
       })
   })
   .then(response => response.json())
   .then(data => {
       if (data.status === 'success') {
-          alert(data.message);
+          
+
+        let dataString = localStorage.getItem('data');
+        if (!dataString) {
+            console.error('No data found in localStorage');
+            return;
+        }
+        
+        // Parse the data string into an object
+        let data = JSON.parse(dataString);
+        
+        // Check if 'this_month_meetings' exists in the data
+        if (!data.dashboard_stats || !data.dashboard_stats.this_month_meetings) {
+            console.error('Invalid data structure in localStorage');
+            return;
+        }
+        
+        // Create a new meeting object
+        const newMeeting = {
+          _id: data.meeting_id,
+          host_id: userId,
+          meeting_name: meetingName,
+          timestamp: meetingScheduleTime,
+          // Add other necessary fields here
+      };
+    
+        // Add the new meeting to the 'this_month_meetings' array
+        data.dashboard_stats.this_month_meetings.push(newMeeting);
+    
+        // Convert the updated data object back to a string
+        dataString = JSON.stringify(data);
+    
+        // Store the updated string back in localStorage
+        localStorage.setItem('data', dataString);
+    
+
+
+
+          // Hide modal if needed
           // document.getElementById('scheduleMeetingModal')!.style.display = 'none';
       } else {
           alert(data.message);
