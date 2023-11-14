@@ -648,6 +648,7 @@ export default class DefaultTransceiverController
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const { currentTimestampMs } = clientMetricReport;
     const rtcStatsReport = clientMetricReport.getRTCStatsReport();
+    let receiverReportReceptionTimestampMs: number = 0;
     let currentTotalPacketsSent: number = 0;
     let currentTotalPacketsLost: number = 0;
 
@@ -658,27 +659,38 @@ export default class DefaultTransceiverController
         if (report.type === 'outbound-rtp') {
           currentTotalPacketsSent = report.packetsSent;
         } /* istanbul ignore else */ else if (report.type === 'remote-inbound-rtp') {
+          // Use the timestamp that the receiver report was received on the client side to get a more accurate time
+          // interval for the metrics.
+          receiverReportReceptionTimestampMs = report.timestamp;
           currentTotalPacketsLost = report.packetsLost;
         }
       }
     });
 
-    // Make sure packetsSent is greater than the most recent value
-    // in the history before consuming to avoid divide-by-zero while
-    // calculating loss percent.
+    // Since the timestamp from the server side is only updated when a new receiver report is generated, only add
+    // metrics with new timestamps to our metrics history.
+    //
+    // Also, make sure that the total packets sent is greater than the most recent value in the history before consuming
+    // to avoid divide-by-zero while calculating uplink loss percent.
     if (
-      this.audioMetricsHistory.length > 0 &&
-      currentTotalPacketsSent <=
-        this.audioMetricsHistory[this.audioMetricsHistory.length - 1].totalPacketsSent
+      this.audioMetricsHistory.length === 0 ||
+      (receiverReportReceptionTimestampMs >
+        this.audioMetricsHistory[this.audioMetricsHistory.length - 1].timestampMs &&
+        currentTotalPacketsSent >
+          this.audioMetricsHistory[this.audioMetricsHistory.length - 1].totalPacketsSent)
     ) {
-      return;
+      // Note that although the total packets sent is updated anytime we get the WebRTC stats, we are only adding a new
+      // metric for total packets sent when we receive a new receiver report. We only care about the total packets that
+      // the server was expected to receive at the time that the latest `packetsLost` metric was calculated in order to
+      // do our uplink loss calculation. Therefore, we only record the total packets sent when we receive a new receiver
+      // report, which will give us an estimate of the number of packets that the server was supposed to receive at the
+      // time when the latest `packetsLost` metric was calculated.
+      this.audioMetricsHistory.push({
+        timestampMs: receiverReportReceptionTimestampMs,
+        totalPacketsSent: currentTotalPacketsSent,
+        totalPacketsLost: currentTotalPacketsLost,
+      });
     }
-
-    this.audioMetricsHistory.push({
-      timestampMs: currentTimestampMs,
-      totalPacketsSent: currentTotalPacketsSent,
-      totalPacketsLost: currentTotalPacketsLost,
-    });
 
     // Remove the oldest metric report from our list
     if (this.audioMetricsHistory.length > this.maxAudioMetricsHistory) {
@@ -760,8 +772,9 @@ export default class DefaultTransceiverController
     if (this.audioMetricsHistory.length < 2) {
       return 0;
     }
-    const currentTimestampMs: number = this.audioMetricsHistory[this.audioMetricsHistory.length - 1]
-      .timestampMs;
+    const latestReceiverReportTimestampMs: number = this.audioMetricsHistory[
+      this.audioMetricsHistory.length - 1
+    ].timestampMs;
     const currentTotalPacketsSent: number = this.audioMetricsHistory[
       this.audioMetricsHistory.length - 1
     ].totalPacketsSent;
@@ -770,17 +783,17 @@ export default class DefaultTransceiverController
     ].totalPacketsLost;
 
     // Iterate backwards in the metrics history, from the report immediately preceeding
-    // the latest one, until we find the first metric report that whose timestamp differs
+    // the latest one, until we find the first metric report whose timestamp differs
     // from the latest report by atleast timeWindowMs
     for (let i = this.audioMetricsHistory.length - 2; i >= 0; i--) {
-      if (currentTimestampMs - this.audioMetricsHistory[i].timestampMs >= timeWindowMs) {
+      if (
+        latestReceiverReportTimestampMs - this.audioMetricsHistory[i].timestampMs >=
+        timeWindowMs
+      ) {
         const lossDelta = currentTotalPacketsLost - this.audioMetricsHistory[i].totalPacketsLost;
         const sentDelta = currentTotalPacketsSent - this.audioMetricsHistory[i].totalPacketsSent;
-        let lossPercent = 100 * (lossDelta / sentDelta);
-        /* istanbul ignore if */
-        if (lossPercent < 0) lossPercent = 0;
-        /* istanbul ignore if */ else if (lossPercent > 100) lossPercent = 100;
-        return lossPercent;
+        const lossPercent = 100 * (lossDelta / sentDelta);
+        return Math.max(0, Math.min(lossPercent, 100));
       }
     }
     // If we are here, we don't have enough entries in history

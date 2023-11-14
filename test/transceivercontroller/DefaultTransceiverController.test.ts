@@ -31,6 +31,8 @@ import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStre
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
+const packetsPerSecond = 50;
+
 /**
  * Calls the DefaultTransceiverControllers metricsDidReceive observer method
  * based on the input parameters. This is used to unit test dynamic updates
@@ -61,9 +63,10 @@ function sendMetricReports(
       {
         kind: 'audio',
         type: 'outbound-rtp',
-        packetsSent: i * 50,
+        packetsSent: i * packetsPerSecond,
       },
       {
+        timestamp: i * 1000,
         kind: 'audio',
         type: 'remote-inbound-rtp',
         packetsLost: totalPacketsLost,
@@ -1199,8 +1202,8 @@ describe('DefaultTransceiverController', () => {
       expect(tc['audioMetricsHistory'].length).to.equal(5);
       expect(tc['audioMetricsHistory'][0].timestampMs).to.equal(0);
       expect(tc['audioMetricsHistory'][4].timestampMs).to.equal(4000);
-      expect(tc['audioMetricsHistory'][0].totalPacketsSent).to.equal(0);
-      expect(tc['audioMetricsHistory'][4].totalPacketsSent).to.equal(200);
+      expect(tc['audioMetricsHistory'][0].totalPacketsLost).to.equal(0);
+      expect(tc['audioMetricsHistory'][4].totalPacketsLost).to.equal(0);
       expect(tc['currentNumRedundantEncodings']).to.equal(0);
     });
 
@@ -1233,8 +1236,8 @@ describe('DefaultTransceiverController', () => {
       expect(tc['audioMetricsHistory'].length).to.equal(5);
       expect(tc['audioMetricsHistory'][0].timestampMs).to.equal(0);
       expect(tc['audioMetricsHistory'][4].timestampMs).to.equal(4000);
-      expect(tc['audioMetricsHistory'][0].totalPacketsSent).to.equal(0);
-      expect(tc['audioMetricsHistory'][4].totalPacketsSent).to.equal(200);
+      expect(tc['audioMetricsHistory'][0].totalPacketsLost).to.equal(0);
+      expect(tc['audioMetricsHistory'][4].totalPacketsLost).to.equal(0);
       expect(tc['currentNumRedundantEncodings']).to.equal(0);
     });
 
@@ -1251,8 +1254,8 @@ describe('DefaultTransceiverController', () => {
       // Metric Report with timestamp 0 should now be removed from the list
       expect(tc['audioMetricsHistory'][0].timestampMs).to.equal(1000);
       expect(tc['audioMetricsHistory'][maxAudioMetricsHistory - 1].timestampMs).to.equal(20000);
-      expect(tc['audioMetricsHistory'][0].totalPacketsSent).to.equal(50);
-      expect(tc['audioMetricsHistory'][maxAudioMetricsHistory - 1].totalPacketsSent).to.equal(1000);
+      expect(tc['audioMetricsHistory'][0].totalPacketsLost).to.equal(0);
+      expect(tc['audioMetricsHistory'][maxAudioMetricsHistory - 1].totalPacketsLost).to.equal(0);
       expect(tc['currentNumRedundantEncodings']).to.equal(0);
     });
 
@@ -1607,6 +1610,50 @@ describe('DefaultTransceiverController', () => {
       // as we have completed the hold down time
       expect(tc['currentNumRedundantEncodings']).to.equal(0);
       expect(tc['audioRedEnabled']).to.equal(true);
+    });
+  });
+
+  describe('lossPercent', () => {
+    function getRandomIntInclusive(min: number, max: number): number {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+    }
+
+    function getRandomArbitrary(min: number, max: number): number {
+      return Math.random() * (max - min) + min;
+    }
+
+    it('estimates loss that is close to the actual loss', () => {
+      let startTimestampSecond = 0;
+      let totalPacketsLost = 0;
+
+      for (let i = 0; i < 100; ++i) {
+        // Vary the packet loss update interval between 3 and 7 seconds.
+        const updateIntervalSeconds = getRandomIntInclusive(3, 7);
+        startTimestampSecond += updateIntervalSeconds;
+
+        // Vary the packet loss between 58% and 62%.
+        const packetLossPercent = getRandomArbitrary(0.58, 0.62);
+
+        // Calculate the number of packets lost since the previous report.
+        totalPacketsLost += Math.floor(
+          updateIntervalSeconds * packetsPerSecond * packetLossPercent
+        );
+
+        sendMetricReports(tc, startTimestampSecond, 1, totalPacketsLost);
+
+        // Let some initial reports come in before calculating losses.
+        if (i >= 10) {
+          // Expect the loss for both windows to be around 60%.
+          const lossPercent5sTimewindow = tc['lossPercent'](5000);
+          const lossPercent15sTimewindow = tc['lossPercent'](15000);
+          expect(lossPercent5sTimewindow).to.be.greaterThanOrEqual(60 - 5);
+          expect(lossPercent5sTimewindow).to.be.lessThanOrEqual(60 + 5);
+          expect(lossPercent15sTimewindow).to.be.greaterThanOrEqual(60 - 5);
+          expect(lossPercent15sTimewindow).to.be.lessThanOrEqual(60 + 5);
+        }
+      }
     });
   });
 });
