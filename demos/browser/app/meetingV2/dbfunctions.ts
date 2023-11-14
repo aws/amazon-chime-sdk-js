@@ -196,9 +196,6 @@ function showEventModal(content: string, timestamp: string, id: string, duration
     // }
 
     
-
-
-    
     modal.show();
 }
 function copyToClipboard(text: string, buttonElem: HTMLButtonElement) {
@@ -230,7 +227,6 @@ function copyToClipboard(text: string, buttonElem: HTMLButtonElement) {
 //     });
 //   });
 // });
-
 
 
   const transcriptContainer = document.getElementById("transcript-container");

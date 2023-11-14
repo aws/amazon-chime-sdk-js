@@ -42,7 +42,7 @@
 
     </svg>
         </h1>
-        <form id="loginForm">
+        <form id="loginForm" class="animate__animated animate__fadeIn">
           <div class="txt_field">
               <input type="text" name="username" required>
               <span></span>
@@ -58,14 +58,14 @@
           <div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div>
           <input name="submit" type="Submit" value="Login">
           <div class="signup_link" id="go-to-register">
-              Not a Member ? <b>Signup</b><br>Or
+              Not a Member ? <b id="button-signup">Signup</b><br>Or
                 <a href="#" id="join-view-only" class="form-check-input">
                 <label for="join-view-only" class="form-check-label">Join Meeting As Guest</label></a>
           </div>
       </form>
 
           <!-- Registration Page -->
-<div class="register container" id="register-container" style="display:none">
+<div class="register container animate__animated animate__fadeIn" id="register-container" style="display:none">
     <h2>Register</h2>
       <form id="registerForm">
         <div class="txt_field">
@@ -113,7 +113,7 @@
   <!-- start of joining page - THIS IS THE SECOND PAGE AFTER LOGIN-->
   <div id="joining-page" class="mainBlock" style="display: flex;">
     <div class="row">
-      <div class="col-lg-4 col-md-12 col-12">
+      <div class="col-lg-4 col-md-12 col-12 animate__animated animate__slideInLeft">
         <div class="leftBlock mb-3">
             <div class="card-wrapper">
               <div class="card-box">
@@ -178,7 +178,7 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-8 col-md-12 col-12">
+      <div class="col-lg-8 col-md-12 col-12 animate__animated animate__slideInDown">
         <div class="d-flex justify-content-between header-row">
           <h2 class="title text-white">Hello, <b class="first_name" id="greetingFirstName"></b></h2>
           <div class="dropdown-block">
@@ -188,7 +188,7 @@
                   src="https://storage.googleapis.com/ringledingle/tests/bird.jpg" />
               </div>
 
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-start container mt-5" aria-labelledby="dropdownMenuButton">
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-start container mt-3" aria-labelledby="dropdownMenuButton">
                 <li class="d-flex">
                   <div>
                     <div class="d-flex">
@@ -1309,7 +1309,7 @@
           </div>
         </div>
         <div class="col-8 col-lg-12 col-md-12 order-2 order-lg-2 text-left text-lg-center buttonfooter footer-bar shadow">
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle microphone">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle microphone">
             <div class="iconButton">
               <button id="button-microphone" type="button" title="Toggle microphone">
                 <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1340,7 +1340,7 @@
               <a class="dropdown-item" href="#">Default microphone</a>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle camera">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle camera">
             <div class="iconButton">
               <button id="button-camera" type="button" class="btn btn-success" title="Toggle camera">
                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1361,7 +1361,7 @@
               <a class="dropdown-item" href="#">Default camera</a>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle participants">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle participants">
             <div class="iconButton">
               <button id="button-participants" type="button" title="Toggle participants">
                 <svg width="49" height="49" viewBox="0 0 49 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1375,7 +1375,7 @@
               <p>Participants</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle screenshare">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle screenshare">
             <div class="iconButton">
               <button id="button-content-share" type="button" title="Toggle Screenshare" class="btn-success">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none"
@@ -1420,7 +1420,7 @@
               <input id="content-share-item" type="file">
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle microphone">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle microphone">
             <div class="iconButton">
               <button id="button-live-transcription" title="Toggle live transcription display" data-bs-toggle="button"
                 aria-pressed="false" type="button">
@@ -1442,7 +1442,7 @@
               <p>Open Transcript</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle chat">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle chat">
             <div class="iconButton">
               <button id="button-chat" type="button" title="Toggle chat">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
@@ -1454,7 +1454,7 @@
               <p>Chat</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle quiz">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle quiz">
             <div class="iconButton">
               <button id="quiz-button" class="cancel-button" type="button" title="Toggle Quiz">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
@@ -1469,7 +1469,7 @@
               <p>Create Quiz</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="End Meeting">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="End Meeting">
             <div class="iconButton">
               <button id="button-meeting-leave" type="button" title="End Meeting">
                 <svg xmlns="http://www.w3.org/2000/svg" width="49" height="49" viewBox="0 0 49 49" fill="none">
@@ -1481,7 +1481,7 @@
               <p>Leave Session</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" style="margin:10px 0px;" role="group" aria-label="Toggle Menu">
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle Menu">
             <div class="iconButton">
               <button type="button" id="toggle-menu" title="See More">
                 <svg width="800px" height="800px" viewBox="0 0 24 24" id="three-dots"

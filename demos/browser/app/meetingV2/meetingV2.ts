@@ -437,6 +437,8 @@ export class DemoMeetingApp
     'button-live-connector': 'off'
   };
 
+  isHost = false;
+
   isViewOnly = false;
 
   // feature flags
@@ -1527,7 +1529,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   const targetForm = event.target as HTMLFormElement;
   const username: string = targetForm.username.value;
   const password: string = targetForm.password.value;
-  alert("login clicked");
+  // alert("login clicked");
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
@@ -1621,7 +1623,6 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
   .then(data => {
       if (data.status === 'success') {
           
-
         let dataString = localStorage.getItem('data');
         if (!dataString) {
             console.error('No data found in localStorage');
@@ -1643,6 +1644,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
           host_id: userId,
           meeting_name: meetingName,
           timestamp: meetingScheduleTime,
+          duration: 60
           // Add other necessary fields here
       };
     
@@ -1654,8 +1656,6 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
     
         // Store the updated string back in localStorage
         localStorage.setItem('data', dataString);
-    
-
 
         location.reload();
           // Hide modal if needed
@@ -2832,8 +2832,6 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
     //     }
     //   }
     // });
-
-
 
 
     const buttonMeetingEnd = document.getElementById('button-meeting-end');
@@ -5713,6 +5711,7 @@ const defaultQuizAttempt = {
 function submitQuizAttempts() {
   const url = "https://app.larq.ai/api/MakeQuizAttempt";
   const storedData = localStorage.getItem('QuizAttempts');
+
   const QuizAttempts = storedData ? JSON.parse(storedData) : defaultQuizAttempt;
   console.log("QuizAttempts to sent to larq API:",QuizAttempts);
   QuizAttempts['userID'] = localStorage.getItem('userId') || "";
@@ -5735,7 +5734,6 @@ function submitQuizAttempts() {
       console.log("Quiz attempt submitted successfully.");
   });
 }
-
 
 
 // DREW FUNCTION VARIABLES
@@ -6090,6 +6088,7 @@ if (registerButton && registerForm && loginSpinner) {
   localStorage.setItem('lastName', lastName);
   localStorage.setItem('userId', data.user_id);
   localStorage.setItem('data', JSON.stringify(data));
+  
   // hide #login-spinner
   document.getElementById('login-spinner').style.display = 'none';
   location.reload();

@@ -1218,8 +1218,8 @@ input[type='file']:focus + label {
 
 .iconButton {
   button svg {
-    width: 48px !important;
-    height: 49px !important;
+    width: 40px !important;
+    height: 40px !important;
   }
   button {
     background-color: transparent;
@@ -1229,7 +1229,7 @@ input[type='file']:focus + label {
     color: #3f4149;
     text-align: center;
 
-    font-size: 16px;
+    font-size: 12px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -2675,7 +2675,10 @@ input[type="radio"]:focus {
   #toggle-icons path{
     stroke: #95a5a6;
   }
-
+  #toggle-icons .iconButton {
+    height: 40px;
+    width: 40px;
+  }
 
   .buttonfooter {
     position: fixed;

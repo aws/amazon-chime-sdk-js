@@ -16,7 +16,7 @@ function downloadDivContentAndLocalStorageDataAsTextFile(divId, localStorageKey,
     var storedData = localStorage.getItem(localStorageKey);
 
     // convert the storedData object to a string
-    storedData = JSON.stringify(storedData);
+    storedData = JSON.stringify(JSON.parse(storedData), null, '\n');
     
     // Combine both the div content and the stored data.
     var combinedContent = 'Detailed Summary:\n\n' + divContent + '\n\nLocal Storage Data:\n\n' + storedData;
@@ -69,13 +69,25 @@ document.querySelector('#button-meeting-leave').addEventListener('click', functi
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Success:', data);
-        alert("Transcript saved successfully");
+        console.log('Transcript Saved Success:', data);
         // redirect to the dashboard
-        window.location.href = "https://app.larq.ai/api/SaveTranscript";
+        // window.location.href = "https://app.larq.ai/api/SaveTranscript";
     })
     .catch((error) => {
         console.error('Error:', error);
     });
     });
+
+
+// if the parameter is ?signup=true and the #login-container is visible, then click the #button-signup:
+if (window.location.search.split('signup=')[1] == 'true' && document.getElementById('login-container').style.display == 'block') {
+    document.querySelector('#button-signup').click();
+}
+
+
+
+
+
     });
+
+
