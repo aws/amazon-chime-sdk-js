@@ -778,6 +778,13 @@ export class DemoMeetingApp
       }
     };
 
+    const registerParam:any = new URL(window.location.href).searchParams.get('register');
+    if (registerParam) {
+      document.getElementById('login-container').style.display = 'block';
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('register-container').style.display = 'block';
+    };
+
 
 
 
@@ -1568,7 +1575,11 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 
 
   } else {
-    alert(data.message);
+    loginSpinner.style.display = 'none';
+    // show #incorrect-pass element 
+    document.getElementById('incorrect-pass')!.innerHTML = data.message!;
+    document.getElementById('incorrect-pass')!.style.display = 'block';
+    console.error('Error:', error);
   }
   loginSpinner.style.display = 'none';
   })
@@ -6101,14 +6112,16 @@ if (registerButton && registerForm && loginSpinner) {
 
 
 } else {
-  alert(data.message);
+  document.getElementById('incorrect-pass2')!.innerHTML = data.message;
+  document.getElementById('incorrect-pass2')!.style.display = 'block';
+
 }
 loginSpinner.style.display = 'none';
 })
 .catch(error => {
   loginSpinner.style.display = 'none';
   // show #incorrect-pass element 
-  // document.getElementById('incorrect-pass')!.style.display = 'block';
+  document.getElementById('incorrect-pass2')!.style.display = 'block';
   alert(`Error: ${error}`);
 });
 
