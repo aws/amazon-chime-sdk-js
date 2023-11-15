@@ -1579,7 +1579,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
     // show #incorrect-pass element 
     document.getElementById('incorrect-pass')!.innerHTML = data.message!;
     document.getElementById('incorrect-pass')!.style.display = 'block';
-    console.error('Error:', error);
+    // console.error('Error:', error);
   }
   loginSpinner.style.display = 'none';
   })
@@ -1587,7 +1587,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
     loginSpinner.style.display = 'none';
     // show #incorrect-pass element 
     document.getElementById('incorrect-pass')!.style.display = 'block';
-    console.error('Error:', error);
+    // console.error('Error:', error);
   });
 });
 
