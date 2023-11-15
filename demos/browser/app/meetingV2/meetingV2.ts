@@ -1838,6 +1838,7 @@ document.querySelector('.logout')?.addEventListener('click', logout);
 
 // if #join-view-only is clicked add "viewonly" to authToken, show #main-page and hide #login-container:
 document.querySelector('#join-view-only')?.addEventListener('click', () => {
+  alert("clicked view only");
   localStorage.setItem('authToken', 'viewonly');
   this.isViewOnly = true;
   document.getElementById('login-container')!.style.display = 'none';
