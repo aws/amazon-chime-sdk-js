@@ -429,7 +429,7 @@ export class DemoMeetingApp
     'button-content-share': 'off',
     'button-live-transcription': 'on',
     'button-video-stats': 'off',
-    'button-promote-to-primary': 'off',
+    'button-promote-to-primary': 'on',
     'button-video-filter': 'off',
     'button-video-recording-drop': 'off',
     'button-record-self': 'off',
@@ -443,7 +443,7 @@ export class DemoMeetingApp
 
   // feature flags
   enableWebAudio = false;
-  logLevel = LogLevel.INFO;
+  logLevel = LogLevel.DEBUG;
   videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
 
   audioCapability: string;
@@ -1513,6 +1513,8 @@ if (!localStorage.getItem('authToken')) {
   document.getElementById('joining-page')!.style.display = 'none';
   document.getElementById('flow-meeting')!.style.display = 'none';
   // this.switchToFlow('login-container');
+} else if (localStorage.getItem('authToken') === 'viewonly') {
+  this.isViewOnly = true;
 }
 
 
@@ -1536,7 +1538,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   const targetForm = event.target as HTMLFormElement;
   const username: string = targetForm.username.value;
   const password: string = targetForm.password.value;
-  // alert("login clicked");
+
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
@@ -1544,17 +1546,15 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + base64Credentials  // Set the Authorization header
+          'Authorization': 'Basic ' + base64Credentials
       }
   }).then(response => {
     if (!response.ok) {
-      return response.text().then(text => {
-        throw new Error(`Server responded with status ${response.status}: ${text}`);
-    });
-}
+      throw new Error('Login failed. Please check your username and password.');
+    }
     return response.json();
-}).then((data: ResponseData) => {
-  if (data.status === 'success') {
+  }).then((data: ResponseData) => {
+    if (data.status === 'success') {
     console.log('Success:', data);
     localStorage.setItem('authToken', data.token!);
     localStorage.setItem('firstName', data.first_name!);
@@ -1575,20 +1575,18 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 
 
   } else {
+    // Handle non-successful response
     loginSpinner.style.display = 'none';
-    // show #incorrect-pass element 
-    document.getElementById('incorrect-pass')!.innerHTML = data.message!;
+    document.getElementById('incorrect-pass')!.innerHTML = 'Incorrect username or password.';
     document.getElementById('incorrect-pass')!.style.display = 'block';
-    // console.error('Error:', error);
   }
   loginSpinner.style.display = 'none';
-  })
-  .catch(error => {
-    loginSpinner.style.display = 'none';
-    // show #incorrect-pass element 
-    document.getElementById('incorrect-pass')!.style.display = 'block';
-    // console.error('Error:', error);
-  });
+})
+.catch(error => {
+  loginSpinner.style.display = 'none';
+  document.getElementById('incorrect-pass')!.style.display = 'block';
+  document.getElementById('incorrect-pass')!.innerHTML = error.message;
+});
 });
 
 
@@ -1876,7 +1874,7 @@ async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
 
     
     try {
-        const response = await fetch('https://app.larq.ai/api/vectorize', {
+        const response = await fetch('https://app.larq.ai/api/Vectorize', {
             method: 'POST',
             body: formData,
         });
@@ -1884,7 +1882,7 @@ async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
         const result = await response.json();
         
         // Update the button text with the store_name from the response
-        if (result.status === "success" && result.store_name) {
+        if (result.status === "success" && result.vector_id) {
             // hide spinner uploadPDFBtn
             pdfspinner?.classList.remove('d-none');
             document.getElementById('upload-alert')?.classList.add('d-none');
@@ -5544,9 +5542,8 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           console.error(error);
           const httpErrorMessage =
             'UserMedia is not allowed in HTTP sites. Either use HTTPS or enable media capture on insecure sites.';
-          (document.getElementById(
-            'failed-meeting'
-          ) as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
+          (document.getElementById('failed-meeting') as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
+
           (document.getElementById('failed-meeting-error') as HTMLDivElement).innerText =
             window.location.protocol === 'http:' ? httpErrorMessage : error.message;
           this.switchToFlow('flow-failed-meeting');

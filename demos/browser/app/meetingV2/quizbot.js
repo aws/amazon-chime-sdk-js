@@ -4,6 +4,9 @@
 // import 'vuesax/dist/vuesax.css'
 // Vue.use(Vuesax)
 
+
+
+
 // on domcontentloaded
 document.addEventListener('DOMContentLoaded', function() {
 console.log("quizbot.js loaded");
