@@ -416,6 +416,7 @@ export class DemoMeetingApp
   }
 
 
+
   contentShare: ContentShareManager | undefined = undefined;
 
   cameraDeviceIds: string[] = [];
@@ -437,7 +438,6 @@ export class DemoMeetingApp
     'button-live-connector': 'off'
   };
 
-  isHost = false;
 
   isViewOnly = false;
 
@@ -482,6 +482,8 @@ export class DemoMeetingApp
   meetingSessionPOSTLogger: POSTLogger;
   meetingEventPOSTLogger: POSTLogger;
 
+  meetingHostId: string | null = null;  // Store the current host ID
+
   hasChromiumWebRTC: boolean = this.defaultBrowserBehavior.hasChromiumWebRTC();
 
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
@@ -521,6 +523,65 @@ export class DemoMeetingApp
   videoFxConfig: VideoFxConfig = this.DEFAULT_VIDEO_FX_CONFIG;
 
   meetingLogger: Logger | undefined = undefined;
+
+
+
+
+  // Drew Host paste
+  
+  // Method for the host to remove an attendee
+  async removeAttendee(attendeeId: string): Promise<void> {
+    if (this.isHost()) {
+      try {
+        await this.deleteAttendee(this.meeting, attendeeId);
+        this.log(`Host has removed attendee: ${attendeeId}`);
+      } catch (error) {
+        this.log(`Failed to remove attendee: ${error}`);
+      }
+    } else {
+      this.log('Only the host can remove attendees');
+    }
+  }
+  
+  // Method to determine if the current user is the host
+  isHost(): boolean {
+    return this.meetingSession.configuration.credentials.attendeeId === this.meetingHostId;
+  }
+  
+  // Method to pass host privileges to another attendee
+  passHostPrivileges(newHostId: string): void {
+    if (this.isHost()) {
+      this.meetingHostId = newHostId;
+      // Pass host-related data to other attendees, such as through data messages
+      // this.audioVideo?.realtimeSendDataMessage(...)
+      this.log(`Host privileges passed to attendee: ${newHostId}`);
+    } else {
+      this.log('Only the host can pass host privileges');
+    }
+  }
+  
+  // Create a quiz by the host
+  async createQuiz(): Promise<void> {
+    if (this.isHost()) {
+      // Logic to create and present a quiz...
+      this.log('Host is creating a quiz');
+      // You may also use realtimeSendDataMessage to communicate the quiz creation to other attendees
+    } else {
+      this.log('Only the host can create a quiz');
+    }
+  }
+  
+  // Add a handler to the onDataMessage event to listen for host transfer requests
+  setupHostTransferHandler(): void {
+    this.audioVideo.realtimeSubscribeToReceiveDataMessage('transferHost', (dataMessage: DataMessage) => {
+      const messageData = JSON.parse(dataMessage.text());
+      if (messageData.action === 'transferHost' && this.isHost()) {
+        this.passHostPrivileges(messageData.newHostId);
+      }
+    });
+  }
+  // END DREW HOST PASTE
+
 
   // If you want to make this a repeatable SPA, change this to 'spa'
   // and fix some state (e.g., video buttons).
@@ -826,6 +887,7 @@ export class DemoMeetingApp
 
 
 
+
     // SEND QUIZBOT FORM TO USERS DREW SEND
 
     const buttonPublishQuiz = document.getElementById('publish-quiz-button') as HTMLButtonElement;
@@ -1053,10 +1115,16 @@ updateBodyBackgroundColor();
     // BEGIN QUIZBOT
     
     const submitQuizBot = document.getElementById('submit-quiz') as HTMLButtonElement;
-    submitQuizBot.addEventListener(
-      'click',
-      async (): Promise<void> => {
+    submitQuizBot.addEventListener('click', async (): Promise<void> => {
 
+
+      if (this.isHost()){
+        console.log("You're are host, you can create Quiz!");
+      }
+      else{
+        console.log("You're not host, you can't create Quiz!");
+        return;
+      }
         // STEP 1: CONFIGURATION FORM
         const create_quiz = document.getElementById('create-quiz');
         var generating_quiz = document.getElementById('generating-quiz');
@@ -1407,8 +1475,24 @@ updateBodyBackgroundColor();
         const quizButton = document.getElementById('quiz-button');
 
         quizButton?.addEventListener('click', function() {
-          // this.toggleButton('quiz-button');
+          if (window.demoMeetingAppInstance.isHost()){
+            console.log("You're are host, you can create Quiz!");
+          }
+          else{
+            console.log("You're not host, you can't create Quiz!");
+
+            // show #create-quiz-not-host
+            const create_quiz_not_host = document.getElementById('create-quiz-not-host');
+            create_quiz_not_host.style.display = 'block';
+            
+
+            return;
+          }
+
           if (x) {
+
+
+
               const create_quiz = document.getElementById('create-quiz');
 
               console.log('button-quizbot');
@@ -5287,6 +5371,10 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
   audioVideoDidStart(): void {
     this.log('session started');
+     // Assign the host ID if not already set (e.g., to the current user's attendee ID)
+     if (!this.meetingHostId) {
+      this.meetingHostId = this.meetingSession.configuration.credentials.attendeeId;
+    }
   }
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
@@ -6221,11 +6309,14 @@ if (!messagingContainer) {
 
 
 
-
-
 //     }
 //   }
 // });
 
+
+
+
+
+// 
 
 });
