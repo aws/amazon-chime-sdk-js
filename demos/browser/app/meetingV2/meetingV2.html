@@ -1,3 +1,6 @@
+<!-- APPLICATION BUILT BY DOLPHIN STUDIOS 2023 -->
+<!-- dolphinstudios.co -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,8 +21,8 @@
 
   <!-- END TEST -->
     <div class="center">
-        <h1>Welcome to         
-    <svg viewbox="0 0 100 20" id="larqFlow">
+        <h1 class="text-white">Welcome to         
+    <!-- <svg viewbox="0 0 100 20" id="larqFlow">
       <defs>
         <linearGradient id="gradient">
           <stop color="#000"/>
@@ -40,66 +43,58 @@
       <text text-anchor="middle" x="50" y="15" font-size="17" fill="url(#wave)"  fill-opacity="1">LARQ</text>
       <text text-anchor="middle" x="50" y="15" font-size="17" fill="#7126d9" fill-opacity="0.6">LARQ</text>
 
-    </svg>
+    </svg> -->
+
+    <img src="https://framerusercontent.com/images/WYMAEVsumDQ1avAqUxdNC9tfHwQ.png" class="w-100">
         </h1>
-        <form id="loginForm" class="animate__animated animate__fadeIn">
-          <div class="txt_field p-1">
-              <input type="text" name="username" required>
-              <span></span>
-              <label>Username</label>
-          </div>
-          <div class="txt_field p-1">
-              <input type="password" name="password" required>
-              <span></span>
-              <label>Password</label>
-          </div>
-          <!-- add spinner -->
-          <div class="pass" id="incorrect-pass" style="display:none"><label>User or Password is incorrect. Try again.</label></div>
-          <div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div>
-          <input name="submit" type="Submit" value="Login">
-          <div class="signup_link" id="go-to-register">
-              Not a Member ? <b id="button-signup">Signup</b><br>Or
-                <a href="#" id="join-view-only" class="form-check-input">
-                <label for="join-view-only" class="form-check-label">Join Meeting As Guest</label></a>
-          </div>
-      </form>
+        <form id="loginForm" class="animate__animated animate__fadeIn"><div class="txt_field p-1 color-white"><input name="username" required="" style="
+          color: white;
+      "> <span class="text-white"></span> <label class="text-white">Username</label></div><div class="txt_field p-1 text-white"><input type="password" name="password" required=""> <span></span> <label class="text-white">Password</label></div><div class="pass" id="incorrect-pass" style="display:none"><label>User or Password is incorrect. Try again.</label></div><div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div><input name="submit" type="Submit" value="Login" style="
+          font-weight: 600;
+          font-size: 19px;
+      "><div class="signup_link" id="go-to-register">Not a Member ? <b id="button-signup">Signup</b><br>Or <a href="#" id="join-view-only" class="form-check-input" style="
+          background: none;
+          padding: 5px;
+          font-weight: 800;
+          border: none;
+      "><label for="join-view-only" class="form-check-label">Join Meeting As Guest</label></a></div></form>
 
           <!-- Registration Page -->
 <div class="register container animate__animated animate__fadeIn" id="register-container" style="display:none">
-    <h2 class="p-3">Register</h2>
+    <h2 class="p-3 text-white">Register</h2>
       <form id="registerForm">
         <div class="txt_field p-1">
             <input type="text" name="username" required>
             <span></span>
-            <label>Username</label>
+            <label class="text-white">Username</label>
         </div>
         <div class="txt_field p-1">
             <input type="password" name="password" required>
             <span></span>
-            <label>Password</label>
+            <label class="text-white">Password</label>
         </div>
         <div class="txt_field p-1">
             <input type="email" name="email" required>
             <span></span>
-            <label>Email</label>
+            <label class="text-white">Email</label>
         </div>
         <div class="txt_field p-1">
           <input type="text" name="first_name">
           <span></span>
-          <label>First Name (Optional)</label>
+          <label class="text-white">First Name (Optional)</label>
       </div>
       <div class="txt_field p-1">
           <input type="text" name="last_name">
           <span></span> 
-          <label>Last Name (Optional)</label>
+          <label class="text-white">Last Name (Optional)</label>
       </div>
 
       <button id="register-button" class="btn btn-success w-100" value="Register">Register</button>
-        <div class="login_link" id="login">
-            Already a Member? <a href="#">Login</a>
+        <div class="login_link text-white" id="login">
+            Already a Member? <a href="#" class="text-white">Login</a>
         </div>
       </form>
-      <div class="pass" id="incorrect-pass2" style="display:none"><label>User or Password is incorrect. Try again.</label></div>
+      <div class="pass text-white" id="incorrect-pass2" style="display:none"><label>User or Password is incorrect. Try again.</label></div>
 
 </div>
 
@@ -181,7 +176,7 @@
       </div>
       <div class="col-lg-8 col-md-12 col-12 animate__animated animate__slideInDown">
         <div class="d-flex justify-content-between header-row">
-          <h2 class="title text-white">Hello, <b class="first_name" id="greetingFirstName"></b></h2>
+          <h2 class="title text-white mx-2">Hello, <b class="first_name" id="greetingFirstName"></b></h2>
           <div class="dropdown-block">
             <div class="btn-group">
               <div class="profileAvater" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -374,7 +369,7 @@
           </h1>
 
           <div class="collapse" id="collapseExample">
-            <div class="card card-body p-3">
+            <div class="card card-body p-3" id="previous-quizzes">
               No previous quizzes yet. <a href="https://larq.ai/" style="text-decoration: none;">Create a quiz on Larq</a> or join a meeting to create a new quiz.
             </div>
           </div>          

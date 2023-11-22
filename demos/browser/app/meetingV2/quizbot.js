@@ -88,6 +88,40 @@ if (window.location.search.split('signup=')[1] == 'true' && document.getElementB
 }
 
 
+// GET QUIZZES
+
+const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
+if (!userId) {
+    console.error('No userId found in localStorage');
+    return;
+}
+
+fetch(`https://app.larq.ai/api/getQuizzes?user_id=${userId}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            updateQuizzes(data.message);
+        } else {
+            console.error('Failed to fetch quizzes');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+
+function updateQuizzes(quizzes) {
+const quizzesDiv = document.getElementById('previous-quizzes');
+if (quizzes.length === 0) {
+    quizzesDiv.innerHTML = 'No previous quizzes yet.';
+    return;
+}
+
+quizzesDiv.innerHTML = ''; // Clear existing content
+quizzes.forEach(quiz => {
+    const quizElement = document.createElement('div');
+    quizElement.className = 'quiz';
+    quizElement.textContent = quiz.title; // Assuming each quiz has a 'title' property
+    quizzesDiv.appendChild(quizElement);
+});
+};
 
 
 

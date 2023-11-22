@@ -503,6 +503,7 @@ a:hover {
 }
 html {
   height: 100%;
+  background-color: black;
 }
 
 body {
@@ -518,7 +519,8 @@ body {
   -webkit-box-pack: center;
   justify-content: center;
   // background-color: #f5f5f5;
-  background-color: #1e1e1e;
+  // background-color: #1e1e1e;
+  background-color: black;
 }
 
 // svg {
@@ -1574,7 +1576,7 @@ input[type='radio'] {
   .card-box .card {
     width: 90%;
     border-radius: 48px;
-    background-image: url('https://storage.googleapis.com/ringledingle/tests/larq-dash.png');
+    background-image: url("https://dolphinstudios.co/wp-content/uploads/2023/03/HD-wallpaper-purple-creative-mesh-purple-creative-background-network-texture-art-purple-background-768x480.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -1857,7 +1859,7 @@ input[type='radio'] {
   .card-box .card {
     width: 100%;
     border-radius: 22px 22px 0px 0px;
-    background-image: url('https://storage.googleapis.com/ringledingle/tests/larq-dash.png');
+    background-image: url("https://dolphinstudios.co/wp-content/uploads/2023/03/HD-wallpaper-purple-creative-mesh-purple-creative-background-network-texture-art-purple-background-768x480.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -2190,6 +2192,14 @@ input[type='radio'] {
 min-width:230px
 }
 
+#join-view-only{
+  background: none;
+    padding: 5px;
+    font-weight: 800;
+    border: none;
+}
+
+
 @media screen and (max-width: 1024px) {
   .mainBlock {
     padding: 10px;
@@ -2409,7 +2419,7 @@ input[type="Submit"]:hover{
 @import url(https://fonts.googleapis.com/css?family=Cabin+Condensed);
 
 #login-container {
-  background: #ffffff;
+  background: #1e1e1e;
   background-size:cover;
   font-family: 'Cabin Condensed', sans-serif;
   display:flex;
@@ -2434,6 +2444,9 @@ input[type="Submit"]:hover{
 #login-container svg{font-weight:bold;max-width:600px;height:100%;}
 #larqFlow{
   min-width: 300px;
+}
+#login-container .center{
+  background-color: #1e1e1e;
 }
 
 

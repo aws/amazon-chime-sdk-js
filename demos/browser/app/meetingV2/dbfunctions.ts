@@ -300,15 +300,6 @@ document.addEventListener('click', (e) => {
 
 
 
-
-
-
-
-
-
-
-
-
 });
 
 // ********** VUE CODE **********
