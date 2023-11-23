@@ -166,7 +166,6 @@ function uploadPDF(pdfFile, userId) {
 
             // make cancelBtn visible by removing the 'd-none' class:
             document.getElementById('cancelBtn').classList.remove('d-none');
-
             uploadBtn.classList.add('btn-outline-success');
             localStorage.setItem('storeName', result.store_name);
             localStorage.setItem('vector_id', result.vector_id);
@@ -174,8 +173,10 @@ function uploadPDF(pdfFile, userId) {
         } else {
             storeName.innerText = result.message;
             storeName.classList.remove('d-none');
+            storeName.classList.remove('alert-success');
+            storeName.classList.add('alert-warning');
             uploadBtn.textContent = "Upload";
-            uploadBtn.classList.add('btn-outline-danger');
+            uploadBtn.classList.add('btn-outline-warning');
         }
     })
     .catch(error => {
@@ -183,17 +184,30 @@ function uploadPDF(pdfFile, userId) {
         pdfspinner.classList.add('d-none');
         choosePDFBtn.disabled = false;
         uploadBtn.disabled = false;
-        storeName.innerText = "Error uploading file";
+        storeName.innerText = "Error uploading file" + error;
+        storeName.classList.remove('alert-success');
+        storeName.classList.add('alert-danger');
         storeName.classList.remove('d-none');
+        uploadBtn.classList.add('btn-outline-danger');
     });
 }
 
 document.getElementById('pdfInput').addEventListener('change', function() {
     const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.classList.remove('d-none');
     if (this.files && this.files[0]) {
         uploadBtn.disabled = false;
+        uploadBtn.classList.remove('btn-outline-success');
+        uploadBtn.classList.add('btn-outline-primary');
+        // put the name of the pdf in <p class="text-sm d-none" id="pdf-name"></p>
+        document.getElementById('pdf-name').innerText = this.files[0].name;
+        document.getElementById('pdf-name').classList.remove('d-none');
+        
     } else {
         uploadBtn.disabled = true;
+        uploadBtn.classList.add('btn-outline-warning');
+        uploadBtn.classList.remove('btn-outline-primary');
+
     }
 });
 
@@ -210,7 +224,6 @@ document.getElementById('cancelBtn').addEventListener('click', function() {
     // Remove the vectorID from localStorage
     localStorage.removeItem('vector_id');
 
-    this.disabled = true;
 
 });
 
