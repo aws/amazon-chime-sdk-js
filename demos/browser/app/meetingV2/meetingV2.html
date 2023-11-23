@@ -49,7 +49,7 @@
         </h1>
         <form id="loginForm" class="animate__animated animate__fadeIn"><div class="txt_field p-1 color-white"><input name="username" required="" style="
           color: white;
-      "> <span class="text-white"></span> <label class="text-white">Username</label></div><div class="txt_field p-1 text-white"><input type="password" name="password" required=""> <span></span> <label class="text-white">Password</label></div><div class="pass" id="incorrect-pass" style="display:none"><label>User or Password is incorrect. Try again.</label></div><div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div><input name="submit" type="Submit" value="Login" style="
+      "> <span class="text-white"></span> <label class="text-white">Username</label></div><div class="txt_field p-1 text-white"><input type="password" name="password" required="" class="text-white"> <span></span> <label class="text-white">Password</label></div><div class="pass" id="incorrect-pass" style="display:none"><label>User or Password is incorrect. Try again.</label></div><div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div><input name="submit" type="Submit" value="Login" style="
           font-weight: 600;
           font-size: 19px;
       "><div class="signup_link" id="go-to-register">Not a Member ? <b id="button-signup">Signup</b><br>Or <a href="#" id="join-view-only" class="form-check-input" style="
@@ -98,7 +98,7 @@
 
 </div>
 
-                <div class="spinner-border p-4 position-absolute top-50 end-50" role="status" id="login-spinner" style="display:none">
+                <div class="spinner-border text-success p-4 position-absolute top-50 end-50" role="status" id="login-spinner" style="display:none">
             <span class="visually-hidden">Loading...</span>
           </div>
 
@@ -393,7 +393,7 @@
   </div> -->
 
   <!-- Initial meeting authentication screen with meeting and name inputs -->
-  <div id="main-page" class="main-page" style="display: none;">
+  <div id="main-page" class="main-page h-100" style="display: none;">
     <div id="flow-authenticate" class="flow text-center p-2 align-items-center flow text-center p-2" style="margin-top: 139px;">
       <div class="text-muted" style="position:fixed;right:3px;bottom:3px">Copyright ©2023 Larq.ai</div>
       <div class="container">
@@ -1006,9 +1006,9 @@
         <div id="tile-transcript-container" class="d-flex flex-column  my-4 my-sm-0 h-100"
           style="overflow-y: scrolll;width: 100%;">
           <div id="tile-area" class="v-grid"></div>
-          <div id="transcript-container" class="transcript-container scrollbar-new-design pb-5 animate__animated animate__slideInUp" style="display:none">
+          <div id="transcript-container" class="transcript-container scrollbar-new-design pb-5 animate__animated animate__slideInUp mb-5" style="display:none">
    
-            <div class="d-flex justify-content-center mt-3 mb-3" id="transcription-button">
+            <div class="d-flex justify-content-center mt-3 mb-3 pt-2" id="transcription-button">
               <svg xmlns="http://www.w3.org/2000/svg" width="33" height="31" viewBox="0 0 33 31" fill="none">
                 <g filter="url(#filter0_d_281_2347)">
                   <path
@@ -1114,17 +1114,21 @@
                           <div class="input-group mb-3">
                             <p>(Optional) Upload a PDF of your textbook.</p>
                               <div class=" m-2">
-                                  <input type="file" class="custom-file-input" id="pdfInput">
-                                  <label class="btn btn-outline-primary" for="pdfInput">Choose PDF</label>
+                                <input type="file" class="custom-file-input" id="pdfInput" accept=".pdf">
+                                <label class="btn btn-outline-primary" for="pdfInput">Choose PDF</label>
                               </div>
                               <div class="input-group-append m-2">
-                                  <button class="btn btn-outline-secondary" type="button" id="uploadBtn">Upload</button>
+                                  <button class="btn btn-outline-secondary d-none" type="button" id="uploadBtn">Upload</button>
                               </div>
                               <div class="d-none alert alert-warning p-2 text-center col-12" role="alert" id="pdf-alert">
                                 Please select a PDF first.
                                 </div>
                                 <div class="d-none alert alert-success p-2 text-center col-12" role="alert" id="store-name">
                                   </div>
+                                  <div id="pdfspinner" class="spinner-border text-success text-primary d-none" role="status">
+                                    <span class="sr-only">Loading</span>
+                                  </div>
+                                  <button id="cancelBtn" class="btn btn-outline-warning d-none p-2">Cancel</button>                                  
                           </div>
                   </div>
               </div>

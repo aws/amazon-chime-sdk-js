@@ -9,6 +9,10 @@
 
 // on domcontentloaded
 document.addEventListener('DOMContentLoaded', function() {
+// BEGIN DOMCONTENTLOADED
+
+
+
 console.log("quizbot.js loaded");
 // Function to download content inside a div as a text file.
 function downloadDivContentAndLocalStorageDataAsTextFile(divId, localStorageKey, filename) {
@@ -125,9 +129,117 @@ quizzes.forEach(quiz => {
 
 
 
+// VECTOR UPLOAD FUNCTION
+function uploadPDF(pdfFile, userId) {
+    const formData = new FormData();
+    formData.append('pdf', pdfFile);
+
+    const pdfspinner = document.getElementById('pdfspinner');
+    const choosePDFBtn = document.getElementById('pdfInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const storeName = document.getElementById('store-name');
+
+    pdfspinner.classList.remove('d-none');
+    choosePDFBtn.disabled = true;
+    uploadBtn.disabled = true;
+
+    fetch('https://app.larq.ai/api/Vectorize', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'user_id': userId
+        }
+    })
+    .then(response => response.json())
+    .then(result => {
+        pdfspinner.classList.add('d-none');
+        choosePDFBtn.disabled = false;
+        uploadBtn.disabled = false;
+
+        if (result.status === "success") {
+            storeName.innerText = result.store_name;
+            storeName.classList.remove('d-none');
+            uploadBtn.textContent = "Uploaded";
+            uploadBtn.classList.remove('btn-outline-danger');
+            uploadBtn.classList.add('btn-outline-success');
+            uploadBtn.classList.remove('d-none');
+
+            // make cancelBtn visible by removing the 'd-none' class:
+            document.getElementById('cancelBtn').classList.remove('d-none');
+
+            uploadBtn.classList.add('btn-outline-success');
+            localStorage.setItem('storeName', result.store_name);
+            localStorage.setItem('vector_id', result.vector_id);
+
+        } else {
+            storeName.innerText = result.message;
+            storeName.classList.remove('d-none');
+            uploadBtn.textContent = "Upload";
+            uploadBtn.classList.add('btn-outline-danger');
+        }
+    })
+    .catch(error => {
+        console.error("Error uploading PDF:", error);
+        pdfspinner.classList.add('d-none');
+        choosePDFBtn.disabled = false;
+        uploadBtn.disabled = false;
+        storeName.innerText = "Error uploading file";
+        storeName.classList.remove('d-none');
+    });
+}
+
+document.getElementById('pdfInput').addEventListener('change', function() {
+    const uploadBtn = document.getElementById('uploadBtn');
+    if (this.files && this.files[0]) {
+        uploadBtn.disabled = false;
+    } else {
+        uploadBtn.disabled = true;
+    }
+});
+
+document.getElementById('cancelBtn').addEventListener('click', function() {
+    const storeName = document.getElementById('store-name');
+    const uploadBtn = document.getElementById('uploadBtn');
+
+    // Clear the success message and reset the upload button
+    storeName.innerText = '';
+    storeName.classList.add('d-none');
+    uploadBtn.textContent = 'Upload';
+    uploadBtn.classList.remove('btn-outline-success', 'btn-success');
+    document.getElementById('cancelBtn').classList.add('d-none');
+    // Remove the vectorID from localStorage
+    localStorage.removeItem('vector_id');
+
+    this.disabled = true;
+
+});
 
 
+document.getElementById('uploadBtn').addEventListener('click', function() {
+    const pdfFile = document.getElementById('pdfInput').files[0];
+    const userId = localStorage.getItem('userId');
+    const pdfalert = document.getElementById('pdf-alert');
 
+    if (pdfFile && userId) {
+        uploadPDF(pdfFile, userId)
+            .then(response => {
+                console.log(response);
+                this.classList.add('btn-success');
+            })
+            .catch(error => {
+                console.error(error);
+                this.classList.add('btn-danger');
+                pdfalert.classList.remove('d-none');
+            });
+    } else {
+        console.warn("Please select a PDF file first. userId:", userId);
+        this.classList.add('btn-danger');
+        pdfalert.classList.remove('d-none');
+    }
+});
+
+
+// END DOMCONTENTLOADED
     });
 
 

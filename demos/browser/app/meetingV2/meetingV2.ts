@@ -1148,10 +1148,10 @@ updateBodyBackgroundColor();
             transcriptData.num_questions = selectedNumber;
             console.log('selectedNumber:', selectedNumber);
         }
-        let vectorID = localStorage.getItem('vectorID')
-        if (vectorID) {
-            transcriptData.vector = vectorID;
-            console.log('vector:', vectorID);
+        let vector_id = localStorage.getItem('vector_id')
+        if (vector_id) {
+            transcriptData.vector_id = vector_id;
+            console.log('vector_id:', vector_id);
         }
 
         let userID = JSON.parse(localStorage.getItem('data')).user_id;
@@ -1620,7 +1620,9 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   loginSpinner.style.display = 'block';
 
   const targetForm = event.target as HTMLFormElement;
-  const username: string = targetForm.username.value;
+  const username: string = targetForm.username.value.toLowerCase();
+  // take the lowercase of the username
+
   const password: string = targetForm.password.value;
 
   // Convert username and password to base64
@@ -1946,78 +1948,78 @@ document.querySelector('#join-view-only')?.addEventListener('click', () => {
 
 
 
-{/* VECTOR BUTTONS */}
+// {/* VECTOR BUTTONS */}
 
-async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
-    const formData = new FormData();
-    formData.append('pdf', pdfFile);
-    formData.append('user_id', userId);
-    // show spinner #uploadPDFBtn
-    const pdfspinner = document.getElementById('pdfspinner');
-    pdfspinner?.classList.add('d-none');
+// async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
+//     const formData = new FormData();
+//     formData.append('pdf', pdfFile);
+//     formData.append('user_id', userId);
+//     // show spinner #uploadPDFBtn
+//     const pdfspinner = document.getElementById('pdfspinner');
+//     pdfspinner?.classList.add('d-none');
 
     
-    try {
-        const response = await fetch('https://app.larq.ai/api/Vectorize', {
-            method: 'POST',
-            body: formData,
-        });
+//     try {
+//         const response = await fetch('https://app.larq.ai/api/Vectorize', {
+//             method: 'POST',
+//             body: formData,
+//         });
         
-        const result = await response.json();
+//         const result = await response.json();
         
-        // Update the button text with the store_name from the response
-        if (result.status === "success" && result.vector_id) {
-            // hide spinner uploadPDFBtn
-            pdfspinner?.classList.remove('d-none');
-            document.getElementById('upload-alert')?.classList.add('d-none');
-            const uploadBtn = document.getElementById('uploadBtn');
-            const storeName = document.getElementById('store-name');
-            if (uploadBtn) {
-                uploadBtn.textContent = result.store_name;
-                uploadBtn.classList.add('btn btn-outline-success');
-                storeName.innerText = result.store_name;
+//         // Update the button text with the store_name from the response
+//         if (result.status === "success" && result.vector_id) {
+//             // hide spinner uploadPDFBtn
+//             pdfspinner?.classList.remove('d-none');
+//             document.getElementById('upload-alert')?.classList.add('d-none');
+//             const uploadBtn = document.getElementById('uploadBtn');
+//             const storeName = document.getElementById('store-name');
+//             if (uploadBtn) {
+//                 uploadBtn.textContent = result.store_name;
+//                 uploadBtn.classList.add('btn btn-outline-success');
+//                 storeName.innerText = result.store_name;
                 
-            }
-            localStorage.setItem('storeName', result.store_name);
-            localStorage.setItem('vectorID', result.vector);
-        }
+//             }
+//             localStorage.setItem('storeName', result.store_name);
+//             localStorage.setItem('vectorID', result.vector);
+//         }
         
-        return result;
-    } catch (error) {
-        // hide spinner 
-        pdfspinner?.classList.remove('d-none');
-        console.error("Error uploading PDF:", error);
-        throw error;
-    }
-}
+//         return result;
+//     } catch (error) {
+//         // hide spinner 
+//         pdfspinner?.classList.remove('d-none');
+//         console.error("Error uploading PDF:", error);
+//         throw error;
+//     }
+// }
 
-// Add event listener to the upload button
-document.getElementById('uploadBtn')?.addEventListener('click', () => {
-    const pdfFile = (document.querySelector('#pdfInput') as HTMLInputElement).files![0];
-    const userId = localStorage.getItem('userId');
-    const uploadBtn = document.getElementById('uploadBtn');
+// // Add event listener to the upload button
+// document.getElementById('uploadBtn')?.addEventListener('click', () => {
+//     const pdfFile = (document.querySelector('#pdfInput') as HTMLInputElement).files![0];
+//     const userId = localStorage.getItem('userId');
+//     const uploadBtn = document.getElementById('uploadBtn');
 
 
-    if (pdfFile && userId) {
-        uploadPDF(pdfFile, userId)
-            .then(response => {
-                console.log(response);
-                uploadBtn.classList.add('btn-success');
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    } else {
-        console.warn("Please select a PDF file first. userId:", userId);
-        // make button glow and under it put the error:
-        const pdfalert = document.getElementById('pdf-alert');
-        uploadBtn?.classList.add('btn-danger');
-        uploadBtn?.classList.add('btn');
-        uploadBtn?.classList.add('text-white');
-        pdfalert?.classList.remove('d-none');
+//     if (pdfFile && userId) {
+//         uploadPDF(pdfFile, userId)
+//             .then(response => {
+//                 console.log(response);
+//                 uploadBtn.classList.add('btn-success');
+//             })
+//             .catch(error => {
+//                 console.error(error);
+//             });
+//     } else {
+//         console.warn("Please select a PDF file first. userId:", userId);
+//         // make button glow and under it put the error:
+//         const pdfalert = document.getElementById('pdf-alert');
+//         uploadBtn?.classList.add('btn-danger');
+//         uploadBtn?.classList.add('btn');
+//         uploadBtn?.classList.add('text-white');
+//         pdfalert?.classList.remove('d-none');
 
-    }
-});
+//     }
+// });
 
 
 
