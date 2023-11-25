@@ -1481,6 +1481,7 @@ updateBodyBackgroundColor();
           }
           else{
             console.log("You're not host, you can't create Quiz!");
+            alert("You're not host, you can't create Quiz!");
 
             // show #create-quiz-not-host
             const create_quiz_not_host = document.getElementById('create-quiz-not-host');

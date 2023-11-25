@@ -261,9 +261,6 @@ document.getElementById('joinButton').addEventListener('click', function(e) {
     handleJoinAction();
 });
 
-
-
-
 // END DOMCONTENTLOADED
     });
 
@@ -291,12 +288,15 @@ function handleJoinAction() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Handle joining or starting the meeting
+                // Handle joining or starting the meeting (NEW MEETING)
                 console.log(data.message);
+                // set localstorage "host_id" to data.host_id
+                localStorage.setItem('host_id', data.host_id);
                 // Redirect to meeting page or perform other actions
             } else if (data.status === 'exists') {
-                // Handle meeting already exists
+                // Handle meeting already exists (JOIN MEETING)
                 console.log(data.message);
+                localStorage.setItem('host_id', data.host_id);
                 // Redirect to meeting page or perform other actions
             }
             else {
