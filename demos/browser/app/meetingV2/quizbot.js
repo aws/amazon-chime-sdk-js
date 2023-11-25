@@ -202,7 +202,7 @@ document.getElementById('pdfInput').addEventListener('change', function() {
         // put the name of the pdf in <p class="text-sm d-none" id="pdf-name"></p>
         document.getElementById('pdf-name').innerText = this.files[0].name;
         document.getElementById('pdf-name').classList.remove('d-none');
-        
+
     } else {
         uploadBtn.disabled = true;
         uploadBtn.classList.add('btn-outline-warning');
@@ -251,8 +251,59 @@ document.getElementById('uploadBtn').addEventListener('click', function() {
     }
 });
 
+document.getElementById('quick-join').addEventListener('click', function(e) {
+    e.preventDefault(); // Prevent default if it's a link or has other default behavior
+    handleJoinAction();
+});
+
+document.getElementById('joinButton').addEventListener('click', function(e) {
+    e.preventDefault(); // Same as above
+    handleJoinAction();
+});
+
+
+
 
 // END DOMCONTENTLOADED
     });
 
 
+
+function handleJoinAction() {
+        const meetingName = document.getElementById('inputMeeting').value;
+        // get userId from localstorage
+        const userId = localStorage.getItem('userId');
+        // Add other form data as needed
+    
+        fetch('https://app.larq.ai/api/scheduleMeeting', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                meeting_name: meetingName,
+                host_id: userId,
+                timestamp: Date.now(),
+                duration: 60 // minutes
+                // Add other meeting details
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Handle joining or starting the meeting
+                console.log(data.message);
+                // Redirect to meeting page or perform other actions
+            } else if (data.status === 'exists') {
+                // Handle meeting already exists
+                console.log(data.message);
+                // Redirect to meeting page or perform other actions
+            }
+            else {
+                console.error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };

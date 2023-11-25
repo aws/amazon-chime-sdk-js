@@ -545,7 +545,7 @@ export class DemoMeetingApp
   
   // Method to determine if the current user is the host
   isHost(): boolean {
-    return this.meetingSession.configuration.credentials.attendeeId === this.meetingHostId;
+    return localStorage.getItem("userId") === localStorage.getItem("host_id");
   }
   
   // Method to pass host privileges to another attendee
@@ -1123,6 +1123,7 @@ updateBodyBackgroundColor();
       }
       else{
         console.log("You're not host, you can't create Quiz!");
+        alert("You're not host, you can't create Quiz!");
         return;
       }
         // STEP 1: CONFIGURATION FORM
@@ -1755,7 +1756,12 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
         location.reload();
           // Hide modal if needed
           // document.getElementById('scheduleMeetingModal')!.style.display = 'none';
-      } else {
+      } 
+      else if( data.status === 'exists'){
+        alert(data.message);        
+
+      }
+      else {
           alert(data.message);
       }
   })
