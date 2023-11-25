@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
       eventElement.classList.add('calendar-event');
   
       dateElement.appendChild(eventElement);
-      dateElement.addEventListener('click', () => showEventModal(foundEvent.meeting_name, foundEvent.timestamp, foundEvent._id, foundEvent.duration));
+      dateElement.addEventListener('click', () => showEventModal(foundEvent.meeting_name, foundEvent.timestamp, foundEvent.meeting_name, foundEvent.duration));
     }
     
     calendarDates.appendChild(dateElement);
