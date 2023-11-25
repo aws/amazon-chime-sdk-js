@@ -1122,8 +1122,8 @@ updateBodyBackgroundColor();
         console.log("You're are host, you can create Quiz!");
       }
       else{
-        console.log("You're not host, you can't create Quiz!");
-        alert("You're not host, you can't create Quiz!");
+        console.log("You're not the host, you can't create quizzes!");
+        alert("You're not the host, you can't create quizzes!");
         return;
       }
         // STEP 1: CONFIGURATION FORM
@@ -1480,8 +1480,8 @@ updateBodyBackgroundColor();
             console.log("You're are host, you can create Quiz!");
           }
           else{
-            console.log("You're not host, you can't create Quiz!");
-            alert("You're not host, you can't create Quiz!");
+            console.log("You're not the host, you can't create quizzes!");
+            alert("You're not the host, you can't create quizzes!");
 
             // show #create-quiz-not-host
             const create_quiz_not_host = document.getElementById('create-quiz-not-host');
