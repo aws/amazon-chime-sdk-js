@@ -289,6 +289,19 @@ const quizButton = document.getElementById('quiz-button');
 quizButton.addEventListener('click', function() {
     if (window.demoMeetingAppInstance.isHost()) {
         console.log("You're the host, you can create Quiz!");
+        // toggle #myDIV
+        if (x.style.display === 'none' || x.style.display === '') {
+            x.style.display = 'block';
+            x.classList.remove('animate__slideOutRight');
+            x.classList.add('animate__slideInRight');
+        } else {
+            x.classList.remove('animate__slideInRight');
+            x.classList.add('animate__slideOutRight');
+            setTimeout(() => {
+                x.style.display = 'none';
+            }, 500); // Adjust timeout to match animation duration
+        }
+        
     } else {
         console.log("You're not the host, you can't create quizzes!");
         alert("You're not the host, you can't create quizzes!");
