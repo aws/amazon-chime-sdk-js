@@ -289,26 +289,13 @@ const quizButton = document.getElementById('quiz-button');
 quizButton.addEventListener('click', function() {
     if (window.demoMeetingAppInstance.isHost()) {
         console.log("You're the host, you can create Quiz!");
-        // toggle #myDIV
-        if (x.style.display === 'none' || x.style.display === '') {
-            x.style.display = 'block';
-            x.classList.remove('animate__slideOutRight');
-            x.classList.add('animate__slideInRight');
-        } else {
-            x.classList.remove('animate__slideInRight');
-            x.classList.add('animate__slideOutRight');
-            setTimeout(() => {
-                x.style.display = 'none';
-            }, 500); // Adjust timeout to match animation duration
-        }
-        
     } else {
         console.log("You're not the host, you can't create quizzes!");
         alert("You're not the host, you can't create quizzes!");
 
         // Show #create-quiz-not-host
         const createQuizNotHost = document.getElementById('create-quiz-not-host');
-        createQuizNotHost.style.display = 'block';
+        createQuizNotHost.classList.add('animate__slideInRight');
         return;
     }
 
@@ -318,32 +305,28 @@ quizButton.addEventListener('click', function() {
         const quizInProgress = document.getElementById('quiz_in_progress');
         const transcriptContainer = document.getElementById('tile-transcript-container');
 
-        if (x.style.display === 'none' || x.style.display === '') {
-            x.style.display = 'block';
+        if (x.classList.contains('animate__slideInRight')) {
+            x.classList.remove('animate__slideInRight');
+            x.classList.add('animate__slideOutRight');
+
+            if (createQuiz) {
+                createQuiz.classList.add('animate__slideInRight');
+            }
+            if (quizQuestion) {
+                quizQuestion.classList.remove('animate__slideInRight');
+            }
+            if (quizInProgress) {
+                quizInProgress.classList.remove('animate__slideInRight');
+            }
+            if (transcriptContainer) {
+                transcriptContainer.style.width = '100%';
+            }
+        } else {
             x.classList.remove('animate__slideOutRight');
             x.classList.add('animate__slideInRight');
 
             if (transcriptContainer) {
                 transcriptContainer.style.width = 'calc(100% - 300px)'; // Adjust width as needed
-            }
-        } else {
-            x.classList.remove('animate__slideInRight');
-            x.classList.add('animate__slideOutRight');
-            setTimeout(() => {
-                x.style.display = 'none';
-            }, 500); // Adjust timeout to match animation duration
-
-            if (createQuiz) {
-                createQuiz.style.display = 'block';
-            }
-            if (quizQuestion) {
-                quizQuestion.style.display = 'none';
-            }
-            if (quizInProgress) {
-                quizInProgress.style.display = 'none';
-            }
-            if (transcriptContainer) {
-                transcriptContainer.style.width = '100%';
             }
         }
     }
