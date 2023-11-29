@@ -7,13 +7,18 @@
 
 
 
-// on domcontentloaded
+
+// **********************************************************************
+// **********************************************************************
+// DOM CONTENT LOADED
+// **********************************************************************
+// **********************************************************************
 document.addEventListener('DOMContentLoaded', function() {
 // BEGIN DOMCONTENTLOADED
 
-
-
 console.log("quizbot.js loaded");
+
+// **********************************************************************
 // Function to download content inside a div as a text file.
 function downloadDivContentAndLocalStorageDataAsTextFile(divId, localStorageKey, filename) {
     // Get the div content.
@@ -42,7 +47,7 @@ function downloadDivContentAndLocalStorageDataAsTextFile(divId, localStorageKey,
     document.body.removeChild(downloadLink);
   }
   
-  // Add an event listener to the element that will trigger the download.
+// Add an event listener to the element that will trigger the download.
   document.querySelector('.link').addEventListener('click', function() {
     downloadDivContentAndLocalStorageDataAsTextFile('full-dash', 'data', 'detailed_summary.txt');
   });
@@ -50,9 +55,10 @@ function downloadDivContentAndLocalStorageDataAsTextFile(divId, localStorageKey,
 document.querySelector('#quiz-summaries').addEventListener('click', function() {
         downloadDivContentAndLocalStorageDataAsTextFile('full-dash', 'data', 'detailed_summary.txt');
       });
+// **********************************************************************
 
 
-
+// **********************************************************************
 //   clicking #button-meeting-leave will send all text in the #transcript-container (as 'transcript') along with localStorage's userId (as 'user_id') and the ?m= parameter (as 'meeting_id') in the URL to https://app.larq.ai/api/SaveTranscript:
 document.querySelector('#button-meeting-leave').addEventListener('click', function() {
     // Get the div content.
@@ -84,16 +90,24 @@ document.querySelector('#button-meeting-leave').addEventListener('click', functi
         console.error('Error:', error);
     });
     });
+// **********************************************************************
 
+
+
+// **********************************************************************
 
 // if the parameter is ?signup=true and the #login-container is visible, then click the #button-signup:
 if (window.location.search.split('signup=')[1] == 'true' && document.getElementById('login-container').style.display == 'block') {
     document.querySelector('#button-signup').click();
 }
 
+// **********************************************************************
+
+
+
+// **********************************************************************
 
 // GET QUIZZES
-
 const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
 if (!userId) {
     console.error('No userId found in localStorage');
@@ -126,9 +140,10 @@ quizzes.forEach(quiz => {
     quizzesDiv.appendChild(quizElement);
 });
 };
+// **********************************************************************
 
 
-
+// **********************************************************************
 // VECTOR UPLOAD FUNCTION
 function uploadPDF(pdfFile, userId) {
     const formData = new FormData();
@@ -251,19 +266,94 @@ document.getElementById('uploadBtn').addEventListener('click', function() {
     }
 });
 
+
+// **********************************************************************
+// **********************************************************************
+// HOST ID
 document.getElementById('quick-join').addEventListener('click', function(e) {
-    e.preventDefault(); // Prevent default if it's a link or has other default behavior
+    // e.preventDefault(); // Prevent default if it's a link or has other default behavior
     handleJoinAction();
 });
 
 document.getElementById('joinButton').addEventListener('click', function(e) {
-    e.preventDefault(); // Same as above
+    // e.preventDefault(); // Same as above
     handleJoinAction();
 });
+// **********************************************************************
 
+// **********************************************************************
+// Function for clicking #quiz-button to toggle #myDIV
+const x = document.getElementById('myDIV');
+const quizButton = document.getElementById('quiz-button');
+
+quizButton.addEventListener('click', function() {
+    if (window.demoMeetingAppInstance.isHost()) {
+        console.log("You're the host, you can create Quiz!");
+    } else {
+        console.log("You're not the host, you can't create quizzes!");
+        alert("You're not the host, you can't create quizzes!");
+
+        // Show #create-quiz-not-host
+        const createQuizNotHost = document.getElementById('create-quiz-not-host');
+        createQuizNotHost.style.display = 'block';
+        return;
+    }
+
+    if (x) {
+        const createQuiz = document.getElementById('create-quiz');
+        const quizQuestion = document.getElementById('quiz_question');
+        const quizInProgress = document.getElementById('quiz_in_progress');
+        const transcriptContainer = document.getElementById('tile-transcript-container');
+
+        if (x.style.display === 'none' || x.style.display === '') {
+            x.style.display = 'block';
+            x.classList.remove('animate__slideOutRight');
+            x.classList.add('animate__slideInRight');
+
+            if (transcriptContainer) {
+                transcriptContainer.style.width = 'calc(100% - 300px)'; // Adjust width as needed
+            }
+        } else {
+            x.classList.remove('animate__slideInRight');
+            x.classList.add('animate__slideOutRight');
+            setTimeout(() => {
+                x.style.display = 'none';
+            }, 500); // Adjust timeout to match animation duration
+
+            if (createQuiz) {
+                createQuiz.style.display = 'block';
+            }
+            if (quizQuestion) {
+                quizQuestion.style.display = 'none';
+            }
+            if (quizInProgress) {
+                quizInProgress.style.display = 'none';
+            }
+            if (transcriptContainer) {
+                transcriptContainer.style.width = '100%';
+            }
+        }
+    }
+});
+// **********************************************************************
+
+
+
+// **********************************************************************
+// **********************************************************************
 // END DOMCONTENTLOADED
-    });
+// **********************************************************************
+// **********************************************************************
 
+});
+
+
+
+// **********************************************************************
+// **********************************************************************
+// FUNCTIONS
+// **********************************************************************
+// **********************************************************************
 
 
 function handleJoinAction() {

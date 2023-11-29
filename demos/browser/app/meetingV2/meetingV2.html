@@ -549,7 +549,7 @@
 
   <!-- Device management and preview screen -->
   <div class="main-page">
-    <div id="flow-devices" class="flow">
+    <div id="flow-devices" class="flow flow h-100 position-absolute top-0">
       <div class="container">
         <form id="form-devices">
           <h1 class="h3 mb-3 font-weight-normal text-center">Select devices</h1>
@@ -1109,6 +1109,9 @@
                 <!-- VECTOR SAMPLE -->
         
                 <div class="container pt-5" id="upload-pdf">
+                  <div class="spinner-border text-success p-4 position-absolute top-50 end-50 d-none" role="status" id="pdfspinner" >
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
                   <div class="row">
                           <!-- Upload Button -->
                           <div class="input-group mb-3">
@@ -1119,17 +1122,17 @@
                               </div>
                               <div class="input-group-append m-2">
                                   <button class="btn btn-outline-secondary d-none" type="button" id="uploadBtn">Upload</button>
+                                  <button id="cancelBtn" class="btn btn-outline-warning d-none p-2">Cancel</button>    
+
                               </div>
                               <div class="d-none alert alert-warning p-2 text-center col-12" role="alert" id="pdf-alert">
                                 Please select a PDF first.
-                                </div>
+                                </div>                                  
+                                <p class="text-sm d-none" id="pdf-name"></p>                              
+
                                 <div class="d-none alert alert-success p-2 text-center col-12" role="alert" id="store-name">
                                   </div>
-                                  <div class="spinner-border text-success p-4 position-absolute top-50 end-50 d-none" role="status" id="pdfspinner" >
-                                    <span class="visually-hidden">Loading...</span>
-                                  </div>
-                                  <button id="cancelBtn" class="btn btn-outline-warning d-none p-2">Cancel</button>    
-                                  <p class="text-sm d-none" id="pdf-name"></p>                              
+
                           </div>
                   </div>
               </div>

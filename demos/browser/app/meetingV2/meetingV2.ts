@@ -1470,65 +1470,6 @@ updateBodyBackgroundColor();
         });
         
 
-        // Set a function for clicking #quiz-button to toggle #myDIV:
-    
-        const x = document.getElementById('myDIV');
-        const quizButton = document.getElementById('quiz-button');
-
-        quizButton?.addEventListener('click', function() {
-          if (window.demoMeetingAppInstance.isHost()){
-            console.log("You're are host, you can create Quiz!");
-          }
-          else{
-            console.log("You're not the host, you can't create quizzes!");
-            alert("You're not the host, you can't create quizzes!");
-
-            // show #create-quiz-not-host
-            const create_quiz_not_host = document.getElementById('create-quiz-not-host');
-            create_quiz_not_host.style.display = 'block';
-            
-
-            return;
-          }
-
-          if (x) {
-
-
-
-              const create_quiz = document.getElementById('create-quiz');
-
-              console.log('button-quizbot');
-              const quiz_question = document.getElementById('quiz_question');
-              const quiz_in_progress = document.getElementById('quiz_in_progress');
-              const transcript_container = document.getElementById('tile-transcript-container');
-      
-          if (x && x.style.display === 'none') {
-            x.style.display = 'block';
-            if (transcript_container) {
-              transcript_container.style.width = '100%';
-            }
-          } else {
-            // remove animate__slideInRight and add animate__slideOutRight to class
-            x.classList.remove('animate__slideInRight');
-            x.classList.add('animate__slideOutRight');
-            x.style.display = 'none';
-
-            if (create_quiz) {
-              create_quiz.style.display = 'block';
-            }
-            if (quiz_question) {
-              quiz_question.style.display = 'none';
-            }
-            if (quiz_in_progress) {
-              quiz_in_progress.style.display = 'none';
-            }
-            if (transcript_container) {
-              transcript_container.style.width = '100%';
-            }
-          }
-            }
-        });
-
 
 
 
