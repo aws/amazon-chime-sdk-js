@@ -21,17 +21,19 @@ ChimeBeta)
     echo "Deploying to beta stage for canary that talks to gamma Chime client for meetings and gamma Chime client for media pipelines"
 
     # Uses Chime Client for meetings and Chime client for media pipelines
-    npm run deploy -- -b chime-sdk-demo-beta-canary$canarySuffix -s chime-sdk-demo-beta-canary$canarySuffix -o chime-sdk-demo-beta-canary$canarySuffix -i eu-south-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
-    npm run deploy -- -b chime-sdk-meeting-readiness-checker-beta-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-beta-canary$canarySuffix -a meetingReadinessChecker -c $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
+    npm run deploy -- -b chime-sdk-demo-beta-canary$canarySuffix -s chime-sdk-demo-beta-canary$canarySuffix -o
+    chime-sdk-demo-beta-canary$canarySuffix -i eu-south-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -m $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
+    npm run deploy -- -b chime-sdk-meeting-readiness-checker-beta-canary$canarySuffix -s
+    chime-sdk-meeting-readiness-checker-beta-canary$canarySuffix -a meetingReadinessChecker -m $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
     ;;
 
 ChimeSDKMeetingsBeta)
     echo "Deploying to beta stage for canary that talks to gamma ChimeSDKMeetings client for meetings and gamma Chime client for media pipelines"
 
     # Uses ChimeSDKMeetings client for meetings and Chime client for media pipelines
-    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -o chime-sdk-meetings-iad-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -m $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
-    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -o chime-sdk-meetings-fra-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -m $GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1 -t -l
-    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -m $GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1 -t -l
+    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -o chime-sdk-meetings-iad-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -m $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
+    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -o chime-sdk-meetings-fra-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -m $GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1 -t -l
+    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -m $GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1 -t -l
     ;;
 
 ChimeSDKMeetings_ChimeSDKMediaPipelinesBeta)
@@ -47,7 +49,8 @@ Chime_ChimeSDKMediaPipelinesBeta)
     echo "Deploying to beta stage for canary that talks to gamma Chime client for meetings and gamma ChimeSDKMediaPipelines client for media pipelines"
 
     # Uses Chime client for meetings and ChimeSDKMediaPipelines client for media pipelines
-    npm run deploy -- -r us-east-1 -b chime-sdk-$chimeSDKMediaPipelinesStackId-demo-beta-canary-us-east-1$canarySuffix -s chime-sdk-$chimeSDKMediaPipelinesStackId-demo-beta-canary-us-east-1$canarySuffix -o chime-sdk-$chimeSDKMediaPipelinesStackId-iad-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l  --chime-sdk-media-pipelines-endpoint $GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1
+    npm run deploy -- -r us-east-1 -b chime-sdk-$chimeSDKMediaPipelinesStackId-demo-beta-canary-us-east
+    -1$canarySuffix -s chime-sdk-$chimeSDKMediaPipelinesStackId-demo-beta-canary-us-east-1$canarySuffix -o chime-sdk-$chimeSDKMediaPipelinesStackId-iad-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL -m $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l  --chime-sdk-media-pipelines-endpoint $GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1
     ;;
 
 ChimeGamma)
