@@ -8,15 +8,12 @@ const currentBranch = (spawnOrFail('git', [' branch --show-current'], { skipOutp
 const deployDemo = (version) => {
   const formattedVersion = `${version.replace(/\./g, "-")}`;
   process.chdir(path.join(__dirname, '../demos/serverless'));
-  const meetingDemoName = `chime-sdk-demo-global-${formattedVersion}`;
-  logger.log(`Deploying ${meetingDemoName} ...`);
-  spawnOrFail('npm', [`run deploy -- -b ${meetingDemoName} -s ${meetingDemoName} -o chime-sdk-demo-global -u false`], { printErr: true });
   const meetingDemoNameRegional = `chime-sdk-demo-${formattedVersion}-regional`;
   logger.log(`Deploying ${meetingDemoNameRegional} ...`);
   spawnOrFail('npm', [`run deploy -- -b ${meetingDemoNameRegional} -s ${meetingDemoNameRegional} -o chime-sdk-demo-regional`], { printErr: true });
   const readinessCheckerDemoName = `chime-sdk-meeting-readiness-checker-${formattedVersion}`;
   logger.log(`Deploying ${readinessCheckerDemoName} ...`);
-  spawnOrFail('npm', [`run deploy -- -b ${readinessCheckerDemoName} -s ${readinessCheckerDemoName} -a meetingReadinessChecker -u false`], { printErr: true });
+  spawnOrFail('npm', [`run deploy -- -b ${readinessCheckerDemoName} -s ${readinessCheckerDemoName} -a meetingReadinessChecker`], { printErr: true });
 };
 
 const getCurrentRemoteBranch = () => {
