@@ -136,7 +136,7 @@ quizzesDiv.innerHTML = ''; // Clear existing content
 quizzes.forEach(quiz => {
     const quizElement = document.createElement('div');
     quizElement.className = 'quiz';
-    quizElement.textContent = quiz.title; // Assuming each quiz has a 'title' property
+    quizElement.textContent = quiz.quiz_title; // Assuming each quiz has a 'title' property
     quizzesDiv.appendChild(quizElement);
 });
 };

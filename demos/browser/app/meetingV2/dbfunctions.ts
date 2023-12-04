@@ -87,53 +87,51 @@ document.addEventListener('DOMContentLoaded', function () {
   //   '2023-10-27': 'Meetings with team leads',
   //   // Add more events as needed
   // };
-
-  const events:any[] = JSON.parse(localStorage.getItem('data')).dashboard_stats.this_month_meetings;
-
+  
 
 
   function generateCalendar() {
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const daysInMonth = lastDay.getDate();
-
+  
     currentMonthElement.textContent =
       firstDay.toLocaleString('default', { month: 'long' }) + ' ' + currentYear;
-
+  
     calendarDates.innerHTML = '';
-
+  
     // Add padding for days before the first day of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const paddingElement = document.createElement('div');
       paddingElement.classList.add('calendar-day', 'inactive');
       calendarDates.appendChild(paddingElement);
     }
-
+  
+    let events: any[] = [];
+    if (localStorage.getItem('data')) {
+      events = JSON.parse(localStorage.getItem('data')).dashboard_stats.this_month_meetings;
+    }
+  
     for (let day = 1; day <= daysInMonth; day++) {
       const dateElement = document.createElement('div');
       dateElement.classList.add('calendar-day');
       dateElement.textContent = day.toString();
-
-    // Check if there's an event for this day
-    const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(
-      day
-    ).padStart(2, '0')}`;
-    
-    const foundEvent = events.find(event => event.timestamp.startsWith(eventDate));
-    
-    if (foundEvent) {
-      // alert(`FOUND EVENT ${foundEvent.meeting_name}, ${foundEvent.timestamp}, ${foundEvent._id}, ${foundEvent.duration}`);
-      const eventElement = document.createElement('div');
-      eventElement.classList.add('calendar-event');
   
-      dateElement.appendChild(eventElement);
-      dateElement.addEventListener('click', () => showEventModal(foundEvent.meeting_name, foundEvent.timestamp, foundEvent.meeting_name, foundEvent.duration));
-    }
-    
-    calendarDates.appendChild(dateElement);
+      // Check if there's an event for this day
+      const eventDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const foundEvent = events.find(eventItem => eventItem.timestamp.startsWith(eventDate));
+      
+      if (foundEvent) {
+        const eventElement = document.createElement('div');
+        eventElement.classList.add('calendar-event');
+        dateElement.appendChild(eventElement);
+        dateElement.addEventListener('click', () => showEventModal(foundEvent.meeting_name, foundEvent.timestamp, foundEvent.meeting_name, foundEvent.duration));
+      }
+      
+      calendarDates.appendChild(dateElement);
     }
   }
-
+  
   function showPreviousMonth() {
     currentMonth--;
     if (currentMonth < 0) {
