@@ -1872,8 +1872,10 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
 
 
 function logout(): void {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('data');
+  // localStorage.removeItem('authToken');
+  // localStorage.removeItem('data');
+  // remove all localstorage items:
+  localStorage.clear();
   location.reload();
 }
 // if user clicks .logout button class, call logout function

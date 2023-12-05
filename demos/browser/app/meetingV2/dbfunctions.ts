@@ -240,40 +240,40 @@ function copyToClipboard(text: string, buttonElem: HTMLButtonElement) {
 // });
 
 
-  const transcriptContainer = document.getElementById("transcript-container");
+//   const transcriptContainer = document.getElementById("transcript-container");
   
-  // Load highlighted text from localStorage on page load
-  const savedHighlight = localStorage.getItem("highlighted_text");
-  if (!transcriptContainer) {
-    console.error("Unable to find transcript-container.");
-}  else {
+//   // Load highlighted text from localStorage on page load
+//   const savedHighlight = localStorage.getItem("highlighted_text");
+//   if (!transcriptContainer) {
+//     console.error("Unable to find transcript-container.");
+// }  else {
 
-  if (savedHighlight) {
-    transcriptContainer.style.backgroundColor = savedHighlight;
-  }
+//   if (savedHighlight) {
+//     transcriptContainer.style.backgroundColor = savedHighlight;
+//   }
 
-  transcriptContainer.addEventListener("mousedown", () => {
+//   transcriptContainer.addEventListener("mousedown", () => {
     
-    // find the target text
-    const selection = window.getSelection();
-    const selectedText = selection?.toString(); 
-    if (!selectedText) {
-        return;
-    }
-    // Apply the highlight color to the selected text
-    transcriptContainer.style.backgroundColor = '#ffff00';
+//     // find the target text
+//     const selection = window.getSelection();
+//     const selectedText = selection?.toString(); 
+//     if (!selectedText) {
+//         return;
+//     }
+//     // Apply the highlight color to the selected text
+//     transcriptContainer.style.backgroundColor = '#ffff00';
 
 
-    // Save the highlighted text's content to localStorage
-    localStorage.setItem("highlighted_text", selectedText);
+//     // Save the highlighted text's content to localStorage
+//     localStorage.setItem("highlighted_text", selectedText);
 
     
 
 
-  });
+//   });
 
 
-}
+// }
   
 
 

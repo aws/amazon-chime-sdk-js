@@ -334,6 +334,45 @@ quizButton.addEventListener('click', function() {
 // **********************************************************************
 
 
+// If the user is host and clicks #button-meeting-leave, then save all text in #transcript-container and send it to app.larq.ai/api/SaveTranscript along with the userId and meetingId:
+document.querySelector('#button-meeting-leave').addEventListener('click', function() {
+    // if not host, then return:
+    if (!window.demoMeetingAppInstance.isHost()) {
+        return;
+    }
+
+    // Get the div content.
+    var transcript = document.getElementById('transcript-container').innerText;
+    // Get the stored data from localStorage directly as a string.
+    var user_id = localStorage.getItem('userId');
+    // Get the meeting_id from the "m=" parameter in the URL:
+    var meeting_id = window.location.search.split('m=')[1];
+    // Combine all the data:
+    var data = {
+        transcript: transcript,
+        user_id: user_id,
+        meeting_id: meeting_id
+    };
+    // Convert the data object to a string
+    data = JSON.stringify(data);
+    // Send the data to the API endpoint
+    fetch('https://app.larq.ai/api/SaveTranscript', {
+        method: 'POST',
+        body: data
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Transcript Saved Success:', data);
+        // redirect to the dashboard
+        // window.location.href = "https://app.larq.ai/api/SaveTranscript";
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    }
+    );
+    });
+
+
 
 // **********************************************************************
 // **********************************************************************
