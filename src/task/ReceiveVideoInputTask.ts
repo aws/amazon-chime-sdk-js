@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
-import DefaultDeviceController from '../devicecontroller/DefaultDeviceController';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import DefaultModality from '../modality/DefaultModality';
 import { SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
@@ -48,7 +47,9 @@ export default class ReceiveVideoInputTask extends BaseTask {
       this.context.logger.warn(
         `Video track (content = ${isContentAttendee}) will be constrained to: ${JSON.stringify(
           constraint
-        )} to remain below configured video quality settings, trackSettings: ${JSON.stringify(trackSettings)}`
+        )} to remain below configured video quality settings, trackSettings: ${JSON.stringify(
+          trackSettings
+        )}`
       );
       try {
         await mediaStreamTrack.applyConstraints(constraint);
@@ -119,15 +120,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
       );
       const trackSettings = videoTracks[0].getSettings();
 
-      if (isContentAttendee) {
-        this.checkAndApplyVideoConstraint(
-          isContentAttendee,
-          videoTracks[0],
-          trackSettings.width,
-          trackSettings.height,
-          trackSettings.frameRate
-        );
-      } else if (this.context.enableSimulcast) {
+      if (this.context.enableSimulcast) {
         // For video, we currently let uplink policy to specify constraints for simulcast. This logic should be removed in the future.
         const constraint = this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
         this.context.logger.info(`simulcast: choose constraint ${JSON.stringify(constraint)}`);
@@ -137,14 +130,12 @@ export default class ReceiveVideoInputTask extends BaseTask {
           this.context.logger.info('simulcast: pass video without more constraint');
         }
       } else {
-        const device = this.context.mediaStreamBroker as DefaultDeviceController;
-        const videoInputQualitySettings = device.getVideoInputQualitySettings();
         this.checkAndApplyVideoConstraint(
           isContentAttendee,
           videoTracks[0],
-          videoInputQualitySettings.videoWidth,
-          videoInputQualitySettings.videoHeight,
-          videoInputQualitySettings.videoFrameRate
+          trackSettings.width,
+          trackSettings.height,
+          trackSettings.frameRate
         );
       }
 

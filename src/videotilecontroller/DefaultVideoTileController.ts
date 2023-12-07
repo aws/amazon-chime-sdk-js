@@ -75,12 +75,12 @@ export default class DefaultVideoTileController implements VideoTileController {
 
   startLocalVideoTile(): number {
     if (
-        this.audioVideoController.configuration.meetingFeatures.videoMaxResolution ===
-        VideoQualitySettings.VideoDisabled
-      ) {
-        this.logger.warn('Could not start camera video because max video resolution was set to None');
-        return -1;
-      }
+      this.audioVideoController.configuration.meetingFeatures.videoMaxResolution ===
+      VideoQualitySettings.VideoDisabled
+    ) {
+      this.logger.warn('Could not start camera video because max video resolution was set to None');
+      return -1;
+    }
     const tile = this.findOrCreateLocalVideoTile();
     this.currentLocalTile.stateRef().localTileStarted = true;
 

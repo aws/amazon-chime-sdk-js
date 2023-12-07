@@ -86,8 +86,11 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
       const attendeeId = videoSource.attendee.attendeeId;
       if (mapOfAttendeeIdToRemoteDescriptions.has(attendeeId)) {
         const info = mapOfAttendeeIdToRemoteDescriptions.get(attendeeId);
-        if (totalBitrateKbps + info.maxBitrateKbps <= AllHighestVideoBandwidthPolicy.maxReceiveBitrateKbps) {
-            streamSelectionSet.add(info.streamId);
+        if (
+          totalBitrateKbps + info.maxBitrateKbps <=
+          AllHighestVideoBandwidthPolicy.maxReceiveBitrateKbps
+        ) {
+          streamSelectionSet.add(info.streamId);
           totalBitrateKbps += info.maxBitrateKbps;
         } else {
           console.warn(

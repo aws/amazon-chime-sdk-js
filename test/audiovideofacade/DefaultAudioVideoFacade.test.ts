@@ -17,7 +17,6 @@ import ContentShareObserver from '../../src/contentshareobserver/ContentShareObs
 import DataMessage from '../../src/datamessage/DataMessage';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
-import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';

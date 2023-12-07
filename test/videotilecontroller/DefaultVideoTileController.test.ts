@@ -7,12 +7,12 @@ import * as sinon from 'sinon';
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
+import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import VideoTileState from '../../src/videotile/VideoTileState';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 
 describe('DefaultVideoTileController', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -201,22 +201,22 @@ describe('DefaultVideoTileController', () => {
       expect(tileController.startLocalVideoTile()).to.equal(tileId);
     });
 
-it('will ignore the call if video is disabled', done => {
-    audioVideoController.configuration.meetingFeatures.videoMaxResolution =
+    it('will ignore the call if video is disabled', done => {
+      audioVideoController.configuration.meetingFeatures.videoMaxResolution =
         VideoQualitySettings.VideoDisabled;
-        tileController.startLocalVideoTile();
+      tileController.startLocalVideoTile();
+
+      new TimeoutScheduler(10).start(() => {
+        expect(tileController.getLocalVideoTile()).to.equal(null);
+        tileController.stopLocalVideoTile();
 
         new TimeoutScheduler(10).start(() => {
           expect(tileController.getLocalVideoTile()).to.equal(null);
-          tileController.stopLocalVideoTile();
-  
-          new TimeoutScheduler(10).start(() => {
-            expect(tileController.getLocalVideoTile()).to.equal(null);
-            tileController.removeLocalVideoTile();
-            expect(tileController.getLocalVideoTile()).to.equal(null);
-            done();
-          });
+          tileController.removeLocalVideoTile();
+          expect(tileController.getLocalVideoTile()).to.equal(null);
+          done();
         });
+      });
     });
   });
 

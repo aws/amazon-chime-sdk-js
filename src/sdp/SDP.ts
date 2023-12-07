@@ -14,7 +14,6 @@ export default class SDP {
   static rfc7587LowestBitrate = 6000;
   static rfc7587HighestBitrate = 510000;
 
-
   private static dependencyDescriptorRtpHeaderExtensionUrl = `https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension`;
   private static videoLayersAllocationRtpHeaderExtensionUrl = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
 
@@ -413,7 +412,9 @@ export default class SDP {
    * after setting the local description.
    */
   withoutDependencyDescriptorRtpHeaderExtension(): SDP {
-    const srcLines: string[] = SDP.splitLines(this.sdp).filter(line => !line.includes(SDP.dependencyDescriptorRtpHeaderExtensionUrl));
+    const srcLines: string[] = SDP.splitLines(this.sdp).filter(
+      line => !line.includes(SDP.dependencyDescriptorRtpHeaderExtensionUrl)
+    );
     return new SDP(srcLines.join(SDP.CRLF) + SDP.CRLF);
   }
 
@@ -893,13 +894,13 @@ export default class SDP {
     return 0;
   }
 
-/**
- * Modifies the active camera section to include a specified starting bitrate
- * for video sending by adding a 'x-google-start-bitrate' fmtp line paramter for
- * each payload type associated with video. 
- * 
- * If no active camera section is found in the SDP, returns the original SDP object.
- */
+  /**
+   * Modifies the active camera section to include a specified starting bitrate
+   * for video sending by adding a 'x-google-start-bitrate' fmtp line paramter for
+   * each payload type associated with video.
+   *
+   * If no active camera section is found in the SDP, returns the original SDP object.
+   */
   withStartingVideoSendBitrate(bitrateKbps: number): SDP {
     const sections = SDP.splitSections(this.sdp);
 

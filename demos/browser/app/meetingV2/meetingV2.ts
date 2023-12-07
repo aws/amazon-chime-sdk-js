@@ -333,7 +333,7 @@ export class DemoMeetingApp
   requestedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
   appliedVideoMaxResolution = VideoQualitySettings.VideoResolutionHD;
   appliedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
-  maxBitrateKbps: number = 1400; // 1400 is the max bitrate for default meeting features without high resolution
+  maxBitrateKbps: number = 1400; // Default to 540p
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
   videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
@@ -863,12 +863,6 @@ export class DemoMeetingApp
     });
 
     const videoInputQuality = document.getElementById('video-input-quality') as HTMLSelectElement;
-    if (this.appliedVideoMaxResolution !== VideoQualitySettings.VideoResolutionFHD) {
-        const option1080p = videoInputQuality.querySelector('option[value="1080p"]');
-        if (option1080p) {
-          videoInputQuality.removeChild(option1080p);
-        }
-      }
     videoInputQuality.addEventListener('change', async (_ev: Event) => {
       this.log('Video input quality is changed');
       switch (videoInputQuality.value) {
@@ -885,8 +879,9 @@ export class DemoMeetingApp
           this.maxBitrateKbps = 1500;
           break;
         case '1080p':
-            this.maxBitrateKbps = 2500;
-            this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
+          // The 1080p dropdown will be removed if we haven't selected FHD meeting feature
+          this.maxBitrateKbps = 2500;
+          this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
           break;
       }
       this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
@@ -3556,8 +3551,7 @@ export class DemoMeetingApp
     }
 
     if (this.appliedVideoMaxResolution !== VideoQualitySettings.VideoResolutionFHD) {
-      (document.getElementById('1080p') as HTMLInputElement).remove(); // we do not allow 1080p camera resolution without FHD video enabled
-      this.log(`meetingTypeSelect ==> Camera-resolution-info remove 1080p resolution since FHD video is disabled (over meeting constraint 720p)`);
+    //   (document.getElementById('1080p') as HTMLInputElement).remove(); // we do not allow 1080p camera resolution without FHD video enabled
     }
     
     return configuration.meetingId;
