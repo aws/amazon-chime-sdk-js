@@ -5865,12 +5865,17 @@ function displayQuestion(index: number, data: FormData) {
         if (!optionSelected) {
           optionSelected = true;
         const correctAnswer = question.correct_answer;
+        // set a boolean variable to true if attempt has been made:
+        let attempted = false;
+
+        if (!attempted){
         if (option === correctAnswer) {
             QuizAttempts.answers.push({
               questionNumber: index,
               answer: option,
               isCorrect: true
             }); 
+            attempted = true;
           }
           radioDiv.className = "form-check form-check-inline radioBox incorrect-answer"; // Highlight correct answer with green outline
         } else {
@@ -5880,6 +5885,7 @@ function displayQuestion(index: number, data: FormData) {
             answer: option,
             isCorrect: false
           }); 
+          attempted = true;
 
           radioDiv.className = "form-check form-check-inline radioBox correct-answer"; // Highlight correct answer with 
           // find the option with the correct answer and highlight it
@@ -5892,6 +5898,7 @@ function displayQuestion(index: number, data: FormData) {
 
           // correctAnswerInput.parentElement!.className = "form-check form-check-inline radioBox correct-answer";
         } 
+      }
       });
 
       
