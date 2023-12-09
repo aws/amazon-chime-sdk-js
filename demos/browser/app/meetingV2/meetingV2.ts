@@ -281,18 +281,23 @@ interface QuizJSON {
   quiz_title: string;
   questions: QuizQuestion[];
   status: string;
+  quiz_id: string;
 
+}
+
+interface Answer{
+    questionNumber: number
+    answer: string | null
+    isCorrect: boolean 
 }
 
 interface QuizAttempt {
-  quiz_id: string;
-  timestamp: string;
-  user_id: string;
-  score: number;
-  correct: number[];
-  incorrect: number[];
+  quiz_id: string
+  score: number
+  timestamp: string
+  user_id: string | null
+  answers: Answer[];
 }
-
 
 type Field = {
   label: string;
@@ -306,7 +311,7 @@ type FormData = {
   title: string;
   fields: Field[];
   host: string;
-  quiz_id?: string; // Assuming quiz_id is a field in the quizJson
+  quiz_id: string; // Assuming quiz_id is a field in the quizJson
 };
 type Meeting = {
   _id: { $oid: string };
@@ -920,7 +925,8 @@ export class DemoMeetingApp
                     };
                 })
             ],
-            host: this.meetingSession.configuration.credentials.attendeeId
+            host: this.meetingSession.configuration.credentials.attendeeId,
+            quiz_id: quiz.quiz_id
         };
     
         return formData;
@@ -1174,6 +1180,7 @@ updateBodyBackgroundColor();
         })
         // on response, show #html_quiz_question:
         const quizJson = await response.json();
+        // localStorage.setItem("quizID", quizJson.quiz_id);
         html_quiz_question.style.display = 'block';
         generating_quiz.style.display = 'none';
 
@@ -1211,9 +1218,12 @@ updateBodyBackgroundColor();
         //     ]
         // };
         console.log('quizJson:', quizJson);
+        
         // add quizJson to the local storage
         localStorage.setItem('quizJson', JSON.stringify(quizJson));
 
+        // const quizID = quizJson.quiz_id;
+        // localStorage.setItem('quizID', quizID);
         const quizTitle = quizJson.quiz_title;
         console.log(quizTitle);
 
@@ -5748,8 +5758,13 @@ const defaultQuizAttempt = {
   timestamp: new Date().toISOString(),
   user_id: localStorage.getItem('userId') || "", // If there's no user_id, it defaults to an empty string.
   score: 0,
-  correct: [] as string[], // This asserts that 'correct' is an array of strings.
-  incorrect: [] as string[], // Similarly, this asserts that 'incorrect' is an array of strings.
+  answers: [
+    {
+      question_id: 0,
+      answer: "",
+      correct: false,
+    },
+  ],
 };
 
 
@@ -5760,14 +5775,21 @@ const defaultQuizAttempt = {
 function submitQuizAttempts() {
   const url = "https://app.larq.ai/api/MakeQuizAttempt";
   const storedData = localStorage.getItem('QuizAttempts');
-
+  let quiz_id = localStorage.getItem('quiz_id');
+  // let quizID = localStorage.getItem('quizID');
   const QuizAttempts = storedData ? JSON.parse(storedData) : defaultQuizAttempt;
   console.log("QuizAttempts to sent to larq API:",QuizAttempts);
-  QuizAttempts['userID'] = localStorage.getItem('userId') || "";
+  QuizAttempts['user_id'] = localStorage.getItem('userId') || "";
+  QuizAttempts['quiz_id'] = quiz_id || "";
+  // QuizAttempts['quizID'] = quizID || "";
+  const totalQuestions = (QuizAttempts as any).answers.length;
 
-  const totalQuestions = (QuizAttempts as any).correct.length + (QuizAttempts as any).incorrect.length;
-  QuizAttempts.score = QuizAttempts.correct.length / totalQuestions;
+  // Get QuizAttempts.score by calculating the number of answers.isCorrect === true:
+  // DO THIS BUT TAKE INTO ACCOUNT A POSSIBLY NULL RESULT, MEANING A 0: QuizAttempts.score = QuizAttempts.answers.filter((answer: any) => answer.isCorrect).length / totalQuestions;
+  
+  QuizAttempts.score = QuizAttempts.answers.filter((answer: any) => answer.isCorrect).length / totalQuestions;
 
+  // alert("Your score is: " + QuizAttempts.score);
   fetch(url, {
       method: 'POST',
       headers: {
@@ -5789,17 +5811,18 @@ function submitQuizAttempts() {
 let userId = localStorage.getItem('userId') || '';
 
 const existingAttempts = localStorage.getItem('QuizAttempts');
-const QuizId = localStorage.getItem('QuizId');
+const quiz_id = localStorage.getItem('quiz_id');
 
 const QuizAttempts: QuizAttempt = existingAttempts 
     ? JSON.parse(existingAttempts) 
     : {
-        quiz_id: QuizId,
+        quiz_id: quiz_id,
         timestamp: new Date().toISOString(),
         user_id: userId,
         score: 0,
-        correct: [],
-        incorrect: []
+        answers:[
+
+        ]
     };
 
 
@@ -5843,15 +5866,22 @@ function displayQuestion(index: number, data: FormData) {
           optionSelected = true;
         const correctAnswer = question.correct_answer;
         if (option === correctAnswer) {
-          // push correct answer to QuizAttempts, unless it's already there
-          if (!QuizAttempts.correct.includes(index)) {
-          QuizAttempts.correct.push(index);
+            QuizAttempts.answers.push({
+              questionNumber: index,
+              answer: option,
+              isCorrect: true
+            }); 
           }
-          radioDiv.className = "form-check form-check-inline radioBox correct-answer"; // Highlight correct answer with green outline
+          radioDiv.className = "form-check form-check-inline radioBox incorrect-answer"; // Highlight correct answer with green outline
         } else {
-          if (!QuizAttempts.incorrect.includes(index)) {
-          // alert("wrong!");
-          radioDiv.className = "form-check form-check-inline radioBox incorrect-answer"; // Highlight correct answer with 
+          // same as the other but false
+          QuizAttempts.answers.push({
+            questionNumber: index,
+            answer: option,
+            isCorrect: false
+          }); 
+
+          radioDiv.className = "form-check form-check-inline radioBox correct-answer"; // Highlight correct answer with 
           // find the option with the correct answer and highlight it
           // const correctAnswerIndex = question.options.indexOf(correctAnswer);
           // const correctAnswerInput = document.getElementById(`answer_${index}_${correctAnswerIndex}`) as HTMLInputElement;
@@ -5861,12 +5891,10 @@ function displayQuestion(index: number, data: FormData) {
     
 
           // correctAnswerInput.parentElement!.className = "form-check form-check-inline radioBox correct-answer";
-          QuizAttempts.incorrect.push(index);}
         } 
-      };
-
       });
 
+      
       const label = document.createElement("label");
       label.className = "form-check-label";
       label.setAttribute("for", input.id);
@@ -5883,7 +5911,10 @@ function displayQuestion(index: number, data: FormData) {
 // FUNCTION 3 - POPULATE THE QUIZ HANDLER
 function populateQuiz(dataString: string) {
         const data: FormData = JSON.parse(dataString);
-        
+        // alert with all the data json dumped
+        // alert(JSON.stringify(data));
+        // save quiz_id to localstorage
+        localStorage.setItem('quiz_id', data.quiz_id);
         document.getElementById("quiz-form-title")!.textContent = data.title;
         document.getElementById("quiz-taker-title")!.textContent = data.title;
         
@@ -5922,15 +5953,16 @@ function populateQuiz(dataString: string) {
                         answerSelected = true; // Mark that an answer has been selected
                         const correctAnswer = field.correct_answer;
                           if (option === correctAnswer) {
-                            if (!QuizAttempts.correct.includes(index)) {
-                            QuizAttempts.correct.push(index);
+                            if (!QuizAttempts.answers[index].isCorrect) {
+                              QuizAttempts.answers[index].isCorrect = true;
+                            
                             }
                             answerOption.classList.add('correct-answer'); // Instead of green outline, add .correct-answer
                           } else {
                             answerOption.classList.add('incorrect-answer'); // Instead of green outline, add .correct-answer
                             // push incorrect answer to QuizAttempts, unles it's already there
-                            if (!QuizAttempts.incorrect.includes(index)) {
-                              QuizAttempts.incorrect.push(index);
+                            if (QuizAttempts.answers[index].isCorrect) {
+                              QuizAttempts.answers[index].isCorrect = false;
                             }
                               
                           }
@@ -5967,8 +5999,8 @@ function populateQuiz(dataString: string) {
         if (currentQuestionIndex < data.fields.length) {
           displayQuestion(currentQuestionIndex, data);
         } else {
-          QuizAttempts.score = QuizAttempts.correct.length; // Update the score when the quiz is completed
-            // You can redirect or show results here when all questions are done.
+          QuizAttempts.score = QuizAttempts.answers.filter((answer: any) => answer.isCorrect).length / QuizAttempts.answers.length;
+          // You can redirect or show results here when all questions are done.
             alert(`Quiz completed! You got ${QuizAttempts.score} right!`);
             localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
             submitQuizAttempts();
@@ -6164,7 +6196,7 @@ loginSpinner.style.display = 'none';
 
 });
 }else {
-alert("HELLLLPP");
+// alert("HELLLLPP");
 console.error("Form or spinner element not found");
 }
 
