@@ -4,7 +4,6 @@
 import ApplicationMetadata from '../applicationmetadata/ApplicationMetadata';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
-import VideoResolution from '../devicecontroller/VideoResolution';
 import { toLowerCasePropertyNames } from '../utils/Utils';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
@@ -122,7 +121,7 @@ export default class MeetingSessionConfiguration {
   /*
    * Additional features in the meeting
    */
-  meetingFeatures: MeetingFeatures;
+  meetingFeatures: MeetingFeatures = new MeetingFeatures();
 
   /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
@@ -186,42 +185,39 @@ export default class MeetingSessionConfiguration {
       if (createMeetingResponse.mediaplacement.eventingestionurl) {
         this.urls.eventIngestionURL = createMeetingResponse.mediaplacement.eventingestionurl;
       }
-      if (createMeetingResponse.meetingfeatures === undefined) {
-        this.meetingFeatures = new MeetingFeatures();
-      } else {
-        if (
-          createMeetingResponse.meetingfeatures.video === undefined ||
-          createMeetingResponse.meetingfeatures.content === undefined
-        ) {
-          this.meetingFeatures = new MeetingFeatures();
-        } else {
-          let videoMaxResolution: VideoQualitySettings;
-          let contentMaxResolution: VideoQualitySettings;
-          if (createMeetingResponse.meetingfeatures.video.maxresolution === VideoResolution.None) {
-            videoMaxResolution = VideoQualitySettings.VideoDisabled;
-          } else if (
-            createMeetingResponse.meetingfeatures.video.maxresolution === VideoResolution.HD
-          ) {
-            videoMaxResolution = VideoQualitySettings.VideoResolutionHD;
-          } else {
-            videoMaxResolution = VideoQualitySettings.VideoResolutionFHD;
-          }
-          if (
-            createMeetingResponse.meetingfeatures.content.maxresolution === VideoResolution.None
-          ) {
-            contentMaxResolution = VideoQualitySettings.VideoDisabled;
-          } else if (
-            createMeetingResponse.meetingfeatures.content.maxresolution === VideoResolution.FHD
-          ) {
-            contentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
-          } else {
-            contentMaxResolution = VideoQualitySettings.VideoResolutionUHD;
-          }
-          this.meetingFeatures = new MeetingFeatures(videoMaxResolution, contentMaxResolution);
+
+      const parseVideoResolution = (
+        resolution: string,
+        defaultValue: VideoQualitySettings
+      ): VideoQualitySettings => {
+        switch (resolution) {
+          case 'None':
+            return VideoQualitySettings.VideoDisabled;
+          case 'HD':
+            return VideoQualitySettings.VideoResolutionHD;
+          case 'FHD':
+            return VideoQualitySettings.VideoResolutionFHD;
+          case 'UHD':
+            return VideoQualitySettings.VideoResolutionUHD;
+          default:
+            return defaultValue;
         }
+      };
+      if (
+        createMeetingResponse.meetingfeatures?.video !== undefined &&
+        createMeetingResponse.meetingfeatures?.content !== undefined
+      ) {
+        this.meetingFeatures = new MeetingFeatures(
+          parseVideoResolution(
+            createMeetingResponse.meetingfeatures.video.maxresolution,
+            VideoQualitySettings.VideoResolutionFHD
+          ),
+          parseVideoResolution(
+            createMeetingResponse.meetingfeatures.content.maxresolution,
+            VideoQualitySettings.VideoResolutionUHD
+          )
+        );
       }
-    } else {
-      this.meetingFeatures = new MeetingFeatures();
     }
     if (createAttendeeResponse) {
       createAttendeeResponse = toLowerCasePropertyNames(createAttendeeResponse);

@@ -310,7 +310,6 @@ import VideoPriorityBasedPolicy from './videodownlinkbandwidthpolicy/VideoPriori
 import VideoPriorityBasedPolicyConfig from './videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig';
 import VideoQualityAdaptationPreference from './videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
-import VideoResolution from './devicecontroller/VideoResolution';
 import VideoSource from './videosource/VideoSource';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
 import VideoStreamIdSet from './videostreamidset/VideoStreamIdSet';
@@ -663,7 +662,6 @@ export {
   VideoPriorityBasedPolicyConfig,
   VideoQualityAdaptationPreference,
   VideoQualitySettings,
-  VideoResolution,
   VideoSource,
   VideoStreamDescription,
   VideoStreamIdSet,
