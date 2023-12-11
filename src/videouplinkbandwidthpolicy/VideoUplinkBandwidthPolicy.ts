@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
@@ -105,4 +106,17 @@ export default interface VideoUplinkBandwidthPolicy {
    * or temporal layers, we can remove the dependency descriptor from the SDP.
    */
   wantsVideoDependencyDescriptorRtpHeaderExtension?(): boolean;
+
+  /**
+   * Called when the intersection of the client's video codec send preferences
+   * and the meeting's video codec receive preferences is updated.
+   * @param meetingSupportedVideoSendCodecs - The intersection;
+   * undefined if the intersection is empty.
+   * @param videoSendCodecPreferences - The original preferences to use as a
+   * fallback when the intersection is empty.
+   */
+  setMeetingSupportedVideoSendCodecs?(
+    meetingSupportedVideoSendCodecs: VideoCodecCapability[] | undefined,
+    videoSendCodecPreferences: VideoCodecCapability[]
+  ): void;
 }

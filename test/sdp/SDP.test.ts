@@ -462,8 +462,8 @@ describe('SDP', () => {
         sdpObj.withVideoSendCodecPreferences([
           VideoCodecCapability.h264(),
           VideoCodecCapability.vp8(),
-          VideoCodecCapability.vp9profile0(),
-          VideoCodecCapability.av1main(),
+          VideoCodecCapability.vp9Profile0(),
+          VideoCodecCapability.av1Main(),
         ]).sdp
       ).to.deep.equal(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
     });
@@ -482,8 +482,8 @@ describe('SDP', () => {
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       expect(
         sdpObj.withVideoSendCodecPreferences([
-          VideoCodecCapability.vp9profile0(),
-          VideoCodecCapability.av1main(),
+          VideoCodecCapability.vp9Profile0(),
+          VideoCodecCapability.av1Main(),
         ]).sdp
       ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_VP9_PROFILE0);
     });
@@ -492,8 +492,8 @@ describe('SDP', () => {
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_VP9_NO_PROFILE_ID);
       expect(
         sdpObj.withVideoSendCodecPreferences([
-          VideoCodecCapability.vp9profile0(),
-          VideoCodecCapability.av1main(),
+          VideoCodecCapability.vp9Profile0(),
+          VideoCodecCapability.av1Main(),
         ]).sdp
       ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_VP9_NO_PROFILE_ID);
     });

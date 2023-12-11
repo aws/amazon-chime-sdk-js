@@ -19,7 +19,6 @@ import { Maybe } from '../utils/Types';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoSource from '../videosource/VideoSource';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
-import SupportedCodecPreferencesObserver from '../videouplinkbandwidthpolicy/SupportedCodecPreferencesObserver';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import BaseTask from './BaseTask';
 
@@ -248,10 +247,8 @@ export default class ReceiveVideoStreamIndexTask
       this.context.meetingSupportedVideoSendCodecPreferences = undefined;
     }
 
-    const observer = (this.context
-      .videoUplinkBandwidthPolicy as unknown) as SupportedCodecPreferencesObserver;
-    if (observer.supportedCodecsDidChange) {
-      observer.supportedCodecsDidChange(
+    if (this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs) {
+      this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
         this.context.meetingSupportedVideoSendCodecPreferences,
         this.context.videoSendCodecPreferences
       );

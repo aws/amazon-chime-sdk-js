@@ -890,9 +890,9 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       // @ts-ignore
       policy.numParticipants = 4;
       policy.setSVCEnabled(true);
-      policy.supportedCodecsDidChange(
-        [VideoCodecCapability.vp9profile0()],
-        [VideoCodecCapability.vp9profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
+      policy.setMeetingSupportedVideoSendCodecs(
+        [VideoCodecCapability.vp9Profile0()],
+        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
       );
       // @ts-ignore
       expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
@@ -907,9 +907,9 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       // @ts-ignore
       policy.numberOfPublishedVideoSources = 8;
       policy.setSVCEnabled(true);
-      policy.supportedCodecsDidChange(
-        [VideoCodecCapability.vp9profile0()],
-        [VideoCodecCapability.vp9profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
+      policy.setMeetingSupportedVideoSendCodecs(
+        [VideoCodecCapability.vp9Profile0()],
+        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
       );
       // @ts-ignore
       expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
@@ -924,9 +924,9 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       // @ts-ignore
       policy.numberOfPublishedVideoSources = 14;
       policy.setSVCEnabled(true);
-      policy.supportedCodecsDidChange(
-        [VideoCodecCapability.vp9profile0()],
-        [VideoCodecCapability.vp9profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
+      policy.setMeetingSupportedVideoSendCodecs(
+        [VideoCodecCapability.vp9Profile0()],
+        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
       );
       // @ts-ignore
       expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
@@ -940,9 +940,9 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       // @ts-ignore
       policy.numParticipants = 4;
       policy.setSVCEnabled(true);
-      policy.supportedCodecsDidChange(
-        [VideoCodecCapability.vp9profile0()],
-        [VideoCodecCapability.vp9profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
+      policy.setMeetingSupportedVideoSendCodecs(
+        [VideoCodecCapability.vp9Profile0()],
+        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
       );
       // @ts-ignore
       expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
@@ -955,12 +955,12 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       // @ts-ignore
       policy.numParticipants = 2;
       policy.setSVCEnabled(true);
-      policy.supportedCodecsDidChange(undefined, [
-        VideoCodecCapability.vp9profile0(),
+      policy.setMeetingSupportedVideoSendCodecs(undefined, [
+        VideoCodecCapability.vp9Profile0(),
         VideoCodecCapability.h264ConstrainedBaselineProfile(),
       ]);
       // Test case for isUsingSVCCodec is unchanged
-      policy.supportedCodecsDidChange(undefined, [VideoCodecCapability.vp9profile0()]);
+      policy.setMeetingSupportedVideoSendCodecs(undefined, [VideoCodecCapability.vp9Profile0()]);
       // @ts-ignore
       expect(policy.optimalParameters.isSVCEncoding()).to.be.false;
     });

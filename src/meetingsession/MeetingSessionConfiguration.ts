@@ -79,8 +79,7 @@ export default class MeetingSessionConfiguration {
   enableSimulcastForUnifiedPlanChromiumBasedBrowsers: boolean = false;
 
   /**
-   * Feature flag to enable SVC on supported browsers.
-   * Currently SVC is only supported on Chromium-based browsers.
+   * Feature flag to enable scalable video coding (SVC) on supported browsers, which is determined by `BrowserBehavior.supportsScalableVideoCoding`
    */
   enableSVC: boolean = false;
 
@@ -205,7 +204,7 @@ export default class MeetingSessionConfiguration {
       };
       if (
         createMeetingResponse.meetingfeatures?.video !== undefined &&
-        createMeetingResponse.meetingfeatures?.content !== undefined
+        createMeetingResponse.meetingfeatures.content !== undefined
       ) {
         this.meetingFeatures = new MeetingFeatures(
           parseVideoResolution(

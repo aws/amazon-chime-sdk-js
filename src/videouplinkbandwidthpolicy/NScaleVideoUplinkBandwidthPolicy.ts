@@ -8,15 +8,13 @@ import TransceiverController from '../transceivercontroller/TransceiverControlle
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import ConnectionMetrics from './ConnectionMetrics';
-import SupportedCodecPreferencesObserver from './SupportedCodecPreferencesObserver';
 import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 
 /** NScaleVideoUplinkBandwidthPolicy implements capture and encode
  *  parameters that are nearly equivalent to those chosen by the
  *  traditional native clients, except for a modification to
  *  maxBandwidthKbps and scaleResolutionDownBy described below. */
-export default class NScaleVideoUplinkBandwidthPolicy
-  implements VideoUplinkBandwidthPolicy, SupportedCodecPreferencesObserver {
+export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
   static readonly encodingMapKey = 'video';
   // 0, 1, 2 have dummy value as we keep the original resolution if we have less than 2 videos.
   // For each video cource, we define a target height for low resoultion and high resolution,
@@ -302,7 +300,7 @@ export default class NScaleVideoUplinkBandwidthPolicy
     return this.enableSVC;
   }
 
-  supportedCodecsDidChange(
+  setMeetingSupportedVideoSendCodecs(
     meetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] | undefined,
     videoSendCodecPreferences: VideoCodecCapability[]
   ): void {

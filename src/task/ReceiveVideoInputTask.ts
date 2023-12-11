@@ -18,7 +18,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
     super(context.logger);
   }
 
-  private async checkApplyConstraint(
+  private async checkAndApplyVideoConstraint(
     isContentAttendee: boolean,
     mediaStreamTrack: MediaStreamTrack,
     width: number,
@@ -120,7 +120,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
       const trackSettings = videoTracks[0].getSettings();
 
       if (isContentAttendee) {
-        this.checkApplyConstraint(
+        this.checkAndApplyVideoConstraint(
           isContentAttendee,
           videoTracks[0],
           trackSettings.width,
@@ -139,7 +139,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
       } else {
         const device = this.context.mediaStreamBroker as DefaultDeviceController;
         const videoInputQualitySettings = device.getVideoInputQualitySettings();
-        this.checkApplyConstraint(
+        this.checkAndApplyVideoConstraint(
           isContentAttendee,
           videoTracks[0],
           videoInputQualitySettings.videoWidth,

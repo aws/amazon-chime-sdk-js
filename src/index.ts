@@ -262,7 +262,6 @@ import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIn
 import SingleNodeAudioTransformDevice from './devicecontroller/SingleNodeAudioTransformDevice';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
 import SubscribeAndReceiveSubscribeAckTask from './task/SubscribeAndReceiveSubscribeAckTask';
-import SupportedCodecPreferencesObserver from './videouplinkbandwidthpolicy/SupportedCodecPreferencesObserver';
 import TargetDisplaySize from './videodownlinkbandwidthpolicy/TargetDisplaySize';
 import Task from './task/Task';
 import TaskCanceler from './taskcanceler/TaskCanceler';
@@ -614,7 +613,6 @@ export {
   Some,
   StreamMetricReport,
   SubscribeAndReceiveSubscribeAckTask,
-  SupportedCodecPreferencesObserver,
   TargetDisplaySize,
   Task,
   TaskCanceler,

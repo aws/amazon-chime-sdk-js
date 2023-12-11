@@ -457,7 +457,7 @@ export default class DefaultAudioVideoController
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
     if (this.enableSimulcast && this.configuration.enableSVC) {
-      this.logger.warn(`SVC is not successfully enabled since simulcast is enabled`);
+      this.logger.warn(`SVC cannot be enabled at the same time as simulcast. Disabling SVC.`);
     }
     this.enableSVC =
       !this.enableSimulcast &&
@@ -574,6 +574,8 @@ export default class DefaultAudioVideoController
         this.configuration.meetingFeatures.contentMaxResolution ===
         VideoQualitySettings.VideoResolutionUHD;
       if (enableUhdContent) {
+        // Increase default bandwidth for content share since this is not yet configuration that can be exposed
+        // without using simulcast
         this.setVideoMaxBandwidthKbps(2500);
       }
       this.meetingSessionContext.videoUplinkBandwidthPolicy.setHighResolutionFeatureEnabled(

@@ -716,7 +716,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
       context.videoSendCodecPreferences = [
         VideoCodecCapability.vp8(),
         VideoCodecCapability.h264(),
-        VideoCodecCapability.vp9profile0(),
+        VideoCodecCapability.vp9Profile0(),
       ];
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(
@@ -729,7 +729,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
         await delay(behavior.asyncWaitMs + 10);
         expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
           VideoCodecCapability.vp8(),
-          VideoCodecCapability.vp9profile0(),
+          VideoCodecCapability.vp9Profile0(),
         ]);
         done();
       });
@@ -792,12 +792,12 @@ describe('ReceiveVideoStreamIndexTask', () => {
       task.run();
     });
 
-    it('calls SupportedCodecPreferencesObserver if implemented', done => {
+    it('calls setMeetingSupportedVideoSendCodecs if implemented', done => {
       context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('attendee');
       context.videoSendCodecPreferences = [
         VideoCodecCapability.vp8(),
         VideoCodecCapability.h264(),
-        VideoCodecCapability.vp9profile0(),
+        VideoCodecCapability.vp9Profile0(),
       ];
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(
@@ -810,7 +810,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
         await delay(behavior.asyncWaitMs + 10);
         expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
           VideoCodecCapability.vp8(),
-          VideoCodecCapability.vp9profile0(),
+          VideoCodecCapability.vp9Profile0(),
         ]);
         done();
       });

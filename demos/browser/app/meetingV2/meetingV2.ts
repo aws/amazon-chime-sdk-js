@@ -646,7 +646,8 @@ export class DemoMeetingApp
     if (!this.defaultBrowserBehavior.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('content-simulcast-config')).style.display = 'none';
-      (document.getElementById('av1main_codec') as HTMLInputElement).remove();
+      (document.getElementById('av1Main-video-codec') as HTMLInputElement).remove();
+      (document.getElementById('av1Main-content-codec') as HTMLInputElement).remove();
     }
 
     document.getElementById('videoCodecSelect').addEventListener('change', () => {
@@ -3848,7 +3849,7 @@ export class DemoMeetingApp
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
     const enableSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC()
-      && !(chosenVideoSendCodec === 'av1main' || chosenVideoSendCodec === 'vp9profile0');
+      && !(chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
 
     if (enableSimulcastConfig) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = false;
@@ -3862,9 +3863,9 @@ export class DemoMeetingApp
     const enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
 
     const enableVideoSVCConfig = this.defaultBrowserBehavior.supportsScalableVideoCoding()
-      && (chosenVideoSendCodec === 'av1main' || chosenVideoSendCodec === 'vp9profile0');
+      && (chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
     const enableContentSVCConfig = this.defaultBrowserBehavior.supportsScalableVideoCoding()
-      && (chosenContentSendCodec === 'av1main' || chosenContentSendCodec === 'vp9profile0');
+      && (chosenContentSendCodec === 'av1Main' || chosenContentSendCodec === 'vp9Profile0');
 
     if (enableContentSVCConfig) {
       (document.getElementById('content-svc-config')).style.display = 'block';
@@ -3961,12 +3962,12 @@ export class DemoMeetingApp
         // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
         this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         break;
-      case 'av1main':
-        this.videoCodecPreferences = [VideoCodecCapability.av1main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+      case 'av1Main':
+        this.videoCodecPreferences = [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         this.enableSimulcast  = false; // simulcast does not work for AV1
         break;
-      case 'vp9profile0':
-        this.videoCodecPreferences = [VideoCodecCapability.vp9profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+      case 'vp9Profile0':
+        this.videoCodecPreferences = [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         this.enableSimulcast  = false; // simulcast does not work for VP9
         break;
       default:
@@ -3984,11 +3985,11 @@ export class DemoMeetingApp
         // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
         this.contentCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         break;
-      case 'av1main':
-        this.contentCodecPreferences = [VideoCodecCapability.av1main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+      case 'av1Main':
+        this.contentCodecPreferences = [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         break;
-      case 'vp9profile0':
-        this.contentCodecPreferences = [VideoCodecCapability.vp9profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+      case 'vp9Profile0':
+        this.contentCodecPreferences = [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         break;
       default:
         // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called

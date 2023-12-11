@@ -4,7 +4,8 @@
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 
 /**
- * [[MeetingFeatures]] contains the information meeting features.
+ * [[MeetingFeatures]] contains information on meeting wide configuration which may impact the
+ * client.
  */
 export default class MeetingFeatures {
   // Maximum resolution level allowed for camera videos in the meeting

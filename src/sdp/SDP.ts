@@ -757,7 +757,7 @@ export default class SDP {
           }
 
           // Firefox may not have profile ID for VP9. Treat VP9 without profile ID as profile 0
-          if (preference.equals(VideoCodecCapability.vp9profile0()) && !hasProfileId) {
+          if (preference.equals(VideoCodecCapability.vp9Profile0()) && !hasProfileId) {
             codecMatches = true;
           }
         } else {
