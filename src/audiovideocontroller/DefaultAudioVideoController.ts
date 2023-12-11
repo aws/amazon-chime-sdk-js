@@ -457,7 +457,9 @@ export default class DefaultAudioVideoController
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
     if (this.enableSimulcast && this.configuration.enableSVC) {
-      this.logger.warn(`SVC cannot be enabled at the same time as simulcast. Disabling SVC.`);
+      this.logger.warn(
+        'SVC cannot be enabled at the same time as simulcast. Disabling SVC, using simulcast.'
+      );
     }
     this.enableSVC =
       !this.enableSimulcast &&

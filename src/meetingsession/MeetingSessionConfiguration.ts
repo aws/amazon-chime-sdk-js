@@ -209,11 +209,11 @@ export default class MeetingSessionConfiguration {
         this.meetingFeatures = new MeetingFeatures(
           parseVideoResolution(
             createMeetingResponse.meetingfeatures.video.maxresolution,
-            VideoQualitySettings.VideoResolutionFHD
+            VideoQualitySettings.VideoResolutionHD
           ),
           parseVideoResolution(
             createMeetingResponse.meetingfeatures.content.maxresolution,
-            VideoQualitySettings.VideoResolutionUHD
+            VideoQualitySettings.VideoResolutionFHD
           )
         );
       }
