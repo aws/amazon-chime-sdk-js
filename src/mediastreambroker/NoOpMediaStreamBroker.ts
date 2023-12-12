@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MediaStreamBroker from './MediaStreamBroker';
 
