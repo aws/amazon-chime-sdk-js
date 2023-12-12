@@ -1636,92 +1636,92 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 
 // after dom content is loaded, add event listener to #scheduleMeetingSubmit
 
-document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () => {
-  const meetingScheduleTime: string = (document.getElementById('meetingScheduleTime') as HTMLInputElement).value;
+// document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () => {
+//   const meetingScheduleTime: string = (document.getElementById('meetingScheduleTime') as HTMLInputElement).value;
 
-  if (!meetingScheduleTime) {
-      alert('Please ensure both date and time are selected.');
-      return;
-  }
+//   if (!meetingScheduleTime) {
+//       alert('Please ensure both date and time are selected.');
+//       return;
+//   }
 
-  const userId = localStorage.getItem('userId');
-  if (!userId) {
-      alert('User ID is missing.');
-      return;
-  }
+//   const userId = localStorage.getItem('userId');
+//   if (!userId) {
+//       alert('User ID is missing.');
+//       return;
+//   }
 
-  const meetingName = (document.getElementById('meetingName') as HTMLInputElement).value;
-  // let authToken = localStorage.getItem('authToken');
+//   const meetingName = (document.getElementById('meetingName') as HTMLInputElement).value;
+//   // let authToken = localStorage.getItem('authToken');
 
-  fetch("https://app.larq.ai/api/scheduleMeeting", {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json' 
-          // Add Authorization header if needed
-          // 'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify({
-          timestamp: meetingScheduleTime,
-          host_id: userId,
-          meeting_name: meetingName,
-          duration: 60
-      })
-  })
-  .then(response => response.json())
-  .then(data => {
-      if (data.status === 'success') {
+//   fetch("https://app.larq.ai/api/scheduleMeeting", {
+//       method: 'POST',
+//       headers: {
+//           'Content-Type': 'application/json' 
+//           // Add Authorization header if needed
+//           // 'Authorization': `Bearer ${authToken}`
+//       },
+//       body: JSON.stringify({
+//           timestamp: meetingScheduleTime,
+//           host_id: userId,
+//           meeting_name: meetingName,
+//           duration: 60
+//       })
+//   })
+//   .then(response => response.json())
+//   .then(data => {
+//       if (data.status === 'success') {
           
-        let dataString = localStorage.getItem('data');
-        if (!dataString) {
-            console.error('No data found in localStorage');
-            return;
-        }
+//         let dataString = localStorage.getItem('data');
+//         if (!dataString) {
+//             console.error('No data found in localStorage');
+//             return;
+//         }
         
-        // Parse the data string into an object
-        let data = JSON.parse(dataString);
+//         // Parse the data string into an object
+//         let data = JSON.parse(dataString);
         
-        // Check if 'this_month_meetings' exists in the data
-        if (!data.dashboard_stats || !data.dashboard_stats.this_month_meetings) {
-            console.error('Invalid data structure in localStorage');
-            return;
-        }
+//         // Check if 'this_month_meetings' exists in the data
+//         if (!data.dashboard_stats || !data.dashboard_stats.this_month_meetings) {
+//             console.error('Invalid data structure in localStorage');
+//             return;
+//         }
         
-        // Create a new meeting object
-        const newMeeting = {
-          _id: data.meeting_id,
-          host_id: userId,
-          meeting_name: meetingName,
-          timestamp: meetingScheduleTime,
-          duration: 60
-          // Add other necessary fields here
-      };
+//         // Create a new meeting object
+//         const newMeeting = {
+//           _id: data.meeting_id,
+//           host_id: userId,
+//           meeting_name: meetingName,
+//           timestamp: meetingScheduleTime,
+//           duration: 60
+//           // Add other necessary fields here
+//       };
     
-        // Add the new meeting to the 'this_month_meetings' array
-        data.dashboard_stats.this_month_meetings.push(newMeeting);
+//         // Add the new meeting to the 'this_month_meetings' array
+//         data.dashboard_stats.this_month_meetings.push(newMeeting);
     
-        // Convert the updated data object back to a string
-        dataString = JSON.stringify(data);
+//         // Convert the updated data object back to a string
+//         dataString = JSON.stringify(data);
     
-        // Store the updated string back in localStorage
-        localStorage.setItem('data', dataString);
+//         // Store the updated string back in localStorage
+//         localStorage.setItem('data', dataString);
 
-        location.reload();
-          // Hide modal if needed
-          // document.getElementById('scheduleMeetingModal')!.style.display = 'none';
-      } 
-      else if( data.status === 'exists'){
-        alert(data.message);        
+//         location.reload();
+//           // Hide modal if needed
+//           // document.getElementById('scheduleMeetingModal')!.style.display = 'none';
+//       } 
+//       else if( data.status === 'exists'){
+//         alert(data.message);        
 
-      }
-      else {
-          alert(data.message);
-      }
-  })
-  .catch(error => {
-      alert('Error occurred: ' + error.message);
-      console.error('Error:', error);
-  });
-});
+//       }
+//       else {
+//           alert(data.message);
+//       }
+//   })
+//   .catch(error => {
+//       alert('Error occurred: ' + error.message);
+//       console.error('Error:', error);
+//   });
+// });
 
 
   // Drew take 2

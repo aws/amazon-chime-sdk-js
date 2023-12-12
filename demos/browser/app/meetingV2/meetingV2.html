@@ -11,6 +11,7 @@
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuesax/dist/vuesax.css"> Vuesax styles -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
+
   <title>Meeting Demo</title>
 </head>
 
@@ -109,7 +110,7 @@
   <!-- start of joining page - THIS IS THE SECOND PAGE AFTER LOGIN-->
   <div id="joining-page" class="mainBlock" style="display: flex;">
     <div class="row">
-      <div class="col-lg-4 col-md-12 col-12 animate__animated animate__slideInLeft">
+      <div class="col-lg-4 col-md-12 col-12 animate__animated animate__fadeInLeft">
         <div class="leftBlock mb-3">
             <div class="card-wrapper">
               <div class="card-box">
@@ -174,7 +175,7 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-8 col-md-12 col-12 animate__animated animate__slideInDown">
+      <div class="col-lg-8 col-md-12 col-12 animate__animated animate__fadeInDown">
         <div class="d-flex justify-content-between header-row">
           <h2 class="title text-white mx-2">Hello, <b class="first_name" id="greetingFirstName"></b></h2>
           <div class="dropdown-block">
@@ -299,7 +300,7 @@
           <div class="d-flex justify-content-between">
               <a class="heading" id="recentQuizTitle">Science: Chapter X</a>
               <p class="link btn btn-success text-white">
-              Download detailed summary
+              Download JSON summary
               <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M20.25 10.5V19.5C20.25 19.8978 20.092 20.2793 19.8107 20.5606C19.5294 20.8419 19.1478 21 18.75 21H5.25C4.85218 21 4.47064 20.8419 4.18934 20.5606C3.90804 20.2793 3.75 19.8978 3.75 19.5V10.5C3.75 10.1022 3.90804 9.72062 4.18934 9.43932C4.47064 9.15802 4.85218 8.99998 5.25 8.99998H7.5C7.69891 8.99998 7.88968 9.079 8.03033 9.21965C8.17098 9.3603 8.25 9.55107 8.25 9.74998C8.25 9.94889 8.17098 10.1397 8.03033 10.2803C7.88968 10.421 7.69891 10.5 7.5 10.5H5.25V19.5H18.75V10.5H16.5C16.3011 10.5 16.1103 10.421 15.9697 10.2803C15.829 10.1397 15.75 9.94889 15.75 9.74998C15.75 9.55107 15.829 9.3603 15.9697 9.21965C16.1103 9.079 16.3011 8.99998 16.5 8.99998H18.75C19.1478 8.99998 19.5294 9.15802 19.8107 9.43932C20.092 9.72062 20.25 10.1022 20.25 10.5ZM8.78063 6.53061L11.25 4.06029V12.75C11.25 12.9489 11.329 13.1397 11.4697 13.2803C11.6103 13.421 11.8011 13.5 12 13.5C12.1989 13.5 12.3897 13.421 12.5303 13.2803C12.671 13.1397 12.75 12.9489 12.75 12.75V4.06029L15.2194 6.53061C15.3601 6.67134 15.551 6.7504 15.75 6.7504C15.949 6.7504 16.1399 6.67134 16.2806 6.53061C16.4214 6.38987 16.5004 6.199 16.5004 5.99998C16.5004 5.80096 16.4214 5.61009 16.2806 5.46935L12.5306 1.71935C12.461 1.64962 12.3783 1.5943 12.2872 1.55656C12.1962 1.51882 12.0986 1.49939 12 1.49939C11.9014 1.49939 11.8038 1.51882 11.7128 1.55656C11.6217 1.5943 11.539 1.64962 11.4694 1.71935L7.71937 5.46935C7.57864 5.61009 7.49958 5.80096 7.49958 5.99998C7.49958 6.199 7.57864 6.38987 7.71938 6.5306C7.86011 6.67133 8.05098 6.7504 8.25 6.7504C8.44902 6.7504 8.63989 6.67134 8.78063 6.53061Z"
@@ -310,18 +311,18 @@
           </div>
           <div class="row">
             <div class="col-lg-6 col-md-6 col-12">
-            <div class="sub-header">Class Average: <span id="recentClassAverage">0.73</span></div>
+            <div class="sub-header">Class Average: <span id="recentClassAverage"></span></div>
               <h5>Most Difficult Question:</h5>
               <div class="lists" id="mostDifficultQuestion">
-                  <p>At night, plants breathe in ______________</p>
+                  <p></p>
               </div>
               <h5>Top Performer:</h5>
               <div class="lists" id="topPerformer">
-                  <p>Maria <span>5/5</span></p>
+                  <p><span></span></p>
               </div>
               <h5>Needs Attention:</h5>
               <div class="lists" id="needsAttention">
-                  <p>Somya <span>(2/5)</span></p>
+                  <p><span></span></p>
               </div>
               <div class="sub-header">Completed (<span id="completedCount">6</span>)</div>
               <div class="listingBlock" id="completedList">

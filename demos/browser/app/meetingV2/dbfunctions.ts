@@ -87,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function () {
   //   '2023-10-27': 'Meetings with team leads',
   //   // Add more events as needed
   // };
-  
 
 
   function generateCalendar() {
@@ -168,47 +167,94 @@ document.addEventListener('DOMContentLoaded', function () {
   // }
   // );
 
-function showEventModal(content: string, timestamp: string, id: string, duration: string) {
-  const modalElement = document.getElementById('eventModal');
-  const modalContentElement = document.getElementById('eventModalContent');
-
-  if (!modalElement || !modalContentElement) {
-        console.error("Modal elements not found");
-        return;
+  function showEventModal(content: string, timestamp: string, id: string, duration: string) {
+    const modalElement = document.getElementById('eventModal');
+    const modalContentElement = document.getElementById('eventModalContent');
+  
+    if (!modalElement || !modalContentElement) {
+      console.error("Modal elements not found");
+      return;
     }
-    
     
     const modal = new bootstrap.Modal(modalElement);
     let formattedTimestamp = "Invalid Date";
-
+  
     if (timestamp) {
-        const date = new Date(timestamp);
-        if (!isNaN(date.getTime())) {  // Check if date is valid
-            const formattedDate = date.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
-            const formattedTime = date.toLocaleString('default', { hour: 'numeric', minute: 'numeric', hour12: true });
-            formattedTimestamp = `${formattedDate}<br>At ${formattedTime}`;
-        }
+      const date = new Date(timestamp);
+      if (!isNaN(date.getTime())) {  // Check if date is valid
+        const formattedDate = date.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
+        const formattedTime = date.toLocaleString('default', { hour: 'numeric', minute: 'numeric', hour12: true });
+        formattedTimestamp = `${formattedDate}<br>At ${formattedTime}`;
+      }
     }
-    modalContentElement.innerHTML = ""
-    modalContentElement.innerHTML += `<div class="text-center"><h3>${content}</h3><br><br><small>Event on ${formattedTimestamp}</small><br><br><i>Duration: ${duration} minutes</i>`;
-
-    modalContentElement.innerHTML += `<br><br><button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://app.larq.ai?m=${id}', '_blank')">Go to Meeting</button>`;
-    // add a copy meeting link(should copy: https://app.larq.ai?m=[ID]) button to the modal:
-    modalContentElement.innerHTML += `<button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://app.larq.ai?m=${id}', this)">Copy Meeting Link</button>`;
-    // copy to clipboard function doesn't work yet but it should be something like this:
-    // function copyToClipboard(text) {
-    //   var inputc = document.body.appendChild(document.createElement("input"));
-    //   inputc.value = text;
-    //   inputc.focus();
-    //   inputc.select();
-    //   document.execCommand('copy');
-    //   inputc.parentNode.removeChild(inputc);
-    //   alert("Copied the text: " + inputc.value);
-    // }
-
-    
+  
+    // Generate calendar links
+    const googleCalendarLink = generateGoogleCalendarLink(timestamp, content, id);
+    const outlookCalendarLink = generateOutlookCalendarLink(timestamp, content, id);
+  
+    modalContentElement.innerHTML = `<div class="text-center">
+      <h3>${content}</h3>
+      <br><br>
+      <small>Event on ${formattedTimestamp}</small>
+      <br><br>
+      <i>Duration: ${duration} minutes</i>
+      <br><br>
+      <p style="font-size:14px">Add to Calendar</p>
+      <a href="${googleCalendarLink}" target="_blank" class="btn btn-warning d-inline col-5 p-2 m-2">Google Calendar</a>
+      <a href="${outlookCalendarLink}" download class="btn btn-info d-inline text-white col-5 p-2 m-2">Outlook ICS File</a>
+      <br><br>
+      <button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://app.larq.ai?m=${id}', '_blank')">Go to Meeting</button>
+      <button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://app.larq.ai?m=${id}', this)">Copy Meeting Link</button>
+    </div>`;
+  
     modal.show();
+  }
+  function generateGoogleCalendarLink(meetingTime: string, meetingName: string, meetingId: string): string {
+    const baseUrl: string = 'https://www.google.com/calendar/render?action=TEMPLATE';
+    const formatTime = (date: Date): string => date.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const startTime: Date = new Date(meetingTime);
+    const endTime: Date = new Date(startTime.getTime() + 60 * 60000); // Assuming 60 minutes duration
+    const location: string = `https://app.larq.ai?m=${meetingId}`;
+
+    return `${baseUrl}&text=${encodeURIComponent(meetingName)}&dates=${formatTime(startTime)}/${formatTime(endTime)}&location=${encodeURIComponent(location)}`;
 }
+
+function generateOutlookCalendarLink(meetingTime: string, meetingName: string, meetingId: string): string {
+    const formatICSDate = (date: Date): string => {
+        return date.toISOString().replace(/-|:|\.\d\d\d/g, '').slice(0, 15) + 'Z';
+    };
+
+    const startTime: Date = new Date(meetingTime);
+    const endTime: Date = new Date(startTime.getTime() + 60 * 60000); // Assuming 60 minutes duration
+    const location: string = `https://app.larq.ai?m=${meetingId}`;
+
+    const icsContent: string = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'BEGIN:VEVENT',
+        `URL:${location}`,
+        `DTSTART:${formatICSDate(startTime)}`,
+        `DTEND:${formatICSDate(endTime)}`,
+        `SUMMARY:${meetingName}`,
+        `DESCRIPTION:${meetingName}`,
+        `LOCATION:${location}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\n');
+
+    const blob: Blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url: string = URL.createObjectURL(blob);
+
+    const link: HTMLAnchorElement = document.createElement('a');
+    link.href = url;
+    link.download = `${meetingName.replace(/\s+/g, '_')}.ics`;
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+
+    return url; // This is a blob URL, it won't be useful after the download is triggered
+}
+
 function copyToClipboard(text: string, buttonElem: HTMLButtonElement) {
   navigator.clipboard.writeText(text).then(() => {
       // Change button text
@@ -226,55 +272,6 @@ function copyToClipboard(text: string, buttonElem: HTMLButtonElement) {
 
 (window as any).copyToClipboard = copyToClipboard;
 
-
-// document.addEventListener('DOMContentLoaded', function() {
-//   document.querySelectorAll('.calendar-day .calendar-event').forEach(eventDay => {
-//     eventDay.parentElement?.addEventListener('click', function() {
-//       // const content = "Test Event";  // Replace with actual event details
-//       // const timestamp = "2023-10-03T14:00:00.000Z";  // Replace with actual timestamp
-//       // const id = "1234"; // Replace with actual id
-//       // const duration = "60"; // Replace with actual duration
-//       // showEventModal(content, timestamp, id, duration);
-//     });
-//   });
-// });
-
-
-//   const transcriptContainer = document.getElementById("transcript-container");
-  
-//   // Load highlighted text from localStorage on page load
-//   const savedHighlight = localStorage.getItem("highlighted_text");
-//   if (!transcriptContainer) {
-//     console.error("Unable to find transcript-container.");
-// }  else {
-
-//   if (savedHighlight) {
-//     transcriptContainer.style.backgroundColor = savedHighlight;
-//   }
-
-//   transcriptContainer.addEventListener("mousedown", () => {
-    
-//     // find the target text
-//     const selection = window.getSelection();
-//     const selectedText = selection?.toString(); 
-//     if (!selectedText) {
-//         return;
-//     }
-//     // Apply the highlight color to the selected text
-//     transcriptContainer.style.backgroundColor = '#ffff00';
-
-
-//     // Save the highlighted text's content to localStorage
-//     localStorage.setItem("highlighted_text", selectedText);
-
-    
-
-
-//   });
-
-
-// }
-  
 
 
 

@@ -1,12 +1,4 @@
-// import Vue from 'vue'
-// import Vuesax from 'vuesax'
- 
-// import 'vuesax/dist/vuesax.css'
-// Vue.use(Vuesax)
-
-
-
-
+import * as bootstrap from 'bootstrap';
 
 // **********************************************************************
 // **********************************************************************
@@ -109,12 +101,9 @@ if (window.location.search.split('signup=')[1] == 'true' && document.getElementB
 
 // GET QUIZZES
 const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
-if (!userId) {
-    console.error('No userId found in localStorage');
-    return;
-}
+if (userId) {
 
-fetch(`https://app.larq.ai/api/getQuizzes?user_id=${userId}`)
+    fetch(`https://app.larq.ai/api/getQuizzes?user_id=${userId}`)
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
@@ -140,6 +129,8 @@ quizzes.forEach(quiz => {
     quizzesDiv.appendChild(quizElement);
 });
 };
+}
+
 // **********************************************************************
 
 
@@ -372,8 +363,107 @@ document.querySelector('#button-meeting-leave').addEventListener('click', functi
     );
     });
 
+// **********************************************************************
 
 
+
+document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () => {
+    const meetingScheduleTime = (document.getElementById('meetingScheduleTime') ).value;
+  
+    if (!meetingScheduleTime) {
+        alert('Please ensure both date and time are selected.');
+        return;
+    }
+  
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        alert('User ID is missing. Did you sign in?');
+        return;
+    }
+  
+    const meetingName = (document.getElementById('meetingName') ).value;
+    // let authToken = localStorage.getItem('authToken');
+  
+    fetch("https://app.larq.ai/api/scheduleMeeting", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json' 
+            // Add Authorization header if needed
+            // 'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({
+            timestamp: meetingScheduleTime,
+            host_id: userId,
+            meeting_name: meetingName,
+            duration: 60
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            
+          let dataString = localStorage.getItem('data');
+          if (!dataString) {
+              console.error('No data found in localStorage');
+              return;
+          }
+          
+          // Parse the data string into an object
+          let data = JSON.parse(dataString);
+          
+          // Check if 'this_month_meetings' exists in the data
+          if (!data.dashboard_stats || !data.dashboard_stats.this_month_meetings) {
+              console.error('Invalid data structure in localStorage');
+              return;
+          }
+          
+          // Create a new meeting object
+          const newMeeting = {
+            _id: data.meeting_id,
+            host_id: userId,
+            meeting_name: meetingName,
+            timestamp: meetingScheduleTime,
+            duration: 60
+            // Add other necessary fields here
+        };
+
+        // // Generate and display "Add to Calendar" links
+        // const googleCalendarLink = generateGoogleCalendarLink(meetingScheduleTime, meetingName);
+        // const outlookCalendarLink = generateOutlookCalendarLink(meetingScheduleTime, meetingName); // You need to implement this
+
+        // // Display or log the links (modify as needed)
+        // console.log('Add to Google Calendar:', googleCalendarLink);
+        // console.log('Download ICS for Outlook:', outlookCalendarLink);
+
+      
+          // Add the new meeting to the 'this_month_meetings' array
+          data.dashboard_stats.this_month_meetings.push(newMeeting);
+      
+          // Convert the updated data object back to a string
+          dataString = JSON.stringify(data);
+      
+          // Store the updated string back in localStorage
+          localStorage.setItem('data', dataString);
+          showEventModal(meetingName, meetingScheduleTime, data.meeting_id, 60);    
+            //   location.reload();
+            // Hide modal if needed
+            // document.getElementById('scheduleMeetingModal')!.style.display = 'none';
+        } 
+        else if( data.status === 'exists'){
+          alert(data.message);    
+          showEventModal(meetingName, meetingScheduleTime, data.meeting_id, 60);    
+  
+        }
+        else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error occurred: ' + error.message);
+        console.error('Error:', error);
+    });
+  });
+  
 // **********************************************************************
 // **********************************************************************
 // END DOMCONTENTLOADED
@@ -390,6 +480,99 @@ document.querySelector('#button-meeting-leave').addEventListener('click', functi
 // **********************************************************************
 // **********************************************************************
 
+function showEventModal(content, timestamp, id, duration) {
+    const modalElement = document.getElementById('eventModal');
+    const modalContentElement = document.getElementById('eventModalContent');
+  
+    if (!modalElement || !modalContentElement) {
+      console.error("Modal elements not found");
+      return;
+    }
+    
+    const modal = new bootstrap.Modal(modalElement);
+    let formattedTimestamp = "Invalid Date";
+  
+    if (timestamp) {
+      const date = new Date(timestamp);
+      if (!isNaN(date.getTime())) {  // Check if date is valid
+        const formattedDate = date.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
+        const formattedTime = date.toLocaleString('default', { hour: 'numeric', minute: 'numeric', hour12: true });
+        formattedTimestamp = `${formattedDate}<br>At ${formattedTime}`;
+      }
+    }
+  
+    // Generate calendar links
+    const googleCalendarLink = generateGoogleCalendarLink(timestamp, content, id);
+    const outlookCalendarLink = generateOutlookCalendarLink(timestamp, content, id);
+  
+    modalContentElement.innerHTML = `<div class="text-center">
+      <h3>${content}</h3>
+      <br><br>
+      <small>Event on ${formattedTimestamp}</small>
+      <br><br>
+      <i>Duration: ${duration} minutes</i>
+      <br><br>
+      <p style="font-size:14px">Add to Calendar</p>
+      <a href="${googleCalendarLink}" target="_blank" class="btn btn-warning d-inline col-5 p-2 m-2">Google Calendar</a>
+      <a href="${outlookCalendarLink}" download class="btn btn-info d-inline text-white col-5 p-2 m-2">Outlook ICS File</a>
+      <br><br>
+      <button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://app.larq.ai?m=${id}', '_blank')">Go to Meeting</button>
+      <button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://app.larq.ai?m=${id}', this)">Copy Meeting Link</button>
+    </div>`;
+  
+    modal.show();
+  }
+
+
+function generateGoogleCalendarLink(meetingTime, meetingName, meetingId) {
+    const baseUrl = 'https://www.google.com/calendar/render?action=TEMPLATE';
+    const formatTime = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const startTime = new Date(meetingTime);
+    const endTime = new Date(startTime.getTime() + 60 * 60000); // Assuming 60 minutes duration
+    const location = `https://app.larq.ai?m=${meetingId}`;
+  
+    return `${baseUrl}&text=${encodeURIComponent(meetingName)}&dates=${formatTime(startTime)}/${formatTime(endTime)}&location=${encodeURIComponent(location)}`;
+  }
+  
+
+  function generateOutlookCalendarLink(meetingTime, meetingName, meetingId) {
+    const formatICSDate = (date) => {
+      return date.toISOString().replace(/-|:|\.\d\d\d/g, '').slice(0, 15) + 'Z';
+    };
+  
+    const startTime = new Date(meetingTime);
+    const endTime = new Date(startTime.getTime() + 60 * 60000); // Assuming 60 minutes duration
+    const location = `https://app.larq.ai?m=${meetingId}`;
+  
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'BEGIN:VEVENT',
+      `URL:${location}`,
+      `DTSTART:${formatICSDate(startTime)}`,
+      `DTEND:${formatICSDate(endTime)}`,
+      `SUMMARY:${meetingName}`,
+      `DESCRIPTION:${meetingName}`,
+      `LOCATION:${location}`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\n');
+  
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${meetingName.replace(/\s+/g, '_')}.ics`;
+    document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+  
+    return url; // This is a blob URL, it won't be useful after the download is triggered
+  }
+    
+  
+  
 
 function handleJoinAction() {
         const meetingName = document.getElementById('inputMeeting').value;
@@ -415,11 +598,13 @@ function handleJoinAction() {
             if (data.status === 'success') {
                 // Handle joining or starting the meeting (NEW MEETING)
                 console.log(data.message);
+                meeting_id = data.meeting_id;
                 // set localstorage "host_id" to data.host_id
                 localStorage.setItem('host_id', data.host_id);
                 // Redirect to meeting page or perform other actions
             } else if (data.status === 'exists') {
                 // Handle meeting already exists (JOIN MEETING)
+                meeting_id = data.meeting_id;
                 console.log(data.message);
                 localStorage.setItem('host_id', data.host_id);
                 // Redirect to meeting page or perform other actions
