@@ -5,6 +5,7 @@ import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
+import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
 
@@ -18,6 +19,9 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   private subscribedReceiveSet: VideoStreamIdSet;
   private videoSources: VideoSource[] | undefined;
   protected videoIndex: VideoStreamIndex;
+
+  // Cap total receive bitrate at 15000 kbps to avoid hitting per client connection limits
+  private static maxReceiveBitrateKbps = 15000;
 
   constructor(private selfAttendeeId: string) {
     this.reset();
@@ -61,26 +65,43 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
       this.selfAttendeeId
     );
 
-    // If video sources are not chosen, then return the default receive set.
-    if (this.videoSources === undefined) {
-      return receiveSet;
-    }
+    // If video sources are not chosen, then use all of them.
+    const videoSources = !!this.videoSources
+      ? this.videoSources
+      : this.videoIndex.allVideoSendingSourcesExcludingSelf(this.selfAttendeeId);
 
     // Get the list of all the remote stream information
     const remoteInfos = this.videoIndex.remoteStreamDescriptions();
 
-    const mapOfAttendeeIdToOptimalStreamId = new Map<string, number>();
+    const mapOfAttendeeIdToRemoteDescriptions = new Map<string, VideoStreamDescription>();
 
     for (const info of remoteInfos) {
       if (receiveSet.contain(info.streamId)) {
-        mapOfAttendeeIdToOptimalStreamId.set(info.attendeeId, info.streamId);
+        mapOfAttendeeIdToRemoteDescriptions.set(info.attendeeId, info);
       }
     }
 
-    for (const videoSource of this.videoSources) {
+    let totalBitrateKbps = 0;
+    for (const videoSource of videoSources) {
       const attendeeId = videoSource.attendee.attendeeId;
-      if (mapOfAttendeeIdToOptimalStreamId.has(attendeeId)) {
-        streamSelectionSet.add(mapOfAttendeeIdToOptimalStreamId.get(attendeeId));
+      if (mapOfAttendeeIdToRemoteDescriptions.has(attendeeId)) {
+        const info = mapOfAttendeeIdToRemoteDescriptions.get(attendeeId);
+        if (
+          totalBitrateKbps + info.maxBitrateKbps <=
+          AllHighestVideoBandwidthPolicy.maxReceiveBitrateKbps
+        ) {
+          streamSelectionSet.add(info.streamId);
+          totalBitrateKbps += info.maxBitrateKbps;
+        } else {
+          console.warn(
+            'total bitrate ' +
+              (totalBitrateKbps + info.maxBitrateKbps) +
+              ' exceeds maximum limit (15000). Use chooseRemoteVideoSources to select a subset of participants to avoid this.'
+          );
+          // We could continue to check more sources (some of them might still fall under the limit).
+          // But we stop here to limit resubscribes if we're hovering near the cap.
+          break;
+        }
       }
     }
 

@@ -6,6 +6,7 @@ import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import Destroyable from '../destroyable/Destroyable';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
@@ -37,6 +38,7 @@ export default class DefaultContentShareController
     contentShareConfiguration.credentials.externalUserId = configuration.credentials.externalUserId;
     contentShareConfiguration.credentials.joinToken =
       configuration.credentials.joinToken + ContentShareConstants.Modality;
+    contentShareConfiguration.meetingFeatures = configuration.meetingFeatures.clone();
     return contentShareConfiguration;
   }
 
@@ -73,8 +75,25 @@ export default class DefaultContentShareController
     }
   }
 
+  enableSVCForContentShare(enable: boolean): void {
+    if (enable) {
+      this.contentAudioVideo.configuration.enableSVC = true;
+    } else {
+      this.contentAudioVideo.configuration.enableSVC = false;
+    }
+  }
+
   async startContentShare(stream: MediaStream): Promise<void> {
     if (!stream) {
+      return;
+    }
+    if (
+      this.contentAudioVideo.configuration.meetingFeatures.contentMaxResolution ===
+      VideoQualitySettings.VideoDisabled
+    ) {
+      this.contentAudioVideo.logger.info(
+        'Could not start content because max content resolution was set to None'
+      );
       return;
     }
     this.mediaStreamBroker.mediaStream = stream;

@@ -186,6 +186,87 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       shouldResub = policy.wantsResubscribe();
       expect(shouldResub).to.equal(false);
     });
+
+    it('Send Mid and Low res for FHD video feature', () => {
+      policy.setHighResolutionFeatureEnabled(true);
+      const index = new SimulcastVideoStreamIndex(logger);
+      let encodingParams = policy.chooseEncodingParameters();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      updateIndexFrame(index, 3);
+      policy.updateIndex(index);
+      policy.updateConnectionMetric({ uplinkKbps: 3000 });
+      encodingParams = policy.chooseEncodingParameters();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      incrementTime(6100);
+      policy.updateConnectionMetric({ uplinkKbps: 1000 });
+      let shouldResub = policy.wantsResubscribe();
+      expect(shouldResub).to.equal(true);
+      encodingParams = policy.chooseEncodingParameters();
+      let param = encodingParams.get(SimulcastTransceiverController.MID_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(1000000);
+      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(0);
+      incrementTime(6100);
+      policy.updateConnectionMetric({ uplinkKbps: 390 });
+      shouldResub = policy.wantsResubscribe();
+      expect(shouldResub).to.equal(true);
+      const mediaConstraint = policy.chooseMediaTrackConstraints();
+      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 1080 }));
+    });
+
+    it('Send Mid and Low res at low rate for FHD video feature', () => {
+      policy.setHighResolutionFeatureEnabled(true);
+      const index = new SimulcastVideoStreamIndex(logger);
+      let encodingParams = policy.chooseEncodingParameters();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      updateIndexFrame(index, 3);
+      policy.updateIndex(index);
+      policy.updateConnectionMetric({ uplinkKbps: 3000 });
+      encodingParams = policy.chooseEncodingParameters();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      incrementTime(6100);
+      policy.updateConnectionMetric({ uplinkKbps: 300 });
+      let shouldResub = policy.wantsResubscribe();
+      expect(shouldResub).to.equal(true);
+      encodingParams = policy.chooseEncodingParameters();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      incrementTime(8100);
+      policy.updateConnectionMetric({ uplinkKbps: 510 });
+      shouldResub = policy.wantsResubscribe();
+      expect(shouldResub).to.equal(true);
+      encodingParams = policy.chooseEncodingParameters();
+      let param = encodingParams.get(SimulcastTransceiverController.MID_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(1000000);
+      param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(250000);
+      const mediaConstraint = policy.chooseMediaTrackConstraints();
+      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 1080 }));
+    });
+
+    it('Send only low res when bitrate low for FHD video feature', () => {
+      policy.setHighResolutionFeatureEnabled(true);
+      const index = new SimulcastVideoStreamIndex(logger);
+      let encodingParams = policy.chooseEncodingParameters();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      updateIndexFrame(index, 3);
+      policy.updateIndex(index);
+      policy.updateConnectionMetric({ uplinkKbps: 3000 });
+      encodingParams = policy.chooseEncodingParameters();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      incrementTime(6100);
+      policy.updateConnectionMetric({ uplinkKbps: 300 });
+      let shouldResub = policy.wantsResubscribe();
+      expect(shouldResub).to.equal(true);
+      encodingParams = policy.chooseEncodingParameters();
+      const param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(500000);
+      incrementTime(8100);
+      policy.updateConnectionMetric({ uplinkKbps: 480 });
+      shouldResub = policy.wantsResubscribe();
+      expect(shouldResub).to.equal(false);
+      const mediaConstraint = policy.chooseMediaTrackConstraints();
+      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 1080 }));
+    });
   });
 
   describe('encoding change with num clients', () => {
@@ -261,7 +342,7 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       let param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(200000);
       param = encodingParams.get(SimulcastTransceiverController.MID_LEVEL_NAME);
-      expect(param.maxBitrate).to.equal(350000);
+      expect(param.maxBitrate).to.equal(360000);
     });
   });
 

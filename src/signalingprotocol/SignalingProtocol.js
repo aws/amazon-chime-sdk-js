@@ -1616,6 +1616,7 @@ $root.SdkJoinFrame = (function() {
      * @property {boolean|null} [wantsCompressedSdp] SdkJoinFrame wantsCompressedSdp
      * @property {SdkServerSideNetworkAdaption|null} [serverSideNetworkAdaption] SdkJoinFrame serverSideNetworkAdaption
      * @property {Array.<SdkServerSideNetworkAdaption>|null} [supportedServerSideNetworkAdaptions] SdkJoinFrame supportedServerSideNetworkAdaptions
+     * @property {boolean|null} [wantsAllTemporalLayersInIndex] SdkJoinFrame wantsAllTemporalLayersInIndex
      * @property {boolean|null} [disablePeriodicKeyframeRequestOnContentSender] SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender
      */
 
@@ -1700,6 +1701,14 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.prototype.supportedServerSideNetworkAdaptions = $util.emptyArray;
 
     /**
+     * SdkJoinFrame wantsAllTemporalLayersInIndex.
+     * @member {boolean} wantsAllTemporalLayersInIndex
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.wantsAllTemporalLayersInIndex = false;
+
+    /**
      * SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender.
      * @member {boolean} disablePeriodicKeyframeRequestOnContentSender
      * @memberof SdkJoinFrame
@@ -1748,6 +1757,8 @@ $root.SdkJoinFrame = (function() {
         if (message.supportedServerSideNetworkAdaptions != null && message.supportedServerSideNetworkAdaptions.length)
             for (var i = 0; i < message.supportedServerSideNetworkAdaptions.length; ++i)
                 writer.uint32(/* id 11, wireType 0 =*/88).int32(message.supportedServerSideNetworkAdaptions[i]);
+        if (message.wantsAllTemporalLayersInIndex != null && Object.hasOwnProperty.call(message, "wantsAllTemporalLayersInIndex"))
+            writer.uint32(/* id 12, wireType 0 =*/96).bool(message.wantsAllTemporalLayersInIndex);
         if (message.disablePeriodicKeyframeRequestOnContentSender != null && Object.hasOwnProperty.call(message, "disablePeriodicKeyframeRequestOnContentSender"))
             writer.uint32(/* id 13, wireType 0 =*/104).bool(message.disablePeriodicKeyframeRequestOnContentSender);
         return writer;
@@ -1814,6 +1825,9 @@ $root.SdkJoinFrame = (function() {
                         message.supportedServerSideNetworkAdaptions.push(reader.int32());
                 } else
                     message.supportedServerSideNetworkAdaptions.push(reader.int32());
+                break;
+            case 12:
+                message.wantsAllTemporalLayersInIndex = reader.bool();
                 break;
             case 13:
                 message.disablePeriodicKeyframeRequestOnContentSender = reader.bool();
@@ -1883,6 +1897,9 @@ $root.SdkJoinFrame = (function() {
             case 4:
                 break;
             }
+        if (message.wantsAllTemporalLayersInIndex != null && message.hasOwnProperty("wantsAllTemporalLayersInIndex"))
+            if (typeof message.wantsAllTemporalLayersInIndex !== "boolean")
+                return "wantsAllTemporalLayersInIndex: boolean expected";
         if (message.supportedServerSideNetworkAdaptions != null && message.hasOwnProperty("supportedServerSideNetworkAdaptions")) {
             if (!Array.isArray(message.supportedServerSideNetworkAdaptions))
                 return "supportedServerSideNetworkAdaptions: array expected";
@@ -1980,6 +1997,8 @@ $root.SdkJoinFrame = (function() {
                     break;
                 }
         }
+        if (object.wantsAllTemporalLayersInIndex != null)
+            message.wantsAllTemporalLayersInIndex = Boolean(object.wantsAllTemporalLayersInIndex);
         if (object.disablePeriodicKeyframeRequestOnContentSender != null)
             message.disablePeriodicKeyframeRequestOnContentSender = Boolean(object.disablePeriodicKeyframeRequestOnContentSender);
         return message;
@@ -3783,6 +3802,14 @@ $root.SdkIndexFrame = (function() {
                 case 3:
                     message.supportedReceiveCodecIntersection[i] = 3;
                     break;
+                case "VP9_PROFILE_0":
+                case 8:
+                    message.supportedReceiveCodecIntersection[i] = 8;
+                    break;
+                case "AV1_MAIN":
+                case 11:
+                    message.supportedReceiveCodecIntersection[i] = 11;
+                    break;
                 }
         }
         return message;
@@ -4344,6 +4371,8 @@ $root.SdkStreamDescriptor = (function() {
      * @property {string|null} [attendeeId] SdkStreamDescriptor attendeeId
      * @property {SdkStreamMediaType|null} [mediaType] SdkStreamDescriptor mediaType
      * @property {string|null} [externalUserId] SdkStreamDescriptor externalUserId
+     * @property {number|null} [width] SdkStreamDescriptor width
+     * @property {number|null} [height] SdkStreamDescriptor height
      */
 
     /**
@@ -4434,6 +4463,22 @@ $root.SdkStreamDescriptor = (function() {
     SdkStreamDescriptor.prototype.externalUserId = "";
 
     /**
+     * SdkStreamDescriptor width.
+     * @member {number} width
+     * @memberof SdkStreamDescriptor
+     * @instance
+     */
+    SdkStreamDescriptor.prototype.width = 0;
+ 
+    /**
+     * SdkStreamDescriptor height.
+     * @member {number} height
+     * @memberof SdkStreamDescriptor
+     * @instance
+     */
+    SdkStreamDescriptor.prototype.height = 0;
+
+    /**
      * Creates a new SdkStreamDescriptor instance using the specified properties.
      * @function create
      * @memberof SdkStreamDescriptor
@@ -4475,6 +4520,10 @@ $root.SdkStreamDescriptor = (function() {
             writer.uint32(/* id 9, wireType 0 =*/72).int32(message.mediaType);
         if (message.externalUserId != null && Object.hasOwnProperty.call(message, "externalUserId"))
             writer.uint32(/* id 10, wireType 2 =*/82).string(message.externalUserId);
+        if (message.width != null && Object.hasOwnProperty.call(message, "width"))
+            writer.uint32(/* id 11, wireType 0 =*/88).uint32(message.width);
+        if (message.height != null && Object.hasOwnProperty.call(message, "height"))
+            writer.uint32(/* id 12, wireType 0 =*/96).uint32(message.height);
         return writer;
     };
 
@@ -4535,6 +4584,12 @@ $root.SdkStreamDescriptor = (function() {
                 break;
             case 10:
                 message.externalUserId = reader.string();
+                break;
+            case 11:
+                message.width = reader.uint32();
+                break;
+            case 12:
+                message.height = reader.uint32();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -4603,6 +4658,12 @@ $root.SdkStreamDescriptor = (function() {
         if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
             if (!$util.isString(message.externalUserId))
                 return "externalUserId: string expected";
+        if (message.width != null && message.hasOwnProperty("width"))
+            if (!$util.isInteger(message.width))
+                return "width: integer expected";
+        if (message.height != null && message.hasOwnProperty("height"))
+            if (!$util.isInteger(message.height))
+                return "height: integer expected";
         return null;
     };
 
@@ -4644,6 +4705,10 @@ $root.SdkStreamDescriptor = (function() {
         }
         if (object.externalUserId != null)
             message.externalUserId = String(object.externalUserId);
+        if (object.width != null)
+            message.width = object.width >>> 0;
+        if (object.height != null)
+            message.height = object.height >>> 0;
         return message;
     };
 
@@ -4670,6 +4735,8 @@ $root.SdkStreamDescriptor = (function() {
             object.attendeeId = "";
             object.mediaType = options.enums === String ? "AUDIO" : 1;
             object.externalUserId = "";
+            object.width = 0;
+            object.height = 0;
         }
         if (message.streamId != null && message.hasOwnProperty("streamId"))
             object.streamId = message.streamId;
@@ -4689,6 +4756,10 @@ $root.SdkStreamDescriptor = (function() {
             object.mediaType = options.enums === String ? $root.SdkStreamMediaType[message.mediaType] : message.mediaType;
         if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
             object.externalUserId = message.externalUserId;
+        if (message.width != null && message.hasOwnProperty("width"))
+            object.width = message.width;
+        if (message.height != null && message.hasOwnProperty("height"))
+            object.height = message.height;
         return object;
     };
 
@@ -12389,6 +12460,22 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
     return SdkRemoteVideoUpdateFrame;
 })();
 
+/**
+ * SdkVideoQualityAdaptationPreference enum.
+ * @exports SdkVideoQualityAdaptationPreference
+ * @enum {number}
+ * @property {number} BALANCED=1 BALANCED value
+ * @property {number} MAINTAIN_FRAMERATE=2 MAINTAIN_FRAMERATE value
+ * @property {number} MAINTAIN_RESOLUTION=3 MAINTAIN_RESOLUTION value
+ */
+$root.SdkVideoQualityAdaptationPreference = (function() {
+    var valuesById = {}, values = Object.create(valuesById);
+    values[valuesById[1] = "BALANCED"] = 1;
+    values[valuesById[2] = "MAINTAIN_FRAMERATE"] = 2;
+    values[valuesById[3] = "MAINTAIN_RESOLUTION"] = 3;
+    return values;
+})();
+
 $root.SdkVideoSubscriptionConfiguration = (function() {
 
     /**
@@ -12401,6 +12488,7 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @property {number|null} [priority] SdkVideoSubscriptionConfiguration priority
      * @property {number|null} [targetBitrateKbps] SdkVideoSubscriptionConfiguration targetBitrateKbps
      * @property {number|null} [groupId] SdkVideoSubscriptionConfiguration groupId
+     * @property {SdkVideoQualityAdaptationPreference|null} [qualityAdaptationPreference] SdkVideoSubscriptionConfiguration qualityAdaptationPreference
      */
 
     /**
@@ -12467,6 +12555,14 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
     SdkVideoSubscriptionConfiguration.prototype.groupId = 0;
 
     /**
+     * SdkVideoSubscriptionConfiguration qualityAdaptationPreference.
+     * @member {SdkVideoQualityAdaptationPreference} qualityAdaptationPreference
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.qualityAdaptationPreference = 1;
+
+    /**
      * Creates a new SdkVideoSubscriptionConfiguration instance using the specified properties.
      * @function create
      * @memberof SdkVideoSubscriptionConfiguration
@@ -12501,6 +12597,8 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.targetBitrateKbps);
         if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
             writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.groupId);
+        if (message.qualityAdaptationPreference != null && Object.hasOwnProperty.call(message, "qualityAdaptationPreference"))
+            writer.uint32(/* id 7, wireType 0 =*/56).int32(message.qualityAdaptationPreference);
         return writer;
     };
 
@@ -12552,6 +12650,9 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
                 break;
             case 6:
                 message.groupId = reader.uint32();
+                break;
+            case 7:
+                message.qualityAdaptationPreference = reader.int32();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -12607,6 +12708,15 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
         if (message.groupId != null && message.hasOwnProperty("groupId"))
             if (!$util.isInteger(message.groupId))
                 return "groupId: integer expected";
+        if (message.qualityAdaptationPreference != null && message.hasOwnProperty("qualityAdaptationPreference"))
+            switch (message.qualityAdaptationPreference) {
+            default:
+                return "qualityAdaptationPreference: enum value expected";
+            case 1:
+            case 2:
+            case 3:
+                break;
+            }
         return null;
     };
 
@@ -12634,6 +12744,20 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             message.targetBitrateKbps = object.targetBitrateKbps >>> 0;
         if (object.groupId != null)
             message.groupId = object.groupId >>> 0;
+        switch (object.qualityAdaptationPreference) {
+        case "BALANCED":
+        case 1:
+            message.qualityAdaptationPreference = 1;
+            break;
+        case "MAINTAIN_FRAMERATE":
+        case 2:
+            message.qualityAdaptationPreference = 2;
+            break;
+        case "MAINTAIN_RESOLUTION":
+        case 3:
+            message.qualityAdaptationPreference = 3;
+            break;
+        }
         return message;
     };
 
@@ -12657,6 +12781,7 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             object.priority = 0;
             object.targetBitrateKbps = 0;
             object.groupId = 0;
+            object.qualityAdaptationPreference = options.enums === String ? "BALANCED" : 1;
         }
         if (message.mid != null && message.hasOwnProperty("mid"))
             object.mid = message.mid;
@@ -12670,6 +12795,8 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             object.targetBitrateKbps = message.targetBitrateKbps;
         if (message.groupId != null && message.hasOwnProperty("groupId"))
             object.groupId = message.groupId;
+        if (message.qualityAdaptationPreference != null && message.hasOwnProperty("qualityAdaptationPreference"))
+            object.qualityAdaptationPreference = options.enums === String ? $root.SdkVideoQualityAdaptationPreference[message.qualityAdaptationPreference] : message.qualityAdaptationPreference;
         return object;
     };
 
@@ -13681,11 +13808,15 @@ $root.SdkMeetingSessionCredentials = (function() {
  * @enum {number}
  * @property {number} VP8=1 VP8 value
  * @property {number} H264_CONSTRAINED_BASELINE_PROFILE=3 H264_CONSTRAINED_BASELINE_PROFILE value
+ * @property {number} VP9_PROFILE_0=8 VP9_PROFILE_0 value
+ * @property {number} AV1_MAIN=11 AV1_MAIN value
  */
 $root.SdkVideoCodecCapability = (function() {
     var valuesById = {}, values = Object.create(valuesById);
     values[valuesById[1] = "VP8"] = 1;
     values[valuesById[3] = "H264_CONSTRAINED_BASELINE_PROFILE"] = 3;
+    values[valuesById[8] = "VP9_PROFILE_0"] = 8;
+    values[valuesById[11] = "AV1_MAIN"] = 11;
     return values;
 })();
 

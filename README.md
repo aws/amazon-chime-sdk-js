@@ -100,6 +100,7 @@ The following developer guides cover specific topics for a technical audience.
 - [Client Event Ingestion](https://aws.github.io/amazon-chime-sdk-js/modules/clientevent_ingestion.html)
 - [Content Security Policy](https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html)
 - [Managing Video Quality for Different Video Layouts](https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html)
+- [Meeting Features](https://aws.github.io/amazon-chime-sdk-js/modules/meetingfeatures.html)
 
 ## Migration Guides
 

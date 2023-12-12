@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.19.0] - 2023-09-20
 
 ### Added
+- Add high resolution meeting features. See the [Meeting Features](https://aws.github.io/amazon-chime-sdk-js/modules/meetingfeatures.html) guide for more information.
+- Add VP9 and AV1 video codecs. See the [Video Codecs](https://aws.github.io/amazon-chime-sdk-js/modules/videocodecs.html) guide for more information. VP9 has the ability to enable SVC.
 
 ### Removed
 

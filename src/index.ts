@@ -157,6 +157,7 @@ import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
 import MediaStreamBrokerObserver from './mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingEventsClientConfiguration from './eventsclientconfiguration/MeetingEventsClientConfiguration';
 import MeetingEventsClientConfigurationAttributes from './eventsclientconfiguration/MeetingEventsClientConfigurationAttributes';
+import MeetingFeatures from './meetingsession/MeetingFeatures';
 import MeetingHistoryState from './eventcontroller/MeetingHistoryState';
 import MeetingReadinessChecker from './meetingreadinesschecker/MeetingReadinessChecker';
 import MeetingReadinessCheckerConfiguration from './meetingreadinesschecker/MeetingReadinessCheckerConfiguration';
@@ -306,6 +307,7 @@ import VideoPreference from './videodownlinkbandwidthpolicy/VideoPreference';
 import VideoPreferences from './videodownlinkbandwidthpolicy/VideoPreferences';
 import VideoPriorityBasedPolicy from './videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoPriorityBasedPolicyConfig from './videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig';
+import VideoQualityAdaptationPreference from './videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
 import VideoSource from './videosource/VideoSource';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
@@ -502,6 +504,7 @@ export {
   MediaStreamBrokerObserver,
   MeetingEventsClientConfiguration,
   MeetingEventsClientConfigurationAttributes,
+  MeetingFeatures,
   MeetingHistoryState,
   MeetingReadinessChecker,
   MeetingReadinessCheckerConfiguration,
@@ -655,6 +658,7 @@ export {
   VideoPreferences,
   VideoPriorityBasedPolicy,
   VideoPriorityBasedPolicyConfig,
+  VideoQualityAdaptationPreference,
   VideoQualitySettings,
   VideoSource,
   VideoStreamDescription,

@@ -6,13 +6,14 @@ import {
   TargetDisplaySize,
   VideoPreference,
   VideoPreferences,
+  VideoQualityAdaptationPreference,
   VideoPriorityBasedPolicy,
   VideoSource
 } from 'amazon-chime-sdk-js';
 
 export default class VideoPreferenceManager {
   static readonly DefaultVideoTilePriority: number = 5;
-  static readonly DefaultVideoTileTargetDisplaySize: TargetDisplaySize = TargetDisplaySize.High;
+  static readonly DefaultVideoTileTargetDisplaySize: TargetDisplaySize = TargetDisplaySize.Maximum;
 
   attendeeIdToVideoPreference = new Map<string, VideoPreference>();
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
@@ -50,6 +51,16 @@ export default class VideoPreferenceManager {
       this.attendeeIdToVideoPreference.get(attendeeId).priority = priority
     } else {
       this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(attendeeId, priority, VideoPreferenceManager.DefaultVideoTileTargetDisplaySize));
+    }
+    this.updateDownlinkPreference();
+  }
+
+  setAttendeeDegradationPreference(attendeeId: string, preference: VideoQualityAdaptationPreference) {
+    if (this.attendeeIdToVideoPreference.has(attendeeId)) {
+      this.attendeeIdToVideoPreference.get(attendeeId).degradationPreference = preference
+    } else {
+      this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(
+        attendeeId, VideoPreferenceManager.DefaultVideoTilePriority, VideoPreferenceManager.DefaultVideoTileTargetDisplaySize, preference));
     }
     this.updateDownlinkPreference();
   }

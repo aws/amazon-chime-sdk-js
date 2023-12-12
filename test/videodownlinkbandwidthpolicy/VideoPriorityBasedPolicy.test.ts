@@ -27,6 +27,7 @@ import VideoDownlinkObserver from '../../src/videodownlinkbandwidthpolicy/VideoD
 import VideoPreference from '../../src/videodownlinkbandwidthpolicy/VideoPreference';
 import { VideoPreferences } from '../../src/videodownlinkbandwidthpolicy/VideoPreferences';
 import VideoPriorityBasedPolicy from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
+import VideoQualityAdaptationPreference from '../../src/videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -103,6 +104,142 @@ describe('VideoPriorityBasedPolicy', () => {
           })
         );
       }
+    }
+    index.integrateIndexFrame(
+      new SdkIndexFrame({ sources: sources, numParticipants: remoteClientCnt })
+    );
+  }
+
+  function updateSvcIndexFrame(index: SimulcastVideoStreamIndex, remoteClientCnt: number): void {
+    const sources: SdkStreamDescriptor[] = [];
+    for (let i = 1; i < remoteClientCnt + 1; i++) {
+      const attendee = `attendee-svc-${i}`;
+      sources.push(
+        // Main (S3T3) stream: 1080p@30fps 1500 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 9,
+          groupId: i,
+          maxBitrateKbps: 1500,
+          avgBitrateBps: 1500 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 1920,
+          height: 1080,
+          framerate: 30,
+        })
+      );
+      sources.push(
+        // S1T1 stream: 270p@7fps 100 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 8,
+          groupId: i,
+          maxBitrateKbps: 100,
+          avgBitrateBps: 100 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 480,
+          height: 270,
+          framerate: 7,
+        })
+      );
+      sources.push(
+        // S1T2 stream: 270p@15fps 150 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 7,
+          groupId: i,
+          maxBitrateKbps: 150,
+          avgBitrateBps: 150 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 480,
+          height: 270,
+          framerate: 15,
+        })
+      );
+      sources.push(
+        // S1T3 stream: 270p@30fps 200 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 6,
+          groupId: i,
+          maxBitrateKbps: 200,
+          avgBitrateBps: 200 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 480,
+          height: 270,
+          framerate: 30,
+        })
+      );
+      sources.push(
+        // S2T1 stream: 540p@7fps 250 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 5,
+          groupId: i,
+          maxBitrateKbps: 250,
+          avgBitrateBps: 250 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 960,
+          height: 540,
+          framerate: 7,
+        })
+      );
+      sources.push(
+        // S2T2 stream: 540p@15fps 400 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 4,
+          groupId: i,
+          maxBitrateKbps: 400,
+          avgBitrateBps: 400 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 960,
+          height: 540,
+          framerate: 15,
+        })
+      );
+      sources.push(
+        // S2T3 stream: 540p@30fps 650 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 3,
+          groupId: i,
+          maxBitrateKbps: 650,
+          avgBitrateBps: 650 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 960,
+          height: 540,
+          framerate: 30,
+        })
+      );
+      sources.push(
+        // S3T1 stream: 1080p@7fps 600 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 2,
+          groupId: i,
+          maxBitrateKbps: 600,
+          avgBitrateBps: 600 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 1920,
+          height: 1080,
+          framerate: 7,
+        })
+      );
+      sources.push(
+        // S3T2 stream: 1080p@15fps 1000 kbps
+        new SdkStreamDescriptor({
+          streamId: 10 * i - 1,
+          groupId: i,
+          maxBitrateKbps: 1000,
+          avgBitrateBps: 1000 * 1000,
+          attendeeId: attendee,
+          mediaType: SdkStreamMediaType.VIDEO,
+          width: 1920,
+          height: 1080,
+          framerate: 15,
+        })
+      );
     }
     index.integrateIndexFrame(
       new SdkIndexFrame({ sources: sources, numParticipants: remoteClientCnt })
@@ -1679,6 +1816,78 @@ describe('VideoPriorityBasedPolicy', () => {
       expect(resub).to.equal(true);
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([1]);
+    });
+  });
+
+  describe('determineTargetRate', () => {
+    it('caps target rate at 15000 kbps', () => {
+      // @ts-ignore
+      policy.startupPeriod = false;
+      // @ts-ignore
+      policy.downlinkStats.bandwidthEstimateKbps = 20000;
+      // @ts-ignore
+      expect(policy.determineTargetRate()).to.equal(15000);
+    });
+  });
+
+  describe('degradation preference', () => {
+    it('can choose with balanced degradation path', () => {
+      updateSvcIndexFrame(videoStreamIndex, 6);
+      policy.updateIndex(videoStreamIndex);
+      const preferences = VideoPreferences.prepare();
+      preferences.add(new VideoPreference('attendee-svc-1', 1, TargetDisplaySize.High));
+      policy.chooseRemoteVideoSources(preferences.build());
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1]);
+      policy.reset();
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([]);
+    });
+
+    it('can choose with maintain framerate degradation path', () => {
+      updateSvcIndexFrame(videoStreamIndex, 6);
+      policy.updateIndex(videoStreamIndex);
+      const preferences = VideoPreferences.prepare();
+      preferences.add(
+        new VideoPreference(
+          'attendee-svc-1',
+          1,
+          TargetDisplaySize.High,
+          VideoQualityAdaptationPreference.MaintainFramerate
+        )
+      );
+      policy.chooseRemoteVideoSources(preferences.build());
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1]);
+      policy.reset();
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([]);
+    });
+
+    it('can choose with maintain resolution degradation path', () => {
+      updateSvcIndexFrame(videoStreamIndex, 6);
+      policy.updateIndex(videoStreamIndex);
+      const preferences = VideoPreferences.prepare();
+      preferences.add(
+        new VideoPreference(
+          'attendee-svc-1',
+          1,
+          TargetDisplaySize.High,
+          VideoQualityAdaptationPreference.MaintainResolution
+        )
+      );
+      policy.chooseRemoteVideoSources(preferences.build());
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1]);
+      policy.reset();
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([]);
     });
   });
 });

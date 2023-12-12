@@ -126,16 +126,37 @@ function serve(host = '127.0.0.1:8080') {
             if (primaryMeeting !== undefined) {
               request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
             }
-            if (requestUrl.query.ns_es === 'true') {
-              request.MeetingFeatures = {
-                Audio: {
-                  // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+            if (requestUrl.query.ns_es === 'true' || 
+                  requestUrl.query.v_rs === 'FHD' || 
+                  requestUrl.query.v_rs === 'None' || 
+                  requestUrl.query.c_rs === 'UHD' ||
+                  requestUrl.query.c_rs === 'None' ||
+                  requestUrl.query.a_cnt != '-999') {
+              request.MeetingFeatures = {};
+              if (requestUrl.query.ns_es === 'true') {
+                request.MeetingFeatures.Audio = {
                   EchoReduction: 'AVAILABLE'
                 }
-              };
+              }
+              if (requestUrl.query.v_rs === 'FHD' || requestUrl.query.v_rs === 'None') {
+                request.MeetingFeatures.Video = {
+                  MaxResolution: requestUrl.query.v_rs
+                }
+              }
+              if (requestUrl.query.c_rs === 'UHD' || requestUrl.query.c_rs === 'None') {
+                request.MeetingFeatures.Content = {
+                  MaxResolution: requestUrl.query.c_rs
+                }
+              }
+              if (requestUrl.query.a_cnt != '-999') {
+                request.MeetingFeatures.Attendee = {
+                  MaxCount: Number(requestUrl.query.a_cnt)
+                }
+              }
             }
             console.info('Creating new meeting: ' + JSON.stringify(request));
             meeting = await chimeSDKMeetings.createMeeting(request);
+            console.info('Created new meeting: ' + JSON.stringify(meeting));
 
             // Extend meeting with primary external meeting ID if it exists
             if (primaryMeeting !== undefined) {

@@ -76,7 +76,7 @@ export default class NoOpDeviceController
   chooseVideoInputQuality(_width: number, _height: number, _frameRate: number): void {}
 
   getVideoInputQualitySettings(): VideoQualitySettings | null {
-    return null;
+    return VideoQualitySettings.VideoDisabled;
   }
 }
 

@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import {
   AllHighestVideoBandwidthPolicy,
   DefaultTransceiverController,
+  NoVideoUplinkBandwidthPolicy,
   SDP,
   SignalingClientVideoSubscriptionConfiguration,
   TargetDisplaySize,
@@ -41,6 +42,7 @@ import {
 import SubscribeAndReceiveSubscribeAckTask from '../../src/task/SubscribeAndReceiveSubscribeAckTask';
 import { wait as delay } from '../../src/utils/Utils';
 import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
+import VideoQualityAdaptationPreference from '../../src/videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -82,6 +84,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
     context.realtimeController = new DefaultRealtimeController(new NoOpMediaStreamBroker());
+    context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
 
     textCompressor = new ZLIBTextCompressor(context.logger);
     webSocketAdapter = new DefaultWebSocketAdapter(context.logger);
@@ -349,7 +352,8 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       first.groupId = 2;
       first.mid = '2';
       first.priority = Number.MAX_SAFE_INTEGER - 1;
-      first.targetBitrateKbps = 1400;
+      first.qualityAdaptationPreference = VideoQualityAdaptationPreference.Balanced;
+      first.targetBitrateKbps = 1500;
       expected.push(first);
       const second = new SignalingClientVideoSubscriptionConfiguration();
       second.attendeeId = 'attendee-2';
@@ -357,6 +361,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       second.mid = '3';
       second.priority = Number.MAX_SAFE_INTEGER - 2;
       second.targetBitrateKbps = 300;
+      second.qualityAdaptationPreference = VideoQualityAdaptationPreference.Balanced;
       expected.push(second);
       expect(settings.videoSubscriptionConfiguration).to.deep.equal(expected);
     });

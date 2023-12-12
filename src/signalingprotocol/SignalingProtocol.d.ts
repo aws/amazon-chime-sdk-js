@@ -530,8 +530,8 @@ export interface ISdkJoinFrame {
     /** SdkJoinFrame serverSideNetworkAdaption */
     serverSideNetworkAdaption?: (SdkServerSideNetworkAdaption|null);
 
-    /** SdkJoinFrame supportedServerSideNetworkAdaptions */
-    supportedServerSideNetworkAdaptions?: (SdkServerSideNetworkAdaption[]|null);
+    /** SdkJoinFrame wantsAllTemporalLayersInIndex */
+    wantsAllTemporalLayersInIndex?: (boolean|null);
 
     /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender */
     disablePeriodicKeyframeRequestOnContentSender?: (boolean|null);
@@ -570,6 +570,9 @@ export class SdkJoinFrame implements ISdkJoinFrame {
     /** SdkJoinFrame supportedServerSideNetworkAdaptions. */
     public supportedServerSideNetworkAdaptions: SdkServerSideNetworkAdaption[];
 
+    /** SdkJoinFrame wantsAllTemporalLayersInIndex. */
+    public wantsAllTemporalLayersInIndex: boolean;
+ 
     /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender. */
     public disablePeriodicKeyframeRequestOnContentSender: boolean;
 
@@ -1520,6 +1523,12 @@ export interface ISdkStreamDescriptor {
 
     /** SdkStreamDescriptor externalUserId */
     externalUserId?: (string|null);
+
+    /** SdkStreamDescriptor width */
+    width?: (number|null);
+ 
+    /** SdkStreamDescriptor height */
+    height?: (number|null);
 }
 
 /** Represents a SdkStreamDescriptor. */
@@ -1557,6 +1566,12 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
 
     /** SdkStreamDescriptor externalUserId. */
     public externalUserId: string;
+
+    /** SdkStreamDescriptor width. */
+    public width: number;
+ 
+    /** SdkStreamDescriptor height. */
+    public height: number;
 
     /**
      * Creates a new SdkStreamDescriptor instance using the specified properties.
@@ -4613,6 +4628,13 @@ export class SdkRemoteVideoUpdateFrame implements ISdkRemoteVideoUpdateFrame {
     public toJSON(): { [k: string]: any };
 }
 
+/** SdkVideoQualityAdaptationPreference enum. */
+export enum SdkVideoQualityAdaptationPreference {
+    BALANCED = 1,
+    MAINTAIN_FRAMERATE = 2,
+    MAINTAIN_RESOLUTION = 3
+}
+
 /** Properties of a SdkVideoSubscriptionConfiguration. */
 export interface ISdkVideoSubscriptionConfiguration {
 
@@ -4633,6 +4655,9 @@ export interface ISdkVideoSubscriptionConfiguration {
 
     /** SdkVideoSubscriptionConfiguration groupId */
     groupId?: (number|null);
+
+    /** SdkVideoSubscriptionConfiguration qualityAdaptationPreference */
+    qualityAdaptationPreference?: (SdkVideoQualityAdaptationPreference|null);
 }
 
 /** Represents a SdkVideoSubscriptionConfiguration. */
@@ -4661,6 +4686,9 @@ export class SdkVideoSubscriptionConfiguration implements ISdkVideoSubscriptionC
 
     /** SdkVideoSubscriptionConfiguration groupId. */
     public groupId: number;
+
+    /** SdkVideoSubscriptionConfiguration qualityAdaptationPreference. */
+    public qualityAdaptationPreference: SdkVideoQualityAdaptationPreference;
 
     /**
      * Creates a new SdkVideoSubscriptionConfiguration instance using the specified properties.
@@ -5202,5 +5230,7 @@ export class SdkMeetingSessionCredentials implements ISdkMeetingSessionCredentia
 /** SdkVideoCodecCapability enum. */
 export enum SdkVideoCodecCapability {
     VP8 = 1,
-    H264_CONSTRAINED_BASELINE_PROFILE = 3
+    H264_CONSTRAINED_BASELINE_PROFILE = 3,
+    VP9_PROFILE_0 = 8,
+    AV1_MAIN = 11
 }

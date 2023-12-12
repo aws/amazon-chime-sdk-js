@@ -9,6 +9,7 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import VideoCodecCapability from '../../src/sdp/VideoCodecCapability';
 import {
   SdkIndexFrame,
   SdkStreamDescriptor,
@@ -98,6 +99,35 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       [26, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 101, false, 3)],
     ]);
 
+    const expectedNumParticipantsToParametersFhd = new Map([
+      [1, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 600, false, 1)],
+      [2, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 600, false, 1)],
+      [3, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 400, false, 1)],
+      [4, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 400, false, 1)],
+      [5, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 320, false, 1)],
+      [6, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 274, false, 1)],
+      [7, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 242, false, 1)],
+      [8, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 218, false, 1)],
+      [9, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 199, false, 1.125)],
+      [10, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 184, false, 1.125)],
+      [11, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 172, false, 1.125)],
+      [12, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 162, false, 1.125)],
+      [13, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 153, false, 1.5)],
+      [14, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 146, false, 1.5)],
+      [15, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 139, false, 1.5)],
+      [16, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 134, false, 1.5)],
+      [17, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 129, false, 2)],
+      [18, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 124, false, 2)],
+      [19, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 120, false, 2)],
+      [20, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 117, false, 2)],
+      [21, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 113, false, 2)],
+      [22, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 110, false, 2)],
+      [23, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 108, false, 2)],
+      [24, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 105, false, 2)],
+      [25, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 103, false, 2)],
+      [26, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 101, false, 2)],
+    ]);
+
     const expectedNumParticipantsToParametersWithNoResolutionScaling = new Map([
       [1, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 600, false, 1)],
       [2, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 600, false, 1)],
@@ -169,6 +199,48 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
 
     it('returns the correct values when the self is present in the SdkIndexFrame', () => {
       for (const entry of expectedNumParticipantsToParameters) {
+        policy.setTransceiverController(transceiverController);
+        transceiverController.setVideoInput(new MediaStreamTrack());
+        const numParticipants = entry[0];
+        const expectedParams = entry[1];
+        const sources: SdkStreamDescriptor[] = [];
+        for (let i = 0; i < numParticipants; i++) {
+          const attendee = i === 0 ? selfAttendeeId : `attendee-${i}`;
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i,
+              groupId: i,
+              maxBitrateKbps: 100,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i * 2,
+              groupId: i,
+              maxBitrateKbps: 200,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+        }
+        const index = new DefaultVideoStreamIndex(logger);
+        index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
+        policy.updateIndex(index);
+        const actualParams = policy.chooseCaptureAndEncodeParameters();
+        assert(
+          actualParams.equal(expectedParams),
+          `numParticipants: ${numParticipants} expected: ${JSON.stringify(
+            expectedParams
+          )} actual: ${JSON.stringify(actualParams)}`
+        );
+      }
+    });
+
+    it('returns the correct values when the self is present in the SdkIndexFrame for high resolution feature', () => {
+      policy.setHighResolutionFeatureEnabled(true);
+      for (const entry of expectedNumParticipantsToParametersFhd) {
         policy.setTransceiverController(transceiverController);
         transceiverController.setVideoInput(new MediaStreamTrack());
         const numParticipants = entry[0];
@@ -807,6 +879,90 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       policy.updateTransceiverController();
       expect(spy.notCalled).to.be.true;
       spy.restore();
+    });
+  });
+
+  describe('SVC', () => {
+    it('Enables SVC when SVC is enabled, using SVC codec, and there are more than 3 participants', () => {
+      policy.setTransceiverController(transceiverController);
+      // @ts-ignore
+      policy.isUsingSVCCodec = false;
+      // @ts-ignore
+      policy.numParticipants = 4;
+      policy.setSVCEnabled(true);
+      policy.setMeetingSupportedVideoSendCodecs(
+        [VideoCodecCapability.vp9Profile0()],
+        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
+      );
+      // @ts-ignore
+      expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
+    });
+
+    it('Degrade to L2T3 scalability mode if target height is between 360 and 720', () => {
+      policy.setTransceiverController(transceiverController);
+      // @ts-ignore
+      policy.isUsingSVCCodec = false;
+      // @ts-ignore
+      policy.numParticipants = 10;
+      // @ts-ignore
+      policy.numberOfPublishedVideoSources = 8;
+      policy.setSVCEnabled(true);
+      policy.setMeetingSupportedVideoSendCodecs(
+        [VideoCodecCapability.vp9Profile0()],
+        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
+      );
+      // @ts-ignore
+      expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
+    });
+
+    it('Degrade to L1T3 scalability mode if target height is below 360', () => {
+      policy.setTransceiverController(transceiverController);
+      // @ts-ignore
+      policy.isUsingSVCCodec = false;
+      // @ts-ignore
+      policy.numParticipants = 16;
+      // @ts-ignore
+      policy.numberOfPublishedVideoSources = 14;
+      policy.setSVCEnabled(true);
+      policy.setMeetingSupportedVideoSendCodecs(
+        [VideoCodecCapability.vp9Profile0()],
+        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
+      );
+      // @ts-ignore
+      expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
+    });
+
+    it('Enables SVC when SVC is enabled, even if logger is not defined', () => {
+      policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId, true);
+      policy.setTransceiverController(transceiverController);
+      // @ts-ignore
+      policy.isUsingSVCCodec = false;
+      // @ts-ignore
+      policy.numParticipants = 4;
+      policy.setSVCEnabled(true);
+      policy.setMeetingSupportedVideoSendCodecs(
+        [VideoCodecCapability.vp9Profile0()],
+        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
+      );
+      // @ts-ignore
+      expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
+    });
+
+    it('Disable SVC when there is no more than 3 participants', () => {
+      policy.setTransceiverController(transceiverController);
+      // @ts-ignore
+      policy.isUsingSVCCodec = false;
+      // @ts-ignore
+      policy.numParticipants = 2;
+      policy.setSVCEnabled(true);
+      policy.setMeetingSupportedVideoSendCodecs(undefined, [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+      ]);
+      // Test case for isUsingSVCCodec is unchanged
+      policy.setMeetingSupportedVideoSendCodecs(undefined, [VideoCodecCapability.vp9Profile0()]);
+      // @ts-ignore
+      expect(policy.optimalParameters.isSVCEncoding()).to.be.false;
     });
   });
 });

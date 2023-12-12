@@ -64,6 +64,7 @@ import {
   VideoInputDevice,
   VideoPriorityBasedPolicy,
   VideoPriorityBasedPolicyConfig,
+  VideoQualitySettings,
   VoiceFocusDeviceTransformer,
   VoiceFocusModelComplexity,
   VoiceFocusModelName,
@@ -327,15 +328,23 @@ export class DemoMeetingApp
   isViewOnly = false;
 
   // feature flags
+  maxAttendeeCount = -999;
+  requestedVideoMaxResolution = VideoQualitySettings.VideoResolutionHD;
+  requestedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+  appliedVideoMaxResolution = VideoQualitySettings.VideoResolutionHD;
+  appliedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+  maxBitrateKbps: number = 1400; // Default to 540p
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
   videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
+  contentCodecPreferences: VideoCodecCapability[] | undefined = undefined;
 
   audioCapability: string;
   videoCapability: string;
   contentCapability: string;
 
   enableSimulcast = false;
+  enableSVC = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig;
   enablePin = false;
@@ -637,7 +646,17 @@ export class DemoMeetingApp
     if (!this.defaultBrowserBehavior.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('content-simulcast-config')).style.display = 'none';
+      (document.getElementById('av1Main-video-codec') as HTMLInputElement).remove();
+      (document.getElementById('av1Main-content-codec') as HTMLInputElement).remove();
     }
+
+    for (let id of ['videoCodecSelect', 'simulcast', 'svc']) {
+      document.getElementById(id).addEventListener('change', () => {
+        this.setSimulcastAndSVC();
+      });
+    }
+    this.setSimulcastAndSVC();
+
     document.getElementById('join-view-only').addEventListener('change', () => {
       this.isViewOnly = (document.getElementById('join-view-only') as HTMLInputElement).checked;
     });
@@ -684,6 +703,23 @@ export class DemoMeetingApp
     const replicaMeetingInput = document.getElementById('replica-meeting-input');
     replicaMeetingInput.addEventListener('change', async _e => {
       (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value = "";
+      (document.getElementById('videoFeatureSelect') as HTMLInputElement).value = "hd";
+      (document.getElementById('contentFeatureSelect') as HTMLInputElement).value = "fhd";
+      (document.getElementById('max-attendee-cnt') as HTMLInputElement).value = "";
+      if ((replicaMeetingInput as HTMLInputElement).checked) {
+        // Replica follows meeting feature of primary meeting and does not support feature selection
+        (document.getElementById('videoFeatureSelect') as HTMLInputElement).style.display = 'none';
+        (document.getElementById('videoFeatureTitle') as HTMLInputElement).style.display = 'none';
+        (document.getElementById('contentFeatureSelect') as HTMLInputElement).style.display = 'none';
+        (document.getElementById('contentFeatureTitle') as HTMLInputElement).style.display = 'none';
+        (document.getElementById('max-attendee-cnt') as HTMLInputElement).style.display = 'none';
+      } else {
+        (document.getElementById('videoFeatureSelect') as HTMLInputElement).style.display = 'block';
+        (document.getElementById('videoFeatureTitle') as HTMLInputElement).style.display = 'block';
+        (document.getElementById('contentFeatureSelect') as HTMLInputElement).style.display = 'block';
+        (document.getElementById('contentFeatureTitle') as HTMLInputElement).style.display = 'block';
+        (document.getElementById('max-attendee-cnt') as HTMLInputElement).style.display = 'block';
+      }
     });
 
     document.getElementById('quick-join').addEventListener('click', e => {
@@ -825,17 +861,24 @@ export class DemoMeetingApp
       switch (videoInputQuality.value) {
         case '360p':
           this.audioVideo.chooseVideoInputQuality(640, 360, 15);
-          this.audioVideo.setVideoMaxBandwidthKbps(600);
+          this.maxBitrateKbps = 600;
           break;
         case '540p':
           this.audioVideo.chooseVideoInputQuality(960, 540, 15);
-          this.audioVideo.setVideoMaxBandwidthKbps(1400);
+          this.maxBitrateKbps = 1400;
           break;
         case '720p':
           this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
-          this.audioVideo.setVideoMaxBandwidthKbps(1500);
+          this.maxBitrateKbps = 1500;
+          break;
+        case '1080p':
+          // The 1080p dropdown will be removed if we haven't selected FHD meeting feature
+          this.maxBitrateKbps = 2500;
+          this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
           break;
       }
+      this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
+      this.log(`API Setting: videoInputQuality change: ${videoInputQuality.value}, maxbitrateKbps: ${this.maxBitrateKbps}`);
       try {
         if (this.chosenVideoTransformDevice) {
           await this.chosenVideoTransformDevice.stop();
@@ -1687,6 +1730,7 @@ export class DemoMeetingApp
     this.displayEstimatedDownlinkBandwidth(metricReport.availableIncomingBitrate);
 
     this.isButtonOn('button-video-stats') && this.videoTileCollection.showVideoWebRTCStats(this.videoMetricReport);
+    this.videoTileCollection.collectVideoWebRTCStats(this.videoMetricReport);
   }
 
   displayEstimatedUplinkBandwidth(bitrate: number) {
@@ -1821,6 +1865,7 @@ export class DemoMeetingApp
       configuration.attendeePresenceTimeoutMs = Number(timeoutMs);
     }
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
+    configuration.enableSVC = this.enableSVC;
     if (this.usePriorityBasedDownlinkPolicy) {
       const serverSideNetworkAdaptionDropDown = document.getElementById('server-side-network-adaption') as HTMLSelectElement;
       switch (serverSideNetworkAdaptionDropDown.value) {
@@ -1890,6 +1935,10 @@ export class DemoMeetingApp
       this.audioVideo.setVideoCodecSendPreferences(this.videoCodecPreferences);
       this.audioVideo.setContentShareVideoCodecPreferences(this.videoCodecPreferences);
     }
+    if (this.contentCodecPreferences !== undefined && this.contentCodecPreferences.length > 0) {
+      this.audioVideo.setContentShareVideoCodecPreferences(this.contentCodecPreferences);
+    }
+    this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
 
     // The default pagination size is 25.
     let paginationPageSize = parseInt((document.getElementById('pagination-page-size') as HTMLSelectElement).value)
@@ -2349,6 +2398,28 @@ export class DemoMeetingApp
       videoCapability?: string,
       contentCapability?: string,
     ): Promise<any> {
+    let videoMaxResolutionStr = 'HD';
+    let contentMaxResolutionStr = 'FHD';
+    switch (this.requestedVideoMaxResolution) {
+      case VideoQualitySettings.VideoResolutionFHD:
+        videoMaxResolutionStr = 'FHD';
+        break;
+      case VideoQualitySettings.VideoDisabled:
+        videoMaxResolutionStr = 'None';
+        break;
+      default:
+        videoMaxResolutionStr = 'HD';
+    }
+    switch (this.requestedContentMaxResolution) {
+      case VideoQualitySettings.VideoResolutionUHD:
+        contentMaxResolutionStr = 'UHD';
+        break;
+      case VideoQualitySettings.VideoDisabled:
+        contentMaxResolutionStr = 'None';
+        break;
+      default:
+        contentMaxResolutionStr = 'FHD';
+    }
     let uri = `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(
         meeting
     )}&name=${encodeURIComponent(name)}&region=${encodeURIComponent(region)}`
@@ -2365,6 +2436,9 @@ export class DemoMeetingApp
       uri += `&attendeeContentCapability=${contentCapability}`;
     }
     uri += `&ns_es=${this.echoReductionCapability}`
+    uri += `&v_rs=${videoMaxResolutionStr}`
+    uri += `&c_rs=${contentMaxResolutionStr}`
+    uri += `&a_cnt=${isNaN(this.maxAttendeeCount) ? -999 : Number(this.maxAttendeeCount)}`
     const response = await fetch(uri,
         {
           method: 'POST',
@@ -3435,6 +3509,44 @@ export class DemoMeetingApp
     const url = new URL(window.location.href);
     url.searchParams.set('m', this.meeting);
     history.replaceState({}, `${this.meeting}`, url.toString());
+
+    if (this.joinInfo.Meeting.Meeting.MeetingFeatures === undefined) {
+      this.appliedVideoMaxResolution = VideoQualitySettings.VideoResolutionHD;
+      this.appliedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+    } else {
+      switch (this.joinInfo.Meeting.Meeting.MeetingFeatures.Video?.MaxResolution) {
+        case "FHD":
+          this.appliedVideoMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+          break;
+        case "None":
+          this.appliedVideoMaxResolution = VideoQualitySettings.VideoDisabled;
+          break;
+        default:
+          this.appliedVideoMaxResolution = VideoQualitySettings.VideoResolutionHD;
+      }
+      switch (this.joinInfo.Meeting.Meeting.MeetingFeatures.Content?.MaxResolution) {
+        case "UHD":
+          this.appliedContentMaxResolution = VideoQualitySettings.VideoResolutionUHD;
+          break;
+        case "None":
+          this.appliedContentMaxResolution = VideoQualitySettings.VideoDisabled;
+          break;
+        default:
+          this.appliedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+      }
+    }
+
+    if (this.appliedVideoMaxResolution === VideoQualitySettings.VideoDisabled) {
+      this.toggleButton('button-camera', 'disabled');
+    }
+    if (this.appliedContentMaxResolution === VideoQualitySettings.VideoDisabled) {
+      this.toggleButton('button-content-share', 'disabled');
+    }
+
+    if (this.appliedVideoMaxResolution !== VideoQualitySettings.VideoResolutionFHD) {
+      (document.getElementById('1080p') as HTMLInputElement).remove(); // we do not allow 1080p camera resolution without FHD video enabled
+    }
+    
     return configuration.meetingId;
   }
 
@@ -3720,11 +3832,63 @@ export class DemoMeetingApp
     }
   }
 
+  private setSimulcastAndSVC(): void {
+    const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
+    const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
+    const enableSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC()
+      && !(chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
+
+    if (enableSimulcastConfig) {
+      (document.getElementById('simulcast') as HTMLInputElement).disabled = false;
+      (document.getElementById('content-simulcast-config') as HTMLInputElement).style.display = 'block';
+    } else {
+      (document.getElementById('simulcast') as HTMLInputElement).checked = false;
+      (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
+      (document.getElementById('content-simulcast-config') as HTMLInputElement).style.display = 'none';
+    }
+
+    const enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
+
+    const enableVideoSVCConfig = this.defaultBrowserBehavior.supportsScalableVideoCoding()
+      && (chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
+    const enableContentSVCConfig = this.defaultBrowserBehavior.supportsScalableVideoCoding()
+      && (chosenContentSendCodec === 'av1Main' || chosenContentSendCodec === 'vp9Profile0');
+
+    if (enableContentSVCConfig) {
+      (document.getElementById('content-svc-config')).style.display = 'block';
+    } else {
+      (document.getElementById('content-svc-config')).style.display = 'none';
+    }
+
+    if (enableSimulcast) {
+      (document.getElementById('svc') as HTMLInputElement).disabled = true;
+      (document.getElementById('svc') as HTMLInputElement).checked = false;
+      return;
+    }
+
+    if (enableVideoSVCConfig) {
+      (document.getElementById('svc') as HTMLInputElement).disabled = false;
+    } else {
+      (document.getElementById('svc') as HTMLInputElement).disabled = true;
+      (document.getElementById('svc') as HTMLInputElement).checked = false;
+    }
+
+    const enableSVC = (document.getElementById('svc') as HTMLInputElement).checked;
+    if (enableSVC) {
+      (document.getElementById('simulcast') as HTMLInputElement).checked = false;
+      (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
+    }
+  }
+
   private redirectFromAuthentication(quickjoin: boolean = false): void {
     this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
     this.name = (document.getElementById('inputName') as HTMLInputElement).value;
     this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
     this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
+    if (!this.enableSimulcast) {
+      this.enableSVC = (document.getElementById('svc') as HTMLInputElement).checked;
+    }
+    this.maxAttendeeCount = parseInt((document.getElementById('max-attendee-cnt') as HTMLSelectElement).value);
     this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
     this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
     this.disablePeriodicKeyframeRequestOnContentSender = (document.getElementById('disable-content-keyframe') as HTMLInputElement).checked;
@@ -3753,6 +3917,29 @@ export class DemoMeetingApp
         break;
     }
 
+    const chosenMaxVideoResolution = (document.getElementById('videoFeatureSelect') as HTMLSelectElement).value;
+    const chosenMaxContentResolution = (document.getElementById('contentFeatureSelect') as HTMLSelectElement).value;
+    switch (chosenMaxVideoResolution) {
+      case 'fhd':
+        this.requestedVideoMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+        break;
+      case 'none':
+        this.requestedVideoMaxResolution = VideoQualitySettings.VideoDisabled;
+        break;
+      default:
+        this.requestedVideoMaxResolution = VideoQualitySettings.VideoResolutionHD;
+    }
+    switch (chosenMaxContentResolution) {
+      case 'uhd':
+        this.requestedContentMaxResolution = VideoQualitySettings.VideoResolutionUHD;
+        break;
+      case 'none':
+        this.requestedContentMaxResolution = VideoQualitySettings.VideoDisabled;
+        break;
+      default:
+        this.requestedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
+    }
+
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     switch (chosenVideoSendCodec) {
       case 'vp8':
@@ -3761,6 +3948,35 @@ export class DemoMeetingApp
       case 'h264ConstrainedBaselineProfile':
         // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
         this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        break;
+      case 'av1Main':
+        this.videoCodecPreferences = [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        this.enableSimulcast  = false; // simulcast does not work for AV1
+        break;
+      case 'vp9Profile0':
+        this.videoCodecPreferences = [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        this.enableSimulcast  = false; // simulcast does not work for VP9
+        break;
+      default:
+        // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
+        // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
+        break;
+    }
+
+    const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
+    switch (chosenContentSendCodec) {
+      case 'vp8':
+        this.contentCodecPreferences = [VideoCodecCapability.vp8()];
+        break;
+      case 'h264ConstrainedBaselineProfile':
+        // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
+        this.contentCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        break;
+      case 'av1Main':
+        this.contentCodecPreferences = [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        break;
+      case 'vp9Profile0':
+        this.contentCodecPreferences = [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         break;
       default:
         // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
@@ -3825,10 +4041,25 @@ export class DemoMeetingApp
             const videoInputQuality = document.getElementById(
                 'video-input-quality'
             ) as HTMLSelectElement;
-            videoInputQuality.value = '720p';
-            this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
+            if (this.appliedVideoMaxResolution === VideoQualitySettings.VideoResolutionFHD) {
+              videoInputQuality.value = '1080p';
+              this.maxBitrateKbps = 2500;
+              this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
+            } else {
+              videoInputQuality.value = '720p';
+              this.maxBitrateKbps = 1500;
+              this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
+            }
             videoInputQuality.disabled = true;
+          } else if (this.appliedVideoMaxResolution === VideoQualitySettings.VideoResolutionFHD) {
+            const videoInputQuality = document.getElementById(
+                'video-input-quality'
+            ) as HTMLSelectElement;
+            videoInputQuality.value = '1080p';
+            this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
+            this.maxBitrateKbps = 2500;
           }
+          this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
 
           // `this.primaryExternalMeetingId` may by the join request
           const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');

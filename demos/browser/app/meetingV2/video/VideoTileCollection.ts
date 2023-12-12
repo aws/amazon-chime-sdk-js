@@ -5,6 +5,7 @@ import {
   AudioVideoObserver,
   Logger,
   TargetDisplaySize,
+  VideoQualityAdaptationPreference,
   VideoSource,
   VideoTileControllerFacade,
   VideoTileState,
@@ -32,6 +33,14 @@ const ConfigLevelToTargetDisplaySize: { [Key in ConfigLevel]: TargetDisplaySize 
   max: TargetDisplaySize.Maximum,
 };
 
+type DegrationPreferenceString = 'balanced' | 'maintainResolution' | 'maintainFramerate';
+ 
+const StringToVideoQualityAdaptationPreference: { [Key in DegrationPreferenceString]: VideoQualityAdaptationPreference } = {
+    balanced: VideoQualityAdaptationPreference.Balanced,
+    maintainResolution: VideoQualityAdaptationPreference.MaintainResolution,
+    maintainFramerate: VideoQualityAdaptationPreference.MaintainFramerate,
+  };
+ 
 const VideoUpstreamMetricsKeyStats: { [key: string]: string } = {
   videoUpstreamFrameHeight: 'Frame Height',
   videoUpstreamFrameWidth: 'Frame Width',
@@ -99,6 +108,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
   tileIndexToPauseEventListener: { [id: number]: (event: Event) => void } = {};
   tileIndexToTargetResolutionEventListener: { [id: number]: (event: Event) => void } = {};
   tileIndexToPriorityEventListener: { [id: number]: (event: Event) => void } = {};
+  tileIndexToDegradationPreferenceEventListener: { [id: number]: (event: Event) => void } = {};
 
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
   tileIndexToDemoVideoTile = new Map<number, DemoVideoTile>();
@@ -111,6 +121,9 @@ export default class VideoTileCollection implements AudioVideoObserver {
     this._activeSpeakerAttendeeId = id;
     this.layoutFeaturedTile();
   }
+
+  statsReportCount: number = 0;
+  statsReportInterval: number = 10;
 
   pagination: PaginationManager<string>;
 
@@ -177,6 +190,10 @@ export default class VideoTileCollection implements AudioVideoObserver {
       demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
       this.tileIndexToPriorityEventListener[tileIndex] = this.createVideoPriorityListener(tileState);
       demoVideoTile.videoPriorityRadioElement.addEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
+
+      demoVideoTile.videoDegradationPreferenceRadioElement.removeEventListener('click', this.tileIndexToDegradationPreferenceEventListener[tileIndex]);
+      this.tileIndexToDegradationPreferenceEventListener[tileIndex] = this.createVideoDegradationPreferenceListener(tileState);
+      demoVideoTile.videoDegradationPreferenceRadioElement.addEventListener('click', this.tileIndexToDegradationPreferenceEventListener[tileIndex]);
     }
 
     const videoElement = demoVideoTile.videoElement;
@@ -214,6 +231,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
     if (true) {
       demoVideoTile.targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
       demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
+      demoVideoTile.videoDegradationPreferenceRadioElement.removeEventListener('click', this.tileIndexToDegradationPreferenceEventListener[tileIndex]);
     }
     demoVideoTile.hide();
     // Clear values
@@ -242,6 +260,59 @@ export default class VideoTileCollection implements AudioVideoObserver {
         demoVideoTile.showVideoStats(VideoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream');
       } else {
         demoVideoTile.showVideoStats(VideoDownstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Downstream');
+      }
+    }
+  }
+
+  collectVideoWebRTCStats(videoMetricReport: { [id: string]: { [id: string]: {} } }): void {
+    const videoTiles = this.videoTileController.getAllVideoTiles();
+    if (videoTiles.length === 0) {
+      return;
+    }
+    let uplinkStats = new Map<string, number>();
+    let downlinkStats = new Map<string, number>();
+    let uplinkCount = 0;
+    let downlinkCount = 0;
+    for (const videoTile of videoTiles) {
+      const tileState = videoTile.state();
+      if (tileState.paused) {
+        continue;
+      }
+      const tileId = videoTile.id();
+      const tileIndex = this.tileIdToTileIndex[tileId];
+      const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
+      if (tileState.localTile || tileState.isContent) {
+        uplinkCount++;
+        demoVideoTile.collectVideoStats(VideoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream', uplinkStats);
+      } else {
+        downlinkCount++;
+        demoVideoTile.collectVideoStats(VideoDownstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Downstream', downlinkStats);
+      }
+    }
+
+    // compute average
+    if (downlinkCount > 0) {
+      for (let [metricName, value] of downlinkStats) {
+        downlinkStats.set(metricName, Math.floor(value / downlinkCount));
+      }
+    }
+
+    // report stats
+    this.statsReportCount++;
+    if (this.statsReportCount % this.statsReportInterval === 0) {
+      if (uplinkCount > 0) {
+        let stats: string = "";
+        for (let [metricName, value] of uplinkStats) {
+          stats += ` | ${metricName}: ${value}`;
+        }
+        this.logger.info(`  RTCStats  uplink (${uplinkCount}): ${stats}`);
+      }
+      if (downlinkCount > 0) {
+        let stats: string = "";
+        for (let [metricName, value] of downlinkStats) {
+          stats += ` | ${metricName}: ${value}`;
+        }
+        this.logger.info(`    RTCStats  downlink (${downlinkCount}): ${stats}`);
       }
     }
   }
@@ -417,6 +488,19 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
   }
 
+  private createVideoDegradationPreferenceListener(tileState: VideoTileState): (event: Event) => void {
+    return (event: Event): void => {
+      if (!(event.target instanceof HTMLInputElement)) {
+        // Ignore the Label event which will have a stale value
+        return;
+      }
+      const attendeeId = tileState.boundAttendeeId;
+      const value = (event.target as HTMLInputElement).value;
+      const preference = StringToVideoQualityAdaptationPreference[value as DegrationPreferenceString];
+      this.logger.info(`degradation preference changed for: ${attendeeId} to ${preference}`);
+      this.videoPreferenceManager.setAttendeeDegradationPreference(attendeeId, preference);
+    }
+  }
 
   private createPauseResumeListener(tileState: VideoTileState): (event: Event) => void {
     return (event: Event): void => {

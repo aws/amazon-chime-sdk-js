@@ -127,16 +127,45 @@ exports.join = async (event, context) => {
       if (primaryMeeting !== undefined) {
         request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
       }
-      if (query.ns_es === 'true') {
-        request.MeetingFeatures = {
-          Audio: {
-            // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+      if (query.ns_es === 'true' || 
+            query.v_rs === 'FHD' || 
+            query.v_rs === 'None' || 
+            query.c_rs === 'UHD' ||
+            query.c_rs === 'None' ||
+            query.a_cnt != '-999') {
+        request.MeetingFeatures = {};
+        if (query.ns_es === 'true') {
+          request.MeetingFeatures.Audio = {
             EchoReduction: 'AVAILABLE'
           }
-        };
+        }
+        if (query.v_rs === 'FHD' || query.v_rs === 'None') {
+          request.MeetingFeatures.Video = {
+            MaxResolution: query.v_rs
+          }
+        }
+        if (query.c_rs === 'UHD' || query.c_rs === 'None') {
+          request.MeetingFeatures.Content = {
+            MaxResolution: query.c_rs
+          }
+        }
+        if (query.a_cnt != '-999') {
+          request.MeetingFeatures.Attendee = {
+            MaxCount: Number(query.a_cnt)
+          }
+        }
       }
-      console.info('Creating new meeting: ' + JSON.stringify(request));
-      meeting = await chimeSDKMeetings.createMeeting(request);
+      try {
+        console.info('Creating new meeting: ' + JSON.stringify(request));
+        meeting = await chimeSDKMeetings.createMeeting(request);
+      } catch (error) {
+        console.error('Failed to create new meeting: ' + JSON.stringify(error));
+        let statusCode = 400;
+        if (error.code == "ServiceFailureException" || error.code == "ServiceUnavailableException"){
+          statusCode = 500;
+        }
+        return response(statusCode, 'application/json', JSON.stringify({ error: error.message }));
+      }
 
       // Extend meeting with primary external meeting ID if it exists
       if (primaryMeeting !== undefined) {
@@ -169,21 +198,31 @@ exports.join = async (event, context) => {
     };
   }
 
-  const attendee = (await chimeSDKMeetings.createAttendee(createAttendeeRequest));
+  try {
+    const attendee = (await chimeSDKMeetings.createAttendee(createAttendeeRequest));
 
-  // Return the meeting and attendee responses. The client will use these
-  // to join the meeting.
-  let joinResponse = {
-    JoinInfo: {
-      Meeting: meeting,
-      Attendee: attendee,
-    },
+    // Return the meeting and attendee responses. The client will use these
+    // to join the meeting.
+    let joinResponse = {
+      JoinInfo: {
+        Meeting: meeting,
+        Attendee: attendee,
+      },
+    }
+    if (meeting.Meeting.PrimaryExternalMeetingId !== undefined) {
+      // Put this where it expects it, since it is not technically part of create meeting response
+      joinResponse.JoinInfo.PrimaryExternalMeetingId = meeting.Meeting.PrimaryExternalMeetingId;
+    }
+    return response(200, 'application/json', JSON.stringify(joinResponse, null, 2));
+  } catch (error) {
+    console.error('Failed to create new attendee: ' + JSON.stringify(error));
+    let statusCode = 400;
+    if (error.code == "ServiceFailureException" || error.code == "ServiceUnavailableException"){
+      statusCode = 500;
+    }
+    return response(statusCode, 'application/json', JSON.stringify({ error: error.message }));
   }
-  if (meeting.Meeting.PrimaryExternalMeetingId !== undefined) {
-    // Put this where it expects it, since it is not technically part of create meeting response
-    joinResponse.JoinInfo.PrimaryExternalMeetingId = meeting.Meeting.PrimaryExternalMeetingId;
-  }
-  return response(200, 'application/json', JSON.stringify(joinResponse, null, 2));
+  
 };
 
 exports.end = async (event, context) => {

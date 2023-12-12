@@ -165,6 +165,12 @@ export default class AudioVideoControllerState {
 
   enableSimulcast: boolean = false;
 
+  // If set to true, the client will actively try to use Scalable Video Coding (SVC) features
+  // if possible. The availability of these features depends dynamically on the video codec used;
+  // static browser availability and any competing features (e.g. simulcast) should
+  // have already been checked before this is set to true.
+  enableSVC: boolean = false;
+
   eventController: EventController | null = null;
 
   signalingOpenDurationMs: number | null = null;
