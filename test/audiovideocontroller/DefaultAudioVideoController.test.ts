@@ -5391,12 +5391,12 @@ describe('DefaultAudioVideoController', () => {
       await start();
       audioVideoController.videoTileController.startLocalVideoTile();
       await sendICEEventAndSubscribeAckFrame();
-        const replaceVideoSpy = sinon.spy(audioVideoController, 'replaceLocalVideo');
-        mediaStreamBroker.triggerVideoInputChangeEvent(mediaStream);
-        await delay(defaultDelay); // Wait for the replaceLocalVideo finish as it is an async function in an event
-        expect(replaceVideoSpy.calledOnceWith(mediaStream)).to.be.true;
+      const replaceVideoSpy = sinon.spy(audioVideoController, 'replaceLocalVideo');
+      mediaStreamBroker.triggerVideoInputChangeEvent(mediaStream);
+      await delay(defaultDelay); // Wait for the replaceLocalVideo finish as it is an async function in an event
+      expect(replaceVideoSpy.calledOnceWith(mediaStream)).to.be.true;
       await stop();
-        replaceVideoSpy.restore();
+      replaceVideoSpy.restore();
     });
 
     it('stop local video if local tile started and video stream is undefined', async () => {

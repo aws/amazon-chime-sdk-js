@@ -28,8 +28,4 @@ export default class NoOpMediaStreamBroker implements MediaStreamBroker {
   addMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
 
   removeMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
-
-  getVideoInputQualitySettings(): VideoQualitySettings | null {
-    return VideoQualitySettings.VideoDisabled;
-  }
 }
