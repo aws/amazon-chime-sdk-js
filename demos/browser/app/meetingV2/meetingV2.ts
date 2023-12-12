@@ -650,18 +650,11 @@ export class DemoMeetingApp
       (document.getElementById('av1Main-content-codec') as HTMLInputElement).remove();
     }
 
-    document.getElementById('videoCodecSelect').addEventListener('change', () => {
-      this.setSimulcastAndSVC();
-    });
- 
-    document.getElementById('simulcast').addEventListener('change', () => {
-      this.setSimulcastAndSVC();
-    });
- 
-    document.getElementById('svc').addEventListener('change', () => {
-      this.setSimulcastAndSVC();
-    });
- 
+    for (let id of ['videoCodecSelect', 'simulcast', 'svc']) {
+      document.getElementById(id).addEventListener('change', () => {
+        this.setSimulcastAndSVC();
+      });
+    }
     this.setSimulcastAndSVC();
 
     document.getElementById('join-view-only').addEventListener('change', () => {
@@ -3551,7 +3544,7 @@ export class DemoMeetingApp
     }
 
     if (this.appliedVideoMaxResolution !== VideoQualitySettings.VideoResolutionFHD) {
-    //   (document.getElementById('1080p') as HTMLInputElement).remove(); // we do not allow 1080p camera resolution without FHD video enabled
+      (document.getElementById('1080p') as HTMLInputElement).remove(); // we do not allow 1080p camera resolution without FHD video enabled
     }
     
     return configuration.meetingId;
