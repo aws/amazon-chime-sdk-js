@@ -3785,9 +3785,7 @@ describe('DefaultAudioVideoController', () => {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
           expect(
             spy.calledWith(
-              sinon.match(value => {
-                return /ICEGatheringTimeoutWorkaround/.test(value);
-              })
+              sinon.match('will retry due to status code ICEGatheringTimeoutWorkaround')
             )
           ).to.be.true;
           done();
@@ -3842,13 +3840,8 @@ describe('DefaultAudioVideoController', () => {
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
-          expect(
-            spy.calledWith(
-              sinon.match(value => {
-                return /TaskFailed/.test(value);
-              })
-            )
-          ).to.be.true;
+          expect(spy.calledWith(sinon.match('will retry due to status code TaskFailed'))).to.be
+            .true;
           done();
         }
       }
@@ -3894,14 +3887,9 @@ describe('DefaultAudioVideoController', () => {
 
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
-          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
-          expect(
-            loggerSpy.calledWith(
-              sinon.match(value => {
-                return /TaskFailed/.test(value);
-              })
-            )
-          ).to.be.true;
+          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
+          expect(loggerSpy.calledWith(sinon.match('will retry due to status code TaskFailed'))).to
+            .be.true;
           loggerSpy.restore();
           done();
         }
@@ -3995,13 +3983,8 @@ describe('DefaultAudioVideoController', () => {
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
-          expect(
-            spy.calledWith(
-              sinon.match(value => {
-                return /NoAttendeePresent/.test(value);
-              })
-            )
-          ).to.be.true;
+          expect(spy.calledWith(sinon.match('will retry due to status code NoAttendeePresent'))).to
+            .be.true;
           spy.restore();
           done();
         }
@@ -4648,8 +4631,14 @@ describe('DefaultAudioVideoController', () => {
 
       // Forcibly clean up the stats collector so it doesn't spam after the test runs.
       // This will _eventually_ get cleaned by the main CleanStoppedSessionTask, but that takes a while.
-      // @ts-ignore
-      await new CleanStoppedSessionTask(audioVideoController.meetingSessionContext).run();
+      let success = true;
+      try {
+        // @ts-ignore
+        await new CleanStoppedSessionTask(audioVideoController.meetingSessionContext).run();
+      } catch (error) {
+        success = false;
+      }
+      expect(success).to.be.false;
     });
 
     it('should return an array of length 0, when videoStreamIndex is not initialized', async () => {

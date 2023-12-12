@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+- Revert: Improve reconnection behavior on signaling disconnection mid call or during join/subscribe. This was leading to unexpected `AudioJoinedFromAnotherDevice` events in certain edge conditions. It will be re-released in a later version.
 
 ### Fixed
 - Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow
@@ -63,7 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolution constraint for content share
 
 ### Changed
-
 - Improve reconnection behavior on signaling disconnection mid call or during join/subscribe
 
 ### Fixed

@@ -321,24 +321,15 @@ export default class MonitorTask
     // Don't add two or more consecutive "signalingDropped" states.
     if (
       (event.type === SignalingClientEventType.WebSocketClosed &&
-        this.isUnexpectedWebsocketCloseCode(event.closeCode)) ||
+        (event.closeCode === 4410 || (event.closeCode >= 4500 && event.closeCode < 4600))) ||
       event.type === SignalingClientEventType.WebSocketError ||
       event.type === SignalingClientEventType.WebSocketFailed
     ) {
-      if (event.type === SignalingClientEventType.WebSocketClosed) {
-        this.context.logger.info(
-          `The signaling connection was closed with code ${event.closeCode} and reason: ${event.closeReason}`
-        );
-      }
       if (!this.hasSignalingError) {
         const attributes = this.generateAudioVideoEventAttributesForReceivingAudioDropped();
         this.context.eventController?.publishEvent('signalingDropped', attributes);
         this.hasSignalingError = true;
       }
-      this.context.audioVideoController.handleMeetingSessionStatus(
-        new MeetingSessionStatus(MeetingSessionStatusCode.SignalChannelClosedUnexpectedly),
-        null
-      );
     } else if (event.type === SignalingClientEventType.WebSocketOpen) {
       this.hasSignalingError = false;
     }
@@ -380,15 +371,6 @@ export default class MonitorTask
         this.context.audioVideoController.handleMeetingSessionStatus(status, null);
       }
     }
-  }
-
-  private isUnexpectedWebsocketCloseCode(closeCode: number): boolean {
-    return (
-      // Abnormal Closure. This might be expected for unplanned disconnections.
-      closeCode === 1006 ||
-      // Custom close codes that may be sent by the backend
-      (closeCode >= 4500 && closeCode < 4600)
-    );
   }
 
   private checkAndSendWeakSignalEvent = (signalStrength: number): void => {

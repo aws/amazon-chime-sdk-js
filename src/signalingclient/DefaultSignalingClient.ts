@@ -254,12 +254,9 @@ export default class DefaultSignalingClient implements SignalingClient {
       this.webSocket.addEventListener('close', handler);
       scheduler.start(() => {
         // SDK has not received the "close" event on WebSocket for two seconds.
-        //
-        // We report it as a graceful close with no message as there should be no end-user
-        // impact of this timeout, and we do not want to trigger any non-graceful disconnection handling
-        // like reconnection.
+        // Handle a fake close event with 1006 to indicate that the client abnormally closed the connection.
         handler(
-          new CloseEvent('close', { wasClean: false, code: 1005, reason: '', bubbles: false })
+          new CloseEvent('close', { wasClean: false, code: 1006, reason: '', bubbles: false })
         );
       });
       this.webSocket.close();
@@ -394,12 +391,6 @@ export default class DefaultSignalingClient implements SignalingClient {
             `notifying event: ${SignalingClientEventType[event.type]}, websocket state=${
               WebSocketReadyState[this.webSocket.readyState()]
             }`
-        );
-        break;
-      case SignalingClientEventType.WebSocketClosed:
-        this.logger.info(
-          `notifying event: ${SignalingClientEventType[event.type]}, 
-              code: ${event.closeCode} reason: ${event.closeReason}`
         );
         break;
       default:
