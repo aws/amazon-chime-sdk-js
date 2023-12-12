@@ -14,7 +14,6 @@ import SignalingClientEventType from '../signalingclient/SignalingClientEventTyp
 import SignalingClientJoin from '../signalingclient/SignalingClientJoin';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
-  ISdkErrorFrame,
   SdkIndexFrame,
   SdkServerSideNetworkAdaption,
   SdkSignalFrame,
@@ -55,33 +54,27 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
 
         handleSignalingClientEvent(event: SignalingClientEvent): void {
           if (event.type === SignalingClientEventType.WebSocketClosed) {
+            let message = `The signaling connection was closed with code ${event.closeCode} and reason: ${event.closeReason}`;
+            context.logger.warn(message);
+
+            let statusCode: MeetingSessionStatusCode = MeetingSessionStatusCode.SignalingBadRequest;
             if (event.closeCode === 4410) {
-              context.audioVideoController.handleMeetingSessionStatus(
-                new MeetingSessionStatus(MeetingSessionStatusCode.MeetingEnded),
-                new Error('The meeting already ended.')
-              );
-              return;
+              message = 'The meeting already ended.';
+              context.logger.warn(message);
+              statusCode = MeetingSessionStatusCode.MeetingEnded;
+            } else if (event.closeCode >= 4500 && event.closeCode < 4600) {
+              statusCode = MeetingSessionStatusCode.SignalingInternalServerError;
             }
-            // Leave the reconnection to MonitorTask. Cancel this task so it doesn't block reconnection
-            this.cancel();
-            return;
-          } else if (event.type !== SignalingClientEventType.ReceivedSignalFrame) {
+            context.audioVideoController.handleMeetingSessionStatus(
+              new MeetingSessionStatus(statusCode),
+              new Error(message)
+            );
             return;
           }
-
+          if (event.type !== SignalingClientEventType.ReceivedSignalFrame) {
+            return;
+          }
           if (event.message.type === SdkSignalFrame.Type.JOIN_ACK) {
-            const error: ISdkErrorFrame | null = event.message.error;
-            if (error) {
-              context.audioVideoController.handleMeetingSessionStatus(
-                new MeetingSessionStatus(MeetingSessionStatusCode.SignalingBadRequest),
-                new Error(
-                  `Received error (status:${error.status}) when joining meeting ${error.description}`
-                )
-              );
-              this.cancel();
-              return;
-            }
-
             // @ts-ignore: force cast to SdkJoinAckFrame
             const joinAckFrame: SdkJoinAckFrame = event.message.joinack;
             if (joinAckFrame && joinAckFrame.videoSubscriptionLimit) {
