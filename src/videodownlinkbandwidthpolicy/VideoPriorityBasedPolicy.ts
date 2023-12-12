@@ -393,8 +393,8 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
         }
       );
       if (streamsForAttendees.length < 3) {
-        // Stale preference for remote video that no longer exists if 0,
-        // nothing to filter out unless there are multiple options to pick from
+        // If `streamsForAttendees.length` is 0, they are stale preference for remote video that no longer exists
+        // if 1 or 2, there is nothing to filter out
         continue;
       }
       let maxFrameRate = 15;

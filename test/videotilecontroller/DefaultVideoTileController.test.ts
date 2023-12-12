@@ -12,6 +12,7 @@ import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElem
 import VideoTileState from '../../src/videotile/VideoTileState';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 
 describe('DefaultVideoTileController', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -198,6 +199,24 @@ describe('DefaultVideoTileController', () => {
     it('returns the same local tile ID if it has already started', () => {
       const tileId = tileController.startLocalVideoTile();
       expect(tileController.startLocalVideoTile()).to.equal(tileId);
+    });
+
+it('will ignore the call if video is disabled', done => {
+    audioVideoController.configuration.meetingFeatures.videoMaxResolution =
+        VideoQualitySettings.VideoDisabled;
+        tileController.startLocalVideoTile();
+
+        new TimeoutScheduler(10).start(() => {
+          expect(tileController.getLocalVideoTile()).to.equal(null);
+          tileController.stopLocalVideoTile();
+  
+          new TimeoutScheduler(10).start(() => {
+            expect(tileController.getLocalVideoTile()).to.equal(null);
+            tileController.removeLocalVideoTile();
+            expect(tileController.getLocalVideoTile()).to.equal(null);
+            done();
+          });
+        });
     });
   });
 

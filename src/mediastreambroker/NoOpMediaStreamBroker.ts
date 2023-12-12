@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MediaStreamBroker from './MediaStreamBroker';
 
@@ -28,8 +27,4 @@ export default class NoOpMediaStreamBroker implements MediaStreamBroker {
   addMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
 
   removeMediaStreamBrokerObserver(_observer: MediaStreamBrokerObserver): void {}
-
-  getVideoInputQualitySettings(): VideoQualitySettings | null {
-    return VideoQualitySettings.VideoDisabled;
-  }
 }

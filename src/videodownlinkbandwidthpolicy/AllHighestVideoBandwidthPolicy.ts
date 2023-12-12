@@ -20,6 +20,9 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   private videoSources: VideoSource[] | undefined;
   protected videoIndex: VideoStreamIndex;
 
+  // Cap total receive bitrate at 15000 kbps to avoid hitting per client connection limits
+  private static maxReceiveBitrateKbps = 15000;
+
   constructor(private selfAttendeeId: string) {
     this.reset();
   }
@@ -83,9 +86,8 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
       const attendeeId = videoSource.attendee.attendeeId;
       if (mapOfAttendeeIdToRemoteDescriptions.has(attendeeId)) {
         const info = mapOfAttendeeIdToRemoteDescriptions.get(attendeeId);
-        // Cap total receive bitrate at 15000 kbps
-        if (totalBitrateKbps + info.maxBitrateKbps <= 15000) {
-          streamSelectionSet.add(info.streamId);
+        if (totalBitrateKbps + info.maxBitrateKbps <= AllHighestVideoBandwidthPolicy.maxReceiveBitrateKbps) {
+            streamSelectionSet.add(info.streamId);
           totalBitrateKbps += info.maxBitrateKbps;
         } else {
           console.warn(

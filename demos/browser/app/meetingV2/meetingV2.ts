@@ -333,7 +333,7 @@ export class DemoMeetingApp
   requestedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
   appliedVideoMaxResolution = VideoQualitySettings.VideoResolutionHD;
   appliedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
-  maxBitrate: number = 1400; // max bitrate for default meeting features without allowing high resolution
+  maxBitrateKbps: number = 1400; // 1400 is the max bitrate for default meeting features without high resolution
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
   videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
@@ -862,35 +862,34 @@ export class DemoMeetingApp
     });
 
     const videoInputQuality = document.getElementById('video-input-quality') as HTMLSelectElement;
+    if (this.appliedVideoMaxResolution !== VideoQualitySettings.VideoResolutionFHD) {
+        const option1080p = videoInputQuality.querySelector('option[value="1080p"]');
+        if (option1080p) {
+          videoInputQuality.removeChild(option1080p);
+        }
+      }
     videoInputQuality.addEventListener('change', async (_ev: Event) => {
       this.log('Video input quality is changed');
       switch (videoInputQuality.value) {
         case '360p':
           this.audioVideo.chooseVideoInputQuality(640, 360, 15);
-          this.maxBitrate = 600;
+          this.maxBitrateKbps = 600;
           break;
         case '540p':
           this.audioVideo.chooseVideoInputQuality(960, 540, 15);
-          this.maxBitrate = 1400;
+          this.maxBitrateKbps = 1400;
           break;
         case '720p':
           this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
-          this.maxBitrate = 1500;
+          this.maxBitrateKbps = 1500;
           break;
         case '1080p':
-          if (this.appliedVideoMaxResolution === VideoQualitySettings.VideoResolutionFHD) {
-            this.maxBitrate = 2500;
+            this.maxBitrateKbps = 2500;
             this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
-            this.log(`initEventListeners ==> Camera-resolution-info for meeting with FHD video enabled, resolution constraint: 1080p, chosen resolution: ${videoInputQuality.value}`);
-          } else {
-            this.maxBitrate = 1500;
-            this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
-            this.log(`initEventListeners ==> Camera-resolution-info for meeting without FHD video enabled, resolution constraint: 720p, chosen resolution: ${videoInputQuality.value}`);
-          }
           break;
       }
-      this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrate);
-      this.log(`API Setting: videoInputQuality change: ${videoInputQuality.value}, maxbitrate: ${this.maxBitrate}`);
+      this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
+      this.log(`API Setting: videoInputQuality change: ${videoInputQuality.value}, maxbitrateKbps: ${this.maxBitrateKbps}`);
       try {
         if (this.chosenVideoTransformDevice) {
           await this.chosenVideoTransformDevice.stop();
@@ -1950,7 +1949,7 @@ export class DemoMeetingApp
     if (this.contentCodecPreferences !== undefined && this.contentCodecPreferences.length > 0) {
       this.audioVideo.setContentShareVideoCodecPreferences(this.contentCodecPreferences);
     }
-    this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrate);
+    this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
 
     // The default pagination size is 25.
     let paginationPageSize = parseInt((document.getElementById('pagination-page-size') as HTMLSelectElement).value)
@@ -4056,11 +4055,11 @@ export class DemoMeetingApp
             ) as HTMLSelectElement;
             if (this.appliedVideoMaxResolution === VideoQualitySettings.VideoResolutionFHD) {
               videoInputQuality.value = '1080p';
-              this.maxBitrate = 2500;
+              this.maxBitrateKbps = 2500;
               this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
             } else {
               videoInputQuality.value = '720p';
-              this.maxBitrate = 1500;
+              this.maxBitrateKbps = 1500;
               this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
             }
             videoInputQuality.disabled = true;
@@ -4070,9 +4069,9 @@ export class DemoMeetingApp
             ) as HTMLSelectElement;
             videoInputQuality.value = '1080p';
             this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
-            this.maxBitrate = 2500;
+            this.maxBitrateKbps = 2500;
           }
-          this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrate);
+          this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
 
           // `this.primaryExternalMeetingId` may by the join request
           const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');

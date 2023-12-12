@@ -3,6 +3,7 @@
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import DefaultDevicePixelRatioMonitor from '../devicepixelratiomonitor/DefaultDevicePixelRatioMonitor';
 import DevicePixelRatioWindowSource from '../devicepixelratiosource/DevicePixelRatioWindowSource';
 import Logger from '../logger/Logger';
@@ -73,6 +74,13 @@ export default class DefaultVideoTileController implements VideoTileController {
   }
 
   startLocalVideoTile(): number {
+    if (
+        this.audioVideoController.configuration.meetingFeatures.videoMaxResolution ===
+        VideoQualitySettings.VideoDisabled
+      ) {
+        this.logger.warn('Could not start camera video because max video resolution was set to None');
+        return -1;
+      }
     const tile = this.findOrCreateLocalVideoTile();
     this.currentLocalTile.stateRef().localTileStarted = true;
 

@@ -147,6 +147,8 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   supportsScalableVideoCoding(): boolean {
     return (
+      // Currently `this.hasChromiumWebRTC() && this.engine() === 'Blink'` completely
+      // overlaps but we keep both just in case that changes in the future.
       this.hasChromiumWebRTC() && this.engine() === 'Blink' && this.engineMajorVersion() >= 111
     );
   }

@@ -113,15 +113,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
   }
 
   startLocalVideoTile(): number {
-    let result = 0;
-    if (
-      this.audioVideoController.configuration.meetingFeatures.videoMaxResolution ===
-      VideoQualitySettings.VideoDisabled
-    ) {
-      this.trace('Could not start camera video because max video resolution was set to None');
-    } else {
-      result = this.videoTileController.startLocalVideoTile();
-    }
+    const result = this.videoTileController.startLocalVideoTile();
     this.trace('startLocalVideoTile', null, result);
     return result;
   }

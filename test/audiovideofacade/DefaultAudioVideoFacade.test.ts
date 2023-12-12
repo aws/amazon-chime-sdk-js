@@ -198,14 +198,6 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith());
     });
 
-    it('will call startLocalVideoTile with meetingFeatures.videoMaxResolution set to VideoDisabled', () => {
-      const spy = sinon.spy(controller.videoTileController, 'startLocalVideoTile');
-      controller.configuration.meetingFeatures.videoMaxResolution =
-        VideoQualitySettings.VideoDisabled;
-      facade.startLocalVideoTile();
-      assert(spy.notCalled);
-    });
-
     it('will call stopLocalVideoTile', () => {
       const spy = sinon.spy(controller.videoTileController, 'stopLocalVideoTile');
       facade.stopLocalVideoTile();

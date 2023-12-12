@@ -45,10 +45,10 @@ export default class ReceiveVideoInputTask extends BaseTask {
         height: { ideal: videoQualitySettings.videoHeight },
         frameRate: { ideal: videoQualitySettings.videoFrameRate },
       };
-      this.context.logger.info(
-        `Video track (content = ${isContentAttendee}) with constraint: ${JSON.stringify(
+      this.context.logger.warn(
+        `Video track (content = ${isContentAttendee}) will be constrained to: ${JSON.stringify(
           constraint
-        )}, trackSettings: ${JSON.stringify(trackSettings)}`
+        )} to remain below configured video quality settings, trackSettings: ${JSON.stringify(trackSettings)}`
       );
       try {
         await mediaStreamTrack.applyConstraints(constraint);
