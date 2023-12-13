@@ -74,11 +74,6 @@
 					</div>
 					<p>After raw video frames are captured (e.g. from a camera outputting an RGBA pixel matrix) they are <em>encoded</em> before being sent on the network to reduce their size. On the receiving end, they are <em>decoded</em> back to raw data before being displayed or recorded. The pattern is similar to compression and decompression patterns in, for example, <code>.zip</code> files, however in the realm of media, these <em>codecs</em> (a portmanteau of <em>encoder</em> and <em>decoder</em>) are heavily specialized to audio or video, and the choice of codec can dramatically effect end user experience and the features of your application.</p>
 					<p>The Amazon Chime SDK for Javascript supports setting a list of video codec preferences which will be used to select the encoder for an individual client. The API allows setting fallback codecs to, if desired, ensure that all participants in the call can receive video from senders as long as there is some intersection between the chosen codecs and the receive capabilities. This document will cover how to use the API, its effects, and some possible use cases for using it.</p>
-					<a href="#video-codec-list" id="video-codec-list" style="color: inherit; text-decoration: none;">
-						<h2>Video Codec List</h2>
-					</a>
-					<p>The supported video codecs in the Amazon Chime SDK client libraries include H264 CBP, VP8, VP9 and AV1.  AV1 is the best in terms of coding efficiency with the highest CPU consumption. AV1 has coding tools designed specifically for screen content, such as Palette mode, Intra Block Copy, and Identity Transform. For content sharing, AV1 gives about 60% bit reduction compared to H264. VP9 gives ~30% coding efficiency improvement than H264 CBP with better network adaption from multiple layers of bitstreams.</p>
-					<p>The improved compression efficiency of AV1 and VP9 comes at the cost of higher complexity, requiring more processing power for encoding and decoding. This can be a concern for system with limited resources, such as mobile devices, leading to higher power consumption and potentially reduced battery life.</p>
 					<a href="#setting-video-send-codec-preferences" id="setting-video-send-codec-preferences" style="color: inherit; text-decoration: none;">
 						<h2>Setting Video Send Codec Preferences</h2>
 					</a>
@@ -110,7 +105,7 @@
 					</a>
 					<p>The default behavior in the Amazon Chime SDK client libraries noted above is chosen to minimize CPU and maintain backwards compatible behavior. However, depending on your applications use case, you may wish to adjust from the defaults to best fit your end-users. This section will cover various impacts of that choice which should be considered.</p>
 					<a href="#hardware-vs-software-codecs" id="hardware-vs-software-codecs" style="color: inherit; text-decoration: none;">
-						<h3>Hardware vs. Software Codecs</h3>
+						<h4>Hardware vs. Software Codecs</h4>
 					</a>
 					<p>Video codecs can be implemented one of two ways:</p>
 					<ul>
@@ -118,15 +113,6 @@
 						<li>Hardware codecs are ran on specialized physical components (i.e. <em>not</em> on CPU), which generally limit CPU requirements and battery usage. Often the licensing of codecs is offloaded to the device manufacture.</li>
 					</ul>
 					<p>Note that while a <em>codec</em> refers to both encoding and decoding, the implementation doesn&#39;t need to be coupled. For example a client may encode using a software encoder, but decode using a hardware encoder. Similarily there are various implementations, both software and hardware, for any given codec. The codec specification ensures that these implementations are interoperable.</p>
-					<a href="#batterycpu-usage" id="batterycpu-usage" style="color: inherit; text-decoration: none;">
-						<h3>Battery/CPU Usage</h3>
-					</a>
-					<p>As mentioned above, hardware codecs generally require less CPU and battery load. Therefore application builders should acknowledge that there will be, for example, marginally worse battery life for clients which they switch to send VP8, which is usually using software implementations. This effects the receive side as well, a switch to VP8 is more impactful to applications which receive and display a significant amount of remote videos. AV1 and VP9 run on libaom and libvpx software library. H264 CBP encoding runs on software and decoding usually on hardware. VP8 usually runs on libvpx software with low CPU consumption. Compared to H264CBP, VP9 CPU usage is about 30% higher and AV1 CPU usage is about 40% higher.</p>
-					<a href="#bandwidth-usage-amp-general-performance" id="bandwidth-usage-amp-general-performance" style="color: inherit; text-decoration: none;">
-						<h3>Bandwidth Usage &amp; General Performance</h3>
-					</a>
-					<p>VP8 and H.264 perform similarly from an end-user experience in terms of video quality for a given bitrate. Therefore ignoring browser/device specific bugs, video quality should not likely be a factor in the choice to pick a specific video codec to send.</p>
-					<p>With enough system resources, AV1 is recommended for content sharing with much better quality. The text and graph are much sharper and easier to read. When the network bandwidth is limited, VP9 is recommended because of multiple layers of bitstream. When the network bandwidth is down, client could subscribe to lower spatial and temporal layer bitstream. When the network bandwidth is high, client could upgrade to highest spatial and temporal layer bitstream to get best quality.</p>
 					<a href="#browserdevice-support" id="browserdevice-support" style="color: inherit; text-decoration: none;">
 						<h3>Browser/Device Support</h3>
 					</a>
@@ -136,31 +122,8 @@
 						<li>Some custom or old Chrome builds may not have H.264 enabled.</li>
 					</ul>
 					<p>If your application encounters significant end-user issues with not being able to receive H.264 (which will currently be replaced by a static VP8 video stream with an error message), you may want to consider calling <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideocontrollerfacade.html#setvideocodecsendpreferences"><code>setVideoCodecSendPreferences</code></a> with either VP8 only or VP8 as a fallback.</p>
-					<p>The following table shows the sending and receiving codecs for Chrome, Safari, and Firefox browsers.</p>
-					<table>
-						<thead>
-							<tr>
-								<th>Browser</th>
-								<th>Chrome</th>
-								<th>Safari</th>
-								<th>Firefox</th>
-							</tr>
-						</thead>
-						<tbody><tr>
-								<td>Sender codecs</td>
-								<td>H264, VP8, VP9, AV1</td>
-								<td>VP8, VP9</td>
-								<td>H264, VP9</td>
-							</tr>
-							<tr>
-								<td>Receiver codecs</td>
-								<td>H264, VP8, VP9, AV1</td>
-								<td>H264, VP8, VP9</td>
-								<td>H264, VP8, VP9</td>
-							</tr>
-					</tbody></table>
 					<a href="#avoiding-browserdevice-specific-bugs" id="avoiding-browserdevice-specific-bugs" style="color: inherit; text-decoration: none;">
-						<h3>Avoiding Browser/Device Specific Bugs</h3>
+						<h4>Avoiding Browser/Device Specific Bugs</h4>
 					</a>
 					<p>Occasionally, Browser or OS updates (particularily on mobile) may bring along bugs and issues related to specific codecs (particularily when hardware is in use). In this case, you may not want to wait on JS SDK versions to manually change the default send codec. For example, if you detect that iOS clients are sending significantly lower bitrates then expected, it may be due to a recent release impacting hardware encoders. For example, builders can temporarily use only VP8 for iOS Safari clients:</p>
 					<pre><code><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultBrowserBehavior</span><span style="color: #000000">().</span><span style="color: #795E26">isIOSSafari</span><span style="color: #000000">()) {</span>
@@ -168,17 +131,14 @@
 <span style="color: #000000">}</span>
 </code></pre>
 					<p>If you suspect issues with a given codec/device/browser combination, please cut a Github issue so Amazon Chime SDK developers can investigate and provide guidance.</p>
-					<a href="#typical-use-case-study" id="typical-use-case-study" style="color: inherit; text-decoration: none;">
-						<h2>Typical Use Case Study</h2>
+					<a href="#batterycpu-usage" id="batterycpu-usage" style="color: inherit; text-decoration: none;">
+						<h3>Battery/CPU Usage</h3>
 					</a>
-					<p>The following use cases are studied with regarding to codec selection:</p>
-					<ul>
-						<li>1-1 video communication, telehealth/banking/tax/customer support with agent</li>
-						<li>4-way video communication, typical collaborating session with grid layout</li>
-						<li>Online education: high-resolution instructor video + low-resolution student videos</li>
-						<li>Virtual conference that supports up to 25 video gallery layout</li>
-					</ul>
-					<p>Based on internal testing (with NSCale uplink policy) for above cases, if all attendees use laptop/desktop devices with enough CPU capacity, then builders could select AV1 for content sharing and VP9 for camera video. In the case that high CPU usage is observed (for example, above 40%), builders could select H264 CBP to reduce CPU load. If the main focus is content sharing, builders could select AV1 with high resolution for content sharing and choose low resolution for camera video to strike a balance on CPU load.</p>
+					<p>As mentioned above, hardware codecs generally require less CPU and battery load. Therefore application builders should acknoledge that there will be, for example, marginally worse battery life for clients which they switch to send VP8, which is usually using software implementations. This effects the receive side as well, a switch to VP8 is more impactful to applications which receive and display a significant amount of remote videos.</p>
+					<a href="#bandwidth-usage-amp-general-performance" id="bandwidth-usage-amp-general-performance" style="color: inherit; text-decoration: none;">
+						<h3>Bandwidth Usage &amp; General Performance</h3>
+					</a>
+					<p>VP8 and H.264 perform similarily from an end-user experience in terms of video quality for a given bitrate. Therefore ignoring browser/device specific bugs, video quality should not likely be a factor in the choice to pick a specific video codec to send.</p>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Video%20Codecs%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
@@ -221,9 +181,6 @@
 					</li>
 					<li class=" tsd-kind-namespace">
 						<a href="meetingevents.html">Meeting<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-namespace">
-						<a href="meetingfeatures.html">Meeting<wbr>Features</a>
 					</li>
 					<li class=" tsd-kind-namespace">
 						<a href="migrationto_2_0.html">Migrationto_<wbr>2_0</a>
