@@ -72,8 +72,9 @@ export default class SetLocalDescriptionTask extends BaseTask {
       this.context.videoSendCodecPreferences.length > 0
     ) {
       sdp = new SDP(sdp).withVideoSendCodecPreferences(
-        this.context.meetingSupportedVideoSendCodecPreferences ??
-          this.context.videoSendCodecPreferences
+        this.context.meetingSupportedVideoSendCodecPreferences !== undefined
+          ? this.context.meetingSupportedVideoSendCodecPreferences
+          : this.context.videoSendCodecPreferences
       ).sdp;
     }
 
