@@ -187,6 +187,18 @@ describe('SetRemoteDescriptionTask', () => {
       context.activeVideoInput.addTrack(track);
       task.run().then(() => done());
     });
+
+    it('can handle undefined current video send codec', done => {
+      context.sdpAnswer = SDPMock.CHROME_UNIFIED_PLAN_AUDIO_ONLY_WITH_VIDEO_CHECK_IN;
+      context.audioVideoController.configuration.credentials.attendeeId = 'attendee#content';
+      context.currentVideoSendCodec = undefined;
+      context.activeVideoInput = new MediaStream();
+      const track = new MediaStreamTrack();
+      // @ts-ignore
+      track.kind = 'video';
+      context.activeVideoInput.addTrack(track);
+      task.run().then(() => done());
+    });
   });
 
   describe('cancel', () => {
