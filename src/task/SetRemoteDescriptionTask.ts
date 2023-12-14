@@ -4,6 +4,7 @@
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import DefaultModality from '../modality/DefaultModality';
 import SDP from '../sdp/SDP';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import BaseTask from './BaseTask';
 
 /*
@@ -61,7 +62,9 @@ export default class SetRemoteDescriptionTask extends BaseTask {
       );
       const videoTrack = mediaStream.getVideoTracks()[0];
       if (isContent) {
-        if (this.context.currentVideoSendCodec.codecName === 'AV1') {
+        if (
+          this.context.currentVideoSendCodec?.codecName === VideoCodecCapability.av1Main().codecName
+        ) {
           // Based on our experiments: "text" contentHint gives good coding performance for content share using AV1
           // @ts-ignore
           videoTrack.contentHint = 'text';
