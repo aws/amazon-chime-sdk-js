@@ -230,4 +230,22 @@ describe('DefaultSimulcastUplinkPolicyForContentShare', () => {
       policy.removeObserver(observer);
     });
   });
+
+  describe('set high resolution feature', () => {
+    it('can be set high resolution feature', () => {
+      policy = new DefaultSimulcastUplinkPolicyForContentShare(logger);
+      policy.setHighResolutionFeatureEnabled(true);
+      // @ts-ignore
+      expect(policy.defaultHiTargetBitrateKbps).to.equal(2000);
+      // @ts-ignore
+      expect(policy.defaultLowTargetBitrateKbps).to.equal(500);
+      expect(policy.maxBandwidthKbps()).to.equal(2000);
+      policy.setHighResolutionFeatureEnabled(false);
+      // @ts-ignore
+      expect(policy.defaultHiTargetBitrateKbps).to.equal(1200);
+      // @ts-ignore
+      expect(policy.defaultLowTargetBitrateKbps).to.equal(300);
+      expect(policy.maxBandwidthKbps()).to.equal(1200);
+    });
+  });
 });

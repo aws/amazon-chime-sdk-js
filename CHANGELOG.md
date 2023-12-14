@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.19.0] - 2023-09-20
+## [3.20.0] - 2023-12-12
 
 ### Added
 
@@ -14,8 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
-- Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow
+
+## [3.19.0] - 2023-09-20
+
+### Added
+- Add high resolution meeting features. See the [Meeting Features](https://aws.github.io/amazon-chime-sdk-js/modules/meetingfeatures.html) guide for more information.
+- Add VP9 and AV1 video codecs. See the [Video Codecs](https://aws.github.io/amazon-chime-sdk-js/modules/videocodecs.html) guide for more information. VP9 has the ability to enable SVC.
+
+### Removed
+
+### Changed
+- Revert: Improve reconnection behavior on signaling disconnection mid call or during join/subscribe. This was leading to unexpected `AudioJoinedFromAnotherDevice` events in certain edge conditions. It will be re-released in a later version.
+
+### Fixed
 - Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
+- Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow.
 - Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely
 
 ## [3.18.2] - 2023-10-09
@@ -64,7 +77,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolution constraint for content share
 
 ### Changed
-
 - Improve reconnection behavior on signaling disconnection mid call or during join/subscribe
 
 ### Fixed

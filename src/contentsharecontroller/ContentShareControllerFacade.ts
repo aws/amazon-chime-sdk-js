@@ -29,6 +29,15 @@ export default interface ContentShareControllerFacade {
   ): void;
 
   /**
+   * Toggle SVC for content share. This should be called before calling `startContentShare` or
+   * `startContentShareFromScreenCapture`. This will only have impact if using an SVC supporting
+   * codec like VP9. It cannot be enabled at the same time as simulcast.
+   *
+   * @param enable Enable/disable SVC
+   */
+  enableSVCForContentShare(enable: boolean): void;
+
+  /**
    * Start content sharing
    */
   startContentShare(stream: MediaStream): Promise<void>;

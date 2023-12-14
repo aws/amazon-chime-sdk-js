@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import DefaultModality from '../modality/DefaultModality';
 import SDP from '../sdp/SDP';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import BaseTask from './BaseTask';
 
 /*
@@ -49,7 +51,33 @@ export default class SetRemoteDescriptionTask extends BaseTask {
           ? this.context.meetingSupportedVideoSendCodecPreferences
           : this.context.videoSendCodecPreferences
       ).sdp;
-      this.context.currentVideoSendCodec = new SDP(sdp).highestPriorityVideoSendCodec();
+    }
+    this.context.currentVideoSendCodec = new SDP(sdp).highestPriorityVideoSendCodec();
+
+    const mediaStream = this.context.activeVideoInput;
+    if (mediaStream !== undefined) {
+      const attendeeId = this.context.audioVideoController.configuration.credentials.attendeeId;
+      const isContent = new DefaultModality(attendeeId).hasModality(
+        DefaultModality.MODALITY_CONTENT
+      );
+      const videoTrack = mediaStream.getVideoTracks()[0];
+      if (isContent) {
+        if (
+          this.context.currentVideoSendCodec?.codecName === VideoCodecCapability.av1Main().codecName
+        ) {
+          // Based on our experiments: "text" contentHint gives good coding performance for content share using AV1
+          // @ts-ignore
+          videoTrack.contentHint = 'text';
+          this.logger.info(`Setting content hint to text for AV1, attendee: ${attendeeId}`);
+        } else if (this.context.audioVideoController.configuration.enableSVC) {
+          // Set content hint to `motion` as a workaround for the issue Chrome cannot enable
+          // temporal scalability for screen share
+          // https://bugs.chromium.org/p/chromium/issues/detail?id=1433486
+          // @ts-ignore
+          videoTrack.contentHint = 'motion';
+          this.logger.info(`Setting content hint to motion to enable SVC, attendee: ${attendeeId}`);
+        }
+      }
     }
 
     this.logger.info(`processed remote description is >>>${sdp}<<<`);

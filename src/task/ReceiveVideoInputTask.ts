@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import DefaultModality from '../modality/DefaultModality';
 import { SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import BaseTask from './BaseTask';
@@ -14,6 +15,50 @@ export default class ReceiveVideoInputTask extends BaseTask {
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
+  }
+
+  private async checkAndApplyVideoConstraint(
+    isContentAttendee: boolean,
+    mediaStreamTrack: MediaStreamTrack,
+    width: number,
+    height: number,
+    frameRate: number
+  ): Promise<void> {
+    const trackSettings = mediaStreamTrack.getSettings();
+    let videoQualitySettings: VideoQualitySettings;
+
+    if (isContentAttendee) {
+      videoQualitySettings = this.context.meetingSessionConfiguration.meetingFeatures
+        .contentMaxResolution;
+    } else {
+      videoQualitySettings = this.context.meetingSessionConfiguration.meetingFeatures
+        .videoMaxResolution;
+    }
+    if (
+      width > videoQualitySettings.videoWidth ||
+      height > videoQualitySettings.videoHeight ||
+      frameRate > videoQualitySettings.videoFrameRate
+    ) {
+      const constraint: MediaTrackConstraints = {
+        width: { ideal: videoQualitySettings.videoWidth },
+        height: { ideal: videoQualitySettings.videoHeight },
+        frameRate: { ideal: videoQualitySettings.videoFrameRate },
+      };
+      this.context.logger.warn(
+        `Video track (content = ${isContentAttendee}) will be constrained to: ${JSON.stringify(
+          constraint
+        )} to remain below configured video quality settings, trackSettings: ${JSON.stringify(
+          trackSettings
+        )}`
+      );
+      try {
+        await mediaStreamTrack.applyConstraints(constraint);
+      } catch (error) {
+        this.context.logger.info(
+          `Could not apply constraint for video track (content = ${isContentAttendee})`
+        );
+      }
+    }
   }
 
   async run(): Promise<void> {
@@ -75,8 +120,8 @@ export default class ReceiveVideoInputTask extends BaseTask {
       );
       const trackSettings = videoTracks[0].getSettings();
 
-      // For video, we currently enforce 720p for simulcast. This logic should be removed in the future.
-      if (this.context.enableSimulcast && !isContentAttendee) {
+      if (this.context.enableSimulcast) {
+        // For video, we currently let uplink policy to specify constraints for simulcast. This logic should be removed in the future.
         const constraint = this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
         this.context.logger.info(`simulcast: choose constraint ${JSON.stringify(constraint)}`);
         try {
@@ -84,6 +129,14 @@ export default class ReceiveVideoInputTask extends BaseTask {
         } catch (error) {
           this.context.logger.info('simulcast: pass video without more constraint');
         }
+      } else {
+        this.checkAndApplyVideoConstraint(
+          isContentAttendee,
+          videoTracks[0],
+          trackSettings.width,
+          trackSettings.height,
+          trackSettings.frameRate
+        );
       }
 
       const externalUserId = this.context.audioVideoController.configuration.credentials

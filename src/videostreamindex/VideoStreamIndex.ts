@@ -144,4 +144,9 @@ export default interface VideoStreamIndex {
    * Returns the cloned array of [[VideoStreamDescription]] corresponding to remote streams
    */
   remoteStreamDescriptions(): VideoStreamDescription[];
+
+  /**
+   * Returns send video stream ID that correspond to the Rid
+   */
+  sendVideoStreamIdFromRid(rid: string): number;
 }

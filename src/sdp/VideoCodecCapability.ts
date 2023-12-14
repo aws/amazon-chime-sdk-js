@@ -56,6 +56,28 @@ export default class VideoCodecCapability implements Eq {
   }
 
   /**
+   * Returns the configuration of AV1 recommended by the SDK
+   */
+  static av1Main(): VideoCodecCapability {
+    return new VideoCodecCapability('AV1', {
+      clockRate: 90000,
+      mimeType: 'video/AV1',
+    });
+  }
+
+  /**
+   * Returns the configuration of VP9 profile 0 supported by the SDK.
+   * Profile 0 is for use with 8-bit source content.
+   */
+  static vp9Profile0(): VideoCodecCapability {
+    return new VideoCodecCapability('VP9', {
+      clockRate: 90000,
+      mimeType: 'video/VP9',
+      sdpFmtpLine: 'profile-id=0',
+    });
+  }
+
+  /**
    * Returns the configuration of codec corresponding to the signaled capability
    */
   static fromSignaled(capability: SdkVideoCodecCapability): VideoCodecCapability | undefined {
@@ -64,6 +86,10 @@ export default class VideoCodecCapability implements Eq {
         return VideoCodecCapability.vp8();
       case SdkVideoCodecCapability.H264_CONSTRAINED_BASELINE_PROFILE:
         return VideoCodecCapability.h264ConstrainedBaselineProfile();
+      case SdkVideoCodecCapability.VP9_PROFILE_0:
+        return this.vp9Profile0();
+      case SdkVideoCodecCapability.AV1_MAIN:
+        return this.av1Main();
       default:
         return undefined;
     }

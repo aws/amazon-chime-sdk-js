@@ -13,6 +13,7 @@ import ContentShareController from '../../src/contentsharecontroller/ContentShar
 import ContentShareMediaStreamBroker from '../../src/contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../../src/contentsharecontroller/DefaultContentShareController';
 import ContentShareObserver from '../../src/contentshareobserver/ContentShareObserver';
+import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
@@ -223,6 +224,39 @@ describe('DefaultContentShareController', () => {
         // @ts-ignore
         expect(policy.encodingParams).to.deep.equal(encodingParams);
       });
+    });
+
+    describe('enableSVCForContentShare', () => {
+      it('can be enabled and disabled', () => {
+        contentShareController.enableSVCForContentShare(true);
+        expect(contentShareMeetingSessionConfigure.enableSVC).to.be.true;
+
+        contentShareController.enableSVCForContentShare(false);
+        expect(contentShareMeetingSessionConfigure.enableSVC).to.be.false;
+      });
+    });
+
+    it('startContentShare with video track and meetingFeatures.contentMaxResolution set to None', async () => {
+      contentShareMeetingSessionConfigure.meetingFeatures.contentMaxResolution =
+        VideoQualitySettings.VideoDisabled;
+      // @ts-ignore
+      mediaStream.addTrack(new MediaStreamTrack('video-track-id', 'video'));
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
+      const videoTileSpy = sinon.spy(
+        contentAudioVideoController.videoTileController,
+        'startLocalVideoTile'
+      );
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
+      );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
+      await contentShareController.startContentShare(mediaStream);
+      expect(audioVideoSpy.notCalled).to.be.true;
+      await delay(defaultDelay);
+      expect(contentShareObserverSpy.notCalled).to.be.true;
+      expect(videoTileSpy.notCalled).to.be.true;
+      expect(selfVideoTileSpy.notCalled).to.be.true;
     });
 
     it('startContentShare with video track', async () => {

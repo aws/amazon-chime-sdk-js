@@ -30,8 +30,16 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
   static readonly holdDownDurationMs: number = 4000;
   static readonly defaultMaxFrameRate = 15;
   // Current rough estimates where webrtc disables streams
-  static readonly kHiDisabledRate = 700;
-  static readonly kMidDisabledRate = 240;
+  static readonly kHiDisabledRateHd = 700;
+  static readonly kMidDisabledRateHd = 240;
+  static readonly kHiDisabledRateFhd = 1200;
+  static readonly kMidDisabledRateFhd = 400;
+  static readonly kHiTargetBitrateKbpsHd = 1200;
+  static readonly kMidTargetBitrateKbpsHd = 600;
+  static readonly kLowTargetBitrateKbpsHd = 300;
+  static readonly kHiTargetBitrateKbpsFhd = 2000;
+  static readonly kMidTargetBitrateKbpsFhd = 1000;
+  static readonly kLowTargetBitrateKbpsFhd = 500;
 
   private numSenders: number = 0;
   // Simulcast is disabled when there are only 2 or fewer attendees, because in that case the backend will forward REMBs from
@@ -51,13 +59,27 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
   private nextLocalDescriptions: VideoStreamDescription[] = [];
   private activeStreamsToPublish: ActiveStreams;
   private observerQueue: Set<SimulcastUplinkObserver> = new Set<SimulcastUplinkObserver>();
+  private hiDisabledRate: number = DefaultSimulcastUplinkPolicy.kHiDisabledRateHd;
+  private midDisabledRate: number = DefaultSimulcastUplinkPolicy.kMidDisabledRateHd;
+  private hiTargetBitrateKbps: number = DefaultSimulcastUplinkPolicy.kHiTargetBitrateKbpsHd;
+  private midTargetBitrateKbps: number = DefaultSimulcastUplinkPolicy.kMidTargetBitrateKbpsHd;
+  private lowTargetBitrateKbps: number = DefaultSimulcastUplinkPolicy.kLowTargetBitrateKbpsHd;
+  private enableFhdVideo: boolean = false;
 
   constructor(private selfAttendeeId: string, private logger: Logger) {
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, true);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, true);
     this.lastUplinkBandwidthKbps = DefaultSimulcastUplinkPolicy.defaultUplinkBandwidthKbps;
-    this.currentQualityMap = this.fillEncodingParamWithBitrates([300, 0, 1200]);
-    this.newQualityMap = this.fillEncodingParamWithBitrates([300, 0, 1200]);
+    this.currentQualityMap = this.fillEncodingParamWithBitrates([
+      this.lowTargetBitrateKbps,
+      0,
+      this.hiTargetBitrateKbps,
+    ]);
+    this.newQualityMap = this.fillEncodingParamWithBitrates([
+      this.lowTargetBitrateKbps,
+      0,
+      this.hiTargetBitrateKbps,
+    ]);
   }
 
   updateConnectionMetric({ uplinkKbps = 0 }: ConnectionMetrics): void {
@@ -84,9 +106,8 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
       holdTime = DefaultSimulcastUplinkPolicy.holdDownDurationMs * 2;
     } else if (
       (this.currentActiveStreams === ActiveStreams.kMidAndLow &&
-        uplinkKbps <= DefaultSimulcastUplinkPolicy.kMidDisabledRate) ||
-      (this.currentActiveStreams === ActiveStreams.kHiAndLow &&
-        uplinkKbps <= DefaultSimulcastUplinkPolicy.kHiDisabledRate)
+        uplinkKbps <= this.midDisabledRate) ||
+      (this.currentActiveStreams === ActiveStreams.kHiAndLow && uplinkKbps <= this.hiDisabledRate)
     ) {
       holdTime = DefaultSimulcastUplinkPolicy.holdDownDurationMs / 2;
     }
@@ -114,13 +135,13 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
       hysteresisIncrease = this.lastUplinkBandwidthKbps + 1;
       hysteresisDecrease = 0;
     } else if (this.currentActiveStreams === ActiveStreams.kHiAndLow) {
-      hysteresisIncrease = 2400;
-      hysteresisDecrease = DefaultSimulcastUplinkPolicy.kHiDisabledRate;
+      hysteresisIncrease = this.enableFhdVideo ? 4000 : 2400;
+      hysteresisDecrease = this.hiDisabledRate;
     } else if (this.currentActiveStreams === ActiveStreams.kMidAndLow) {
-      hysteresisIncrease = 1000;
-      hysteresisDecrease = DefaultSimulcastUplinkPolicy.kMidDisabledRate;
+      hysteresisIncrease = this.enableFhdVideo ? 1600 : 1000;
+      hysteresisDecrease = this.midDisabledRate;
     } else {
-      hysteresisIncrease = 300;
+      hysteresisIncrease = this.enableFhdVideo ? 500 : 300;
       hysteresisDecrease = 0;
     }
 
@@ -158,27 +179,28 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
         // 1000 kbps).
         this.newActiveStreams = ActiveStreams.kHi;
         newBitrates[0].maxBitrateKbps = 0;
-        newBitrates[1].maxBitrateKbps = 1200;
+        newBitrates[1].maxBitrateKbps = this.hiTargetBitrateKbps;
         newBitrates[2].maxBitrateKbps = 0;
-      } else if (
-        this.numSenders <= 4 &&
-        this.lastUplinkBandwidthKbps >= DefaultSimulcastUplinkPolicy.kHiDisabledRate
-      ) {
-        // 320x192+ (640x384)  + 1280x768
+      } else if (this.numSenders <= 4 && this.lastUplinkBandwidthKbps >= this.hiDisabledRate) {
+        // E.g., 320x192+ (640x384)  + 1280x768
         this.newActiveStreams = ActiveStreams.kHiAndLow;
-        newBitrates[0].maxBitrateKbps = 300;
+        newBitrates[0].maxBitrateKbps = this.lowTargetBitrateKbps;
         newBitrates[1].maxBitrateKbps = 0;
-        newBitrates[2].maxBitrateKbps = 1200;
-      } else if (this.lastUplinkBandwidthKbps >= DefaultSimulcastUplinkPolicy.kMidDisabledRate) {
-        // 320x192 + 640x384 + (1280x768)
+        newBitrates[2].maxBitrateKbps = this.hiTargetBitrateKbps;
+      } else if (this.lastUplinkBandwidthKbps >= this.midDisabledRate) {
+        // E.g., 320x192 + 640x384 + (1280x768)
         this.newActiveStreams = ActiveStreams.kMidAndLow;
-        newBitrates[0].maxBitrateKbps = this.lastUplinkBandwidthKbps >= 350 ? 200 : 150;
-        newBitrates[1].maxBitrateKbps = this.numSenders <= 6 ? 600 : 350;
+        newBitrates[0].maxBitrateKbps =
+          this.lastUplinkBandwidthKbps >= this.midTargetBitrateKbps * 0.7
+            ? (this.lowTargetBitrateKbps * 2) / 3
+            : this.lowTargetBitrateKbps / 2;
+        newBitrates[1].maxBitrateKbps =
+          this.numSenders <= 6 ? this.midTargetBitrateKbps : this.midTargetBitrateKbps * 0.6;
         newBitrates[2].maxBitrateKbps = 0;
       } else {
-        // 320x192 + 640x384 + (1280x768)
+        // E.g., 320x192 + 640x384 + (1280x768)
         this.newActiveStreams = ActiveStreams.kLow;
-        newBitrates[0].maxBitrateKbps = 300;
+        newBitrates[0].maxBitrateKbps = this.lowTargetBitrateKbps;
         newBitrates[1].maxBitrateKbps = 0;
         newBitrates[2].maxBitrateKbps = 0;
       }
@@ -204,8 +226,8 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
     // Changing MediaTrackConstraints causes a restart of video input and possible small
     // scaling changes.  Always use 720p for now
     const trackConstraint: MediaTrackConstraints = {
-      width: { ideal: 1280 },
-      height: { ideal: 768 },
+      width: { ideal: this.enableFhdVideo ? 1920 : 1280 },
+      height: { ideal: this.enableFhdVideo ? 1080 : 768 },
       frameRate: { ideal: 15 },
     };
     return trackConstraint;
@@ -309,13 +331,13 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
 
   private captureWidth(): number {
     // should deprecate in this policy
-    const width = 1280;
+    const width = this.enableFhdVideo ? 1920 : 1280;
     return width;
   }
 
   private captureHeight(): number {
     // should deprecate in this policy
-    const height = 768;
+    const height = this.enableFhdVideo ? 1080 : 768;
     return height;
   }
 
@@ -326,7 +348,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
 
   maxBandwidthKbps(): number {
     // should deprecate in this policy
-    return 1400;
+    return this.enableFhdVideo ? 2500 : 1400;
   }
 
   setIdealMaxBandwidthKbps(_idealMaxBandwidthKbps: number): void {
@@ -335,6 +357,29 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
 
   setHasBandwidthPriority(_hasBandwidthPriority: boolean): void {
     // should deprecate in this policy
+  }
+
+  setHighResolutionFeatureEnabled(enabled: boolean): void {
+    this.enableFhdVideo = enabled;
+    this.hiDisabledRate = enabled
+      ? DefaultSimulcastUplinkPolicy.kHiDisabledRateFhd
+      : DefaultSimulcastUplinkPolicy.kHiDisabledRateHd;
+    this.midDisabledRate = enabled
+      ? DefaultSimulcastUplinkPolicy.kMidDisabledRateFhd
+      : DefaultSimulcastUplinkPolicy.kMidDisabledRateHd;
+    this.hiTargetBitrateKbps = enabled
+      ? DefaultSimulcastUplinkPolicy.kHiTargetBitrateKbpsFhd
+      : DefaultSimulcastUplinkPolicy.kHiTargetBitrateKbpsHd;
+    this.midTargetBitrateKbps = enabled
+      ? DefaultSimulcastUplinkPolicy.kMidTargetBitrateKbpsFhd
+      : DefaultSimulcastUplinkPolicy.kMidTargetBitrateKbpsHd;
+    this.lowTargetBitrateKbps = enabled
+      ? DefaultSimulcastUplinkPolicy.kLowTargetBitrateKbpsFhd
+      : DefaultSimulcastUplinkPolicy.kLowTargetBitrateKbpsHd;
+  }
+
+  wantsVideoDependencyDescriptorRtpHeaderExtension(): boolean {
+    return true;
   }
 
   private fillEncodingParamWithBitrates(

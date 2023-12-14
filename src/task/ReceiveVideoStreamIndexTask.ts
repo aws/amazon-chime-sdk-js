@@ -247,6 +247,13 @@ export default class ReceiveVideoStreamIndexTask
       this.context.meetingSupportedVideoSendCodecPreferences = undefined;
     }
 
+    if (this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs) {
+      this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
+        this.context.meetingSupportedVideoSendCodecPreferences,
+        this.context.videoSendCodecPreferences
+      );
+    }
+
     if (willNeedUpdate) {
       this.context.audioVideoController.update({ needsRenegotiation: true });
     }

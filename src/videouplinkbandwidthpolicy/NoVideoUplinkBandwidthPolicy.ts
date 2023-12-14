@@ -28,4 +28,8 @@ export default class NoVideoUplinkBandwidthPolicy implements VideoUplinkBandwidt
   }
   setIdealMaxBandwidthKbps(_idealMaxBandwidthKbps: number): void {}
   setHasBandwidthPriority(_hasBandwidthPriority: boolean): void {}
+  setHighResolutionFeatureEnabled?(_enabled: boolean): void {}
+  wantsVideoDependencyDescriptorRtpHeaderExtension(): boolean {
+    return false;
+  }
 }

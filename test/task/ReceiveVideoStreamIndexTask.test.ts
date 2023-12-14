@@ -713,14 +713,23 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
   describe('handling supportedReceiveCodecIntersection', () => {
     it('calculates intersection', done => {
-      context.videoSendCodecPreferences = [VideoCodecCapability.vp8(), VideoCodecCapability.h264()];
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp8(),
+        VideoCodecCapability.h264(),
+        VideoCodecCapability.vp9Profile0(),
+      ];
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(
-          createIndexSignalBuffer(false, null, null, [SdkVideoCodecCapability.VP8])
+          createIndexSignalBuffer(false, null, null, [
+            SdkVideoCodecCapability.VP8,
+            SdkVideoCodecCapability.VP9_PROFILE_0,
+            SdkVideoCodecCapability.AV1_MAIN,
+          ])
         );
         await delay(behavior.asyncWaitMs + 10);
         expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
           VideoCodecCapability.vp8(),
+          VideoCodecCapability.vp9Profile0(),
         ]);
         done();
       });
@@ -777,6 +786,32 @@ describe('ReceiveVideoStreamIndexTask', () => {
           VideoCodecCapability.vp8(),
         ]);
         expect(audioVideoControllerSpy.calledWith({ needsRenegotiation: true })).to.be.true;
+        done();
+      });
+
+      task.run();
+    });
+
+    it('calls setMeetingSupportedVideoSendCodecs if implemented', done => {
+      context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('attendee');
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp8(),
+        VideoCodecCapability.h264(),
+        VideoCodecCapability.vp9Profile0(),
+      ];
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(
+          createIndexSignalBuffer(false, null, null, [
+            SdkVideoCodecCapability.VP8,
+            SdkVideoCodecCapability.VP9_PROFILE_0,
+            SdkVideoCodecCapability.AV1_MAIN,
+          ])
+        );
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
+          VideoCodecCapability.vp8(),
+          VideoCodecCapability.vp9Profile0(),
+        ]);
         done();
       });
 

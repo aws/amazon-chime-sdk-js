@@ -3,9 +3,11 @@
 
 import ApplicationMetadata from '../applicationmetadata/ApplicationMetadata';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import { toLowerCasePropertyNames } from '../utils/Utils';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
+import MeetingFeatures from './MeetingFeatures';
 import MeetingSessionCredentials from './MeetingSessionCredentials';
 import MeetingSessionURLs from './MeetingSessionURLs';
 
@@ -77,6 +79,11 @@ export default class MeetingSessionConfiguration {
   enableSimulcastForUnifiedPlanChromiumBasedBrowsers: boolean = false;
 
   /**
+   * Feature flag to enable scalable video coding (SVC) on supported browsers, which is determined by `BrowserBehavior.supportsScalableVideoCoding`
+   */
+  enableSVC: boolean = false;
+
+  /**
    * Video downlink bandwidth policy to determine which remote videos
    * are subscribed to.
    */
@@ -110,6 +117,11 @@ export default class MeetingSessionConfiguration {
    */
   disablePeriodicKeyframeRequestOnContentSender: boolean = false;
 
+  /*
+   * Additional features in the meeting
+   */
+  meetingFeatures: MeetingFeatures = new MeetingFeatures();
+
   /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
    * chime:CreateAttendee response. You can pass in either a JSON object containing the
@@ -124,7 +136,13 @@ export default class MeetingSessionConfiguration {
    *        "AudioHostUrl": "...",
    *        "SignalingUrl": "...",
    *        "TurnControlUrl": "..."
-   *      }
+   *      },
+   *      "MeetingFeatures":{
+   *        "Audio":"...",
+   *        "Video":"....",
+   *        "Content":"...",
+   *        "Attendee":"..."
+   *      },
    *    }
    *   }
    * }, {
@@ -165,6 +183,39 @@ export default class MeetingSessionConfiguration {
       this.urls.turnControlURL = createMeetingResponse.mediaplacement.turncontrolurl;
       if (createMeetingResponse.mediaplacement.eventingestionurl) {
         this.urls.eventIngestionURL = createMeetingResponse.mediaplacement.eventingestionurl;
+      }
+
+      const parseVideoResolution = (
+        resolution: string,
+        defaultValue: VideoQualitySettings
+      ): VideoQualitySettings => {
+        switch (resolution) {
+          case 'None':
+            return VideoQualitySettings.VideoDisabled;
+          case 'HD':
+            return VideoQualitySettings.VideoResolutionHD;
+          case 'FHD':
+            return VideoQualitySettings.VideoResolutionFHD;
+          case 'UHD':
+            return VideoQualitySettings.VideoResolutionUHD;
+          default:
+            return defaultValue;
+        }
+      };
+      if (
+        createMeetingResponse.meetingfeatures?.video !== undefined &&
+        createMeetingResponse.meetingfeatures.content !== undefined
+      ) {
+        this.meetingFeatures = new MeetingFeatures(
+          parseVideoResolution(
+            createMeetingResponse.meetingfeatures.video.maxresolution,
+            VideoQualitySettings.VideoResolutionHD
+          ),
+          parseVideoResolution(
+            createMeetingResponse.meetingfeatures.content.maxresolution,
+            VideoQualitySettings.VideoResolutionFHD
+          )
+        );
       }
     }
     if (createAttendeeResponse) {

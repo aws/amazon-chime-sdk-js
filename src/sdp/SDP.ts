@@ -14,6 +14,9 @@ export default class SDP {
   static rfc7587LowestBitrate = 6000;
   static rfc7587HighestBitrate = 510000;
 
+  private static dependencyDescriptorRtpHeaderExtensionUrl = `https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension`;
+  private static videoLayersAllocationRtpHeaderExtensionUrl = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
+
   /**
    * Construts a new [[SDP]] object
    */
@@ -387,8 +390,35 @@ export default class SDP {
    * this will not add the packet overhead unless negotiated to avoid waste
    */
   withVideoLayersAllocationRtpHeaderExtension(previousSdp: SDP): SDP {
-    const url = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
+    return this.withRtpHeaderExtension(previousSdp, SDP.videoLayersAllocationRtpHeaderExtensionUrl);
+  }
 
+  /**
+   * Dependency descriptors can be used by the backend to designate spatial or temporal layers
+   * on a single encoding. Along with the video layers allocation exension this will
+   * result in the ability for remote attendees to subscribe to individual layers below the top.
+   */
+  withDependencyDescriptorRtpHeaderExtension(previousSdp: SDP): SDP {
+    return this.withRtpHeaderExtension(previousSdp, SDP.dependencyDescriptorRtpHeaderExtensionUrl);
+  }
+
+  /**
+   * If the send transceiver is in a state where the layers allocation extension is not matching up with
+   * the dependency descriptor extension, or we simply don't want to allow for the seperation of spatial
+   * or temporal layers, we can remove the dependency descriptor from the SDP.
+   *
+   * Note: Care should be taken when calling this function since `withDependencyDescriptorRtpHeaderExtension`
+   * if called again will require an accurate ID value. Thus it is recommended to only call `withoutDependencyDescriptorRtpHeaderExtension`
+   * after setting the local description.
+   */
+  withoutDependencyDescriptorRtpHeaderExtension(): SDP {
+    const srcLines: string[] = SDP.splitLines(this.sdp).filter(
+      line => !line.includes(SDP.dependencyDescriptorRtpHeaderExtensionUrl)
+    );
+    return new SDP(srcLines.join(SDP.CRLF) + SDP.CRLF);
+  }
+
+  private withRtpHeaderExtension(previousSdp: SDP, url: string): SDP {
     // According to https://webrtc.googlesource.com/src/+/b62ee8ce94e5f10e0a94d6f112e715cc4d0cd9dc,
     // RTP header extension ID change would result in a hard failure. Therefore if the extension exists
     // in the previous SDP, use the same extension ID to avoid the failure. Otherwise use a new ID
@@ -711,6 +741,7 @@ export default class SDP {
         let codecMatches = false;
         if (preference.codecCapability.sdpFmtpLine !== undefined) {
           // Check the fmtp line
+          let hasProfileId = false;
           for (const prospectiveFmtpLine of lines) {
             if (
               prospectiveFmtpLine.startsWith(
@@ -720,6 +751,15 @@ export default class SDP {
               codecMatches = true;
               break;
             }
+
+            if (prospectiveFmtpLine.startsWith(`a=fmtp:${payloadMatch[1]} profile-id=`)) {
+              hasProfileId = true;
+            }
+          }
+
+          // Firefox may not have profile ID for VP9. Treat VP9 without profile ID as profile 0
+          if (preference.equals(VideoCodecCapability.vp9Profile0()) && !hasProfileId) {
+            codecMatches = true;
           }
         } else {
           // No 'fmtp' line, nothing else to check
@@ -852,5 +892,41 @@ export default class SDP {
       }
     }
     return 0;
+  }
+
+  /**
+   * Modifies the active camera section to include a specified starting bitrate
+   * for video sending by adding a 'x-google-start-bitrate' fmtp line paramter for
+   * each payload type associated with video.
+   *
+   * If no active camera section is found in the SDP, returns the original SDP object.
+   */
+  withStartingVideoSendBitrate(bitrateKbps: number): SDP {
+    const sections = SDP.splitSections(this.sdp);
+
+    const cameraLineIndex: number = SDP.findActiveCameraSection(sections);
+    if (cameraLineIndex === -1) {
+      return this;
+    }
+
+    const srcLines: string[] = SDP.splitLines(sections[cameraLineIndex]);
+    const dstLines: string[] = [];
+
+    for (const line of srcLines) {
+      if (/^a=fmtp:\d*/.test(line)) {
+        // `x-google-start-bitrate` is an unofficial flag that has existed in libwebrtc since its release and is unlikely
+        // to be removed without notification.
+        //
+        // libwebrtc reference: https://webrtc.googlesource.com/src/+/b6ef1a736ee94d97cc28f3bd59b826c716a3278f/media/base/media_constants.cc#97
+        const newLine = line + `;x-google-start-bitrate=${bitrateKbps * 1000}`;
+        dstLines.push(newLine);
+      } else {
+        dstLines.push(line);
+      }
+    }
+    sections[cameraLineIndex] = dstLines.join(SDP.CRLF) + SDP.CRLF;
+
+    const newSdp = sections.join('');
+    return new SDP(newSdp);
   }
 }

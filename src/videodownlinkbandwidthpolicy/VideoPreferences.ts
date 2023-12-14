@@ -45,6 +45,7 @@ export function convertVideoPreferencesToSignalingClientVideoSubscriptionConfigu
     // The signaling protocol expects 'higher' values for 'higher' priorities
     configuration.priority = Number.MAX_SAFE_INTEGER - preference.priority;
     configuration.targetBitrateKbps = preference.targetSizeToBitrateKbps(preference.targetSize);
+    configuration.qualityAdaptationPreference = preference.degradationPreference;
     configurations.push(configuration);
   }
   return configurations;

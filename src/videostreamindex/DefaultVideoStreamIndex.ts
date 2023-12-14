@@ -36,6 +36,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   protected streamToExternalUserIdMap: Map<number, string> | null = null;
 
   private videoStreamDescription = new VideoStreamDescription();
+  private sendVideoStreamId: number = 0;
   constructor(protected logger: Logger) {
     this.videoStreamDescription.trackLabel = 'AmazonChimeExpressVideo';
     this.videoStreamDescription.streamId = 2;
@@ -68,6 +69,9 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       description.streamId = source.streamId;
       description.maxBitrateKbps = source.maxBitrateKbps;
       description.avgBitrateKbps = this.convertBpsToKbps(source.avgBitrateBps);
+      description.width = source.width;
+      description.height = source.height;
+      description.maxFrameRate = source.framerate;
       streamInfos.push(description);
     });
     return streamInfos;
@@ -144,6 +148,15 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     this.subscribeStreamToExternalUserIdMap = this.buildStreamExternalUserIdMap(
       this.indexForSubscribe
     );
+
+    this.sendVideoStreamId = 0;
+    if (
+      subscribeAck.allocations &&
+      subscribeAck.allocations !== undefined &&
+      subscribeAck.allocations.length > 0
+    ) {
+      this.sendVideoStreamId = subscribeAck.allocations[0].streamId;
+    }
   }
 
   integrateBitratesFrame(bitrates: ISdkBitrateFrame): void {
@@ -419,6 +432,10 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       }
     }
     return paused;
+  }
+
+  sendVideoStreamIdFromRid(_rid: string): number {
+    return this.sendVideoStreamId;
   }
 
   private buildTrackToStreamMap(subscribeAck: SdkSubscribeAckFrame): Map<string, number> {
