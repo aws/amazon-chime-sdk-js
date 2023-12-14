@@ -261,15 +261,15 @@ document.getElementById('uploadBtn').addEventListener('click', function() {
 // **********************************************************************
 // **********************************************************************
 // HOST ID
-document.getElementById('quick-join').addEventListener('click', function(e) {
-    // e.preventDefault(); // Prevent default if it's a link or has other default behavior
-    handleJoinAction();
-});
+// document.getElementById('quick-join').addEventListener('click', function(e) {
+//     // e.preventDefault(); // Prevent default if it's a link or has other default behavior
+// });
 
-document.getElementById('joinButton').addEventListener('click', function(e) {
-    // e.preventDefault(); // Same as above
-    handleJoinAction();
-});
+// document.getElementById('joinButton').addEventListener('click', function(e) {
+//     // e.preventDefault(); // Same as above
+//     e.stopPropagation(); // Same as above
+//     handleJoinAction();
+// });
 // **********************************************************************
 
 // **********************************************************************
@@ -574,46 +574,47 @@ function generateGoogleCalendarLink(meetingTime, meetingName, meetingId) {
   
   
 
-function handleJoinAction() {
-        const meetingName = document.getElementById('inputMeeting').value;
-        // get userId from localstorage
-        const userId = localStorage.getItem('userId');
-        // Add other form data as needed
+// function handleJoinAction() {
+//         const meetingName = document.getElementById('inputMeeting').value;
+//         // get userId from localstorage
+//         const userId = localStorage.getItem('userId');
+//         // Add other form data as needed
     
-        fetch('https://app.larq.ai/api/scheduleMeeting', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                meeting_name: meetingName,
-                host_id: userId,
-                timestamp: Date.now(),
-                duration: 60 // minutes
-                // Add other meeting details
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Handle joining or starting the meeting (NEW MEETING)
-                console.log(data.message);
-                meeting_id = data.meeting_id;
-                // set localstorage "host_id" to data.host_id
-                localStorage.setItem('host_id', data.host_id);
-                // Redirect to meeting page or perform other actions
-            } else if (data.status === 'exists') {
-                // Handle meeting already exists (JOIN MEETING)
-                meeting_id = data.meeting_id;
-                console.log(data.message);
-                localStorage.setItem('host_id', data.host_id);
-                // Redirect to meeting page or perform other actions
-            }
-            else {
-                console.error(data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    };
+//         fetch('https://app.larq.ai/api/scheduleMeeting', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({
+//                 meeting_name: meetingName,
+//                 host_id: userId,
+//                 timestamp: Date.now(),
+//                 duration: 60 // minutes
+//                 // Add other meeting details
+//             }),
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.status === 'success') {
+//                 // Handle joining or starting the meeting (NEW MEETING)
+//                 console.log(data.message);
+//                 meeting_id = data.meeting_id;
+//                 // set localstorage "host_id" to data.host_id
+//                 localStorage.setItem('host_id', data.host_id);
+//                 // Redirect to meeting page or perform other actions
+//             } else if (data.status === 'exists') {
+//                 // Handle meeting already exists (JOIN MEETING)
+//                 meeting_id = data.meeting_id;
+//                 console.log(data.message);
+//                 localStorage.setItem('host_id', data.host_id);
+//                 // Redirect to meeting page or perform other actions
+//             }
+//             else {
+//                 console.error(data.message);
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error:', error);
+//         });
+//     };
+

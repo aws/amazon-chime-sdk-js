@@ -1506,12 +1506,12 @@
         <div id="toggle-icons" class="text-center bg-primary bottom-0 position-fixed animate__animated animate__fadeInUp" style="display: none;z-index: 100;">
           <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Transcription">
             <div class="iconButton">
-              <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start"
+              <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2" title="Start"
               data-bs-toggle="button" aria-pressed="true" autocomplete="off">
               <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
             </button>
             </div>
-            <button style="height: 32px;" id="button-video-filter-drop" type="button"
+            <button style="height: 32px; border:none" id="button-video-filter-drop" type="button"
               class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
             <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
@@ -1533,7 +1533,7 @@
                     </svg>
                   </button>
                 </div>
-                <button style="height: 32px;" id="button-video-filter-drop" type="button"
+                <button style="height: 32px;border:none" id="button-video-filter-drop" type="button"
                   class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
                 <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"

@@ -1629,100 +1629,6 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 });
 
 
-{/* if #scheduleMeeting is clicked make modal popup with a date/time scheduler*/}
-// document.querySelector('#scheduleMeeting')?.addEventListener('click', () => {
-//   document.getElementById('scheduleMeetingModal')!.style.display = 'block';
-// });
-
-// after dom content is loaded, add event listener to #scheduleMeetingSubmit
-
-// document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () => {
-//   const meetingScheduleTime: string = (document.getElementById('meetingScheduleTime') as HTMLInputElement).value;
-
-//   if (!meetingScheduleTime) {
-//       alert('Please ensure both date and time are selected.');
-//       return;
-//   }
-
-//   const userId = localStorage.getItem('userId');
-//   if (!userId) {
-//       alert('User ID is missing.');
-//       return;
-//   }
-
-//   const meetingName = (document.getElementById('meetingName') as HTMLInputElement).value;
-//   // let authToken = localStorage.getItem('authToken');
-
-//   fetch("https://app.larq.ai/api/scheduleMeeting", {
-//       method: 'POST',
-//       headers: {
-//           'Content-Type': 'application/json' 
-//           // Add Authorization header if needed
-//           // 'Authorization': `Bearer ${authToken}`
-//       },
-//       body: JSON.stringify({
-//           timestamp: meetingScheduleTime,
-//           host_id: userId,
-//           meeting_name: meetingName,
-//           duration: 60
-//       })
-//   })
-//   .then(response => response.json())
-//   .then(data => {
-//       if (data.status === 'success') {
-          
-//         let dataString = localStorage.getItem('data');
-//         if (!dataString) {
-//             console.error('No data found in localStorage');
-//             return;
-//         }
-        
-//         // Parse the data string into an object
-//         let data = JSON.parse(dataString);
-        
-//         // Check if 'this_month_meetings' exists in the data
-//         if (!data.dashboard_stats || !data.dashboard_stats.this_month_meetings) {
-//             console.error('Invalid data structure in localStorage');
-//             return;
-//         }
-        
-//         // Create a new meeting object
-//         const newMeeting = {
-//           _id: data.meeting_id,
-//           host_id: userId,
-//           meeting_name: meetingName,
-//           timestamp: meetingScheduleTime,
-//           duration: 60
-//           // Add other necessary fields here
-//       };
-    
-//         // Add the new meeting to the 'this_month_meetings' array
-//         data.dashboard_stats.this_month_meetings.push(newMeeting);
-    
-//         // Convert the updated data object back to a string
-//         dataString = JSON.stringify(data);
-    
-//         // Store the updated string back in localStorage
-//         localStorage.setItem('data', dataString);
-
-//         location.reload();
-//           // Hide modal if needed
-//           // document.getElementById('scheduleMeetingModal')!.style.display = 'none';
-//       } 
-//       else if( data.status === 'exists'){
-//         alert(data.message);        
-
-//       }
-//       else {
-//           alert(data.message);
-//       }
-//   })
-//   .catch(error => {
-//       alert('Error occurred: ' + error.message);
-//       console.error('Error:', error);
-//   });
-// });
-
 
   // Drew take 2
     // Retrieve data from localStorage
@@ -2075,13 +1981,64 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
     document.getElementById('quick-join').addEventListener('click', e => {
       e.preventDefault();
+      handleJoinAction();
       this.redirectFromAuthentication(true);
     });
 
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
+      handleJoinAction();
       this.redirectFromAuthentication();
     });
+
+    function handleJoinAction() {
+      const meetingInput = document.getElementById('inputMeeting') as HTMLInputElement; // Cast to HTMLInputElement
+      const meetingName = meetingInput.value; // Use .value to get input value
+    
+      // get userId from localstorage
+      const userId = localStorage.getItem('userId');
+      // Add other form data as needed
+    
+      fetch('https://app.larq.ai/api/scheduleMeeting', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              meeting_name: meetingName,
+              host_id: userId,
+              timestamp: Date.now(),
+              duration: 60 // minutes
+              // Add other meeting details
+          }),
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              // Handle joining or starting the meeting (NEW MEETING)
+              console.log(data.message);
+              const meeting_id = data.meeting_id;
+              // set localstorage "host_id" to data.host_id
+              localStorage.setItem('host_id', data.host_id);
+              localStorage.setItem('meeting_id', meeting_id);
+              // Redirect to meeting page or perform other actions
+          } else if (data.status === 'exists') {
+              // Handle meeting already exists (JOIN MEETING)
+              const meeting_id = data.meeting_id;
+              console.log(data.message);
+              localStorage.setItem('host_id', data.host_id);
+              localStorage.setItem('meeting_id', meeting_id);
+              // Redirect to meeting page or perform other actions
+          }
+          else {
+              console.error(data.message);
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+    };
+    
 
     const earlyConnectCheckbox = document.getElementById('preconnect') as HTMLInputElement;
     earlyConnectCheckbox.checked = SHOULD_EARLY_CONNECT;
