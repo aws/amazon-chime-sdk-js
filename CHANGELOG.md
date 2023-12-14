@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Fix reconnections when setting audio Attendee Capability to 'None' or 'Send' mid call. The connection health monitor will now look at all packets received on all candidate pairs instead of just audio received media packets.
 
 ## [3.19.0] - 2023-09-20
 
