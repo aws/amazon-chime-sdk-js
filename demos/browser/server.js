@@ -131,7 +131,7 @@ function serve(host = '127.0.0.1:8080') {
                   requestUrl.query.v_rs === 'None' || 
                   requestUrl.query.c_rs === 'UHD' ||
                   requestUrl.query.c_rs === 'None' ||
-                  requestUrl.query.a_cnt != '-999') {
+                  requestUrl.query.a_cnt > 1 && requestUrl.query.a_cnt <= 250) {
               request.MeetingFeatures = {};
               if (requestUrl.query.ns_es === 'true') {
                 request.MeetingFeatures.Audio = {
@@ -148,7 +148,7 @@ function serve(host = '127.0.0.1:8080') {
                   MaxResolution: requestUrl.query.c_rs
                 }
               }
-              if (requestUrl.query.a_cnt != '-999') {
+              if (requestUrl.query.a_cnt > 1 && requestUrl.query.a_cnt <= 250) {
                 request.MeetingFeatures.Attendee = {
                   MaxCount: Number(requestUrl.query.a_cnt)
                 }
