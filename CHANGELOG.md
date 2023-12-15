@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow.
-- Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely
+- Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely.
 
 ## [3.18.2] - 2023-10-09
 
