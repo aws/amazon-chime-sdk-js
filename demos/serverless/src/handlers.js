@@ -132,7 +132,7 @@ exports.join = async (event, context) => {
             query.v_rs === 'None' || 
             query.c_rs === 'UHD' ||
             query.c_rs === 'None' ||
-            query.a_cnt != '-999') {
+            query.a_cnt > 1 && query.a_cnt <= 250) {
         request.MeetingFeatures = {};
         if (query.ns_es === 'true') {
           request.MeetingFeatures.Audio = {
@@ -149,7 +149,7 @@ exports.join = async (event, context) => {
             MaxResolution: query.c_rs
           }
         }
-        if (query.a_cnt != '-999') {
+        if (query.a_cnt > 1 && query.a_cnt <= 250) {
           request.MeetingFeatures.Attendee = {
             MaxCount: Number(query.a_cnt)
           }
