@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "amazon-chime-sdk-js": "file:../../..",
-    "@aws-sdk/client-chime-sdk-meetings": "^3.441.0"
+    "@aws-sdk/client-chime-sdk-meetings": "^3.477.0"
   },
   "license": "Apache-2.0",
   "repository": {

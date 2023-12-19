@@ -203,18 +203,20 @@ export default class MeetingSessionConfiguration {
         }
       };
       if (
-        createMeetingResponse.meetingfeatures?.video !== undefined &&
-        createMeetingResponse.meetingfeatures.content !== undefined
+        createMeetingResponse.meetingfeatures?.video !== undefined ||
+        createMeetingResponse.meetingfeatures?.content !== undefined
       ) {
+        const videoMaxResolution =
+          createMeetingResponse.meetingfeatures?.video === undefined
+            ? 'HD'
+            : createMeetingResponse.meetingfeatures.video.maxresolution;
+        const contentMaxResolution =
+          createMeetingResponse.meetingfeatures?.content === undefined
+            ? 'FHD'
+            : createMeetingResponse.meetingfeatures.content.maxresolution;
         this.meetingFeatures = new MeetingFeatures(
-          parseVideoResolution(
-            createMeetingResponse.meetingfeatures.video.maxresolution,
-            VideoQualitySettings.VideoResolutionHD
-          ),
-          parseVideoResolution(
-            createMeetingResponse.meetingfeatures.content.maxresolution,
-            VideoQualitySettings.VideoResolutionFHD
-          )
+          parseVideoResolution(videoMaxResolution, VideoQualitySettings.VideoResolutionHD),
+          parseVideoResolution(contentMaxResolution, VideoQualitySettings.VideoResolutionFHD)
         );
       }
     }
