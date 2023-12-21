@@ -1581,12 +1581,17 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
-  fetch(`https://app.larq.ai/api/login?username=${username}&password=${password}`, {
+  fetch(`https://app.larq.ai/api/login`, {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Basic ' + base64Credentials
-      }
+      },
+      body: JSON.stringify({
+          username: username,
+          password: password
+      })
+
   }).then(response => {
     if (!response.ok) {
       throw new Error('Login failed. Please check your username and password.');
