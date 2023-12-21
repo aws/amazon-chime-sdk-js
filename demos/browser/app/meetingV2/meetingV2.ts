@@ -1581,7 +1581,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
-  fetch("https://app.larq.ai/api/login", {
+  fetch(`https://app.larq.ai/api/login?username=${username}&password=${password}`, {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
