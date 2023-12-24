@@ -1637,10 +1637,11 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
 
   // Drew take 2
     // Retrieve data from localStorage
-    const data = JSON.parse(localStorage.getItem('data')).dashboard_stats;
+    const storedData = JSON.parse(localStorage.getItem('data'));
+    const data = storedData?.dashboard_stats || {}; // Check if dashboard_stats exists or default to an empty object
     const emptyDash = document.getElementById('empty-dash') as HTMLElement;
     const fullDash = document.getElementById('full-dash') as HTMLElement;
-
+    
     // Check if data exists and has recent_quizzes
     if (data && data.recent_quizzes && data.recent_quizzes.length > 0) {
         const recentQuiz = data.recent_quizzes[0];  // Most recent quiz
