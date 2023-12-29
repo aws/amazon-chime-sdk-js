@@ -203,8 +203,8 @@ document.addEventListener('DOMContentLoaded', function () {
       <a href="${googleCalendarLink}" target="_blank" class="btn btn-warning d-inline col-5 p-2 m-2">Google Calendar</a>
       <a href="${outlookCalendarLink}" download class="btn btn-info d-inline text-white col-5 p-2 m-2">Outlook ICS File</a>
       <br><br>
-      <button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://app.larq.ai?m=${id}', '_blank')">Go to Meeting</button>
-      <button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://app.larq.ai?m=${id}', this)">Copy Meeting Link</button>
+      <button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://meeting.larq.ai?m=${id}', '_blank')">Go to Meeting</button>
+      <button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://meeting.larq.ai?m=${id}', this)">Copy Meeting Link</button>
     </div>`;
   
     modal.show();
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const formatTime = (date: Date): string => date.toISOString().replace(/-|:|\.\d\d\d/g, '');
     const startTime: Date = new Date(meetingTime);
     const endTime: Date = new Date(startTime.getTime() + 60 * 60000); // Assuming 60 minutes duration
-    const location: string = `https://app.larq.ai?m=${meetingId}`;
+    const location: string = `https://meeting.larq.ai?m=${meetingId}`;
 
     return `${baseUrl}&text=${encodeURIComponent(meetingName)}&dates=${formatTime(startTime)}/${formatTime(endTime)}&location=${encodeURIComponent(location)}`;
 }
@@ -226,7 +226,7 @@ function generateOutlookCalendarLink(meetingTime: string, meetingName: string, m
 
     const startTime: Date = new Date(meetingTime);
     const endTime: Date = new Date(startTime.getTime() + 60 * 60000); // Assuming 60 minutes duration
-    const location: string = `https://app.larq.ai?m=${meetingId}`;
+    const location: string = `https://meeting.larq.ai?m=${meetingId}`;
 
     const icsContent: string = [
         'BEGIN:VCALENDAR',

@@ -68,7 +68,7 @@ document.querySelector('#button-meeting-leave').addEventListener('click', functi
     // Convert the data object to a string
     data = JSON.stringify(data);
     // Send the data to the API endpoint
-    fetch('https://app.larq.ai/api/SaveTranscript', {
+    fetch('https://api.larq.ai/api/SaveTranscript', {
         method: 'POST',
         body: data
     })
@@ -103,7 +103,7 @@ if (window.location.search.split('signup=')[1] == 'true' && document.getElementB
 const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
 if (userId) {
 
-    fetch(`https://app.larq.ai/api/getQuizzes?user_id=${userId}`)
+    fetch(`https://api.larq.ai/api/getQuizzes?user_id=${userId}`)
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
@@ -149,7 +149,7 @@ function uploadPDF(pdfFile, userId) {
     choosePDFBtn.disabled = true;
     uploadBtn.disabled = true;
 
-    fetch('https://app.larq.ai/api/Vectorize', {
+    fetch('https://api.larq.ai/api/Vectorize', {
         method: 'POST',
         body: formData,
         headers: {
@@ -347,7 +347,7 @@ document.querySelector('#button-meeting-leave').addEventListener('click', functi
     // Convert the data object to a string
     data = JSON.stringify(data);
     // Send the data to the API endpoint
-    fetch('https://app.larq.ai/api/SaveTranscript', {
+    fetch('https://api.larq.ai/api/SaveTranscript', {
         method: 'POST',
         body: data
     })
@@ -384,7 +384,7 @@ document.querySelector('#scheduleMeetingSubmit')?.addEventListener('click', () =
     const meetingName = (document.getElementById('meetingName') ).value;
     // let authToken = localStorage.getItem('authToken');
   
-    fetch("https://app.larq.ai/api/scheduleMeeting", {
+    fetch("https://api.larq.ai/api/scheduleMeeting", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json' 
@@ -516,8 +516,8 @@ function showEventModal(content, timestamp, id, duration) {
       <a href="${googleCalendarLink}" target="_blank" class="btn btn-warning d-inline col-5 p-2 m-2">Google Calendar</a>
       <a href="${outlookCalendarLink}" download class="btn btn-info d-inline text-white col-5 p-2 m-2">Outlook ICS File</a>
       <br><br>
-      <button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://app.larq.ai?m=${id}', '_blank')">Go to Meeting</button>
-      <button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://app.larq.ai?m=${id}', this)">Copy Meeting Link</button>
+      <button class="btn btn-success d-inline col-5 p-2 m-2" onclick="window.open('https://meeting.larq.ai?m=${id}', '_blank')">Go to Meeting</button>
+      <button class="btn btn-primary d-inline col-5 p-2 m-2" onclick="copyToClipboard('https://meeting.larq.ai?m=${id}', this)">Copy Meeting Link</button>
     </div>`;
   
     modal.show();
@@ -529,7 +529,7 @@ function generateGoogleCalendarLink(meetingTime, meetingName, meetingId) {
     const formatTime = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, '');
     const startTime = new Date(meetingTime);
     const endTime = new Date(startTime.getTime() + 60 * 60000); // Assuming 60 minutes duration
-    const location = `https://app.larq.ai?m=${meetingId}`;
+    const location = `https://meeting.larq.ai?m=${meetingId}`;
   
     return `${baseUrl}&text=${encodeURIComponent(meetingName)}&dates=${formatTime(startTime)}/${formatTime(endTime)}&location=${encodeURIComponent(location)}`;
   }
@@ -542,7 +542,7 @@ function generateGoogleCalendarLink(meetingTime, meetingName, meetingId) {
   
     const startTime = new Date(meetingTime);
     const endTime = new Date(startTime.getTime() + 60 * 60000); // Assuming 60 minutes duration
-    const location = `https://app.larq.ai?m=${meetingId}`;
+    const location = `https://meeting.larq.ai?m=${meetingId}`;
   
     const icsContent = [
       'BEGIN:VCALENDAR',
@@ -580,7 +580,7 @@ function generateGoogleCalendarLink(meetingTime, meetingName, meetingId) {
 //         const userId = localStorage.getItem('userId');
 //         // Add other form data as needed
     
-//         fetch('https://app.larq.ai/api/scheduleMeeting', {
+//         fetch('https://api.larq.ai/api/scheduleMeeting', {
 //             method: 'POST',
 //             headers: {
 //                 'Content-Type': 'application/json',

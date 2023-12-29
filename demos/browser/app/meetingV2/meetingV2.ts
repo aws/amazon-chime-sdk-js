@@ -1169,7 +1169,7 @@ updateBodyBackgroundColor();
 
 
         
-        const url = "https://app.larq.ai/api/MakeQuiz";
+        const url = "https://api.larq.ai/api/MakeQuiz";
         console.log("TRANSCRIPT DATA:", transcriptData);
         const response = await fetch(url, {
             method: 'POST',
@@ -1581,7 +1581,7 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   // Convert username and password to base64
   const base64Credentials = btoa(username + ':' + password);
 
-  fetch(`https://app.larq.ai/api/login`, {
+  fetch(`https://api.larq.ai/api/login`, {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -1832,7 +1832,7 @@ document.querySelector('#join-view-only')?.addEventListener('click', () => {
 
     
 //     try {
-//         const response = await fetch('https://app.larq.ai/api/Vectorize', {
+//         const response = await fetch('https://api.larq.ai/api/Vectorize', {
 //             method: 'POST',
 //             body: formData,
 //         });
@@ -2005,7 +2005,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       const userId = localStorage.getItem('userId');
       // Add other form data as needed
     
-      fetch('https://app.larq.ai/api/scheduleMeeting', {
+      fetch('https://api.larq.ai/api/scheduleMeeting', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -5736,7 +5736,7 @@ const defaultQuizAttempt = {
 
 // FUNCTION 1 - SUBMIT QUIZ ATTEMPTS
 function submitQuizAttempts() {
-  const url = "https://app.larq.ai/api/MakeQuizAttempt";
+  const url = "https://api.larq.ai/api/MakeQuizAttempt";
   const storedData = localStorage.getItem('QuizAttempts');
   let quiz_id = localStorage.getItem('quiz_id');
   // let quizID = localStorage.getItem('quizID');
@@ -6114,7 +6114,7 @@ if (registerButton && registerForm && loginSpinner) {
     const lastName = registerForm.last_name.value;
 
 
-  fetch("https://app.larq.ai/api/register", {
+  fetch("https://api.larq.ai/api/register", {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
