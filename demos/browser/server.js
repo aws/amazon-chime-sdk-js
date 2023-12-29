@@ -9,8 +9,8 @@ const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 
 function getKeyAndCertPaths() {
-  const remoteKeyPath = '/etc/letsencrypt/live/app.larq.ai/privkey.pem';
-  const remoteCertPath = '/etc/letsencrypt/live/app.larq.ai/fullchain.pem';
+  const remoteKeyPath = '/etc/letsencrypt/live/meeting.larq.ai/privkey.pem';
+  const remoteCertPath = '/etc/letsencrypt/live/meeting.larq.ai/fullchain.pem';
 
   const localKeyPath = 'key.pem';
   const localCertPath = 'cert.pem';
