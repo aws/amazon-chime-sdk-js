@@ -24,13 +24,13 @@ const indexPage = fs.readFileSync(indexPagePath);
 
 const currentRegion = process.env.REGION || 'us-east-1';
 
-const chimeSDKMediaPipelines = new ChimeSDKMediaPipelines({ region: 'us-east-1' });
-chimeSDKMediaPipelines.endpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com"
+const chimeSDKMediaPipelines = new ChimeSDKMediaPipelines({
+  region: 'us-east-1',
+  endpoint: process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com" });
 
-const chimeSDKMeetings = new ChimeSDKMeetings({ region: currentRegion });
-if (process.env.ENDPOINT) {
-  chimeSDKMeetings.endpoint = process.env.ENDPOINT
-}
+const chimeSDKMeetings = new ChimeSDKMeetings({
+  region: currentRegion,
+  ...(process.env.ENDPOINT && { endpoint: process.env.ENDPOINT }) });
 
 const sts = new STS({ region: 'us-east-1' });
 
