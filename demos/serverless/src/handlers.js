@@ -25,18 +25,14 @@ const ivs = new Ivs({
   apiVersion: '2020-07-14',
 });
 
-const chimeSDKMeetings = new ChimeSDKMeetings({
-  region: currentRegion,
-});
-if (chimeSDKMeetingsEndpoint) {
-  chimeSDKMeetings.endpoint = chimeSDKMeetingsEndpoint;
-}
+
+const chimeSDKMeetings = new ChimeSDKMeetings({ region: currentRegion, endpoint: chimeSDKMeetingsEndpoint });
 
 // Create an AWS SDK Media Pipelines object.
 const chimeSdkMediaPipelines = new ChimeSDKMediaPipelines({
   region: mediaPipelinesControlRegion,
+  endpoint: chimeSDKMediaPipelinesEndpoint
 });
-chimeSdkMediaPipelines.endpoint = chimeSDKMediaPipelinesEndpoint;
 
 // Read resource names from the environment
 const {
