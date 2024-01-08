@@ -136,15 +136,15 @@ function serve(host = '0.0.0.0:8080') {
       else if (request.method === 'GET' && requestUrl.pathname === '/meeting/new') {
         // Add variable to store meeting info
         // add localstorage variable for new_meeting to be true
-        localStorage.setItem('new_meeting', 'true');
-        localStorage.setItem('join_meeting', 'false');
+        // localStorage.setItem('new_meeting', 'true');
+        // localStorage.setItem('join_meeting', 'false');
         respond(response, 200, 'text/html', indexPage);
 
       } else if (request.method === 'GET' && requestUrl.pathname === '/meeting/join') {
         // Return the list of meetings
         // add localstorage variable for new_meeting to be false
-        localStorage.setItem('new_meeting', 'false');
-        localStorage.setItem('join_meeting', 'true');
+        // localStorage.setItem('new_meeting', 'false');
+        // localStorage.setItem('join_meeting', 'true');
         respond(response, 200, 'text/html', indexPage);
 
       }
