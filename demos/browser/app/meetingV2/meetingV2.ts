@@ -832,29 +832,34 @@ export class DemoMeetingApp
     );
 
     // do the same functions if ?m= is in the url (instead of clicking):
-    const meetingParam:any = new URL(window.location.href).searchParams.get('m');
-    if (meetingParam && verifyToken(localStorage.getItem('authToken'))) {
-      var join_button = document.getElementById('joining-page');
-      var joining_page = document.getElementById('main-page');
-      if (join_button.style.display === 'none') {
-        join_button.style.display = 'block';
-      } else {
-        join_button.style.display = 'none';
-        joining_page.style.display = 'flex';
-      }
-    }
-    else if (meetingParam && !verifyToken(localStorage.getItem('authToken'))) {
-      document.getElementById('login-container').style.display = 'block';
-      document.getElementById('loginForm').style.display = 'none';
-      document.getElementById('register-container').style.display = 'block';
-    }
-    else {
-      document.getElementById('login-container').style.display = 'block';
-      document.getElementById('loginForm').style.display = 'block';
-      document.getElementById('register-container').style.display = 'none';
+    // const meetingParam:any = new URL(window.location.href).searchParams.get('m');
+    const tokenParam = new URL(window.location.href).searchParams.get('token');
+    // If token is present, verify it - else use the localstorage token
+    if (tokenParam) {
+      localStorage.setItem('authToken', tokenParam);
     };
 
-    function verifyToken(token: string) {
+    const verified = verifyToken(localStorage.getItem('authToken'));
+    
+    
+    // If meeting is specified and user is logged in:
+    if (verified) {
+      var dash_page = document.getElementById('joining-page');
+      var joining_page = document.getElementById('main-page');
+
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'none';  
+    dash_page.style.display = 'none';
+    joining_page.style.display = 'flex';
+
+    // Else if meeting is specified and user is not logged in:
+  } else {
+      document.getElementById('login-container').style.display = 'block';
+      document.getElementById('loginForm').style.display = 'block';  
+      joining_page.style.display = 'none';
+    };
+
+    function verifyToken(token: string) { 
       return fetch(`https://api.larq.ai/verify-token?token=${token}`, {
           method: 'POST',
           headers: {
