@@ -878,7 +878,7 @@ export class DemoMeetingApp
               console.log('Token Authorized:', data);
               document.getElementById('login-container').style.display = 'none';
               document.getElementById('loginForm').style.display = 'none';  
-              joining_page.style.display = 'block';
+              joining_page.style.display = 'flex';
               return true;
           } else {
               console.log('Token Unauthorized:', data);
