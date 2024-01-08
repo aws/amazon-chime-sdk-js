@@ -806,12 +806,12 @@ export class DemoMeetingApp
     const buttonJoinMeeting = document.getElementById('join-meeting') as HTMLButtonElement;
     buttonJoinMeeting.addEventListener('click', _e => {
       var x = document.getElementById('joining-page');
-      var joining_page = document.getElementById('main-page');
+      var main_page = document.getElementById('main-page');
       if (x.style.display === 'none') {
         x.style.display = 'block';
       } else {
         x.style.display = 'none';
-        joining_page.style.display = 'flex';
+        main_page.style.display = 'flex';
         this.switchToFlow('flow-authenticate');
       }
     });
@@ -819,12 +819,12 @@ export class DemoMeetingApp
     const buttonNewMeeting = document.getElementById('new-meeting') as HTMLButtonElement;
     buttonNewMeeting.addEventListener('click', _e => {
       var x = document.getElementById('joining-page');
-      var joining_page = document.getElementById('main-page');
+      var main_page = document.getElementById('main-page');
       if (x.style.display === 'none') {
         x.style.display = 'block';
       } else {
         x.style.display = 'none';
-        joining_page.style.display = 'flex';
+        main_page.style.display = 'flex';
         this.switchToFlow('flow-authenticate');
 
       }
@@ -833,14 +833,21 @@ export class DemoMeetingApp
 
     // do the same functions if ?m= is in the url (instead of clicking):
     const meetingParam:any = new URL(window.location.href).searchParams.get('m');
+
+    // do the same for ?token= in the url
+    const tokenParam:any = new URL(window.location.href).searchParams.get('token');
+    if (tokenParam) {
+      localStorage.setItem('authToken', tokenParam);
+    }
+    
     if (meetingParam && localStorage.getItem('authToken')) {
-      var join_button = document.getElementById('joining-page');
-      var joining_page = document.getElementById('main-page');
-      if (join_button.style.display === 'none') {
-        join_button.style.display = 'block';
+      var joining_page = document.getElementById('joining-page');
+      var main_page = document.getElementById('main-page');
+      if (joining_page.style.display === 'none') {
+        joining_page.style.display = 'block';
       } else {
-        join_button.style.display = 'none';
-        joining_page.style.display = 'flex';
+        joining_page.style.display = 'none';
+        main_page.style.display = 'flex';
       }
     };
 
@@ -1552,7 +1559,47 @@ if (!localStorage.getItem('authToken')) {
   // this.switchToFlow('login-container');
 } else if (localStorage.getItem('authToken') === 'viewonly') {
   this.isViewOnly = true;
+  this.switchToFlow('flow-meeting');
 }
+else{
+  // verify the auth token by posting a request to https://api.larq.ai/verify?token body token is the token
+  // if the response is 200, then show the joining page
+  // if the response is 401, then show the login form
+
+  const authToken = localStorage.getItem('authToken');
+  // make the request to verify the token
+  fetch(`https://api.larq.ai/verify?token=${authToken}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        token: authToken
+    })
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error('Login failed. Please check your username and password.');
+    }
+    return response.json();
+  }).then((data: ResponseData) => {
+    if (data.status === 'success') {
+    console.log('Token Authorized:', data);
+
+    }
+    else{
+      console.log('Token Unauthorized:', data);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('firstName');
+      localStorage.removeItem('lastName');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('data');
+      document.getElementById('login-container')!.style.display = 'block';
+      document.getElementById('joining-page')!.style.display = 'none';
+      document.getElementById('flow-meeting')!.style.display = 'none';
+    }
+
+});
+
 
 
 // Assuming you have a type definition for the response data structure. 

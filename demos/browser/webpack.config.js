@@ -111,7 +111,7 @@ module.exports = env => {
         index: `${app}.html`
       },
       allowedHosts: ['larq.ai', 'app.larq.ai','127.0.0.1'],
-  public: 'app.larq.ai',
+  public: 'meeting.larq.ai',
   headers: {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
