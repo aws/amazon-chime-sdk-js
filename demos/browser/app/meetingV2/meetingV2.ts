@@ -832,7 +832,12 @@ export class DemoMeetingApp
     );
 
     // do the same functions if ?m= is in the url (instead of clicking):
-    // const meetingParam:any = new URL(window.location.href).searchParams.get('m');
+    const meetingParam:any = new URL(window.location.href).searchParams.get('m');
+    if (meetingParam) {
+      // make #inputMeeting readonly
+      const inputMeeting = document.getElementById('inputMeeting') as HTMLInputElement;
+      inputMeeting.readOnly = true;
+    }
     const tokenParam = new URL(window.location.href).searchParams.get('token');
     // If token is present, verify it - else use the localstorage token
     if (tokenParam) {

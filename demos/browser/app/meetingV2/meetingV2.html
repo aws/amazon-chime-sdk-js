@@ -399,9 +399,9 @@
       <div class="text-muted" style="position:fixed;right:3px;bottom:3px">Copyright ©2023 Larq.ai</div>
       <div class="container">
         <form id="form-authenticate">
-          <h1 class="h3 mb-3 fw-normal text-white">Join a meeting</h1>
+          <h1 id="join-meeting-label" class="h3 mb-3 fw-normal text-white">New meeting</h1>
           <div class="form-floating row mt-3">
-            <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required
+            <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required readonly
               autofocus>
             <label for="inputMeeting" style="text-align: left;">Meeting Title or ID</label>
           </div>
@@ -454,7 +454,7 @@
           
           <!-- make a back() button -->
           <div class="row mt-3">
-            <a id="back-button" href="/">Back to Dashboard</a></div>
+            <a id="back-button" href="https://app.larq.ai/dashboard">Back to Dashboard</a></div>
 
           <div class="row mt-3" style="display: none;">
             <a id="to-sip-flow" href="#">Joining via SIP? Click here.</a>
