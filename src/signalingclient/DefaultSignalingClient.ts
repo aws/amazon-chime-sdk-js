@@ -29,7 +29,7 @@ import {
   SdkVideoQualityAdaptationPreference,
   SdkVideoSubscriptionConfiguration,
 } from '../signalingprotocol/SignalingProtocol.js';
-import { getFormattedOffset } from '../utils/Utils';
+import { getCrypto, getFormattedOffset } from '../utils/Utils';
 import Versioning from '../versioning/Versioning';
 import VideoQualityAdaptationPreference from '../videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
@@ -476,7 +476,7 @@ export default class DefaultSignalingClient implements SignalingClient {
 
   private generateNewAudioSessionId(): number {
     const num = new Uint32Array(1);
-    const randomNum = window.crypto.getRandomValues(num);
+    const randomNum = getCrypto().getRandomValues(num);
     return randomNum[0];
   }
 

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { getCrypto } from '../utils/Utils';
 import PrefetchOn from './PrefetchOn';
 import PrefetchSortBy from './PrefetchSortBy';
 
@@ -67,7 +68,7 @@ export default class MessagingSessionConfiguration {
 
   private generateSessionId(): string {
     const num = new Uint32Array(1);
-    const randomNum = window.crypto.getRandomValues(num);
+    const randomNum = getCrypto().getRandomValues(num);
     return randomNum[0].toString();
   }
 }
