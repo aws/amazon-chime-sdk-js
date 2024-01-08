@@ -127,8 +127,8 @@ function serve(host = '0.0.0.0:8080') {
       
       if (request.method === 'GET' && requestUrl.pathname === '/') {
         // Return the contents of the index page
-        localStorage.setItem('new_meeting', 'false');
-        localStorage.setItem('join_meeting', 'false');
+        // localStorage.setItem('new_meeting', 'false');
+        // localStorage.setItem('join_meeting', 'false');
         respond(response, 200, 'text/html', indexPage);
       } 
 
