@@ -842,8 +842,13 @@ export class DemoMeetingApp
     // If token is present, verify it - else use the localstorage token
     if (tokenParam) {
       localStorage.setItem('authToken', tokenParam);
-    };
+      // remove the token from the url
 
+      // change href for #back-button to be app.larq.ai?token=tokenParam
+    
+      window.history.replaceState({}, document.title, "/");
+
+    }
     const verified = verifyToken(localStorage.getItem('authToken'));
     
     
@@ -856,6 +861,12 @@ export class DemoMeetingApp
     document.getElementById('loginForm').style.display = 'none';  
     dash_page.style.display = 'none';
     joining_page.style.display = 'flex';
+
+    // Add token to the back button href
+    const token = localStorage.getItem('authToken');
+    const backButton = document.getElementById('back-button') as HTMLAnchorElement;
+    backButton.href = `https://app.larq.ai?token=${token}`;
+
 
     // Else if meeting is specified and user is not logged in:
   } else {
@@ -902,6 +913,7 @@ export class DemoMeetingApp
           return false;
       });
     }
+
     
 
     const registerParam:any = new URL(window.location.href).searchParams.get('register');
@@ -1587,15 +1599,21 @@ updateBodyBackgroundColor();
       var startTranscription = document.getElementById('button-start-transcription');
       if (startTranscription) {
         (startTranscription as HTMLElement).click();
+        // hide the #transcript-container then too
+        var tc = document.getElementById('transcript-container');
+        if (tc) {
+          tc.style.display = 'none';
+        }
+
       }
     });
 
 
-    var tc = document.getElementById('transcript-container');
-    if (tc) {
-      tc.style.display = 'block';
-      // this.toggleButton('button-live-transcription');
-    }
+    // var tc = document.getElementById('transcript-container');
+    // if (tc) {
+    //   tc.style.display = 'block';
+    //   // this.toggleButton('button-live-transcription');
+    // }
 
 
 
