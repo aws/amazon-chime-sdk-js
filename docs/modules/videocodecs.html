@@ -72,6 +72,22 @@
 							<h1>Managing Video Codecs in Meetings</h1>
 						</a>
 					</div>
+					<ul>
+						<li><a href="#managing-video-codecs-in-meetings">Managing Video Codecs in Meetings</a><ul>
+								<li><a href="#setting-video-send-codec-preferences">Setting Video Send Codec Preferences</a></li>
+								<li><a href="#considerations-for-adjusting-video-send-codec-defaults">Considerations for Adjusting Video Send Codec Defaults</a><ul>
+										<li><a href="#hardware-vs-software-codecs">Hardware vs. Software Codecs</a></li>
+										<li><a href="#browserdevice-support">Browser/Device Support</a><ul>
+												<li><a href="#avoiding-browserdevice-specific-bugs">Avoiding Browser/Device Specific Bugs</a></li>
+											</ul>
+										</li>
+										<li><a href="#batterycpu-usage">Battery/CPU Usage</a></li>
+										<li><a href="#bandwidth-usage--general-performance">Bandwidth Usage &amp; General Performance</a></li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
 					<p>After raw video frames are captured (e.g. from a camera outputting an RGBA pixel matrix) they are <em>encoded</em> before being sent on the network to reduce their size. On the receiving end, they are <em>decoded</em> back to raw data before being displayed or recorded. The pattern is similar to compression and decompression patterns in, for example, <code>.zip</code> files, however in the realm of media, these <em>codecs</em> (a portmanteau of <em>encoder</em> and <em>decoder</em>) are heavily specialized to audio or video, and the choice of codec can dramatically effect end user experience and the features of your application.</p>
 					<p>The Amazon Chime SDK for Javascript supports setting a list of video codec preferences which will be used to select the encoder for an individual client. The API allows setting fallback codecs to, if desired, ensure that all participants in the call can receive video from senders as long as there is some intersection between the chosen codecs and the receive capabilities. This document will cover how to use the API, its effects, and some possible use cases for using it.</p>
 					<a href="#setting-video-send-codec-preferences" id="setting-video-send-codec-preferences" style="color: inherit; text-decoration: none;">

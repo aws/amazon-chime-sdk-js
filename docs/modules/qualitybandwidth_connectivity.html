@@ -73,6 +73,40 @@
 						</a>
 					</div>
 					<p>The Amazon Chime SDK for JavaScript, in conjunction with WebRTC, allows you to configure quality and bandwidth options for meeting sessions. It provides both automatic and manual controls to adapt to changing network conditions. Finding the right balance of quality and performance can be challenging when either the client&#39;s network or CPU is constrained. As network reliability and available bandwidth decrease, quality and functionality trade-offs must be made in real time to preserve the viability of the meeting. This guide gives an overview of challenges associated with devices and networks, degradation detection mechanisms, and mitigations for various levels of degradation.</p>
+					<ul>
+						<li><a href="#quality-bandwidth-and-connectivity">Quality, Bandwidth, and Connectivity</a><ul>
+								<li><a href="#goals">Goals</a></li>
+								<li><a href="#challenges">Challenges</a></li>
+								<li><a href="#detection-mechanisms">Detection Mechanisms</a><ul>
+										<li><a href="#events-for-monitoring-local-attendee-downlink">Events for monitoring local attendee downlink</a></li>
+										<li><a href="#events-for-monitoring-remote-attendee-uplink">Events for monitoring remote attendee uplink</a></li>
+										<li><a href="#metrics-exposed-directly-from-the-webrtc-peer-connection">Metrics exposed directly from the WebRTC peer connection</a></li>
+										<li><a href="#events-for-monitoring-currently-active-simulast-layers">Events for monitoring currently active simulast layers</a></li>
+									</ul>
+								</li>
+								<li><a href="#mitigations">Mitigations</a><ul>
+										<li><a href="#automatic-mitigations">Automatic mitigations</a></li>
+										<li><a href="#mitigations-to-conserve-cpu">Mitigations to conserve CPU</a><ul>
+												<li><a href="#application-profiling">Application profiling</a></li>
+												<li><a href="#choose-a-lower-local-video-quality">Choose a lower local video quality</a></li>
+												<li><a href="#pause-remote-videos">Pause remote videos</a></li>
+											</ul>
+										</li>
+										<li><a href="#mitigations-to-conserve-bandwidth">Mitigations to conserve bandwidth</a><ul>
+												<li><a href="#adjust-local-video-quality">Adjust local video quality</a></li>
+												<li><a href="#turning-off-local-video">Turning off local video</a></li>
+												<li><a href="#configure-a-video-uplink-policy">Configure a video uplink policy</a></li>
+												<li><a href="#pause-remote-attendee-video">Pause remote attendee video</a></li>
+												<li><a href="#use-active-speaker-detection">Use active speaker detection</a></li>
+												<li><a href="#configure-a-video-downlink-policy">Configure a video downlink policy</a></li>
+											</ul>
+										</li>
+										<li><a href="#use-video-simulcast">Use video simulcast</a></li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
 					<a href="#goals" id="goals" style="color: inherit; text-decoration: none;">
 						<h2>Goals</h2>
 					</a>

@@ -2,6 +2,10 @@
 
 We send the [Amazon Chime SDK meeting events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html#meeting-events-and-attributes) to the Amazon Chime backend to analyze meeting health trends or identify common failures. This helps to improve your meeting experience.
 
+- [Event Ingestion](#event-ingestion)
+  - [Sensitive attributes](#sensitive-attributes)
+  - [Opt out of Event Ingestion](#opt-out-of-event-ingestion)
+
 ## Sensitive attributes
 
 The Amazon Chime SDK for JavaScript will not send below sensitive attributes to the Amazon Chime backend.

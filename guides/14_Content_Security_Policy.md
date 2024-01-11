@@ -1,5 +1,12 @@
 # Content Security Policy for applications using the Amazon Chime SDK
 
+- [Content Security Policy for applications using the Amazon Chime SDK](#content-security-policy-for-applications-using-the-amazon-chime-sdk)
+  - [Meeting](#meeting)
+  - [Messaging](#messaging)
+  - [Logging](#logging)
+  - [Amazon Voice Focus](#amazon-voice-focus)
+
+
 Modern web applications use [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) to protect users from certain classes of attacks. You can add a security policy by configuring your web server to return the Content-Security-Policy HTTP header or using a `<meta>` element to configure a policy. You can add security headers using [Lambda@Edge](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html) and Amazon [CloudFront](https://aws.amazon.com/cloudfront/). For more information, see [Adding HTTP Security Headers Using Lambda@Edge and Amazon CloudFront](https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/).
 
 Include the following in your policy to allow the Amazon Chime SDK access to the meeting, messaging, and Amazon Voice Focus resources.

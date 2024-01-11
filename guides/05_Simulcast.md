@@ -10,6 +10,16 @@ The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes
 If you want more fine-grained control of which simulcast layer to subscribe, please use [VideoPriorityBasedPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy). More details about priority-based downlink policy can be 
 found [here](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html).
 
+- [Video Simulcast](#video-simulcast)
+  - [Details](#details)
+    - [Simulcast overview](#simulcast-overview)
+    - [Simulcast resolutions and behavior](#simulcast-resolutions-and-behavior)
+    - [Downlink  Bandwidth Policy](#downlink--bandwidth-policy)
+    - [Creating a simulcast enabled meeting](#creating-a-simulcast-enabled-meeting)
+    - [Receive upstream simulcast layer change notification](#receive-upstream-simulcast-layer-change-notification)
+    - [Custom Simulcast Policy](#custom-simulcast-policy)
+    - [Enable Simulcast For Content Share](#enable-simulcast-for-content-share)
+
 ## Details
 
 ### Simulcast overview
@@ -45,6 +55,7 @@ Note that simulcast is disabled when there are only 2 or fewer attendees.  This 
 ### Downlink  Bandwidth Policy
 
 The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) adds functionality to take advantage of video simulcast.  The goal of this policy is to leave the complexity of managing the downlink bandwidth and decision of which streams to request inside the SDK and remove that burden from the application.  The policy monitors numerous pieces of information and uses that to determine which streams to subscribe to.  The data considered are:
+
 1. Message from infrastructure enumerating video streams from each remote client
 2. Estimated downlink bandwidth from WebRTC library
 3. Media metrics such as packet loss and used bandwidth
@@ -61,7 +72,9 @@ When using the policy it is recommended that applications do not take action on 
 The VideoAdaptiveProbePolicy can be used with or without simulcast.  To enable it without simulcast set the [MeetingSessionConfiguration.videoDownlinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) to [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html).  If simulcast is not active, then the policy will only be able to add or remove remote videos.
 
 ### Creating a simulcast enabled meeting
+
 First, create a meeting session configuration.
+
 ```javascript
 import {
   ConsoleLogger,
@@ -93,6 +106,7 @@ configuration.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(logger
 ```
 
 Now create a meeting session with the simulcast enabled meeting session configuration.
+
 ```javascript
 // In the examples below, you will use this meetingSession object.
 const meetingSession = new DefaultMeetingSession(
@@ -134,7 +148,9 @@ const observer = {
 
 meetingSession.audioVideo.addObserver(observer);
 ```
+
 ### Custom Simulcast Policy
+
 If the default simulcast uplink policy does not work for you, you can create your own simulcast video uplink policy 
 by implementing [SimulcastUplinkPolicy](https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html) 
 and set the video uplink policy via [MeetingSessionConfiguration.videoUplinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy).
@@ -152,6 +168,7 @@ if (browserBehavior.isSimulcastSupported()) {
 ```
 
 ### Enable Simulcast For Content Share
+
 You can use `enableSimulcastForContentShare` to toggle simulcast on/off for content share. Note that you don't have 
 to set `enableSimulcastForUnifiedPlanChromiumBasedBrowsers` yourself as this configuration will be set automatically 
 for content share attendee as part of `enableSimulcastForContentShare`.
@@ -165,6 +182,7 @@ await meetingSession.audioVideo.startContentShareFromScreenCapture();
 await meetingSession.audioVideo.enableSimulcastForContentShare(false);
 await meetingSession.audioVideo.startContentShareFromScreenCapture();
 ```
+
 Below is the default simulcast encoding parameters:
 
 | Encoding Parameters      | Simulcast stream 1 | Simulcast stream 2 |
@@ -188,6 +206,3 @@ await meetingSession.audioVideo.enableSimulcastForContentShare(true, {
 });
 await meetingSession.audioVideo.startContentShareFromScreenCapture();
 ```
-
-
-

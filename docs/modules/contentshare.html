@@ -69,7 +69,7 @@
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<a href="#content-share" id="content-share" style="color: inherit; text-decoration: none;">
-							<h3>Content Share</h3>
+							<h1>Content Share</h1>
 						</a>
 					</div>
 					<p>This guide explains how to share audio and video content such as screen capture or
@@ -80,8 +80,19 @@
 					belonging to the meeting session.</p>
 					<p>Content share is not supported on mobile OS like iOS and Android. Please refer to the system requirements table for more information:
 					<a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers">Amazon Chime SDK system requirements</a></p>
+					<ul>
+						<li><a href="#content-share">Content Share</a><ul>
+								<li><a href="#share-content">Share content</a></li>
+								<li><a href="#view-the-content-share">View the content share</a></li>
+								<li><a href="#pause-and-unpause-the-content-share">Pause and unpause the content share</a></li>
+								<li><a href="#stop-the-content-share">Stop the content share</a></li>
+								<li><a href="#receive-content-share-events">Receive content share events</a></li>
+								<li><a href="#apply-video-processing-to-content-share">Apply video processing to content share</a></li>
+							</ul>
+						</li>
+					</ul>
 					<a href="#share-content" id="share-content" style="color: inherit; text-decoration: none;">
-						<h4>Share content</h4>
+						<h2>Share content</h2>
 					</a>
 					<p>Using the audio-video facade, start sharing content by calling
 						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare">startContentShare</a>
@@ -106,7 +117,7 @@
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">. </span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">(</span><span style="color: #001080">sourceId</span><span style="color: #000000">);</span>
 </code></pre>
 					<a href="#view-the-content-share" id="view-the-content-share" style="color: inherit; text-decoration: none;">
-						<h4>View the content share</h4>
+						<h2>View the content share</h2>
 					</a>
 					<p>Content shares are treated as regular audio-video attendees. The attendee ID of a
 						content share has a suffix of
@@ -137,7 +148,7 @@
 <span style="color: #000000">}</span>
 </code></pre>
 					<a href="#pause-and-unpause-the-content-share" id="pause-and-unpause-the-content-share" style="color: inherit; text-decoration: none;">
-						<h4>Pause and unpause the content share</h4>
+						<h2>Pause and unpause the content share</h2>
 					</a>
 					<p>To pause and unpause the content share, call
 						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausecontentshare">pauseContentShare</a> and
@@ -149,7 +160,7 @@
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">unpauseContentShare</span><span style="color: #000000">();</span>
 </code></pre>
 					<a href="#stop-the-content-share" id="stop-the-content-share" style="color: inherit; text-decoration: none;">
-						<h4>Stop the content share</h4>
+						<h2>Stop the content share</h2>
 					</a>
 					<p>To stop the content share, call
 					<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopcontentshare">stopContentShare</a>.</p>
@@ -157,14 +168,14 @@
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">stopContentShare</span><span style="color: #000000">();</span>
 </code></pre>
 					<a href="#receive-content-share-events" id="receive-content-share-events" style="color: inherit; text-decoration: none;">
-						<h4>Receive content share events</h4>
+						<h2>Receive content share events</h2>
 					</a>
 					<p>Implement methods from <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html">ContentShareObserver</a> and
 						add an instance of the observer using
 						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addcontentshareobserver">addContentShareObserver</a>
 					to receive events.</p>
 					<a href="#apply-video-processing-to-content-share" id="apply-video-processing-to-content-share" style="color: inherit; text-decoration: none;">
-						<h4>Apply video processing to content share</h4>
+						<h2>Apply video processing to content share</h2>
 					</a>
 					<p>See <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/guides/10_Video_Processor.md#custom-video-processor-usage-for-content-share">this section in the Video Processing guide for more information</a>.</p>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Content%20Share%20feedback">Give feedback on this guide</a></p>
