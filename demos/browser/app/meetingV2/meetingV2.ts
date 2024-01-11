@@ -2070,6 +2070,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
     
     document.getElementById('quick-join').addEventListener('click', async e => {
       e.preventDefault();
+      this.showProgress('progress-authenticate');
       const makeMeeting = await handleJoinAction();
       if (!makeMeeting) {
         return;
@@ -2080,6 +2081,8 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
     document.getElementById('form-authenticate').addEventListener('submit', async e => {
       e.preventDefault();
       const makeMeeting = await handleJoinAction();
+      this.showProgress('progress-authenticate');
+
       if (!makeMeeting) {
         return;
       }
@@ -2095,7 +2098,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       try {
         const response = await fetch(`https://api.larq.ai/meetings/${meetingID}`, {
           method: 'GET',
-          headers: {
+          headers: {  
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + (localStorage.getItem('authToken') || ''),
           },
@@ -2115,7 +2118,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           }
           else {
               console.error(data.message);
-              alert(data.message);
+              // alert(data.message);
               // redirect them to app.larq.ai:
               // const token = localStorage.getItem('authToken');
               // window.location.href = `https://app.larq.ai?token=${token}`;
