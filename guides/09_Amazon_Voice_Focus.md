@@ -1,5 +1,43 @@
 # Integrating Amazon Voice Focus and Echo Reduction into your Amazon Chime SDK for JavaScript application
 
+- [Integrating Amazon Voice Focus and Echo Reduction into your Amazon Chime SDK for JavaScript application](#integrating-amazon-voice-focus-and-echo-reduction-into-your-amazon-chime-sdk-for-javascript-application)
+  - [What is Amazon Voice Focus?](#what-is-amazon-voice-focus)
+  - [What is Echo Reduction?](#what-is-echo-reduction)
+  - [Amazon Voice Focus on the web](#amazon-voice-focus-on-the-web)
+  - [When should I use Amazon Voice Focus?](#when-should-i-use-amazon-voice-focus)
+  - [When should I use Echo Reduction?](#when-should-i-use-echo-reduction)
+  - [Can I use Amazon Voice Focus and Echo Reduction in my application?](#can-i-use-amazon-voice-focus-and-echo-reduction-in-my-application)
+    - [Browser compatibility](#browser-compatibility)
+    - [SIMD support](#simd-support)
+    - [Content delivery, caching and bandwidth](#content-delivery-caching-and-bandwidth)
+  - [Preparing your application](#preparing-your-application)
+    - [Content Security Policy](#content-security-policy)
+    - [Cross-Origin Opener Policy](#cross-origin-opener-policy)
+  - [Frames](#frames)
+  - [Checking for support before offering noise suppression and echo reduction](#checking-for-support-before-offering-noise-suppression-and-echo-reduction)
+  - [Adding Amazon Voice Focus to your application](#adding-amazon-voice-focus-to-your-application)
+  - [Adding Echo Reduction to your application](#adding-echo-reduction-to-your-application)
+    - [Request](#request)
+- [Check for support](#check-for-support)
+  - [Configuration](#configuration)
+  - [Enabling Voice Focus with Echo Reduction](#enabling-voice-focus-with-echo-reduction)
+    - [1. Create a meeting with support for Echo Reduction using Amazon Chime SDK Meetings namespace](#1-create-a-meeting-with-support-for-echo-reduction-using-amazon-chime-sdk-meetings-namespace)
+    - [2. Enabling Echo Reduction at the client level](#2-enabling-echo-reduction-at-the-client-level)
+  - [Disabling Amazon Voice Focus and Echo Reduction and switching devices](#disabling-amazon-voice-focus-and-echo-reduction-and-switching-devices)
+  - [Destroying Amazon Voice Focus worker thread from your application](#destroying-amazon-voice-focus-worker-thread-from-your-application)
+  - [Disabling Echo Reduction from your application](#disabling-echo-reduction-from-your-application)
+  - [Adapting to performance constraints](#adapting-to-performance-constraints)
+    - [Usage preference](#usage-preference)
+    - [Variant selection](#variant-selection)
+    - [Execution preference](#execution-preference)
+    - [Name](#name)
+    - [Configuring SIMD](#configuring-simd)
+    - [Disabling estimation entirely](#disabling-estimation-entirely)
+  - [Observer notifications](#observer-notifications)
+  - [Automatic gain control](#automatic-gain-control)
+  - [Accessing and using configurations](#accessing-and-using-configurations)
+
+
 ## What is Amazon Voice Focus?
 
 Amazon Voice Focus is a noise suppressor that uses machine learning to reduce unwanted background noise in your users’ microphone input. Unlike conventional noise suppressors, Amazon Voice Focus reduces fan noise, road noise, typing, rustling paper, lawnmowers, barking dogs, and other kinds of non-speech input, allowing your users to focus on the human voice.
