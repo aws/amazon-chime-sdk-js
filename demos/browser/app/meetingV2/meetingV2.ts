@@ -865,7 +865,10 @@ export class DemoMeetingApp
     // Add token to the back button href
     const token = localStorage.getItem('authToken');
     const backButton = document.getElementById('back-button') as HTMLAnchorElement;
+    const backButton2 = document.getElementById('back-button2') as HTMLAnchorElement;
     backButton.href = `https://app.larq.ai?token=${token}`;
+    backButton2.href = `https://app.larq.ai?token=${token}`;
+
 
 
     // Else if meeting is specified and user is not logged in:
@@ -2063,65 +2066,71 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value = "";
     });
 
-    document.getElementById('quick-join').addEventListener('click', e => {
+
+    
+    document.getElementById('quick-join').addEventListener('click', async e => {
       e.preventDefault();
-      handleJoinAction();
+      const makeMeeting = await handleJoinAction();
+      if (!makeMeeting) {
+        return;
+      }
       this.redirectFromAuthentication(true);
     });
-
-    document.getElementById('form-authenticate').addEventListener('submit', e => {
+    
+    document.getElementById('form-authenticate').addEventListener('submit', async e => {
       e.preventDefault();
-      handleJoinAction();
+      const makeMeeting = await handleJoinAction();
+      if (!makeMeeting) {
+        return;
+      }
       this.redirectFromAuthentication();
     });
+    
 
-    function handleJoinAction() {
+    async function handleJoinAction(): Promise<boolean> {
       const meetingInput = document.getElementById('inputMeeting') as HTMLInputElement; // Cast to HTMLInputElement
-      const meetingName = meetingInput.value; // Use .value to get input value
-    
-      // get userId from localstorage
-      const userId = localStorage.getItem('userId');
-      // Add other form data as needed
-    
-      fetch('https://api.larq.ai/scheduleMeeting', {
-          method: 'POST',
+      const meetingID = meetingInput.value; // Use .value to get input value
+      const noMeetingAlert = document.getElementById('no-meeting-alert');
+
+      try {
+        const response = await fetch(`https://api.larq.ai/meetings/${meetingID}`, {
+          method: 'GET',
           headers: {
-              'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + (localStorage.getItem('authToken') || ''),
           },
-          body: JSON.stringify({
-              meeting_name: meetingName,
-              host_id: userId,
-              timestamp: Date.now(),
-              duration: 60 // minutes
-              // Add other meeting details
-          }),
-      })
-      .then(response => response.json())
-      .then(data => {
-          if (data.status === 'success') {
+          mode: 'cors' // Ensure this is set if you're dealing with CORS
+        });
+            const data = await response.json();
+        if (data.status === 'success') {
               // Handle joining or starting the meeting (NEW MEETING)
               console.log(data.message);
               const meeting_id = data.meeting_id;
               // set localstorage "host_id" to data.host_id
               localStorage.setItem('host_id', data.host_id);
               localStorage.setItem('meeting_id', meeting_id);
-              // Redirect to meeting page or perform other actions
-          } else if (data.status === 'exists') {
-              // Handle meeting already exists (JOIN MEETING)
-              const meeting_id = data.meeting_id;
-              console.log(data.message);
-              localStorage.setItem('host_id', data.host_id);
-              localStorage.setItem('meeting_id', meeting_id);
+              noMeetingAlert?.classList.add('d-none');
+              return true;
               // Redirect to meeting page or perform other actions
           }
           else {
               console.error(data.message);
+              alert(data.message);
+              // redirect them to app.larq.ai:
+              // const token = localStorage.getItem('authToken');
+              // window.location.href = `https://app.larq.ai?token=${token}`;
+              // make #no-meeting-alert visible
+              noMeetingAlert?.classList.remove('d-none');
+              // stop the script from running:
+
+
+              
+              return false;
           }
-      })
-      .catch(error => {
-          console.error('Error:', error);
-      });
-    };
+    } catch (error) {
+         console.error('Error:', error);
+        }
+      }
     
 
     const earlyConnectCheckbox = document.getElementById('preconnect') as HTMLInputElement;
