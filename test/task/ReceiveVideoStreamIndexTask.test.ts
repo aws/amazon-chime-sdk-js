@@ -723,7 +723,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
           createIndexSignalBuffer(false, null, null, [
             SdkVideoCodecCapability.VP8,
             SdkVideoCodecCapability.VP9_PROFILE_0,
-            SdkVideoCodecCapability.AV1_MAIN,
+            SdkVideoCodecCapability.AV1_MAIN_PROFILE,
           ])
         );
         await delay(behavior.asyncWaitMs + 10);
@@ -804,7 +804,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
           createIndexSignalBuffer(false, null, null, [
             SdkVideoCodecCapability.VP8,
             SdkVideoCodecCapability.VP9_PROFILE_0,
-            SdkVideoCodecCapability.AV1_MAIN,
+            SdkVideoCodecCapability.AV1_MAIN_PROFILE,
           ])
         );
         await delay(behavior.asyncWaitMs + 10);

@@ -13,7 +13,7 @@ $root.SdkSignalFrame = (function() {
 
     /**
      * Properties of a SdkSignalFrame.
-     * @exports ISdkSignalFrame
+     * @name ISdkSignalFrame
      * @interface ISdkSignalFrame
      * @property {number|Long} timestampMs SdkSignalFrame timestampMs
      * @property {SdkSignalFrame.Type} type SdkSignalFrame type
@@ -43,7 +43,7 @@ $root.SdkSignalFrame = (function() {
 
     /**
      * Constructs a new SdkSignalFrame.
-     * @exports SdkSignalFrame
+     * @name SdkSignalFrame
      * @classdesc Represents a SdkSignalFrame.
      * @implements ISdkSignalFrame
      * @constructor
@@ -352,78 +352,102 @@ $root.SdkSignalFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.timestampMs = reader.uint64();
-                break;
-            case 2:
-                message.type = reader.int32();
-                break;
-            case 3:
-                message.error = $root.SdkErrorFrame.decode(reader, reader.uint32());
-                break;
-            case 4:
-                message.join = $root.SdkJoinFrame.decode(reader, reader.uint32());
-                break;
-            case 5:
-                message.joinack = $root.SdkJoinAckFrame.decode(reader, reader.uint32());
-                break;
-            case 6:
-                message.sub = $root.SdkSubscribeFrame.decode(reader, reader.uint32());
-                break;
-            case 7:
-                message.suback = $root.SdkSubscribeAckFrame.decode(reader, reader.uint32());
-                break;
-            case 8:
-                message.index = $root.SdkIndexFrame.decode(reader, reader.uint32());
-                break;
-            case 10:
-                message.pause = $root.SdkPauseResumeFrame.decode(reader, reader.uint32());
-                break;
-            case 11:
-                message.leave = $root.SdkLeaveFrame.decode(reader, reader.uint32());
-                break;
-            case 12:
-                message.leaveAck = $root.SdkLeaveAckFrame.decode(reader, reader.uint32());
-                break;
-            case 14:
-                message.bitrates = $root.SdkBitrateFrame.decode(reader, reader.uint32());
-                break;
-            case 17:
-                message.audioControl = $root.SdkAudioControlFrame.decode(reader, reader.uint32());
-                break;
-            case 18:
-                message.audioMetadata = $root.SdkAudioMetadataFrame.decode(reader, reader.uint32());
-                break;
-            case 19:
-                message.audioStreamIdInfo = $root.SdkAudioStreamIdInfoFrame.decode(reader, reader.uint32());
-                break;
-            case 20:
-                message.pingPong = $root.SdkPingPongFrame.decode(reader, reader.uint32());
-                break;
-            case 21:
-                message.audioStatus = $root.SdkAudioStatusFrame.decode(reader, reader.uint32());
-                break;
-            case 22:
-                message.clientMetric = $root.SdkClientMetricFrame.decode(reader, reader.uint32());
-                break;
-            case 23:
-                message.dataMessage = $root.SdkDataMessageFrame.decode(reader, reader.uint32());
-                break;
-            case 25:
-                message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.decode(reader, reader.uint32());
-                break;
-            case 26:
-                message.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.decode(reader, reader.uint32());
-                break;
-            case 27:
-                message.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.decode(reader, reader.uint32());
-                break;
-            case 28:
-                message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.decode(reader, reader.uint32());
-                break;
-            case 35:
-                message.notification = $root.SdkNotificationFrame.decode(reader, reader.uint32());
-                break;
+            case 1: {
+                    message.timestampMs = reader.uint64();
+                    break;
+                }
+            case 2: {
+                    message.type = reader.int32();
+                    break;
+                }
+            case 3: {
+                    message.error = $root.SdkErrorFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 4: {
+                    message.join = $root.SdkJoinFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 5: {
+                    message.joinack = $root.SdkJoinAckFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 6: {
+                    message.sub = $root.SdkSubscribeFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 7: {
+                    message.suback = $root.SdkSubscribeAckFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 8: {
+                    message.index = $root.SdkIndexFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 10: {
+                    message.pause = $root.SdkPauseResumeFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 11: {
+                    message.leave = $root.SdkLeaveFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 12: {
+                    message.leaveAck = $root.SdkLeaveAckFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 14: {
+                    message.bitrates = $root.SdkBitrateFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 17: {
+                    message.audioControl = $root.SdkAudioControlFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 18: {
+                    message.audioMetadata = $root.SdkAudioMetadataFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 19: {
+                    message.audioStreamIdInfo = $root.SdkAudioStreamIdInfoFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 20: {
+                    message.pingPong = $root.SdkPingPongFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 21: {
+                    message.audioStatus = $root.SdkAudioStatusFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 22: {
+                    message.clientMetric = $root.SdkClientMetricFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 23: {
+                    message.dataMessage = $root.SdkDataMessageFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 25: {
+                    message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 26: {
+                    message.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 27: {
+                    message.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 28: {
+                    message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.decode(reader, reader.uint32());
+                    break;
+                }
+            case 35: {
+                    message.notification = $root.SdkNotificationFrame.decode(reader, reader.uint32());
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -627,6 +651,12 @@ $root.SdkSignalFrame = (function() {
             else if (typeof object.timestampMs === "object")
                 message.timestampMs = new $util.LongBits(object.timestampMs.low >>> 0, object.timestampMs.high >>> 0).toNumber(true);
         switch (object.type) {
+        default:
+            if (typeof object.type === "number") {
+                message.type = object.type;
+                break;
+            }
+            break;
         case "JOIN":
         case 1:
             message.type = 1;
@@ -878,7 +908,7 @@ $root.SdkSignalFrame = (function() {
             else
                 object.timestampMs = options.longs === String ? $util.Long.prototype.toString.call(message.timestampMs) : options.longs === Number ? new $util.LongBits(message.timestampMs.low >>> 0, message.timestampMs.high >>> 0).toNumber(true) : message.timestampMs;
         if (message.type != null && message.hasOwnProperty("type"))
-            object.type = options.enums === String ? $root.SdkSignalFrame.Type[message.type] : message.type;
+            object.type = options.enums === String ? $root.SdkSignalFrame.Type[message.type] === undefined ? message.type : $root.SdkSignalFrame.Type[message.type] : message.type;
         if (message.error != null && message.hasOwnProperty("error"))
             object.error = $root.SdkErrorFrame.toObject(message.error, options);
         if (message.join != null && message.hasOwnProperty("join"))
@@ -935,6 +965,21 @@ $root.SdkSignalFrame = (function() {
      */
     SdkSignalFrame.prototype.toJSON = function toJSON() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkSignalFrame
+     * @function getTypeUrl
+     * @memberof SdkSignalFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkSignalFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkSignalFrame";
     };
 
     /**
@@ -998,7 +1043,7 @@ $root.SdkErrorFrame = (function() {
 
     /**
      * Properties of a SdkErrorFrame.
-     * @exports ISdkErrorFrame
+     * @name ISdkErrorFrame
      * @interface ISdkErrorFrame
      * @property {number|null} [status] SdkErrorFrame status
      * @property {string|null} [description] SdkErrorFrame description
@@ -1006,7 +1051,7 @@ $root.SdkErrorFrame = (function() {
 
     /**
      * Constructs a new SdkErrorFrame.
-     * @exports SdkErrorFrame
+     * @name SdkErrorFrame
      * @classdesc Represents a SdkErrorFrame.
      * @implements ISdkErrorFrame
      * @constructor
@@ -1097,12 +1142,14 @@ $root.SdkErrorFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.status = reader.uint32();
-                break;
-            case 2:
-                message.description = reader.string();
-                break;
+            case 1: {
+                    message.status = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.description = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -1201,12 +1248,27 @@ $root.SdkErrorFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkErrorFrame
+     * @function getTypeUrl
+     * @memberof SdkErrorFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkErrorFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkErrorFrame";
+    };
+
     return SdkErrorFrame;
 })();
 
 /**
  * SdkJoinFlags enum.
- * @exports SdkJoinFlags
+ * @name SdkJoinFlags
  * @enum {number}
  * @property {number} HAS_STREAM_UPDATE=2 HAS_STREAM_UPDATE value
  * @property {number} COMPLETE_VIDEO_SOURCES_LIST=16 COMPLETE_VIDEO_SOURCES_LIST value
@@ -1224,7 +1286,7 @@ $root.SdkClientDetails = (function() {
 
     /**
      * Properties of a SdkClientDetails.
-     * @exports ISdkClientDetails
+     * @name ISdkClientDetails
      * @interface ISdkClientDetails
      * @property {string|null} [appName] SdkClientDetails appName
      * @property {string|null} [appVersion] SdkClientDetails appVersion
@@ -1239,7 +1301,7 @@ $root.SdkClientDetails = (function() {
 
     /**
      * Constructs a new SdkClientDetails.
-     * @exports SdkClientDetails
+     * @name SdkClientDetails
      * @classdesc Represents a SdkClientDetails.
      * @implements ISdkClientDetails
      * @constructor
@@ -1400,33 +1462,42 @@ $root.SdkClientDetails = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.appName = reader.string();
-                break;
-            case 2:
-                message.appVersion = reader.string();
-                break;
-            case 3:
-                message.deviceModel = reader.string();
-                break;
-            case 4:
-                message.deviceMake = reader.string();
-                break;
-            case 5:
-                message.platformName = reader.string();
-                break;
-            case 6:
-                message.platformVersion = reader.string();
-                break;
-            case 7:
-                message.clientSource = reader.string();
-                break;
-            case 8:
-                message.chimeSdkVersion = reader.string();
-                break;
-            case 9:
-                message.clientUtcOffset = reader.string();
-                break;
+            case 1: {
+                    message.appName = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.appVersion = reader.string();
+                    break;
+                }
+            case 3: {
+                    message.deviceModel = reader.string();
+                    break;
+                }
+            case 4: {
+                    message.deviceMake = reader.string();
+                    break;
+                }
+            case 5: {
+                    message.platformName = reader.string();
+                    break;
+                }
+            case 6: {
+                    message.platformVersion = reader.string();
+                    break;
+                }
+            case 7: {
+                    message.clientSource = reader.string();
+                    break;
+                }
+            case 8: {
+                    message.chimeSdkVersion = reader.string();
+                    break;
+                }
+            case 9: {
+                    message.clientUtcOffset = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -1581,12 +1652,27 @@ $root.SdkClientDetails = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkClientDetails
+     * @function getTypeUrl
+     * @memberof SdkClientDetails
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkClientDetails.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkClientDetails";
+    };
+
     return SdkClientDetails;
 })();
 
 /**
  * SdkServerSideNetworkAdaption enum.
- * @exports SdkServerSideNetworkAdaption
+ * @name SdkServerSideNetworkAdaption
  * @enum {number}
  * @property {number} DEFAULT=1 DEFAULT value
  * @property {number} NONE=2 NONE value
@@ -1606,7 +1692,7 @@ $root.SdkJoinFrame = (function() {
 
     /**
      * Properties of a SdkJoinFrame.
-     * @exports ISdkJoinFrame
+     * @name ISdkJoinFrame
      * @interface ISdkJoinFrame
      * @property {number|null} [protocolVersion] SdkJoinFrame protocolVersion
      * @property {number|null} [maxNumOfVideos] SdkJoinFrame maxNumOfVideos
@@ -1622,7 +1708,7 @@ $root.SdkJoinFrame = (function() {
 
     /**
      * Constructs a new SdkJoinFrame.
-     * @exports SdkJoinFrame
+     * @name SdkJoinFrame
      * @classdesc Represents a SdkJoinFrame.
      * @implements ISdkJoinFrame
      * @constructor
@@ -1795,43 +1881,53 @@ $root.SdkJoinFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.protocolVersion = reader.uint32();
-                break;
-            case 2:
-                message.maxNumOfVideos = reader.uint32();
-                break;
-            case 3:
-                message.flags = reader.uint32();
-                break;
-            case 4:
-                message.clientDetails = $root.SdkClientDetails.decode(reader, reader.uint32());
-                break;
-            case 6:
-                message.audioSessionId = reader.uint64();
-                break;
-            case 7:
-                message.wantsCompressedSdp = reader.bool();
-                break;
-            case 10:
-                message.serverSideNetworkAdaption = reader.int32();
-                break;
-            case 11:
-                if (!(message.supportedServerSideNetworkAdaptions && message.supportedServerSideNetworkAdaptions.length))
-                    message.supportedServerSideNetworkAdaptions = [];
-                if ((tag & 7) === 2) {
-                    var end2 = reader.uint32() + reader.pos;
-                    while (reader.pos < end2)
+            case 1: {
+                    message.protocolVersion = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.maxNumOfVideos = reader.uint32();
+                    break;
+                }
+            case 3: {
+                    message.flags = reader.uint32();
+                    break;
+                }
+            case 4: {
+                    message.clientDetails = $root.SdkClientDetails.decode(reader, reader.uint32());
+                    break;
+                }
+            case 6: {
+                    message.audioSessionId = reader.uint64();
+                    break;
+                }
+            case 7: {
+                    message.wantsCompressedSdp = reader.bool();
+                    break;
+                }
+            case 10: {
+                    message.serverSideNetworkAdaption = reader.int32();
+                    break;
+                }
+            case 11: {
+                    if (!(message.supportedServerSideNetworkAdaptions && message.supportedServerSideNetworkAdaptions.length))
+                        message.supportedServerSideNetworkAdaptions = [];
+                    if ((tag & 7) === 2) {
+                        var end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.supportedServerSideNetworkAdaptions.push(reader.int32());
+                    } else
                         message.supportedServerSideNetworkAdaptions.push(reader.int32());
-                } else
-                    message.supportedServerSideNetworkAdaptions.push(reader.int32());
-                break;
-            case 12:
-                message.wantsAllTemporalLayersInIndex = reader.bool();
-                break;
-            case 13:
-                message.disablePeriodicKeyframeRequestOnContentSender = reader.bool();
-                break;
+                    break;
+                }
+            case 12: {
+                    message.wantsAllTemporalLayersInIndex = reader.bool();
+                    break;
+                }
+            case 13: {
+                    message.disablePeriodicKeyframeRequestOnContentSender = reader.bool();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -1897,9 +1993,6 @@ $root.SdkJoinFrame = (function() {
             case 4:
                 break;
             }
-        if (message.wantsAllTemporalLayersInIndex != null && message.hasOwnProperty("wantsAllTemporalLayersInIndex"))
-            if (typeof message.wantsAllTemporalLayersInIndex !== "boolean")
-                return "wantsAllTemporalLayersInIndex: boolean expected";
         if (message.supportedServerSideNetworkAdaptions != null && message.hasOwnProperty("supportedServerSideNetworkAdaptions")) {
             if (!Array.isArray(message.supportedServerSideNetworkAdaptions))
                 return "supportedServerSideNetworkAdaptions: array expected";
@@ -1914,6 +2007,9 @@ $root.SdkJoinFrame = (function() {
                     break;
                 }
         }
+        if (message.wantsAllTemporalLayersInIndex != null && message.hasOwnProperty("wantsAllTemporalLayersInIndex"))
+            if (typeof message.wantsAllTemporalLayersInIndex !== "boolean")
+                return "wantsAllTemporalLayersInIndex: boolean expected";
         if (message.disablePeriodicKeyframeRequestOnContentSender != null && message.hasOwnProperty("disablePeriodicKeyframeRequestOnContentSender"))
             if (typeof message.disablePeriodicKeyframeRequestOnContentSender !== "boolean")
                 return "disablePeriodicKeyframeRequestOnContentSender: boolean expected";
@@ -1955,6 +2051,12 @@ $root.SdkJoinFrame = (function() {
         if (object.wantsCompressedSdp != null)
             message.wantsCompressedSdp = Boolean(object.wantsCompressedSdp);
         switch (object.serverSideNetworkAdaption) {
+        default:
+            if (typeof object.serverSideNetworkAdaption === "number") {
+                message.serverSideNetworkAdaption = object.serverSideNetworkAdaption;
+                break;
+            }
+            break;
         case "DEFAULT":
         case 1:
             message.serverSideNetworkAdaption = 1;
@@ -1979,6 +2081,10 @@ $root.SdkJoinFrame = (function() {
             for (var i = 0; i < object.supportedServerSideNetworkAdaptions.length; ++i)
                 switch (object.supportedServerSideNetworkAdaptions[i]) {
                 default:
+                    if (typeof object.supportedServerSideNetworkAdaptions[i] === "number") {
+                        message.supportedServerSideNetworkAdaptions[i] = object.supportedServerSideNetworkAdaptions[i];
+                        break;
+                    }
                 case "DEFAULT":
                 case 1:
                     message.supportedServerSideNetworkAdaptions[i] = 1;
@@ -2031,6 +2137,7 @@ $root.SdkJoinFrame = (function() {
                 object.audioSessionId = options.longs === String ? "0" : 0;
             object.wantsCompressedSdp = false;
             object.serverSideNetworkAdaption = options.enums === String ? "DEFAULT" : 1;
+            object.wantsAllTemporalLayersInIndex = false;
             object.disablePeriodicKeyframeRequestOnContentSender = false;
         }
         if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
@@ -2049,12 +2156,14 @@ $root.SdkJoinFrame = (function() {
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             object.wantsCompressedSdp = message.wantsCompressedSdp;
         if (message.serverSideNetworkAdaption != null && message.hasOwnProperty("serverSideNetworkAdaption"))
-            object.serverSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.serverSideNetworkAdaption] : message.serverSideNetworkAdaption;
+            object.serverSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.serverSideNetworkAdaption] === undefined ? message.serverSideNetworkAdaption : $root.SdkServerSideNetworkAdaption[message.serverSideNetworkAdaption] : message.serverSideNetworkAdaption;
         if (message.supportedServerSideNetworkAdaptions && message.supportedServerSideNetworkAdaptions.length) {
             object.supportedServerSideNetworkAdaptions = [];
             for (var j = 0; j < message.supportedServerSideNetworkAdaptions.length; ++j)
-                object.supportedServerSideNetworkAdaptions[j] = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.supportedServerSideNetworkAdaptions[j]] : message.supportedServerSideNetworkAdaptions[j];
+                object.supportedServerSideNetworkAdaptions[j] = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.supportedServerSideNetworkAdaptions[j]] === undefined ? message.supportedServerSideNetworkAdaptions[j] : $root.SdkServerSideNetworkAdaption[message.supportedServerSideNetworkAdaptions[j]] : message.supportedServerSideNetworkAdaptions[j];
         }
+        if (message.wantsAllTemporalLayersInIndex != null && message.hasOwnProperty("wantsAllTemporalLayersInIndex"))
+            object.wantsAllTemporalLayersInIndex = message.wantsAllTemporalLayersInIndex;
         if (message.disablePeriodicKeyframeRequestOnContentSender != null && message.hasOwnProperty("disablePeriodicKeyframeRequestOnContentSender"))
             object.disablePeriodicKeyframeRequestOnContentSender = message.disablePeriodicKeyframeRequestOnContentSender;
         return object;
@@ -2071,6 +2180,21 @@ $root.SdkJoinFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkJoinFrame
+     * @function getTypeUrl
+     * @memberof SdkJoinFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkJoinFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkJoinFrame";
+    };
+
     return SdkJoinFrame;
 })();
 
@@ -2078,7 +2202,7 @@ $root.SdkJoinAckFrame = (function() {
 
     /**
      * Properties of a SdkJoinAckFrame.
-     * @exports ISdkJoinAckFrame
+     * @name ISdkJoinAckFrame
      * @interface ISdkJoinAckFrame
      * @property {ISdkTurnCredentials|null} [turnCredentials] SdkJoinAckFrame turnCredentials
      * @property {number|null} [videoSubscriptionLimit] SdkJoinAckFrame videoSubscriptionLimit
@@ -2088,7 +2212,7 @@ $root.SdkJoinAckFrame = (function() {
 
     /**
      * Constructs a new SdkJoinAckFrame.
-     * @exports SdkJoinAckFrame
+     * @name SdkJoinAckFrame
      * @classdesc Represents a SdkJoinAckFrame.
      * @implements ISdkJoinAckFrame
      * @constructor
@@ -2199,18 +2323,22 @@ $root.SdkJoinAckFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.turnCredentials = $root.SdkTurnCredentials.decode(reader, reader.uint32());
-                break;
-            case 2:
-                message.videoSubscriptionLimit = reader.uint32();
-                break;
-            case 3:
-                message.wantsCompressedSdp = reader.bool();
-                break;
-            case 4:
-                message.defaultServerSideNetworkAdaption = reader.int32();
-                break;
+            case 1: {
+                    message.turnCredentials = $root.SdkTurnCredentials.decode(reader, reader.uint32());
+                    break;
+                }
+            case 2: {
+                    message.videoSubscriptionLimit = reader.uint32();
+                    break;
+                }
+            case 3: {
+                    message.wantsCompressedSdp = reader.bool();
+                    break;
+                }
+            case 4: {
+                    message.defaultServerSideNetworkAdaption = reader.int32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -2292,6 +2420,12 @@ $root.SdkJoinAckFrame = (function() {
         if (object.wantsCompressedSdp != null)
             message.wantsCompressedSdp = Boolean(object.wantsCompressedSdp);
         switch (object.defaultServerSideNetworkAdaption) {
+        default:
+            if (typeof object.defaultServerSideNetworkAdaption === "number") {
+                message.defaultServerSideNetworkAdaption = object.defaultServerSideNetworkAdaption;
+                break;
+            }
+            break;
         case "DEFAULT":
         case 1:
             message.defaultServerSideNetworkAdaption = 1;
@@ -2338,7 +2472,7 @@ $root.SdkJoinAckFrame = (function() {
         if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
             object.wantsCompressedSdp = message.wantsCompressedSdp;
         if (message.defaultServerSideNetworkAdaption != null && message.hasOwnProperty("defaultServerSideNetworkAdaption"))
-            object.defaultServerSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.defaultServerSideNetworkAdaption] : message.defaultServerSideNetworkAdaption;
+            object.defaultServerSideNetworkAdaption = options.enums === String ? $root.SdkServerSideNetworkAdaption[message.defaultServerSideNetworkAdaption] === undefined ? message.defaultServerSideNetworkAdaption : $root.SdkServerSideNetworkAdaption[message.defaultServerSideNetworkAdaption] : message.defaultServerSideNetworkAdaption;
         return object;
     };
 
@@ -2353,6 +2487,21 @@ $root.SdkJoinAckFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkJoinAckFrame
+     * @function getTypeUrl
+     * @memberof SdkJoinAckFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkJoinAckFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkJoinAckFrame";
+    };
+
     return SdkJoinAckFrame;
 })();
 
@@ -2360,13 +2509,13 @@ $root.SdkLeaveFrame = (function() {
 
     /**
      * Properties of a SdkLeaveFrame.
-     * @exports ISdkLeaveFrame
+     * @name ISdkLeaveFrame
      * @interface ISdkLeaveFrame
      */
 
     /**
      * Constructs a new SdkLeaveFrame.
-     * @exports SdkLeaveFrame
+     * @name SdkLeaveFrame
      * @classdesc Represents a SdkLeaveFrame.
      * @implements ISdkLeaveFrame
      * @constructor
@@ -2513,6 +2662,21 @@ $root.SdkLeaveFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkLeaveFrame
+     * @function getTypeUrl
+     * @memberof SdkLeaveFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkLeaveFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkLeaveFrame";
+    };
+
     return SdkLeaveFrame;
 })();
 
@@ -2520,13 +2684,13 @@ $root.SdkLeaveAckFrame = (function() {
 
     /**
      * Properties of a SdkLeaveAckFrame.
-     * @exports ISdkLeaveAckFrame
+     * @name ISdkLeaveAckFrame
      * @interface ISdkLeaveAckFrame
      */
 
     /**
      * Constructs a new SdkLeaveAckFrame.
-     * @exports SdkLeaveAckFrame
+     * @name SdkLeaveAckFrame
      * @classdesc Represents a SdkLeaveAckFrame.
      * @implements ISdkLeaveAckFrame
      * @constructor
@@ -2673,12 +2837,27 @@ $root.SdkLeaveAckFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkLeaveAckFrame
+     * @function getTypeUrl
+     * @memberof SdkLeaveAckFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkLeaveAckFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkLeaveAckFrame";
+    };
+
     return SdkLeaveAckFrame;
 })();
 
 /**
  * SdkStreamServiceType enum.
- * @exports SdkStreamServiceType
+ * @name SdkStreamServiceType
  * @enum {number}
  * @property {number} RX=1 RX value
  * @property {number} TX=2 TX value
@@ -2694,7 +2873,7 @@ $root.SdkStreamServiceType = (function() {
 
 /**
  * SdkStreamMediaType enum.
- * @exports SdkStreamMediaType
+ * @name SdkStreamMediaType
  * @enum {number}
  * @property {number} AUDIO=1 AUDIO value
  * @property {number} VIDEO=2 VIDEO value
@@ -2710,7 +2889,7 @@ $root.SdkSubscribeFrame = (function() {
 
     /**
      * Properties of a SdkSubscribeFrame.
-     * @exports ISdkSubscribeFrame
+     * @name ISdkSubscribeFrame
      * @interface ISdkSubscribeFrame
      * @property {SdkStreamServiceType|null} [duplex] SdkSubscribeFrame duplex
      * @property {Array.<ISdkStreamDescriptor>|null} [sendStreams] SdkSubscribeFrame sendStreams
@@ -2725,7 +2904,7 @@ $root.SdkSubscribeFrame = (function() {
 
     /**
      * Constructs a new SdkSubscribeFrame.
-     * @exports SdkSubscribeFrame
+     * @name SdkSubscribeFrame
      * @classdesc Represents a SdkSubscribeFrame.
      * @implements ISdkSubscribeFrame
      * @constructor
@@ -2892,44 +3071,53 @@ $root.SdkSubscribeFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.duplex = reader.int32();
-                break;
-            case 2:
-                if (!(message.sendStreams && message.sendStreams.length))
-                    message.sendStreams = [];
-                message.sendStreams.push($root.SdkStreamDescriptor.decode(reader, reader.uint32()));
-                break;
-            case 3:
-                if (!(message.receiveStreamIds && message.receiveStreamIds.length))
-                    message.receiveStreamIds = [];
-                if ((tag & 7) === 2) {
-                    var end2 = reader.uint32() + reader.pos;
-                    while (reader.pos < end2)
+            case 1: {
+                    message.duplex = reader.int32();
+                    break;
+                }
+            case 2: {
+                    if (!(message.sendStreams && message.sendStreams.length))
+                        message.sendStreams = [];
+                    message.sendStreams.push($root.SdkStreamDescriptor.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 3: {
+                    if (!(message.receiveStreamIds && message.receiveStreamIds.length))
+                        message.receiveStreamIds = [];
+                    if ((tag & 7) === 2) {
+                        var end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.receiveStreamIds.push(reader.uint32());
+                    } else
                         message.receiveStreamIds.push(reader.uint32());
-                } else
-                    message.receiveStreamIds.push(reader.uint32());
-                break;
-            case 4:
-                message.sdpOffer = reader.string();
-                break;
-            case 5:
-                message.audioHost = reader.string();
-                break;
-            case 6:
-                message.audioCheckin = reader.bool();
-                break;
-            case 7:
-                message.audioMuted = reader.bool();
-                break;
-            case 8:
-                message.compressedSdpOffer = reader.bytes();
-                break;
-            case 9:
-                if (!(message.videoSubscriptionConfiguration && message.videoSubscriptionConfiguration.length))
-                    message.videoSubscriptionConfiguration = [];
-                message.videoSubscriptionConfiguration.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
-                break;
+                    break;
+                }
+            case 4: {
+                    message.sdpOffer = reader.string();
+                    break;
+                }
+            case 5: {
+                    message.audioHost = reader.string();
+                    break;
+                }
+            case 6: {
+                    message.audioCheckin = reader.bool();
+                    break;
+                }
+            case 7: {
+                    message.audioMuted = reader.bool();
+                    break;
+                }
+            case 8: {
+                    message.compressedSdpOffer = reader.bytes();
+                    break;
+                }
+            case 9: {
+                    if (!(message.videoSubscriptionConfiguration && message.videoSubscriptionConfiguration.length))
+                        message.videoSubscriptionConfiguration = [];
+                    message.videoSubscriptionConfiguration.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -3030,6 +3218,12 @@ $root.SdkSubscribeFrame = (function() {
             return object;
         var message = new $root.SdkSubscribeFrame();
         switch (object.duplex) {
+        default:
+            if (typeof object.duplex === "number") {
+                message.duplex = object.duplex;
+                break;
+            }
+            break;
         case "RX":
         case 1:
             message.duplex = 1;
@@ -3071,7 +3265,7 @@ $root.SdkSubscribeFrame = (function() {
         if (object.compressedSdpOffer != null)
             if (typeof object.compressedSdpOffer === "string")
                 $util.base64.decode(object.compressedSdpOffer, message.compressedSdpOffer = $util.newBuffer($util.base64.length(object.compressedSdpOffer)), 0);
-            else if (object.compressedSdpOffer.length)
+            else if (object.compressedSdpOffer.length >= 0)
                 message.compressedSdpOffer = object.compressedSdpOffer;
         if (object.videoSubscriptionConfiguration) {
             if (!Array.isArray(object.videoSubscriptionConfiguration))
@@ -3119,7 +3313,7 @@ $root.SdkSubscribeFrame = (function() {
             }
         }
         if (message.duplex != null && message.hasOwnProperty("duplex"))
-            object.duplex = options.enums === String ? $root.SdkStreamServiceType[message.duplex] : message.duplex;
+            object.duplex = options.enums === String ? $root.SdkStreamServiceType[message.duplex] === undefined ? message.duplex : $root.SdkStreamServiceType[message.duplex] : message.duplex;
         if (message.sendStreams && message.sendStreams.length) {
             object.sendStreams = [];
             for (var j = 0; j < message.sendStreams.length; ++j)
@@ -3159,6 +3353,21 @@ $root.SdkSubscribeFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkSubscribeFrame
+     * @function getTypeUrl
+     * @memberof SdkSubscribeFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkSubscribeFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkSubscribeFrame";
+    };
+
     return SdkSubscribeFrame;
 })();
 
@@ -3166,7 +3375,7 @@ $root.SdkSubscribeAckFrame = (function() {
 
     /**
      * Properties of a SdkSubscribeAckFrame.
-     * @exports ISdkSubscribeAckFrame
+     * @name ISdkSubscribeAckFrame
      * @interface ISdkSubscribeAckFrame
      * @property {SdkStreamServiceType|null} [duplex] SdkSubscribeAckFrame duplex
      * @property {Array.<ISdkStreamAllocation>|null} [allocations] SdkSubscribeAckFrame allocations
@@ -3177,7 +3386,7 @@ $root.SdkSubscribeAckFrame = (function() {
 
     /**
      * Constructs a new SdkSubscribeAckFrame.
-     * @exports SdkSubscribeAckFrame
+     * @name SdkSubscribeAckFrame
      * @classdesc Represents a SdkSubscribeAckFrame.
      * @implements ISdkSubscribeAckFrame
      * @constructor
@@ -3302,25 +3511,30 @@ $root.SdkSubscribeAckFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.duplex = reader.int32();
-                break;
-            case 2:
-                if (!(message.allocations && message.allocations.length))
-                    message.allocations = [];
-                message.allocations.push($root.SdkStreamAllocation.decode(reader, reader.uint32()));
-                break;
-            case 3:
-                message.sdpAnswer = reader.string();
-                break;
-            case 4:
-                if (!(message.tracks && message.tracks.length))
-                    message.tracks = [];
-                message.tracks.push($root.SdkTrackMapping.decode(reader, reader.uint32()));
-                break;
-            case 5:
-                message.compressedSdpAnswer = reader.bytes();
-                break;
+            case 1: {
+                    message.duplex = reader.int32();
+                    break;
+                }
+            case 2: {
+                    if (!(message.allocations && message.allocations.length))
+                        message.allocations = [];
+                    message.allocations.push($root.SdkStreamAllocation.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 3: {
+                    message.sdpAnswer = reader.string();
+                    break;
+                }
+            case 4: {
+                    if (!(message.tracks && message.tracks.length))
+                        message.tracks = [];
+                    message.tracks.push($root.SdkTrackMapping.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 5: {
+                    message.compressedSdpAnswer = reader.bytes();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -3405,6 +3619,12 @@ $root.SdkSubscribeAckFrame = (function() {
             return object;
         var message = new $root.SdkSubscribeAckFrame();
         switch (object.duplex) {
+        default:
+            if (typeof object.duplex === "number") {
+                message.duplex = object.duplex;
+                break;
+            }
+            break;
         case "RX":
         case 1:
             message.duplex = 1;
@@ -3443,7 +3663,7 @@ $root.SdkSubscribeAckFrame = (function() {
         if (object.compressedSdpAnswer != null)
             if (typeof object.compressedSdpAnswer === "string")
                 $util.base64.decode(object.compressedSdpAnswer, message.compressedSdpAnswer = $util.newBuffer($util.base64.length(object.compressedSdpAnswer)), 0);
-            else if (object.compressedSdpAnswer.length)
+            else if (object.compressedSdpAnswer.length >= 0)
                 message.compressedSdpAnswer = object.compressedSdpAnswer;
         return message;
     };
@@ -3477,7 +3697,7 @@ $root.SdkSubscribeAckFrame = (function() {
             }
         }
         if (message.duplex != null && message.hasOwnProperty("duplex"))
-            object.duplex = options.enums === String ? $root.SdkStreamServiceType[message.duplex] : message.duplex;
+            object.duplex = options.enums === String ? $root.SdkStreamServiceType[message.duplex] === undefined ? message.duplex : $root.SdkStreamServiceType[message.duplex] : message.duplex;
         if (message.allocations && message.allocations.length) {
             object.allocations = [];
             for (var j = 0; j < message.allocations.length; ++j)
@@ -3506,6 +3726,21 @@ $root.SdkSubscribeAckFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkSubscribeAckFrame
+     * @function getTypeUrl
+     * @memberof SdkSubscribeAckFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkSubscribeAckFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkSubscribeAckFrame";
+    };
+
     return SdkSubscribeAckFrame;
 })();
 
@@ -3513,7 +3748,7 @@ $root.SdkIndexFrame = (function() {
 
     /**
      * Properties of a SdkIndexFrame.
-     * @exports ISdkIndexFrame
+     * @name ISdkIndexFrame
      * @interface ISdkIndexFrame
      * @property {boolean|null} [atCapacity] SdkIndexFrame atCapacity
      * @property {Array.<ISdkStreamDescriptor>|null} [sources] SdkIndexFrame sources
@@ -3524,7 +3759,7 @@ $root.SdkIndexFrame = (function() {
 
     /**
      * Constructs a new SdkIndexFrame.
-     * @exports SdkIndexFrame
+     * @name SdkIndexFrame
      * @classdesc Represents a SdkIndexFrame.
      * @implements ISdkIndexFrame
      * @constructor
@@ -3651,37 +3886,42 @@ $root.SdkIndexFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.atCapacity = reader.bool();
-                break;
-            case 2:
-                if (!(message.sources && message.sources.length))
-                    message.sources = [];
-                message.sources.push($root.SdkStreamDescriptor.decode(reader, reader.uint32()));
-                break;
-            case 3:
-                if (!(message.pausedAtSourceIds && message.pausedAtSourceIds.length))
-                    message.pausedAtSourceIds = [];
-                if ((tag & 7) === 2) {
-                    var end2 = reader.uint32() + reader.pos;
-                    while (reader.pos < end2)
+            case 1: {
+                    message.atCapacity = reader.bool();
+                    break;
+                }
+            case 2: {
+                    if (!(message.sources && message.sources.length))
+                        message.sources = [];
+                    message.sources.push($root.SdkStreamDescriptor.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 3: {
+                    if (!(message.pausedAtSourceIds && message.pausedAtSourceIds.length))
+                        message.pausedAtSourceIds = [];
+                    if ((tag & 7) === 2) {
+                        var end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.pausedAtSourceIds.push(reader.uint32());
+                    } else
                         message.pausedAtSourceIds.push(reader.uint32());
-                } else
-                    message.pausedAtSourceIds.push(reader.uint32());
-                break;
-            case 4:
-                message.numParticipants = reader.uint32();
-                break;
-            case 5:
-                if (!(message.supportedReceiveCodecIntersection && message.supportedReceiveCodecIntersection.length))
-                    message.supportedReceiveCodecIntersection = [];
-                if ((tag & 7) === 2) {
-                    var end2 = reader.uint32() + reader.pos;
-                    while (reader.pos < end2)
+                    break;
+                }
+            case 4: {
+                    message.numParticipants = reader.uint32();
+                    break;
+                }
+            case 5: {
+                    if (!(message.supportedReceiveCodecIntersection && message.supportedReceiveCodecIntersection.length))
+                        message.supportedReceiveCodecIntersection = [];
+                    if ((tag & 7) === 2) {
+                        var end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.supportedReceiveCodecIntersection.push(reader.int32());
+                    } else
                         message.supportedReceiveCodecIntersection.push(reader.int32());
-                } else
-                    message.supportedReceiveCodecIntersection.push(reader.int32());
-                break;
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -3747,7 +3987,13 @@ $root.SdkIndexFrame = (function() {
                 default:
                     return "supportedReceiveCodecIntersection: enum value[] expected";
                 case 1:
+                case 2:
                 case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 8:
+                case 11:
                     break;
                 }
         }
@@ -3794,19 +4040,39 @@ $root.SdkIndexFrame = (function() {
             for (var i = 0; i < object.supportedReceiveCodecIntersection.length; ++i)
                 switch (object.supportedReceiveCodecIntersection[i]) {
                 default:
+                    if (typeof object.supportedReceiveCodecIntersection[i] === "number") {
+                        message.supportedReceiveCodecIntersection[i] = object.supportedReceiveCodecIntersection[i];
+                        break;
+                    }
                 case "VP8":
                 case 1:
                     message.supportedReceiveCodecIntersection[i] = 1;
+                    break;
+                case "H264_BASELINE_PROFILE":
+                case 2:
+                    message.supportedReceiveCodecIntersection[i] = 2;
                     break;
                 case "H264_CONSTRAINED_BASELINE_PROFILE":
                 case 3:
                     message.supportedReceiveCodecIntersection[i] = 3;
                     break;
+                case "H264_MAIN_PROFILE":
+                case 4:
+                    message.supportedReceiveCodecIntersection[i] = 4;
+                    break;
+                case "H264_HIGH_PROFILE":
+                case 5:
+                    message.supportedReceiveCodecIntersection[i] = 5;
+                    break;
+                case "H264_CONSTRAINED_HIGH_PROFILE":
+                case 6:
+                    message.supportedReceiveCodecIntersection[i] = 6;
+                    break;
                 case "VP9_PROFILE_0":
                 case 8:
                     message.supportedReceiveCodecIntersection[i] = 8;
                     break;
-                case "AV1_MAIN":
+                case "AV1_MAIN_PROFILE":
                 case 11:
                     message.supportedReceiveCodecIntersection[i] = 11;
                     break;
@@ -3854,7 +4120,7 @@ $root.SdkIndexFrame = (function() {
         if (message.supportedReceiveCodecIntersection && message.supportedReceiveCodecIntersection.length) {
             object.supportedReceiveCodecIntersection = [];
             for (var j = 0; j < message.supportedReceiveCodecIntersection.length; ++j)
-                object.supportedReceiveCodecIntersection[j] = options.enums === String ? $root.SdkVideoCodecCapability[message.supportedReceiveCodecIntersection[j]] : message.supportedReceiveCodecIntersection[j];
+                object.supportedReceiveCodecIntersection[j] = options.enums === String ? $root.SdkVideoCodecCapability[message.supportedReceiveCodecIntersection[j]] === undefined ? message.supportedReceiveCodecIntersection[j] : $root.SdkVideoCodecCapability[message.supportedReceiveCodecIntersection[j]] : message.supportedReceiveCodecIntersection[j];
         }
         return object;
     };
@@ -3870,6 +4136,21 @@ $root.SdkIndexFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkIndexFrame
+     * @function getTypeUrl
+     * @memberof SdkIndexFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkIndexFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkIndexFrame";
+    };
+
     return SdkIndexFrame;
 })();
 
@@ -3877,7 +4158,7 @@ $root.SdkPauseResumeFrame = (function() {
 
     /**
      * Properties of a SdkPauseResumeFrame.
-     * @exports ISdkPauseResumeFrame
+     * @name ISdkPauseResumeFrame
      * @interface ISdkPauseResumeFrame
      * @property {Array.<number>|null} [streamIds] SdkPauseResumeFrame streamIds
      * @property {Array.<number>|null} [groupIds] SdkPauseResumeFrame groupIds
@@ -3885,7 +4166,7 @@ $root.SdkPauseResumeFrame = (function() {
 
     /**
      * Constructs a new SdkPauseResumeFrame.
-     * @exports SdkPauseResumeFrame
+     * @name SdkPauseResumeFrame
      * @classdesc Represents a SdkPauseResumeFrame.
      * @implements ISdkPauseResumeFrame
      * @constructor
@@ -3980,26 +4261,28 @@ $root.SdkPauseResumeFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.streamIds && message.streamIds.length))
-                    message.streamIds = [];
-                if ((tag & 7) === 2) {
-                    var end2 = reader.uint32() + reader.pos;
-                    while (reader.pos < end2)
+            case 1: {
+                    if (!(message.streamIds && message.streamIds.length))
+                        message.streamIds = [];
+                    if ((tag & 7) === 2) {
+                        var end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.streamIds.push(reader.uint32());
+                    } else
                         message.streamIds.push(reader.uint32());
-                } else
-                    message.streamIds.push(reader.uint32());
-                break;
-            case 2:
-                if (!(message.groupIds && message.groupIds.length))
-                    message.groupIds = [];
-                if ((tag & 7) === 2) {
-                    var end2 = reader.uint32() + reader.pos;
-                    while (reader.pos < end2)
+                    break;
+                }
+            case 2: {
+                    if (!(message.groupIds && message.groupIds.length))
+                        message.groupIds = [];
+                    if ((tag & 7) === 2) {
+                        var end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.groupIds.push(reader.uint32());
+                    } else
                         message.groupIds.push(reader.uint32());
-                } else
-                    message.groupIds.push(reader.uint32());
-                break;
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -4122,6 +4405,21 @@ $root.SdkPauseResumeFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkPauseResumeFrame
+     * @function getTypeUrl
+     * @memberof SdkPauseResumeFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkPauseResumeFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkPauseResumeFrame";
+    };
+
     return SdkPauseResumeFrame;
 })();
 
@@ -4129,7 +4427,7 @@ $root.SdkBitrateFrame = (function() {
 
     /**
      * Properties of a SdkBitrateFrame.
-     * @exports ISdkBitrateFrame
+     * @name ISdkBitrateFrame
      * @interface ISdkBitrateFrame
      * @property {Array.<ISdkBitrate>|null} [bitrates] SdkBitrateFrame bitrates
      * @property {number|null} [serverAvailableOutgoingBitrate] SdkBitrateFrame serverAvailableOutgoingBitrate
@@ -4137,7 +4435,7 @@ $root.SdkBitrateFrame = (function() {
 
     /**
      * Constructs a new SdkBitrateFrame.
-     * @exports SdkBitrateFrame
+     * @name SdkBitrateFrame
      * @classdesc Represents a SdkBitrateFrame.
      * @implements ISdkBitrateFrame
      * @constructor
@@ -4230,14 +4528,16 @@ $root.SdkBitrateFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.bitrates && message.bitrates.length))
-                    message.bitrates = [];
-                message.bitrates.push($root.SdkBitrate.decode(reader, reader.uint32()));
-                break;
-            case 2:
-                message.serverAvailableOutgoingBitrate = reader.uint32();
-                break;
+            case 1: {
+                    if (!(message.bitrates && message.bitrates.length))
+                        message.bitrates = [];
+                    message.bitrates.push($root.SdkBitrate.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 2: {
+                    message.serverAvailableOutgoingBitrate = reader.uint32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -4353,6 +4653,21 @@ $root.SdkBitrateFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkBitrateFrame
+     * @function getTypeUrl
+     * @memberof SdkBitrateFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkBitrateFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkBitrateFrame";
+    };
+
     return SdkBitrateFrame;
 })();
 
@@ -4360,7 +4675,7 @@ $root.SdkStreamDescriptor = (function() {
 
     /**
      * Properties of a SdkStreamDescriptor.
-     * @exports ISdkStreamDescriptor
+     * @name ISdkStreamDescriptor
      * @interface ISdkStreamDescriptor
      * @property {number|null} [streamId] SdkStreamDescriptor streamId
      * @property {number|null} [framerate] SdkStreamDescriptor framerate
@@ -4377,7 +4692,7 @@ $root.SdkStreamDescriptor = (function() {
 
     /**
      * Constructs a new SdkStreamDescriptor.
-     * @exports SdkStreamDescriptor
+     * @name SdkStreamDescriptor
      * @classdesc Represents a SdkStreamDescriptor.
      * @implements ISdkStreamDescriptor
      * @constructor
@@ -4469,7 +4784,7 @@ $root.SdkStreamDescriptor = (function() {
      * @instance
      */
     SdkStreamDescriptor.prototype.width = 0;
- 
+
     /**
      * SdkStreamDescriptor height.
      * @member {number} height
@@ -4558,39 +4873,50 @@ $root.SdkStreamDescriptor = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.streamId = reader.uint32();
-                break;
-            case 2:
-                message.framerate = reader.uint32();
-                break;
-            case 3:
-                message.maxBitrateKbps = reader.uint32();
-                break;
-            case 4:
-                message.trackLabel = reader.string();
-                break;
-            case 6:
-                message.groupId = reader.uint32();
-                break;
-            case 7:
-                message.avgBitrateBps = reader.uint32();
-                break;
-            case 8:
-                message.attendeeId = reader.string();
-                break;
-            case 9:
-                message.mediaType = reader.int32();
-                break;
-            case 10:
-                message.externalUserId = reader.string();
-                break;
-            case 11:
-                message.width = reader.uint32();
-                break;
-            case 12:
-                message.height = reader.uint32();
-                break;
+            case 1: {
+                    message.streamId = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.framerate = reader.uint32();
+                    break;
+                }
+            case 3: {
+                    message.maxBitrateKbps = reader.uint32();
+                    break;
+                }
+            case 4: {
+                    message.trackLabel = reader.string();
+                    break;
+                }
+            case 6: {
+                    message.groupId = reader.uint32();
+                    break;
+                }
+            case 7: {
+                    message.avgBitrateBps = reader.uint32();
+                    break;
+                }
+            case 8: {
+                    message.attendeeId = reader.string();
+                    break;
+                }
+            case 9: {
+                    message.mediaType = reader.int32();
+                    break;
+                }
+            case 10: {
+                    message.externalUserId = reader.string();
+                    break;
+                }
+            case 11: {
+                    message.width = reader.uint32();
+                    break;
+                }
+            case 12: {
+                    message.height = reader.uint32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -4694,6 +5020,12 @@ $root.SdkStreamDescriptor = (function() {
         if (object.attendeeId != null)
             message.attendeeId = String(object.attendeeId);
         switch (object.mediaType) {
+        default:
+            if (typeof object.mediaType === "number") {
+                message.mediaType = object.mediaType;
+                break;
+            }
+            break;
         case "AUDIO":
         case 1:
             message.mediaType = 1;
@@ -4753,7 +5085,7 @@ $root.SdkStreamDescriptor = (function() {
         if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
             object.attendeeId = message.attendeeId;
         if (message.mediaType != null && message.hasOwnProperty("mediaType"))
-            object.mediaType = options.enums === String ? $root.SdkStreamMediaType[message.mediaType] : message.mediaType;
+            object.mediaType = options.enums === String ? $root.SdkStreamMediaType[message.mediaType] === undefined ? message.mediaType : $root.SdkStreamMediaType[message.mediaType] : message.mediaType;
         if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
             object.externalUserId = message.externalUserId;
         if (message.width != null && message.hasOwnProperty("width"))
@@ -4774,6 +5106,21 @@ $root.SdkStreamDescriptor = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkStreamDescriptor
+     * @function getTypeUrl
+     * @memberof SdkStreamDescriptor
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkStreamDescriptor.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkStreamDescriptor";
+    };
+
     return SdkStreamDescriptor;
 })();
 
@@ -4781,7 +5128,7 @@ $root.SdkStreamAllocation = (function() {
 
     /**
      * Properties of a SdkStreamAllocation.
-     * @exports ISdkStreamAllocation
+     * @name ISdkStreamAllocation
      * @interface ISdkStreamAllocation
      * @property {string|null} [trackLabel] SdkStreamAllocation trackLabel
      * @property {number|null} [streamId] SdkStreamAllocation streamId
@@ -4790,7 +5137,7 @@ $root.SdkStreamAllocation = (function() {
 
     /**
      * Constructs a new SdkStreamAllocation.
-     * @exports SdkStreamAllocation
+     * @name SdkStreamAllocation
      * @classdesc Represents a SdkStreamAllocation.
      * @implements ISdkStreamAllocation
      * @constructor
@@ -4891,15 +5238,18 @@ $root.SdkStreamAllocation = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.trackLabel = reader.string();
-                break;
-            case 2:
-                message.streamId = reader.uint32();
-                break;
-            case 3:
-                message.groupId = reader.uint32();
-                break;
+            case 1: {
+                    message.trackLabel = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.streamId = reader.uint32();
+                    break;
+                }
+            case 3: {
+                    message.groupId = reader.uint32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -5006,6 +5356,21 @@ $root.SdkStreamAllocation = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkStreamAllocation
+     * @function getTypeUrl
+     * @memberof SdkStreamAllocation
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkStreamAllocation.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkStreamAllocation";
+    };
+
     return SdkStreamAllocation;
 })();
 
@@ -5013,7 +5378,7 @@ $root.SdkTrackMapping = (function() {
 
     /**
      * Properties of a SdkTrackMapping.
-     * @exports ISdkTrackMapping
+     * @name ISdkTrackMapping
      * @interface ISdkTrackMapping
      * @property {number|null} [streamId] SdkTrackMapping streamId
      * @property {number|null} [ssrc] SdkTrackMapping ssrc
@@ -5022,7 +5387,7 @@ $root.SdkTrackMapping = (function() {
 
     /**
      * Constructs a new SdkTrackMapping.
-     * @exports SdkTrackMapping
+     * @name SdkTrackMapping
      * @classdesc Represents a SdkTrackMapping.
      * @implements ISdkTrackMapping
      * @constructor
@@ -5123,15 +5488,18 @@ $root.SdkTrackMapping = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.streamId = reader.uint32();
-                break;
-            case 2:
-                message.ssrc = reader.uint32();
-                break;
-            case 3:
-                message.trackLabel = reader.string();
-                break;
+            case 1: {
+                    message.streamId = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.ssrc = reader.uint32();
+                    break;
+                }
+            case 3: {
+                    message.trackLabel = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -5238,6 +5606,21 @@ $root.SdkTrackMapping = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTrackMapping
+     * @function getTypeUrl
+     * @memberof SdkTrackMapping
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTrackMapping.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTrackMapping";
+    };
+
     return SdkTrackMapping;
 })();
 
@@ -5245,7 +5628,7 @@ $root.SdkBitrate = (function() {
 
     /**
      * Properties of a SdkBitrate.
-     * @exports ISdkBitrate
+     * @name ISdkBitrate
      * @interface ISdkBitrate
      * @property {number|null} [sourceStreamId] SdkBitrate sourceStreamId
      * @property {number|null} [avgBitrateBps] SdkBitrate avgBitrateBps
@@ -5253,7 +5636,7 @@ $root.SdkBitrate = (function() {
 
     /**
      * Constructs a new SdkBitrate.
-     * @exports SdkBitrate
+     * @name SdkBitrate
      * @classdesc Represents a SdkBitrate.
      * @implements ISdkBitrate
      * @constructor
@@ -5344,12 +5727,14 @@ $root.SdkBitrate = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.sourceStreamId = reader.uint32();
-                break;
-            case 2:
-                message.avgBitrateBps = reader.uint32();
-                break;
+            case 1: {
+                    message.sourceStreamId = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.avgBitrateBps = reader.uint32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -5448,6 +5833,21 @@ $root.SdkBitrate = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkBitrate
+     * @function getTypeUrl
+     * @memberof SdkBitrate
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkBitrate.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkBitrate";
+    };
+
     return SdkBitrate;
 })();
 
@@ -5455,14 +5855,14 @@ $root.SdkAudioControlFrame = (function() {
 
     /**
      * Properties of a SdkAudioControlFrame.
-     * @exports ISdkAudioControlFrame
+     * @name ISdkAudioControlFrame
      * @interface ISdkAudioControlFrame
      * @property {boolean|null} [muted] SdkAudioControlFrame muted
      */
 
     /**
      * Constructs a new SdkAudioControlFrame.
-     * @exports SdkAudioControlFrame
+     * @name SdkAudioControlFrame
      * @classdesc Represents a SdkAudioControlFrame.
      * @implements ISdkAudioControlFrame
      * @constructor
@@ -5543,9 +5943,10 @@ $root.SdkAudioControlFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.muted = reader.bool();
-                break;
+            case 1: {
+                    message.muted = reader.bool();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -5635,6 +6036,21 @@ $root.SdkAudioControlFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkAudioControlFrame
+     * @function getTypeUrl
+     * @memberof SdkAudioControlFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioControlFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioControlFrame";
+    };
+
     return SdkAudioControlFrame;
 })();
 
@@ -5642,14 +6058,14 @@ $root.SdkAudioMetadataFrame = (function() {
 
     /**
      * Properties of a SdkAudioMetadataFrame.
-     * @exports ISdkAudioMetadataFrame
+     * @name ISdkAudioMetadataFrame
      * @interface ISdkAudioMetadataFrame
      * @property {Array.<ISdkAudioAttendeeState>|null} [attendeeStates] SdkAudioMetadataFrame attendeeStates
      */
 
     /**
      * Constructs a new SdkAudioMetadataFrame.
-     * @exports SdkAudioMetadataFrame
+     * @name SdkAudioMetadataFrame
      * @classdesc Represents a SdkAudioMetadataFrame.
      * @implements ISdkAudioMetadataFrame
      * @constructor
@@ -5732,11 +6148,12 @@ $root.SdkAudioMetadataFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.attendeeStates && message.attendeeStates.length))
-                    message.attendeeStates = [];
-                message.attendeeStates.push($root.SdkAudioAttendeeState.decode(reader, reader.uint32()));
-                break;
+            case 1: {
+                    if (!(message.attendeeStates && message.attendeeStates.length))
+                        message.attendeeStates = [];
+                    message.attendeeStates.push($root.SdkAudioAttendeeState.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -5843,6 +6260,21 @@ $root.SdkAudioMetadataFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkAudioMetadataFrame
+     * @function getTypeUrl
+     * @memberof SdkAudioMetadataFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioMetadataFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioMetadataFrame";
+    };
+
     return SdkAudioMetadataFrame;
 })();
 
@@ -5850,7 +6282,7 @@ $root.SdkAudioAttendeeState = (function() {
 
     /**
      * Properties of a SdkAudioAttendeeState.
-     * @exports ISdkAudioAttendeeState
+     * @name ISdkAudioAttendeeState
      * @interface ISdkAudioAttendeeState
      * @property {number|null} [audioStreamId] SdkAudioAttendeeState audioStreamId
      * @property {number|null} [volume] SdkAudioAttendeeState volume
@@ -5860,7 +6292,7 @@ $root.SdkAudioAttendeeState = (function() {
 
     /**
      * Constructs a new SdkAudioAttendeeState.
-     * @exports SdkAudioAttendeeState
+     * @name SdkAudioAttendeeState
      * @classdesc Represents a SdkAudioAttendeeState.
      * @implements ISdkAudioAttendeeState
      * @constructor
@@ -5971,18 +6403,22 @@ $root.SdkAudioAttendeeState = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.audioStreamId = reader.uint32();
-                break;
-            case 2:
-                message.volume = reader.uint32();
-                break;
-            case 3:
-                message.muted = reader.bool();
-                break;
-            case 4:
-                message.signalStrength = reader.uint32();
-                break;
+            case 1: {
+                    message.audioStreamId = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.volume = reader.uint32();
+                    break;
+                }
+            case 3: {
+                    message.muted = reader.bool();
+                    break;
+                }
+            case 4: {
+                    message.signalStrength = reader.uint32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -6097,6 +6533,21 @@ $root.SdkAudioAttendeeState = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkAudioAttendeeState
+     * @function getTypeUrl
+     * @memberof SdkAudioAttendeeState
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioAttendeeState.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioAttendeeState";
+    };
+
     return SdkAudioAttendeeState;
 })();
 
@@ -6104,14 +6555,14 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
 
     /**
      * Properties of a SdkAudioStreamIdInfoFrame.
-     * @exports ISdkAudioStreamIdInfoFrame
+     * @name ISdkAudioStreamIdInfoFrame
      * @interface ISdkAudioStreamIdInfoFrame
      * @property {Array.<ISdkAudioStreamIdInfo>|null} [streams] SdkAudioStreamIdInfoFrame streams
      */
 
     /**
      * Constructs a new SdkAudioStreamIdInfoFrame.
-     * @exports SdkAudioStreamIdInfoFrame
+     * @name SdkAudioStreamIdInfoFrame
      * @classdesc Represents a SdkAudioStreamIdInfoFrame.
      * @implements ISdkAudioStreamIdInfoFrame
      * @constructor
@@ -6194,11 +6645,12 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.streams && message.streams.length))
-                    message.streams = [];
-                message.streams.push($root.SdkAudioStreamIdInfo.decode(reader, reader.uint32()));
-                break;
+            case 1: {
+                    if (!(message.streams && message.streams.length))
+                        message.streams = [];
+                    message.streams.push($root.SdkAudioStreamIdInfo.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -6305,6 +6757,21 @@ $root.SdkAudioStreamIdInfoFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkAudioStreamIdInfoFrame
+     * @function getTypeUrl
+     * @memberof SdkAudioStreamIdInfoFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioStreamIdInfoFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioStreamIdInfoFrame";
+    };
+
     return SdkAudioStreamIdInfoFrame;
 })();
 
@@ -6312,7 +6779,7 @@ $root.SdkAudioStreamIdInfo = (function() {
 
     /**
      * Properties of a SdkAudioStreamIdInfo.
-     * @exports ISdkAudioStreamIdInfo
+     * @name ISdkAudioStreamIdInfo
      * @interface ISdkAudioStreamIdInfo
      * @property {number|null} [audioStreamId] SdkAudioStreamIdInfo audioStreamId
      * @property {string|null} [attendeeId] SdkAudioStreamIdInfo attendeeId
@@ -6323,7 +6790,7 @@ $root.SdkAudioStreamIdInfo = (function() {
 
     /**
      * Constructs a new SdkAudioStreamIdInfo.
-     * @exports SdkAudioStreamIdInfo
+     * @name SdkAudioStreamIdInfo
      * @classdesc Represents a SdkAudioStreamIdInfo.
      * @implements ISdkAudioStreamIdInfo
      * @constructor
@@ -6444,21 +6911,26 @@ $root.SdkAudioStreamIdInfo = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.audioStreamId = reader.uint32();
-                break;
-            case 2:
-                message.attendeeId = reader.string();
-                break;
-            case 3:
-                message.muted = reader.bool();
-                break;
-            case 4:
-                message.externalUserId = reader.string();
-                break;
-            case 5:
-                message.dropped = reader.bool();
-                break;
+            case 1: {
+                    message.audioStreamId = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.attendeeId = reader.string();
+                    break;
+                }
+            case 3: {
+                    message.muted = reader.bool();
+                    break;
+                }
+            case 4: {
+                    message.externalUserId = reader.string();
+                    break;
+                }
+            case 5: {
+                    message.dropped = reader.bool();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -6581,12 +7053,27 @@ $root.SdkAudioStreamIdInfo = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkAudioStreamIdInfo
+     * @function getTypeUrl
+     * @memberof SdkAudioStreamIdInfo
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioStreamIdInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioStreamIdInfo";
+    };
+
     return SdkAudioStreamIdInfo;
 })();
 
 /**
  * SdkPingPongType enum.
- * @exports SdkPingPongType
+ * @name SdkPingPongType
  * @enum {number}
  * @property {number} PING=1 PING value
  * @property {number} PONG=2 PONG value
@@ -6602,7 +7089,7 @@ $root.SdkPingPongFrame = (function() {
 
     /**
      * Properties of a SdkPingPongFrame.
-     * @exports ISdkPingPongFrame
+     * @name ISdkPingPongFrame
      * @interface ISdkPingPongFrame
      * @property {SdkPingPongType} type SdkPingPongFrame type
      * @property {number} pingId SdkPingPongFrame pingId
@@ -6610,7 +7097,7 @@ $root.SdkPingPongFrame = (function() {
 
     /**
      * Constructs a new SdkPingPongFrame.
-     * @exports SdkPingPongFrame
+     * @name SdkPingPongFrame
      * @classdesc Represents a SdkPingPongFrame.
      * @implements ISdkPingPongFrame
      * @constructor
@@ -6699,12 +7186,14 @@ $root.SdkPingPongFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.type = reader.int32();
-                break;
-            case 2:
-                message.pingId = reader.uint32();
-                break;
+            case 1: {
+                    message.type = reader.int32();
+                    break;
+                }
+            case 2: {
+                    message.pingId = reader.uint32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -6769,6 +7258,12 @@ $root.SdkPingPongFrame = (function() {
             return object;
         var message = new $root.SdkPingPongFrame();
         switch (object.type) {
+        default:
+            if (typeof object.type === "number") {
+                message.type = object.type;
+                break;
+            }
+            break;
         case "PING":
         case 1:
             message.type = 1;
@@ -6801,7 +7296,7 @@ $root.SdkPingPongFrame = (function() {
             object.pingId = 0;
         }
         if (message.type != null && message.hasOwnProperty("type"))
-            object.type = options.enums === String ? $root.SdkPingPongType[message.type] : message.type;
+            object.type = options.enums === String ? $root.SdkPingPongType[message.type] === undefined ? message.type : $root.SdkPingPongType[message.type] : message.type;
         if (message.pingId != null && message.hasOwnProperty("pingId"))
             object.pingId = message.pingId;
         return object;
@@ -6818,6 +7313,21 @@ $root.SdkPingPongFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkPingPongFrame
+     * @function getTypeUrl
+     * @memberof SdkPingPongFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkPingPongFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkPingPongFrame";
+    };
+
     return SdkPingPongFrame;
 })();
 
@@ -6825,14 +7335,14 @@ $root.SdkAudioStatusFrame = (function() {
 
     /**
      * Properties of a SdkAudioStatusFrame.
-     * @exports ISdkAudioStatusFrame
+     * @name ISdkAudioStatusFrame
      * @interface ISdkAudioStatusFrame
      * @property {number|null} [audioStatus] SdkAudioStatusFrame audioStatus
      */
 
     /**
      * Constructs a new SdkAudioStatusFrame.
-     * @exports SdkAudioStatusFrame
+     * @name SdkAudioStatusFrame
      * @classdesc Represents a SdkAudioStatusFrame.
      * @implements ISdkAudioStatusFrame
      * @constructor
@@ -6913,9 +7423,10 @@ $root.SdkAudioStatusFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.audioStatus = reader.uint32();
-                break;
+            case 1: {
+                    message.audioStatus = reader.uint32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -7005,6 +7516,21 @@ $root.SdkAudioStatusFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkAudioStatusFrame
+     * @function getTypeUrl
+     * @memberof SdkAudioStatusFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioStatusFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioStatusFrame";
+    };
+
     return SdkAudioStatusFrame;
 })();
 
@@ -7012,7 +7538,7 @@ $root.SdkMetric = (function() {
 
     /**
      * Properties of a SdkMetric.
-     * @exports ISdkMetric
+     * @name ISdkMetric
      * @interface ISdkMetric
      * @property {SdkMetric.Type|null} [type] SdkMetric type
      * @property {number|null} [value] SdkMetric value
@@ -7020,7 +7546,7 @@ $root.SdkMetric = (function() {
 
     /**
      * Constructs a new SdkMetric.
-     * @exports SdkMetric
+     * @name SdkMetric
      * @classdesc Represents a SdkMetric.
      * @implements ISdkMetric
      * @constructor
@@ -7111,12 +7637,14 @@ $root.SdkMetric = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.type = reader.int32();
-                break;
-            case 2:
-                message.value = reader.double();
-                break;
+            case 1: {
+                    message.type = reader.int32();
+                    break;
+                }
+            case 2: {
+                    message.value = reader.double();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -7247,6 +7775,12 @@ $root.SdkMetric = (function() {
             return object;
         var message = new $root.SdkMetric();
         switch (object.type) {
+        default:
+            if (typeof object.type === "number") {
+                message.type = object.type;
+                break;
+            }
+            break;
         case "VIDEO_ACTUAL_ENCODER_BITRATE":
         case 1:
             message.type = 1;
@@ -7475,6 +8009,10 @@ $root.SdkMetric = (function() {
         case 89:
             message.type = 89;
             break;
+        case "VIDEO_FREEZE_COUNT":
+        case 90:
+            message.type = 90;
+            break;
         case "VIDEO_FREEZE_DURATION":
         case 91:
             message.type = 91;
@@ -7502,21 +8040,6 @@ $root.SdkMetric = (function() {
         case "RTC_MIC_AUDIO_LEVEL":
         case 97:
             message.type = 97;
-        case "RTC_SPK_TOTAL_LOST":
-        case 98:
-            message.type = 98;
-            break;
-        case "RTC_SPK_TOTAL_EXPECTED":
-        case 99:
-            message.type = 99;
-            break;
-        case "RTC_SPK_TOTAL_RECOVERED_RED":
-        case 100:
-            message.type = 100;
-            break;
-        case "RTC_SPK_TOTAL_RECOVERED_FEC":
-        case 101:
-            message.type = 101;
             break;
         case "RTC_SPK_TOTAL_LOST":
         case 98:
@@ -7562,7 +8085,7 @@ $root.SdkMetric = (function() {
             object.value = 0;
         }
         if (message.type != null && message.hasOwnProperty("type"))
-            object.type = options.enums === String ? $root.SdkMetric.Type[message.type] : message.type;
+            object.type = options.enums === String ? $root.SdkMetric.Type[message.type] === undefined ? message.type : $root.SdkMetric.Type[message.type] : message.type;
         if (message.value != null && message.hasOwnProperty("value"))
             object.value = options.json && !isFinite(message.value) ? String(message.value) : message.value;
         return object;
@@ -7577,6 +8100,21 @@ $root.SdkMetric = (function() {
      */
     SdkMetric.prototype.toJSON = function toJSON() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkMetric
+     * @function getTypeUrl
+     * @memberof SdkMetric
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkMetric.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkMetric";
     };
 
     /**
@@ -7736,7 +8274,7 @@ $root.SdkStreamMetricFrame = (function() {
 
     /**
      * Properties of a SdkStreamMetricFrame.
-     * @exports ISdkStreamMetricFrame
+     * @name ISdkStreamMetricFrame
      * @interface ISdkStreamMetricFrame
      * @property {number|null} [streamId] SdkStreamMetricFrame streamId
      * @property {number|null} [groupId] SdkStreamMetricFrame groupId
@@ -7746,7 +8284,7 @@ $root.SdkStreamMetricFrame = (function() {
 
     /**
      * Constructs a new SdkStreamMetricFrame.
-     * @exports SdkStreamMetricFrame
+     * @name SdkStreamMetricFrame
      * @classdesc Represents a SdkStreamMetricFrame.
      * @implements ISdkStreamMetricFrame
      * @constructor
@@ -7861,22 +8399,26 @@ $root.SdkStreamMetricFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 3:
-                message.streamId = reader.uint32();
-                break;
-            case 4:
-                message.groupId = reader.uint32();
-                break;
-            case 5:
-                if (!(message.metrics && message.metrics.length))
-                    message.metrics = [];
-                message.metrics.push($root.SdkMetric.decode(reader, reader.uint32()));
-                break;
-            case 6:
-                if (!(message.dimensions && message.dimensions.length))
-                    message.dimensions = [];
-                message.dimensions.push($root.SdkStreamDimension.decode(reader, reader.uint32()));
-                break;
+            case 3: {
+                    message.streamId = reader.uint32();
+                    break;
+                }
+            case 4: {
+                    message.groupId = reader.uint32();
+                    break;
+                }
+            case 5: {
+                    if (!(message.metrics && message.metrics.length))
+                        message.metrics = [];
+                    message.metrics.push($root.SdkMetric.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 6: {
+                    if (!(message.dimensions && message.dimensions.length))
+                        message.dimensions = [];
+                    message.dimensions.push($root.SdkStreamDimension.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -8027,6 +8569,21 @@ $root.SdkStreamMetricFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkStreamMetricFrame
+     * @function getTypeUrl
+     * @memberof SdkStreamMetricFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkStreamMetricFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkStreamMetricFrame";
+    };
+
     return SdkStreamMetricFrame;
 })();
 
@@ -8034,7 +8591,7 @@ $root.SdkClientMetricFrame = (function() {
 
     /**
      * Properties of a SdkClientMetricFrame.
-     * @exports ISdkClientMetricFrame
+     * @name ISdkClientMetricFrame
      * @interface ISdkClientMetricFrame
      * @property {Array.<ISdkMetric>|null} [globalMetrics] SdkClientMetricFrame globalMetrics
      * @property {Array.<ISdkStreamMetricFrame>|null} [streamMetricFrames] SdkClientMetricFrame streamMetricFrames
@@ -8042,7 +8599,7 @@ $root.SdkClientMetricFrame = (function() {
 
     /**
      * Constructs a new SdkClientMetricFrame.
-     * @exports SdkClientMetricFrame
+     * @name SdkClientMetricFrame
      * @classdesc Represents a SdkClientMetricFrame.
      * @implements ISdkClientMetricFrame
      * @constructor
@@ -8137,16 +8694,18 @@ $root.SdkClientMetricFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.globalMetrics && message.globalMetrics.length))
-                    message.globalMetrics = [];
-                message.globalMetrics.push($root.SdkMetric.decode(reader, reader.uint32()));
-                break;
-            case 2:
-                if (!(message.streamMetricFrames && message.streamMetricFrames.length))
-                    message.streamMetricFrames = [];
-                message.streamMetricFrames.push($root.SdkStreamMetricFrame.decode(reader, reader.uint32()));
-                break;
+            case 1: {
+                    if (!(message.globalMetrics && message.globalMetrics.length))
+                        message.globalMetrics = [];
+                    message.globalMetrics.push($root.SdkMetric.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 2: {
+                    if (!(message.streamMetricFrames && message.streamMetricFrames.length))
+                        message.streamMetricFrames = [];
+                    message.streamMetricFrames.push($root.SdkStreamMetricFrame.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -8279,6 +8838,21 @@ $root.SdkClientMetricFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkClientMetricFrame
+     * @function getTypeUrl
+     * @memberof SdkClientMetricFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkClientMetricFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkClientMetricFrame";
+    };
+
     return SdkClientMetricFrame;
 })();
 
@@ -8286,7 +8860,7 @@ $root.SdkStreamDimension = (function() {
 
     /**
      * Properties of a SdkStreamDimension.
-     * @exports ISdkStreamDimension
+     * @name ISdkStreamDimension
      * @interface ISdkStreamDimension
      * @property {SdkStreamDimension.Type|null} [type] SdkStreamDimension type
      * @property {ISdkDimensionValue|null} [value] SdkStreamDimension value
@@ -8294,7 +8868,7 @@ $root.SdkStreamDimension = (function() {
 
     /**
      * Constructs a new SdkStreamDimension.
-     * @exports SdkStreamDimension
+     * @name SdkStreamDimension
      * @classdesc Represents a SdkStreamDimension.
      * @implements ISdkStreamDimension
      * @constructor
@@ -8385,12 +8959,14 @@ $root.SdkStreamDimension = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.type = reader.int32();
-                break;
-            case 2:
-                message.value = $root.SdkDimensionValue.decode(reader, reader.uint32());
-                break;
+            case 1: {
+                    message.type = reader.int32();
+                    break;
+                }
+            case 2: {
+                    message.value = $root.SdkDimensionValue.decode(reader, reader.uint32());
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -8455,6 +9031,12 @@ $root.SdkStreamDimension = (function() {
             return object;
         var message = new $root.SdkStreamDimension();
         switch (object.type) {
+        default:
+            if (typeof object.type === "number") {
+                message.type = object.type;
+                break;
+            }
+            break;
         case "VIDEO_ENCODER_NAME":
         case 1:
             message.type = 1;
@@ -8490,7 +9072,7 @@ $root.SdkStreamDimension = (function() {
             object.value = null;
         }
         if (message.type != null && message.hasOwnProperty("type"))
-            object.type = options.enums === String ? $root.SdkStreamDimension.Type[message.type] : message.type;
+            object.type = options.enums === String ? $root.SdkStreamDimension.Type[message.type] === undefined ? message.type : $root.SdkStreamDimension.Type[message.type] : message.type;
         if (message.value != null && message.hasOwnProperty("value"))
             object.value = $root.SdkDimensionValue.toObject(message.value, options);
         return object;
@@ -8505,6 +9087,21 @@ $root.SdkStreamDimension = (function() {
      */
     SdkStreamDimension.prototype.toJSON = function toJSON() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkStreamDimension
+     * @function getTypeUrl
+     * @memberof SdkStreamDimension
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkStreamDimension.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkStreamDimension";
     };
 
     /**
@@ -8528,7 +9125,7 @@ $root.SdkDimensionValue = (function() {
 
     /**
      * Properties of a SdkDimensionValue.
-     * @exports ISdkDimensionValue
+     * @name ISdkDimensionValue
      * @interface ISdkDimensionValue
      * @property {string|null} [stringValue] SdkDimensionValue stringValue
      * @property {boolean|null} [boolValue] SdkDimensionValue boolValue
@@ -8537,7 +9134,7 @@ $root.SdkDimensionValue = (function() {
 
     /**
      * Constructs a new SdkDimensionValue.
-     * @exports SdkDimensionValue
+     * @name SdkDimensionValue
      * @classdesc Represents a SdkDimensionValue.
      * @implements ISdkDimensionValue
      * @constructor
@@ -8638,15 +9235,18 @@ $root.SdkDimensionValue = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.stringValue = reader.string();
-                break;
-            case 2:
-                message.boolValue = reader.bool();
-                break;
-            case 3:
-                message.uintValue = reader.uint64();
-                break;
+            case 1: {
+                    message.stringValue = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.boolValue = reader.bool();
+                    break;
+                }
+            case 3: {
+                    message.uintValue = reader.uint64();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -8767,6 +9367,21 @@ $root.SdkDimensionValue = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkDimensionValue
+     * @function getTypeUrl
+     * @memberof SdkDimensionValue
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkDimensionValue.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkDimensionValue";
+    };
+
     return SdkDimensionValue;
 })();
 
@@ -8774,14 +9389,14 @@ $root.SdkDataMessageFrame = (function() {
 
     /**
      * Properties of a SdkDataMessageFrame.
-     * @exports ISdkDataMessageFrame
+     * @name ISdkDataMessageFrame
      * @interface ISdkDataMessageFrame
      * @property {Array.<ISdkDataMessagePayload>|null} [messages] SdkDataMessageFrame messages
      */
 
     /**
      * Constructs a new SdkDataMessageFrame.
-     * @exports SdkDataMessageFrame
+     * @name SdkDataMessageFrame
      * @classdesc Represents a SdkDataMessageFrame.
      * @implements ISdkDataMessageFrame
      * @constructor
@@ -8864,11 +9479,12 @@ $root.SdkDataMessageFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.messages && message.messages.length))
-                    message.messages = [];
-                message.messages.push($root.SdkDataMessagePayload.decode(reader, reader.uint32()));
-                break;
+            case 1: {
+                    if (!(message.messages && message.messages.length))
+                        message.messages = [];
+                    message.messages.push($root.SdkDataMessagePayload.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -8975,6 +9591,21 @@ $root.SdkDataMessageFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkDataMessageFrame
+     * @function getTypeUrl
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkDataMessageFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkDataMessageFrame";
+    };
+
     return SdkDataMessageFrame;
 })();
 
@@ -8982,7 +9613,7 @@ $root.SdkDataMessagePayload = (function() {
 
     /**
      * Properties of a SdkDataMessagePayload.
-     * @exports ISdkDataMessagePayload
+     * @name ISdkDataMessagePayload
      * @interface ISdkDataMessagePayload
      * @property {string|null} [topic] SdkDataMessagePayload topic
      * @property {Uint8Array|null} [data] SdkDataMessagePayload data
@@ -8994,7 +9625,7 @@ $root.SdkDataMessagePayload = (function() {
 
     /**
      * Constructs a new SdkDataMessagePayload.
-     * @exports SdkDataMessagePayload
+     * @name SdkDataMessagePayload
      * @classdesc Represents a SdkDataMessagePayload.
      * @implements ISdkDataMessagePayload
      * @constructor
@@ -9125,24 +9756,30 @@ $root.SdkDataMessagePayload = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.topic = reader.string();
-                break;
-            case 2:
-                message.data = reader.bytes();
-                break;
-            case 3:
-                message.lifetimeMs = reader.uint32();
-                break;
-            case 4:
-                message.senderAttendeeId = reader.string();
-                break;
-            case 5:
-                message.ingestTimeNs = reader.int64();
-                break;
-            case 6:
-                message.senderExternalUserId = reader.string();
-                break;
+            case 1: {
+                    message.topic = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.data = reader.bytes();
+                    break;
+                }
+            case 3: {
+                    message.lifetimeMs = reader.uint32();
+                    break;
+                }
+            case 4: {
+                    message.senderAttendeeId = reader.string();
+                    break;
+                }
+            case 5: {
+                    message.ingestTimeNs = reader.int64();
+                    break;
+                }
+            case 6: {
+                    message.senderExternalUserId = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -9216,7 +9853,7 @@ $root.SdkDataMessagePayload = (function() {
         if (object.data != null)
             if (typeof object.data === "string")
                 $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-            else if (object.data.length)
+            else if (object.data.length >= 0)
                 message.data = object.data;
         if (object.lifetimeMs != null)
             message.lifetimeMs = object.lifetimeMs >>> 0;
@@ -9296,6 +9933,21 @@ $root.SdkDataMessagePayload = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkDataMessagePayload
+     * @function getTypeUrl
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkDataMessagePayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkDataMessagePayload";
+    };
+
     return SdkDataMessagePayload;
 })();
 
@@ -9303,7 +9955,7 @@ $root.SdkTurnCredentials = (function() {
 
     /**
      * Properties of a SdkTurnCredentials.
-     * @exports ISdkTurnCredentials
+     * @name ISdkTurnCredentials
      * @interface ISdkTurnCredentials
      * @property {string|null} [username] SdkTurnCredentials username
      * @property {string|null} [password] SdkTurnCredentials password
@@ -9313,7 +9965,7 @@ $root.SdkTurnCredentials = (function() {
 
     /**
      * Constructs a new SdkTurnCredentials.
-     * @exports SdkTurnCredentials
+     * @name SdkTurnCredentials
      * @classdesc Represents a SdkTurnCredentials.
      * @implements ISdkTurnCredentials
      * @constructor
@@ -9426,20 +10078,24 @@ $root.SdkTurnCredentials = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.username = reader.string();
-                break;
-            case 2:
-                message.password = reader.string();
-                break;
-            case 3:
-                message.ttl = reader.uint32();
-                break;
-            case 4:
-                if (!(message.uris && message.uris.length))
-                    message.uris = [];
-                message.uris.push(reader.string());
-                break;
+            case 1: {
+                    message.username = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.password = reader.string();
+                    break;
+                }
+            case 3: {
+                    message.ttl = reader.uint32();
+                    break;
+                }
+            case 4: {
+                    if (!(message.uris && message.uris.length))
+                        message.uris = [];
+                    message.uris.push(reader.string());
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -9567,6 +10223,21 @@ $root.SdkTurnCredentials = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTurnCredentials
+     * @function getTypeUrl
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTurnCredentials.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTurnCredentials";
+    };
+
     return SdkTurnCredentials;
 })();
 
@@ -9574,7 +10245,7 @@ $root.SdkTranscriptItem = (function() {
 
     /**
      * Properties of a SdkTranscriptItem.
-     * @exports ISdkTranscriptItem
+     * @name ISdkTranscriptItem
      * @interface ISdkTranscriptItem
      * @property {string|null} [content] SdkTranscriptItem content
      * @property {number|Long|null} [endTime] SdkTranscriptItem endTime
@@ -9589,7 +10260,7 @@ $root.SdkTranscriptItem = (function() {
 
     /**
      * Constructs a new SdkTranscriptItem.
-     * @exports SdkTranscriptItem
+     * @name SdkTranscriptItem
      * @classdesc Represents a SdkTranscriptItem.
      * @implements ISdkTranscriptItem
      * @constructor
@@ -9750,33 +10421,42 @@ $root.SdkTranscriptItem = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.content = reader.string();
-                break;
-            case 2:
-                message.endTime = reader.int64();
-                break;
-            case 3:
-                message.speakerAttendeeId = reader.string();
-                break;
-            case 4:
-                message.speakerExternalUserId = reader.string();
-                break;
-            case 5:
-                message.startTime = reader.int64();
-                break;
-            case 6:
-                message.type = reader.int32();
-                break;
-            case 7:
-                message.vocabularyFilterMatch = reader.bool();
-                break;
-            case 8:
-                message.confidence = reader.double();
-                break;
-            case 9:
-                message.stable = reader.bool();
-                break;
+            case 1: {
+                    message.content = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.endTime = reader.int64();
+                    break;
+                }
+            case 3: {
+                    message.speakerAttendeeId = reader.string();
+                    break;
+                }
+            case 4: {
+                    message.speakerExternalUserId = reader.string();
+                    break;
+                }
+            case 5: {
+                    message.startTime = reader.int64();
+                    break;
+                }
+            case 6: {
+                    message.type = reader.int32();
+                    break;
+                }
+            case 7: {
+                    message.vocabularyFilterMatch = reader.bool();
+                    break;
+                }
+            case 8: {
+                    message.confidence = reader.double();
+                    break;
+                }
+            case 9: {
+                    message.stable = reader.bool();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -9884,6 +10564,12 @@ $root.SdkTranscriptItem = (function() {
             else if (typeof object.startTime === "object")
                 message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
         switch (object.type) {
+        default:
+            if (typeof object.type === "number") {
+                message.type = object.type;
+                break;
+            }
+            break;
         case "PRONUNCIATION":
         case 1:
             message.type = 1;
@@ -9951,7 +10637,7 @@ $root.SdkTranscriptItem = (function() {
             else
                 object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
         if (message.type != null && message.hasOwnProperty("type"))
-            object.type = options.enums === String ? $root.SdkTranscriptItem.Type[message.type] : message.type;
+            object.type = options.enums === String ? $root.SdkTranscriptItem.Type[message.type] === undefined ? message.type : $root.SdkTranscriptItem.Type[message.type] : message.type;
         if (message.vocabularyFilterMatch != null && message.hasOwnProperty("vocabularyFilterMatch"))
             object.vocabularyFilterMatch = message.vocabularyFilterMatch;
         if (message.confidence != null && message.hasOwnProperty("confidence"))
@@ -9970,6 +10656,21 @@ $root.SdkTranscriptItem = (function() {
      */
     SdkTranscriptItem.prototype.toJSON = function toJSON() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkTranscriptItem
+     * @function getTypeUrl
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscriptItem.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscriptItem";
     };
 
     /**
@@ -9993,7 +10694,7 @@ $root.SdkTranscriptEntity = (function() {
 
     /**
      * Properties of a SdkTranscriptEntity.
-     * @exports ISdkTranscriptEntity
+     * @name ISdkTranscriptEntity
      * @interface ISdkTranscriptEntity
      * @property {string|null} [category] SdkTranscriptEntity category
      * @property {number|null} [confidence] SdkTranscriptEntity confidence
@@ -10005,7 +10706,7 @@ $root.SdkTranscriptEntity = (function() {
 
     /**
      * Constructs a new SdkTranscriptEntity.
-     * @exports SdkTranscriptEntity
+     * @name SdkTranscriptEntity
      * @classdesc Represents a SdkTranscriptEntity.
      * @implements ISdkTranscriptEntity
      * @constructor
@@ -10136,24 +10837,30 @@ $root.SdkTranscriptEntity = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.category = reader.string();
-                break;
-            case 2:
-                message.confidence = reader.double();
-                break;
-            case 3:
-                message.content = reader.string();
-                break;
-            case 4:
-                message.endTime = reader.int64();
-                break;
-            case 5:
-                message.startTime = reader.int64();
-                break;
-            case 6:
-                message.type = reader.string();
-                break;
+            case 1: {
+                    message.category = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.confidence = reader.double();
+                    break;
+                }
+            case 3: {
+                    message.content = reader.string();
+                    break;
+                }
+            case 4: {
+                    message.endTime = reader.int64();
+                    break;
+                }
+            case 5: {
+                    message.startTime = reader.int64();
+                    break;
+                }
+            case 6: {
+                    message.type = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -10312,6 +11019,21 @@ $root.SdkTranscriptEntity = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTranscriptEntity
+     * @function getTypeUrl
+     * @memberof SdkTranscriptEntity
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscriptEntity.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscriptEntity";
+    };
+
     return SdkTranscriptEntity;
 })();
 
@@ -10319,7 +11041,7 @@ $root.SdkTranscriptAlternative = (function() {
 
     /**
      * Properties of a SdkTranscriptAlternative.
-     * @exports ISdkTranscriptAlternative
+     * @name ISdkTranscriptAlternative
      * @interface ISdkTranscriptAlternative
      * @property {Array.<ISdkTranscriptItem>|null} [items] SdkTranscriptAlternative items
      * @property {string|null} [transcript] SdkTranscriptAlternative transcript
@@ -10328,7 +11050,7 @@ $root.SdkTranscriptAlternative = (function() {
 
     /**
      * Constructs a new SdkTranscriptAlternative.
-     * @exports SdkTranscriptAlternative
+     * @name SdkTranscriptAlternative
      * @classdesc Represents a SdkTranscriptAlternative.
      * @implements ISdkTranscriptAlternative
      * @constructor
@@ -10433,19 +11155,22 @@ $root.SdkTranscriptAlternative = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.items && message.items.length))
-                    message.items = [];
-                message.items.push($root.SdkTranscriptItem.decode(reader, reader.uint32()));
-                break;
-            case 2:
-                message.transcript = reader.string();
-                break;
-            case 3:
-                if (!(message.entities && message.entities.length))
-                    message.entities = [];
-                message.entities.push($root.SdkTranscriptEntity.decode(reader, reader.uint32()));
-                break;
+            case 1: {
+                    if (!(message.items && message.items.length))
+                        message.items = [];
+                    message.items.push($root.SdkTranscriptItem.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 2: {
+                    message.transcript = reader.string();
+                    break;
+                }
+            case 3: {
+                    if (!(message.entities && message.entities.length))
+                        message.entities = [];
+                    message.entities.push($root.SdkTranscriptEntity.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -10587,6 +11312,21 @@ $root.SdkTranscriptAlternative = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTranscriptAlternative
+     * @function getTypeUrl
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscriptAlternative.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscriptAlternative";
+    };
+
     return SdkTranscriptAlternative;
 })();
 
@@ -10594,7 +11334,7 @@ $root.SdkTranscriptLanguageWithScore = (function() {
 
     /**
      * Properties of a SdkTranscriptLanguageWithScore.
-     * @exports ISdkTranscriptLanguageWithScore
+     * @name ISdkTranscriptLanguageWithScore
      * @interface ISdkTranscriptLanguageWithScore
      * @property {string|null} [languageCode] SdkTranscriptLanguageWithScore languageCode
      * @property {number|null} [score] SdkTranscriptLanguageWithScore score
@@ -10602,7 +11342,7 @@ $root.SdkTranscriptLanguageWithScore = (function() {
 
     /**
      * Constructs a new SdkTranscriptLanguageWithScore.
-     * @exports SdkTranscriptLanguageWithScore
+     * @name SdkTranscriptLanguageWithScore
      * @classdesc Represents a SdkTranscriptLanguageWithScore.
      * @implements ISdkTranscriptLanguageWithScore
      * @constructor
@@ -10693,12 +11433,14 @@ $root.SdkTranscriptLanguageWithScore = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.languageCode = reader.string();
-                break;
-            case 2:
-                message.score = reader.double();
-                break;
+            case 1: {
+                    message.languageCode = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.score = reader.double();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -10797,6 +11539,21 @@ $root.SdkTranscriptLanguageWithScore = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTranscriptLanguageWithScore
+     * @function getTypeUrl
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscriptLanguageWithScore.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscriptLanguageWithScore";
+    };
+
     return SdkTranscriptLanguageWithScore;
 })();
 
@@ -10804,7 +11561,7 @@ $root.SdkTranscriptResult = (function() {
 
     /**
      * Properties of a SdkTranscriptResult.
-     * @exports ISdkTranscriptResult
+     * @name ISdkTranscriptResult
      * @interface ISdkTranscriptResult
      * @property {Array.<ISdkTranscriptAlternative>|null} [alternatives] SdkTranscriptResult alternatives
      * @property {string|null} [channelId] SdkTranscriptResult channelId
@@ -10818,7 +11575,7 @@ $root.SdkTranscriptResult = (function() {
 
     /**
      * Constructs a new SdkTranscriptResult.
-     * @exports SdkTranscriptResult
+     * @name SdkTranscriptResult
      * @classdesc Represents a SdkTranscriptResult.
      * @implements ISdkTranscriptResult
      * @constructor
@@ -10973,34 +11730,42 @@ $root.SdkTranscriptResult = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.alternatives && message.alternatives.length))
-                    message.alternatives = [];
-                message.alternatives.push($root.SdkTranscriptAlternative.decode(reader, reader.uint32()));
-                break;
-            case 2:
-                message.channelId = reader.string();
-                break;
-            case 3:
-                message.endTime = reader.int64();
-                break;
-            case 4:
-                message.isPartial = reader.bool();
-                break;
-            case 5:
-                message.resultId = reader.string();
-                break;
-            case 6:
-                message.startTime = reader.int64();
-                break;
-            case 7:
-                message.languageCode = reader.string();
-                break;
-            case 8:
-                if (!(message.languageIdentification && message.languageIdentification.length))
-                    message.languageIdentification = [];
-                message.languageIdentification.push($root.SdkTranscriptLanguageWithScore.decode(reader, reader.uint32()));
-                break;
+            case 1: {
+                    if (!(message.alternatives && message.alternatives.length))
+                        message.alternatives = [];
+                    message.alternatives.push($root.SdkTranscriptAlternative.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 2: {
+                    message.channelId = reader.string();
+                    break;
+                }
+            case 3: {
+                    message.endTime = reader.int64();
+                    break;
+                }
+            case 4: {
+                    message.isPartial = reader.bool();
+                    break;
+                }
+            case 5: {
+                    message.resultId = reader.string();
+                    break;
+                }
+            case 6: {
+                    message.startTime = reader.int64();
+                    break;
+                }
+            case 7: {
+                    message.languageCode = reader.string();
+                    break;
+                }
+            case 8: {
+                    if (!(message.languageIdentification && message.languageIdentification.length))
+                        message.languageIdentification = [];
+                    message.languageIdentification.push($root.SdkTranscriptLanguageWithScore.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -11211,6 +11976,21 @@ $root.SdkTranscriptResult = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTranscriptResult
+     * @function getTypeUrl
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscriptResult.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscriptResult";
+    };
+
     return SdkTranscriptResult;
 })();
 
@@ -11218,14 +11998,14 @@ $root.SdkTranscript = (function() {
 
     /**
      * Properties of a SdkTranscript.
-     * @exports ISdkTranscript
+     * @name ISdkTranscript
      * @interface ISdkTranscript
      * @property {Array.<ISdkTranscriptResult>|null} [results] SdkTranscript results
      */
 
     /**
      * Constructs a new SdkTranscript.
-     * @exports SdkTranscript
+     * @name SdkTranscript
      * @classdesc Represents a SdkTranscript.
      * @implements ISdkTranscript
      * @constructor
@@ -11308,11 +12088,12 @@ $root.SdkTranscript = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.results && message.results.length))
-                    message.results = [];
-                message.results.push($root.SdkTranscriptResult.decode(reader, reader.uint32()));
-                break;
+            case 1: {
+                    if (!(message.results && message.results.length))
+                        message.results = [];
+                    message.results.push($root.SdkTranscriptResult.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -11419,6 +12200,21 @@ $root.SdkTranscript = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTranscript
+     * @function getTypeUrl
+     * @memberof SdkTranscript
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscript.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscript";
+    };
+
     return SdkTranscript;
 })();
 
@@ -11426,7 +12222,7 @@ $root.SdkTranscriptionStatus = (function() {
 
     /**
      * Properties of a SdkTranscriptionStatus.
-     * @exports ISdkTranscriptionStatus
+     * @name ISdkTranscriptionStatus
      * @interface ISdkTranscriptionStatus
      * @property {SdkTranscriptionStatus.Type|null} [type] SdkTranscriptionStatus type
      * @property {number|Long|null} [eventTime] SdkTranscriptionStatus eventTime
@@ -11437,7 +12233,7 @@ $root.SdkTranscriptionStatus = (function() {
 
     /**
      * Constructs a new SdkTranscriptionStatus.
-     * @exports SdkTranscriptionStatus
+     * @name SdkTranscriptionStatus
      * @classdesc Represents a SdkTranscriptionStatus.
      * @implements ISdkTranscriptionStatus
      * @constructor
@@ -11558,21 +12354,26 @@ $root.SdkTranscriptionStatus = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.type = reader.int32();
-                break;
-            case 2:
-                message.eventTime = reader.int64();
-                break;
-            case 3:
-                message.transcriptionRegion = reader.string();
-                break;
-            case 4:
-                message.transcriptionConfiguration = reader.string();
-                break;
-            case 5:
-                message.message = reader.string();
-                break;
+            case 1: {
+                    message.type = reader.int32();
+                    break;
+                }
+            case 2: {
+                    message.eventTime = reader.int64();
+                    break;
+                }
+            case 3: {
+                    message.transcriptionRegion = reader.string();
+                    break;
+                }
+            case 4: {
+                    message.transcriptionConfiguration = reader.string();
+                    break;
+                }
+            case 5: {
+                    message.message = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -11647,6 +12448,12 @@ $root.SdkTranscriptionStatus = (function() {
             return object;
         var message = new $root.SdkTranscriptionStatus();
         switch (object.type) {
+        default:
+            if (typeof object.type === "number") {
+                message.type = object.type;
+                break;
+            }
+            break;
         case "STARTED":
         case 1:
             message.type = 1;
@@ -11711,7 +12518,7 @@ $root.SdkTranscriptionStatus = (function() {
             object.message = "";
         }
         if (message.type != null && message.hasOwnProperty("type"))
-            object.type = options.enums === String ? $root.SdkTranscriptionStatus.Type[message.type] : message.type;
+            object.type = options.enums === String ? $root.SdkTranscriptionStatus.Type[message.type] === undefined ? message.type : $root.SdkTranscriptionStatus.Type[message.type] : message.type;
         if (message.eventTime != null && message.hasOwnProperty("eventTime"))
             if (typeof message.eventTime === "number")
                 object.eventTime = options.longs === String ? String(message.eventTime) : message.eventTime;
@@ -11735,6 +12542,21 @@ $root.SdkTranscriptionStatus = (function() {
      */
     SdkTranscriptionStatus.prototype.toJSON = function toJSON() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkTranscriptionStatus
+     * @function getTypeUrl
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscriptionStatus.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscriptionStatus";
     };
 
     /**
@@ -11764,7 +12586,7 @@ $root.SdkTranscriptEvent = (function() {
 
     /**
      * Properties of a SdkTranscriptEvent.
-     * @exports ISdkTranscriptEvent
+     * @name ISdkTranscriptEvent
      * @interface ISdkTranscriptEvent
      * @property {ISdkTranscriptionStatus|null} [status] SdkTranscriptEvent status
      * @property {ISdkTranscript|null} [transcript] SdkTranscriptEvent transcript
@@ -11772,7 +12594,7 @@ $root.SdkTranscriptEvent = (function() {
 
     /**
      * Constructs a new SdkTranscriptEvent.
-     * @exports SdkTranscriptEvent
+     * @name SdkTranscriptEvent
      * @classdesc Represents a SdkTranscriptEvent.
      * @implements ISdkTranscriptEvent
      * @constructor
@@ -11877,12 +12699,14 @@ $root.SdkTranscriptEvent = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.status = $root.SdkTranscriptionStatus.decode(reader, reader.uint32());
-                break;
-            case 2:
-                message.transcript = $root.SdkTranscript.decode(reader, reader.uint32());
-                break;
+            case 1: {
+                    message.status = $root.SdkTranscriptionStatus.decode(reader, reader.uint32());
+                    break;
+                }
+            case 2: {
+                    message.transcript = $root.SdkTranscript.decode(reader, reader.uint32());
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -12002,6 +12826,21 @@ $root.SdkTranscriptEvent = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTranscriptEvent
+     * @function getTypeUrl
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscriptEvent.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscriptEvent";
+    };
+
     return SdkTranscriptEvent;
 })();
 
@@ -12009,14 +12848,14 @@ $root.SdkTranscriptFrame = (function() {
 
     /**
      * Properties of a SdkTranscriptFrame.
-     * @exports ISdkTranscriptFrame
+     * @name ISdkTranscriptFrame
      * @interface ISdkTranscriptFrame
      * @property {Array.<ISdkTranscriptEvent>|null} [events] SdkTranscriptFrame events
      */
 
     /**
      * Constructs a new SdkTranscriptFrame.
-     * @exports SdkTranscriptFrame
+     * @name SdkTranscriptFrame
      * @classdesc Represents a SdkTranscriptFrame.
      * @implements ISdkTranscriptFrame
      * @constructor
@@ -12099,11 +12938,12 @@ $root.SdkTranscriptFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.events && message.events.length))
-                    message.events = [];
-                message.events.push($root.SdkTranscriptEvent.decode(reader, reader.uint32()));
-                break;
+            case 1: {
+                    if (!(message.events && message.events.length))
+                        message.events = [];
+                    message.events.push($root.SdkTranscriptEvent.decode(reader, reader.uint32()));
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -12210,6 +13050,21 @@ $root.SdkTranscriptFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkTranscriptFrame
+     * @function getTypeUrl
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkTranscriptFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkTranscriptFrame";
+    };
+
     return SdkTranscriptFrame;
 })();
 
@@ -12217,7 +13072,7 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
 
     /**
      * Properties of a SdkRemoteVideoUpdateFrame.
-     * @exports ISdkRemoteVideoUpdateFrame
+     * @name ISdkRemoteVideoUpdateFrame
      * @interface ISdkRemoteVideoUpdateFrame
      * @property {Array.<ISdkVideoSubscriptionConfiguration>|null} [addedOrUpdatedVideoSubscriptions] SdkRemoteVideoUpdateFrame addedOrUpdatedVideoSubscriptions
      * @property {Array.<string>|null} [removedVideoSubscriptionMids] SdkRemoteVideoUpdateFrame removedVideoSubscriptionMids
@@ -12225,7 +13080,7 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
 
     /**
      * Constructs a new SdkRemoteVideoUpdateFrame.
-     * @exports SdkRemoteVideoUpdateFrame
+     * @name SdkRemoteVideoUpdateFrame
      * @classdesc Represents a SdkRemoteVideoUpdateFrame.
      * @implements ISdkRemoteVideoUpdateFrame
      * @constructor
@@ -12320,16 +13175,18 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                if (!(message.addedOrUpdatedVideoSubscriptions && message.addedOrUpdatedVideoSubscriptions.length))
-                    message.addedOrUpdatedVideoSubscriptions = [];
-                message.addedOrUpdatedVideoSubscriptions.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
-                break;
-            case 2:
-                if (!(message.removedVideoSubscriptionMids && message.removedVideoSubscriptionMids.length))
-                    message.removedVideoSubscriptionMids = [];
-                message.removedVideoSubscriptionMids.push(reader.string());
-                break;
+            case 1: {
+                    if (!(message.addedOrUpdatedVideoSubscriptions && message.addedOrUpdatedVideoSubscriptions.length))
+                        message.addedOrUpdatedVideoSubscriptions = [];
+                    message.addedOrUpdatedVideoSubscriptions.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 2: {
+                    if (!(message.removedVideoSubscriptionMids && message.removedVideoSubscriptionMids.length))
+                        message.removedVideoSubscriptionMids = [];
+                    message.removedVideoSubscriptionMids.push(reader.string());
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -12457,12 +13314,27 @@ $root.SdkRemoteVideoUpdateFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkRemoteVideoUpdateFrame
+     * @function getTypeUrl
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkRemoteVideoUpdateFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkRemoteVideoUpdateFrame";
+    };
+
     return SdkRemoteVideoUpdateFrame;
 })();
 
 /**
  * SdkVideoQualityAdaptationPreference enum.
- * @exports SdkVideoQualityAdaptationPreference
+ * @name SdkVideoQualityAdaptationPreference
  * @enum {number}
  * @property {number} BALANCED=1 BALANCED value
  * @property {number} MAINTAIN_FRAMERATE=2 MAINTAIN_FRAMERATE value
@@ -12480,7 +13352,7 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
 
     /**
      * Properties of a SdkVideoSubscriptionConfiguration.
-     * @exports ISdkVideoSubscriptionConfiguration
+     * @name ISdkVideoSubscriptionConfiguration
      * @interface ISdkVideoSubscriptionConfiguration
      * @property {string} mid SdkVideoSubscriptionConfiguration mid
      * @property {string|null} [attendeeId] SdkVideoSubscriptionConfiguration attendeeId
@@ -12493,7 +13365,7 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
 
     /**
      * Constructs a new SdkVideoSubscriptionConfiguration.
-     * @exports SdkVideoSubscriptionConfiguration
+     * @name SdkVideoSubscriptionConfiguration
      * @classdesc Represents a SdkVideoSubscriptionConfiguration.
      * @implements ISdkVideoSubscriptionConfiguration
      * @constructor
@@ -12633,27 +13505,34 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.mid = reader.string();
-                break;
-            case 2:
-                message.attendeeId = reader.string();
-                break;
-            case 3:
-                message.streamId = reader.uint32();
-                break;
-            case 4:
-                message.priority = reader.uint32();
-                break;
-            case 5:
-                message.targetBitrateKbps = reader.uint32();
-                break;
-            case 6:
-                message.groupId = reader.uint32();
-                break;
-            case 7:
-                message.qualityAdaptationPreference = reader.int32();
-                break;
+            case 1: {
+                    message.mid = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.attendeeId = reader.string();
+                    break;
+                }
+            case 3: {
+                    message.streamId = reader.uint32();
+                    break;
+                }
+            case 4: {
+                    message.priority = reader.uint32();
+                    break;
+                }
+            case 5: {
+                    message.targetBitrateKbps = reader.uint32();
+                    break;
+                }
+            case 6: {
+                    message.groupId = reader.uint32();
+                    break;
+                }
+            case 7: {
+                    message.qualityAdaptationPreference = reader.int32();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -12745,6 +13624,12 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
         if (object.groupId != null)
             message.groupId = object.groupId >>> 0;
         switch (object.qualityAdaptationPreference) {
+        default:
+            if (typeof object.qualityAdaptationPreference === "number") {
+                message.qualityAdaptationPreference = object.qualityAdaptationPreference;
+                break;
+            }
+            break;
         case "BALANCED":
         case 1:
             message.qualityAdaptationPreference = 1;
@@ -12796,7 +13681,7 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
         if (message.groupId != null && message.hasOwnProperty("groupId"))
             object.groupId = message.groupId;
         if (message.qualityAdaptationPreference != null && message.hasOwnProperty("qualityAdaptationPreference"))
-            object.qualityAdaptationPreference = options.enums === String ? $root.SdkVideoQualityAdaptationPreference[message.qualityAdaptationPreference] : message.qualityAdaptationPreference;
+            object.qualityAdaptationPreference = options.enums === String ? $root.SdkVideoQualityAdaptationPreference[message.qualityAdaptationPreference] === undefined ? message.qualityAdaptationPreference : $root.SdkVideoQualityAdaptationPreference[message.qualityAdaptationPreference] : message.qualityAdaptationPreference;
         return object;
     };
 
@@ -12811,6 +13696,21 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkVideoSubscriptionConfiguration
+     * @function getTypeUrl
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkVideoSubscriptionConfiguration.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkVideoSubscriptionConfiguration";
+    };
+
     return SdkVideoSubscriptionConfiguration;
 })();
 
@@ -12818,7 +13718,7 @@ $root.SdkNotificationFrame = (function() {
 
     /**
      * Properties of a SdkNotificationFrame.
-     * @exports ISdkNotificationFrame
+     * @name ISdkNotificationFrame
      * @interface ISdkNotificationFrame
      * @property {SdkNotificationFrame.NotificationLevel|null} [level] SdkNotificationFrame level
      * @property {string|null} [message] SdkNotificationFrame message
@@ -12826,7 +13726,7 @@ $root.SdkNotificationFrame = (function() {
 
     /**
      * Constructs a new SdkNotificationFrame.
-     * @exports SdkNotificationFrame
+     * @name SdkNotificationFrame
      * @classdesc Represents a SdkNotificationFrame.
      * @implements ISdkNotificationFrame
      * @constructor
@@ -12917,12 +13817,14 @@ $root.SdkNotificationFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.level = reader.int32();
-                break;
-            case 2:
-                message.message = reader.string();
-                break;
+            case 1: {
+                    message.level = reader.int32();
+                    break;
+                }
+            case 2: {
+                    message.message = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -12994,6 +13896,12 @@ $root.SdkNotificationFrame = (function() {
         case 2:
             message.level = 2;
             break;
+        default:
+            if (typeof object.level === "number") {
+                message.level = object.level;
+                break;
+            }
+            break;
         case "ERROR":
         case 3:
             message.level = 3;
@@ -13022,7 +13930,7 @@ $root.SdkNotificationFrame = (function() {
             object.message = "";
         }
         if (message.level != null && message.hasOwnProperty("level"))
-            object.level = options.enums === String ? $root.SdkNotificationFrame.NotificationLevel[message.level] : message.level;
+            object.level = options.enums === String ? $root.SdkNotificationFrame.NotificationLevel[message.level] === undefined ? message.level : $root.SdkNotificationFrame.NotificationLevel[message.level] : message.level;
         if (message.message != null && message.hasOwnProperty("message"))
             object.message = message.message;
         return object;
@@ -13037,6 +13945,21 @@ $root.SdkNotificationFrame = (function() {
      */
     SdkNotificationFrame.prototype.toJSON = function toJSON() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkNotificationFrame
+     * @function getTypeUrl
+     * @memberof SdkNotificationFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkNotificationFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkNotificationFrame";
     };
 
     /**
@@ -13062,14 +13985,14 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
 
     /**
      * Properties of a SdkPrimaryMeetingJoinFrame.
-     * @exports ISdkPrimaryMeetingJoinFrame
+     * @name ISdkPrimaryMeetingJoinFrame
      * @interface ISdkPrimaryMeetingJoinFrame
      * @property {ISdkMeetingSessionCredentials|null} [credentials] SdkPrimaryMeetingJoinFrame credentials
      */
 
     /**
      * Constructs a new SdkPrimaryMeetingJoinFrame.
-     * @exports SdkPrimaryMeetingJoinFrame
+     * @name SdkPrimaryMeetingJoinFrame
      * @classdesc Represents a SdkPrimaryMeetingJoinFrame.
      * @implements ISdkPrimaryMeetingJoinFrame
      * @constructor
@@ -13150,9 +14073,10 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.credentials = $root.SdkMeetingSessionCredentials.decode(reader, reader.uint32());
-                break;
+            case 1: {
+                    message.credentials = $root.SdkMeetingSessionCredentials.decode(reader, reader.uint32());
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -13247,6 +14171,21 @@ $root.SdkPrimaryMeetingJoinFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkPrimaryMeetingJoinFrame
+     * @function getTypeUrl
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkPrimaryMeetingJoinFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkPrimaryMeetingJoinFrame";
+    };
+
     return SdkPrimaryMeetingJoinFrame;
 })();
 
@@ -13254,13 +14193,13 @@ $root.SdkPrimaryMeetingJoinAckFrame = (function() {
 
     /**
      * Properties of a SdkPrimaryMeetingJoinAckFrame.
-     * @exports ISdkPrimaryMeetingJoinAckFrame
+     * @name ISdkPrimaryMeetingJoinAckFrame
      * @interface ISdkPrimaryMeetingJoinAckFrame
      */
 
     /**
      * Constructs a new SdkPrimaryMeetingJoinAckFrame.
-     * @exports SdkPrimaryMeetingJoinAckFrame
+     * @name SdkPrimaryMeetingJoinAckFrame
      * @classdesc Represents a SdkPrimaryMeetingJoinAckFrame.
      * @implements ISdkPrimaryMeetingJoinAckFrame
      * @constructor
@@ -13407,6 +14346,21 @@ $root.SdkPrimaryMeetingJoinAckFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkPrimaryMeetingJoinAckFrame
+     * @function getTypeUrl
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkPrimaryMeetingJoinAckFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkPrimaryMeetingJoinAckFrame";
+    };
+
     return SdkPrimaryMeetingJoinAckFrame;
 })();
 
@@ -13414,13 +14368,13 @@ $root.SdkPrimaryMeetingLeaveFrame = (function() {
 
     /**
      * Properties of a SdkPrimaryMeetingLeaveFrame.
-     * @exports ISdkPrimaryMeetingLeaveFrame
+     * @name ISdkPrimaryMeetingLeaveFrame
      * @interface ISdkPrimaryMeetingLeaveFrame
      */
 
     /**
      * Constructs a new SdkPrimaryMeetingLeaveFrame.
-     * @exports SdkPrimaryMeetingLeaveFrame
+     * @name SdkPrimaryMeetingLeaveFrame
      * @classdesc Represents a SdkPrimaryMeetingLeaveFrame.
      * @implements ISdkPrimaryMeetingLeaveFrame
      * @constructor
@@ -13567,6 +14521,21 @@ $root.SdkPrimaryMeetingLeaveFrame = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkPrimaryMeetingLeaveFrame
+     * @function getTypeUrl
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkPrimaryMeetingLeaveFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkPrimaryMeetingLeaveFrame";
+    };
+
     return SdkPrimaryMeetingLeaveFrame;
 })();
 
@@ -13574,7 +14543,7 @@ $root.SdkMeetingSessionCredentials = (function() {
 
     /**
      * Properties of a SdkMeetingSessionCredentials.
-     * @exports ISdkMeetingSessionCredentials
+     * @name ISdkMeetingSessionCredentials
      * @interface ISdkMeetingSessionCredentials
      * @property {string|null} [attendeeId] SdkMeetingSessionCredentials attendeeId
      * @property {string|null} [externalUserId] SdkMeetingSessionCredentials externalUserId
@@ -13583,7 +14552,7 @@ $root.SdkMeetingSessionCredentials = (function() {
 
     /**
      * Constructs a new SdkMeetingSessionCredentials.
-     * @exports SdkMeetingSessionCredentials
+     * @name SdkMeetingSessionCredentials
      * @classdesc Represents a SdkMeetingSessionCredentials.
      * @implements ISdkMeetingSessionCredentials
      * @constructor
@@ -13684,15 +14653,18 @@ $root.SdkMeetingSessionCredentials = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
-            case 1:
-                message.attendeeId = reader.string();
-                break;
-            case 2:
-                message.externalUserId = reader.string();
-                break;
-            case 3:
-                message.joinToken = reader.string();
-                break;
+            case 1: {
+                    message.attendeeId = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.externalUserId = reader.string();
+                    break;
+                }
+            case 3: {
+                    message.joinToken = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -13799,27 +14771,48 @@ $root.SdkMeetingSessionCredentials = (function() {
         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
     };
 
+    /**
+     * Gets the default type url for SdkMeetingSessionCredentials
+     * @function getTypeUrl
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkMeetingSessionCredentials.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkMeetingSessionCredentials";
+    };
+
     return SdkMeetingSessionCredentials;
 })();
 
 /**
  * SdkVideoCodecCapability enum.
- * @exports SdkVideoCodecCapability
+ * @name SdkVideoCodecCapability
  * @enum {number}
  * @property {number} VP8=1 VP8 value
+ * @property {number} H264_BASELINE_PROFILE=2 H264_BASELINE_PROFILE value
  * @property {number} H264_CONSTRAINED_BASELINE_PROFILE=3 H264_CONSTRAINED_BASELINE_PROFILE value
+ * @property {number} H264_MAIN_PROFILE=4 H264_MAIN_PROFILE value
+ * @property {number} H264_HIGH_PROFILE=5 H264_HIGH_PROFILE value
+ * @property {number} H264_CONSTRAINED_HIGH_PROFILE=6 H264_CONSTRAINED_HIGH_PROFILE value
  * @property {number} VP9_PROFILE_0=8 VP9_PROFILE_0 value
- * @property {number} AV1_MAIN=11 AV1_MAIN value
+ * @property {number} AV1_MAIN_PROFILE=11 AV1_MAIN_PROFILE value
  */
 $root.SdkVideoCodecCapability = (function() {
     var valuesById = {}, values = Object.create(valuesById);
     values[valuesById[1] = "VP8"] = 1;
+    values[valuesById[2] = "H264_BASELINE_PROFILE"] = 2;
     values[valuesById[3] = "H264_CONSTRAINED_BASELINE_PROFILE"] = 3;
+    values[valuesById[4] = "H264_MAIN_PROFILE"] = 4;
+    values[valuesById[5] = "H264_HIGH_PROFILE"] = 5;
+    values[valuesById[6] = "H264_CONSTRAINED_HIGH_PROFILE"] = 6;
     values[valuesById[8] = "VP9_PROFILE_0"] = 8;
-    values[valuesById[11] = "AV1_MAIN"] = 11;
+    values[valuesById[11] = "AV1_MAIN_PROFILE"] = 11;
     return values;
 })();
 
 module.exports = $root;
-$util.Long = undefined;
-$protobuf.configure();

@@ -220,25 +220,23 @@ export default class ReceiveVideoStreamIndexTask
 
     // Intersect `this.context.videoSendCodecPreferences` with `index.supportedReceiveCodecIntersection`
     for (const capability of this.context.videoSendCodecPreferences) {
-      let codecSupported = false;
       for (const signaledCapability of index.supportedReceiveCodecIntersection) {
         if (capability.equals(VideoCodecCapability.fromSignaled(signaledCapability))) {
-          codecSupported = true;
           newMeetingSupportedVideoSendCodecPreferences.push(capability);
           break;
         }
       }
-      // We need to renegotiate if we are currently sending a codec that is no longer supported in the call.
-      if (
-        this.context.currentVideoSendCodec !== undefined &&
-        !codecSupported &&
-        capability.equals(this.context.currentVideoSendCodec)
-      ) {
-        willNeedUpdate = true;
-      }
     }
 
     if (newMeetingSupportedVideoSendCodecPreferences.length > 0) {
+      // We need to renegotiate if we are currently sending a codec that is no longer supported in the call, or if we can
+      // start sending a higher preference codec again (due to a constrained remote attendee leaving)
+      if (
+        this.context.currentVideoSendCodec !== undefined &&
+        !newMeetingSupportedVideoSendCodecPreferences[0].equals(this.context.currentVideoSendCodec)
+      ) {
+        willNeedUpdate = true;
+      }
       this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
     } else {
       this.logger.warn(
