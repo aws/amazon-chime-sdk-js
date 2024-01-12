@@ -25,18 +25,14 @@ const ivs = new Ivs({
   apiVersion: '2020-07-14',
 });
 
-const chimeSDKMeetings = new ChimeSDKMeetings({
-  region: currentRegion,
-});
-if (chimeSDKMeetingsEndpoint) {
-  chimeSDKMeetings.endpoint = chimeSDKMeetingsEndpoint;
-}
+
+const chimeSDKMeetings = new ChimeSDKMeetings({ region: currentRegion, endpoint: chimeSDKMeetingsEndpoint });
 
 // Create an AWS SDK Media Pipelines object.
 const chimeSdkMediaPipelines = new ChimeSDKMediaPipelines({
   region: mediaPipelinesControlRegion,
+  endpoint: chimeSDKMediaPipelinesEndpoint
 });
-chimeSdkMediaPipelines.endpoint = chimeSDKMediaPipelinesEndpoint;
 
 // Read resource names from the environment
 const {
@@ -132,7 +128,7 @@ exports.join = async (event, context) => {
             query.v_rs === 'None' || 
             query.c_rs === 'UHD' ||
             query.c_rs === 'None' ||
-            query.a_cnt != '-999') {
+            query.a_cnt > 1 && query.a_cnt <= 250) {
         request.MeetingFeatures = {};
         if (query.ns_es === 'true') {
           request.MeetingFeatures.Audio = {
@@ -149,7 +145,7 @@ exports.join = async (event, context) => {
             MaxResolution: query.c_rs
           }
         }
-        if (query.a_cnt != '-999') {
+        if (query.a_cnt > 1 && query.a_cnt <= 250) {
           request.MeetingFeatures.Attendee = {
             MaxCount: Number(query.a_cnt)
           }

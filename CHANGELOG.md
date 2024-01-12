@@ -18,8 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.19.0] - 2023-09-20
 
 ### Added
-- Add high resolution meeting features. See the [Meeting Features](https://aws.github.io/amazon-chime-sdk-js/modules/meetingfeatures.html) guide for more information.
-- Add VP9 and AV1 video codecs. See the [Video Codecs](https://aws.github.io/amazon-chime-sdk-js/modules/videocodecs.html) guide for more information. VP9 has the ability to enable SVC.
+- Add support for high-definition WebRTC sessions with 1080p webcam video and 4K screen share. Developers can choose video encoding bitrates up to 2.5Mbps, frame rates up to 30fps, and the codec, including new options VP9, AV1, and scalable video coding (SVC).
+- Update AWS SDK version to 3.477.0
 
 ### Removed
 
@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
 - Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow.
-- Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely
+- Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely.
 
 ## [3.18.2] - 2023-10-09
 
