@@ -326,7 +326,7 @@ quizButton.addEventListener('click', function() {
 
 
 // If the user is host and clicks #button-meeting-leave, then save all text in #transcript-container and send it to app.larq.ai/api/SaveTranscript along with the userId and meetingId:
-document.querySelector('#button-meeting-leave').addEventListener('click', function() {
+document.querySelector('#button-meeting-end').addEventListener('click', function() {
     // if not host, then return:
     if (!window.demoMeetingAppInstance.isHost()) {
         return;

@@ -2114,6 +2114,12 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
               // set localstorage "host_id" to data.host_id
               localStorage.setItem('host_id', data.host_id);
               localStorage.setItem('meeting_id', meeting_id);
+
+              // if host_id === user_id then show #create-quiz
+              if (data.host_id === localStorage.getItem('userId')) {
+                document.getElementById('button-meeting-end')!.style.display = 'block';
+              }
+
               noMeetingAlert?.classList.add('d-none');
               return true;
               // Redirect to meeting page or perform other actions
@@ -2628,9 +2634,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       'custom-language-model-checkbox'
     ) as HTMLInputElement;
     languageModelCb.addEventListener('click', () => {
-      document
-        .getElementById('language-model')
-        .classList.toggle('hidden', !languageModelCb.checked);
+      document.getElementById('language-model').classList.toggle('hidden', !languageModelCb.checked);
     });
 
     const buttonStartTranscription = document.getElementById('button-start-transcription');
