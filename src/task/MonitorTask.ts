@@ -27,6 +27,7 @@ import {
 } from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import { Maybe } from '../utils/Types';
+import VideoEncodingMonitor from '../videoencodingmonitor/VideoEncodingMonitor';
 import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
 
@@ -51,6 +52,7 @@ export default class MonitorTask
   private isResubscribeCheckPaused: boolean = false;
   private pendingMetricsReport: ClientMetricReport | undefined = undefined;
   private isMeetingConnected: boolean = false;
+  private videoEncodingMonitor: VideoEncodingMonitor;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -72,6 +74,7 @@ export default class MonitorTask
       { ...connectionHealthPolicyConfiguration },
       this.initialConnectionHealthData.clone()
     );
+    this.videoEncodingMonitor = new VideoEncodingMonitor(context);
   }
 
   removeObserver(): void {
@@ -199,6 +202,8 @@ export default class MonitorTask
       number,
       StreamMetricReport
     >();
+
+    this.videoEncodingMonitor.encodingMonitor(clientMetricReport);
 
     // TODO: move those logic to stats collector.
     for (const ssrc in streamMetricReport) {

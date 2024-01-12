@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add automatic codec degradation logic when CPU usage of software encoder is high or video encoding of hardware encoder fails.
+
 ### Removed
 
 ### Changed

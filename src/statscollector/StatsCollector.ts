@@ -46,6 +46,8 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   private clientMetricReport: ClientMetricReport;
   private redRecoveryMetricReport: RedundantAudioRecoveryMetricReport = new RedundantAudioRecoveryMetricReport();
   private lastRedRecoveryMetricReportConsumedTimestampMs: number = 0;
+  private videoCodecDegradationHighEncodeCpuCount: number = 0;
+  private videoCodecDegradationHwEncodeFailureCount: number = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -545,6 +547,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     // Add custom stats for reporting.
     const customStatsReports: CustomStatsReport[] = [];
     this.maybeAddRedRecoveryMetrics(customStatsReports);
+    this.addVideoCodecDegradationMetrics(customStatsReports);
     this.clientMetricReport.customStatsReports = customStatsReports;
     filteredRawMetricReports.push(...customStatsReports);
 
@@ -617,5 +620,49 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     });
 
     this.lastRedRecoveryMetricReportConsumedTimestampMs = this.redRecoveryMetricReport.currentTimestampMs;
+  }
+
+  /**
+   * Receive video codec degradation event due to high encode CPU usage
+   * from MonitorTask and increment counter
+   */
+  videoCodecDegradationHighEncodeCpuDidReceive(): void {
+    this.videoCodecDegradationHighEncodeCpuCount += 1;
+  }
+
+  /**
+   * Receive video codec degradation event due to hardware encoder failure
+   * from MonitorTask and increment counter
+   */
+  videoCodecDegradationHwEncodeFailureDidReceive(): void {
+    this.videoCodecDegradationHwEncodeFailureCount += 1;
+  }
+
+  private getVideoUpstreamSsrc(): number | null {
+    for (const ssrc in this.clientMetricReport.streamMetricReports) {
+      if (
+        this.clientMetricReport.streamMetricReports[ssrc].mediaType === MediaType.VIDEO &&
+        this.clientMetricReport.streamMetricReports[ssrc].direction === Direction.UPSTREAM
+      ) {
+        return Number(ssrc);
+      }
+    }
+    return null;
+  }
+
+  private addVideoCodecDegradationMetrics(customStatsReports: CustomStatsReport[]): void {
+    const videoUpstreamSsrc = this.getVideoUpstreamSsrc();
+    if (videoUpstreamSsrc !== null) {
+      customStatsReports.push({
+        kind: 'video',
+        type: 'outbound-rtp',
+        ssrc: videoUpstreamSsrc,
+        timestamp: Date.now(),
+        videoCodecDegradationHighEncodeCpu: this.videoCodecDegradationHighEncodeCpuCount,
+        videoCodecDegradationHwEncodeFailure: this.videoCodecDegradationHwEncodeFailureCount,
+      });
+    }
+    this.videoCodecDegradationHighEncodeCpuCount = 0;
+    this.videoCodecDegradationHwEncodeFailureCount = 0;
   }
 }
