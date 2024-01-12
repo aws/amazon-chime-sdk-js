@@ -433,7 +433,7 @@ export class DemoMeetingApp
     'button-camera': 'off',
     'button-speaker': 'on',
     'button-content-share': 'off',
-    'button-live-transcription': 'on',
+    'button-live-transcription': 'off',
     'button-video-stats': 'off',
     'button-promote-to-primary': 'on',
     'button-video-filter': 'off',
