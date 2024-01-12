@@ -2110,14 +2110,18 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
         if (data.status === 'success') {
               // Handle joining or starting the meeting (NEW MEETING)
               console.log(data.message);
-              const meeting_id = data.meeting_id;
+              const meeting_id = data.message.meeting_id;
+              const host_id = data.message.host_id;
               // set localstorage "host_id" to data.host_id
-              localStorage.setItem('host_id', data.host_id);
+              localStorage.removeItem('host_id');
+              localStorage.removeItem('meeting_id');
+
+              localStorage.setItem('host_id', host_id);
               localStorage.setItem('meeting_id', meeting_id);
 
               // if host_id === user_id then show #create-quiz
               if (data.host_id === localStorage.getItem('userId')) {
-                document.getElementById('button-meeting-end')!.style.display = 'block';
+                document.getElementById('end-meeting-display')!.style.display = 'block';
               }
 
               noMeetingAlert?.classList.add('d-none');
