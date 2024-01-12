@@ -2073,6 +2073,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       this.showProgress('progress-authenticate');
       const makeMeeting = await handleJoinAction();
       if (!makeMeeting) {
+        this.hideProgress('progress-authenticate');
         return;
       }
       this.redirectFromAuthentication(true);
@@ -2084,6 +2085,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       this.showProgress('progress-authenticate');
 
       if (!makeMeeting) {
+        this.hideProgress('progress-authenticate');
         return;
       }
       this.redirectFromAuthentication();
