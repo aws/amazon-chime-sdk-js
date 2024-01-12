@@ -1197,7 +1197,7 @@ updateBodyBackgroundColor();
     
     const submitQuizBot = document.getElementById('submit-quiz') as HTMLButtonElement;
     submitQuizBot.addEventListener('click', async (): Promise<void> => {
-
+      
 
       if (this.isHost()){
         console.log("You're are host, you can create Quiz!");
@@ -1242,10 +1242,14 @@ updateBodyBackgroundColor();
             console.log('user_id:', userID);
         }
 
+        // remove #generation-error if it exists:
+        const generationError = document.getElementById('generation-error');
+        generationError.classList.add('d-none');
 
         
         const url = "https://api.larq.ai/MakeQuiz";
         console.log("TRANSCRIPT DATA:", transcriptData);
+        
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -1255,43 +1259,20 @@ updateBodyBackgroundColor();
         })
         // on response, show #html_quiz_question:
         const quizJson = await response.json();
+
+        // if quizJson.success === false, alert the user and return
+        if (quizJson.success === false) {
+          generationError.classList.remove('d-none');
+          // now make the error message the error message from the server
+          generationError.innerText = quizJson.message;
+          create_quiz.style.display = 'block';
+          return;
+        }
+
         // localStorage.setItem("quizID", quizJson.quiz_id);
         html_quiz_question.style.display = 'block';
         generating_quiz.style.display = 'none';
 
-        // BELOW IS THE STRUCTURE OF THE QUIZ RESPONSE
-        // const quizJson = {
-        //     quiz_title: 'History 101',
-        //     questions: [
-        //       {
-        //         answer_reason: 'The Magna Carta was sealed by King John in the year 1215.',
-        //         correct_answer: '1215',
-        //         question: 'In which year was the Magna Carta sealed?',
-        //         question_number: 1,
-        //         wrong_answers: ['1200', '1230', '1150'],
-        //       },
-        //       {
-        //         answer_reason:
-        //           'The primary aim of the Renaissance was the revival of classical learning and wisdom.',
-        //         correct_answer: 'Revival of classical learning',
-        //         question: 'What was the primary aim of the Renaissance?',
-        //         question_number: 2,
-        //         wrong_answers: [
-        //           'Promotion of modern art',
-        //           'Start of the industrial revolution',
-        //           'Promotion of religious beliefs',
-        //         ],
-        //       },
-        //       {
-        //         answer_reason:
-        //           'Galileo Galilei was known for his contributions to the fields of physics, astronomy, and modern science.',
-        //         correct_answer: 'Galileo Galilei',
-        //         question: 'Who is known as the father of observational astronomy?',
-        //         question_number: 3,
-        //         wrong_answers: ['Isaac Newton', 'Albert Einstein', 'Nikola Tesla'],
-        //       },
-        //     ]
-        // };
         console.log('quizJson:', quizJson);
         
         // add quizJson to the local storage
@@ -2110,7 +2091,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
         if (data.status === 'success') {
               // Handle joining or starting the meeting (NEW MEETING)
               console.log(data.message);
-              const meeting_id = data.message.meeting_id;
+              const meeting_id = data.message._id;
               const host_id = data.message.host_id;
               // set localstorage "host_id" to data.host_id
               localStorage.removeItem('host_id');
@@ -2120,8 +2101,8 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
               localStorage.setItem('meeting_id', meeting_id);
 
               // if host_id === user_id then show #create-quiz
-              if (data.host_id === localStorage.getItem('userId')) {
-                document.getElementById('end-meeting-display')!.style.display = 'block';
+              if (host_id === localStorage.getItem('userId')) {
+                document.getElementById('end-meeting-display').style.display = 'block';
               }
 
               noMeetingAlert?.classList.add('d-none');
