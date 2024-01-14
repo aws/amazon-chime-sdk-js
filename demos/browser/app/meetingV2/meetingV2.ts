@@ -866,8 +866,10 @@ export class DemoMeetingApp
     const token = localStorage.getItem('authToken');
     const backButton = document.getElementById('back-button') as HTMLAnchorElement;
     const backButton2 = document.getElementById('back-button2') as HTMLAnchorElement;
+    const backButton3 = document.getElementById('back-button3') as HTMLAnchorElement;
     backButton.href = `https://app.larq.ai?token=${token}`;
     backButton2.href = `https://app.larq.ai?token=${token}`;
+    backButton3.href = `https://app.larq.ai?token=${token}`;
 
 
 
@@ -2102,7 +2104,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
               // if host_id === user_id then show #create-quiz
               if (host_id === localStorage.getItem('userId')) {
-                document.getElementById('end-meeting-display').style.display = 'block';
+                document.getElementById('end-meeting-display').classList.remove('d-none');
               }
 
               noMeetingAlert?.classList.add('d-none');

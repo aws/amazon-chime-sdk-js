@@ -46,19 +46,24 @@
 
     </svg> -->
 
-    <img src="https://framerusercontent.com/images/WYMAEVsumDQ1avAqUxdNC9tfHwQ.png" class="w-100">
+    <img src="https://teachserv.com/wp-content/uploads/2024/01/Original-on-Transparent-1.png" class="w-100">
         </h1>
         <form id="loginForm" class="animate__animated animate__fadeIn"><div class="txt_field p-1 color-white"><input name="username" required="" style="
           color: white;
       "> <span class="text-white"></span> <label class="text-white">Username</label></div><div class="txt_field p-1 text-white"><input type="password" name="password" required="" class="text-white"> <span></span> <label class="text-white">Password</label></div><div class="pass" id="incorrect-pass" style="display:none"><label>User or Password is incorrect. Try again.</label></div><div class="pass"><a href="mailto:info@teachserv.com" style="text-decoration: none;">Forget Password?</a></div><input name="submit" type="Submit" value="Login" style="
           font-weight: 600;
           font-size: 19px;
-      "><div class="signup_link" id="go-to-register">Not a Member ? <b id="button-signup">Signup</b><br>Or <a href="#" id="join-view-only" class="form-check-input" style="
+      ">
+      <div class="signup_link" id="go-to-register">Not a Member ? <b id="button-signup">Signup</b><br>Or <a href="#" id="join-view-only" class="form-check-input" style="
           background: none;
           padding: 5px;
           font-weight: 800;
           border: none;
-      "><label for="join-view-only" class="form-check-label">Join Meeting As Guest</label></a></div></form>
+          display:none;
+      "><label for="join-view-only" class="form-check-label">Join Meeting As Guest</label></a></div>
+      <a href="https://teachserv.com/wp-login.php">Sign in with Teachserv</a>
+      
+    </form>
 
           <!-- Registration Page -->
 <div class="register container animate__animated animate__fadeIn" id="register-container" style="display:none">
@@ -994,6 +999,7 @@
             </div>
           </div>
           <div class="bs-component scrollbar-y-design" style="flex: 1 1 auto; overflow-y: auto; height: 30%;">
+            <a href="https://app.larq.ai" id="back-button3"><p class="btn btn-primary">&lt;- Return to Dashboard</p></a>
             <ul id="roster" class="list-group"></ul>
           </div>
           <div class="message d-flex flex-column pt-1" id="messages"
@@ -1486,7 +1492,7 @@
             <p>Leave Meeting</p>
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" id="end-meeting-display" role="group" aria-label="End Meeting" style="display: none;">
+          <div class="d-none btn-group mx-1 mx-xl-2" id="end-meeting-display" role="group" aria-label="End Meeting">
             <div class="iconButton">
               <button id="button-meeting-end" type="button" title="End Meeting">
                 <svg xmlns="http://www.w3.org/2000/svg" width="49" height="49" viewBox="0 0 49 49" fill="none">
