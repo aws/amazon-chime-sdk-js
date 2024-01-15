@@ -846,7 +846,14 @@ export class DemoMeetingApp
 
       // change href for #back-button to be app.larq.ai?token=tokenParam
     
-      window.history.replaceState({}, document.title, "/");
+      // Create a URL object from the current location
+      const url = new URL(window.location.href);
+      
+      // Remove the 'token' parameter
+      url.searchParams.delete('token');
+
+      // Update the URL without reloading the page
+      window.history.replaceState({}, document.title, url.pathname + url.search);
 
     }
     const verified = verifyToken(localStorage.getItem('authToken'));
