@@ -848,7 +848,8 @@ export class DemoMeetingApp
     
       // Create a URL object from the current location
       const url = new URL(window.location.href);
-      
+      url.searchParams.delete('token');
+
       // Construct the new URL string, preserving other parameters
       const newUrl = url.origin + url.pathname + url.search;
 
