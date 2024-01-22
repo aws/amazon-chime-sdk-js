@@ -2,10 +2,12 @@
 
 const lockFileVersion = require('../package-lock.json').lockfileVersion;
 
-if (lockFileVersion === 2) {
+if (lockFileVersion !== 1) {
   process.exit(0);
 } else {
-  console.log(`In-correct package-lock version detected, should be 2, found ${lockFileVersion}`);
-  console.log('Check if you are using npm v7, if not update to npm v7 and re-run build:release');
+  console.log('Incorrect package-lock version detected. Version 1 is not supported.');
+  console.log(
+    'Please check if you are using npm v8 or higher. If not, update to npm v8 or higher and re-run build:release'
+  );
   process.exit(1);
 }

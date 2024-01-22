@@ -6,8 +6,8 @@ This demo shows how to use the Amazon Chime SDK to build meeting applications fo
 
 To build, test, and run demos from source you will need:
 
-* Node 14 or higher
-* npm 6.11 or higher
+* Node 18 or higher
+* npm 8.6.0 or higher
 
 Ensure you have AWS credentials configured in your `~/.aws` folder for a
 role with a policy allowing `chime:CreateMeeting`, `chime:DeleteMeeting`, and
