@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.20.0] - 2023-12-12
 
 ### Added
-- Added support for Node v20.
+
+- Add support for node 20 and drop support for node < 18.
 
 ### Removed
 
