@@ -1522,19 +1522,6 @@ export default class DOMMockBuilder {
       disconnect(): void {}
     };
 
-    try {
-      GlobalAny.crypto = {
-        getRandomValues(_data: Uint32Array): Uint32Array {
-          return new Uint32Array([
-            Math.trunc(Math.random() * 2 ** 32),
-            Math.trunc(Math.random() * 2 ** 32),
-          ]);
-        },
-      };
-    } catch (e) {
-      // ignore - in Node 20 and above, crypto is read-only.
-    }
-
     GlobalAny.HTMLVideoElement = class MockHTMLVideoElement {
       refSrcObject: MediaStream;
       width: number;
@@ -1845,6 +1832,5 @@ export default class DOMMockBuilder {
     delete GlobalAny.AudioBuffer;
     delete GlobalAny.MediaStreamAudioDestinationNode;
     delete GlobalAny.MediaStreamAudioSourceNode;
-    delete GlobalAny.crypto;
   }
 }

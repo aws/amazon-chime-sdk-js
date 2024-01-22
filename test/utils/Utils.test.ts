@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import {
-  getCrypto,
   getFormattedOffset,
+  getRandomValues,
   toLowerCasePropertyNames,
   wait,
 } from '../../src/utils/Utils';
@@ -122,9 +123,7 @@ describe('Utils', () => {
       expect(output.metadata[0]).to.eq('HTTPMetadata1');
       expect(output.metadata[1]).to.eq('HTTPMetadata2');
     });
-  });
 
-  describe('getFormattedOffset', () => {
     it('gets correct formatted UTC offset from integer UTC offset', () => {
       expect(getFormattedOffset(180)).to.eq('-03:00');
       expect(getFormattedOffset(-330)).to.eq('+05:30');
@@ -135,26 +134,15 @@ describe('Utils', () => {
     });
   });
 
-  describe('getCrypto', () => {
-    afterEach(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (global as any).window = undefined;
-    });
-
-    it('returns window.crypto when available', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (global as any).window = {
-        crypto: {
-          getRandomValues: () => {},
-        },
-      };
-      expect(getCrypto().getRandomValues).not.to.be.undefined;
-    });
-
-    it('returns the node crypto package when window.crypto is not available', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (global as any).window = {};
-      expect(getCrypto().getRandomValues).not.to.be.undefined;
+  describe('getRandomValues', () => {
+    describe('getRandomValues', () => {
+      it('should handle catch block for Node environment', () => {
+        const buffer = new Uint32Array(1);
+        const dataViewSpy = sinon.spy(DataView.prototype, 'setUint32');
+        getRandomValues(buffer);
+        expect(dataViewSpy.calledOnce).to.be.true;
+        dataViewSpy.restore();
+      });
     });
   });
 });

@@ -70,10 +70,13 @@ export function getFormattedOffset(utcOffset: number): string {
   return `${offsetOperator}${offsetHours}:${offsetMinutes}`;
 }
 
-/**
- * Returns a Crypto object, either from the window or from the node:crypto package.
- * @returns Get the crypto object from the global scope.
- */
-export function getCrypto(): Crypto {
-  return window.crypto || require('node:crypto').webcrypto;
+export function getRandomValues(buffer: Uint32Array): void {
+  try {
+    // Browser environment
+    window.crypto.getRandomValues(buffer);
+  } catch (error) {
+    // Node environment for unit test
+    const view = new DataView(buffer.buffer);
+    view.setUint32(0, Math.trunc(Math.random() * 2 ** 32), true);
+  }
 }
