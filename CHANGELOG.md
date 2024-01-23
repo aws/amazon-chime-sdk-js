@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Setup passthrough streams for insertable streams case in the redundant audio worker so that passthrough streams do not get blocked on the main thread
 
 ## [3.19.0] - 2023-09-20
 
