@@ -1,5 +1,23 @@
 # Video Input Processing
 
+- [Video Input Processing](#video-input-processing)
+  - [Introduction](#introduction)
+    - [Browser compatibility](#browser-compatibility)
+  - [Video Processing APIs](#video-processing-apis)
+    - [VideoTransformDevice](#videotransformdevice)
+      - [Construction and Starting Video Processing](#construction-and-starting-video-processing)
+      - [Switching the Inner Device on VideoTransformDevice](#switching-the-inner-device-on-videotransformdevice)
+      - [Stopping VideoTransformDevice](#stopping-videotransformdevice)
+      - [Receiving lifecycle notifications with an observer](#receiving-lifecycle-notifications-with-an-observer)
+    - [VideoFrameBuffer](#videoframebuffer)
+    - [VideoFrameProcessor](#videoframeprocessor)
+    - [Building a simple processor](#building-a-simple-processor)
+    - [Building an overlay processor](#building-an-overlay-processor)
+  - [Additional Video Processing Use-Cases](#additional-video-processing-use-cases)
+    - [Custom processor usage during meeting preview](#custom-processor-usage-during-meeting-preview)
+    - [Custom video processor usage for content share](#custom-video-processor-usage-for-content-share)
+
+
 ## Introduction
 
 Amazon Chime SDK for JavaScript contains easy-to-use APIs for adding frame-by-frame processing to an outgoing video stream.

@@ -9,18 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add support for node 20 and drop support for node < 18.
+
 ### Removed
 
 ### Changed
 
 ### Fixed
+
 - Fix reconnections when setting audio Attendee Capability to 'None' or 'Send' mid call. The connection health monitor will now look at all packets received on all candidate pairs instead of just audio received media packets.
+- Setup passthrough streams for insertable streams case in the redundant audio worker so that passthrough streams do not get blocked on the main thread
 
 ## [3.19.0] - 2023-09-20
 
 ### Added
-- Add high resolution meeting features. See the [Meeting Features](https://aws.github.io/amazon-chime-sdk-js/modules/meetingfeatures.html) guide for more information.
-- Add VP9 and AV1 video codecs. See the [Video Codecs](https://aws.github.io/amazon-chime-sdk-js/modules/videocodecs.html) guide for more information. VP9 has the ability to enable SVC.
+- Add support for high-definition WebRTC sessions with 1080p webcam video and 4K screen share. Developers can choose video encoding bitrates up to 2.5Mbps, frame rates up to 30fps, and the codec, including new options VP9, AV1, and scalable video coding (SVC).
+- Update AWS SDK version to 3.477.0
 
 ### Removed
 
@@ -28,8 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Revert: Improve reconnection behavior on signaling disconnection mid call or during join/subscribe. This was leading to unexpected `AudioJoinedFromAnotherDevice` events in certain edge conditions. It will be re-released in a later version.
 
 ### Fixed
+- Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
 - Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow.
-- Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely
+- Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely.
 
 ## [3.18.2] - 2023-10-09
 
@@ -82,7 +87,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Do not display a warning message when invoking `meetingSession.audioVideo.setVideoCodecSendPreferences` prior to the start of the session.
-- Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
 
 ## [3.16.0] - 2023-06-26
 

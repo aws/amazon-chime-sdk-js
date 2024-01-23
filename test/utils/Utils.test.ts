@@ -2,8 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
-import { getFormattedOffset, toLowerCasePropertyNames, wait } from '../../src/utils/Utils';
+import {
+  getFormattedOffset,
+  getRandomValues,
+  toLowerCasePropertyNames,
+  wait,
+} from '../../src/utils/Utils';
 
 describe('Utils', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -125,6 +131,18 @@ describe('Utils', () => {
       expect(getFormattedOffset(-720)).to.eq('+12:00');
       expect(getFormattedOffset(-840)).to.eq('+14:00');
       expect(getFormattedOffset(0)).to.eq('+00:00');
+    });
+  });
+
+  describe('getRandomValues', () => {
+    describe('getRandomValues', () => {
+      it('should handle catch block for Node environment', () => {
+        const buffer = new Uint32Array(1);
+        const dataViewSpy = sinon.spy(DataView.prototype, 'setUint32');
+        getRandomValues(buffer);
+        expect(dataViewSpy.calledOnce).to.be.true;
+        dataViewSpy.restore();
+      });
     });
   });
 });

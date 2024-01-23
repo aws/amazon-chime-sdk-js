@@ -1,5 +1,30 @@
 # Managing Video Quality for Different Video Layouts
 
+- [Managing Video Quality for Different Video Layouts](#managing-video-quality-for-different-video-layouts)
+  - [Overview](#overview)
+  - [Introduction](#introduction)
+    - [Video Lifecycle Management APIs](#video-lifecycle-management-apis)
+    - [Video Uplink and Downlink Policies](#video-uplink-and-downlink-policies)
+      - [Uplink Policy](#uplink-policy)
+        - [NScaleVideoUplinkBandwidthPolicy (Default)](#nscalevideouplinkbandwidthpolicy-default)
+        - [SimulcastUplinkPolicy](#simulcastuplinkpolicy)
+      - [Downlink Policy](#downlink-policy)
+        - [AllHighestVideoBandwidthPolicy (Default)](#allhighestvideobandwidthpolicy-default)
+        - [VideoPriorityBasedPolicy](#videoprioritybasedpolicy)
+  - [Recommendations for Common Layouts](#recommendations-for-common-layouts)
+    - [Case 1: Small Grid Layout (up to 4 Videos) with Fixed Tile Size](#case-1-small-grid-layout-up-to-4-videos-with-fixed-tile-size)
+      - [JavaScript SDK Implementation](#javascript-sdk-implementation)
+      - [React Components Library Implementation](#react-components-library-implementation)
+    - [Case 2: Gallery Layout (up to 25 Videos) with Fixed Tile Size](#case-2-gallery-layout-up-to-25-videos-with-fixed-tile-size)
+      - [JavaScript SDK Implementation](#javascript-sdk-implementation-1)
+      - [React Components Library Implementation](#react-components-library-implementation-1)
+    - [Case 3: Featured Layout](#case-3-featured-layout)
+      - [JavaScript SDK Implementation](#javascript-sdk-implementation-2)
+      - [React Components Library Implementation](#react-components-library-implementation-2)
+      - [JavaScript SDK Implementation](#javascript-sdk-implementation-3)
+      - [React Components Library Implementation](#react-components-library-implementation-3)
+
+
 ## Overview
 
 The Amazon Chime SDK for JavaScript enables builders to create applications with custom and dynamic video layouts. Depending on the number of video tiles displayed on the screen, their relative display size and priority, different video upstream strategies and tile management methods are applied to provide the optimal video experience for end users.

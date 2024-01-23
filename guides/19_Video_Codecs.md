@@ -1,5 +1,15 @@
 # Managing Video Codecs in Meetings
 
+- [Managing Video Codecs in Meetings](#managing-video-codecs-in-meetings)
+  - [Setting Video Send Codec Preferences](#setting-video-send-codec-preferences)
+  - [Considerations for Adjusting Video Send Codec Defaults](#considerations-for-adjusting-video-send-codec-defaults)
+      - [Hardware vs. Software Codecs](#hardware-vs-software-codecs)
+    - [Browser/Device Support](#browserdevice-support)
+      - [Avoiding Browser/Device Specific Bugs](#avoiding-browserdevice-specific-bugs)
+    - [Battery/CPU Usage](#batterycpu-usage)
+    - [Bandwidth Usage \& General Performance](#bandwidth-usage--general-performance)
+
+
 After raw video frames are captured (e.g. from a camera outputting an RGBA pixel matrix) they are *encoded* before being sent on the network to reduce their size. On the receiving end, they are *decoded* back to raw data before being displayed or recorded. The pattern is similar to compression and decompression patterns in, for example, `.zip` files, however in the realm of media, these *codecs* (a portmanteau of *encoder* and *decoder*) are heavily specialized to audio or video, and the choice of codec can dramatically effect end user experience and the features of your application.
 
 The Amazon Chime SDK for Javascript supports setting a list of video codec preferences which will be used to select the encoder for an individual client. The API allows setting fallback codecs to, if desired, ensure that all participants in the call can receive video from senders as long as there is some intersection between the chosen codecs and the receive capabilities. This document will cover how to use the API, its effects, and some possible use cases for using it.

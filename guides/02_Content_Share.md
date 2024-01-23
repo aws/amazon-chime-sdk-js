@@ -1,4 +1,4 @@
-### Content Share
+# Content Share
 
 This guide explains how to share audio and video content such as screen capture or
 media files in a meeting. This guide assumes you have already created a meeting and
@@ -10,7 +10,16 @@ belonging to the meeting session.
 
 Content share is not supported on mobile OS like iOS and Android. Please refer to the system requirements table for more information:
 [Amazon Chime SDK system requirements](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers)
-#### Share content
+
+- [Content Share](#content-share)
+  - [Share content](#share-content)
+  - [View the content share](#view-the-content-share)
+  - [Pause and unpause the content share](#pause-and-unpause-the-content-share)
+  - [Stop the content share](#stop-the-content-share)
+  - [Receive content share events](#receive-content-share-events)
+  - [Apply video processing to content share](#apply-video-processing-to-content-share)
+
+## Share content
 
 Using the audio-video facade, start sharing content by calling
 [startContentShare](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare)
@@ -44,7 +53,7 @@ const sourceId = // get this from your custom Electron screen capture picker
 await meetingSession. audioVideo.startContentShareFromScreenCapture(sourceId);
 ```
 
-#### View the content share
+## View the content share
 
 Content shares are treated as regular audio-video attendees. The attendee ID of a
 content share has a suffix of
@@ -81,7 +90,7 @@ if (new DefaultModality(attendeeId).hasModality(DefaultModality.MODALITY_CONTENT
 }
 ```
 
-#### Pause and unpause the content share
+## Pause and unpause the content share
 
 To pause and unpause the content share, call
 [pauseContentShare](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausecontentshare) and
@@ -97,7 +106,7 @@ const meetingSession = // reference to MeetingSession
 await meetingSession.audioVideo.unpauseContentShare();
 ````
 
-#### Stop the content share
+## Stop the content share
 
 To stop the content share, call
 [stopContentShare](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopcontentshare).
@@ -107,13 +116,13 @@ const meetingSession = // reference to MeetingSession
 await meetingSession.audioVideo.stopContentShare();
 ````
 
-#### Receive content share events
+## Receive content share events
 
 Implement methods from [ContentShareObserver](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html) and
 add an instance of the observer using
 [addContentShareObserver](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addcontentshareobserver)
 to receive events.
 
-#### Apply video processing to content share
+## Apply video processing to content share
 
 See [this section in the Video Processing guide for more information](https://github.com/aws/amazon-chime-sdk-js/blob/main/guides/10_Video_Processor.md#custom-video-processor-usage-for-content-share).

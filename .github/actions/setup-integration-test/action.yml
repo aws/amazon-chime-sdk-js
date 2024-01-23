@@ -57,10 +57,10 @@ runs:
         noSSLBumpDomains: all
         tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
         restUrl: ${{ inputs.sauce-rest-url }}
-    - name: Setup Node.js - 16.x
+    - name: Setup Node.js - 20.x
       uses: actions/setup-node@v1
       with:
-        node-version: 16.x
+        node-version: 20.x
     - name: Install Kite
       run: integration/js/script/install-kite
       shell: bash

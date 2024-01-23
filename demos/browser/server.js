@@ -24,13 +24,13 @@ const indexPage = fs.readFileSync(indexPagePath);
 
 const currentRegion = process.env.REGION || 'us-east-1';
 
-const chimeSDKMediaPipelines = new ChimeSDKMediaPipelines({ region: 'us-east-1' });
-chimeSDKMediaPipelines.endpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com"
+const chimeSDKMediaPipelines = new ChimeSDKMediaPipelines({
+  region: 'us-east-1',
+  endpoint: process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com" });
 
-const chimeSDKMeetings = new ChimeSDKMeetings({ region: currentRegion });
-if (process.env.ENDPOINT) {
-  chimeSDKMeetings.endpoint = process.env.ENDPOINT
-}
+const chimeSDKMeetings = new ChimeSDKMeetings({
+  region: currentRegion,
+  ...(process.env.ENDPOINT && { endpoint: process.env.ENDPOINT }) });
 
 const sts = new STS({ region: 'us-east-1' });
 
@@ -131,7 +131,7 @@ function serve(host = '127.0.0.1:8080') {
                   requestUrl.query.v_rs === 'None' || 
                   requestUrl.query.c_rs === 'UHD' ||
                   requestUrl.query.c_rs === 'None' ||
-                  requestUrl.query.a_cnt != '-999') {
+                  requestUrl.query.a_cnt > 1 && requestUrl.query.a_cnt <= 250) {
               request.MeetingFeatures = {};
               if (requestUrl.query.ns_es === 'true') {
                 request.MeetingFeatures.Audio = {
@@ -148,7 +148,7 @@ function serve(host = '127.0.0.1:8080') {
                   MaxResolution: requestUrl.query.c_rs
                 }
               }
-              if (requestUrl.query.a_cnt != '-999') {
+              if (requestUrl.query.a_cnt > 1 && requestUrl.query.a_cnt <= 250) {
                 request.MeetingFeatures.Attendee = {
                   MaxCount: Number(requestUrl.query.a_cnt)
                 }

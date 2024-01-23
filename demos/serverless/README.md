@@ -8,8 +8,8 @@ This demo shows how to deploy [Chime SDK Browser Demo](https://github.com/aws/am
 
 To deploy the serverless demo you will need:
 
-- Node 10 or higher
-- npm 6.11 or higher
+* Node 18 or higher
+* npm 8.6.0 or higher
 
 And install aws and sam command line tools:
 

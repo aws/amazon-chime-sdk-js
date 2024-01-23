@@ -605,10 +605,21 @@ export default class DefaultTransceiverController
     } /* istanbul ignore else */ else if (supportsInsertableStreams) {
       // @ts-ignore
       const sendStreams = transceiver.sender.createEncodedStreams();
-      sendStreams.readable.pipeTo(sendStreams.writable);
       // @ts-ignore
       const receiveStreams = transceiver.receiver.createEncodedStreams();
-      receiveStreams.readable.pipeTo(receiveStreams.writable);
+      this.audioRedWorker.postMessage(
+        {
+          msgType: 'PassthroughTransform',
+          send: sendStreams,
+          receive: receiveStreams,
+        },
+        [
+          sendStreams.readable,
+          sendStreams.writable,
+          receiveStreams.readable,
+          receiveStreams.writable,
+        ]
+      );
     }
 
     return transceiver;

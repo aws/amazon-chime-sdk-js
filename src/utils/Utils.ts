@@ -69,3 +69,14 @@ export function getFormattedOffset(utcOffset: number): string {
 
   return `${offsetOperator}${offsetHours}:${offsetMinutes}`;
 }
+
+export function getRandomValues(buffer: Uint32Array): void {
+  try {
+    // Browser environment
+    window.crypto.getRandomValues(buffer);
+  } catch (error) {
+    // Node environment for unit test
+    const view = new DataView(buffer.buffer);
+    view.setUint32(0, Math.trunc(Math.random() * 2 ** 32), true);
+  }
+}
