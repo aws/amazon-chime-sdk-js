@@ -393,6 +393,33 @@ describe('RedundantAudioEncoder', () => {
       expect(receiveReadable.locked).to.be.true;
       expect(receiveWritable.locked).to.be.true;
 
+      const passthroughSendReadable = new ReadableStream();
+      const passthroughSendWritable = new WritableStream();
+      const passthroughReceiveReadable = new ReadableStream();
+      const passthroughReceiveWritable = new WritableStream();
+
+      expect(passthroughSendReadable.locked).to.be.false;
+      expect(passthroughSendWritable.locked).to.be.false;
+      expect(passthroughReceiveReadable.locked).to.be.false;
+      expect(passthroughReceiveWritable.locked).to.be.false;
+
+      audioRedWorker.postMessage({
+        msgType: 'PassthroughTransform',
+        send: {
+          readable: passthroughSendReadable,
+          writable: passthroughSendWritable,
+        },
+        receive: {
+          readable: passthroughReceiveReadable,
+          writable: passthroughReceiveWritable,
+        },
+      });
+
+      expect(passthroughSendReadable.locked).to.be.true;
+      expect(passthroughSendWritable.locked).to.be.true;
+      expect(passthroughReceiveReadable.locked).to.be.true;
+      expect(passthroughReceiveWritable.locked).to.be.true;
+
       const redPayloadType = 63;
       let newRedPayloadType: number;
 

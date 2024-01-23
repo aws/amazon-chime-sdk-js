@@ -113,6 +113,9 @@ export default class RedundantAudioEncoder {
       if (event.data.msgType === 'StartRedWorker') {
         encoder.setupSenderTransform(event.data.send.readable, event.data.send.writable);
         encoder.setupReceiverTransform(event.data.receive.readable, event.data.receive.writable);
+      } else if (event.data.msgType === 'PassthroughTransform') {
+        encoder.setupPassthroughTransform(event.data.send.readable, event.data.send.writable);
+        encoder.setupPassthroughTransform(event.data.receive.readable, event.data.receive.writable);
       } else if (event.data.msgType === 'RedPayloadType') {
         encoder.setRedPayloadType(event.data.payloadType);
       } else if (event.data.msgType === 'OpusPayloadType') {
