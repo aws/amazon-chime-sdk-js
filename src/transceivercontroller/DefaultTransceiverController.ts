@@ -435,7 +435,7 @@ export default class DefaultTransceiverController
     }
 
     if (track) {
-      transceiver.direction = 'sendonly';
+      transceiver.direction = 'sendrecv';
     } else {
       transceiver.direction = 'inactive';
     }

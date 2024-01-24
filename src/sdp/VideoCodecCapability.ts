@@ -126,7 +126,9 @@ export default class VideoCodecCapability implements Eq {
    * to this codec (e.g. fallback for a Firefox receiver, and then recovery when the Firefox
    * receiver leaves).
    *
-   *
+   * If you expect a decent amount of iOS safari traffic, you should include `h264ConstrainedHighProfile` in your
+   * preferences as well. It will be forwarded as High profile to receivers that negotiated High but not Constrained
+   * High
    */
   static h264HighProfile(): VideoCodecCapability {
     return new VideoCodecCapability('H264', {
@@ -139,8 +141,8 @@ export default class VideoCodecCapability implements Eq {
   /**
    * Returns the configuration of H.264 Constrained High Profile supported by the SDK
    *
-   * This is only available on Safari. The same notes on H.264 High Profile apply to this
-   * codec. Its usage is not recommended.
+   * This is currently only used on Safari. The same notes on H.264 High Profile apply to this
+   * codec.
    */
   static h264ConstrainedHighProfile(): VideoCodecCapability {
     return new VideoCodecCapability('H264', {

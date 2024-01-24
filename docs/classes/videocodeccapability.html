@@ -249,7 +249,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L192">src/sdp/VideoCodecCapability.ts:192</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L194">src/sdp/VideoCodecCapability.ts:194</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -271,7 +271,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L182">src/sdp/VideoCodecCapability.ts:182</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L184">src/sdp/VideoCodecCapability.ts:184</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -293,7 +293,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L199">src/sdp/VideoCodecCapability.ts:199</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L201">src/sdp/VideoCodecCapability.ts:201</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -321,7 +321,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L156">src/sdp/VideoCodecCapability.ts:156</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L158">src/sdp/VideoCodecCapability.ts:158</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -391,15 +391,15 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L145">src/sdp/VideoCodecCapability.ts:145</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L147">src/sdp/VideoCodecCapability.ts:147</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Returns the configuration of H.264 Constrained High Profile supported by the SDK</p>
 								</div>
-								<p>This is only available on Safari. The same notes on H.264 High Profile apply to this
-								codec. Its usage is not recommended.</p>
+								<p>This is currently only used on Safari. The same notes on H.264 High Profile apply to this
+								codec.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
 						</li>
@@ -415,7 +415,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L131">src/sdp/VideoCodecCapability.ts:131</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L133">src/sdp/VideoCodecCapability.ts:133</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -428,6 +428,9 @@
 									resolved, receivers will fail to allocate the decoder for this profile if the sender switches away and back
 									to this codec (e.g. fallback for a Firefox receiver, and then recovery when the Firefox
 								receiver leaves).</p>
+								<p>If you expect a decent amount of iOS safari traffic, you should include <code>h264ConstrainedHighProfile</code> in your
+									preferences as well. It will be forwarded as High profile to receivers that negotiated High but not Constrained
+								High</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
 						</li>
@@ -490,7 +493,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L175">src/sdp/VideoCodecCapability.ts:175</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L177">src/sdp/VideoCodecCapability.ts:177</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -512,7 +515,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L164">src/sdp/VideoCodecCapability.ts:164</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L166">src/sdp/VideoCodecCapability.ts:166</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

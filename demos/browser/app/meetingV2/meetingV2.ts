@@ -3953,7 +3953,8 @@ export class DemoMeetingApp
         case 'h264MainProfile':
           return [VideoCodecCapability.h264MainProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         case 'h264HighProfile':
-          return [VideoCodecCapability.h264HighProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+          // Include both Constrained High (typically offered on Safari) and High
+          return [VideoCodecCapability.h264HighProfile(), VideoCodecCapability.h264ConstrainedHighProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         case 'av1Main':
           return [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         case 'vp9Profile0':
