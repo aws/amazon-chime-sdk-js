@@ -16,6 +16,7 @@ export default class SignalingAndMetricsConnectionMonitor
   implements ConnectionMonitor, PingPongObserver, AudioVideoObserver {
   private isActive = false;
   private hasSeenValidPacketMetricsBefore = false;
+  private lastTotalPacketsReceived = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -73,11 +74,11 @@ export default class SignalingAndMetricsConnectionMonitor
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
-    let packetsReceived = 0;
-    let fractionPacketsLostInbound = 0;
+    let audioPacketsReceived = 0;
+    let audiofractionPacketsLostInbound = 0;
     const metricReport = clientMetricReport.getObservableMetrics();
-    const potentialPacketsReceived = metricReport.audioPacketsReceived;
-    const potentialFractionPacketsLostInbound = metricReport.audioPacketsReceivedFractionLoss;
+    const potentialAudioPacketsReceived = metricReport.audioPacketsReceived;
+    const potentialAudioFractionPacketsLostInbound = metricReport.audioPacketsReceivedFractionLoss;
 
     const audioSpeakerDelayMs = metricReport.audioSpeakerDelayMs;
 
@@ -86,24 +87,42 @@ export default class SignalingAndMetricsConnectionMonitor
       this.connectionHealthData.setAudioSpeakerDelayMs(audioSpeakerDelayMs);
     }
 
+    // To get the total packets received, including RTCP, we need to sum up
+    // all candidate pair metrics (in case the candidate pair changes).
+    //
+    // The stats collector currently doesn't account for candidate pair stats
+    // so we just use the raw report for now.
+    const webrtcReport = clientMetricReport.getRTCStatsReport();
+
+    let totalPacketsReceived = 0;
+    webrtcReport.forEach(stat => {
+      if (stat.type === 'candidate-pair' && stat.packetsReceived) {
+        totalPacketsReceived += stat.packetsReceived;
+      }
+    });
+    const packetsReceived = totalPacketsReceived - this.lastTotalPacketsReceived;
+    this.lastTotalPacketsReceived = totalPacketsReceived;
     if (
-      typeof potentialPacketsReceived === 'number' &&
-      typeof potentialFractionPacketsLostInbound === 'number'
+      typeof potentialAudioPacketsReceived === 'number' &&
+      typeof potentialAudioFractionPacketsLostInbound === 'number'
     ) {
-      packetsReceived = potentialPacketsReceived;
-      fractionPacketsLostInbound = potentialFractionPacketsLostInbound;
-      if (packetsReceived < 0 || fractionPacketsLostInbound < 0) {
-        // TODO: getting negative numbers on this metric after reconnect sometimes
-        // For now, just skip the metric if it looks weird.
+      audioPacketsReceived = potentialAudioPacketsReceived;
+      audiofractionPacketsLostInbound = potentialAudioFractionPacketsLostInbound;
+      if (audioPacketsReceived < 0 || audiofractionPacketsLostInbound < 0 || packetsReceived < 0) {
+        // The stats collector or logic above may emit negative numbers on this metric after reconnect
+        // which we should not use.
         return;
       }
     } else {
       return;
     }
-    this.addToMinuteWindow(this.connectionHealthData.packetsReceivedInLastMinute, packetsReceived);
+    this.addToMinuteWindow(
+      this.connectionHealthData.packetsReceivedInLastMinute,
+      audioPacketsReceived
+    );
     this.addToMinuteWindow(
       this.connectionHealthData.fractionPacketsLostInboundInLastMinute,
-      fractionPacketsLostInbound
+      audiofractionPacketsLostInbound
     );
     if (packetsReceived > 0) {
       this.hasSeenValidPacketMetricsBefore = true;
@@ -113,7 +132,7 @@ export default class SignalingAndMetricsConnectionMonitor
         this.connectionHealthData.consecutiveStatsWithNoPackets + 1
       );
     }
-    if (packetsReceived === 0 || fractionPacketsLostInbound > 0) {
+    if (audioPacketsReceived === 0 || audiofractionPacketsLostInbound > 0) {
       this.connectionHealthData.setLastPacketLossInboundTimestampMs(Date.now());
     }
     if (typeof metricReport.audioPacketsSent === 'number') {
