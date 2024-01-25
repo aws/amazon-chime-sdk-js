@@ -548,6 +548,7 @@ export default class DefaultTransceiverController
         this.audioRedWorker,
         { type: 'ReceiverTransform' }
       );
+      // eslint-disable-next-line
     } else /* istanbul ignore else */ if (supportsInsertableStreams) {
       // @ts-ignore
       const sendStreams = this._localAudioTransceiver.sender.createEncodedStreams();
@@ -602,6 +603,7 @@ export default class DefaultTransceiverController
       transceiver.receiver.transform = new RTCRtpScriptTransform(this.audioRedWorker, {
         type: 'PassthroughTransform',
       });
+      // eslint-disable-next-line
     } else /* istanbul ignore else */ if (supportsInsertableStreams) {
       // @ts-ignore
       const sendStreams = transceiver.sender.createEncodedStreams();
