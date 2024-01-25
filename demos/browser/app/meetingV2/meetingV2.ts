@@ -3940,50 +3940,42 @@ export class DemoMeetingApp
         this.requestedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
     }
 
+    const getCodecPreferences = (chosenCodec: string) => {
+      // We will always include H.264 CBP and VP8 and fallbacks when those are not the codecs selected, so that
+      // we always have a widely available codec in use.
+      switch (chosenCodec) {
+        case 'vp8':
+          return [VideoCodecCapability.vp8()];
+        case 'h264ConstrainedBaselineProfile':
+          return [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'h264BaselineProfile':
+          return [VideoCodecCapability.h264BaselineProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'h264MainProfile':
+          return [VideoCodecCapability.h264MainProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'h264HighProfile':
+          // Include both Constrained High (typically offered on Safari) and High
+          return [VideoCodecCapability.h264HighProfile(), VideoCodecCapability.h264ConstrainedHighProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'av1Main':
+          return [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'vp9Profile0':
+          return [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        default:
+          // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
+          // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
+          return [];
+      }
+    }
+
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
-    switch (chosenVideoSendCodec) {
-      case 'vp8':
-        this.videoCodecPreferences = [VideoCodecCapability.vp8()];
-        break;
-      case 'h264ConstrainedBaselineProfile':
-        // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
-        this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        break;
-      case 'av1Main':
-        this.videoCodecPreferences = [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        this.enableSimulcast  = false; // simulcast does not work for AV1
-        break;
-      case 'vp9Profile0':
-        this.videoCodecPreferences = [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        this.enableSimulcast  = false; // simulcast does not work for VP9
-        break;
-      default:
-        // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
-        // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
-        break;
+    this.videoCodecPreferences = getCodecPreferences(chosenVideoSendCodec);
+    if (!['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
+      // Attempting to use simulcast with VP9 or AV1 will lead to unexpected behavior (e.g. SVC instead)
+      this.enableSimulcast = false;
     }
 
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
-    switch (chosenContentSendCodec) {
-      case 'vp8':
-        this.contentCodecPreferences = [VideoCodecCapability.vp8()];
-        break;
-      case 'h264ConstrainedBaselineProfile':
-        // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
-        this.contentCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        break;
-      case 'av1Main':
-        this.contentCodecPreferences = [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        break;
-      case 'vp9Profile0':
-        this.contentCodecPreferences = [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        break;
-      default:
-        // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
-        // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
-        break;
-    }
-
+    this.contentCodecPreferences = getCodecPreferences(chosenContentSendCodec);
+  
     this.audioCapability = (document.getElementById('audioCapabilitySelect') as HTMLSelectElement).value;
     this.videoCapability = (document.getElementById('videoCapabilitySelect') as HTMLSelectElement).value;
     this.contentCapability = (document.getElementById('contentCapabilitySelect') as HTMLSelectElement).value;

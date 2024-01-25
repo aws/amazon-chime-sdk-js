@@ -481,7 +481,11 @@ message SdkMeetingSessionCredentials {
 
 enum SdkVideoCodecCapability {
     VP8 = 1;
+    H264_BASELINE_PROFILE = 2;
     H264_CONSTRAINED_BASELINE_PROFILE = 3;
+    H264_MAIN_PROFILE = 4;
+    H264_HIGH_PROFILE = 5;
+    H264_CONSTRAINED_HIGH_PROFILE = 6;
     VP9_PROFILE_0 = 8;
     AV1_MAIN_PROFILE = 11;
 };

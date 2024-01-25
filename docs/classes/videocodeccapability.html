@@ -110,11 +110,18 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videocodeccapability.html#equals" class="tsd-kind-icon">equals</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videocodeccapability.html#fmtplinematches" class="tsd-kind-icon">fmtp<wbr>Line<wbr>Matches</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#av1" class="tsd-kind-icon">av1</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#av1main" class="tsd-kind-icon">av1<wbr>Main</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#fromsignaled" class="tsd-kind-icon">from<wbr>Signaled</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#h264" class="tsd-kind-icon">h264</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#h264baselineprofile" class="tsd-kind-icon">h264<wbr>Baseline<wbr>Profile</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#h264constrainedbaselineprofile" class="tsd-kind-icon">h264<wbr>Constrained<wbr>Baseline<wbr>Profile</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#h264constrainedhighprofile" class="tsd-kind-icon">h264<wbr>Constrained<wbr>High<wbr>Profile</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#h264highprofile" class="tsd-kind-icon">h264<wbr>High<wbr>Profile</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#h264mainprofile" class="tsd-kind-icon">h264<wbr>Main<wbr>Profile</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#vp8" class="tsd-kind-icon">vp8</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#vp9" class="tsd-kind-icon">vp9</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videocodeccapability.html#vp9profile0" class="tsd-kind-icon">vp9<wbr>Profile0</a></li>
 							</ul>
 						</section>
@@ -198,6 +205,62 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fmtplinematches" class="tsd-anchor"></a>
+					<h3>fmtp<wbr>Line<wbr>Matches</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fmtp<wbr>Line<wbr>Matches<span class="tsd-signature-symbol">(</span>line<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, expectedPayloadType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L37">src/sdp/VideoCodecCapability.ts:37</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether the codec capability fmtp line matches. This will not
+										attempt to match H.264 profile levels (e.g. 5.2, 3.1), see internal comments for
+									more detailed information.</p>
+								</div>
+								<p>This function is meant to only be used internally.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>line: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>expectedPayloadType: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="av1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> av1</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">av1<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L194">src/sdp/VideoCodecCapability.ts:194</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the configuration of AV1 recommended by the SDK</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="av1main" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> av1<wbr>Main</h3>
@@ -208,12 +271,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L61">src/sdp/VideoCodecCapability.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L184">src/sdp/VideoCodecCapability.ts:184</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns the configuration of AV1 recommended by the SDK</p>
+									<p>Returns the configuration of AV1 main profile used by the SDK</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
@@ -230,7 +293,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L83">src/sdp/VideoCodecCapability.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L201">src/sdp/VideoCodecCapability.ts:201</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -258,13 +321,37 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L54">src/sdp/VideoCodecCapability.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L158">src/sdp/VideoCodecCapability.ts:158</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns the configuration of H.264 recommended by the SDK</p>
+									<p>Returns the configuration of H.264 recommended by the SDK for maximum compatability.</p>
 								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="h264baselineprofile" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> h264<wbr>Baseline<wbr>Profile</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">h264<wbr>Baseline<wbr>Profile<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L81">src/sdp/VideoCodecCapability.ts:81</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the configuration of H.264 Baseline Profile supported by the SDK.</p>
+								</div>
+								<p>This profile is more likely to use hardware for encode on most browsers
+								then constrained baseline profile.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
 						</li>
@@ -280,13 +367,95 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L43">src/sdp/VideoCodecCapability.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L95">src/sdp/VideoCodecCapability.ts:95</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns the configuration of H.264 CBP supported by the SDK</p>
+									<p>Returns the configuration of H.264 CBP supported by the SDK.</p>
 								</div>
+								<p>This profile is required in all WebRTC implementations and typically
+								uses software for the encode for stability. Hardware decode is common.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="h264constrainedhighprofile" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> h264<wbr>Constrained<wbr>High<wbr>Profile</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">h264<wbr>Constrained<wbr>High<wbr>Profile<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L147">src/sdp/VideoCodecCapability.ts:147</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the configuration of H.264 Constrained High Profile supported by the SDK</p>
+								</div>
+								<p>This is currently only used on Safari. The same notes on H.264 High Profile apply to this
+								codec.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="h264highprofile" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> h264<wbr>High<wbr>Profile</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">h264<wbr>High<wbr>Profile<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L133">src/sdp/VideoCodecCapability.ts:133</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the configuration of H.264 High Profile supported by the SDK.</p>
+								</div>
+								<p>Currently most browsers do not have software fallback for high profile
+								which may impact stability. Its usage should be done with caution.</p>
+								<p>On MacOS, until <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1520287">https://bugs.chromium.org/p/chromium/issues/detail?id=1520287</a> is
+									resolved, receivers will fail to allocate the decoder for this profile if the sender switches away and back
+									to this codec (e.g. fallback for a Firefox receiver, and then recovery when the Firefox
+								receiver leaves).</p>
+								<p>If you expect a decent amount of iOS safari traffic, you should include <code>h264ConstrainedHighProfile</code> in your
+									preferences as well. It will be forwarded as High profile to receivers that negotiated High but not Constrained
+								High</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="h264mainprofile" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> h264<wbr>Main<wbr>Profile</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">h264<wbr>Main<wbr>Profile<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L110">src/sdp/VideoCodecCapability.ts:110</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the configuration of H.264 Main Profile supported by the SDK</p>
+								</div>
+								<p>This profile is more likely to use hardware for encode on most browsers
+									then constrained baseline profile. It may have modest quality/bitrate improvements
+								over baseline/constrained baseline profile.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
 						</li>
@@ -302,12 +471,34 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L33">src/sdp/VideoCodecCapability.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L68">src/sdp/VideoCodecCapability.ts:68</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Returns the configuration of VP8 supported by the SDK</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="vp9" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> vp9</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">vp9<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L177">src/sdp/VideoCodecCapability.ts:177</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the configuration of AV1 recommended by the SDK</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
@@ -324,7 +515,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L72">src/sdp/VideoCodecCapability.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/VideoCodecCapability.ts#L166">src/sdp/VideoCodecCapability.ts:166</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -366,6 +557,12 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="videocodeccapability.html#equals" class="tsd-kind-icon">equals</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="videocodeccapability.html#fmtplinematches" class="tsd-kind-icon">fmtp<wbr>Line<wbr>Matches</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="videocodeccapability.html#av1" class="tsd-kind-icon">av1</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="videocodeccapability.html#av1main" class="tsd-kind-icon">av1<wbr>Main</a>
 							</li>
@@ -376,10 +573,25 @@
 								<a href="videocodeccapability.html#h264" class="tsd-kind-icon">h264</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="videocodeccapability.html#h264baselineprofile" class="tsd-kind-icon">h264<wbr>Baseline<wbr>Profile</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="videocodeccapability.html#h264constrainedbaselineprofile" class="tsd-kind-icon">h264<wbr>Constrained<wbr>Baseline<wbr>Profile</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="videocodeccapability.html#h264constrainedhighprofile" class="tsd-kind-icon">h264<wbr>Constrained<wbr>High<wbr>Profile</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="videocodeccapability.html#h264highprofile" class="tsd-kind-icon">h264<wbr>High<wbr>Profile</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="videocodeccapability.html#h264mainprofile" class="tsd-kind-icon">h264<wbr>Main<wbr>Profile</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="videocodeccapability.html#vp8" class="tsd-kind-icon">vp8</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="videocodeccapability.html#vp9" class="tsd-kind-icon">vp9</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="videocodeccapability.html#vp9profile0" class="tsd-kind-icon">vp9<wbr>Profile0</a>

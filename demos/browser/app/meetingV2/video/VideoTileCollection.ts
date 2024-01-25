@@ -281,6 +281,11 @@ export default class VideoTileCollection implements AudioVideoObserver {
       const tileId = videoTile.id();
       const tileIndex = this.tileIdToTileIndex[tileId];
       const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
+      if (demoVideoTile === undefined) {
+        // Demo tile doesn't exist yet, we probably haven't received any frame
+        continue;
+      }
+
       if (tileState.localTile || tileState.isContent) {
         uplinkCount++;
         demoVideoTile.collectVideoStats(VideoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream', uplinkStats);
