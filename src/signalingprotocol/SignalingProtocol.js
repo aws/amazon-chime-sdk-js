@@ -14816,3 +14816,5 @@ $root.SdkVideoCodecCapability = (function() {
 })();
 
 module.exports = $root;
+$util.Long = undefined;
+$protobuf.configure();

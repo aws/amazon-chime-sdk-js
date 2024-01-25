@@ -26,4 +26,6 @@ end
   File.rename(temp_file_path, "src/#{dir}/#{protocol}.js")
 
   verbose "node node_modules/.bin/pbts -o src/#{dir}/#{protocol}.d.ts src/#{dir}/#{protocol}.js"
+  # Disable use of Long in protobuf
+  File.write("src/#{dir}/#{protocol}.js", "$util.Long = undefined;\n$protobuf.configure();", mode:"a")
 end

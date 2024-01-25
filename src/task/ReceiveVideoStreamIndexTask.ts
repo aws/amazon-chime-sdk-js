@@ -246,7 +246,8 @@ export default class ReceiveVideoStreamIndexTask
       // If that codec is not what we are sending, trigger an update
       if (
         this.context.currentVideoSendCodec !== undefined &&
-        !firstMatchingCodecPreference.equals(this.context.currentVideoSendCodec)
+        (firstMatchingCodecPreference === undefined ||
+          !this.context.currentVideoSendCodec.equals(firstMatchingCodecPreference))
       ) {
         willNeedUpdate = true;
       }
