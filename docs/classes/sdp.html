@@ -112,6 +112,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#highestpriorityvideosendcodec" class="tsd-kind-icon">highest<wbr>Priority<wbr>Video<wbr>Send<wbr>Codec</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#lines" class="tsd-kind-icon">lines</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#mediasections" class="tsd-kind-icon">media<wbr>Sections</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#prioritizedsendvideocodeccapabilities" class="tsd-kind-icon">prioritized<wbr>Send<wbr>Video<wbr>Codec<wbr>Capabilities</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#removeh264supportfromsendsection" class="tsd-kind-icon">remove<wbr>H264<wbr>Support<wbr>From<wbr>Send<wbr>Section</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#ssrcforvideosendingsection" class="tsd-kind-icon">ssrc<wbr>For<wbr>Video<wbr>Sending<wbr>Section</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sdp.html#videosendsectionhasdifferentssrc" class="tsd-kind-icon">video<wbr>Send<wbr>Section<wbr>Has<wbr>DifferentSSRC</a></li>
@@ -236,7 +237,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L858">src/sdp/SDP.ts:858</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L884">src/sdp/SDP.ts:884</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -403,7 +404,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L796">src/sdp/SDP.ts:796</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L798">src/sdp/SDP.ts:798</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -413,6 +414,7 @@
 									parsing the rest of the SDP for relevant information to construct it.</p>
 								</div>
 								<p>Returns undefined if there is no video send section or no codecs in the send section</p>
+								<p>This function is currently unused/deprecated and will be removed in a future PR.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a></h4>
 						</li>
@@ -459,6 +461,31 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="sdpmediasection.html" class="tsd-signature-type" data-tsd-kind="Class">SDPMediaSection</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="prioritizedsendvideocodeccapabilities" class="tsd-anchor"></a>
+					<h3>prioritized<wbr>Send<wbr>Video<wbr>Codec<wbr>Capabilities</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">prioritized<wbr>Send<wbr>Video<wbr>Codec<wbr>Capabilities<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L812">src/sdp/SDP.ts:812</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns all <code>VideoCodecCapability</code> that can be found in the camera section, in order of priority as defined in
+										m-line (e.g. <code>m=video 9 UDP/+++ &lt;highest priority payload type&gt; &lt;payload type&gt; &lt;payload type&gt; ...</code>),
+									parsing the rest of the SDP for relevant information to construct it.</p>
+								</div>
+								<p>Returns an empty list if there is no video send section or no codecs in the send section</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -602,7 +629,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L888">src/sdp/SDP.ts:888</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L914">src/sdp/SDP.ts:914</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1196,6 +1223,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="sdp.html#mediasections" class="tsd-kind-icon">media<wbr>Sections</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="sdp.html#prioritizedsendvideocodeccapabilities" class="tsd-kind-icon">prioritized<wbr>Send<wbr>Video<wbr>Codec<wbr>Capabilities</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="sdp.html#removeh264supportfromsendsection" class="tsd-kind-icon">remove<wbr>H264<wbr>Support<wbr>From<wbr>Send<wbr>Section</a>

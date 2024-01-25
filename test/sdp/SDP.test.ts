@@ -542,18 +542,23 @@ describe('SDP', () => {
     });
 
     it('Returns undefined for faulty m line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_M_LINE);
       expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
     });
 
     it('Returns undefined for faulty rtpmap line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE);
-      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+      expect(sdpObj.highestPriorityVideoSendCodec().equals(VideoCodecCapability.vp9Profile0())).to
+        .be.true;
     });
 
     it('Returns undefined for faulty name/clockrate line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE_CLOCKRATE);
-      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+      expect(sdpObj.highestPriorityVideoSendCodec().equals(VideoCodecCapability.vp9Profile0())).to
+        .be.true;
     });
 
     it('Returns expected value for codec with fmtp line', () => {
@@ -561,9 +566,61 @@ describe('SDP', () => {
       expect(sdpObj.highestPriorityVideoSendCodec().equals(VideoCodecCapability.h264())).to.be.true;
     });
 
-    it('Returns undefined for faulty fmtp line', () => {
+    it('Can handle faulty fmtp line', () => {
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_H264_PREFERRED_FAULTY_FMTP_LINE);
-      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+      expect(sdpObj.highestPriorityVideoSendCodec().codecName).to.equal('H264');
+      expect(sdpObj.highestPriorityVideoSendCodec().codecCapability.sdpFmtpLine).to.equal(
+        undefined
+      );
+    });
+  });
+
+  describe('prioritizedSendVideoCodecCapabilities', () => {
+    it('Returns empty list if no video', () => {
+      const sdpObj = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()).to.deep.equal([]);
+    });
+
+    it('Returns expected value', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()[0].equals(VideoCodecCapability.vp8()))
+        .to.be.true;
+    });
+
+    it('Returns empty list for faulty m line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_M_LINE);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()).to.deep.equal([]);
+    });
+
+    it('Returns undefined for faulty rtpmap line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE);
+      expect(
+        sdpObj.prioritizedSendVideoCodecCapabilities()[0].equals(VideoCodecCapability.vp9Profile0())
+      ).to.be.true;
+    });
+
+    it('Returns undefined for faulty name/clockrate line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE_CLOCKRATE);
+      expect(
+        sdpObj.prioritizedSendVideoCodecCapabilities()[0].equals(VideoCodecCapability.vp9Profile0())
+      ).to.be.true;
+    });
+
+    it('Returns expected value for codec with fmtp line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_H264_PREFERRED);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()[0].equals(VideoCodecCapability.h264()))
+        .to.be.true;
+    });
+
+    it('Can handle faulty fmtp line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_H264_PREFERRED_FAULTY_FMTP_LINE);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()[0].codecName).to.equal('H264');
+      expect(
+        sdpObj.prioritizedSendVideoCodecCapabilities()[0].codecCapability.sdpFmtpLine
+      ).to.equal(undefined);
     });
   });
 

@@ -215,7 +215,10 @@ export default class ReceiveVideoStreamIndexTask
       return;
     }
 
+    // The following list contains the configured send codec preferences filtered to
+    // only what is supported by the meeting
     const newMeetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] = [];
+    // Will be set to true if we need to force a negotiation to change the codec
     let willNeedUpdate = false;
 
     // Intersect `this.context.videoSendCodecPreferences` with `index.supportedReceiveCodecIntersection`
@@ -231,9 +234,19 @@ export default class ReceiveVideoStreamIndexTask
     if (newMeetingSupportedVideoSendCodecPreferences.length > 0) {
       // We need to renegotiate if we are currently sending a codec that is no longer supported in the call, or if we can
       // start sending a higher preference codec again (due to a constrained remote attendee leaving)
+
+      // First we find the first codec from our send preferences that has already been intersected with the
+      // codecs supported by the meeting, that we know we can support. This is what we want to send.
+      const firstMatchingCodecPreference = newMeetingSupportedVideoSendCodecPreferences.find(
+        capability =>
+          this.context.prioritizedSendVideoCodecCapabilities.some(prioritizedCapability =>
+            capability.equals(prioritizedCapability)
+          )
+      );
+      // If that codec is not what we are sending, trigger an update
       if (
         this.context.currentVideoSendCodec !== undefined &&
-        !newMeetingSupportedVideoSendCodecPreferences[0].equals(this.context.currentVideoSendCodec)
+        !firstMatchingCodecPreference.equals(this.context.currentVideoSendCodec)
       ) {
         willNeedUpdate = true;
       }

@@ -792,15 +792,31 @@ export default class SDP {
    * parsing the rest of the SDP for relevant information to construct it.
    *
    * Returns undefined if there is no video send section or no codecs in the send section
+   *
+   * This function is currently unused/deprecated and will be removed in a future PR.
    */
   highestPriorityVideoSendCodec(): VideoCodecCapability | undefined {
+    const prioritizedSendVideoCodecCapabilities = this.prioritizedSendVideoCodecCapabilities();
+    return prioritizedSendVideoCodecCapabilities.length > 0
+      ? prioritizedSendVideoCodecCapabilities[0]
+      : undefined;
+  }
+
+  /**
+   * Returns all `VideoCodecCapability` that can be found in the camera section, in order of priority as defined in
+   * m-line (e.g. `m=video 9 UDP/+++ <highest priority payload type> <payload type> <payload type> ...`),
+   * parsing the rest of the SDP for relevant information to construct it.
+   *
+   * Returns an empty list if there is no video send section or no codecs in the send section
+   */
+  prioritizedSendVideoCodecCapabilities(): VideoCodecCapability[] {
     const srcSDP: string = this.sdp;
     const sections = SDP.splitSections(srcSDP);
     // Note `findActiveCameraSection` looks for `sendrecv` video sections so it
     // works on both local and remote SDPs.
     const cameraLineIndex: number = SDP.findActiveCameraSection(sections);
     if (cameraLineIndex === -1) {
-      return undefined;
+      return [];
     }
 
     const lines = SDP.splitLines(sections[cameraLineIndex]);
@@ -808,50 +824,60 @@ export default class SDP {
     // m=video 9 UDP/+++ <payload> <payload> <payload> ...
     const mlineTokens = lines[0].split(' ');
     if (mlineTokens.length < 4) {
-      return undefined;
+      return [];
     }
-    // Start from 3 to skip `m=video 9 UDP/+++`
-    const highestPriorityPayloadType = mlineTokens[3];
-    let highestPriorityCodecName: string = undefined;
-    let highestPriorityClockRate: string = undefined;
-    let highestPriorityFmtpLine: string = undefined;
-    for (const line of lines) {
-      // E.g. 'a=rtpmap:125 H264/90000'
-      const payloadMatch = /^a=rtpmap:([0-9]+)\s/.exec(line); // Get the payload type
-      if (
-        payloadMatch === null ||
-        payloadMatch.length < 2 ||
-        payloadMatch[1] !== highestPriorityPayloadType
-      ) {
-        continue;
-      }
-      const lineTokens = line.split(' '); // Previous check guarantees this to be valid
-      const nameAndClockRate = lineTokens[1].split('/');
-      if (nameAndClockRate === undefined || nameAndClockRate.length < 2) {
-        continue;
-      }
-      highestPriorityCodecName = nameAndClockRate[0];
-      highestPriorityClockRate = nameAndClockRate[1];
 
-      for (const prospectiveFmtpLine of lines) {
-        if (prospectiveFmtpLine.startsWith(`a=fmtp:${highestPriorityPayloadType}`)) {
-          const fmtpLineTokens = prospectiveFmtpLine.split(' ');
-          if (fmtpLineTokens === undefined || fmtpLineTokens.length < 2) {
-            return undefined; // Bail out of broken SDP
-          }
-          highestPriorityFmtpLine = fmtpLineTokens[1];
-          continue;
+    // Extract payload types from the m-line
+    const payloadTypes = mlineTokens.slice(3);
+
+    // Get VideoCodecCapability for each payload type
+    const capabilities = payloadTypes
+      .map(payloadType => this.videoCodecCapabilityForPayloadType(lines, payloadType))
+      .filter(capability => {
+        // Filter out capabilities that failed to parse or are not codecs (e.g. RTX payload types)
+        return (
+          capability !== undefined && ['VP8', 'H264', 'VP9', 'AV1'].includes(capability.codecName)
+        );
+      });
+
+    return capabilities;
+  }
+
+  private videoCodecCapabilityForPayloadType(
+    sectionLines: string[],
+    payloadType: string
+  ): VideoCodecCapability | undefined {
+    let codecName = undefined;
+    let clockRate = undefined;
+    let fmtpLine = undefined;
+
+    for (const line of sectionLines) {
+      // Match the payload type in rtpmap lines
+      const payloadMatch = /^a=rtpmap:([0-9]+)\s/.exec(line);
+      if (payloadMatch && payloadMatch[1] === payloadType) {
+        const lineTokens = line.split(' ');
+        const nameAndClockRate = lineTokens[1].split('/');
+        if (nameAndClockRate.length >= 2) {
+          codecName = nameAndClockRate[0];
+          clockRate = nameAndClockRate[1];
         }
       }
-      break;
+
+      // Match fmtp lines for the payload type
+      if (line.startsWith(`a=fmtp:${payloadType} `)) {
+        // `split` will always return 2 items given we have trailing whitespace in check above
+        fmtpLine = line.split(' ')[1];
+      }
     }
-    if (highestPriorityCodecName !== undefined) {
-      return new VideoCodecCapability(highestPriorityCodecName, {
-        clockRate: parseInt(highestPriorityClockRate),
-        mimeType: `video/${highestPriorityCodecName}`,
-        sdpFmtpLine: highestPriorityFmtpLine,
+
+    if (codecName !== undefined) {
+      return new VideoCodecCapability(codecName, {
+        clockRate: parseInt(clockRate),
+        mimeType: `video/${codecName}`,
+        sdpFmtpLine: fmtpLine,
       });
     }
+
     return undefined;
   }
 

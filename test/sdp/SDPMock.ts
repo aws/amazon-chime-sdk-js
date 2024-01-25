@@ -5652,7 +5652,7 @@ a=rtcp-fb:125 transport-cc\r
 a=rtcp-fb:125 ccm fir\r
 a=rtcp-fb:125 nack\r
 a=rtcp-fb:125 nack pli\r
-a=fmtp:125 \r
+a=fmtp:125\r
 a=rtpmap:107 rtx/90000\r
 a=fmtp:107 apt=125\r
 a=rtpmap:108 H264/90000\r
