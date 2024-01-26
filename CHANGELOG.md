@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add support for node 20 and drop support for node < 18.
 - Add support for H.264 profiles besides Constrained Baseline Profile.
+- Fix MeetingReadinessChecker demo by checking for audio `kind`
 
 ### Removed
 
