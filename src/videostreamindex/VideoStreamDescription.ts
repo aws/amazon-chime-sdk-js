@@ -13,9 +13,12 @@ export default class VideoStreamDescription {
   // average bitrate is updated every 2 seconds via bitrates messages
   avgBitrateKbps: number = 0;
   maxFrameRate: number = 0;
+  width: number = 0;
+  height: number = 0;
   timeEnabled: number = 0;
   disabledByWebRTC: boolean = false;
   disabledByUplinkPolicy: boolean = false;
+  rid: string = '';
 
   constructor(
     attendeeId?: string,
@@ -44,6 +47,8 @@ export default class VideoStreamDescription {
     newInfo.timeEnabled = this.timeEnabled;
     newInfo.disabledByWebRTC = this.disabledByWebRTC;
     newInfo.disabledByUplinkPolicy = this.disabledByUplinkPolicy;
+    newInfo.width = this.width;
+    newInfo.height = this.height;
     return newInfo;
   }
 
@@ -60,5 +65,9 @@ export default class VideoStreamDescription {
       this.disabledByUplinkPolicy || this.disabledByWebRTC ? 0 : this.maxBitrateKbps;
     descriptor.avgBitrateBps = this.avgBitrateKbps;
     return descriptor;
+  }
+
+  totalPixels(): number {
+    return this.width * this.height;
   }
 }

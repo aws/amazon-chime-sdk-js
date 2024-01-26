@@ -27,7 +27,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   let connectionHealthData: ConnectionHealthData;
   let pingPongStartCalled: boolean;
   let consecutiveMissedPongsCalled: boolean;
-  let consecutiveStatsWithNoPacketsCalled: boolean;
+  let consecutiveStatsWithNoPackets: number | undefined = undefined;
   let lastPacketLossInboundTimestampMsCalled: boolean;
   let setLastNoSignalTimestampMsCalled: boolean;
   let setLastWeakSignalTimestampMsCalled: boolean;
@@ -65,8 +65,9 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     setConsecutiveMissedPongs(_pongs: number): void {
       consecutiveMissedPongsCalled = true;
     }
-    setConsecutiveStatsWithNoPackets(_stats: number): void {
-      consecutiveStatsWithNoPacketsCalled = true;
+    setConsecutiveStatsWithNoPackets(count: number): void {
+      super.setConsecutiveStatsWithNoPackets(count);
+      consecutiveStatsWithNoPackets = count;
     }
     setLastPacketLossInboundTimestampMs(_timeStamp: number): void {
       lastPacketLossInboundTimestampMsCalled = true;
@@ -97,7 +98,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   }
 
   class TestClientMetricReport extends ClientMetricReport {
-    packetsReceived: RawMetrics = null;
+    audioPacketsReceived: RawMetrics = null;
     fractionLoss: RawMetrics = null;
     videoPacketSentPerSecond: RawMetrics = 1000;
     videoUpstreamBitrate: RawMetrics = 100;
@@ -113,10 +114,11 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     videoDownstreamFrameHeight: RawMetrics = 100;
     videoDownstreamFrameWidth: RawMetrics = 100;
     audioPacketsSent: RawMetrics = 50;
+    totalPacketsReceived: number = 0;
 
     getObservableMetrics(): { [id: string]: number } {
       return {
-        audioPacketsReceived: this.packetsReceived,
+        audioPacketsReceived: this.audioPacketsReceived,
         audioPacketsReceivedFractionLoss: this.fractionLoss,
         videoPacketSentPerSecond: this.videoPacketSentPerSecond,
         videoUpstreamBitrate: this.videoUpstreamBitrate,
@@ -135,6 +137,31 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
         videoUpstreamFrameWidth: this.videoUpstreamFrameWidth,
       };
     }
+
+    getRTCStatsReport(): RTCStatsReport {
+      const rtcStatsReport = new Map<string, RawMetrics>([
+        [
+          'candidatePairId1',
+          {
+            type: 'candidate-pair',
+            ...{
+              packetsReceived: this.totalPacketsReceived,
+            },
+          },
+        ],
+        [
+          'candidatePairId2',
+          {
+            type: 'candidate-pair',
+            ...{
+              packetsReceived: 0,
+            },
+          },
+        ],
+      ]);
+
+      return rtcStatsReport as RTCStatsReport;
+    }
   }
 
   const expect: Chai.ExpectStatic = chai.expect;
@@ -151,7 +178,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     domMockBuilder = new DOMMockBuilder();
     pingPongStartCalled = false;
     consecutiveMissedPongsCalled = false;
-    consecutiveStatsWithNoPacketsCalled = false;
+    consecutiveStatsWithNoPackets = 0;
     lastPacketLossInboundTimestampMsCalled = false;
     setLastNoSignalTimestampMsCalled = false;
     setLastWeakSignalTimestampMsCalled = false;
@@ -204,7 +231,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     const window: number[] = [];
     const num = 1;
     connectionHealthData.packetsReceivedInLastMinute = window;
-    testClientMetricReport.packetsReceived = num;
+    testClientMetricReport.audioPacketsReceived = num;
     testClientMetricReport.fractionLoss = 1;
     sendClientMetricReport(testClientMetricReport);
     expect(window.length).to.equal(1);
@@ -216,7 +243,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     let num: number;
     for (num = 0; num < 61; num++) {
       connectionHealthData.packetsReceivedInLastMinute = window;
-      testClientMetricReport.packetsReceived = num;
+      testClientMetricReport.audioPacketsReceived = num;
       testClientMetricReport.fractionLoss = 1;
       sendClientMetricReport(testClientMetricReport);
     }
@@ -225,62 +252,82 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   });
 
   it('can return without changing stats when fraction loss is negative', () => {
-    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.audioPacketsReceived = 1;
     testClientMetricReport.fractionLoss = -1;
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveMissedPongsCalled).to.equal(false);
-    expect(consecutiveStatsWithNoPacketsCalled).to.equal(false);
+    expect(consecutiveStatsWithNoPackets).to.equal(0);
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
   });
 
   it('can return without changing stats when packets received is negative', () => {
-    testClientMetricReport.packetsReceived = -1;
+    testClientMetricReport.audioPacketsReceived = -1;
     testClientMetricReport.fractionLoss = 1;
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveMissedPongsCalled).to.equal(false);
-    expect(consecutiveStatsWithNoPacketsCalled).to.equal(false);
+    expect(consecutiveStatsWithNoPackets).to.equal(0);
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
   });
 
   it('can return without changing stats when packets received is not a number', () => {
-    testClientMetricReport.packetsReceived = 'not a number';
+    testClientMetricReport.audioPacketsReceived = 'not a number';
     testClientMetricReport.fractionLoss = 1;
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveMissedPongsCalled).to.equal(false);
-    expect(consecutiveStatsWithNoPacketsCalled).to.equal(false);
+    expect(consecutiveStatsWithNoPackets).to.equal(0);
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
   });
 
   it('can return without changing stats when fractional packet loss is not a number', () => {
-    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.audioPacketsReceived = 1;
     testClientMetricReport.fractionLoss = 'not a number';
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveMissedPongsCalled).to.equal(false);
-    expect(consecutiveStatsWithNoPacketsCalled).to.equal(false);
+    expect(consecutiveStatsWithNoPackets).to.equal(0);
+    expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
+  });
+
+  it('can return without changing stats when total packets received is negative', () => {
+    testClientMetricReport.totalPacketsReceived = 4;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 1;
+    sendClientMetricReport(testClientMetricReport);
+    testClientMetricReport.totalPacketsReceived = 2;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 1;
+    sendClientMetricReport(testClientMetricReport);
+    expect(consecutiveMissedPongsCalled).to.equal(false);
+    expect(consecutiveStatsWithNoPackets).to.equal(0);
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
   });
 
   it('can reset and increment consecutive stats with no packets when packets received are followed by no packets', () => {
-    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.totalPacketsReceived = 1;
     testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 1;
     sendClientMetricReport(testClientMetricReport);
-    expect(consecutiveStatsWithNoPacketsCalled).to.equal(true);
-    testClientMetricReport.packetsReceived = 0;
-    testClientMetricReport.fractionLoss = 1;
-    consecutiveStatsWithNoPacketsCalled = false;
+    expect(consecutiveStatsWithNoPackets).to.equal(0);
+    testClientMetricReport.totalPacketsReceived = 1;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 0;
     sendClientMetricReport(testClientMetricReport);
-    expect(consecutiveStatsWithNoPacketsCalled).to.equal(true);
+    expect(consecutiveStatsWithNoPackets).to.equal(1);
+    testClientMetricReport.totalPacketsReceived = 1;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 0;
+    sendClientMetricReport(testClientMetricReport);
+    expect(consecutiveStatsWithNoPackets).to.equal(2);
   });
 
   it('can set last packet loss inbound timestamp due to no packets', () => {
-    testClientMetricReport.packetsReceived = 0;
+    testClientMetricReport.audioPacketsReceived = 0;
     testClientMetricReport.fractionLoss = 0;
     sendClientMetricReport(testClientMetricReport);
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(true);
   });
 
   it('can set last packet loss inbound timestamp due to fractional packet loss', () => {
-    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.audioPacketsReceived = 1;
     testClientMetricReport.fractionLoss = 1;
     sendClientMetricReport(testClientMetricReport);
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(true);
@@ -317,7 +364,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   });
 
   it('can increment and reset consecutive stats with no audio packets sent', () => {
-    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.audioPacketsReceived = 1;
     testClientMetricReport.fractionLoss = 0;
     sendClientMetricReport(testClientMetricReport);
     expect(connectionHealthData.consecutiveStatsWithNoAudioPacketsSent).to.equal(0);
@@ -332,7 +379,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   });
 
   it('does not set consecutive stats with no audio packets sent when audioPacketsSent is not present', () => {
-    testClientMetricReport.packetsReceived = 1;
+    testClientMetricReport.audioPacketsReceived = 1;
     testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsSent = undefined;
     sendClientMetricReport(testClientMetricReport);

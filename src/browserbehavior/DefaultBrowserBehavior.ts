@@ -72,6 +72,14 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return parseInt(this.uaParserResult.os.version.split('.')[0]);
   }
 
+  private engine(): string {
+    return this.uaParserResult.engine.name;
+  }
+
+  private engineMajorVersion(): number {
+    return parseInt(this.uaParserResult.engine.version.split('.')[0]);
+  }
+
   name(): string {
     return this.browser.name;
   }
@@ -131,6 +139,18 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   supportsVideoLayersAllocationRtpHeaderExtension(): boolean {
     return this.hasChromiumWebRTC();
+  }
+
+  supportsDependencyDescriptorRtpHeaderExtension(): boolean {
+    return this.hasChromiumWebRTC();
+  }
+
+  supportsScalableVideoCoding(): boolean {
+    return (
+      // Currently `this.hasChromiumWebRTC() && this.engine() === 'Blink'` completely
+      // overlaps but we keep both just in case that changes in the future.
+      this.hasChromiumWebRTC() && this.engine() === 'Blink' && this.engineMajorVersion() >= 111
+    );
   }
 
   requiresResolutionAlignment(width: number, height: number): [number, number] {

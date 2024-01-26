@@ -269,5 +269,73 @@ describe('AllHighestVideoBandwidthPolicy', () => {
 
       expect(subscriptions.array()).to.deep.equal([]);
     });
+
+    it('drops streams above 15000 kbps', () => {
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 6,
+              groupId: 2,
+              maxBitrateKbps: 400,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 5,
+              groupId: 2,
+              maxBitrateKbps: 50,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 4,
+              groupId: 399,
+              maxBitrateKbps: 800,
+              attendeeId: 'xy2',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 3,
+              groupId: 399,
+              maxBitrateKbps: 200,
+              attendeeId: 'xy2',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              maxBitrateKbps: 20000,
+              attendeeId: 'xy3',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+
+      const attendee1 = new Attendee();
+      const attendee2 = new Attendee();
+      const attendee3 = new Attendee();
+
+      attendee1.attendeeId = 'xy1';
+      attendee2.attendeeId = 'xy2';
+      attendee3.attendeeId = 'xy3';
+
+      const videoSource1 = new VideoSource();
+      const videoSource2 = new VideoSource();
+      const videoSource3 = new VideoSource();
+
+      videoSource1.attendee = attendee1;
+      videoSource2.attendee = attendee2;
+      videoSource3.attendee = attendee3;
+
+      const videoSources = [videoSource1, videoSource2, videoSource3];
+      policy.updateIndex(index);
+
+      policy.chooseRemoteVideoSources(videoSources);
+
+      const subscriptions = policy.chooseSubscriptions();
+      expect(subscriptions.array()).to.deep.equal([4, 6]);
+    });
   });
 });

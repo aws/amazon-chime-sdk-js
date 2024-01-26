@@ -3,8 +3,14 @@
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import * as sinon from 'sinon';
 
-import { DefaultBrowserBehavior, SDP, VideoCodecCapability } from '../../src';
+import {
+  DefaultBrowserBehavior,
+  DefaultTransceiverController,
+  SDP,
+  VideoCodecCapability,
+} from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -126,6 +132,37 @@ describe('SetLocalDescriptionTask', () => {
       expect(
         new SDP(peerLocalSDP).highestPriorityVideoSendCodec().equals(VideoCodecCapability.h264())
       ).to.be.be.true;
+    });
+
+    it('will call setAudioPayloadTypes of transceiverController', async () => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.transceiverController = new DefaultTransceiverController(
+        context.logger,
+        context.browserBehavior,
+        context
+      );
+      const spy = sinon.spy(context.transceiverController, 'setAudioPayloadTypes');
+      context.audioProfile = new AudioProfile();
+      await task.run();
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('sets start bitrate for SVC content', async () => {
+      class TestPeerConnectionMock extends RTCPeerConnection {
+        setLocalDescription(description: RTCSessionDescriptionInit): Promise<void> {
+          expect(description.sdp).to.be.equal(sdpOffer.sdp);
+          return new Promise<void>((resolve, _reject) => {
+            resolve();
+          });
+        }
+      }
+      const peer: RTCPeerConnection = new TestPeerConnectionMock();
+      context.peer = peer;
+      context.audioVideoController.configuration.credentials.attendeeId = 'attendee#content';
+      context.audioVideoController.configuration.enableSVC = true;
+      await task.run();
     });
   });
 

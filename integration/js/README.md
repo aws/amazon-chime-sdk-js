@@ -6,8 +6,8 @@ This guide will help you setup and run integration tests for [Chime SDK](https:/
 
 To run integration tests you will need:
 
-- Node 10 or higher. Node 14 is supported.
-- npm 6.11 or higher. 6.14.8 is supported.
+- Node 18 or higher
+- npm 8.6.0 or higher
 - [KITE](https://github.com/webrtc/KITE).
 - Java runtime installed on the machine.
 

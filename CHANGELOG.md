@@ -5,16 +5,72 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.18.0] - 2023-09-11
+## [3.20.0] - 2023-12-12
 
 ### Added
 
+- Add support for node 20 and drop support for node < 18.
+- Add support for H.264 profiles besides Constrained Baseline Profile.
+
 ### Removed
-- Resolution constraint for content share
 
 ### Changed
 
 ### Fixed
+
+- Fix reconnections when setting audio Attendee Capability to 'None' or 'Send' mid call. The connection health monitor will now look at all packets received on all candidate pairs instead of just audio received media packets.
+- Setup passthrough streams for insertable streams case in the redundant audio worker so that passthrough streams do not get blocked on the main thread
+
+## [3.19.0] - 2023-09-20
+
+### Added
+- Add support for high-definition WebRTC sessions with 1080p webcam video and 4K screen share. Developers can choose video encoding bitrates up to 2.5Mbps, frame rates up to 30fps, and the codec, including new options VP9, AV1, and scalable video coding (SVC).
+- Update AWS SDK version to 3.477.0
+
+### Removed
+
+### Changed
+- Revert: Improve reconnection behavior on signaling disconnection mid call or during join/subscribe. This was leading to unexpected `AudioJoinedFromAnotherDevice` events in certain edge conditions. It will be re-released in a later version.
+
+### Fixed
+- Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
+- Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow.
+- Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely.
+
+## [3.18.2] - 2023-10-09
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+- Save the redundant audio worker code during build time so that the worker code stays intact and is able to be loaded
+
+## [3.18.1] - 2023-09-29
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+- Fixed bug that prevented sending and receiving audio, video, and content share when using Simulcast and Redundant Audio at the same time
+
+## [3.18.0] - 2023-09-11
+
+### Added
+- Support sending and receiving redundant audio data to help reduce the effects of packet loss on audio quality. See README for more details.
+- Send a few additional metrics to backend
+
+### Removed
+
+### Changed
+
+### Fixed
+- Fixed audio send failing for the rest of the meeting when writing frames larger than 1000 bytes in Chrome, which could be caused by sending redundant audio
 
 ## [3.17.0] - 2023-08-15
 
@@ -24,9 +80,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a new meeting event, `deviceLabelTriggerFailed`, for device label trigger failures. By default, the Chime SDK for JavaScript requests access to the microphone and camera in order to retrieve device labels. The SDK will send the `deviceLabelTriggerFailed` event when either the microphone, camera or both requests fail. (Before this PR, the SDK would emit `audioInputFailed` and `videoInputFailed` events simultaneously, which could lead to confusion.) If a custom function is supplied with `meetingSession.audioVideo.setDeviceLabelTrigger`, the SDK will send this event when the custom function is not successful.
 
 ### Removed
+- Resolution constraint for content share
 
 ### Changed
-
 - Improve reconnection behavior on signaling disconnection mid call or during join/subscribe
 
 ### Fixed

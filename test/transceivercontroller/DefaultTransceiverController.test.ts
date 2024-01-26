@@ -4,7 +4,15 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import {
+  AudioVideoControllerState,
+  ClientMetricReport,
+  NoOpAudioVideoController,
+  RedundantAudioEncoder,
+  RedundantAudioRecoveryMetricReport,
+  RedundantAudioRecoveryMetricsObserver,
+} from '../../src';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -17,30 +25,100 @@ import {
   SdkTrackMapping,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
-import TransceiverController from '../../src/transceivercontroller/TransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIdSet from '../../src/videostreamidset/VideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
+const packetsPerSecond = 50;
+
+/**
+ * Calls the DefaultTransceiverControllers metricsDidReceive observer method
+ * based on the input parameters. This is used to unit test dynamic updates
+ * to the number of redundant encodings based on the uplink packet loss
+ *
+ * @param tc The DefaultTransceiverController whose metricsDidReceive method we need to call.
+ * @param startTimestampSecond Timestamp in seconds of the first metric report being sent out.
+ *                             This will be converted to milliseconds in the report. This is also
+ *                             used to derive mock packets sent metric in the report.
+ * @param numMetricReports Number of times we want to call the metricsDidReceive method with a new metric report
+ *                         Each metric reports currentTimestampMs will monotonically increase by 1000ms.
+ *                         Each metric reports packetsSent will monotonically increased by 50.
+ * @param totalPacketsLost The total packets lost metric to write to the metric report block
+ *                         This value will be added to ALL metric reports if specified.
+ */
+function sendMetricReports(
+  tc: DefaultTransceiverController,
+  startTimestampSecond: number,
+  numMetricReports: number,
+  totalPacketsLost: number
+): void {
+  const logger = new NoOpLogger(LogLevel.DEBUG);
+  for (let i = startTimestampSecond; i < startTimestampSecond + numMetricReports; i++) {
+    const clientMetricReport = new ClientMetricReport(logger);
+    clientMetricReport.currentTimestampMs = i * 1000;
+    // @ts-ignore
+    clientMetricReport.rtcStatsReport = [
+      {
+        kind: 'audio',
+        type: 'outbound-rtp',
+        packetsSent: i * packetsPerSecond,
+      },
+      {
+        timestamp: i * 1000,
+        kind: 'audio',
+        type: 'remote-inbound-rtp',
+        packetsLost: totalPacketsLost,
+      },
+    ] as RTCStatsReport;
+    tc.metricsDidReceive(clientMetricReport);
+  }
+}
+
 describe('DefaultTransceiverController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const logger = new NoOpLogger(LogLevel.DEBUG);
   const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
-  let tc: TransceiverController;
+  let tc: DefaultTransceiverController;
   let domMockBuilder: DOMMockBuilder;
-  let browser: BrowserBehavior;
+  const context: AudioVideoControllerState = new AudioVideoControllerState();
 
   beforeEach(() => {
-    domMockBehavior.browserName = 'firefox';
+    domMockBehavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
-    browser = new DefaultBrowserBehavior();
-    tc = new DefaultTransceiverController(logger, browser);
+
+    // Wrap the mock worker to initialize the RED worker since the worker code at the URL is not actually executed.
+    const prevWorker = global.Worker;
+    global.Worker = class MockRedWorker extends prevWorker {
+      constructor(stringUrl: string) {
+        super(stringUrl);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        self.postMessage = (message: any): void => {
+          const msgEvent = new MessageEvent('message', { data: message });
+          this.onmessage(msgEvent);
+        };
+
+        RedundantAudioEncoder.initializeWorker();
+      }
+    };
+
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
+    context.audioVideoController = new NoOpAudioVideoController();
+    tc = new DefaultTransceiverController(logger, context.browserBehavior, context);
+
+    // Enable logging for the RED worker since the worker code at the URL is not actually executed.
+    RedundantAudioEncoder.shouldLog = true;
   });
 
   afterEach(() => {
-    tc = new DefaultTransceiverController(logger, browser);
+    RedundantAudioEncoder.shouldLog = false;
+    delete self.onmessage;
+    delete self.postMessage;
+    // @ts-ignore
+    delete self.onrtctransform;
     domMockBuilder.cleanup();
   });
 
@@ -70,6 +148,44 @@ describe('DefaultTransceiverController', () => {
       expect(peer.getTransceivers().length).to.equal(0);
     });
 
+    it('can set up transceivers without the meeting session context', () => {
+      tc = new DefaultTransceiverController(logger, context.browserBehavior);
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      expect(peer.getTransceivers().length).to.equal(2);
+      // Without the meeting session context, the RED worker should not be created.
+      expect(tc['audioRedWorker']).to.be.null;
+
+      const transceivers = peer.getTransceivers();
+      expect(transceivers.length).to.equal(2);
+
+      const audioTransceiver = transceivers[0];
+      expect(audioTransceiver.direction).to.equal('inactive');
+      expect(audioTransceiver.receiver.track.kind).to.equal('audio');
+      expect(audioTransceiver.sender.track.kind).to.equal('audio');
+
+      const videoTransceiver = transceivers[1];
+      expect(videoTransceiver.direction).to.equal('inactive');
+      expect(videoTransceiver.receiver.track.kind).to.equal('video');
+      expect(videoTransceiver.sender.track.kind).to.equal('video');
+    });
+
+    it('can set up transceivers with audio redundancy disabled', () => {
+      context.audioProfile = new AudioProfile(
+        /* audioBitrateBps */ null,
+        /* enableAudioRedundancy */ false
+      );
+      tc = new DefaultTransceiverController(logger, context.browserBehavior, context);
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+
+      expect(peer.getTransceivers().length).to.equal(0);
+      tc.setupLocalTransceivers();
+      expect(peer.getTransceivers().length).to.equal(2);
+    });
+
     it('can set up transceivers once', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
@@ -92,6 +208,124 @@ describe('DefaultTransceiverController', () => {
       tc.setupLocalTransceivers();
       expect(peer.getTransceivers()[0]).to.equal(audioTransceiver);
       expect(peer.getTransceivers()[1]).to.equal(videoTransceiver);
+      expect(tc.localAudioTransceiver()).to.equal(peer.getTransceivers()[0]);
+      expect(tc.localVideoTransceiver()).to.equal(peer.getTransceivers()[1]);
+    });
+
+    it('throws if worker creation fails', () => {
+      // Wrap the mock worker to initialize the RED worker since the worker code at the URL is not actually executed.
+      const prevWorker = global.Worker;
+      global.Worker = class FailingRedWorker extends prevWorker {
+        constructor(stringUrl: string) {
+          super(stringUrl);
+          throw new Error('bogus fail red worker');
+        }
+      };
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      expect(peer.getTransceivers().length).to.equal(0);
+      expect(() => {
+        tc.setupLocalTransceivers();
+      }).to.throw('bogus fail red worker');
+    });
+
+    it('sets up the RED worker with RTCRtpScriptTransform', () => {
+      // @ts-ignore
+      const peer: RTCPeerConnection = new RTCPeerConnection({ encodedInsertableStreams: true });
+      tc.setPeer(peer);
+
+      const logSpy = sinon.spy(tc['logger'], 'info');
+      tc.setupLocalTransceivers();
+      expect(logSpy.calledWith('[AudioRed] Setting up sender RED transform')).to.be.true;
+      // The `rtctransform` event is defined since `RTCRtpScriptTransform` is supported.
+      // @ts-ignore
+      expect(self.onrtctransform).to.not.be.undefined;
+
+      logSpy.restore();
+    });
+
+    it('sets up the RED worker with insertable streams when RTCRtpScriptTransform is not supported', () => {
+      // @ts-ignore
+      const RTCRtpScriptTransformer = window.RTCRtpScriptTransformer;
+      // @ts-ignore
+      const RTCTransformEvent = window.RTCTransformEvent;
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransformer;
+      // @ts-ignore
+      delete window.RTCTransformEvent;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
+      // @ts-ignore
+      const peer: RTCPeerConnection = new RTCPeerConnection({ encodedInsertableStreams: true });
+      tc.setPeer(peer);
+
+      const logSpy = sinon.spy(tc['logger'], 'info');
+      tc.setupLocalTransceivers();
+      expect(logSpy.calledWith('[AudioRed] Setting up sender RED transform')).to.be.true;
+      // The `rtctransform` event is not defined since `RTCRtpScriptTransform` is not supported.
+      // @ts-ignore
+      expect(self.onrtctransform).to.be.undefined;
+
+      logSpy.restore();
+      // @ts-ignore
+      window.RTCRtpScriptTransformer = RTCRtpScriptTransformer;
+      // @ts-ignore
+      window.RTCTransformEvent = RTCTransformEvent;
+      // @ts-ignore
+      window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+    });
+
+    it('does not set up the RED worker when insertable streams are not supported and throws an exception', () => {
+      // @ts-ignore
+      const RTCRtpScriptTransformer = window.RTCRtpScriptTransformer;
+      // @ts-ignore
+      const RTCTransformEvent = window.RTCTransformEvent;
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      const receiverCreateEncodedStreams = RTCRtpReceiver.prototype.createEncodedStreams;
+      // @ts-ignore
+      const senderCreateEncodedStreams = RTCRtpSender.prototype.createEncodedStreams;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransformer;
+      // @ts-ignore
+      delete window.RTCTransformEvent;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete RTCRtpReceiver.prototype.createEncodedStreams;
+      // @ts-ignore
+      delete RTCRtpSender.prototype.createEncodedStreams;
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+
+      const logSpy = sinon.spy(tc['logger'], 'info');
+      expect(() => {
+        tc.setupLocalTransceivers();
+      }).to.throw(
+        '[AudioRed] Encoded insertable streams not supported. Recreating peer connection with audio redundancy disabled.'
+      );
+      expect(logSpy.calledWith('[AudioRed] Setting up sender RED transform')).to.be.false;
+
+      // setupLocalTransceivers will force redundancy to be false before throwing the exception.
+      // The peer connection is then recreated by setting encodedInsertableStreams to false.
+      expect(tc['meetingSessionContext'].audioProfile.hasRedundancyEnabled()).to.be.false;
+
+      logSpy.restore();
+      // @ts-ignore
+      window.RTCRtpScriptTransformer = RTCRtpScriptTransformer;
+      // @ts-ignore
+      window.RTCTransformEvent = RTCTransformEvent;
+      // @ts-ignore
+      window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+      // @ts-ignore
+      RTCRtpReceiver.prototype.createEncodedStreams = receiverCreateEncodedStreams;
+      // @ts-ignore
+      RTCRtpSender.prototype.createEncodedStreams = senderCreateEncodedStreams;
     });
   });
 
@@ -889,6 +1123,537 @@ describe('DefaultTransceiverController', () => {
       expect(params.encodings[0].maxBitrate).to.be.equal(600_000);
       expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(2);
       expect(params.encodings[0].codecPayloadType).to.be.equal(1);
+    });
+  });
+
+  describe('setAudioPayloadTypes', () => {
+    it('can set the RED and Opus payload types', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+
+      const logSpy = sinon.spy(tc['logger'], 'info');
+      tc.setupLocalTransceivers();
+      tc.setAudioPayloadTypes(
+        new Map([
+          ['red', 63],
+          ['opus', 111],
+        ])
+      );
+      expect(logSpy.calledWith('[AudioRed] red payload type set to 63')).to.be.true;
+      expect(logSpy.calledWith('[AudioRed] opus payload type set to 111')).to.be.true;
+      logSpy.restore();
+    });
+
+    it('does not set the RED and Opus payload types if the RED worker does not exist', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+
+      const logSpy = sinon.spy(tc['logger'], 'info');
+      tc.setAudioPayloadTypes(
+        new Map([
+          ['red', 63],
+          ['opus', 111],
+        ])
+      );
+      expect(logSpy.calledWith('[AudioRed] red payload type set to 63')).to.be.false;
+      expect(logSpy.calledWith('[AudioRed] opus payload type set to 111')).to.be.false;
+      logSpy.restore();
+    });
+  });
+
+  describe('RedundantAudioEncoderStats', () => {
+    it('is sent to observers', done => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+
+      class TestObserver implements RedundantAudioRecoveryMetricsObserver {
+        recoveryMetricsDidReceive(metricReport: RedundantAudioRecoveryMetricReport): void {
+          expect(metricReport.currentTimestampMs).to.equal(1000);
+          expect(metricReport.ssrc).to.equal(12345);
+          expect(metricReport.totalAudioPacketsExpected).to.equal(10);
+          expect(metricReport.totalAudioPacketsLost).to.equal(20);
+          expect(metricReport.totalAudioPacketsRecoveredRed).to.equal(30);
+          expect(metricReport.totalAudioPacketsRecoveredFec).to.equal(40);
+          done();
+        }
+      }
+
+      tc.addRedundantAudioRecoveryMetricsObserver(new TestObserver());
+      const redMetricReport = new RedundantAudioRecoveryMetricReport();
+      redMetricReport.currentTimestampMs = 1000;
+      redMetricReport.ssrc = 12345;
+      redMetricReport.totalAudioPacketsExpected = 10;
+      redMetricReport.totalAudioPacketsLost = 20;
+      redMetricReport.totalAudioPacketsRecoveredRed = 30;
+      redMetricReport.totalAudioPacketsRecoveredFec = 40;
+      tc['forEachRedMetricsObserver'](redMetricReport);
+    });
+  });
+
+  describe('metricsDidReceive', () => {
+    it('adds metrics to history', () => {
+      // send 5 metric reports
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 0
+      );
+      expect(tc['audioMetricsHistory'].length).to.equal(5);
+      expect(tc['audioMetricsHistory'][0].timestampMs).to.equal(0);
+      expect(tc['audioMetricsHistory'][4].timestampMs).to.equal(4000);
+      expect(tc['audioMetricsHistory'][0].totalPacketsLost).to.equal(0);
+      expect(tc['audioMetricsHistory'][4].totalPacketsLost).to.equal(0);
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+    });
+
+    it('does not add metric to history if packetsSent <= latest packetsSent in history', () => {
+      // send 5 metric reports
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 0
+      );
+      // Send a metric report with same packetsSent as latest metric report in history
+      const clientMetricReport = new ClientMetricReport(logger);
+      clientMetricReport.currentTimestampMs = 5000;
+      // @ts-ignore
+      clientMetricReport.rtcStatsReport = [
+        {
+          kind: 'audio',
+          type: 'outbound-rtp',
+          packetsSent: 200,
+        },
+        {
+          kind: 'audio',
+          type: 'remote-inbound-rtp',
+          packetsLost: 0,
+        },
+      ] as RTCStatsReport;
+      tc.metricsDidReceive(clientMetricReport);
+
+      expect(tc['audioMetricsHistory'].length).to.equal(5);
+      expect(tc['audioMetricsHistory'][0].timestampMs).to.equal(0);
+      expect(tc['audioMetricsHistory'][4].timestampMs).to.equal(4000);
+      expect(tc['audioMetricsHistory'][0].totalPacketsLost).to.equal(0);
+      expect(tc['audioMetricsHistory'][4].totalPacketsLost).to.equal(0);
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+    });
+
+    it('removes oldest metric in history once list size is > maxAudioMetricsHistory', () => {
+      // Send 21 metric reports
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 21,
+        /*totalPacketsLost*/ 0
+      );
+      const maxAudioMetricsHistory = tc['maxAudioMetricsHistory'];
+      expect(tc['audioMetricsHistory'].length).to.equal(maxAudioMetricsHistory);
+      // Metric Report with timestamp 0 should now be removed from the list
+      expect(tc['audioMetricsHistory'][0].timestampMs).to.equal(1000);
+      expect(tc['audioMetricsHistory'][maxAudioMetricsHistory - 1].timestampMs).to.equal(20000);
+      expect(tc['audioMetricsHistory'][0].totalPacketsLost).to.equal(0);
+      expect(tc['audioMetricsHistory'][maxAudioMetricsHistory - 1].totalPacketsLost).to.equal(0);
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+    });
+
+    it('updates currentNumRedundantEncodings to 1 when loss is 10%', () => {
+      // Send 6 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 6,
+        /*totalPacketsLost*/ 0
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+
+      // Send 5 metric reports with about 10% loss
+      // 5 packets lost every second for 5s plus additional 5 packets = 30 packets lost
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 6,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 30
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+    });
+
+    it('updates currentNumRedundantEncodings to 2 when loss is 20%', () => {
+      // Send 6 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 6,
+        /*totalPacketsLost*/ 0
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+
+      // Send 5 metric reports with about 20% loss
+      // 10 packets lost every second for 5s plus additional 10 packets = 60 packets lost
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 6,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 60
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+    });
+
+    it('drops currentNumRedundantEncodings to 0 only after hold down time', () => {
+      // Send 6 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 6,
+        /*totalPacketsLost*/ 0
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+
+      // Send 5 metric reports with about 30% loss
+      // 15 packets lost every second for 5s plus additional 15 packets = 90 packets lost
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 6,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 90
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+
+      // Send 30 metric reports with no loss
+      // totalPacketsLost stays at 90 as the metric in the report is cumulative
+      // and there is no more loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 11,
+        /*numMetricReports*/ 30,
+        /*totalPacketsLost*/ 90
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+
+      // Send 270 metric reports with no loss to take it over 5m hold down time
+      // totalPacketsLost stays at 90 as the metric in the report is cumulative
+      // and there is no more loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 41,
+        /*numMetricReports*/ 270,
+        /*totalPacketsLost*/ 90
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+    });
+
+    it('does not drop currentNumRedundantEncodings if we are close to hold down time ending and again see loss', () => {
+      // Send 6 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 6,
+        /*totalPacketsLost*/ 0
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+
+      // Send 5 metric reports with about 30% loss
+      // 15 packets lost every second for 5s plus additional 15 packets = 90 packets lost
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 6,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 90
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+
+      // Send 30 metric reports with no loss
+      // totalPacketsLost stays at 90 as the metric in the report is cumulative
+      // and there is no more loss.
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 11,
+        /*numMetricReports*/ 30,
+        /*totalPacketsLost*/ 90
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+
+      // Send 250 metric reports with no loss to take it close to 5m hold down time
+      // This along with the previous 30 metric report, covers 4m40s of no loss
+      // totalPacketsLost stays at 90 as the metric in the report is cumulative
+      // and there is no more loss.
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 41,
+        /*numMetricReports*/ 250,
+        /*totalPacketsLost*/ 90
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+
+      // Send 5 metric reports with about 30% loss
+      // 15 packets lost every second for 5s plus additional 15 packets = 90 packets lost
+      // Adding to the previous loss of 90 packets gets us the value of 180
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 291,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 180
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+
+      // We need to get to 311 index to cover 5m hold down time.
+      // Also send 30 more metric reports to go 30s over hold down time.
+      // Since we saw loss in the previous batch of reports, hold down time
+      // should reset and we should still be at 2 encodings after these reports.
+      // totalPacketsLost stays at 180 as the metric in the report is cumulative
+      // and there is no more loss.
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 296,
+        /*numMetricReports*/ 45,
+        /*totalPacketsLost*/ 180
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+    });
+
+    it('should quickly turn red back on after transient high packet loss', () => {
+      // Send 6 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 6,
+        /*totalPacketsLost*/ 0
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+      expect(tc['audioRedEnabled']).to.equal(true);
+
+      // Send 5 metric reports with about 10% loss
+      // 5 packets lost every second for 5s plus additional 5 packets = 30 packets lost
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 6,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 30
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(true);
+
+      // Send 5 metric reports with about 80% loss
+      // 40 packets lost every second for 5s plus additional 40 packets = 240 packets lost
+      // Add this value to previous total packet loss value 30
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 11,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 270
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(false);
+
+      // Send 5 metric reports with about 10% loss
+      // 5 packets lost every second for 5s plus additional 5 packets = 30 packets lost
+      // Add this value to previous total packet loss value of 270
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 16,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 300
+      );
+      // This is 2 because the 15s window loss at this moment is still > 20%
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+      expect(tc['audioRedEnabled']).to.equal(true);
+      expect(tc['lastRedHolddownTimerStartTimestampMs']).to.equal(20000);
+
+      // Send 5 minutes worth of metric reports with 0 loss
+      // We should still be at 2 encodings due to hold down timer.
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 21,
+        /*numMetricReports*/ 300,
+        /*totalPacketsLost*/ 300
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(2);
+      expect(tc['audioRedEnabled']).to.equal(true);
+
+      // Send 5 more metric reports with 0 loss
+      // to take it over the hold down time.
+      // This should bring the encodings back down to 0.
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 321,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 300
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+      expect(tc['audioRedEnabled']).to.equal(true);
+    });
+
+    it('should keep red turned off for extended high packet loss events', () => {
+      // Send 6 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 0,
+        /*numMetricReports*/ 6,
+        /*totalPacketsLost*/ 0
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+      expect(tc['audioRedEnabled']).to.equal(true);
+
+      // Send 5 metric reports with about 10% loss
+      // 5 packets lost every second for 5s plus additional 5 packets = 30 packets lost
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 6,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 30
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(true);
+
+      // Send 5 metric reports with about 80% loss
+      // 40 packets lost every second for 5s plus additional 40 packets = 240 packets lost
+      // Add this value to previous total packet loss value of 30
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 11,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 270
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(false);
+      expect(tc['lastHighPacketLossEventTimestampMs']).to.equal(15000);
+
+      // Send 5 metric reports with about 80% loss
+      // 40 packets lost every second for 5s plus additional 40 packets = 240 packets lost
+      // Add this value to previous total packet loss value of 270
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 16,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 510
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(false);
+      expect(tc['lastHighPacketLossEventTimestampMs']).to.equal(20000);
+
+      // Send 5 metric reports with about 80% loss
+      // 40 packets lost every second for 5s plus additional 40 packets = 240 packets lost
+      // Add this value to previous total packet loss value 0f 510
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 21,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 750
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(false);
+      expect(tc['lastHighPacketLossEventTimestampMs']).to.equal(25000);
+
+      // Send 20 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 26,
+        /*numMetricReports*/ 20,
+        /*totalPacketsLost*/ 750
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(false);
+
+      // Send 20 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 46,
+        /*numMetricReports*/ 20,
+        /*totalPacketsLost*/ 750
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(false);
+
+      // Send 15 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 66,
+        /*numMetricReports*/ 15,
+        /*totalPacketsLost*/ 750
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(false);
+
+      // Send 5 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 81,
+        /*numMetricReports*/ 5,
+        /*totalPacketsLost*/ 750
+      );
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(true);
+      expect(tc['lastRedHolddownTimerStartTimestampMs']).to.equal(85000);
+
+      // Send 240 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 86,
+        /*numMetricReports*/ 240,
+        /*totalPacketsLost*/ 750
+      );
+      // Redundant encodings remains at 1 as hold down timer
+      // resets when red is enabled again
+      expect(tc['currentNumRedundantEncodings']).to.equal(1);
+      expect(tc['audioRedEnabled']).to.equal(true);
+
+      // Send 65 metric reports with no loss
+      sendMetricReports(
+        tc,
+        /*startTimestampSecond*/ 326,
+        /*numMetricReports*/ 65,
+        /*totalPacketsLost*/ 750
+      );
+      // Redundant encodings should come back down to 0
+      // as we have completed the hold down time
+      expect(tc['currentNumRedundantEncodings']).to.equal(0);
+      expect(tc['audioRedEnabled']).to.equal(true);
+    });
+  });
+
+  describe('lossPercent', () => {
+    function getRandomIntInclusive(min: number, max: number): number {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+    }
+
+    function getRandomArbitrary(min: number, max: number): number {
+      return Math.random() * (max - min) + min;
+    }
+
+    it('estimates loss that is close to the actual loss', () => {
+      let startTimestampSecond = 0;
+      let totalPacketsLost = 0;
+
+      for (let i = 0; i < 100; ++i) {
+        // Vary the packet loss update interval between 3 and 7 seconds.
+        const updateIntervalSeconds = getRandomIntInclusive(3, 7);
+        startTimestampSecond += updateIntervalSeconds;
+
+        // Vary the packet loss between 58% and 62%.
+        const packetLossPercent = getRandomArbitrary(0.58, 0.62);
+
+        // Calculate the number of packets lost since the previous report.
+        totalPacketsLost += Math.floor(
+          updateIntervalSeconds * packetsPerSecond * packetLossPercent
+        );
+
+        sendMetricReports(tc, startTimestampSecond, 1, totalPacketsLost);
+
+        // Let some initial reports come in before calculating losses.
+        if (i >= 10) {
+          // Expect the loss for both windows to be around 60%.
+          const lossPercent5sTimewindow = tc['lossPercent'](5000);
+          const lossPercent15sTimewindow = tc['lossPercent'](15000);
+          expect(lossPercent5sTimewindow).to.be.greaterThanOrEqual(60 - 5);
+          expect(lossPercent5sTimewindow).to.be.lessThanOrEqual(60 + 5);
+          expect(lossPercent15sTimewindow).to.be.greaterThanOrEqual(60 - 5);
+          expect(lossPercent15sTimewindow).to.be.lessThanOrEqual(60 + 5);
+        }
+      }
     });
   });
 });

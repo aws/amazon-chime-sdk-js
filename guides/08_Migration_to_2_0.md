@@ -1,5 +1,16 @@
 # Migration from SDK v1 to SDK v2
 
+- [Migration from SDK v1 to SDK v2](#migration-from-sdk-v1-to-sdk-v2)
+  - [Installation](#installation)
+  - [Interface changes](#interface-changes)
+    - [Removing `enableWebAudio`](#removing-enablewebaudio)
+    - [Update `bindAudioElement()`, `bindAudioStream()` and `bindAudioDevice()` to return `Promise<void>` instead of `boolean`](#update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promisevoid-instead-of-boolean)
+    - [Introducing `AudioInputDevice` and `VideoInputDevice`](#introducing-audioinputdevice-and-videoinputdevice)
+    - [Introducing the `GetUserMediaError` type](#introducing-the-getusermediaerror-type)
+    - [Introducing `supportsSetSinkId()` in `DefaultBrowserBehavior`](#introducing-supportssetsinkid-in-defaultbrowserbehavior)
+    - [Deprecating legacy screen share](#deprecating-legacy-screen-share)
+
+
 ## Installation
 
 Installation involves adjusting your `package.json` to depend on version `2.0.0`.

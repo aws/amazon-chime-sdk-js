@@ -545,4 +545,17 @@ describe('SimulcastVideoStreamIndex', () => {
       expect(index.externalUserIdForTrack('track_v2')).to.equal('client1p-ext');
     });
   });
+
+  describe('sendVideoStreamIdFromRid', () => {
+    it('returns stream corresponding to rid', () => {
+      // @ts-ignore
+      index._sendRidToVideoStreamIdMap = new Map<string, number>([
+        ['aaa', 1],
+        ['bbb', 2],
+      ]);
+      expect(index.sendVideoStreamIdFromRid('aaa')).to.equal(1);
+      expect(index.sendVideoStreamIdFromRid('bbb')).to.equal(2);
+      expect(index.sendVideoStreamIdFromRid('ccc')).to.equal(0);
+    });
+  });
 });

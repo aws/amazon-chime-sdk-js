@@ -30,7 +30,6 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.RealtimeApiFailed:
       case MeetingSessionStatusCode.TaskFailed:
       case MeetingSessionStatusCode.NoAttendeePresent:
-      case MeetingSessionStatusCode.SignalChannelClosedUnexpectedly:
         return true;
       default:
         return false;
@@ -120,8 +119,6 @@ export default class MeetingSessionStatus {
         return 'The Primary meeting credentials provided are no longer valid. chime::DeleteAttendee may have been called on them.';
       case MeetingSessionStatusCode.AudioDisconnectAudio:
         return 'The audio connection failed.';
-      case MeetingSessionStatusCode.SignalChannelClosedUnexpectedly:
-        return 'The websocket was closed unexpectedly. This may be due to a network change or backend detected failure.';
       /* istanbul ignore next */
       default: {
         // You get a compile-time error if you do not handle any status code.

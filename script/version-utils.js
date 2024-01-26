@@ -125,7 +125,7 @@ const versionBump = async (option, branchName) => {
     const currentBranch = (spawnOrFail('git', [' branch --show-current'], { skipOutput: true })).trim();
     spawnOrFail('git', [`checkout -b ${prevReleaseBranch}`]);
     updateBaseBranch(prevReleaseBranch);
-    spawnOrFail('git', ['add -A']);
+    spawnOrFail('git', ['add CHANGELOG.md package.json package-lock.json']);
     spawnOrFail('git', [`commit -m "Update base branch to ${prevReleaseBranch}"`]);
     spawnOrFail('git', [`push origin HEAD:${prevReleaseBranch} -f`]);
     logger.log(`Branch ${prevReleaseBranch} is created. Please make sure to set branch protection.`);

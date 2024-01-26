@@ -1,5 +1,33 @@
 # Integrating background filters into a client application<a id="background-filters"></a>
 
+- [Integrating background filters into a client application](#integrating-background-filters-into-a-client-application)
+- [About using background filters](#about-using-background-filters)
+  - [Using the cross-origin opener policy](#using-the-cross-origin-opener-policy)
+  - [SIMD support](#simd-support)
+  - [WebGL2 support](#webgl2-support)
+  - [Content delivery and bandwidth](#content-delivery-and-bandwidth)
+  - [Browser compatibility](#browser-compatibility)
+- [Using a Content Security Policy](#using-a-content-security-policy)
+  - [Required CSP Directives](#required-csp-directives)
+    - [Script Policy](#script-policy)
+    - [Worker Policy](#worker-policy)
+    - [WebAssembly Policy](#webassembly-policy)
+  - [Optional CSP Directives](#optional-csp-directives)
+    - [Background Image Policy](#background-image-policy)
+  - [Example CSP Declaration](#example-csp-declaration)
+  - [CSP Errors](#csp-errors)
+- [Adding background filters to your application](#adding-background-filters-to-your-application)
+  - [Checking for support before offering a filter](#checking-for-support-before-offering-a-filter)
+  - [Creating a VideoFxConfig object](#creating-a-videofxconfig-object)
+  - [Creating a VideoFxProcessor object](#creating-a-videofxprocessor-object)
+  - [Creating the VideoTransformDevice object](#creating-the-videotransformdevice-object)
+  - [Tuning resource utilization](#tuning-resource-utilization)
+  - [Starting video input](#starting-video-input)
+  - [Stopping video input](#stopping-video-input)
+- [Example background filter](#example-background-filter)
+
+---
+
 This section explains how to programmatically filter video backgrounds by using background blur 2\.0 and background replacement 2\.0\. To add a background filter to a video stream, you need to create a `VideoFxProcessor` that contains a `VideoFxConfig` object\. You then insert that processor into a `VideoTransformDevice`\.
 
 The background filter processor uses a TensorFlow Lite machine learning model, JavaScript Web Workers, and WebAssembly to apply a filter to the background of each frame in the video stream\. These assets are downloaded at runtime when you create a `VideoFxProcessor`\.
@@ -7,22 +35,31 @@ The background filter processor uses a TensorFlow Lite machine learning model, J
 The new background blur and replacement filters are integrated into the [browser demo application on GitHub](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/browser)\. To try it out, launch the demo with `npm run start`, join the meeting, then click the camera to enable video\. From the video filter drop down, choose one of the **Background Blur 2\.0** or **Background Replacement 2\.0** options\.
 
 **Topics**
+- [Integrating background filters into a client application](#integrating-background-filters-into-a-client-application)
 - [About using background filters](#about-using-background-filters)
-  - [Using the cross-origin opener policy](#cross-origin-policy)
+  - [Using the cross-origin opener policy](#using-the-cross-origin-opener-policy)
   - [SIMD support](#simd-support)
   - [WebGL2 support](#webgl2-support)
-  - [Content delivery and bandwidth](#delivery-caching-bandwidth)
-  - [Browser compatibility](#filters-browser-compat)
-- [Using a content security policy](#content-security)
-- [Adding background filters to your application](#add-filters)
-  - [Checking for support before offering a filter](#support-check)
-  - [Creating a VideoFxConfig object](#create-videofxconfig)
-  - [Creating a VideoFxProcessor object](#create-videofxprocessor)
-  - [Creating the VideoTransformDevice object](#create-video-transform)
-  - [Tuning resource utilization](#tuning)
-  - [Starting video input](#start-video-input)
-  - [Stopping video input](#stop-video-input)
-- [Example background filter](#example-bg-filter)
+  - [Content delivery and bandwidth](#content-delivery-and-bandwidth)
+  - [Browser compatibility](#browser-compatibility)
+- [Using a Content Security Policy](#using-a-content-security-policy)
+  - [Required CSP Directives](#required-csp-directives)
+    - [Script Policy](#script-policy)
+    - [Worker Policy](#worker-policy)
+    - [WebAssembly Policy](#webassembly-policy)
+  - [Optional CSP Directives](#optional-csp-directives)
+    - [Background Image Policy](#background-image-policy)
+  - [Example CSP Declaration](#example-csp-declaration)
+  - [CSP Errors](#csp-errors)
+- [Adding background filters to your application](#adding-background-filters-to-your-application)
+  - [Checking for support before offering a filter](#checking-for-support-before-offering-a-filter)
+  - [Creating a VideoFxConfig object](#creating-a-videofxconfig-object)
+  - [Creating a VideoFxProcessor object](#creating-a-videofxprocessor-object)
+  - [Creating the VideoTransformDevice object](#creating-the-videotransformdevice-object)
+  - [Tuning resource utilization](#tuning-resource-utilization)
+  - [Starting video input](#starting-video-input)
+  - [Stopping video input](#stopping-video-input)
+- [Example background filter](#example-background-filter)
 
 # About using background filters<a id="about-using-background-filters"></a>
 

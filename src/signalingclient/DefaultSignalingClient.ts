@@ -26,10 +26,12 @@ import {
   SdkStreamMediaType,
   SdkStreamServiceType,
   SdkSubscribeFrame,
+  SdkVideoQualityAdaptationPreference,
   SdkVideoSubscriptionConfiguration,
 } from '../signalingprotocol/SignalingProtocol.js';
-import { getFormattedOffset } from '../utils/Utils';
+import { getFormattedOffset, getRandomValues } from '../utils/Utils';
 import Versioning from '../versioning/Versioning';
+import VideoQualityAdaptationPreference from '../videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from '../websocketadapter/WebSocketReadyState';
 import { convertServerSideNetworkAdaptionEnumToSignaled } from './ServerSideNetworkAdaption';
@@ -118,6 +120,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.supportedServerSideNetworkAdaptions = settings.supportedServerSideNetworkAdaptions.map(
       convertServerSideNetworkAdaptionEnumToSignaled
     );
+    joinFrame.wantsAllTemporalLayersInIndex = settings.wantsAllTemporalLayersInIndex;
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
     message.join = joinFrame;
@@ -200,6 +203,22 @@ export default class DefaultSignalingClient implements SignalingClient {
     signalConfig.groupId = config.groupId;
     signalConfig.priority = config.priority;
     signalConfig.targetBitrateKbps = config.targetBitrateKbps;
+    switch (config.qualityAdaptationPreference) {
+      case VideoQualityAdaptationPreference.Balanced:
+        signalConfig.qualityAdaptationPreference = SdkVideoQualityAdaptationPreference.BALANCED;
+        break;
+      case VideoQualityAdaptationPreference.MaintainFramerate:
+        signalConfig.qualityAdaptationPreference =
+          SdkVideoQualityAdaptationPreference.MAINTAIN_FRAMERATE;
+        break;
+      case VideoQualityAdaptationPreference.MaintainResolution:
+        signalConfig.qualityAdaptationPreference =
+          SdkVideoQualityAdaptationPreference.MAINTAIN_RESOLUTION;
+        break;
+      default:
+        signalConfig.qualityAdaptationPreference = SdkVideoQualityAdaptationPreference.BALANCED;
+    }
+
     return signalConfig;
   }
 
@@ -254,12 +273,9 @@ export default class DefaultSignalingClient implements SignalingClient {
       this.webSocket.addEventListener('close', handler);
       scheduler.start(() => {
         // SDK has not received the "close" event on WebSocket for two seconds.
-        //
-        // We report it as a graceful close with no message as there should be no end-user
-        // impact of this timeout, and we do not want to trigger any non-graceful disconnection handling
-        // like reconnection.
+        // Handle a fake close event with 1006 to indicate that the client abnormally closed the connection.
         handler(
-          new CloseEvent('close', { wasClean: false, code: 1005, reason: '', bubbles: false })
+          new CloseEvent('close', { wasClean: false, code: 1006, reason: '', bubbles: false })
         );
       });
       this.webSocket.close();
@@ -396,12 +412,6 @@ export default class DefaultSignalingClient implements SignalingClient {
             }`
         );
         break;
-      case SignalingClientEventType.WebSocketClosed:
-        this.logger.info(
-          `notifying event: ${SignalingClientEventType[event.type]}, 
-              code: ${event.closeCode} reason: ${event.closeReason}`
-        );
-        break;
       default:
         this.logger.info(`notifying event: ${SignalingClientEventType[event.type]}`);
         break;
@@ -466,8 +476,8 @@ export default class DefaultSignalingClient implements SignalingClient {
 
   private generateNewAudioSessionId(): number {
     const num = new Uint32Array(1);
-    const randomNum = window.crypto.getRandomValues(num);
-    return randomNum[0];
+    getRandomValues(num);
+    return num[0];
   }
 
   private closeEventHandler = (event: CloseEvent): void => {

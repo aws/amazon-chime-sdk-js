@@ -1,5 +1,17 @@
 # User Guide for Priority-based Downlink Policy
 
+- [User Guide for Priority-based Downlink Policy](#user-guide-for-priority-based-downlink-policy)
+  - [Introduction](#introduction)
+  - [APIs and Usage](#apis-and-usage)
+    - [MeetingSessionConfiguration](#meetingsessionconfiguration)
+    - [Notification of current available remote sources](#notification-of-current-available-remote-sources)
+    - [Priority and max size for each remote stream](#priority-and-max-size-for-each-remote-stream)
+    - [Configuring the receipt and priority of remote video sources](#configuring-the-receipt-and-priority-of-remote-video-sources)
+    - [Receiving notifications that a remote video was paused due to bandwidth constraint](#receiving-notifications-that-a-remote-video-was-paused-due-to-bandwidth-constraint)
+    - [Enabling Server Side Network Adaption Features ](#enabling-server-side-network-adaption-features-)
+  - [Builder Code Sample](#builder-code-sample)
+
+
 ## Introduction
 
 Amazon Chime SDK for JavaScript allows builders to choose a downlink policy on each device when joining a meeting. Downlink policies control the way how a recipient subscribes to the remote video sources. This document explains how to use the `VideoPriorityBasedPolicy` introduced in version 2.8, how it differs from the existing policies and how builders can take advantage of it to meet their use cases.

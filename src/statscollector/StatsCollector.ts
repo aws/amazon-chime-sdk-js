@@ -3,13 +3,16 @@
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
+import { CustomStatsReport } from '../clientmetricreport/ClientMetricReport';
 import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
+import RedundantAudioRecoveryMetricReport from '../clientmetricreport/RedundantAudioRecoveryMetricReport';
 import StreamMetricReport from '../clientmetricreport/StreamMetricReport';
 import Logger from '../logger/Logger';
 import MeetingSessionLifecycleEvent from '../meetingsession/MeetingSessionLifecycleEvent';
 import MeetingSessionLifecycleEventCondition from '../meetingsession/MeetingSessionLifecycleEventCondition';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
+import RedundantAudioRecoveryMetricsObserver from '../redundantaudiorecoverymetricsobserver/RedundantAudioRecoveryMetricsObserver';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import SignalingClient from '../signalingclient/SignalingClient';
 import {
@@ -33,7 +36,7 @@ type StatsReportItem = any;
 /**
  * [[StatsCollector]] gathers statistics and sends metrics.
  */
-export default class StatsCollector {
+export default class StatsCollector implements RedundantAudioRecoveryMetricsObserver {
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
 
@@ -41,6 +44,8 @@ export default class StatsCollector {
   private signalingClient: SignalingClient;
   private videoStreamIndex: VideoStreamIndex;
   private clientMetricReport: ClientMetricReport;
+  private redRecoveryMetricReport: RedundantAudioRecoveryMetricReport = new RedundantAudioRecoveryMetricReport();
+  private lastRedRecoveryMetricReportConsumedTimestampMs: number = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -260,6 +265,12 @@ export default class StatsCollector {
           metricReport.currentMetrics[rawMetric] = rawMetricReport[rawMetric];
         } else if (typeof rawMetricReport[rawMetric] === 'string') {
           metricReport.currentStringMetrics[rawMetric] = rawMetricReport[rawMetric];
+        } else if (typeof rawMetricReport[rawMetric] === 'object') {
+          metricReport.previousObjectMetrics[rawMetric] =
+            metricReport.currentObjectMetrics[rawMetric] === undefined
+              ? rawMetricReport[rawMetric]
+              : metricReport.currentObjectMetrics[rawMetric];
+          metricReport.currentObjectMetrics[rawMetric] = rawMetricReport[rawMetric];
         } else {
           this.logger.error(
             `Unknown metric value type ${typeof rawMetricReport[rawMetric]} for metric ${rawMetric}`
@@ -285,7 +296,14 @@ export default class StatsCollector {
           const streamMetricReport = new StreamMetricReport();
           streamMetricReport.mediaType = this.getMediaType(rawMetricReport);
           streamMetricReport.direction = this.getDirectionType(rawMetricReport);
-          if (!this.videoStreamIndex.allStreams().empty()) {
+          if (
+            streamMetricReport.mediaType === MediaType.VIDEO &&
+            streamMetricReport.direction === Direction.UPSTREAM
+          ) {
+            streamMetricReport.streamId = this.videoStreamIndex.sendVideoStreamIdFromRid(
+              rawMetricReport.rid
+            );
+          } else if (!this.videoStreamIndex.allStreams().empty()) {
             streamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
               Number(rawMetricReport.ssrc)
             );
@@ -302,9 +320,18 @@ export default class StatsCollector {
         } else {
           // Update stream ID in case we have overridden it locally in the case of remote video
           // updates completed without a negotiation
-          existingStreamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
-            Number(rawMetricReport.ssrc)
-          );
+          if (
+            existingStreamMetricReport.mediaType === MediaType.VIDEO &&
+            existingStreamMetricReport.direction === Direction.UPSTREAM
+          ) {
+            existingStreamMetricReport.streamId = this.videoStreamIndex.sendVideoStreamIdFromRid(
+              rawMetricReport.rid
+            );
+          } else {
+            existingStreamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
+              Number(rawMetricReport.ssrc)
+            );
+          }
         }
         this.clientMetricReport.currentSsrcs[Number(rawMetricReport.ssrc)] = 1;
       }
@@ -400,6 +427,10 @@ export default class StatsCollector {
       for (const metricName in streamMetricReport.currentStringMetrics) {
         this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
       }
+
+      for (const metricName in streamMetricReport.currentObjectMetrics) {
+        this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
+      }
     }
   }
 
@@ -426,9 +457,13 @@ export default class StatsCollector {
    * Checks if the type of RawMetricReport is stream related.
    */
   private isStreamRawMetricReport(type: string): boolean {
-    return ['inbound-rtp', 'outbound-rtp', 'remote-inbound-rtp', 'remote-outbound-rtp'].includes(
-      type
-    );
+    return [
+      'inbound-rtp',
+      'inbound-rtp-red',
+      'outbound-rtp',
+      'remote-inbound-rtp',
+      'remote-outbound-rtp',
+    ].includes(type);
   }
 
   /**
@@ -443,7 +478,7 @@ export default class StatsCollector {
    */
   private getDirectionType(rawMetricReport: RawMetricReport): Direction {
     const { type } = rawMetricReport;
-    return type === 'inbound-rtp' || type === 'remote-outbound-rtp'
+    return type === 'inbound-rtp' || type === 'remote-outbound-rtp' || type === 'inbound-rtp-red'
       ? Direction.DOWNSTREAM
       : Direction.UPSTREAM;
   }
@@ -454,6 +489,7 @@ export default class StatsCollector {
   isValidStandardRawMetric(rawMetricReport: RawMetricReport): boolean {
     return (
       rawMetricReport.type === 'inbound-rtp' ||
+      rawMetricReport.type === 'inbound-rtp-red' ||
       rawMetricReport.type === 'outbound-rtp' ||
       rawMetricReport.type === 'remote-inbound-rtp' ||
       rawMetricReport.type === 'remote-outbound-rtp' ||
@@ -505,7 +541,15 @@ export default class StatsCollector {
     this.logger.debug(() => {
       return `Filtered raw metrics : ${JSON.stringify(filteredRawMetricReports)}`;
     });
+
+    // Add custom stats for reporting.
+    const customStatsReports: CustomStatsReport[] = [];
+    this.maybeAddRedRecoveryMetrics(customStatsReports);
+    this.clientMetricReport.customStatsReports = customStatsReports;
+    filteredRawMetricReports.push(...customStatsReports);
+
     this.processRawMetricReports(filteredRawMetricReports);
+
     const clientMetricFrame = this.makeClientMetricProtobuf();
     this.sendClientMetricProtobuf(clientMetricFrame);
     this.audioVideoController.forEachObserver(observer => {
@@ -540,5 +584,38 @@ export default class StatsCollector {
 
   overrideObservableMetric(name: string, value: number): void {
     this.clientMetricReport.overrideObservableMetric(name, value);
+  }
+  /**
+   * Receives the red recovery metrics from DefaultTransceiver.
+   */
+  recoveryMetricsDidReceive(metricReport: RedundantAudioRecoveryMetricReport): void {
+    this.redRecoveryMetricReport = metricReport;
+  }
+
+  /**
+   * Adds RED recovery metrics to the raw webrtc stats report.
+   */
+  private maybeAddRedRecoveryMetrics(customStatsReports: CustomStatsReport[]): void {
+    if (
+      this.redRecoveryMetricReport.currentTimestampMs ===
+      this.lastRedRecoveryMetricReportConsumedTimestampMs
+    ) {
+      // We have already sent the latest RED metrics.
+      return;
+    }
+
+    // @ts-ignore
+    customStatsReports.push({
+      kind: 'audio',
+      type: 'inbound-rtp-red',
+      ssrc: this.redRecoveryMetricReport.ssrc,
+      timestamp: this.redRecoveryMetricReport.currentTimestampMs,
+      totalAudioPacketsLost: this.redRecoveryMetricReport.totalAudioPacketsLost,
+      totalAudioPacketsExpected: this.redRecoveryMetricReport.totalAudioPacketsExpected,
+      totalAudioPacketsRecoveredRed: this.redRecoveryMetricReport.totalAudioPacketsRecoveredRed,
+      totalAudioPacketsRecoveredFec: this.redRecoveryMetricReport.totalAudioPacketsRecoveredFec,
+    });
+
+    this.lastRedRecoveryMetricReportConsumedTimestampMs = this.redRecoveryMetricReport.currentTimestampMs;
   }
 }

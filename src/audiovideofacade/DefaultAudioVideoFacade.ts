@@ -467,6 +467,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
     this.contentShareController.enableSimulcastForContentShare(enable, encodingParams);
   }
 
+  enableSVCForContentShare(enable: boolean): void {
+    this.trace('enableSVCForContentShare');
+    this.contentShareController.enableSVCForContentShare(enable);
+  }
+
   startContentShare(stream: MediaStream): Promise<void> {
     const result = this.contentShareController.startContentShare(stream);
     this.trace('startContentShare');

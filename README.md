@@ -34,11 +34,10 @@ The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) ca
 ## Resources
 
 - [Amazon Chime SDK Overview](https://aws.amazon.com/chime/chime-sdk/)
-- [Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
+- [Pricing](https://aws.amazon.com/chime/chime-sdk/pricing/)
 - [Supported Browsers](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers)
 - [Getting Started Guides](guides/20_Builders_Journey.md)
 - [Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html)
-- [PSTN Audio Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html)
 - [Control Plane API Reference](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/welcome.html)
 - [Frequently Asked Questions (FAQ)](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
 
@@ -61,7 +60,6 @@ In addition to the below, here is a list of [all blog posts about the Amazon Chi
 - [Capturing Amazon Chime SDK Meeting Content](https://aws.amazon.com/blogs/business-productivity/capture-amazon-chime-sdk-meetings-using-media-capture-pipelines/)
 - [Monitoring and Troubleshooting With Amazon Chime SDK Meeting Events](https://aws.amazon.com/blogs/business-productivity/monitoring-and-troubleshooting-with-amazon-chime-sdk-meeting-events/)
 - [Build Meetings features into your Amazon Chime SDK messaging application](https://aws.amazon.com/blogs/business-productivity/build-meeting-features-into-your-amazon-chime-sdk-messaging-application/)
-- [Integrating PSTN callers with Amazon Chime SDK meetings](https://aws.amazon.com/blogs/business-productivity/integrating-pstn-callers-with-amazon-chime-sdk-meetings/)
 - [Using the Amazon Chime SDK to Create Automated Outbound Call Notifications](https://aws.amazon.com/blogs/business-productivity/using-the-amazon-chime-sdk-to-create-automated-outbound-call-notifications/)
 - [Building voice menus and call routing with the Amazon Chime SDK](https://aws.amazon.com/blogs/business-productivity/building-voice-menus-and-call-routing-with-the-amazon-chime-sdk/)
 
@@ -112,7 +110,6 @@ The following developer guides cover specific topics for a technical audience.
 
 The following developer guides cover the Amazon Chime SDK more broadly.
 
-- [PSTN Audio developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/build-lambdas-for-sip-sdk.html)
 - [Messaging developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/using-the-messaging-sdk.html)
 - [Media Pipelines developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/media-pipelines.html)
 
@@ -157,7 +154,7 @@ The Amazon Chime SDK for JavaScript uses WebRTC, the real-time communication API
 
 ## Installation
 
-Make sure you have Node.js version 12 or higher. Node 14 is recommended and supported.
+Make sure you have Node.js version 18 or higher. Node 20 is recommended and supported.
 
 To add the Amazon Chime SDK for JavaScript into an existing application,
 install the package directly from npm:
@@ -1215,9 +1212,55 @@ Use the following setting to optimize the content share audio for an audio strea
 meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
 ```
 
+**Use case 35.** Redundant Audio
+
+Starting from version 3.18.2, the SDK starts sending redundant audio data to our servers on detecting packet loss
+to help reduce its effect on audio quality. Redundant audio packets are only sent out for packets containing active
+audio, ie, speech or music. This may increase the bandwidth consumed by audio to up to 3 times the normal amount
+depending on the amount of packet loss detected. The SDK will automatically stop sending redundant data if it hasn't
+detected any packet loss for 5 minutes.
+
+This feature requires `blob:` to be in your content security policy under the `worker-src` directive.
+Without this, we will not be able to send out redundant audio data.
+
+This feature is not supported on Firefox at the moment.
+We were able to successfully send redundant audio from safari 16.1 onwards. 15.6.1 advertises support as well but is untested.
+Chrome advertises support for redundant audio from version M96.
+
+To disable this feature for attendee audio, you can use the following:
+
+```js
+meetingSession.audioVideo.setAudioProfile(new AudioProfile(null, false));
+```
+
+If using bitrate optimization and you want to disable audio redundancy you can use the below line.
+In the example below, we only use fullbandSpeechMono but you can use fullbandMusicMono and fullbandMusicStereo
+depending on your use case.
+
+```js
+meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono(false));
+```
+
+To disable this feature for content share audio, you can use any one of the following:
+
+```js
+meetingSession.audioVideo.setContentAudioProfile(new AudioProfile(null, false));
+```
+
+If using bitrate optimization and you want to disable audio redundancy you can use the below line.
+In the example below, we only use fullbandSpeechMono but you can use fullbandMusicMono and fullbandMusicStereo
+depending on your use case.
+
+```js
+meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono(false));
+```
+
+While there is an option to disable the feature, we recommend keeping it enabled for improved audio quality.
+One possible reason to disable it might be if your customers have very strict bandwidth limitations.
+
 ### Starting a messaging session
 
-**Use case 35.** Setup an observer to receive events: connecting, start, stop and receive message; and
+**Use case 36.** Setup an observer to receive events: connecting, start, stop and receive message; and
 start a messaging session.
 
 > Note: You can remove an observer by calling `messagingSession.removeObserver(observer)`.
@@ -1254,7 +1297,7 @@ Amazon Chime SDK for JavaScript allows builders to provide application metadata 
 
 > ⚠️ Do not pass any Personal Identifiable Information (PII).
 
-**Use case 36.** Provide application metadata to the meeting session configuration.
+**Use case 37.** Provide application metadata to the meeting session configuration.
 
 ```js
 import { MeetingSessionConfiguration, ApplicationMetadata } from 'amazon-chime-sdk-js';

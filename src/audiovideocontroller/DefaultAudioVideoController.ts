@@ -13,6 +13,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import Destroyable from '../destroyable/Destroyable';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
@@ -119,6 +120,7 @@ export default class DefaultAudioVideoController
   private static PING_PONG_INTERVAL_MS = 10000;
 
   private enableSimulcast: boolean = false;
+  private enableSVC: boolean = false;
   private useUpdateTransceiverControllerForUplink: boolean = false;
   private totalRetryCount = 0;
   private startAudioVideoTimestamp: number = 0;
@@ -287,6 +289,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.eventController = this.eventController;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
     this.meetingSessionContext.videoSendCodecPreferences = this.videoSendCodecPreferences;
+    this.meetingSessionContext.audioProfile = this._audioProfile;
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
@@ -453,13 +456,24 @@ export default class DefaultAudioVideoController
       this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
+    if (this.enableSimulcast && this.configuration.enableSVC) {
+      this.logger.warn(
+        'SVC cannot be enabled at the same time as simulcast. Disabling SVC, using simulcast.'
+      );
+    }
+    this.enableSVC =
+      !this.enableSimulcast &&
+      this.configuration.enableSVC &&
+      new DefaultBrowserBehavior().supportsScalableVideoCoding();
+
     const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
 
     if (!useAudioConnection) {
       this.logger.info(`Using video only transceiver controller`);
       this.meetingSessionContext.transceiverController = new VideoOnlyTransceiverController(
         this.logger,
-        this.meetingSessionContext.browserBehavior
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
       );
     } else if (this.enableSimulcast) {
       this.logger.info(`Using transceiver controller with simulcast support`);
@@ -470,19 +484,22 @@ export default class DefaultAudioVideoController
       ) {
         this.meetingSessionContext.transceiverController = new SimulcastContentShareTransceiverController(
           this.logger,
-          this.meetingSessionContext.browserBehavior
+          this.meetingSessionContext.browserBehavior,
+          this.meetingSessionContext
         );
       } else {
         this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
           this.logger,
-          this.meetingSessionContext.browserBehavior
+          this.meetingSessionContext.browserBehavior,
+          this.meetingSessionContext
         );
       }
     } else {
       this.logger.info(`Using default transceiver controller`);
       this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
         this.logger,
-        this.meetingSessionContext.browserBehavior
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
       );
     }
 
@@ -497,6 +514,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
     this.meetingSessionContext.videoUplinkBandwidthPolicy = this.configuration.videoUplinkBandwidthPolicy;
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
+    this.meetingSessionContext.enableSVC = this.enableSVC;
 
     if (this.enableSimulcast) {
       let simulcastPolicy = this.meetingSessionContext
@@ -529,6 +547,7 @@ export default class DefaultAudioVideoController
           this.meetingSessionContext.logger,
           this.meetingSessionContext.browserBehavior
         );
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setSVCEnabled(this.enableSVC);
       }
       if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
         this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
@@ -546,6 +565,31 @@ export default class DefaultAudioVideoController
         );
       }
       this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+
+    if (
+      new DefaultModality(this.configuration.credentials.attendeeId).hasModality(
+        DefaultModality.MODALITY_CONTENT
+      )
+    ) {
+      const enableUhdContent =
+        this.configuration.meetingFeatures.contentMaxResolution ===
+        VideoQualitySettings.VideoResolutionUHD;
+      if (enableUhdContent) {
+        // Increase default bandwidth for content share since this is not yet configuration that can be exposed
+        // without using simulcast
+        this.setVideoMaxBandwidthKbps(2500);
+      }
+      this.meetingSessionContext.videoUplinkBandwidthPolicy.setHighResolutionFeatureEnabled(
+        enableUhdContent
+      );
+    } else {
+      const enableFhdVideo =
+        this.configuration.meetingFeatures.videoMaxResolution ===
+        VideoQualitySettings.VideoResolutionFHD;
+      this.meetingSessionContext.videoUplinkBandwidthPolicy.setHighResolutionFeatureEnabled(
+        enableFhdVideo
+      );
     }
 
     if (this.meetingSessionContext.videoUplinkBandwidthPolicy && this.maxUplinkBandwidthKbps) {
@@ -707,11 +751,6 @@ export default class DefaultAudioVideoController
 
   /* @internal */
   stopReturningPromise(): Promise<void> {
-    // We need to ensure this disables reconnection before any other steps are taken,
-    // in case something during close is triggering a reconnection (e.g. websocket
-    // close)
-    this._reconnectController.disableReconnect();
-
     // In order to avoid breaking backward compatibility, when only the
     // signaling connection is established we appear to not be connected.
     // We handle this by simply disconnecting the websocket directly.
@@ -732,6 +771,7 @@ export default class DefaultAudioVideoController
     */
     return new Promise((resolve, reject) => {
       this.sessionStateController.perform(SessionStateControllerAction.Disconnect, () => {
+        this._reconnectController.disableReconnect();
         this.logger.info('attendee left meeting, session will not be reconnected');
         this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.Left), false, null)
           .then(resolve)
@@ -1479,21 +1519,21 @@ export default class DefaultAudioVideoController
     }
     if (status.isFailure() || status.isTerminal()) {
       if (this.meetingSessionContext.reconnectController) {
-        const willReconnect = this.reconnect(status, error);
-        if (willReconnect) {
+        const willRetry = this.reconnect(status, error);
+        if (willRetry) {
           this.logger.warn(
-            `The audio video controller will reconnect due to status code ${
-              MeetingSessionStatusCode[status.statusCode()]
-            }${error ? ` and error: ${error.message}` : ``}`
+            `will retry due to status code ${MeetingSessionStatusCode[status.statusCode()]}${
+              error ? ` and error: ${error.message}` : ``
+            }`
           );
         } else {
           this.logger.error(
-            `The audio video controller failed with status code ${
-              MeetingSessionStatusCode[status.statusCode()]
-            }${error ? ` and error: ${error.message}` : ``}`
+            `failed with status code ${MeetingSessionStatusCode[status.statusCode()]}${
+              error ? ` and error: ${error.message}` : ``
+            }`
           );
         }
-        return willReconnect;
+        return willRetry;
       }
     }
     return false;

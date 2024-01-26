@@ -1,5 +1,5 @@
-import Long from "long";
 import * as $protobuf from "protobufjs";
+import Long = require("long");
 /** Properties of a SdkSignalFrame. */
 export interface ISdkSignalFrame {
 
@@ -226,6 +226,13 @@ export class SdkSignalFrame implements ISdkSignalFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkSignalFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 export namespace SdkSignalFrame {
@@ -351,6 +358,13 @@ export class SdkErrorFrame implements ISdkErrorFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkErrorFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** SdkJoinFlags enum. */
@@ -496,6 +510,13 @@ export class SdkClientDetails implements ISdkClientDetails {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkClientDetails
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** SdkServerSideNetworkAdaption enum. */
@@ -533,6 +554,9 @@ export interface ISdkJoinFrame {
     /** SdkJoinFrame supportedServerSideNetworkAdaptions */
     supportedServerSideNetworkAdaptions?: (SdkServerSideNetworkAdaption[]|null);
 
+    /** SdkJoinFrame wantsAllTemporalLayersInIndex */
+    wantsAllTemporalLayersInIndex?: (boolean|null);
+
     /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender */
     disablePeriodicKeyframeRequestOnContentSender?: (boolean|null);
 }
@@ -569,6 +593,9 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
     /** SdkJoinFrame supportedServerSideNetworkAdaptions. */
     public supportedServerSideNetworkAdaptions: SdkServerSideNetworkAdaption[];
+
+    /** SdkJoinFrame wantsAllTemporalLayersInIndex. */
+    public wantsAllTemporalLayersInIndex: boolean;
 
     /** SdkJoinFrame disablePeriodicKeyframeRequestOnContentSender. */
     public disablePeriodicKeyframeRequestOnContentSender: boolean;
@@ -642,6 +669,13 @@ export class SdkJoinFrame implements ISdkJoinFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkJoinFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkJoinAckFrame. */
@@ -750,6 +784,13 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkJoinAckFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkLeaveFrame. */
@@ -834,6 +875,13 @@ export class SdkLeaveFrame implements ISdkLeaveFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkLeaveFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkLeaveAckFrame. */
@@ -918,6 +966,13 @@ export class SdkLeaveAckFrame implements ISdkLeaveAckFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkLeaveAckFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** SdkStreamServiceType enum. */
@@ -1069,6 +1124,13 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkSubscribeFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkSubscribeAckFrame. */
@@ -1183,6 +1245,13 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkSubscribeAckFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkIndexFrame. */
@@ -1297,6 +1366,13 @@ export class SdkIndexFrame implements ISdkIndexFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkIndexFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkPauseResumeFrame. */
@@ -1393,6 +1469,13 @@ export class SdkPauseResumeFrame implements ISdkPauseResumeFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkPauseResumeFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkBitrateFrame. */
@@ -1489,6 +1572,13 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkBitrateFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkStreamDescriptor. */
@@ -1520,6 +1610,12 @@ export interface ISdkStreamDescriptor {
 
     /** SdkStreamDescriptor externalUserId */
     externalUserId?: (string|null);
+
+    /** SdkStreamDescriptor width */
+    width?: (number|null);
+
+    /** SdkStreamDescriptor height */
+    height?: (number|null);
 }
 
 /** Represents a SdkStreamDescriptor. */
@@ -1557,6 +1653,12 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
 
     /** SdkStreamDescriptor externalUserId. */
     public externalUserId: string;
+
+    /** SdkStreamDescriptor width. */
+    public width: number;
+
+    /** SdkStreamDescriptor height. */
+    public height: number;
 
     /**
      * Creates a new SdkStreamDescriptor instance using the specified properties.
@@ -1627,6 +1729,13 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkStreamDescriptor
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkStreamAllocation. */
@@ -1729,6 +1838,13 @@ export class SdkStreamAllocation implements ISdkStreamAllocation {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkStreamAllocation
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTrackMapping. */
@@ -1831,6 +1947,13 @@ export class SdkTrackMapping implements ISdkTrackMapping {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTrackMapping
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkBitrate. */
@@ -1927,6 +2050,13 @@ export class SdkBitrate implements ISdkBitrate {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkBitrate
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkAudioControlFrame. */
@@ -2017,6 +2147,13 @@ export class SdkAudioControlFrame implements ISdkAudioControlFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioControlFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkAudioMetadataFrame. */
@@ -2107,6 +2244,13 @@ export class SdkAudioMetadataFrame implements ISdkAudioMetadataFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioMetadataFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkAudioAttendeeState. */
@@ -2215,6 +2359,13 @@ export class SdkAudioAttendeeState implements ISdkAudioAttendeeState {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioAttendeeState
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkAudioStreamIdInfoFrame. */
@@ -2305,6 +2456,13 @@ export class SdkAudioStreamIdInfoFrame implements ISdkAudioStreamIdInfoFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioStreamIdInfoFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkAudioStreamIdInfo. */
@@ -2419,6 +2577,13 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioStreamIdInfo
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** SdkPingPongType enum. */
@@ -2521,6 +2686,13 @@ export class SdkPingPongFrame implements ISdkPingPongFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkPingPongFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkAudioStatusFrame. */
@@ -2611,6 +2783,13 @@ export class SdkAudioStatusFrame implements ISdkAudioStatusFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioStatusFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkMetric. */
@@ -2707,6 +2886,13 @@ export class SdkMetric implements ISdkMetric {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkMetric
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 export namespace SdkMetric {
@@ -2770,8 +2956,19 @@ export namespace SdkMetric {
         VIDEO_DECODE_WIDTH = 87,
         VIDEO_ENCODER_IS_HARDWARE = 88,
         VIDEO_DECODER_IS_HARDWARE = 89,
+        VIDEO_FREEZE_COUNT = 90,
+        VIDEO_FREEZE_DURATION = 91,
+        VIDEO_PAUSE_COUNT = 92,
+        VIDEO_PAUSE_DURATION = 93,
+        VIDEO_QUALITY_REASON = 94,
+        VIDEO_PROCESSING_TIME = 95,
         RTC_SPK_AUDIO_LEVEL = 96,
-        RTC_MIC_AUDIO_LEVEL = 97
+        RTC_MIC_AUDIO_LEVEL = 97,
+        RTC_SPK_TOTAL_LOST = 98,
+        RTC_SPK_TOTAL_EXPECTED = 99,
+        RTC_SPK_TOTAL_RECOVERED_RED = 100,
+        RTC_SPK_TOTAL_RECOVERED_FEC = 101,
+        VIDEO_QUALITY_LIMITATION_DURATION_CPU = 102
     }
 }
 
@@ -2881,6 +3078,13 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkStreamMetricFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkClientMetricFrame. */
@@ -2977,6 +3181,13 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkClientMetricFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkStreamDimension. */
@@ -3073,6 +3284,13 @@ export class SdkStreamDimension implements ISdkStreamDimension {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkStreamDimension
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 export namespace SdkStreamDimension {
@@ -3184,6 +3402,13 @@ export class SdkDimensionValue implements ISdkDimensionValue {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkDimensionValue
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkDataMessageFrame. */
@@ -3274,6 +3499,13 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkDataMessageFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkDataMessagePayload. */
@@ -3394,6 +3626,13 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkDataMessagePayload
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTurnCredentials. */
@@ -3502,6 +3741,13 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTurnCredentials
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTranscriptItem. */
@@ -3640,6 +3886,13 @@ export class SdkTranscriptItem implements ISdkTranscriptItem {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscriptItem
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 export namespace SdkTranscriptItem {
@@ -3769,6 +4022,13 @@ export class SdkTranscriptEntity implements ISdkTranscriptEntity {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscriptEntity
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTranscriptAlternative. */
@@ -3871,6 +4131,13 @@ export class SdkTranscriptAlternative implements ISdkTranscriptAlternative {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscriptAlternative
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTranscriptLanguageWithScore. */
@@ -3967,6 +4234,13 @@ export class SdkTranscriptLanguageWithScore implements ISdkTranscriptLanguageWit
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscriptLanguageWithScore
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTranscriptResult. */
@@ -4099,6 +4373,13 @@ export class SdkTranscriptResult implements ISdkTranscriptResult {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscriptResult
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTranscript. */
@@ -4189,6 +4470,13 @@ export class SdkTranscript implements ISdkTranscript {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscript
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTranscriptionStatus. */
@@ -4303,6 +4591,13 @@ export class SdkTranscriptionStatus implements ISdkTranscriptionStatus {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscriptionStatus
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 export namespace SdkTranscriptionStatus {
@@ -4414,6 +4709,13 @@ export class SdkTranscriptEvent implements ISdkTranscriptEvent {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscriptEvent
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkTranscriptFrame. */
@@ -4504,6 +4806,13 @@ export class SdkTranscriptFrame implements ISdkTranscriptFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkTranscriptFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkRemoteVideoUpdateFrame. */
@@ -4600,6 +4909,20 @@ export class SdkRemoteVideoUpdateFrame implements ISdkRemoteVideoUpdateFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkRemoteVideoUpdateFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** SdkVideoQualityAdaptationPreference enum. */
+export enum SdkVideoQualityAdaptationPreference {
+    BALANCED = 1,
+    MAINTAIN_FRAMERATE = 2,
+    MAINTAIN_RESOLUTION = 3
 }
 
 /** Properties of a SdkVideoSubscriptionConfiguration. */
@@ -4622,6 +4945,9 @@ export interface ISdkVideoSubscriptionConfiguration {
 
     /** SdkVideoSubscriptionConfiguration groupId */
     groupId?: (number|null);
+
+    /** SdkVideoSubscriptionConfiguration qualityAdaptationPreference */
+    qualityAdaptationPreference?: (SdkVideoQualityAdaptationPreference|null);
 }
 
 /** Represents a SdkVideoSubscriptionConfiguration. */
@@ -4650,6 +4976,9 @@ export class SdkVideoSubscriptionConfiguration implements ISdkVideoSubscriptionC
 
     /** SdkVideoSubscriptionConfiguration groupId. */
     public groupId: number;
+
+    /** SdkVideoSubscriptionConfiguration qualityAdaptationPreference. */
+    public qualityAdaptationPreference: SdkVideoQualityAdaptationPreference;
 
     /**
      * Creates a new SdkVideoSubscriptionConfiguration instance using the specified properties.
@@ -4720,6 +5049,13 @@ export class SdkVideoSubscriptionConfiguration implements ISdkVideoSubscriptionC
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkVideoSubscriptionConfiguration
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkNotificationFrame. */
@@ -4816,6 +5152,13 @@ export class SdkNotificationFrame implements ISdkNotificationFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkNotificationFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 export namespace SdkNotificationFrame {
@@ -4916,6 +5259,13 @@ export class SdkPrimaryMeetingJoinFrame implements ISdkPrimaryMeetingJoinFrame {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkPrimaryMeetingJoinFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkPrimaryMeetingJoinAckFrame. */
@@ -5000,6 +5350,13 @@ export class SdkPrimaryMeetingJoinAckFrame implements ISdkPrimaryMeetingJoinAckF
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkPrimaryMeetingJoinAckFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkPrimaryMeetingLeaveFrame. */
@@ -5084,6 +5441,13 @@ export class SdkPrimaryMeetingLeaveFrame implements ISdkPrimaryMeetingLeaveFrame
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkPrimaryMeetingLeaveFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkMeetingSessionCredentials. */
@@ -5186,10 +5550,23 @@ export class SdkMeetingSessionCredentials implements ISdkMeetingSessionCredentia
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionCredentials
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** SdkVideoCodecCapability enum. */
 export enum SdkVideoCodecCapability {
     VP8 = 1,
-    H264_CONSTRAINED_BASELINE_PROFILE = 3
+    H264_BASELINE_PROFILE = 2,
+    H264_CONSTRAINED_BASELINE_PROFILE = 3,
+    H264_MAIN_PROFILE = 4,
+    H264_HIGH_PROFILE = 5,
+    H264_CONSTRAINED_HIGH_PROFILE = 6,
+    VP9_PROFILE_0 = 8,
+    AV1_MAIN_PROFILE = 11
 }

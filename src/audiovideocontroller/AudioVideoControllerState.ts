@@ -144,6 +144,10 @@ export default class AudioVideoControllerState {
   // all the other clients in the meeting.
   meetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] | undefined = undefined;
 
+  // Calculated as the list of available codec set in the (possibly munged) SDP answer
+  // that is provided to the peer connection, which will be ordered by priority.
+  prioritizedSendVideoCodecCapabilities: VideoCodecCapability[] = [];
+
   videosPaused: VideoStreamIdSet | null = null;
 
   videoDuplexMode: SdkStreamServiceType | null = null;
@@ -164,6 +168,12 @@ export default class AudioVideoControllerState {
   videoDeviceInformation: { [id: string]: string } = {};
 
   enableSimulcast: boolean = false;
+
+  // If set to true, the client will actively try to use Scalable Video Coding (SVC) features
+  // if possible. The availability of these features depends dynamically on the video codec used;
+  // static browser availability and any competing features (e.g. simulcast) should
+  // have already been checked before this is set to true.
+  enableSVC: boolean = false;
 
   eventController: EventController | null = null;
 

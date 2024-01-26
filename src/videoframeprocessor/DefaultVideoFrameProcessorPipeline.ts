@@ -3,10 +3,12 @@
 
 import Logger from '../logger/Logger';
 import CanvasVideoFrameBuffer from './CanvasVideoFrameBuffer';
+import DefaultVideoFrameProcessorTimer from './DefaultVideoFrameProcessorTimer';
 import VideoFrameBuffer from './VideoFrameBuffer';
 import VideoFrameProcessor from './VideoFrameProcessor';
 import VideoFrameProcessorPipeline from './VideoFrameProcessorPipeline';
 import VideoFrameProcessorPipelineObserver from './VideoFrameProcessorPipelineObserver';
+import VideoFrameProcessorTimer from './VideoFrameProcessorTimer';
 
 const DEFAULT_FRAMERATE = 15;
 
@@ -44,9 +46,15 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
   >();
 
   private hasStarted: boolean = false;
-  private lastTimeOut: ReturnType<typeof setTimeout> | undefined;
+  private timer: VideoFrameProcessorTimer;
 
-  constructor(private logger: Logger, private stages: VideoFrameProcessor[]) {}
+  constructor(
+    private logger: Logger,
+    private stages: VideoFrameProcessor[],
+    timer: VideoFrameProcessorTimer = new DefaultVideoFrameProcessorTimer()
+  ) {
+    this.timer = timer;
+  }
 
   destroy(): void {
     this.stop();
@@ -55,6 +63,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
         stage.destroy();
       }
     }
+    this.timer.destroy();
   }
 
   get framerate(): number {
@@ -83,11 +92,6 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
       for (const track of this.outputMediaStream.getVideoTracks()) {
         track.stop();
       }
-    }
-
-    if (this.lastTimeOut) {
-      clearTimeout(this.lastTimeOut);
-      this.lastTimeOut = undefined;
     }
 
     if (this.hasStarted) {
@@ -231,6 +235,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     try {
       imageSource = await this.destBuffers[0].asCanvasImageSource();
     } catch (error) {
+      /* istanbul ignore else: Check exists incase stop is interleaved with async function calls; hard to mock */
       if (this.inputVideoStream) {
         this.logger.info('buffers are destroyed and pipeline could not start');
         this.forEachObserver(obs => {
@@ -286,9 +291,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
       });
     }
 
-    // TODO: use requestAnimationFrame which is more organic and allows browser to conserve resources by its choices.
-    /* @ts-ignore */
-    this.lastTimeOut = setTimeout(this.process, nextFrameDelay);
+    await this.timer.start(nextFrameDelay, this.process.bind(this));
   };
 
   private forEachObserver(

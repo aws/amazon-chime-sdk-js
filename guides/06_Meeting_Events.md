@@ -1,5 +1,16 @@
 # Meeting Events
 
+- [Meeting Events](#meeting-events)
+  - [Meeting events and attributes](#meeting-events-and-attributes)
+    - [Standard attributes](#standard-attributes)
+    - [Meeting attributes](#meeting-attributes)
+    - [Device attributes](#device-attributes)
+    - [The meeting history attribute](#the-meeting-history-attribute)
+    - [Meeting error messages](#meeting-error-messages)
+    - [Device error messages](#device-error-messages)
+    - [Audio transmission related events](#audio-transmission-related-events)
+  - [Example](#example)
+
 The `eventDidReceive` observer method makes it easy to collect, process, and monitor meeting events.
 You can use meeting events to identify and troubleshoot the cause of device and meeting failures.
 

@@ -94,6 +94,7 @@ message SdkJoinFrame {
     optional bool wants_compressed_sdp = 7;
     optional SdkServerSideNetworkAdaption server_side_network_adaption = 10;
     repeated SdkServerSideNetworkAdaption supported_server_side_network_adaptions = 11;
+    optional bool wants_all_temporal_layers_in_index = 12;
     optional bool disable_periodic_keyframe_request_on_content_sender = 13;
 }
 
@@ -167,6 +168,8 @@ message SdkStreamDescriptor {
     optional string attendee_id = 8;
     optional SdkStreamMediaType media_type = 9;
     optional string external_user_id = 10;
+    optional uint32 width = 11;
+    optional uint32 height = 12;
 }
 
 message SdkStreamAllocation {
@@ -286,8 +289,19 @@ message SdkMetric {
         VIDEO_DECODE_WIDTH = 87;
         VIDEO_ENCODER_IS_HARDWARE = 88;
         VIDEO_DECODER_IS_HARDWARE = 89;
+        VIDEO_FREEZE_COUNT = 90;
+        VIDEO_FREEZE_DURATION = 91;
+        VIDEO_PAUSE_COUNT = 92;
+        VIDEO_PAUSE_DURATION = 93;
+        VIDEO_QUALITY_REASON = 94;
+        VIDEO_PROCESSING_TIME = 95;
         RTC_SPK_AUDIO_LEVEL = 96;
         RTC_MIC_AUDIO_LEVEL = 97;
+        RTC_SPK_TOTAL_LOST = 98;
+        RTC_SPK_TOTAL_EXPECTED = 99;
+        RTC_SPK_TOTAL_RECOVERED_RED = 100;
+        RTC_SPK_TOTAL_RECOVERED_FEC = 101;
+        VIDEO_QUALITY_LIMITATION_DURATION_CPU = 102;
     }
     optional Type type = 1;
     optional double value = 2;
@@ -423,6 +437,12 @@ message SdkRemoteVideoUpdateFrame {
     repeated string removed_video_subscription_mids = 2;
 }
 
+enum SdkVideoQualityAdaptationPreference {
+  BALANCED = 1;
+  MAINTAIN_FRAMERATE = 2;
+  MAINTAIN_RESOLUTION = 3;
+}
+
 message SdkVideoSubscriptionConfiguration {
     required string mid = 1;
     optional string attendee_id = 2;
@@ -430,6 +450,7 @@ message SdkVideoSubscriptionConfiguration {
     optional uint32 priority = 4;
     optional uint32 target_bitrate_kbps = 5;
     optional uint32 group_id = 6;
+    optional SdkVideoQualityAdaptationPreference quality_adaptation_preference = 7;
 }
 
 message SdkNotificationFrame {
@@ -460,5 +481,11 @@ message SdkMeetingSessionCredentials {
 
 enum SdkVideoCodecCapability {
     VP8 = 1;
+    H264_BASELINE_PROFILE = 2;
     H264_CONSTRAINED_BASELINE_PROFILE = 3;
+    H264_MAIN_PROFILE = 4;
+    H264_HIGH_PROFILE = 5;
+    H264_CONSTRAINED_HIGH_PROFILE = 6;
+    VP9_PROFILE_0 = 8;
+    AV1_MAIN_PROFILE = 11;
 };

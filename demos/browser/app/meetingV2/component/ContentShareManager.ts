@@ -203,65 +203,113 @@ export default class ContentShareManager implements ContentShareObserver {
       document.getElementById('dropdown-item-content-share-test-stereo-audio-tone').style.display = 'none';
     }
 
-    document.getElementById('button-save-content-share-configs').addEventListener('click', () => {
-      this.frameRate = parseInt((document.getElementById('content-capture-frame-rate') as HTMLInputElement).value, 10);
-
-      const previousEnableVolumeReduction = this.enableVolumeReduction;
-      const previousEnableCircularCut = this.enableCirculeCut;
-      this.enableVolumeReduction = (document.getElementById(
-        'content-enable-volume-reduction'
-      ) as HTMLInputElement).checked;
-      this.enableCirculeCut = (document.getElementById('content-enable-circular-cut') as HTMLInputElement).checked;
-      if (
-        previousEnableVolumeReduction !== this.enableVolumeReduction ||
-        previousEnableCircularCut !== this.enableCirculeCut
-      ) {
-        this.logger.info(
-          `New values for content share media processing, restarting. enableVolumeReduction:${this.enableVolumeReduction}, enableCirculeCut:${this.enableCirculeCut}`
-        );
-        if (this.started) {
-          this.stop();
-          this.start();
-        }
-      }
-
-      const enableSimulcastForContentShare = (document.getElementById('content-enable-simulcast') as HTMLInputElement)
-        .checked;
-      if (enableSimulcastForContentShare) {
-        const lowMaxBitratesKbps =
-          parseInt((document.getElementById('content-simulcast-low-max-bitratekbps') as HTMLInputElement).value) ||
-          undefined;
-        const lowScaleFactor =
-          parseInt((document.getElementById('content-simulcast-low-scale-factor') as HTMLInputElement).value) ||
-          undefined;
-        const lowMaxFramerate =
-          parseInt((document.getElementById('content-simulcast-low-max-framerate') as HTMLInputElement).value) ||
-          undefined;
-        const highMaxBitratesKbps =
-          parseInt((document.getElementById('content-simulcast-high-max-bitratekbps') as HTMLInputElement).value) ||
-          undefined;
-        const highScaleFactor =
-          parseInt((document.getElementById('content-simulcast-high-scale-factor') as HTMLInputElement).value) ||
-          undefined;
-        const highMaxFramerate =
-          parseInt((document.getElementById('content-simulcast-high-max-framerate') as HTMLInputElement).value) ||
-          undefined;
-        this.audioVideo.enableSimulcastForContentShare(true, {
-          low: {
-            maxBitrateKbps: lowMaxBitratesKbps,
-            scaleResolutionDownBy: lowScaleFactor,
-            maxFramerate: lowMaxFramerate,
-          },
-          high: {
-            maxBitrateKbps: highMaxBitratesKbps,
-            scaleResolutionDownBy: highScaleFactor,
-            maxFramerate: highMaxFramerate,
-          },
-        });
-      } else {
-        this.audioVideo.enableSimulcastForContentShare(false);
-      }
+    document.getElementById('content-enable-simulcast').addEventListener('click', () => {
+      this.updateContentSimulcastAndSVCConfigUX();
     });
+    document.getElementById('content-enable-svc').addEventListener('click', () => {
+      this.updateContentSimulcastAndSVCConfigUX();
+    });
+    this.updateContentSimulcastAndSVCConfigUX();
+
+
+    document.getElementById('button-save-content-share-configs').addEventListener('click', () => {
+      this.setContentShareConfig();
+    });
+    this.setContentShareConfig();
+  }
+
+  private setContentShareConfig(): void {
+    this.frameRate = parseInt((document.getElementById('content-capture-frame-rate') as HTMLInputElement).value, 10);
+
+    const previousEnableVolumeReduction = this.enableVolumeReduction;
+    const previousEnableCircularCut = this.enableCirculeCut;
+    this.enableVolumeReduction = (document.getElementById(
+      'content-enable-volume-reduction'
+    ) as HTMLInputElement).checked;
+    this.enableCirculeCut = (document.getElementById('content-enable-circular-cut') as HTMLInputElement).checked;
+    if (
+      previousEnableVolumeReduction !== this.enableVolumeReduction ||
+      previousEnableCircularCut !== this.enableCirculeCut
+    ) {
+      this.logger.info(
+        `New values for content share media processing, restarting. enableVolumeReduction:${this.enableVolumeReduction}, enableCirculeCut:${this.enableCirculeCut}`
+      );
+      if (this.started) {
+        this.stop();
+        this.start();
+      }
+    }
+
+    const enableSimulcastForContentShare = (document.getElementById('content-enable-simulcast') as HTMLInputElement)
+      .checked;
+    if (enableSimulcastForContentShare) {
+      const lowMaxBitratesKbps =
+        parseInt((document.getElementById('content-simulcast-low-max-bitratekbps') as HTMLInputElement).value) ||
+        undefined;
+      const lowScaleFactor =
+        parseInt((document.getElementById('content-simulcast-low-scale-factor') as HTMLInputElement).value) ||
+        undefined;
+      const lowMaxFramerate =
+        parseInt((document.getElementById('content-simulcast-low-max-framerate') as HTMLInputElement).value) ||
+        undefined;
+      const highMaxBitratesKbps =
+        parseInt((document.getElementById('content-simulcast-high-max-bitratekbps') as HTMLInputElement).value) ||
+        undefined;
+      const highScaleFactor =
+        parseInt((document.getElementById('content-simulcast-high-scale-factor') as HTMLInputElement).value) ||
+        undefined;
+      const highMaxFramerate =
+        parseInt((document.getElementById('content-simulcast-high-max-framerate') as HTMLInputElement).value) ||
+        undefined;
+      this.audioVideo.enableSimulcastForContentShare(true, {
+        low: {
+          maxBitrateKbps: lowMaxBitratesKbps,
+          scaleResolutionDownBy: lowScaleFactor,
+          maxFramerate: lowMaxFramerate,
+        },
+        high: {
+          maxBitrateKbps: highMaxBitratesKbps,
+          scaleResolutionDownBy: highScaleFactor,
+          maxFramerate: highMaxFramerate,
+        },
+      });
+    } else {
+      this.audioVideo.enableSimulcastForContentShare(false);
+ 
+      const enableSVCForContentShare = (document.getElementById('content-enable-svc') as HTMLInputElement)
+        .checked;
+      if (enableSVCForContentShare) {
+        this.audioVideo.enableSVCForContentShare(true);
+      } else {
+        this.audioVideo.enableSVCForContentShare(false);
+      }
+    }
+  }
+ 
+  private updateContentSimulcastAndSVCConfigUX() {
+    const enableSimulcastForContentShare = (document.getElementById('content-enable-simulcast') as HTMLInputElement)
+      .checked;
+    if (enableSimulcastForContentShare) {
+      (document.getElementById('content-enable-svc') as HTMLInputElement).disabled = true;
+      (document.getElementById('content-enable-svc') as HTMLInputElement).checked = false;
+      return;
+    }
+ 
+    const enableSVCConfig = (document.getElementById('content-svc-config')).style.display === 'block';
+    if (enableSVCConfig) {
+      (document.getElementById('content-enable-svc') as HTMLInputElement).disabled = false;
+    } else {
+      (document.getElementById('content-enable-svc') as HTMLInputElement).disabled = true;
+      (document.getElementById('content-enable-svc') as HTMLInputElement).checked = false;
+    }
+ 
+    const enableSVC = (document.getElementById('content-enable-svc') as HTMLInputElement).checked;
+    if (enableSVC) {
+      (document.getElementById('content-enable-simulcast') as HTMLInputElement).checked = false;
+      (document.getElementById('content-enable-simulcast') as HTMLInputElement).disabled = true;
+    } else {
+      (document.getElementById('content-enable-simulcast') as HTMLInputElement).disabled = false;
+    }
   }
 
   private updateContentShareUX(): void {

@@ -1,5 +1,19 @@
 # Replica Meetings Attendee Behaviors and Features
 
+- [Replica Meetings Attendee Behaviors and Features](#replica-meetings-attendee-behaviors-and-features)
+  - [Replica meeting receive behavior](#replica-meeting-receive-behavior)
+    - [Remote attendee events](#remote-attendee-events)
+    - [Remote audio and video](#remote-audio-and-video)
+    - [Remote data messages](#remote-data-messages)
+    - [Meeting events and ingestion](#meeting-events-and-ingestion)
+    - [Replica meeting attendee limitations and messaging](#replica-meeting-attendee-limitations-and-messaging)
+    - [Video send availability notification](#video-send-availability-notification)
+    - [Avoiding unnecessary device permission requests for Replica attendees](#avoiding-unnecessary-device-permission-requests-for-replica-attendees)
+  - [Low latency promotion of Replica meeting attendees into the Primary meeting](#low-latency-promotion-of-replica-meeting-attendees-into-the-primary-meeting)
+    - [Promotion of Replica attendees](#promotion-of-replica-attendees)
+    - [Demotion of promoted Replica attendees](#demotion-of-promoted-replica-attendees)
+
+
 To allow extended scaling of meetings that expect significant portions of attendees be non-active participants (e.g. a live event or presentation), the Amazon Chime SDK supports the creation of Replica meetings with specialized behavior. For explanation of how to create Replica meetings via the CreateMeeting and CreateMeetingWithAttendees APIs, a high level overview of how Replica meetings work, and a walkthrough of how to incorporate this type of scaling in your applications meetings, see the section above.
 
 In short, an attendee in a Replica meeting will receive remote media and metadata from the Primary meeting as if they were attendees of the Primary meeting (though they will not require authentication for the Primary meeting unless they would like to be promoted to an active participant, which is covered in a separate section below).

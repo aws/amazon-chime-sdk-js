@@ -12,8 +12,24 @@ import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFram
 import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from '../../src/videoframeprocessor/VideoFrameProcessor';
 import VideoFrameProcessorPipelineObserver from '../../src/videoframeprocessor/VideoFrameProcessorPipelineObserver';
+import VideoFrameProcessorTimer from '../../src/videoframeprocessor/VideoFrameProcessorTimer';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+
+/**
+ * [[MockVideoFrameProcessorTimer]] uses just `setTimeout` to avoid the complexity of
+ * Workers in unit tests. We avoid trying to mock out the actual requests as that will break
+ * things like the event listeners
+ */
+class MockVideoFrameProcessorTimer implements VideoFrameProcessorTimer {
+  async start(delay: number, callback: () => void): Promise<void> {
+    setTimeout(callback, delay);
+  }
+
+  async destroy(): Promise<void> {
+    return;
+  }
+}
 
 describe('DefaultVideoFrameProcessorPipeline', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -26,6 +42,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
   let mockVideoStream: MediaStream;
   let mockVideoTrack: MediaStreamTrack;
   let proc: VideoFrameProcessor;
+  const mockTimer = new MockVideoFrameProcessorTimer();
 
   class MockObserver implements VideoFrameProcessorPipelineObserver {
     processingDidFailToStart = sinon.stub();
@@ -60,7 +77,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     mockVideoTrack = new MediaStreamTrack('attach-media-input-task-video-track-id', 'video');
     mockVideoStream.addTrack(mockVideoTrack);
     proc = new NoOpVideoFrameProcessor();
-    pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc]);
+    pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);
   });
 
   afterEach(() => {
@@ -102,11 +119,6 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       await pipe.setInputMediaStream(null);
       const outputStream = await pipe.getInputMediaStream();
       expect(outputStream).to.equal(null);
-      await pipe.setInputMediaStream(null);
-    });
-
-    it('can start the pipeline with valid stream and stop with null', async () => {
-      await pipe.setInputMediaStream(mockVideoStream);
       await pipe.setInputMediaStream(null);
     });
 

@@ -109,6 +109,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#supportedserversidenetworkadaptions" class="tsd-kind-icon">supported<wbr>Server<wbr>Side<wbr>Network<wbr>Adaptions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#updateindex" class="tsd-kind-icon">update<wbr>Index</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#updatemetrics" class="tsd-kind-icon">update<wbr>Metrics</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#wantsalltemporallayersinindex" class="tsd-kind-icon">wants<wbr>All<wbr>Temporal<wbr>Layers<wbr>InIndex</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#wantsresubscribe" class="tsd-kind-icon">wants<wbr>Resubscribe</a></li>
 							</ul>
 						</section>
@@ -500,6 +501,31 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="wantsalltemporallayersinindex" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> wants<wbr>All<wbr>Temporal<wbr>Layers<wbr>InIndex</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">wants<wbr>All<wbr>Temporal<wbr>Layers<wbr>InIndex<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L111">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:111</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Used to indicate that this policy can handle the increased complexity
+										required to deal with layers of different frame rates (i.e. balances
+										tradeoffs of resolution vs. frame rate, will not degrade resolution or
+									framerate during recovery, etc.)</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="wantsresubscribe" class="tsd-anchor"></a>
 					<h3>wants<wbr>Resubscribe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -577,6 +603,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videodownlinkbandwidthpolicy.html#updatemetrics" class="tsd-kind-icon">update<wbr>Metrics</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videodownlinkbandwidthpolicy.html#wantsalltemporallayersinindex" class="tsd-kind-icon">wants<wbr>All<wbr>Temporal<wbr>Layers<wbr>InIndex</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videodownlinkbandwidthpolicy.html#wantsresubscribe" class="tsd-kind-icon">wants<wbr>Resubscribe</a>

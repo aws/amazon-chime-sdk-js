@@ -241,7 +241,6 @@ describe('TranscriptEvent', () => {
     expect(actualEvents.length).to.equal(1);
     if (!(actualEvents[0] instanceof Transcript)) {
       assert.fail();
-      return;
     }
     expect(actualEvents[0].results.length).to.eql(1);
     expect(actualEvents[0].results[0].alternatives[0].items.length).to.eql(3);

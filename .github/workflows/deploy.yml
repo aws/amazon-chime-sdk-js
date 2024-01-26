@@ -39,6 +39,7 @@ jobs:
         AWS_DEFAULT_OUTPUT: text
         NAME: ChimeBeta
         GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
+        GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
         GAMMA_CHIME_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_SERVICE_PRINCIPAL}}
     steps:
       - name: Configure AWS Credentials

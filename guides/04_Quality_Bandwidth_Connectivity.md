@@ -1,8 +1,30 @@
-
-
 # Quality, Bandwidth, and Connectivity
 
 The Amazon Chime SDK for JavaScript, in conjunction with WebRTC, allows you to configure quality and bandwidth options for meeting sessions. It provides both automatic and manual controls to adapt to changing network conditions. Finding the right balance of quality and performance can be challenging when either the client's network or CPU is constrained. As network reliability and available bandwidth decrease, quality and functionality trade-offs must be made in real time to preserve the viability of the meeting. This guide gives an overview of challenges associated with devices and networks, degradation detection mechanisms, and mitigations for various levels of degradation.
+
+- [Quality, Bandwidth, and Connectivity](#quality-bandwidth-and-connectivity)
+  - [Goals](#goals)
+  - [Challenges](#challenges)
+  - [Detection Mechanisms](#detection-mechanisms)
+    - [Events for monitoring local attendee downlink](#events-for-monitoring-local-attendee-downlink)
+    - [Events for monitoring remote attendee uplink](#events-for-monitoring-remote-attendee-uplink)
+    - [Metrics exposed directly from the WebRTC peer connection](#metrics-exposed-directly-from-the-webrtc-peer-connection)
+    - [Events for monitoring currently active simulast layers](#events-for-monitoring-currently-active-simulast-layers)
+  - [Mitigations](#mitigations)
+    - [Automatic mitigations](#automatic-mitigations)
+    - [Mitigations to conserve CPU](#mitigations-to-conserve-cpu)
+      - [Application profiling](#application-profiling)
+      - [Choose a lower local video quality](#choose-a-lower-local-video-quality)
+      - [Pause remote videos](#pause-remote-videos)
+    - [Mitigations to conserve bandwidth](#mitigations-to-conserve-bandwidth)
+      - [Adjust local video quality](#adjust-local-video-quality)
+      - [Turning off local video](#turning-off-local-video)
+      - [Configure a video uplink policy](#configure-a-video-uplink-policy)
+      - [Pause remote attendee video](#pause-remote-attendee-video)
+      - [Use active speaker detection](#use-active-speaker-detection)
+      - [Configure a video downlink policy](#configure-a-video-downlink-policy)
+    - [Use video simulcast](#use-video-simulcast)
+
 
 ## Goals
 
@@ -19,6 +41,7 @@ To join an Amazon Chime SDK meeting, each client traverses the public internet t
 - **Complexity and length of the network path:** meeting attendees that are geographically distant from the SDK media region may experience higher packet loss, jitter, and round-trip times due to the number of intermediate networks, which may vary in quality.
 
 ## Detection Mechanisms
+
 The Amazon Chime SDK for JavaScript produces several kinds of events on the [AudioVideoObserver](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html) to monitor connectivity and quality. Use the following events and key health metrics to monitor the performance of the meeting session in real time. For code snippets showing how to subscribe to these events, see [Monitoring and Alerts](https://github.com/aws/amazon-chime-sdk-js#monitoring-and-alerts).
 
 *Metrics derived from WebRTC stats are not guaranteed to be present in all browsers. In such cases the value may be missing.*
@@ -74,6 +97,7 @@ WebRTC will automatically reduce video frame rate, resolution, and bandwidth if 
 ### Mitigations to conserve CPU
 
 #### Application profiling
+
 Use the browser's built-in developer tools to profile your application and determine whether there are any hotspots. When handling real-time events (prefixed with `realtime`) ensure that you are doing as little processing as possible. See the [API Overview section on building a roster](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#5-build-a-roster-of-participants-using-the-real-time-api) for more information. In particular, look out for expensive DOM updates (such as when manipulating the roster or video tile layout).
 
 When possible, profile on devices that have similar performance characteristics to the ones you expect to be used by your end users.
@@ -90,7 +114,7 @@ Calling [pauseVideoTile](https://aws.github.io/amazon-chime-sdk-js/interfaces/au
 
 In the absence of packet loss, keep in mind that the sender uplink and receiver downlink consume the same bandwidth for each video tile. Mitigations affecting one sender's uplink can benefit all receiver's downlinks. This means that in order to help receiver's, sometimes the best course of action is to lower the bandwidth consumed by the sender.
 
-####  Adjust local video quality
+#### Adjust local video quality
 
 You can choose a video quality of up to 1280x720 (720p) at 30 fps using [chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) and [setVideoMaxBandwidthKbps(maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.
 

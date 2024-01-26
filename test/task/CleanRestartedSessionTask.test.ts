@@ -4,9 +4,9 @@
 import * as chai from 'chai';
 
 import { NScaleVideoUplinkBandwidthPolicy } from '../../src';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/SignalingAndMetricsConnectionMonitor';
@@ -38,18 +38,19 @@ describe('CleanRestartedSessionTask', () => {
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   let task: Task;
-  let browserBehavior: BrowserBehavior;
 
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
-    browserBehavior = new DefaultBrowserBehavior();
     context = new AudioVideoControllerState();
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
     context.transceiverController = new DefaultTransceiverController(
       context.logger,
-      browserBehavior
+      context.browserBehavior,
+      context
     );
     context.videoTileController = new DefaultVideoTileController(
       new DefaultVideoTileFactory(),
