@@ -988,6 +988,10 @@ export class DemoMeetingApp
     
       // Fetch the stored quiz data
       const storedQuiz: QuizJSON = JSON.parse(localStorage.getItem('quizJson') || '{}');
+          // set #view-larq-stats to go to https://app.larq.ai/quiz_id/results when clicked:
+          const viewLarqStats = document.getElementById('view-larq-stats') as HTMLAnchorElement;
+          viewLarqStats.href = `https://app.larq.ai/quiz/${storedQuiz.quiz_id}/results`;
+      
 
       // DREW ADDITIONS
 
@@ -6009,9 +6013,6 @@ function populateQuiz(dataString: string) {
         // alert(JSON.stringify(data));
         // save quiz_id to localstorage
 
-        // set #view-larq-stats to go to https://app.larq.ai/quiz_id/results when clicked:
-        const viewLarqStats = document.getElementById('view-larq-stats') as HTMLAnchorElement;
-        viewLarqStats.href = `https://app.larq.ai/quiz/${data.quiz_id}/results`;
 
         localStorage.setItem('quiz_id', data.quiz_id);
         document.getElementById("quiz-form-title")!.textContent = data.title;
