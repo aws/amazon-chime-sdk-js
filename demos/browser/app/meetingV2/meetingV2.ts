@@ -285,18 +285,15 @@ interface QuizJSON {
 
 }
 
-interface Answer{
-    questionNumber: number
-    answer: string | null
-    isCorrect: boolean 
-}
 
 interface QuizAttempt {
   quiz_id: string
   score: number
   timestamp: string
   user_id: string | null
-  answers: Answer[];
+  // incorrect is a list of numbers
+  incorrect: number[]
+  correct: number[]
 }
 
 type Field = {
@@ -1293,6 +1290,8 @@ updateBodyBackgroundColor();
         const quizTitle = quizJson.quiz_title;
         console.log(quizTitle);
 
+        
+
         const quizTitleHTML = document.getElementById('quiz-title') as HTMLElement;
         quizTitleHTML.innerText = quizTitle;
 
@@ -1330,6 +1329,7 @@ updateBodyBackgroundColor();
             questionBlock.addEventListener('click', function () {
               // Display the selected question and its options
 
+
                     console.log('questionNumber', questionNumber);
                     const currentActive = document.querySelector('.numbers-block.active-numbers-block');
                     if (currentActive) {
@@ -1337,13 +1337,13 @@ updateBodyBackgroundColor();
                     }
                     questionBlock.classList.add('active-numbers-block');
 
-                    quizQuestionElement.innerText = question.question;
+                    quizQuestionElement.innerText = quizJson.questions[questionNumber-1].question;
                     quizOptions.innerHTML = ''; // Clear previous options
-
-                    let correctAnswer = question.correct_answer;
-                    let wrongAnswers = question.wrong_answers;
+                    
+                    let correctAnswer = quizJson.questions[questionNumber-1].correct_answer;
+                    let wrongAnswers = quizJson.questions[questionNumber-1].wrong_answers.filter((answer: string) => answer != null);
                     let allAnswers = [correctAnswer, ...wrongAnswers]; // No randomization
-
+                
                     allAnswers.forEach((answer, ansIndex) => {
                       let optionLabel = document.createElement('label');
                       optionLabel.className = 'form-check form-check-inline';
@@ -1358,11 +1358,13 @@ updateBodyBackgroundColor();
                       if (answer === correctAnswer) {
                         // Check the correct answer
                         optionInput.checked = true;
-                        optionLabel.classList.add('correct-answer');
+                        
                       }
-                      else{
-                        optionLabel.classList.remove('correct-answer');
-                      }
+                      optionLabel.classList.toggle('correct-answer', answer === correctAnswer);
+
+                      // Update local storage
+                     localStorage.setItem('quizJson', JSON.stringify(quizJson));
+
 
                       let answerselectorLabel = document.createElement('label');
                       answerselectorLabel.className = 'btn btn-outline';
@@ -1390,7 +1392,7 @@ updateBodyBackgroundColor();
                                     this.contentEditable = 'false';
                         
                                     if (newText !== originalText) {
-                                        question.question = newText;
+                                      quizJson.questions[questionNumber-1].question = newText;
                                         localStorage.setItem('quizJson', JSON.stringify(quizJson));
                                         console.log('quizJson in localstorage:', quizJson);
                                     }
@@ -1422,35 +1424,61 @@ updateBodyBackgroundColor();
                                 optionLabel.classList.add('editing');
                                 // optionLabel.classList.add('form-control');
                                 this.focus();
-                                const originalText = answerLabel.value;
+                                // const originalText = answerLabel.value;
                 
-                                answerLabel.addEventListener('blur', () => {
-                                  const newText = answerLabel.value?.trim() || '';
-                                    answerLabel.contentEditable = 'false';
-                                    optionLabel.classList.remove('editing');
-                                    // optionLabel.classList.remove('form-control');
+                                // answerLabel.addEventListener('blur', () => {
+                                //   let newText = this.value.trim();
+                                //   answerLabel.contentEditable = 'false';
+                                //     optionLabel.classList.remove('editing');
+                                //     // optionLabel.classList.remove('form-control');
                     
-                                        if (newText === '') {
-                                          answerLabel.value = answer;
-                                        }
+                                //         if (newText === '') {
+                                //           answerLabel.value = answer;
+                                //         }
+                                        
                                       
-                                        if (newText !== originalText) {
-                                          // Update the answer label in the DOM
-                                          answerLabel.value = newText;
-                                      }
-                                      if (optionInput.checked) {
-                                        // If this option is checked, update the correct answer
-                                        question.correct_answer = newText;
-                                           } else {
-                                        // Update a wrong answer
-                                        question.wrong_answers[ansIndex - 1] = newText;
-                                          }
+                                //         if (newText !== originalText) {
+                                //           // Update the answer label in the DOM
+                                //           answerLabel.value = newText;
+                                          
+                                //       }
+                                //       if (optionInput.checked) {
+                                //         // If this option is checked, update the correct answer
+                                //         question.correct_answer = newText;
+                                //         quizJson.questions[index].correct_answer = newText;
+
+                                //            } else {
+                                //         // Update a wrong answer
+                                //         question.wrong_answers[ansIndex - 1] = newText;
+                                //         quizJson.questions[index].wrong_answers[ansIndex - 1] = newText;
+
+                                //           }
                                                           
-                                        localStorage.setItem('quizJson', JSON.stringify(quizJson));
-                                        console.log('quizJson in localstorage:', quizJson);
+                                //         localStorage.setItem('quizJson', JSON.stringify(quizJson));
+                                //         console.log('quizJson in localstorage:', quizJson);
   
-                          }, { once: true }); // Ensure the blur event only fires once per editing session
-                         
+                          // }, { once: true }); // Ensure the blur event only fires once per editing session
+                          answerLabel.addEventListener('blur', function () {
+                            let newText = this.value.trim();
+                            if (newText !== answer) {
+                              // Update the correct answer if this is the selected option
+                              if (optionInput.checked) {
+                                quizJson.questions[index].correct_answer = newText;
+                              } else {
+                                // Find the index for the wrong answer and update
+                                let wrongAnswerIndex = quizJson.questions[index].wrong_answers.indexOf(answer);
+                                if (wrongAnswerIndex !== -1) {
+                                  quizJson.questions[index].wrong_answers[wrongAnswerIndex] = newText;
+                                }
+                              }
+                              // Update local storage
+                              localStorage.setItem('quizJson', JSON.stringify(quizJson));
+                            }
+                          });
+                    
+                          
+
+
                           // if there has been a click that is not the option label, then remove the editing class
                           document.addEventListener('click', (event) => {
                             const target = event.target as HTMLElement;
@@ -1462,6 +1490,8 @@ updateBodyBackgroundColor();
                          
                           optionInput.addEventListener('change', () => {
                             if (optionInput.checked) {
+                              quizJson.questions[index].correct_answer = answerLabel.value.trim();
+
                               optionLabel.classList.add('correct-answer');
                               // remove the correct-answer class from all other options
                               const allOptionLabels = document.querySelectorAll('.form-check.form-check-inline');
@@ -1472,7 +1502,7 @@ updateBodyBackgroundColor();
                               });
                               
                                 // Update the correct answer.
-                                question.correct_answer = answerLabel.innerText;
+                                quizJson.questions[questionNumber-1].correct_answer = answerLabel.innerText;
                                 localStorage.setItem('quizJson', JSON.stringify(quizJson));
                                 console.log('quizJson in localstorage:', quizJson);
                             }
@@ -5812,13 +5842,9 @@ const defaultQuizAttempt = {
   timestamp: new Date().toISOString(),
   user_id: localStorage.getItem('userId') || "", // If there's no user_id, it defaults to an empty string.
   score: 0,
-  answers: [
-    {
-      question_id: 0,
-      answer: "",
-      correct: false,
-    },
-  ],
+  correct: [] as number[], // if the array should hold numbers
+  incorrect: [] as number[], // if the array should hold numbers
+
 };
 
 
@@ -5829,19 +5855,19 @@ const defaultQuizAttempt = {
 function submitQuizAttempts() {
   const url = "https://api.larq.ai/MakeQuizAttempt";
   const storedData = localStorage.getItem('QuizAttempts');
-  let quiz_id = localStorage.getItem('quiz_id');
   // let quizID = localStorage.getItem('quizID');
   const QuizAttempts = storedData ? JSON.parse(storedData) : defaultQuizAttempt;
   console.log("QuizAttempts to sent to larq API:",QuizAttempts);
+  let quiz_id = QuizAttempts.quiz_id;
   QuizAttempts['user_id'] = localStorage.getItem('userId') || "";
   QuizAttempts['quiz_id'] = quiz_id || "";
   // QuizAttempts['quizID'] = quizID || "";
-  const totalQuestions = (QuizAttempts as any).answers.length;
 
   // Get QuizAttempts.score by calculating the number of answers.isCorrect === true:
   // DO THIS BUT TAKE INTO ACCOUNT A POSSIBLY NULL RESULT, MEANING A 0: QuizAttempts.score = QuizAttempts.answers.filter((answer: any) => answer.isCorrect).length / totalQuestions;
   
-  QuizAttempts.score = QuizAttempts.answers.filter((answer: any) => answer.isCorrect).length / totalQuestions;
+  QuizAttempts.score = QuizAttempts.correct.length / (QuizAttempts.correct.length + QuizAttempts.incorrect.length) * 100;
+
 
   // alert("Your score is: " + QuizAttempts.score);
   fetch(url, {
@@ -5874,9 +5900,8 @@ const QuizAttempts: QuizAttempt = existingAttempts
         timestamp: new Date().toISOString(),
         user_id: userId,
         score: 0,
-        answers:[
-
-        ]
+        correct: [],
+        incorrect: []
     };
 
 
@@ -5918,42 +5943,44 @@ function displayQuestion(index: number, data: FormData) {
       input.addEventListener("change", () => {
         if (!optionSelected) {
           optionSelected = true;
+        // Disable all options
+        const allOptions = answersContainer.querySelectorAll(`input[name='question_${index}']`);
+        allOptions.forEach(opt => (opt as HTMLInputElement).disabled = true);
+
         const correctAnswer = question.correct_answer;
         // set a boolean variable to true if attempt has been made:
         let attempted = false;
 
         if (!attempted){
         if (option === correctAnswer) {
-            QuizAttempts.answers.push({
-              questionNumber: index,
-              answer: option,
-              isCorrect: true
-            }); 
+            QuizAttempts.correct.push(index); 
             attempted = true;
-          }
-          radioDiv.className = "form-check form-check-inline radioBox incorrect-answer"; // Highlight correct answer with green outline
-        } else {
+            radioDiv.className += " correct-answer"; // Highlight correct answer with green outline
+
+          } else {
+            radioDiv.className += " incorrect-answer"; // Highlight incorrect answer
+
+
           // same as the other but false
-          QuizAttempts.answers.push({
-            questionNumber: index,
-            answer: option,
-            isCorrect: false
-          }); 
+          QuizAttempts.incorrect.push(index); 
           attempted = true;
 
-          radioDiv.className = "form-check form-check-inline radioBox correct-answer"; // Highlight correct answer with 
           // find the option with the correct answer and highlight it
           // const correctAnswerIndex = question.options.indexOf(correctAnswer);
           // const correctAnswerInput = document.getElementById(`answer_${index}_${correctAnswerIndex}`) as HTMLInputElement;
 
           const correctAnswerInput = document.getElementById(`answer_${index}_${correctAnswerIndex}`) as HTMLInputElement;
-          correctAnswerInput.parentElement!.className = "form-check form-check-inline radioBox correct-answer";
+          correctAnswerInput.parentElement!.className += " correct-answer";
     
+        }
 
           // correctAnswerInput.parentElement!.className = "form-check form-check-inline radioBox correct-answer";
-        } 
+        // now set the quizattempts to localstorage
+        localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
       }
-      });
+
+      }
+    });
 
       
       const label = document.createElement("label");
@@ -5968,6 +5995,12 @@ function displayQuestion(index: number, data: FormData) {
   }
 }
 
+function resetQuiz() {
+  localStorage.removeItem('QuizAttempts');
+  localStorage.removeItem('quiz_id');
+  localStorage.removeItem('quizJson');
+  // Reset any other related data here
+}
 
 // FUNCTION 3 - POPULATE THE QUIZ HANDLER
 function populateQuiz(dataString: string) {
@@ -5975,6 +6008,11 @@ function populateQuiz(dataString: string) {
         // alert with all the data json dumped
         // alert(JSON.stringify(data));
         // save quiz_id to localstorage
+
+        // set #view-larq-stats to go to https://app.larq.ai/quiz_id/results when clicked:
+        const viewLarqStats = document.getElementById('view-larq-stats') as HTMLAnchorElement;
+        viewLarqStats.href = `https://app.larq.ai/quiz/${data.quiz_id}/results`;
+
         localStorage.setItem('quiz_id', data.quiz_id);
         document.getElementById("quiz-form-title")!.textContent = data.title;
         document.getElementById("quiz-taker-title")!.textContent = data.title;
@@ -6014,18 +6052,14 @@ function populateQuiz(dataString: string) {
                         answerSelected = true; // Mark that an answer has been selected
                         const correctAnswer = field.correct_answer;
                           if (option === correctAnswer) {
-                            if (!QuizAttempts.answers[index].isCorrect) {
-                              QuizAttempts.answers[index].isCorrect = true;
-                            
-                            }
+                            // add index to QuizAttempts.correct
+                            QuizAttempts.correct.push(index);
                             answerOption.classList.add('correct-answer'); // Instead of green outline, add .correct-answer
                           } else {
                             answerOption.classList.add('incorrect-answer'); // Instead of green outline, add .correct-answer
                             // push incorrect answer to QuizAttempts, unles it's already there
-                            if (QuizAttempts.answers[index].isCorrect) {
-                              QuizAttempts.answers[index].isCorrect = false;
-                            }
-                              
+                            QuizAttempts.incorrect.push(index);
+                            
                           }
       
                           // Disable all other options for this question
@@ -6050,24 +6084,27 @@ function populateQuiz(dataString: string) {
             }
         });
 
-
+      // Save quizattempts to localstorage
+      localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
       let currentQuestionIndex = 0; // To track which question is currently displayed
       
 
       // When the next button is clicked
       document.getElementById("quiz-taker-next")!.addEventListener("click", () => {
-        currentQuestionIndex++;
         if (currentQuestionIndex < data.fields.length) {
           displayQuestion(currentQuestionIndex, data);
         } else {
-          QuizAttempts.score = QuizAttempts.answers.filter((answer: any) => answer.isCorrect).length / QuizAttempts.answers.length;
+          QuizAttempts.score = QuizAttempts.correct.length / (QuizAttempts.correct.length + QuizAttempts.incorrect.length) * 100;
           // You can redirect or show results here when all questions are done.
             alert(`Quiz completed! You got ${QuizAttempts.score} right!`);
             localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
             submitQuizAttempts();
+            resetQuiz();
             document.getElementById("starting_quiz_container")!.style.display = "none";
             document.getElementById("roster-tile-container")!.style.display = "block";
         }
+        currentQuestionIndex++;
+
     });
 
     displayQuestion(currentQuestionIndex, data); // Display the first question initially

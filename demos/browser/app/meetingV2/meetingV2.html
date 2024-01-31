@@ -1046,7 +1046,9 @@
           </div>
         </div>
           <!-- DREW FORM TESTS : REMOVE DISPLAY BLOCKS -->
-        <div id="myDIV" class=" my-4 my-sm-0 quizBlock animate__animated animate__slideOutRight scrollbar-y-design">
+        <div id="myDIV" class=" my-4 my-sm-0 quizBlock animate__animated scrollbar-y-design" style="display:none">
+          <div id="create-quiz-not-host" class="h-100 d-none"><div class="d-flex flex-column h-100 scrollbar-new-design" style="overflow-y: overlay;"><div><div class="d-flex justify-content-end mb-3"><button type="button" class="btn-close cancel-button" id="close-quiz"></button></div><div class="quiz-heading">Create an Automated Quiz</div><h3 class="p-4 my-3">Host a Larq meeting to make Quizzes for your sessions!</h3>
+          <div class="btn btn-success w-100 py-2 my-3">Request Host Access</div></div></div></div>
           <div id="create-quiz" style="display: block;" class="h-100">
             <div class="d-flex flex-column h-100 scrollbar-new-design"
               style="overflow-y: overlay;">
@@ -1158,8 +1160,7 @@
 
           </div>
           </div>
-          <div id="create-quiz-not-host" style="display: none;" class="h-100"><div class="d-flex flex-column h-100 scrollbar-new-design" style="overflow-y: overlay;"><div><div class="d-flex justify-content-end mb-3"><button type="button" class="btn-close cancel-button" id="close-quiz"></button></div><div class="quiz-heading">Create an Automated Quiz</div><h3 class="p-4 my-3">Host a Larq meeting to make Quizzes for your sessions!</h3>
-          <div class="btn btn-success w-100 py-2 my-3">Request Host Access</div></div></div></div>
+        
           <div id="generating-quiz" class="h-100" style="display: none;">
             <div class="loading-block justify-content-between">
               <div class="d-flex flex-column align-items-center justify-content-end h-50">
@@ -1257,11 +1258,13 @@
                     data-bs-toggle="modal" data-bs-target="#end-quiz-modal">End Quiz</button>
                 </div>
                 <div class="tabs-block">
-                  <p id="participants" class="activeTabs">Participants</p>
+                  <p id="participants" class="activeTabs">Attempts</p>
                   <p id="queries">Queries</p>
                 </div>
                 <div id="participants-block" class="tab-sections" style="display: block;">
-                  <div class="col-lg-12 col-md-12 col-12">
+                  <a href="https://app.larq.ai" target="_blank" id="view-larq-stats"><div class="btn btn-primary m-2"><h5>View Attempts in Larq Dashboard
+                  </h5></div></a>
+                  <div class="col-lg-12 col-md-12 col-12 d-none">
                     <div class="sub-header">In progress (<span></span>)</div>
                     <div class="listingBlock mb-2">
 
