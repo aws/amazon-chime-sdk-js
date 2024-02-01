@@ -216,7 +216,6 @@ import RealtimeSubscribeToAttendeeIdPresenceCallback from './realtimecontroller/
 import RealtimeVolumeIndicator from './realtimecontroller/RealtimeVolumeIndicator';
 import ReceiveAudioInputTask from './task/ReceiveAudioInputTask';
 import ReceiveRemoteVideoPauseResumeTask from './task/ReceiveRemoteVideoPauseResumeTask';
-import ReceiveTURNCredentialsTask from './task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
 import ReconnectController from './reconnectcontroller/ReconnectController';
@@ -566,7 +565,6 @@ export {
   RealtimeVolumeIndicator,
   ReceiveAudioInputTask,
   ReceiveRemoteVideoPauseResumeTask,
-  ReceiveTURNCredentialsTask,
   ReceiveVideoInputTask,
   ReceiveVideoStreamIndexTask,
   ReconnectController,
