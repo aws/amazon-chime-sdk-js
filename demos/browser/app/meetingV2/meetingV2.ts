@@ -1706,6 +1706,8 @@ document.querySelector('#loginForm')?.addEventListener('submit', (event: Event) 
   }).then((data: ResponseData) => {
     if (data.status === 'success') {
     console.log('Success:', data);
+    // first clear the local storage
+    localStorage.clear();
     localStorage.setItem('authToken', data.token!);
     localStorage.setItem('firstName', data.first_name!);
     localStorage.setItem('lastName', data.last_name!);
@@ -5862,7 +5864,7 @@ function submitQuizAttempts() {
   // let quizID = localStorage.getItem('quizID');
   const QuizAttempts = storedData ? JSON.parse(storedData) : defaultQuizAttempt;
   console.log("QuizAttempts to sent to larq API:",QuizAttempts);
-  let quiz_id = QuizAttempts.quiz_id;
+  let quiz_id =  localStorage.getItem('quiz_id');
   QuizAttempts['user_id'] = localStorage.getItem('userId') || "";
   QuizAttempts['quiz_id'] = quiz_id || "";
   // QuizAttempts['quizID'] = quizID || "";

@@ -889,7 +889,7 @@
     <audio id="meeting-audio" style="display:none"></audio>
     <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column;">
       <div id="starting_quiz_container" style="gap: 20px;display: none;">
-        <div class="quizContainer h-90 shadow scrollbar-y-design" style="width: 70%;">
+        <div class="quizContainer h-90 shadow scrollbar-y-design">
           <div class="d-flex justify-content-end mb-3">
             <button type="button" class="btn-close cancel-button"></button>
           </div>
@@ -960,7 +960,7 @@
       </div>
       <div id="roster-tile-container" class="d-flex flex-sm-grow-1 overflow-hidden h-100 p-3"
         style="flex: unset;gap: 10px; ">
-        <div id="roster-message-container" class="d-flex flex-column h-100 animate__animated animate__slideInLeft" style="width: 20%;">
+        <div id="roster-message-container" class="flex-column h-100 animate__animated animate__slideInLeft" style="width: 20%;">
           <div id="roster-menu-container" class="justify-content-end py-2 gap-3"
             style="flex: 0 0 auto; border-color: transparent !important;">
             <div id="roster-menu-instruction" class="d-flex align-items-center"></div>
@@ -1430,7 +1430,7 @@
               <input id="content-share-item" type="file">
             </div>
           </div>
-          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle microphone">
+          <div class="d-none btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle microphone">
             <div class="iconButton">
               <button id="button-live-transcription" title="Toggle live transcription display" data-bs-toggle="button"
                 aria-pressed="false" type="button">
@@ -1948,13 +1948,13 @@
         <div class="modal-body ">
           <div class="modal-details">
             The teacher is inviting you to take a quiz.
-            <span id="quiz-form-title">Chapter 1 - Photosynthesis</span>
+            <span id="quiz-form-title">No Quiz Found.</span>
 
           </div>
 
         </div>
         <div class="d-flex justify-content-between align-items-center">
-          <div class="timing-details">Will automatically start in 00:56 seconds</div>
+          <div class="timing-details">Will automatically start in 00:59 seconds</div>
           <button id="starting-quiz" type="button" class="customButton" data-bs-dismiss="modal"
             style="width: 40%;">Start the Quiz</button>
         </div>

@@ -86,6 +86,7 @@ a:hover {
   #tile-area {
     display: flex;
     flex-wrap: wrap;
+    margin-left:2%
   }
 
   #tile-area > div {
@@ -98,8 +99,7 @@ a:hover {
   }
 
   #tile-area > video-tile {
-    width: 50% !important;
-    padding-bottom: 33% !important;
+    width: 96% !important;
   }
 
   #tile-area > video-tile > video {
@@ -126,6 +126,16 @@ a:hover {
 
   #roster-message-container{
     position: absolute;
+    z-index: 1000;
+  }
+  #messagingContainer{
+    display:none;
+  }
+  #starting_quiz_container{
+    width:100%
+  }
+  .quizContainer{
+    width:100%;
     z-index: 1000;
   }
 
@@ -1029,6 +1039,10 @@ a.markdown:active {
 }
 
 .transcript-container {
+
+// REMOVE IT ALTOGETHER
+opacity:0;
+
   max-height: 210px;
   margin-bottom:2%;
   overflow-y: scroll;
@@ -2413,6 +2427,10 @@ input[type="Submit"]:hover{
     margin: 15px 0; /* Adjusted margin */
     font-size: 14px; /* Adjusted font size */
   }
+#tile-area{
+  background-size: 90%;
+}
+
 }
 
 /* bigshot one font */
@@ -3003,13 +3021,13 @@ padding:5px
 /* Footer bar */
 .footer-bar {
   overflow-x: auto;
-  height: 70px; /* Initial height */
+  height: 80px; /* Initial height */
   transition: height 0.3s ease-in-out;
 }
 
 .footer-bar:hover,
 .footer-bar:active {
-  height: 100px; /* Height on hover and click */
+  height: 110px; /* Height on hover and click */
 }
 
 /* Horizontal scrollbar design */
