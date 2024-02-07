@@ -1200,6 +1200,7 @@ opacity:0;
 #receive-message{
   padding-top: 5px;
   margin-right: 5px;
+  max-height: 55%;
   flex:none
 }
 
@@ -2547,6 +2548,11 @@ input[type="Submit"]:hover{
     .form-check-inline{
       width:100%;
       padding:10px
+    }
+    #form-failed-meeting{
+      top: 15%;
+      left: 10%;
+      position: absolute;
     }
     .correct-marker{
       border-top-right-radius: 0px;

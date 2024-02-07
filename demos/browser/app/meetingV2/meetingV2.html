@@ -511,7 +511,7 @@
           <div class="card-body">
             <h4 class="card-title">Unable to find meeting</h4>
             <p class="card-text">There was an issue finding that meeting. The meeting may have already ended, or your
-              authorization may have expired.</p>
+              authorization may have expired.  </p>
             <small id="failed-meeting-error" class="text-muted"></small>
           </div>
         </div>
@@ -998,7 +998,7 @@
               </ul>
             </div>
           </div>
-          <div class="bs-component scrollbar-y-design" style="flex: 1 1 auto; overflow-y: auto; height: 30%;">
+          <div class="bs-component scrollbar-y-design" style="flex: 1 1 auto; overflow-y: auto; min-height: 20%;">
             <a href="https://app.larq.ai" id="back-button3"><p class="btn btn-primary">&lt;- Return to Dashboard</p></a>
             <ul id="roster" class="list-group"></ul>
           </div>
@@ -1532,6 +1532,11 @@
 
         <!-- TOGGLE ICONS -->
         <div id="toggle-icons" class="text-center bg-primary bottom-0 position-fixed animate__animated animate__fadeInUp" style="display: none;z-index: 100;">
+          
+          <!-- VIDEO FILTER BUTTON -->
+          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Leave Meeting"><div class="iconButton"><button id="button-meeting-leave" type="button" title="Video Filters"><svg width="800px" height="800px" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg" class="svg-inactive"><path d="M4 20V19M8 20V16M12 20V12M16 20V8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><p>Video Filters</p></div><button style="border:none" id="button-video-filter-drop" type="button" class="btn dropdown-toggle dropdown-toggle-split btn-success" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button></div>
+          <!-- END VIDEO FILTER -->
+          
           <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Transcription">
             <div class="iconButton">
               <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2" title="Start Transcription"
@@ -1539,9 +1544,9 @@
               <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
             </button>
             </div>
-            <button style="height: 32px; border:none" id="button-video-filter-drop" type="button"
+            <!-- <button style="height: 32px; border:none" id="button-video-filter-drop" type="button"
               class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+              aria-haspopup="true" aria-expanded="false" title="Select filter"></button> -->
             <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
               aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
               <a class="dropdown-item" href="#">No filter</a>
@@ -1641,7 +1646,7 @@
                 aria-pressed="false" autocomplete="off" style="display: none">
                 <%= require('../../node_modules/open-iconic/svg/code.svg') %>
               </button> -->
-              <div class="iconButton d-inline w-fit-content">
+              <div class="iconButton d-none w-fit-content">
                 <button id="button-video-stats" type="button" class="mx-1 mx-xl-2 my-2"
                   title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false"
                   autocomplete="off">
