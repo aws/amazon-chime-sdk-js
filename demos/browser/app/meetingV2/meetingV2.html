@@ -54,14 +54,14 @@
           font-weight: 600;
           font-size: 19px;
       ">
-      <div class="signup_link" id="go-to-register">Not a Member ? <b id="button-signup">Signup</b><br>Or <a href="#" id="join-view-only" class="form-check-input" style="
+      <div class="signup_link" id="go-to-register">Not a Member ? <b id="button-signup">Signup</b><br>Or <a href="https://teachserv.com/wp-login.php">Sign in with Teachserv</a>
+        <a href="#" id="join-view-only" class="form-check-input" style="
           background: none;
           padding: 5px;
           font-weight: 800;
           border: none;
           display:none;
       "><label for="join-view-only" class="form-check-label">Join Meeting As Guest</label></a></div>
-      <a href="https://teachserv.com/wp-login.php">Sign in with Teachserv</a>
       
     </form>
 
@@ -1532,11 +1532,6 @@
 
         <!-- TOGGLE ICONS -->
         <div id="toggle-icons" class="text-center bg-primary bottom-0 position-fixed animate__animated animate__fadeInUp" style="display: none;z-index: 100;">
-          
-          <!-- VIDEO FILTER BUTTON -->
-          <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Leave Meeting"><div class="iconButton"><button id="button-meeting-leave" type="button" title="Video Filters"><svg width="800px" height="800px" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg" class="svg-inactive"><path d="M4 20V19M8 20V16M12 20V12M16 20V8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><p>Video Filters</p></div><button style="border:none" id="button-video-filter-drop" type="button" class="btn dropdown-toggle dropdown-toggle-split btn-success" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button></div>
-          <!-- END VIDEO FILTER -->
-          
           <div class="btn-group mx-1 mx-xl-2 " style="margin:10px 0px;" role="group" aria-label="Transcription">
             <div class="iconButton">
               <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2" title="Start Transcription"
@@ -1544,9 +1539,9 @@
               <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
             </button>
             </div>
-            <!-- <button style="height: 32px; border:none" id="button-video-filter-drop" type="button"
+            <button style="height: 32px; border:none" id="button-video-filter-drop" type="button"
               class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" title="Select filter"></button> -->
+              aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
             <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
               aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
               <a class="dropdown-item" href="#">No filter</a>
