@@ -6097,9 +6097,9 @@ function populateQuiz(dataString: string) {
         if (currentQuestionIndex < data.fields.length) {
           displayQuestion(currentQuestionIndex, data);
         } else {
-          QuizAttempts.score = QuizAttempts.correct.length / (QuizAttempts.correct.length + QuizAttempts.incorrect.length) * 100;
+          QuizAttempts.score = QuizAttempts.correct.length / (QuizAttempts.correct.length + QuizAttempts.incorrect.length);
           // You can redirect or show results here when all questions are done.
-            alert(`Quiz completed! You got ${QuizAttempts.score} right!`);
+            alert(`Quiz completed! You got ${QuizAttempts.score}% right!`);
             localStorage.setItem('QuizAttempts', JSON.stringify(QuizAttempts));
             submitQuizAttempts();
             resetQuiz();
