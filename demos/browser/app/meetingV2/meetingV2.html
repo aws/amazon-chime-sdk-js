@@ -15,7 +15,7 @@
   <title>Meeting Demo</title>
 </head>
 
-<body class="h-100">
+<body class="h-100 scrollbar-new-design">
 
   <!-- Login Page -->
 <div class="login container animate__animated animate__fadeInDown" id="login-container" style="display:none">
@@ -998,16 +998,16 @@
               </ul>
             </div>
           </div>
-          <div class="bs-component scrollbar-y-design" style="flex: 1 1 auto; overflow-y: auto; min-height: 20%;">
-            <a href="https://app.larq.ai" id="back-button3"><p class="btn btn-primary">&lt;- Return to Dashboard</p></a>
+          <div class="bs-component scrollbar-y-design p-1" style="flex: 1 1 auto; overflow-y: auto; height: 20%;max-height:25%">
+            <a href="https://app.larq.ai" id="back-button3"><p class="btn btn-primary px-4">Return to Dashboard</p></a>
             <ul id="roster" class="list-group"></ul>
           </div>
           <div class="message d-flex flex-column pt-1" id="messages"
-            style="flex: 1 1 auto; overflow: hidden; height: 100%;">
-            <div class="list-group receive-message scrollbar-new-design" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
+            style="flex: 1 1 auto; overflow: hidden; height: 80%;">
+            <div class="list-group receive-message scrollbar-new-design my-2" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
             border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
             <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
-              <textarea class="form-control shadow-none" id="send-message" rows="1"
+              <textarea class="form-control shadow-none scrollbar-new-design" style="height: 100px; padding: 15px;" id="send-message" rows="1"
                 placeholder="Type a message (markdown supported)"></textarea>
             </div>
           </div>
@@ -1046,7 +1046,7 @@
           </div>
         </div>
           <!-- DREW FORM TESTS : REMOVE DISPLAY BLOCKS -->
-        <div id="myDIV" class=" my-4 my-sm-0 quizBlock animate__animated scrollbar-y-design" style="display:none">
+        <div id="myDIV" class=" my-4 my-sm-0 quizBlock animate__animated scrollbar-new-design" style="display:none">
           <div id="create-quiz-not-host" class="h-100 d-none"><div class="d-flex flex-column h-100 scrollbar-new-design" style="overflow-y: overlay;"><div><div class="d-flex justify-content-end mb-3"><button type="button" class="btn-close cancel-button" id="close-quiz"></button></div><div class="quiz-heading">Create an Automated Quiz</div><h3 class="p-4 my-3">Host a Larq meeting to make Quizzes for your sessions!</h3>
           <div class="btn btn-success w-100 py-2 my-3">Request Host Access</div></div></div></div>
           <div id="create-quiz" style="display: block;" class="h-100">
@@ -1292,7 +1292,7 @@
                 </div>
                 <div id="queries-block" class="queries-block tab-sections" style="display: block;">
                   <!-- <textarea id="queries-section" class="queries-section scrollbar-y-design"> -->
-                    <p>All user queries will be stored here.</p>
+                    <p>All attendee quiz questions will be stored here.</p>
                 </div>
               </div>
               <p id="quiz-timestamp"></p>
@@ -1318,7 +1318,7 @@
             style="font-size:0.65rem;">
           </div>
         </div>
-        <div class="col-8 col-lg-12 col-md-12 order-2 order-lg-2 text-left text-lg-center buttonfooter footer-bar shadow">
+        <div class="col-8 col-lg-12 col-md-12 order-2 order-lg-2 text-center buttonfooter footer-bar shadow">
           <div class="btn-group mx-1 mx-xl-2" role="group" aria-label="Toggle microphone">
             <div class="iconButton">
               <button id="button-microphone" type="button" title="Toggle microphone">
