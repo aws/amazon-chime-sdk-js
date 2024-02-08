@@ -5872,7 +5872,7 @@ function submitQuizAttempts() {
   // Get QuizAttempts.score by calculating the number of answers.isCorrect === true:
   // DO THIS BUT TAKE INTO ACCOUNT A POSSIBLY NULL RESULT, MEANING A 0: QuizAttempts.score = QuizAttempts.answers.filter((answer: any) => answer.isCorrect).length / totalQuestions;
   
-  QuizAttempts.score = QuizAttempts.correct.length / (QuizAttempts.correct.length + QuizAttempts.incorrect.length) * 100;
+  QuizAttempts.score = QuizAttempts.correct.length / (QuizAttempts.correct.length + QuizAttempts.incorrect.length);
 
 
   // alert("Your score is: " + QuizAttempts.score);
