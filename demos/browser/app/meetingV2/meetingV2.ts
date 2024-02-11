@@ -1255,8 +1255,9 @@ updateBodyBackgroundColor();
 
         // remove #generation-error if it exists:
         const generationError = document.getElementById('generation-error');
+        if (generationError.classList.contains('d-none') === false ) {
         generationError.classList.add('d-none');
-
+        }
         
         const url = "https://api.larq.ai/MakeQuiz";
         console.log("TRANSCRIPT DATA:", transcriptData);
@@ -1274,8 +1275,18 @@ updateBodyBackgroundColor();
         // if quizJson.success === false, alert the user and return
         if (quizJson.success === false) {
           generationError.classList.remove('d-none');
+          document.getElementById("quiz_question").style.display = 'none';
           // now make the error message the error message from the server
           generationError.innerText = quizJson.message;
+          create_quiz.style.display = 'block';
+          return;
+        } 
+        // else if no response, alert the user and return
+        else if (!response) {
+          generationError.classList.remove('d-none');
+          document.getElementById("quiz_question").style.display = 'none';
+          // now make the error message the error message from the server
+          generationError.innerText = 'There was an error generating the quiz. Please try again.';
           create_quiz.style.display = 'block';
           return;
         }
@@ -1545,20 +1556,18 @@ updateBodyBackgroundColor();
                 const starting_quiz_container = document.getElementById('starting_quiz_container');
                 const meeting_container = document.getElementById('meeting-container');
                 const roster_tile_container = document.getElementById('roster-tile-container');
+                const quiz_question = document.getElementById("quiz_question");
+
                 // Function to close the form (hide it in this case)
                 function closeForm() {
                     if (myDIV) {
+                      quiz_question.style.display = 'none';
                       meeting_container.style.display = 'block';  
                       video_container.style.display = 'block',
                       myDIV.style.display = 'none';
                       roster_tile_container.style.display = 'block';
-                    }
-                    if (starting_quiz_container){
-                      meeting_container.style.display = 'block';  
-                      video_container.style.display = 'block',
                       starting_quiz_container.style.display = 'none';
-                      roster_tile_container.style.display = 'block';
-                    }
+                                          }
                 }
             
                 // Listen to clicks on elements with class .btn-close and .cancel-button
