@@ -1261,7 +1261,7 @@ updateBodyBackgroundColor();
         
         const url = "https://api.larq.ai/MakeQuiz";
         console.log("TRANSCRIPT DATA:", transcriptData);
-        
+        try {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -1269,14 +1269,8 @@ updateBodyBackgroundColor();
             },
             body: JSON.stringify(transcriptData)
         })
-
         // Check if the response is ok (status in the range 200-299)
         if (!response.ok) {
-          generationError.classList.remove('d-none');
-          document.getElementById("quiz_question").style.display = 'none';
-          // now make the error message the error message from the server
-          generationError.innerText = 'There was an error generating the quiz. Please try again.';
-          create_quiz.style.display = 'block';
           throw new Error('Network response was not ok');
         }
 
@@ -1315,7 +1309,6 @@ updateBodyBackgroundColor();
         // localStorage.setItem('quizID', quizID);
         const quizTitle = quizJson.quiz_title;
         console.log(quizTitle);
-
         
 
         const quizTitleHTML = document.getElementById('quiz-title') as HTMLElement;
@@ -1551,11 +1544,29 @@ updateBodyBackgroundColor();
             });
           
           // Promise and quizbot
-          
+        } catch (error) {
+          console.error('Error:', error);
+          generationError.classList.remove('d-none');
+          document.getElementById("quiz_question").style.display = 'none';
+          // now make the error message the error message from the server
+          generationError.innerText = 'There was an error generating the quiz. Please try again.';
+          create_quiz.style.display = 'block';
+  
+  
+        }
+
 
 
           }
+
+          
+
+
+
         );
+
+
+
 
         // DREW CODE END
         // document.addEventListener('DOMContentLoaded', function() {

@@ -2519,7 +2519,7 @@ input[type="Submit"]:hover{
     }
 
     #myDIV{
-      width: 350px;
+      min-width: 350px;
       position: relative;
       right: 0px;
       padding-bottom: 12vh;
