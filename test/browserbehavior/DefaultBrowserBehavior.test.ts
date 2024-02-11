@@ -357,4 +357,26 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().supportsScalableVideoCoding()).to.be.true;
     });
   });
+
+  describe('Audio redundancy support', () => {
+    it('Does not support audio redundancy for firefox', () => {
+      setUserAgent(FIREFOX_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.false;
+    });
+
+    it('Does not support audio redundancy for chrome earlier than version 107', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.false;
+    });
+
+    it('Supports audio redundancy for chrome version 107 or later', () => {
+      setUserAgent(CHROME_116_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.true;
+    });
+
+    it('Supports audio redundancy for Safari', () => {
+      setUserAgent(SAFARI_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.true;
+    });
+  });
 });

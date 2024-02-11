@@ -4435,7 +4435,7 @@ describe('DefaultAudioVideoController', () => {
 
     it('can be started', async () => {
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-      domMockBehavior.browserName = 'chrome';
+      domMockBehavior.browserName = 'chrome116';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       audioVideoController = new DefaultAudioVideoController(
         configuration,

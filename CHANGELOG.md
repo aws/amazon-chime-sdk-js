@@ -20,7 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix reconnections when setting audio Attendee Capability to 'None' or 'Send' mid call. The connection health monitor will now look at all packets received on all candidate pairs instead of just audio received media packets.
-- Setup passthrough streams for insertable streams case in the redundant audio worker so that passthrough streams do not get blocked on the main thread
+- Setup passthrough streams for insertable streams case in the redundant audio worker so that passthrough streams do not get blocked on the main thread.
+- Disable redundant audio for Chrome 106 and earlier to fix video decoder failure on old Chrome versions with redundant audio turned on.
 
 ## [3.19.0] - 2023-09-20
 
