@@ -1269,6 +1269,17 @@ updateBodyBackgroundColor();
             },
             body: JSON.stringify(transcriptData)
         })
+
+        // Check if the response is ok (status in the range 200-299)
+        if (!response.ok) {
+          generationError.classList.remove('d-none');
+          document.getElementById("quiz_question").style.display = 'none';
+          // now make the error message the error message from the server
+          generationError.innerText = 'There was an error generating the quiz. Please try again.';
+          create_quiz.style.display = 'block';
+          throw new Error('Network response was not ok');
+        }
+
         // on response, show #html_quiz_question:
         const quizJson = await response.json();
 

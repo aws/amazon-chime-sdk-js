@@ -2519,9 +2519,11 @@ input[type="Submit"]:hover{
     }
 
     #myDIV{
-      width:350px;
-      position: absolute;
+      width: 350px;
+      position: relative;
       right: 0px;
+      padding-bottom: 12vh;
+      top: -10px;      
     }
 
     #quiz-options{
