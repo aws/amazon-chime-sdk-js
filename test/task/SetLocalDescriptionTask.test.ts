@@ -136,7 +136,7 @@ describe('SetLocalDescriptionTask', () => {
 
     it('will call setAudioPayloadTypes of transceiverController', async () => {
       domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.browserName = 'chrome';
+      domMockBehavior.browserName = 'chrome116';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.transceiverController = new DefaultTransceiverController(
         context.logger,

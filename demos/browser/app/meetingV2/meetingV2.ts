@@ -637,7 +637,7 @@ export class DemoMeetingApp
       }
     );
 
-    if (this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
+    if (!this.defaultBrowserBehavior.supportsAudioRedundancy()) {
       // Firefox currently does not support audio redundancy through insertable streams or
       // script transform so disable the redundancy checkbox
       (document.getElementById('disable-audio-redundancy') as HTMLInputElement).disabled = true;
