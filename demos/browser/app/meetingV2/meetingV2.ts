@@ -531,6 +531,20 @@ export class DemoMeetingApp
 
   // Drew Host paste
   
+  async muteAttendee(attendeeId: string): Promise<void> {
+    if (this.isHost()) {
+    try {
+      await this.audioVideo.realtimeMuteLocalAudio();
+      this.log(`Attendee has muted: ${attendeeId}`);
+    } catch (error) {
+      this.log(`Failed to mute attendee: ${error}`);
+    }
+  } else {
+    this.log('Only the host can mute attendees');
+  }
+}
+
+
   // Method for the host to remove an attendee
   async removeAttendee(attendeeId: string): Promise<void> {
     if (this.isHost()) {
@@ -547,7 +561,14 @@ export class DemoMeetingApp
   
   // Method to determine if the current user is the host
   isHost(): boolean {
-    return localStorage.getItem("userId") === localStorage.getItem("host_id");
+    if (localStorage.getItem("userId") === localStorage.getItem("host_id")){
+      this.allowAttendeeCapabilities = true;
+      return true;
+
+    } else {
+      this.allowAttendeeCapabilities = false;
+      return false;
+    }
   }
   
   // Method to pass host privileges to another attendee
@@ -854,13 +875,15 @@ export class DemoMeetingApp
       window.history.replaceState({}, document.title, newUrl);
 
     }
-    const verified = verifyToken(localStorage.getItem('authToken'));
+
+    var dash_page = document.getElementById('joining-page');
+    var joining_page = document.getElementById('main-page');
+
+    verifyToken(localStorage.getItem('authToken')).then(verified => {
     
-    
+
     // If meeting is specified and user is logged in:
     if (verified) {
-      var dash_page = document.getElementById('joining-page');
-      var joining_page = document.getElementById('main-page');
 
     document.getElementById('login-container').style.display = 'none';
     document.getElementById('loginForm').style.display = 'none';  
@@ -880,10 +903,13 @@ export class DemoMeetingApp
 
     // Else if meeting is specified and user is not logged in:
   } else {
+      localStorage.clear();
       document.getElementById('login-container').style.display = 'block';
       document.getElementById('loginForm').style.display = 'block';  
       joining_page.style.display = 'none';
-    };
+    }
+  });
+
 
     function verifyToken(token: string) { 
       return fetch(`https://api.larq.ai/verify-token?token=${token}`, {
@@ -1559,13 +1585,9 @@ updateBodyBackgroundColor();
 
           }
 
-          
-
 
 
         );
-
-
 
 
         // DREW CODE END
@@ -2970,9 +2992,8 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
     });
     
 
-    
+    // STUDENT'S FORUM VIEW
     const textAreaSendForumMessage = document.getElementById('forumContainer') as HTMLTextAreaElement;
-    // const queries_block = document.getElementById('queries-block2') as HTMLTextAreaElement;
     textAreaSendForumMessage.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         if (e.shiftKey) {
@@ -2983,32 +3004,21 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
           const textToSend = textArea.value.trim();
           const messageObject = {
             message: textToSend,
-            userId: window.demoMeetingAppInstance.meetingSession.configuration.credentials.attendeeId,
+            userId: localStorage.getItem('host_id'),
             time: Date.now(),
             selfID: window.demoMeetingAppInstance.meetingSession.configuration.credentials.attendeeId,
             selfName: window.demoMeetingAppInstance.meetingSession.configuration.credentials.attendeeId.split('#').slice(-1)[0]
           };
           // alert("messageObject : " + JSON.stringify(messageObject));
           window.demoMeetingAppInstance.sendForumMessage(messageObject);
+          const queriesBlock2 = document.getElementById('queries-block2');
+          queriesBlock2.innerHTML += `<div class="message-bubble-sender">You</div><div class="message-bubble-user"><p class="markdown">${textToSend}</p></div>`;
           textAreaSendForumMessage.rows = 1;
-          // queries_block.innerHTML += `<div class="list-group receive-message" style="flex: 1 1 auto; overflow-y: auto; border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"><div class="message-bubble-sender">Me</div><div class="message-bubble-self"><p class="markdown">${textAreaSendForumMessage.value.trim()}</p></div></div>`;
-          // queries_block.innerHTML += `<div class="message-bubble-sender">Me</div><div class="message-bubble-self"><p class="markdown">${textAreaSendForumMessage.value.trim()}</p></div>`;
-          // textArea.value = '';
+          textAreaSendForumMessage.value = '';
+
         }
       }
     });
-    // const textAreaSendForumMessage2 = document.getElementById('queries-block2') as HTMLTextAreaElement;
-    // textAreaSendForumMessage2.addEventListener('keydown', e => {
-    //   if (e.keyCode === 13) {
-    //     if (e.shiftKey) {
-    //       textAreaSendForumMessage2.rows++;
-    //     } else {
-    //       e.preventDefault();
-    //       sendForumMessage(userId);
-    //       textAreaSendForumMessage2.rows = 1;
-    //     }
-    //   }
-    // });
 
 
     const buttonMeetingEnd = document.getElementById('button-meeting-end');
@@ -3839,8 +3849,9 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
       if (dataMessage.topic === 'quizForumQuestion') {
         const senderName = dataMessage.senderExternalUserId.split('#').slice(-1)[0];
 
+        // if the sender is the same as the current user, update the queries block 2 with the question
         if (JSON.parse(dataMessage.text()).userId === this.meetingSession.configuration.credentials.attendeeId) {
-          // update queries-block2 with the question
+          // update queries block 2 with the question
           const question = JSON.parse(dataMessage.text()).message;
           const queriesBlock2 = document.getElementById('queries-block2');
           queriesBlock2.innerHTML += `<div class="message-bubble-sender">${senderName}</div><div class="message-bubble-self"><p class="markdown">${question}</p></div>`;
@@ -5629,7 +5640,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
   private redirectFromAuthentication(quickjoin: boolean = false): void {
     this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
-    this.name = (document.getElementById('inputName') as HTMLInputElement).value;
+    this.name = (document.getElementById('inputName') as HTMLInputElement).value || 'Anonymous User';
     this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
     this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
     this.enableEventReporting = (document.getElementById(
@@ -6146,108 +6157,105 @@ function populateQuiz(dataString: string) {
     
   }
 
+
+  function appendMessage(containerId: string, senderName: string, message: string, senderAttendeeId: string, selfID:string) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+  
+    // Sanitize message to prevent XSS
+    const sanitizedMessage = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  
+    const messageElement = document.createElement('div');
+    messageElement.innerHTML = `
+      <hr>
+      <div class="d-flex" data-user-id="${senderAttendeeId}">
+          <p class="pe-3 fw-bolder" data-user-id="${senderAttendeeId}">${senderName}</p> 
+          <p>Question <span>✋</span></p>
+      </div>
+      <h5>${sanitizedMessage}</h5>
+      <div class="customInput">
+          <input type="text" data-user-id="${senderAttendeeId}" placeholder="Respond" />
+      </div>
+    `;
+  
+    // Append the sanitized and created element to the container
+    container.appendChild(messageElement);
+  
+    // Add event listeners to new input fields for handling responses
+    const inputField = messageElement.querySelector('.customInput input');
+    if (inputField) {
+      
+      document.querySelectorAll('.customInput input').forEach((input: HTMLInputElement) => {  // Specify type here
+        input.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.key === 'Enter') {
+            const userId = input.getAttribute('data-user-id');
+            AsyncScheduler.nextTick(() => {
+              const textArea = input;
+              const textToSend = textArea.value.trim();  // Now TypeScript knows `value` exists
+
+              if (!textToSend) {
+                return;
+              }
+      
+              // alert(`sending Forum Question! ${textToSend}`);
+              let senderName = "Teacher";
+              const messageObject = {
+                  message: textToSend,
+                  userId: userId,
+                  time: Date.now(),
+                  selfID: selfID,
+                  senderName: senderName
+                };
+            
+              window.demoMeetingAppInstance.sendForumMessage(messageObject);
+                
+              const newReply = document.createElement('p');
+              newReply.className = "forum-reply d-block w-100";
+              newReply.textContent = `Me: ${textToSend}`;
+              input.parentElement!.parentElement!.appendChild(newReply);
+              // alert('added reply to forum question');
+              input.remove(); 
+              textArea.value = ''; 
+
+              });
+          }
+        });
+
+      });
+
+
+
+
+
+
+    }
+  }
+  
+
   // **************************
   // **************************
   // FORUM QUESTION HANDLER
   function showForumQuestion(dataMessage:any, selfID : string, senderName: string) {
     // make sure that "this." refers to the meeting application:
-
-    // alert("showing forum question for dataMessage:"+JSON.stringify(dataMessage) );
-    // Sample senderAttendeeId: 1f2e3d4c5b6a7z8y9x0w1v2u3t4s5r6q7p8o9n0m1l2k3j4i5h6g7f8e9d0c1b2a3
-    // console.log(`showing forum question: ${dataMessage} selfid - ${selfID}` );
-    const data = JSON.parse(dataMessage);
-    // Display the question in the forum 
-      // Access the DOM elements
-      const queriesBlock = document.getElementById('queries-block') as HTMLElement;
-
-      // Create a new query element and populate it with data from ForumQuestion
-          // const newQuery = document.createElement('div');
-
-          queriesBlock.innerHTML += `
-          <hr>
-              <div class="d-flex" data-user-id="${data.senderAttendeeId}">
-                  <p class="pe-3 fw-bolder" data-user-id="${data.senderAttendeeId}">${senderName}</p> 
-                  <p>Question <span>✋</span></p>
-              </div>
-              <h5>${data.message}</h5>
-              <div class="customInput">
-                  <input type="text" data-user-id="${data.senderAttendeeId}" placeholder="Respond" />
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
-                      <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />
-                      <path d="M5.71813 13.4979L4.03607 8.25383C3.55455 6.75305 4.86749 5.29226 6.36714 5.66164L19.0245 8.77372C20.6405 9.17066 21.0795 11.3136 19.7556 12.3427L9.38737 20.4057C8.15899 21.3607 6.38381 20.5649 6.2358 18.9924L5.71813 13.4979ZM5.71813 13.4979L12.4654 12.0472" stroke="#3F4149" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-              </div>
-          `;
-
-          document.querySelectorAll('.customInput input').forEach((input: HTMLInputElement) => {  // Specify type here
-            input.addEventListener('keydown', (e: KeyboardEvent) => {
-              if (e.key === 'Enter') {
-                const userId = input.getAttribute('data-user-id');
-                AsyncScheduler.nextTick(() => {
-                  const textArea = input;
-                  const textToSend = textArea.value.trim();  // Now TypeScript knows `value` exists
-
-                  if (!textToSend) {
-                    return;
-                  }
-          
-                  // alert(`sending Forum Question! ${textToSend}`);
-                  let senderName = "Teacher";
-                  const messageObject = {
-                      message: textToSend,
-                      userId: userId,
-                      time: Date.now(),
-                      selfID: selfID,
-                      senderName: senderName
-                    };
-                
-                  window.demoMeetingAppInstance.sendForumMessage(messageObject);
-                    
-                  // this.sendForumMessage(messageObject);
-                          // replace the div with the input and button with the text that was sent as a reply
-                  const newReply = document.createElement('p');
-                  newReply.className = "forum-reply d-block w-100";
-                  newReply.textContent = `Me: ${textToSend}`;
-                  input.parentElement!.parentElement!.appendChild(newReply);
-                  // alert('added reply to forum question');
-                  // input.remove(); 
-                  textArea.value = '';
-
-                  });
-              }
-            });
-          });
-        
-          
-          // queriesBlock.appendChild(newQuery);
-          
-          // Optionally, you can make the 'queries-block' section visible
-          queriesBlock.style.display = 'block';
-
-         if (data.userId !== selfID){
+      // datamessage:   const messageObject = {
+                //   message: textToSend,
+                //   userId: userId,
+                //   time: Date.now(),
+                //   selfID: selfID,
+                //   senderName: senderName
+                // };
+      const data = JSON.parse(dataMessage);
+      appendMessage('queries-block', senderName, data.message, data.selfID, selfID);
+      if (data.selfID !== selfID){
           // if the message's "to" is not the person receiving the receiving the message, don't display it
           return;
-        } else if (data.userId === selfID){
+        } else if (data.selfID === selfID){
           // if the message's "to" is the person receiving the receiving the message, display it
           // Create a new query element and populate it with data from ForumQuestion
           // const newQuery = document.createElement('div');
-          queriesBlock.innerHTML += `
-          <hr>
-              <div class="d-flex" data-user-id="${data.senderAttendeeId}">
-                  <p class="pe-3 fw-bolder" data-user-id="${data.senderAttendeeId}">${data.senderName}</p> 
-                  <p>Question <span>✋</span></p>
-              </div>
-              <h5>${data.message}</h5>
-              <div class="customInput">
-                  <input type="text" data-user-id="${data.senderAttendeeId}" placeholder="Respond" />
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" id="send-quiz-comment">
-                      <rect x="0.362305" width="23.6375" height="24.2175" rx="4" fill="#F2F2F8" />`
-
-            const queries_block = document.getElementById('queries-block2') as HTMLTextAreaElement;
-            // add 
-            queries_block.innerHTML += `<div class="list-group receive-message" style="flex: 1 1 auto; overflow-y: auto; border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"><div class="message-bubble-sender">${data.senderName}</div><div class="message-bubble-self"><p class="markdown">${data.message}</p></div></div>`
-            
-
+          const data = JSON.parse(dataMessage);
+          appendMessage('queries-block', senderName, data.message, data.selfID, selfID);
+        
 
   }
 
@@ -6347,92 +6355,5 @@ if (!textarea ) {
 if (!messagingContainer) {
   console.error("Messaging container not found.");
 }
-
-
-// // if enter is selected on the textarea #queries-section, then sendForumMessage of the text with no userId:
-// const querytextarea = document.getElementById('queries-section') as HTMLTextAreaElement;
-// textarea.addEventListener('keydown', (e: KeyboardEvent) => {
-//   if (e.key === 'Enter'){
-//     let textToSend = querytextarea.value.trim();
-//     let messageObject = {
-//       message: textToSend,
-//       userId: "",
-//       time: Date.now(),
-//       senderName: this.meetingSession.configuration.credentials.attendeeId,
-//     };
-//     sendForumMessage(messageObject);
-
-//   }
-// }
-
-// line 5927
-// Listen for the 'keydown' event on the textarea
-// const textAreaSendMessage = document.getElementById('forumContainer') as HTMLTextAreaElement;
-// textarea.addEventListener('keydown', e => {
-//   if (e.keyCode === 13) {
-//     if (e.shiftKey) {
-//       textAreaSendMessage.rows++;
-//     } else {
-//       e.preventDefault();
-//       sendForumMessage();
-//       alert("sending Forum Question!");
-      
-//       // AsyncScheduler.nextTick(() => {
-//         // Ensure you're calling these on the correct object, e.g., `this`
-//         if (this?.audioVideo && this?.dataMessageHandler && this?.meetingSession) {
-//           this.audioVideo.realtimeSendDataMessage(
-//             'quizForumQuestion',
-//             question,
-//             DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-//           );
-      
-//           const attendeeId = this.meetingSession.configuration.credentials.attendeeId;
-//           const externalUserId = this.meetingSession.configuration.credentials.externalUserId;
-      
-//           this.dataMessageHandler(
-//             new DataMessage(
-//               Date.now(),
-//               'quizForumQuestion',
-//               new TextEncoder().encode(question),
-//               attendeeId,
-//               externalUserId
-//             )
-//           );
-//         } else {
-//           console.error('One or more objects are undefined:', {
-//             audioVideo: this?.audioVideo,
-//             dataMessageHandler: this?.dataMessageHandler,
-//             meetingSession: this?.meetingSession,
-//           });
-//         }
-
-//                 // Create a new message row with the content and timestamp
-//                 const currentTime = new Date();
-//                 const formattedTime = currentTime.getHours() + ':' + String(currentTime.getMinutes()).padStart(2, '0') + ' PM';  // Format time as HH:mm PM
-//                 const messageRow = `
-//                     <div class="send-message">
-//                         <h4 class="message-heading">You<span>${formattedTime}</span></h4>
-//                         <p class="message-details">${textarea.value}</p>
-//                     </div>
-//                 `;
-                
-//                 // Append the new message row to the messaging container
-//                 messagingContainer.innerHTML += messageRow;
-                
-//                 // Clear the textarea
-//                 textarea.value = '';  // <-- Use the asserted textarea here
-        
-
-
-
-//     }
-//   }
-// });
-
-
-
-
-
-// 
 
 });

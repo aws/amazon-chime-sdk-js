@@ -18,10 +18,10 @@ function downloadDivContentAndLocalStorageDataAsTextFile(divId, localStorageKey,
     
     // Get the stored data from localStorage directly as a string.
     var storedData = localStorage.getItem(localStorageKey);
-
-    // convert the storedData object to a string
-    storedData = JSON.stringify(JSON.parse(storedData), null, '\n');
-    
+    if (storedData) {
+        storedData = JSON.stringify(JSON.parse(storedData), null, '\n');
+    }
+        
     // Combine both the div content and the stored data.
     var combinedContent = 'Detailed Summary:\n\n' + divContent + '\n\nLocal Storage Data:\n\n' + storedData;
     
@@ -229,6 +229,7 @@ document.getElementById('cancelBtn').addEventListener('click', function() {
     document.getElementById('cancelBtn').classList.add('d-none');
     // Remove the vectorID from localStorage
     localStorage.removeItem('vector_id');
+    localStorage.removeItem('storeName');
 
 
 });
