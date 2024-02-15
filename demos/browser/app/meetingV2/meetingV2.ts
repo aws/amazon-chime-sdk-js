@@ -990,10 +990,10 @@ export class DemoMeetingApp
     buttonTranscription.addEventListener('click', _e => {
       var x = document.getElementById('transcript-container');
       if (x.style.display === 'none') {
-        x.style.display = 'block';
+        // x.style.display = 'block';
         this.toggleButton('button-live-transcription');
       } else {
-        x.style.display = 'none';
+        // x.style.display = 'none';
         this.toggleButton('button-live-transcription');
       }
     });
