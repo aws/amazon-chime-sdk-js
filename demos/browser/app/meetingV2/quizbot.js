@@ -166,6 +166,7 @@ function uploadPDF(pdfFile, userId) {
             storeName.innerText = result.store_name;
             storeName.classList.remove('d-none');
             uploadBtn.textContent = "Uploaded";
+            uploadBtn.disabled = true;
             uploadBtn.classList.remove('btn-outline-danger');
             uploadBtn.classList.add('btn-outline-success');
             uploadBtn.classList.remove('d-none');
@@ -220,10 +221,12 @@ document.getElementById('pdfInput').addEventListener('change', function() {
 document.getElementById('cancelBtn').addEventListener('click', function() {
     const storeName = document.getElementById('store-name');
     const uploadBtn = document.getElementById('uploadBtn');
+    const pdfName = document.getElementById('pdf-name');
 
     // Clear the success message and reset the upload button
     storeName.innerText = '';
     storeName.classList.add('d-none');
+    pdfName.innerText = '';
     uploadBtn.textContent = 'Upload';
     uploadBtn.classList.remove('btn-outline-success', 'btn-success');
     document.getElementById('cancelBtn').classList.add('d-none');

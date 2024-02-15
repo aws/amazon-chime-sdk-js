@@ -1980,82 +1980,6 @@ document.querySelector('#join-view-only')?.addEventListener('click', () => {
 // DREW REGISTRATION
 
 
-
-// {/* VECTOR BUTTONS */}
-
-// async function uploadPDF(pdfFile: File, userId: string): Promise<any> {
-//     const formData = new FormData();
-//     formData.append('pdf', pdfFile);
-//     formData.append('user_id', userId);
-//     // show spinner #uploadPDFBtn
-//     const pdfspinner = document.getElementById('pdfspinner');
-//     pdfspinner?.classList.add('d-none');
-
-    
-//     try {
-//         const response = await fetch('https://api.larq.ai/Vectorize', {
-//             method: 'POST',
-//             body: formData,
-//         });
-        
-//         const result = await response.json();
-        
-//         // Update the button text with the store_name from the response
-//         if (result.status === "success" && result.vector_id) {
-//             // hide spinner uploadPDFBtn
-//             pdfspinner?.classList.remove('d-none');
-//             document.getElementById('upload-alert')?.classList.add('d-none');
-//             const uploadBtn = document.getElementById('uploadBtn');
-//             const storeName = document.getElementById('store-name');
-//             if (uploadBtn) {
-//                 uploadBtn.textContent = result.store_name;
-//                 uploadBtn.classList.add('btn btn-outline-success');
-//                 storeName.innerText = result.store_name;
-                
-//             }
-//             localStorage.setItem('storeName', result.store_name);
-//             localStorage.setItem('vectorID', result.vector);
-//         }
-        
-//         return result;
-//     } catch (error) {
-//         // hide spinner 
-//         pdfspinner?.classList.remove('d-none');
-//         console.error("Error uploading PDF:", error);
-//         throw error;
-//     }
-// }
-
-// // Add event listener to the upload button
-// document.getElementById('uploadBtn')?.addEventListener('click', () => {
-//     const pdfFile = (document.querySelector('#pdfInput') as HTMLInputElement).files![0];
-//     const userId = localStorage.getItem('userId');
-//     const uploadBtn = document.getElementById('uploadBtn');
-
-
-//     if (pdfFile && userId) {
-//         uploadPDF(pdfFile, userId)
-//             .then(response => {
-//                 console.log(response);
-//                 uploadBtn.classList.add('btn-success');
-//             })
-//             .catch(error => {
-//                 console.error(error);
-//             });
-//     } else {
-//         console.warn("Please select a PDF file first. userId:", userId);
-//         // make button glow and under it put the error:
-//         const pdfalert = document.getElementById('pdf-alert');
-//         uploadBtn?.classList.add('btn-danger');
-//         uploadBtn?.classList.add('btn');
-//         uploadBtn?.classList.add('text-white');
-//         pdfalert?.classList.remove('d-none');
-
-//     }
-// });
-
-
-
 // add a listener for #end-quiz-button that when clicked will set #quiz_in_progress to display none and #create-quiz to display block
 document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
   const quiz_in_progress = document.getElementById('quiz_in_progress');
@@ -3687,7 +3611,7 @@ document.querySelector('#end-quiz-button')?.addEventListener('click', () => {
 
   private isLocalHost(): boolean {
     return (
-      document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080'
+      document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080' || document.location.host === '127.0.0.1:8081'
     );
   }
 
