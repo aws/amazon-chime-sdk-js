@@ -50,11 +50,16 @@ export default class MeetingSessionURLs {
 
   /**
    * Gets or sets the TURN control URL with gets reflecting the result of the {@link MeetingSessionURLs.urlRewriter} function.
+   *
+   * This URL is currently unused by the SDK and will be removed in a later release.
    */
   get turnControlURL(): string | null {
     return this.urlRewriter(this._turnControlURL);
   }
 
+  /**
+   * This URL is currently unused by the SDK and will be removed in a later release.
+   */
   set turnControlURL(value: string | null) {
     this._turnControlURL = value;
   }
