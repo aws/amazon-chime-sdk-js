@@ -193,7 +193,7 @@ describe('AttachMediaInputTask', () => {
 
     it('sets the correct audio codec preference if audio redundancy is enabled', done => {
       domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.browserName = 'chrome';
+      domMockBehavior.browserName = 'chrome116';
       domMockBehavior.supportsAudioRedCodec = true;
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.audioProfile = new AudioProfile();
