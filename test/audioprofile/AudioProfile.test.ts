@@ -16,9 +16,9 @@ describe('AudioProfile', () => {
   });
 
   describe('constructor', () => {
-    it('can be constructed correctly in chrome', () => {
+    it('can be constructed correctly in chrome 107 and later', () => {
       const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
-      domMockBehavior.browserName = 'chrome';
+      domMockBehavior.browserName = 'chrome116';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new AudioProfile().audioBitrateBps).to.equal(null);
       expect(new AudioProfile().hasRedundancyEnabled()).to.equal(true);

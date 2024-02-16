@@ -31,7 +31,7 @@ export default class AudioProfile {
   constructor(audioBitrateBps: number | null = null, enableAudioRedundancy: boolean = true) {
     this.audioBitrateBps = audioBitrateBps;
     this.enableAudioRedundancy =
-      !new DefaultBrowserBehavior().hasFirefoxWebRTC() && enableAudioRedundancy;
+      new DefaultBrowserBehavior().supportsAudioRedundancy() && enableAudioRedundancy;
   }
 
   /**

@@ -1,0 +1,183 @@
+#!/usr/bin/env node
+
+const { logger, spawnOrFail, prompt, quit } = require('./cli-utils');
+
+const categoryReadableNames = {
+  features: 'Features',
+  bugFixes: 'Bug Fixes',
+  generalImprovements: 'General Improvements',
+  demoChanges: 'Demo Changes',
+  documentation: 'Documentation',
+  operationalChanges: 'Operational Changes'
+};
+
+const qaTestableCategories = new Map([
+  ['1', 'features'],
+  ['2', 'bugFixes'],
+  ['3', 'generalImprovements'],
+  ['4', 'demoChanges']
+]);
+
+const nonQATestableCategories = new Map([
+  ['1', 'bugFixes'],
+  ['2', 'generalImprovements'],
+  ['3', 'demoChanges'],
+  ['4', 'documentation'],
+  ['5', 'operationalChanges']
+]);
+
+const fetchCommitsInRange = (startCommit, endCommit) => {
+  logger.log(`Fetching commits from ${startCommit} to ${endCommit}...`);
+  const commitRange = `${startCommit}..${endCommit}`;
+  const commits = spawnOrFail('git', ['log', '--format=%H', commitRange], { skipOutput: true });
+  const commitList = commits.split('\n').filter(commit => commit !== '');
+  return commitList;
+};
+
+const categorizePR = async (pr, prData, categorizedPRs) => {
+  logger.log(`Categorize the following PR: ${pr.title}`);
+  const isQATestable = (await prompt('Is it QA Testable? (y/N): ')).toLowerCase() === 'y';
+
+  const categories = isQATestable ? qaTestableCategories : nonQATestableCategories;
+  const categoryPrompt = Array.from(categories.entries())
+    .map(([key, value]) => `${key}. ${categoryReadableNames[value]}`)
+    .join('\n');
+
+  const categorySelectionPrompt = `Choose a category:\n${categoryPrompt}\nYour choice: `;
+  const categoryNumber = await prompt(categorySelectionPrompt);
+
+  const categoryKey = categories.get(categoryNumber);
+  if (!categoryKey) {
+    logger.error('Invalid category selection');
+    return;
+  }
+
+  const categoryType = isQATestable ? 'qaTestable' : 'nonQATestable';
+  if (!categorizedPRs[categoryType]) {
+    categorizedPRs[categoryType] = {};
+  }
+  if (!categorizedPRs[categoryType][categoryKey]) {
+    categorizedPRs[categoryType][categoryKey] = [];
+  }
+  categorizedPRs[categoryType][categoryKey].push(prData);
+};
+
+const extractPRData = (pr) => {
+  const descriptionStartMarker = '**Description of changes:**';
+  const testingStartMarker = '**Testing:**';
+  const testingInstructionsStartMarker = '*Can these tested using a demo application? Please provide reproducible step-by-step instructions.*';
+  const checklistMarker = '**Checklist:**';
+
+  const descriptionStartIndex = pr.body.indexOf(descriptionStartMarker);
+  const testingStartIndex = pr.body.indexOf(testingStartMarker);
+  const testingInstructionsStartIndex = pr.body.indexOf(testingInstructionsStartMarker);
+  const checklistIndex = pr.body.indexOf(checklistMarker);
+
+  let description = 'No description available';
+  let testing = 'No testing steps available';
+
+  if (descriptionStartIndex !== -1 && testingStartIndex !== -1) {
+    description = pr.body.substring(descriptionStartIndex + descriptionStartMarker.length, testingStartIndex).trim();
+  } else if (descriptionStartIndex !== -1) {
+    description = pr.body.substring(descriptionStartIndex + descriptionStartMarker.length).trim();
+  }
+
+  if (testingInstructionsStartIndex !== -1 && checklistIndex !== -1) {
+    testing = pr.body.substring(testingInstructionsStartIndex + testingInstructionsStartMarker.length, checklistIndex).trim();
+  } else if (testingInstructionsStartIndex !== -1) {
+    testing = pr.body.substring(testingInstructionsStartIndex + testingInstructionsStartMarker.length).trim();
+  }
+
+  return {
+    owner: pr.user.name || pr.user.login,
+    url: pr.html_url,
+    title: pr.title,
+    description,
+    testing,
+  };
+};
+
+const formatCategorizedPRsToMarkdown = (categorizedPRs) => {
+  let markdownString = '';
+
+  const formatCategorySection = (categoryKey, prs) => {
+    let section = `### ${categoryReadableNames[categoryKey] || categoryKey}\n\n`;
+    for (const pr of prs) {
+      section += `* [${pr.title}](${pr.url})\n    * Description: ${pr.description}\n    * Owner: ${pr.owner}\n    * Test steps: \n\n \`\`\`\n${pr.testing.length > 0 ? pr.testing : 'N/A'}\n\`\`\`\n\n`;
+    }
+    return section;
+  };
+
+  if (Object.keys(categorizedPRs.qaTestable).some(key => categorizedPRs.qaTestable[key].length > 0)) {
+    markdownString += '## QA Testable changes\n\n';
+    for (const [categoryKey, prs] of Object.entries(categorizedPRs.qaTestable)) {
+      if (prs.length > 0) {
+        markdownString += formatCategorySection(categoryKey, prs);
+      }
+    }
+  }
+
+  if (Object.keys(categorizedPRs.nonQATestable).some(key => categorizedPRs.nonQATestable[key].length > 0)) {
+    markdownString += '## Non-QA Testable changes\n\n';
+    for (const [categoryKey, prs] of Object.entries(categorizedPRs.nonQATestable)) {
+      if (prs.length > 0) {
+        markdownString += formatCategorySection(categoryKey, prs);
+      }
+    }
+  }
+
+  return markdownString.trim();
+};
+
+const generateTestingDoc = async () => {
+  const fetch = (await import('node-fetch')).default;
+
+  const categorizedPRs = {
+    qaTestable: {
+      features: [],
+      bugFixes: [],
+      generalImprovements: [],
+      demoChanges: [],
+    },
+    nonQATestable: {
+      bugFixes: [],
+      generalImprovements: [],
+      demoChanges: [],
+      documentation: [],
+      operationalChanges: [],
+    },
+  };
+
+  try {
+    const token = await prompt('Please enter your GitHub access token (use https://github.com/settings/tokens if you don\'t have one already): ');
+    const startCommit = await prompt('Enter the start commit SHA: ');
+    const endCommit = await prompt('Enter the end commit SHA: ');
+
+    const commitSHAs = fetchCommitsInRange(startCommit, endCommit);
+
+    for (const sha of commitSHAs) {
+      const commitPRUrl = `https://api.github.com/repos/aws/amazon-chime-sdk-js/commits/${sha}/pulls`;
+      const prResponse = await fetch(commitPRUrl, {
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.groot-preview+json'
+        }
+      });
+      if (!prResponse.ok) {
+        throw new Error(`Non-OK fetching PRs for commit ${sha}: ${prResponse.status}`);
+      }
+
+      for (const pr of (await prResponse.json())) {
+        const prData = extractPRData(pr);
+        await categorizePR(pr, prData, categorizedPRs);
+      }
+    }
+
+    console.log(formatCategorizedPRsToMarkdown(categorizedPRs))
+  } catch (error) {
+    logger.error('Error:', error);
+    quit(1);
+  }
+};
+
+generateTestingDoc();

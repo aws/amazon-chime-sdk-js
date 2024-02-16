@@ -153,6 +153,15 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     );
   }
 
+  supportsAudioRedundancy(): boolean {
+    if (this.hasChromiumWebRTC()) {
+      // Audio redundancy may cause video decoding failure for Chromium version 106 and
+      // earlier. Marking such Chromium versions as not supporting audio redundancy.
+      return this.engineMajorVersion() >= 107;
+    }
+    return !this.hasFirefoxWebRTC();
+  }
+
   requiresResolutionAlignment(width: number, height: number): [number, number] {
     if (this.isAndroid() && this.isPixel3()) {
       return [Math.ceil(width / 64) * 64, Math.ceil(height / 64) * 64];
