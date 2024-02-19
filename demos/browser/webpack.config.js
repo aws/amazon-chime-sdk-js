@@ -16,89 +16,44 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 /**
  * This is exactly what we document in the CSP guide.
  */
-// const csp = {
-//   'connect-src': "'self' data: https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com",
-
-//   // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+. 
-//   // Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless
-//   // 'unsafe-eval' is also present.
-//   'script-src': "'self' 'unsafe-eval' blob: 'wasm-eval' 'wasm-unsafe-eval'",
-
-//   // Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.
-//   'script-src-elem': "'self' 'unsafe-inline' blob:",
-//   'worker-src': "'self' blob:",
-//   'child-src': "'self' blob:",
-// };
-
-// // Modify our basic CSP to allow several things:
-// // 1. Access to assets in all stages for testing and canaries.
-// for (const stage of ['a', 'b', 'g', '']) {
-//   const host = ` https://*.sdkassets.${stage}chime.aws`;
-//   const media = ` wss://*.${stage}chime.aws`;
-//   csp['connect-src'] += host + media;
-//   csp['script-src'] += host;
-//   csp['script-src-elem'] += host;
-// }
-// csp['script-src'] += host;
-
 const csp = {
-  'default-src': "* data: blob:;",
-  'script-src': "* 'unsafe-inline' 'unsafe-eval' data: blob:;",
-  'style-src': "* 'unsafe-inline' data: blob:;",
-  'img-src': "* data: blob:;",
-  'connect-src': "* data: blob:;",
-  'font-src': "* data: blob:;",
-  'object-src': "* blob:;",
-  'media-src': "* data: blob:;",
-  'frame-src': "* blob:;",
-  'worker-src': "'self' blob:;",
-  'child-src': "'self' blob:;"
+  'connect-src': "'self' data: https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com",
+
+  // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+.
+  // Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless
+  // 'unsafe-eval' is also present.
+  'script-src': "'self' 'unsafe-eval' blob: 'wasm-eval' 'wasm-unsafe-eval'",
+
+  // Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.
+  'script-src-elem': "'self' 'unsafe-inline' blob:",
+  'worker-src': "'self' blob:",
+  'child-src': "'self' blob:",
 };
 
+// Modify our basic CSP to allow several things:
+// 1. Access to assets in all stages for testing and canaries.
+for (const stage of ['a', 'b', 'g', '']) {
+  const host = ` https://*.sdkassets.${stage}chime.aws`;
+  const media = ` wss://*.${stage}chime.aws`;
+  csp['connect-src'] += host + media;
+  csp['script-src'] += host;
+  csp['script-src-elem'] += host;
+}
 
-// // 2. Access to googleapis for the Segmentation filter
-// csp['connect-src'] += ' https://storage.googleapis.com';
+// 2. Access to googleapis for the Segmentation filter 
+csp['connect-src'] += ' https://storage.googleapis.com';
 
-// // 3. Access to jsdelivr for TensorFlow for background blur.
-// csp['script-src'] += ' https://cdn.jsdelivr.net';
-// csp['script-src-elem'] += ' https://cdn.jsdelivr.net';
+// 3. Access to jsdelivr for TensorFlow for background blur.
+csp['script-src'] += ' https://cdn.jsdelivr.net';
+csp['script-src-elem'] += ' https://cdn.jsdelivr.net';
 
-// // DREW ADDING LOCALHOST
-// csp['connect-src'] += " https://aptiversity.com:5555";
-// csp['connect-src'] += " https://aptiversity.com";
-// csp['connect-src'] += " https://www.aptiversity.com";
-// csp['connect-src'] += " https://aptiversity.com:*";
-// csp['connect-src'] += " https://172.31.84.112:5555";
-// csp['connect-src'] += " https://10.0.0.94:5555";
-// csp['connect-src'] += " http://127.0.0.1:8081/";
-// csp['connect-src'] += " http://127.0.0.1:8081";
-// csp['connect-src'] += " http://127.0.0.1:8081*";
-// csp['connect-src'] += " http://127.0.0.1:8080";
-// csp['connect-src'] += " http://127.0.0.1:8081*";
-// csp['connect-src'] += " https://10.0.0.94";
-// csp['connect-src'] += " https://10.0.0.94:5555";
-// csp['connect-src'] += " https://www.ec2-34-235-178-135.compute-1.amazonaws.com:5555";
-// csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:*";
-// csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com";
-// csp['connect-src'] += " https://ec2-34-235-178-135.compute-1.amazonaws.com:5555";
-// csp['connect-src'] += " https://larq.ai:5555";
-// csp['connect-src'] += " https://larq.com:*";
-// csp['connect-src'] += " https://larq.ai";
-// csp['connect-src'] += " https://larq.ai:*";
-// csp['connect-src'] += " https://larq.ai:8081";
-// csp['connect-src'] += " https://larq.ai:8080";
-// csp['connect-src'] += "https://storage.googleapis.com/";
+// 4. Add 'unsafe-eval' because TensorFlow needs it.
+if (!csp['script-src'].includes("'unsafe-eval'")) {
+  csp['script-src'] += " 'unsafe-eval'";
+}
 
-
-// // 4. Add 'unsafe-eval' because TensorFlow needs it.
-// if (!csp['script-src'].includes("'unsafe-eval'")) {
-//   csp['script-src'] += " 'unsafe-eval'";
-// }
-
-// // 5. Access to event ingestion gamma endpoint for testing and canaries.
-// csp['connect-src'] += ' https://*.ingest.gchime.aws ';
-
-
+// 5. Access to event ingestion gamma endpoint for testing and canaries.
+csp['connect-src'] += ' https://*.ingest.gchime.aws ';
 
 module.exports = env => {
   console.info('Env:', JSON.stringify(env, null, 2));
@@ -110,23 +65,12 @@ module.exports = env => {
       devMiddleware: {
         index: `${app}.html`
       },
-      allowedHosts: ['larq.ai', 'app.larq.ai','127.0.0.1'],
-  public: 'meeting.larq.ai',
-  headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-    "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
-    // "Cross-Origin-Opener-Policy": "same-origin",
-    // "Cross-Origin-Embedder-Policy": "require-corp",
-    // "Cross-Origin-Resource-Policy": "cross-origin"
-
-  },
       onListening: (server) => {
         // Just so that the code in server.js isn't confused about
         // which app finally made it through the gauntlet.
         process.env.npm_config_app = app;
         const { serve } = require('./server.js');
-        serve('127.0.0.1:8080');
+        serve('127.0.0.1:8081');
       },
       static: {
         publicPath: '/',

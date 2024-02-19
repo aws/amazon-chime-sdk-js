@@ -1,61 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const AWS = require('aws-sdk');
+const { ChimeSDKMediaPipelines } = require('@aws-sdk/client-chime-sdk-media-pipelines');
+const { ChimeSDKMeetings } = require('@aws-sdk/client-chime-sdk-meetings');
+const { STS } = require('@aws-sdk/client-sts');
+
 const compression = require('compression');
 const fs = require('fs');
-const https = require('https');
+const http = require('http');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
-
-function getKeyAndCertPaths() {
-  const remoteKeyPath = '/etc/letsencrypt/live/meeting.larq.ai/privkey.pem';
-  const remoteCertPath = '/etc/letsencrypt/live/meeting.larq.ai/fullchain.pem';
-
-  const localKeyPath = 'key.pem';
-  const localCertPath = 'cert.pem';
-
-  try {
-    if (fs.existsSync(remoteKeyPath) && fs.existsSync(remoteCertPath)) {
-      return {
-        keyPath: remoteKeyPath,
-        certPath: remoteCertPath
-      };
-    }
-  } catch(err) {
-    console.error('Error reading remote key/cert:', err);
-  }
-
-  try {
-    if (fs.existsSync(localKeyPath) && fs.existsSync(localCertPath)) {
-      return {
-        keyPath: localKeyPath,
-        certPath: localCertPath
-      };
-    }
-  } catch(err) {
-    console.error('Error reading local key/cert:', err);
-  }
-
-  throw new Error('Key and Cert files not found in both remote and local paths.');
-}
-let paths;
-try {
-  paths = getKeyAndCertPaths();
-} catch (error) {
-  console.error('Failed to get key and cert paths:', error);
-  process.exit(1);
-}
-
-
-
-const privateKey = fs.readFileSync(paths.keyPath, 'utf8');
-const certificate = fs.readFileSync(paths.certPath, 'utf8');
-
-const credentials = {
-  key: privateKey,
-  cert: certificate,
-};
 
 // Store created meetings in a map so attendees can join by meeting title.
 const meetingTable = {};
@@ -63,30 +17,22 @@ const meetingTable = {};
 // Load the contents of the web application to be used as the index page.
 const app = process.env.npm_config_app || 'meetingV2';
 const indexPagePath = `dist/${app}.html`;
+
 console.info('Using index path', indexPagePath);
 
 const indexPage = fs.readFileSync(indexPagePath);
 
-// Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
-const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
 const currentRegion = process.env.REGION || 'us-east-1';
-const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || 'true';
 
-// Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
-// Use the MediaRegion property below in CreateMeeting to select the region
-// the meeting is hosted in.
-const chime = new AWS.Chime({ region: 'us-east-1' });
+const chimeSDKMediaPipelines = new ChimeSDKMediaPipelines({
+  region: 'us-east-1',
+  endpoint: process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com" });
 
-const chimeSDKMediaPipelinesRegional = new AWS.ChimeSDKMediaPipelines({region: 'us-east-1'});
-chimeSDKMediaPipelinesRegional.endpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT || "https://media-pipelines-chime.us-east-1.amazonaws.com"
-chime.endpoint = endpoint;
+const chimeSDKMeetings = new ChimeSDKMeetings({
+  region: currentRegion,
+  ...(process.env.ENDPOINT && { endpoint: process.env.ENDPOINT }) });
 
-const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
-if (endpoint !== 'https://service.chime.aws.amazon.com') {
-  chimeSDKMeetings.endpoint = endpoint;
-}
-
-const sts = new AWS.STS({ region: 'us-east-1' })
+const sts = new STS({ region: 'us-east-1' });
 
 const captureS3Destination = process.env.CAPTURE_S3_DESTINATION;
 if (captureS3Destination) {
@@ -102,39 +48,18 @@ if (ivsEndpoint) {
   console.info(`IVS destination for live connector not set. Live Connector will not be available.`)
 }
 
-// return Chime Meetings SDK Client just for Echo Reduction for now.
-function getClientForMeeting(meeting) {
-  return useChimeSDKMeetings === "true" ||
-  (meeting &&
-      meeting.Meeting &&
-      meeting.Meeting.MeetingFeatures &&
-      meeting.Meeting.MeetingFeatures.Audio &&
-      meeting.Meeting.MeetingFeatures.Audio.EchoReduction === "AVAILABLE")
-      ? chimeSDKMeetings
-      : chime;
-}
-
-function serve(host = '0.0.0.0:8080') {
+function serve(host = '127.0.0.1:8080') {
   // Start an HTTP server to serve the index page and handle meeting actions
-  https.createServer(credentials, async (request, response) => {
+  http.createServer({}, async (request, response) => {
     log(`${request.method} ${request.url} BEGIN`);
     try {
       // Enable HTTP compression
       compression({})(request, response, () => {});
       const requestUrl = url.parse(request.url, true);
-
-      
       if (request.method === 'GET' && requestUrl.pathname === '/') {
         // Return the contents of the index page
-        // localStorage.setItem('new_meeting', 'false');
-        // localStorage.setItem('join_meeting', 'false');
         respond(response, 200, 'text/html', indexPage);
-      } 
-
-
-      // END DREW NEW PAGES
-      
-      else if (process.env.DEBUG) {
+      } else if (process.env.DEBUG) {
         // For internal debugging - ignore this
         const debug = require('./debug.js');
         const debugResponse = debug.debug(request);
@@ -146,8 +71,6 @@ function serve(host = '0.0.0.0:8080') {
         const meetingIdFormat = /^[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/
         let meeting = meetingTable[requestUrl.query.title];
 
-        let client = getClientForMeeting(meeting);
-
         let primaryMeeting = undefined
         if (requestUrl.query.primaryExternalMeetingId) {
           primaryMeeting = meetingTable[requestUrl.query.primaryExternalMeetingId]
@@ -156,12 +79,12 @@ function serve(host = '0.0.0.0:8080') {
           } else if (meetingIdFormat.test(requestUrl.query.primaryExternalMeetingId)) {
             // Just in case, check if we were passed a regular meeting ID instead of an external ID
             try {
-              primaryMeeting = await client.getMeeting({
+              primaryMeeting = await chimeSDKMeetings.getMeeting({
                 MeetingId: requestUrl.query.primaryExternalMeetingId
-              }).promise();
+              });
               if (primaryMeeting !== undefined) {
                 console.info(`Retrieved primary meeting id ${primaryMeeting.Meeting.MeetingId}`);
-                await putMeeting(requestUrl.query.primaryExternalMeetingId, primaryMeeting);
+                meetingTable[requestUrl.query.primaryExternalMeetingId] = primaryMeeting;
               }
             } catch (error) {
               console.info("Meeting ID doesnt' exist as a conference ID: " + error);
@@ -179,9 +102,9 @@ function serve(host = '0.0.0.0:8080') {
           // If the meeting does not exist, check if we were passed in a meeting ID instead of an external meeting ID.  If so, use that one
           try {
             if (meetingIdFormat.test(requestUrl.query.title)) {
-              meeting = await client.getMeeting({
+              meeting = await chimeSDKMeetings.getMeeting({
                 MeetingId: requestUrl.query.title
-              }).promise();
+              });
             }
           } catch (error) {
             console.info("Meeting ID doesn't exist as a conference ID: " + error);
@@ -203,17 +126,37 @@ function serve(host = '0.0.0.0:8080') {
             if (primaryMeeting !== undefined) {
               request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
             }
-            if (requestUrl.query.ns_es === 'true') {
-              client = chimeSDKMeetings;
-              request.MeetingFeatures = {
-                Audio: {
-                  // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+            if (requestUrl.query.ns_es === 'true' || 
+                  requestUrl.query.v_rs === 'FHD' || 
+                  requestUrl.query.v_rs === 'None' || 
+                  requestUrl.query.c_rs === 'UHD' ||
+                  requestUrl.query.c_rs === 'None' ||
+                  requestUrl.query.a_cnt > 1 && requestUrl.query.a_cnt <= 250) {
+              request.MeetingFeatures = {};
+              if (requestUrl.query.ns_es === 'true') {
+                request.MeetingFeatures.Audio = {
                   EchoReduction: 'AVAILABLE'
                 }
-              };
+              }
+              if (requestUrl.query.v_rs === 'FHD' || requestUrl.query.v_rs === 'None') {
+                request.MeetingFeatures.Video = {
+                  MaxResolution: requestUrl.query.v_rs
+                }
+              }
+              if (requestUrl.query.c_rs === 'UHD' || requestUrl.query.c_rs === 'None') {
+                request.MeetingFeatures.Content = {
+                  MaxResolution: requestUrl.query.c_rs
+                }
+              }
+              if (requestUrl.query.a_cnt > 1 && requestUrl.query.a_cnt <= 250) {
+                request.MeetingFeatures.Attendee = {
+                  MaxCount: Number(requestUrl.query.a_cnt)
+                }
+              }
             }
             console.info('Creating new meeting: ' + JSON.stringify(request));
-            meeting = await client.createMeeting(request).promise();
+            meeting = await chimeSDKMeetings.createMeeting(request);
+            console.info('Created new meeting: ' + JSON.stringify(meeting));
 
             // Extend meeting with primary external meeting ID if it exists
             if (primaryMeeting !== undefined) {
@@ -225,9 +168,7 @@ function serve(host = '0.0.0.0:8080') {
           meetingTable[requestUrl.query.title] = meeting;
         }
 
-
-        // Create new attendee for the meeting
-        const attendee = await client.createAttendee({
+        const createAttendeeRequest = {
           // The meeting ID of the created meeting to add the attendee to
           MeetingId: meeting.Meeting.MeetingId,
 
@@ -236,8 +177,22 @@ function serve(host = '0.0.0.0:8080') {
           // combined with the name the user provided, which can later
           // be used to help build the roster.
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
-        }).promise();
-        
+        };
+
+        if (
+          requestUrl.query.attendeeAudioCapability &&
+          !requestUrl.query.primaryExternalMeetingId
+        ) {
+          createAttendeeRequest.Capabilities = {
+            Audio: requestUrl.query.attendeeAudioCapability,
+            Video: requestUrl.query.attendeeVideoCapability,
+            Content: requestUrl.query.attendeeContentCapability,
+          };
+        }
+
+       // Create new attendee for the meeting
+       const attendee = await chimeSDKMeetings.createAttendee(createAttendeeRequest);
+
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
         let joinResponse = {
@@ -253,20 +208,19 @@ function serve(host = '0.0.0.0:8080') {
         respond(response, 201, 'application/json', JSON.stringify(joinResponse, null, 2));
       } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
         // End the meeting. All attendee connections will hang up.
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
-        await client.deleteMeeting({
+        await chimeSDKMeetings.deleteMeeting({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
-        }).promise();
+        });
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/startCapture') {
         if (captureS3Destination) {
-          const callerInfo = await sts.getCallerIdentity().promise()
-          pipelineInfo = await chime.createMediaCapturePipeline({
+          const callerInfo = await sts.getCallerIdentity();
+          pipelineInfo = await chimeSDKMediaPipelines.createMediaCapturePipeline({
             SourceType: "ChimeSdkMeeting",
             SourceArn: `arn:aws:chime::${callerInfo.Account}:meeting:${meetingTable[requestUrl.query.title].Meeting.MeetingId}`,
             SinkType: "S3Bucket",
             SinkArn: captureS3Destination,
-          }).promise();
+          });
           meetingTable[requestUrl.query.title].Capture = pipelineInfo.MediaCapturePipeline;
           respond(response, 201, 'application/json', JSON.stringify(pipelineInfo));
         } else {
@@ -276,8 +230,8 @@ function serve(host = '0.0.0.0:8080') {
       } else if (request.method === 'POST' && requestUrl.pathname === '/startLiveConnector') {
         if (ivsEndpoint) {
           try {
-            const callerInfo = await sts.getCallerIdentity().promise()
-            liveConnectorPipelineInfo = await chimeSDKMediaPipelinesRegional.createMediaLiveConnectorPipeline({
+            const callerInfo = await sts.getCallerIdentity()
+            liveConnectorPipelineInfo = await chimeSDKMediaPipelines.createMediaLiveConnectorPipeline({
               Sinks: [
                 {
                   RTMPConfiguration: {
@@ -304,7 +258,7 @@ function serve(host = '0.0.0.0:8080') {
                   SourceType: "ChimeSdkMeeting"
                 }
               ]
-            }).promise();
+            });
             meetingTable[requestUrl.query.title].LiveConnector = liveConnectorPipelineInfo.MediaLiveConnectorPipeline;
             respond(response, 201, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
           }
@@ -318,9 +272,9 @@ function serve(host = '0.0.0.0:8080') {
       } else if (request.method === 'POST' && requestUrl.pathname === '/endLiveConnector') {
         if (ivsEndpoint) {
           liveConnectorPipelineId = meetingTable[requestUrl.query.title].LiveConnector.MediaPipelineId;
-          liveConnectorPipelineInfo = await chimeSDKMediaPipelinesRegional.deleteMediaPipeline({
+          liveConnectorPipelineInfo = await chimeSDKMediaPipelines.deleteMediaPipeline({
             MediaPipelineId: liveConnectorPipelineId
-          }).promise();
+          });
           meetingTable[requestUrl.query.title].LiveConnector = undefined;
           respond(response, 200, 'application/json', JSON.stringify(liveConnectorPipelineInfo));
         } else {
@@ -332,23 +286,22 @@ function serve(host = '0.0.0.0:8080') {
         if (!requestUrl.query.title || !requestUrl.query.attendeeId) {
           throw new Error('Need parameters: title, attendeeId');
         }
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
 
         // Fetch the meeting info
         const meeting = meetingTable[requestUrl.query.title];
 
-        await client.deleteAttendee({
+        await chimeSDKMeetings.deleteAttendee({
           MeetingId: meeting.Meeting.MeetingId,
           AttendeeId: requestUrl.query.attendeeId,
-        }).promise();
+        });
 
         respond(response, 201, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/endCapture') {
         if (captureS3Destination) {
           pipelineInfo = meetingTable[requestUrl.query.title].Capture;
-          await chime.deleteMediaCapturePipeline({
+          await chimeSDKMediaPipelines.deleteMediaCapturePipeline({
             MediaPipelineId: pipelineInfo.MediaPipelineId
-          }).promise();
+          });
           meetingTable[requestUrl.query.title].Capture = undefined;
           respond(response, 200, 'application/json', JSON.stringify({}));
         } else {
@@ -356,12 +309,9 @@ function serve(host = '0.0.0.0:8080') {
           respond(response, 500, 'application/json', JSON.stringify({}))
         }
       } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
-        // End the meeting. All attendee connections will hang up.
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
-
-        await client.deleteMeeting({
+        await chimeSDKMeetings.deleteMeeting({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
-        }).promise();
+        });
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/start_transcription') {
         const languageCode = requestUrl.query.language;
@@ -433,26 +383,18 @@ function serve(host = '0.0.0.0:8080') {
             error: 'Unknown transcription engine'
           }));
         }
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
-
-        await client.startMeetingTranscription({
+        await chimeSDKMeetings.startMeetingTranscription({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
           TranscriptionConfiguration: transcriptionConfiguration
-        }).promise();
+        });
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/stop_transcription') {
-        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
-
-        await client.stopMeetingTranscription({
+        await chimeSDKMeetings.stopMeetingTranscription({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId
-        }).promise();
+        });
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'GET' && requestUrl.pathname === '/fetch_credentials') {
-        const awsCredentials = {
-          accessKeyId: AWS.config.credentials.accessKeyId,
-          secretAccessKey: AWS.config.credentials.secretAccessKey,
-          sessionToken: AWS.config.credentials.sessionToken,
-        };
+        const awsCredentials = await chimeSDKMeetings.config.credentials();
         respond(response, 200, 'application/json', JSON.stringify(awsCredentials), true);
       } else if (request.method === 'GET' && (requestUrl.pathname === '/audio_file' || requestUrl.pathname === '/stereo_audio_file')) {
         let filePath = 'dist/speech.mp3';
@@ -468,8 +410,7 @@ function serve(host = '0.0.0.0:8080') {
           respond(response, 200, 'audio/mpeg', data);
         });
       } else if (request.method === 'POST' && requestUrl.pathname === '/update_attendee_capabilities') {
-        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
-        const data = await client
+        const data = await chimeSDKMeetings
           .updateAttendeeCapabilities({
             MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
             AttendeeId: requestUrl.query.attendeeId,
@@ -478,12 +419,10 @@ function serve(host = '0.0.0.0:8080') {
               Video: requestUrl.query.videoCapability,
               Content: requestUrl.query.contentCapability,
             },
-          })
-          .promise();
+          });
         respond(response, 200, 'application/json', JSON.stringify(data));
       } else if (request.method === 'POST' && requestUrl.pathname === '/batch_update_attendee_capabilities_except') {
-        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
-        const data = await client
+        const data = await chimeSDKMeetings
           .batchUpdateAttendeeCapabilitiesExcept({
             MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
             ExcludedAttendeeIds: requestUrl.query.attendeeIds.split(',').map((attendeeId) => {
@@ -494,17 +433,14 @@ function serve(host = '0.0.0.0:8080') {
               Video: requestUrl.query.videoCapability,
               Content: requestUrl.query.contentCapability,
             },
-          })
-          .promise();
+          });
         respond(response, 200, 'application/json', JSON.stringify(data));
       } else if (request.method === 'GET' && requestUrl.pathname === '/get_attendee') {
-        const client = getClientForMeeting(meetingTable[requestUrl.query.title]);
-        const getAttendeeResponse = await client
+        const getAttendeeResponse = await chimeSDKMeetings
           .getAttendee({
             MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
             AttendeeId: requestUrl.query.id,
-          })
-          .promise();
+          });
         respond(response, 200, 'application/json', JSON.stringify(getAttendeeResponse));      
       } else {
         respond(response, 404, 'text/html', '404 Not Found');
@@ -526,14 +462,10 @@ function respond(response, statusCode, contentType, body, skipLogging = false) {
   response.statusCode = statusCode;
   response.setHeader('Content-Type', contentType);
   response.setHeader('Access-Control-Allow-Origin', '*');
-  if (contentType.startsWith('image/') || contentType === 'application/javascript') {
-    response.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-  }
-
   // enable shared array buffer for videoFxProcessor
-  // response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   // enable shared array buffer for videoFxProcessor
-  // response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
   response.end(body);
   if (contentType === 'application/json' && !skipLogging) {
     log(body);

@@ -6,8 +6,5 @@
   },
   "include": [
     "./app/**/*"
-  ],
-  "exclude": [
-    "node_modules/typescript/lib/lib.dom.d.ts"
   ]
 }
