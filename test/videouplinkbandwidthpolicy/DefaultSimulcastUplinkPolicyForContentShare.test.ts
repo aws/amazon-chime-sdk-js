@@ -5,15 +5,7 @@ import * as chai from 'chai';
 
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
-import {
-  SdkBitrate,
-  SdkBitrateFrame,
-  SdkStreamAllocation,
-  SdkSubscribeAckFrame,
-  SdkTrackMapping,
-} from '../../src/signalingprotocol/SignalingProtocol';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
-import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultSimulcastUplinkPolicyForContentShare from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import SimulcastUplinkObserver from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkObserver';
 
@@ -126,73 +118,6 @@ describe('DefaultSimulcastUplinkPolicyForContentShare', () => {
           maxFramerate: 10,
         })
       ).to.be.true;
-    });
-  });
-
-  describe('update index', () => {
-    it('detects webrtc disabled stream', () => {
-      const index = new SimulcastVideoStreamIndex(logger);
-      let param = policy.chooseEncodingParameters();
-
-      index.integrateUplinkPolicyDecision(Array.from(param.values()));
-      expect(policy.wantsResubscribe()).to.equal(false);
-      policy.updateIndex(index);
-      expect(policy.wantsResubscribe()).to.equal(false);
-
-      const subackFrame = new SdkSubscribeAckFrame({
-        tracks: [
-          new SdkTrackMapping({ streamId: 1, trackLabel: 'b18b9db2' }),
-          new SdkTrackMapping({ streamId: 2, trackLabel: '4107' }),
-        ],
-        allocations: [
-          new SdkStreamAllocation({
-            trackLabel: '',
-            streamId: 1,
-            groupId: 1,
-          }),
-          new SdkStreamAllocation({
-            trackLabel: '',
-            streamId: 2,
-            groupId: 1,
-          }),
-        ],
-      });
-
-      index.integrateSubscribeAckFrame(subackFrame);
-
-      policy.updateIndex(index);
-      const shouldResub = policy.wantsResubscribe();
-      expect(shouldResub).to.equal(false);
-      param = policy.chooseEncodingParameters();
-      index.integrateUplinkPolicyDecision(Array.from(param.values()));
-      expect(policy.wantsResubscribe()).to.equal(false);
-      policy.chooseEncodingParameters();
-
-      let bitrates = SdkBitrateFrame.create();
-      let bitrate = SdkBitrate.create();
-      bitrate.sourceStreamId = 1;
-      bitrate.avgBitrateBps = 200000;
-      bitrates.bitrates.push(bitrate);
-      bitrate = SdkBitrate.create();
-      bitrate.sourceStreamId = 2;
-      bitrate.avgBitrateBps = 800000;
-      bitrates.bitrates.push(bitrate);
-      // Wait for more than SimulcastVideoStreamIndex.BitratesMsgFrequencyMs so that we could disabled the 2nd stream
-      const time = Date.now() + SimulcastVideoStreamIndex.BitratesMsgFrequencyMs + 1000;
-      const originalDateNow = Date.now;
-      Date.now = () => {
-        return time;
-      };
-      index.integrateBitratesFrame(bitrates);
-      policy.updateIndex(index);
-      bitrates = SdkBitrateFrame.create();
-      bitrate = SdkBitrate.create();
-      bitrate.sourceStreamId = 1;
-      bitrate.avgBitrateBps = 200000;
-      bitrates.bitrates.push(bitrate);
-      index.integrateBitratesFrame(bitrates);
-      expect(policy.wantsResubscribe()).to.equal(true);
-      Date.now = originalDateNow;
     });
   });
 

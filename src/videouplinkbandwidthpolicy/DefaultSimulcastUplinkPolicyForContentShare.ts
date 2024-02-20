@@ -4,7 +4,6 @@
 import Logger from '../logger/Logger';
 import SimulcastContentShareTransceiverController from '../transceivercontroller/SimulcastContentShareTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
-import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import ConnectionMetrics from './ConnectionMetrics';
 import ContentShareSimulcastEncodingParameters from './ContentShareSimulcastEncodingParameters';
@@ -17,8 +16,6 @@ import SimulcastUplinkPolicy from './SimulcastUplinkPolicy';
  */
 export default class DefaultSimulcastUplinkPolicyForContentShare implements SimulcastUplinkPolicy {
   private videoIndex: VideoStreamIndex | null = null;
-  private currLocalDescriptions: VideoStreamDescription[] = [];
-  private nextLocalDescriptions: VideoStreamDescription[] = [];
   private enableUhdContent: boolean = false;
   private defaultHiTargetBitrateKbps: number = 1200;
   private defaultLowTargetBitrateKbps: number = 300;
@@ -33,8 +30,6 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
   }
 
   chooseMediaTrackConstraints(): MediaTrackConstraints {
-    // Changing MediaTrackConstraints causes a restart of video input and possible small
-    // scaling changes.  Always use 720p for now
     return undefined;
   }
 
@@ -67,46 +62,20 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
   }
 
   wantsResubscribe(): boolean {
-    let constraintDiff = false;
-
-    this.nextLocalDescriptions = this.videoIndex?.localStreamDescriptions();
-    for (let i = 0; i < this.nextLocalDescriptions?.length; i++) {
-      const streamId = this.nextLocalDescriptions[i].streamId;
-      if (streamId !== 0 && !!streamId) {
-        const prevIndex = this.currLocalDescriptions.findIndex(val => {
-          return val.streamId === streamId;
-        });
-        if (prevIndex !== -1) {
-          if (
-            this.nextLocalDescriptions[i].disabledByWebRTC !==
-            this.currLocalDescriptions[prevIndex].disabledByWebRTC
-          ) {
-            constraintDiff = true;
-          }
-        }
-      }
-    }
-    this.currLocalDescriptions = this.nextLocalDescriptions;
-    return constraintDiff;
+    return false;
   }
 
   chooseCaptureAndEncodeParameters(): DefaultVideoCaptureAndEncodeParameter {
-    // should deprecate in this policy
     return undefined;
   }
 
   maxBandwidthKbps(): number {
-    // should deprecate in this policy
     return this.enableUhdContent ? 2000 : 1200;
   }
 
-  setIdealMaxBandwidthKbps(_idealMaxBandwidthKbps: number): void {
-    // should deprecate in this policy
-  }
+  setIdealMaxBandwidthKbps(_idealMaxBandwidthKbps: number): void {}
 
-  setHasBandwidthPriority(_hasBandwidthPriority: boolean): void {
-    // should deprecate in this policy
-  }
+  setHasBandwidthPriority(_hasBandwidthPriority: boolean): void {}
 
   setHighResolutionFeatureEnabled(enabled: boolean): void {
     this.enableUhdContent = enabled;
@@ -119,10 +88,7 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
     const localDescriptions = this.videoIndex?.localStreamDescriptions();
     if (localDescriptions?.length > 0) {
       params.forEach((value: RTCRtpEncodingParameters) => {
-        let disabledByWebRTC = false;
-        if (value.rid === 'low') disabledByWebRTC = localDescriptions[0].disabledByWebRTC;
-        else disabledByWebRTC = localDescriptions[1].disabledByWebRTC;
-        qualityString += `{ rid: ${value.rid} active:${value.active} disabledByWebRTC: ${disabledByWebRTC} maxBitrate:${value.maxBitrate} scaleResolutionDownBy:${value.scaleResolutionDownBy} maxFrameRate:${value.maxFramerate}`;
+        qualityString += `{ rid: ${value.rid} active:${value.active} maxBitrate:${value.maxBitrate} scaleResolutionDownBy:${value.scaleResolutionDownBy} maxFrameRate:${value.maxFramerate}`;
       });
       this.logger.info(
         `simulcast: content policy:chooseEncodingParameters newQualityMap: ${qualityString}`

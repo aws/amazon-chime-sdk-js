@@ -13,7 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Simplified simulcast uplink policy to not unnecesarily try to compensate for uplink bandwidth estimation.
+
 ### Fixed
+
+- Fixed unnecessary cropping on some camera capturers when simulcast was enabled.
 
 ## [3.20.0] - 2023-12-12
 

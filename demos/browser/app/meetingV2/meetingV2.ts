@@ -3968,7 +3968,7 @@ export class DemoMeetingApp
 
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     this.videoCodecPreferences = getCodecPreferences(chosenVideoSendCodec);
-    if (!['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
+    if (['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
       // Attempting to use simulcast with VP9 or AV1 will lead to unexpected behavior (e.g. SVC instead)
       this.enableSimulcast = false;
     }

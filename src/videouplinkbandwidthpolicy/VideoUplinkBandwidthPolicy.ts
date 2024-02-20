@@ -61,7 +61,7 @@ export default interface VideoUplinkBandwidthPolicy {
   updateConnectionMetric(metrics: ConnectionMetrics): void;
 
   /**
-   * Returns the selected [[MediaTrackConstraints]] to update
+   * This function is deprecated and unused, and will be removed in a future release.
    */
   chooseMediaTrackConstraints(): MediaTrackConstraints;
 

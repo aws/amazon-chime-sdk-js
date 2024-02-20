@@ -179,7 +179,6 @@ export default class MonitorTask
           `trigger resubscribe for up=${resubscribeForUplink}; videosToReceive=[${this.context.videosToReceive.array()}]`
         );
         this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
-        this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
       }
     }
 
