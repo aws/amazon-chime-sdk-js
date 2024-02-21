@@ -15,19 +15,13 @@ import SimulcastUplinkPolicy from './SimulcastUplinkPolicy';
  *  parameters based on constructor input parameters
  */
 export default class DefaultSimulcastUplinkPolicyForContentShare implements SimulcastUplinkPolicy {
-  private videoIndex: VideoStreamIndex | null = null;
   private enableUhdContent: boolean = false;
   private defaultHiTargetBitrateKbps: number = 1200;
   private defaultLowTargetBitrateKbps: number = 300;
 
-  constructor(
-    private logger: Logger,
-    private encodingParams?: ContentShareSimulcastEncodingParameters
-  ) {}
+  constructor(_logger: Logger, private encodingParams?: ContentShareSimulcastEncodingParameters) {}
 
-  updateConnectionMetric(_metrics: ConnectionMetrics): void {
-    // Noop
-  }
+  updateConnectionMetric(_metrics: ConnectionMetrics): void {}
 
   chooseMediaTrackConstraints(): MediaTrackConstraints {
     return undefined;
@@ -53,13 +47,10 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
         (this.encodingParams?.high?.maxBitrateKbps || this.defaultHiTargetBitrateKbps) * toBps,
       maxFramerate: this.encodingParams?.high?.maxFramerate,
     });
-    this.getQualityMapString(newMap);
     return newMap;
   }
 
-  updateIndex(videoIndex: VideoStreamIndex): void {
-    this.videoIndex = videoIndex;
-  }
+  updateIndex(_videoIndex: VideoStreamIndex): void {}
 
   wantsResubscribe(): boolean {
     return false;
@@ -81,19 +72,6 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
     this.enableUhdContent = enabled;
     this.defaultHiTargetBitrateKbps = enabled ? 2000 : 1200;
     this.defaultLowTargetBitrateKbps = enabled ? 500 : 300;
-  }
-
-  private getQualityMapString(params: Map<string, RTCRtpEncodingParameters>): void {
-    let qualityString = '';
-    const localDescriptions = this.videoIndex?.localStreamDescriptions();
-    if (localDescriptions?.length > 0) {
-      params.forEach((value: RTCRtpEncodingParameters) => {
-        qualityString += `{ rid: ${value.rid} active:${value.active} maxBitrate:${value.maxBitrate} scaleResolutionDownBy:${value.scaleResolutionDownBy} maxFrameRate:${value.maxFramerate}`;
-      });
-      this.logger.info(
-        `simulcast: content policy:chooseEncodingParameters newQualityMap: ${qualityString}`
-      );
-    }
   }
 
   addObserver(_observer: SimulcastUplinkObserver): void {}

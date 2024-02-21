@@ -112,6 +112,8 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
     } else {
       // E.g., 320x192 + 640x384 + (1280x768)
       this.newActiveStreams = ActiveStreams.kMidAndLow;
+      // Given the high number of senders, we reduce the low bitrate marginally to
+      // make it easier to obtain videos from all remote senders
       newBitrates[0].maxBitrateKbps = (this.lowTargetBitrateKbps * 2) / 3;
       newBitrates[1].maxBitrateKbps =
         this.numSenders <= 6 ? this.midTargetBitrateKbps : this.midTargetBitrateKbps * 0.6;
