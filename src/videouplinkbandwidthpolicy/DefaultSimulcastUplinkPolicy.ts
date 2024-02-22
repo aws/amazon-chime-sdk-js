@@ -237,6 +237,16 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
 
   setHighResolutionFeatureEnabled(enabled: boolean): void {
     this.enableFhdVideo = enabled;
+    // Raise the bitrates if we are sending FHD
+    this.hiTargetBitrateKbps = enabled
+      ? DefaultSimulcastUplinkPolicy.kHiTargetBitrateKbpsFhd
+      : DefaultSimulcastUplinkPolicy.kHiTargetBitrateKbpsHd;
+    this.midTargetBitrateKbps = enabled
+      ? DefaultSimulcastUplinkPolicy.kMidTargetBitrateKbpsFhd
+      : DefaultSimulcastUplinkPolicy.kMidTargetBitrateKbpsHd;
+    this.lowTargetBitrateKbps = enabled
+      ? DefaultSimulcastUplinkPolicy.kLowTargetBitrateKbpsFhd
+      : DefaultSimulcastUplinkPolicy.kLowTargetBitrateKbpsHd;
   }
 
   wantsVideoDependencyDescriptorRtpHeaderExtension(): boolean {

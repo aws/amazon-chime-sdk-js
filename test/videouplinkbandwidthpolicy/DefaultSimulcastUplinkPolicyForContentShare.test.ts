@@ -146,6 +146,14 @@ describe('DefaultSimulcastUplinkPolicyForContentShare', () => {
       policy.setHasBandwidthPriority(false);
     });
 
+    it('wantsResubscribe', () => {
+      expect(policy.wantsResubscribe()).to.be.false;
+    });
+
+    it('updateIndex', () => {
+      policy.updateIndex(undefined);
+    });
+
     it('observer', () => {
       const observer = {
         encodingSimulcastLayersDidChange(_simulcastLayers: SimulcastLayers): void {},
