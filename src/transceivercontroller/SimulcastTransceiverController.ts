@@ -53,23 +53,23 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     if (!oldParam.encodings) {
       oldParam.encodings = newEncodingParams;
     } else {
-      for (let i = 0; i < oldParam.encodings.length; i++) {
-        if (oldParam.encodings[i].rid === SimulcastTransceiverController.LOW_LEVEL_NAME) {
+      for (const encoding of oldParam.encodings) {
+        if (encoding.rid === SimulcastTransceiverController.LOW_LEVEL_NAME) {
           this.copyEncodingParams(
             encodingParamMap.get(SimulcastTransceiverController.LOW_LEVEL_NAME),
-            oldParam.encodings[i]
+            encoding
           );
         }
-        if (oldParam.encodings[i].rid === SimulcastTransceiverController.MID_LEVEL_NAME) {
+        if (encoding.rid === SimulcastTransceiverController.MID_LEVEL_NAME) {
           this.copyEncodingParams(
             encodingParamMap.get(SimulcastTransceiverController.MID_LEVEL_NAME),
-            oldParam.encodings[i]
+            encoding
           );
         }
-        if (oldParam.encodings[i].rid === SimulcastTransceiverController.HIGH_LEVEL_NAME) {
+        if (encoding.rid === SimulcastTransceiverController.HIGH_LEVEL_NAME) {
           this.copyEncodingParams(
             encodingParamMap.get(SimulcastTransceiverController.HIGH_LEVEL_NAME),
-            oldParam.encodings[i]
+            encoding
           );
         }
       }

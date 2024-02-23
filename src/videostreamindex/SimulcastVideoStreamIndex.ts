@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Logger from '../logger/Logger';
 import {
   SdkBitrateFrame,
   SdkIndexFrame,
@@ -29,15 +28,8 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
 
   private _localStreamInfos: VideoStreamDescription[] = [];
 
-  private _lastBitRateMsgTime: number;
-
   // Map send rid to stream Id
   private _sendRidToVideoStreamIdMap: Map<string, number> = new Map<string, number>();
-
-  constructor(logger: Logger) {
-    super(logger);
-    this._lastBitRateMsgTime = Date.now();
-  }
 
   localStreamDescriptions(): VideoStreamDescription[] {
     const clonedDescriptions: VideoStreamDescription[] = [];
@@ -80,9 +72,6 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
       this._localStreamInfos[localStreamIndex].maxFrameRate = targetMaxFrameRate;
       this._localStreamInfos[localStreamIndex].disabledByUplinkPolicy =
         targetMaxBitrateKbps === 0 ? true : false;
-      if (this._localStreamInfos[localStreamIndex].disabledByUplinkPolicy === true) {
-        this._localStreamInfos[localStreamIndex].disabledByWebRTC = false;
-      }
       localStreamIndex++;
     }
 
@@ -122,39 +111,13 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
       }
     }
 
-    for (let i = 0; i < this._localStreamInfos.length; i++) {
-      this._localStreamInfos[i].disabledByWebRTC = false;
-      const streamId = this._localStreamInfos[i].streamId;
-      if (this._localStreamInfos[i].disabledByUplinkPolicy) {
-        continue;
-      }
-      if (this.streamIdToBitrateKbpsMap.has(streamId)) {
-        const avgBitrateKbps = this.streamIdToBitrateKbpsMap.get(streamId);
-        if (
-          avgBitrateKbps === SimulcastVideoStreamIndex.NOT_SENDING_STREAM_BITRATE &&
-          this._lastBitRateMsgTime - this._localStreamInfos[i].timeEnabled >
-            SimulcastVideoStreamIndex.BitratesMsgFrequencyMs
-        ) {
-          this._localStreamInfos[i].disabledByWebRTC = true;
-        }
-      } else {
-        // Do not flag as disabled if it was recently enabled
-        if (
-          this._lastBitRateMsgTime - this._localStreamInfos[i].timeEnabled >
-          SimulcastVideoStreamIndex.BitratesMsgFrequencyMs
-        ) {
-          this._localStreamInfos[i].disabledByWebRTC = true;
-        }
-      }
-    }
-    this._lastBitRateMsgTime = Date.now();
     this.logLocalStreamDescriptions();
   }
 
   private logLocalStreamDescriptions(): void {
     let msg = '';
     for (const desc of this._localStreamInfos) {
-      msg += `streamId=${desc.streamId} maxBitrate=${desc.maxBitrateKbps} disabledByWebRTC=${desc.disabledByWebRTC} disabledByUplink=${desc.disabledByUplinkPolicy}\n`;
+      msg += `streamId=${desc.streamId} maxBitrate=${desc.maxBitrateKbps} disabledByUplink=${desc.disabledByUplinkPolicy}\n`;
     }
     this.logger.debug(() => {
       return msg;
