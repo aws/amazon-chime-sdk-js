@@ -1586,9 +1586,10 @@ export class DemoMeetingApp
       this.toggleButton(button, isPromoted ? 'off' : 'disabled');
     }
 
-    // Additionally mute audio so it's not in an unexpected state when demoted
+    // Additionally mute audio and stop local video so it's not in an unexpected state when demoted
     if (!isPromoted) {
       this.audioVideo.realtimeMuteLocalAudio();
+      this.audioVideo.stopLocalVideoTile();
     }
   }
 

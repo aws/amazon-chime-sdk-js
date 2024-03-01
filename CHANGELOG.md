@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Simplified simulcast uplink policy to not unnecesarily try to compensate for uplink bandwidth estimation.
+- Avoid unnecessary transceiver creation by using no-video policy for content share.
 
 ### Fixed
 
