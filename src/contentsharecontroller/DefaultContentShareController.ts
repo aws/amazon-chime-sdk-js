@@ -14,6 +14,7 @@ import DefaultModality from '../modality/DefaultModality';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import { Maybe } from '../utils/Types';
+import NoVideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoTile from '../videotile/VideoTile';
 import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 import DefaultSimulcastUplinkPolicyForContentShare from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
@@ -39,6 +40,7 @@ export default class DefaultContentShareController
     contentShareConfiguration.credentials.joinToken =
       configuration.credentials.joinToken + ContentShareConstants.Modality;
     contentShareConfiguration.meetingFeatures = configuration.meetingFeatures.clone();
+    contentShareConfiguration.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     return contentShareConfiguration;
   }
 
