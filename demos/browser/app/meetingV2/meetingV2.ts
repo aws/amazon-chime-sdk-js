@@ -3009,8 +3009,12 @@ export class DemoMeetingApp
     // Set it for the content share stream if we can.
     const videoElem = document.getElementById('content-share-video') as HTMLVideoElement;
     if (this.defaultBrowserBehavior.supportsSetSinkId()) {
-      // @ts-ignore
-      videoElem.setSinkId(device);
+      try {
+        // @ts-ignore
+        await videoElem.setSinkId(device);
+      } catch (e) {
+        this.log('Failed to set audio output', e);
+      }
     }
 
     await this.audioVideo.chooseAudioOutput(device);
