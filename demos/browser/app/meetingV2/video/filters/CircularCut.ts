@@ -1,41 +1,30 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  CanvasVideoFrameBuffer,
-  VideoFrameBuffer,
-  VideoFrameProcessor,
-} from 'amazon-chime-sdk-js';
+import { VideoFrameBuffer, VideoFrameProcessor } from 'amazon-chime-sdk-js';
+import jsQR from 'jsqr';
 
 /**
  * [[CircularCut]] is an implementation of {@link VideoFrameProcessor} for demonstration purpose.
  * It updates the first {@link VideoFrameBuffer} from the input array and clip the whole frame to a circle.
  */
 export default class CircularCut implements VideoFrameProcessor {
-  private targetCanvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
-  private targetCanvasCtx: CanvasRenderingContext2D = this.targetCanvas.getContext(
-    '2d'
-  ) as CanvasRenderingContext2D;
-  private canvasVideoFrameBuffer = new CanvasVideoFrameBuffer(this.targetCanvas);
-  private sourceWidth: number = 0;
-  private sourceHeight: number = 0;
-
+  // private idSet;
   /**
    * Construct a circular cut processor
-   * @param radius - radius of the outputted circle in pixels
    */
-  constructor(private radius: number = 150) {}
+  constructor() {
+    // this.idSet = false;
+  }
 
   destroy(): Promise<void> {
-    this.targetCanvasCtx = null;
-    this.targetCanvas = null;
-    this.canvasVideoFrameBuffer.destroy();
     return;
   }
 
   process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
     // assuming one video stream
     const canvas = buffers[0].asCanvasElement();
+    const canvasCtx: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
 
     const frameWidth = canvas.width;
     const frameHeight = canvas.height;
@@ -44,31 +33,27 @@ export default class CircularCut implements VideoFrameProcessor {
       return Promise.resolve(buffers);
     }
 
-    if (this.sourceWidth !== frameWidth || this.sourceHeight !== frameHeight) {
-      this.sourceWidth = frameWidth;
-      this.sourceHeight = frameHeight;
+    // read QR Code for this VideoFrameBuffer
+    const imageData = canvasCtx.getImageData(0, 0, canvas.width, canvas.height).data;
 
-      // update target canvas size to match the frame size
-      this.targetCanvas.width = this.sourceWidth;
-      this.targetCanvas.height = this.sourceHeight;
+    // If we've already found a QR code, then we don't need to decode anymore
+    // This is a performance enhancement, because otherwise, we'd have to decode every single videoframebuffer and that adds significant latency
+    // If the video processor is notified that the URL changed, or there was cross document change
+    // then we reset this idSet Value and try to detect and decode a QR code on the new document
+    // if (!this.idSet) {
+    const code = jsQR(imageData, frameWidth, frameHeight, {
+      inversionAttempts: 'dontInvert',
+    });
 
-      this.targetCanvasCtx.beginPath();
-      // circle in the center
-      this.targetCanvasCtx.arc(
-        this.sourceWidth / 2,
-        this.sourceHeight / 2,
-        this.radius,
-        0,
-        2 * Math.PI
-      );
-      this.targetCanvasCtx.clip();
-      this.targetCanvasCtx.stroke();
-      this.targetCanvasCtx.closePath();
+    if (code) {
+      // Get the data from the QR Code
+      // If the URL is allowlisted, then do nothing.
+      // If the URL is not allowlisted, apply a Black filter on top of the video stream (but don't end screenshare)
+      console.log('Found QR code', code);
+      // this.idSet = true;
     }
+    // }
 
-    this.targetCanvasCtx.drawImage(canvas, 0, 0);
-
-    buffers[0] = this.canvasVideoFrameBuffer;
     return Promise.resolve(buffers);
   }
 }
