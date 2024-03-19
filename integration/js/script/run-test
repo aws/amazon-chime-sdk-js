@@ -88,8 +88,6 @@ case $1 in
       video)
          r configs/integrationTest/video_test.config.json
          r configs/integrationTest/video_test_processor.config.json
-         #  TODO: Re-enable simulcast test after it has been fixed
-         # r configs/integrationTest/video_test_simulcast.config.json
          r configs/integrationTest/app_quit_video_test.config.json
          r configs/integrationTest/meeting_leave_video_test.config.json
          r configs/integrationTest/reconnection_test.config.json
@@ -101,12 +99,10 @@ case $1 in
       meeting_end)
          r configs/integrationTest/meeting_end_test.config.json
          ;;
-      content_share_test_suite_one)
+      content_share)
          r configs/integrationTest/content_share_screen_capture_test.config.json
          r configs/integrationTest/meeting_leave_content_share_test.config.json
          r configs/integrationTest/content_share_video_test.config.json
-         ;;
-      content_share_test_suite_two)
          r configs/integrationTest/content_share_only_allow_two_test.config.json
          r configs/integrationTest/content_share_join_later_test.config.json
          r configs/integrationTest/app_quit_content_share_test.config.json
@@ -129,6 +125,14 @@ case $1 in
          ;;
       echo_reduction)
          r configs/integrationTest/echo_reduction_test.config.json
+         ;;
+      misc)
+         r configs/integrationTest/data_message_test.config.json
+         r configs/integrationTest/echo_reduction_test.config.json
+         r configs/integrationTest/background_blur_test.config.json
+         r configs/integrationTest/videofx_background_effects_test.config.json
+         r configs/integrationTest/messaging_session_test.config.json
+         r configs/integrationTest/transcription_test.config.json
          ;;
       *)
          r configs/integrationTest/audio_test.config.json

@@ -83,3 +83,55 @@
         - name: Run Video Integ Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-video
+
+    integ-content:
+      name: Content Integration Test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Content Integ Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-content-share
+
+    integ-misc:
+      name: Misc Integration Test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
+        - name: Setup GitHub Actions Host
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Misc Integ Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-misc
