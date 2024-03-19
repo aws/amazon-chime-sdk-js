@@ -372,9 +372,9 @@ export default class ClientMetricReport {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU,
     },
-    videoCodecDegradationHwEncodeFailure: {
+    videoCodecDegradationEncodeFailure: {
       transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_CODEC_DEGRADATION_HW_ENCODE_FAILURE,
+      type: SdkMetric.Type.VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE,
     },
   };
 
@@ -739,6 +739,22 @@ export default class ClientMetricReport {
     return source
       ? transform(source, ssrcNum)
       : transform(observableVideoMetricSpec.source, ssrcNum);
+  }
+
+  /**
+   * Get ssrc of upstream video stream
+   * @returns ssrc of video upstream stream if it exists, otherwise null
+   */
+  getVideoUpstreamSsrc(): number | null {
+    for (const ssrc in this.streamMetricReports) {
+      if (
+        this.streamMetricReports[ssrc].mediaType === MediaType.VIDEO &&
+        this.streamMetricReports[ssrc].direction === Direction.UPSTREAM
+      ) {
+        return Number(ssrc);
+      }
+    }
+    return null;
   }
 
   /**

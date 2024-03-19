@@ -8067,7 +8067,7 @@ $root.SdkMetric = (function() {
         case 103:
             message.type = 103;
             break;
-        case "VIDEO_CODEC_DEGRADATION_HW_ENCODE_FAILURE":
+        case "VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE":
         case 104:
             message.type = 104;
             break;
@@ -8202,7 +8202,7 @@ $root.SdkMetric = (function() {
      * @property {number} RTC_SPK_TOTAL_RECOVERED_FEC=101 RTC_SPK_TOTAL_RECOVERED_FEC value
      * @property {number} VIDEO_QUALITY_LIMITATION_DURATION_CPU=102 VIDEO_QUALITY_LIMITATION_DURATION_CPU value
      * @property {number} VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU=103 VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU value
-     * @property {number} VIDEO_CODEC_DEGRADATION_HW_ENCODE_FAILURE=104 VIDEO_CODEC_DEGRADATION_HW_ENCODE_FAILURE value
+     * @property {number} VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE=104 VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -8277,7 +8277,7 @@ $root.SdkMetric = (function() {
         values[valuesById[101] = "RTC_SPK_TOTAL_RECOVERED_FEC"] = 101;
         values[valuesById[102] = "VIDEO_QUALITY_LIMITATION_DURATION_CPU"] = 102;
         values[valuesById[103] = "VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU"] = 103;
-        values[valuesById[104] = "VIDEO_CODEC_DEGRADATION_HW_ENCODE_FAILURE"] = 104;
+        values[valuesById[104] = "VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE"] = 104;
         return values;
     })();
 

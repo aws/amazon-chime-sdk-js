@@ -141,6 +141,7 @@ export default class SignalingAndMetricsConnectionMonitor
     if (typeof metricReport.audioPacketsSent === 'number') {
       this.updateAudioPacketsSentInConnectionHealth(metricReport.audioPacketsSent);
     }
+    this.updateVideoEncodingHealth(clientMetricReport);
     this.updateConnectionHealth();
   }
 
@@ -152,6 +153,46 @@ export default class SignalingAndMetricsConnectionMonitor
         this.connectionHealthData.consecutiveStatsWithNoAudioPacketsSent + 1
       );
     }
+  }
+
+  private updateVideoEncodingHealth(clientMetricReport: ClientMetricReport): void {
+    const isLocalVideoTileStarted = this.audioVideoController.videoTileController.hasStartedLocalVideoTile();
+    const ssrc = clientMetricReport.getVideoUpstreamSsrc();
+    if (!isLocalVideoTileStarted || ssrc === null) {
+      this.connectionHealthData.setIsVideoEncoderHardware(false);
+      this.connectionHealthData.setVideoEncodingTimeInMs(0);
+      this.connectionHealthData.setCpuLimitationDuration(0);
+      this.connectionHealthData.setVideoInputFps(0);
+      this.connectionHealthData.setVideoEncodeFps(0);
+      return;
+    }
+
+    const isHardwareEncoder = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamEncoderImplementation',
+      ssrc
+    );
+    const videoEncodingTimeInMs = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamTotalEncodeTimePerSecond',
+      ssrc
+    );
+    const cpuLimitationDuration = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamCpuQualityLimitationDurationPerSecond',
+      ssrc
+    );
+    const videoInputFps = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamFramesInputPerSecond',
+      ssrc
+    );
+    const videoEncodeFps = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamFramesEncodedPerSecond',
+      ssrc
+    );
+
+    this.connectionHealthData.setIsVideoEncoderHardware(Boolean(isHardwareEncoder));
+    this.connectionHealthData.setVideoEncodingTimeInMs(videoEncodingTimeInMs);
+    this.connectionHealthData.setCpuLimitationDuration(cpuLimitationDuration);
+    this.connectionHealthData.setVideoInputFps(videoInputFps);
+    this.connectionHealthData.setVideoEncodeFps(videoEncodeFps);
   }
 
   private addToMinuteWindow(array: number[], value: number): void {

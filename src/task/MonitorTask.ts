@@ -17,6 +17,7 @@ import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttribu
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import RemovableObserver from '../removableobserver/RemovableObserver';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
@@ -27,7 +28,6 @@ import {
 } from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import { Maybe } from '../utils/Types';
-import VideoEncodingMonitor from '../videoencodingmonitor/VideoEncodingMonitor';
 import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
 
@@ -52,7 +52,7 @@ export default class MonitorTask
   private isResubscribeCheckPaused: boolean = false;
   private pendingMetricsReport: ClientMetricReport | undefined = undefined;
   private isMeetingConnected: boolean = false;
-  private videoEncodingMonitor: VideoEncodingMonitor;
+  private videoEncodingHealthPolicies: ConnectionHealthPolicy[] = [];
 
   constructor(
     private context: AudioVideoControllerState,
@@ -74,7 +74,14 @@ export default class MonitorTask
       { ...connectionHealthPolicyConfiguration },
       this.initialConnectionHealthData.clone()
     );
-    this.videoEncodingMonitor = new VideoEncodingMonitor(context);
+    for (const policy of connectionHealthPolicyConfiguration.videoEncodingHealthPolicies) {
+      this.videoEncodingHealthPolicies.push(
+        new policy(
+          { ...connectionHealthPolicyConfiguration },
+          this.initialConnectionHealthData.clone()
+        )
+      );
+    }
   }
 
   removeObserver(): void {
@@ -203,8 +210,6 @@ export default class MonitorTask
       StreamMetricReport
     >();
 
-    this.videoEncodingMonitor.encodingMonitor(clientMetricReport);
-
     // TODO: move those logic to stats collector.
     for (const ssrc in streamMetricReport) {
       if (
@@ -253,6 +258,20 @@ export default class MonitorTask
         });
       }
     );
+
+    for (const policy of this.videoEncodingHealthPolicies) {
+      this.applyHealthPolicy(policy, connectionHealthData, () => {
+        this.degradeVideoCodec(policy.name);
+        switch (policy.name) {
+          case 'Video Encoding CPU Health':
+            this.context.statsCollector.videoCodecDegradationHighEncodeCpuDidReceive();
+            break;
+          case 'Video Encoding framerate Health':
+            this.context.statsCollector.videoCodecDegradationEncodeFailureDidReceive();
+            break;
+        }
+      });
+    }
 
     if (this.isMeetingConnected) {
       this.applyHealthPolicy(
@@ -443,4 +462,42 @@ export default class MonitorTask
       poorConnectionCount: this.context.poorConnectionCount,
     };
   };
+
+  /**
+   * Degrade video codec to an alternative codec
+   */
+  private degradeVideoCodec(cause: string): void {
+    // Degrade video codec if there are other codec options and current codec is not H264 CBP or VP8
+    if (
+      this.context.meetingSupportedVideoSendCodecPreferences !== undefined &&
+      this.context.meetingSupportedVideoSendCodecPreferences.length > 1 &&
+      !(
+        this.context.meetingSupportedVideoSendCodecPreferences[0].equals(
+          VideoCodecCapability.h264ConstrainedBaselineProfile()
+        ) ||
+        this.context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
+      )
+    ) {
+      const newMeetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] = [];
+      for (const capability of this.context.videoSendCodecPreferences) {
+        if (!capability.equals(this.context.meetingSupportedVideoSendCodecPreferences[0])) {
+          newMeetingSupportedVideoSendCodecPreferences.push(capability);
+        }
+      }
+      if (newMeetingSupportedVideoSendCodecPreferences.length > 0) {
+        this.context.logger.info(
+          `Downgrading codec from ${this.context.meetingSupportedVideoSendCodecPreferences[0].codecName} to ${newMeetingSupportedVideoSendCodecPreferences[0].codecName} due to ${cause}`
+        );
+        this.context.videoSendCodecsBlocklisted.push(
+          this.context.meetingSupportedVideoSendCodecPreferences[0]
+        );
+        this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
+        this.context.audioVideoController.update({ needsRenegotiation: true });
+      } else {
+        this.context.logger.warn(
+          'Degrading video codec failed since there is no alternative codec to select'
+        );
+      }
+    }
+  }
 }

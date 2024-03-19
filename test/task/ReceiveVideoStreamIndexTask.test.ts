@@ -737,6 +737,31 @@ describe('ReceiveVideoStreamIndexTask', () => {
       task.run();
     });
 
+    it('calculates intersection with blocklisted codecs', done => {
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp8(),
+        VideoCodecCapability.h264(),
+        VideoCodecCapability.vp9Profile0(),
+      ];
+      context.videoSendCodecsBlocklisted = [VideoCodecCapability.vp9Profile0()];
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(
+          createIndexSignalBuffer(false, null, null, [
+            SdkVideoCodecCapability.VP8,
+            SdkVideoCodecCapability.VP9_PROFILE_0,
+            SdkVideoCodecCapability.AV1_MAIN_PROFILE,
+          ])
+        );
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
+          VideoCodecCapability.vp8(),
+        ]);
+        done();
+      });
+
+      task.run();
+    });
+
     it('does not set intersection state if there is no overlap', done => {
       context.videoSendCodecPreferences = [VideoCodecCapability.vp8()];
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {

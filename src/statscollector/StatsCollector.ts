@@ -47,7 +47,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   private redRecoveryMetricReport: RedundantAudioRecoveryMetricReport = new RedundantAudioRecoveryMetricReport();
   private lastRedRecoveryMetricReportConsumedTimestampMs: number = 0;
   private videoCodecDegradationHighEncodeCpuCount: number = 0;
-  private videoCodecDegradationHwEncodeFailureCount: number = 0;
+  private videoCodecDegradationEncodeFailureCount: number = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -634,8 +634,8 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
    * Receive video codec degradation event due to hardware encoder failure
    * from MonitorTask and increment counter
    */
-  videoCodecDegradationHwEncodeFailureDidReceive(): void {
-    this.videoCodecDegradationHwEncodeFailureCount += 1;
+  videoCodecDegradationEncodeFailureDidReceive(): void {
+    this.videoCodecDegradationEncodeFailureCount += 1;
   }
 
   private getVideoUpstreamSsrc(): number | null {
@@ -659,10 +659,10 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
         ssrc: videoUpstreamSsrc,
         timestamp: Date.now(),
         videoCodecDegradationHighEncodeCpu: this.videoCodecDegradationHighEncodeCpuCount,
-        videoCodecDegradationHwEncodeFailure: this.videoCodecDegradationHwEncodeFailureCount,
+        videoCodecDegradationEncodeFailure: this.videoCodecDegradationEncodeFailureCount,
       });
     }
     this.videoCodecDegradationHighEncodeCpuCount = 0;
-    this.videoCodecDegradationHwEncodeFailureCount = 0;
+    this.videoCodecDegradationEncodeFailureCount = 0;
   }
 }
