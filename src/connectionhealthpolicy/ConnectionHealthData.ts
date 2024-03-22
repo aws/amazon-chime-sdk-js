@@ -13,6 +13,11 @@ export default class ConnectionHealthData {
   packetsReceivedInLastMinute: number[] = [];
   fractionPacketsLostInboundInLastMinute: number[] = [];
   audioSpeakerDelayMs = 0;
+  isVideoEncoderHardware = false;
+  videoEncodingTimeInMs = 0;
+  cpuLimitationDuration = 0;
+  videoInputFps = 0;
+  videoEncodeFps = 0;
 
   constructor() {
     this.connectionStartTimestampMs = Date.now();
@@ -41,6 +46,11 @@ export default class ConnectionHealthData {
     this.audioSpeakerDelayMs = 0;
     this.connectionStartTimestampMs = Date.now();
     this.lastGoodSignalTimestampMs = Date.now();
+    this.isVideoEncoderHardware = false;
+    this.videoEncodingTimeInMs = 0;
+    this.cpuLimitationDuration = 0;
+    this.videoInputFps = 0;
+    this.videoEncodeFps = 0;
   }
 
   isConnectionStartRecent(recentDurationMs: number): boolean {
@@ -79,6 +89,11 @@ export default class ConnectionHealthData {
       0
     );
     cloned.audioSpeakerDelayMs = this.audioSpeakerDelayMs;
+    cloned.isVideoEncoderHardware = this.isVideoEncoderHardware;
+    cloned.videoEncodingTimeInMs = this.videoEncodingTimeInMs;
+    cloned.cpuLimitationDuration = this.cpuLimitationDuration;
+    cloned.videoInputFps = this.videoInputFps;
+    cloned.videoEncodeFps = this.videoEncodeFps;
     return cloned;
   }
   setConsecutiveMissedPongs(pongs: number): void {
@@ -104,5 +119,20 @@ export default class ConnectionHealthData {
   }
   setAudioSpeakerDelayMs(delayMs: number): void {
     this.audioSpeakerDelayMs = delayMs;
+  }
+  setIsVideoEncoderHardware(isHardware: boolean): void {
+    this.isVideoEncoderHardware = isHardware;
+  }
+  setVideoEncodingTimeInMs(stats: number): void {
+    this.videoEncodingTimeInMs = stats;
+  }
+  setCpuLimitationDuration(stats: number): void {
+    this.cpuLimitationDuration = stats;
+  }
+  setVideoInputFps(stats: number): void {
+    this.videoInputFps = stats;
+  }
+  setVideoEncodeFps(stats: number): void {
+    this.videoEncodeFps = stats;
   }
 }

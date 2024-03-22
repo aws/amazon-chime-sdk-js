@@ -223,6 +223,16 @@ export default class ReceiveVideoStreamIndexTask
 
     // Intersect `this.context.videoSendCodecPreferences` with `index.supportedReceiveCodecIntersection`
     for (const capability of this.context.videoSendCodecPreferences) {
+      let isCapabilityDegraded = false;
+      for (const degradedCapability of this.context.degradedVideoSendCodecs) {
+        if (capability.equals(degradedCapability)) {
+          isCapabilityDegraded = true;
+          break;
+        }
+      }
+      if (isCapabilityDegraded) {
+        continue;
+      }
       for (const signaledCapability of index.supportedReceiveCodecIntersection) {
         if (capability.equals(VideoCodecCapability.fromSignaled(signaledCapability))) {
           newMeetingSupportedVideoSendCodecPreferences.push(capability);

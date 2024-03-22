@@ -156,6 +156,12 @@ export default class ClientMetricReport {
     ssrc?: number
   ): number => {
     const metricReport = this.streamMetricReports[ssrc];
+    if (
+      metricReport.previousObjectMetrics[metricName] === undefined ||
+      metricReport.currentObjectMetrics[metricName] === undefined
+    ) {
+      return NaN;
+    }
     let intervalSeconds = (this.currentTimestampMs - this.previousTimestampMs) / 1000;
     if (intervalSeconds <= 0) {
       return 0;
@@ -186,6 +192,9 @@ export default class ClientMetricReport {
 
   isHardwareImplementation = (metricName?: string, ssrc?: number): number => {
     const metricReport = this.streamMetricReports[ssrc];
+    if (metricReport.currentStringMetrics[metricName] === undefined) {
+      return NaN;
+    }
     const implName = String(metricReport.currentStringMetrics[metricName]);
     const hasHwName =
       implName.includes('ExternalDecoder') ||
@@ -359,6 +368,14 @@ export default class ClientMetricReport {
       transform: this.averageCpuQualityLimitationDurationPerSecondInMilliseconds,
       type: SdkMetric.Type.VIDEO_QUALITY_LIMITATION_DURATION_CPU,
     },
+    videoCodecDegradationHighEncodeCpu: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU,
+    },
+    videoCodecDegradationEncodeFailure: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE,
+    },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -510,6 +527,11 @@ export default class ClientMetricReport {
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
+    videoUpstreamFramesInputPerSecond: {
+      source: 'framesPerSecond',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
     videoUpstreamFrameHeight: {
       source: 'frameHeight',
       media: MediaType.VIDEO,
@@ -527,6 +549,21 @@ export default class ClientMetricReport {
     },
     videoUpstreamRoundTripTimeMs: {
       source: 'roundTripTime',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
+    videoUpstreamEncoderImplementation: {
+      source: 'encoderImplementation',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
+    videoUpstreamTotalEncodeTimePerSecond: {
+      source: 'totalEncodeTime',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
+    videoUpstreamCpuQualityLimitationDurationPerSecond: {
+      source: 'qualityLimitationDurations',
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
@@ -702,6 +739,22 @@ export default class ClientMetricReport {
     return source
       ? transform(source, ssrcNum)
       : transform(observableVideoMetricSpec.source, ssrcNum);
+  }
+
+  /**
+   * Get ssrc of upstream video stream
+   * @returns ssrc of video upstream stream if it exists, otherwise null
+   */
+  getVideoUpstreamSsrc(): number | null {
+    for (const ssrc in this.streamMetricReports) {
+      if (
+        this.streamMetricReports[ssrc].mediaType === MediaType.VIDEO &&
+        this.streamMetricReports[ssrc].direction === Direction.UPSTREAM
+      ) {
+        return Number(ssrc);
+      }
+    }
+    return null;
   }
 
   /**

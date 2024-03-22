@@ -6,6 +6,9 @@ import * as chai from 'chai';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
+import Direction from '../../src/clientmetricreport/ClientMetricReportDirection';
+import MediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
+import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
@@ -13,8 +16,14 @@ import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBr
 import PingPong from '../../src/pingpong/PingPong';
 import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
+import {
+  SdkIndexFrame,
+  SdkStreamDescriptor,
+  SdkStreamMediaType,
+} from '../../src/signalingprotocol/SignalingProtocol';
 import StatsCollector from '../../src/statscollector/StatsCollector';
 import { Maybe } from '../../src/utils/Types';
+import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 // eslint-disable-next-line
@@ -172,6 +181,29 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     audioVideoController.forEachObserver(observer => {
       Maybe.of(observer.metricsDidReceive).map(f => f.bind(observer)(clientMetricReport));
     });
+  }
+
+  function prepareIndex(streamIds: number[]): DefaultVideoStreamIndex {
+    const index: DefaultVideoStreamIndex = new DefaultVideoStreamIndex(new NoOpDebugLogger());
+    const sources: SdkStreamDescriptor[] = [];
+    for (const id of streamIds) {
+      sources.push(
+        new SdkStreamDescriptor({
+          streamId: id,
+          groupId: id,
+          maxBitrateKbps: 100,
+          mediaType: SdkStreamMediaType.VIDEO,
+          attendeeId: `attendee-${id}`,
+        })
+      );
+    }
+    index.integrateIndexFrame(
+      new SdkIndexFrame({
+        atCapacity: false,
+        sources: sources,
+      })
+    );
+    return index;
   }
 
   beforeEach(() => {
@@ -384,5 +416,99 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     testClientMetricReport.audioPacketsSent = undefined;
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveStatsWithNoAudioPacketsSentCalled).to.be.false;
+  });
+
+  it('does reset video encoding data when video tile is not active', () => {
+    const index = prepareIndex([1, 2]);
+    const clientMetricReport = new ClientMetricReport(new NoOpDebugLogger(), index, 'attendee-1');
+    clientMetricReport.rtcStatsReport = new Map<string, RawMetrics>([
+      [
+        'candidatePairId1',
+        {
+          type: 'candidate-pair',
+          ...{
+            packetsReceived: 0,
+          },
+        },
+      ],
+    ]);
+    sendClientMetricReport(clientMetricReport);
+    expect(connectionHealthData.isVideoEncoderHardware).to.be.false;
+    expect(connectionHealthData.videoEncodingTimeInMs).to.equal(0);
+    expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
+    expect(connectionHealthData.videoInputFps).to.equal(0);
+    expect(connectionHealthData.videoEncodeFps).to.equal(0);
+  });
+
+  it('does reset video encoding data when there is no upstream video stream metrics', () => {
+    audioVideoController.videoTileController.startLocalVideoTile();
+    const index = prepareIndex([1, 2]);
+    const clientMetricReport = new ClientMetricReport(new NoOpDebugLogger(), index, 'attendee-1');
+    const downstreamSsrc = 2;
+    const downstreamReport = new StreamMetricReport();
+    downstreamReport.mediaType = MediaType.VIDEO;
+    downstreamReport.direction = Direction.DOWNSTREAM;
+    clientMetricReport.streamMetricReports[downstreamSsrc] = downstreamReport;
+    clientMetricReport.rtcStatsReport = new Map<string, RawMetrics>([
+      [
+        'candidatePairId1',
+        {
+          type: 'candidate-pair',
+          ...{
+            packetsReceived: 0,
+          },
+        },
+      ],
+    ]);
+    sendClientMetricReport(clientMetricReport);
+    expect(connectionHealthData.isVideoEncoderHardware).to.be.false;
+    expect(connectionHealthData.videoEncodingTimeInMs).to.equal(0);
+    expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
+    expect(connectionHealthData.videoInputFps).to.equal(0);
+    expect(connectionHealthData.videoEncodeFps).to.equal(0);
+  });
+
+  it('does translate data when upstream metric is available', async () => {
+    const index = prepareIndex([1, 2]);
+    const clientMetricReport = new ClientMetricReport(new NoOpDebugLogger(), index, 'attendee-1');
+    clientMetricReport.currentTimestampMs = 2000;
+    clientMetricReport.previousTimestampMs = 1000;
+    const upstreamSsrc = 1;
+    const upstreamReport = new StreamMetricReport();
+    upstreamReport.mediaType = MediaType.VIDEO;
+    upstreamReport.direction = Direction.UPSTREAM;
+    upstreamReport.previousMetrics['totalEncodeTime'] = 1.0;
+    upstreamReport.currentMetrics['totalEncodeTime'] = 1.1;
+    upstreamReport.currentMetrics['framesPerSecond'] = 15;
+    upstreamReport.previousMetrics['framesEncoded'] = 0;
+    upstreamReport.currentMetrics['framesEncoded'] = 15;
+    upstreamReport.currentStringMetrics['encoderImplementation'] = 'ExternalEncoder';
+    upstreamReport.currentObjectMetrics['qualityLimitationDurations'] = {
+      cpu: 0.0,
+      other: 0.0,
+    };
+    upstreamReport.previousObjectMetrics['qualityLimitationDurations'] = {
+      cpu: 0.0,
+      other: 0.0,
+    };
+    clientMetricReport.streamMetricReports[upstreamSsrc] = upstreamReport;
+    clientMetricReport.rtcStatsReport = new Map<string, RawMetrics>([
+      [
+        'candidatePairId1',
+        {
+          type: 'candidate-pair',
+          ...{
+            packetsReceived: 0,
+          },
+        },
+      ],
+    ]);
+    audioVideoController.videoTileController.startLocalVideoTile();
+    sendClientMetricReport(clientMetricReport);
+    expect(connectionHealthData.isVideoEncoderHardware).to.be.true;
+    expect(Math.trunc(connectionHealthData.videoEncodingTimeInMs)).to.equal(100);
+    expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
+    expect(connectionHealthData.videoInputFps).to.equal(15);
+    expect(connectionHealthData.videoEncodeFps).to.equal(15);
   });
 });
