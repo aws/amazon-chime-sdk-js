@@ -106,6 +106,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#browserbehavior" class="tsd-kind-icon">browser<wbr>Behavior</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#connectionmonitor" class="tsd-kind-icon">connection<wbr>Monitor</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#currentvideosendcodec" class="tsd-kind-icon">current<wbr>Video<wbr>Send<wbr>Codec</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#degradedvideosendcodecs" class="tsd-kind-icon">degraded<wbr>Video<wbr>Send<wbr>Codecs</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#enablesvc" class="tsd-kind-icon">enableSVC</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#enablesimulcast" class="tsd-kind-icon">enable<wbr>Simulcast</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#eventcontroller" class="tsd-kind-icon">event<wbr>Controller</a></li>
@@ -147,7 +148,6 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#videoduplexmode" class="tsd-kind-icon">video<wbr>Duplex<wbr>Mode</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#videoinputattachedtimestampms" class="tsd-kind-icon">video<wbr>Input<wbr>Attached<wbr>Timestamp<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#videosendcodecpreferences" class="tsd-kind-icon">video<wbr>Send<wbr>Codec<wbr>Preferences</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#videosendcodecsblocklisted" class="tsd-kind-icon">video<wbr>Send<wbr>Codecs<wbr>Blocklisted</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#videostreamindex" class="tsd-kind-icon">video<wbr>Stream<wbr>Index</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#videosubscriptionlimit" class="tsd-kind-icon">video<wbr>Subscription<wbr>Limit</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#videosubscriptions" class="tsd-kind-icon">video<wbr>Subscriptions</a></li>
@@ -291,6 +291,16 @@
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerState.ts#L141">src/audiovideocontroller/AudioVideoControllerState.ts:141</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="degradedvideosendcodecs" class="tsd-anchor"></a>
+					<h3>degraded<wbr>Video<wbr>Send<wbr>Codecs</h3>
+					<div class="tsd-signature tsd-kind-icon">degraded<wbr>Video<wbr>Send<wbr>Codecs<span class="tsd-signature-symbol">:</span> <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerState.ts#L152">src/audiovideocontroller/AudioVideoControllerState.ts:152</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -749,16 +759,6 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="videosendcodecsblocklisted" class="tsd-anchor"></a>
-					<h3>video<wbr>Send<wbr>Codecs<wbr>Blocklisted</h3>
-					<div class="tsd-signature tsd-kind-icon">video<wbr>Send<wbr>Codecs<wbr>Blocklisted<span class="tsd-signature-symbol">:</span> <a href="videocodeccapability.html" class="tsd-signature-type" data-tsd-kind="Class">VideoCodecCapability</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideocontroller/AudioVideoControllerState.ts#L152">src/audiovideocontroller/AudioVideoControllerState.ts:152</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="videostreamindex" class="tsd-anchor"></a>
 					<h3>video<wbr>Stream<wbr>Index</h3>
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Stream<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videostreamindex.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoStreamIndex</a><span class="tsd-signature-symbol"> = null</span></div>
@@ -909,6 +909,9 @@
 								<a href="audiovideocontrollerstate.html#currentvideosendcodec" class="tsd-kind-icon">current<wbr>Video<wbr>Send<wbr>Codec</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="audiovideocontrollerstate.html#degradedvideosendcodecs" class="tsd-kind-icon">degraded<wbr>Video<wbr>Send<wbr>Codecs</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#enablesvc" class="tsd-kind-icon">enableSVC</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -1030,9 +1033,6 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#videosendcodecpreferences" class="tsd-kind-icon">video<wbr>Send<wbr>Codec<wbr>Preferences</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="audiovideocontrollerstate.html#videosendcodecsblocklisted" class="tsd-kind-icon">video<wbr>Send<wbr>Codecs<wbr>Blocklisted</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#videostreamindex" class="tsd-kind-icon">video<wbr>Stream<wbr>Index</a>

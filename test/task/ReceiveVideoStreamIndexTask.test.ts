@@ -737,13 +737,13 @@ describe('ReceiveVideoStreamIndexTask', () => {
       task.run();
     });
 
-    it('calculates intersection with blocklisted codecs', done => {
+    it('calculates intersection with degraded codecs', done => {
       context.videoSendCodecPreferences = [
         VideoCodecCapability.vp8(),
         VideoCodecCapability.h264(),
         VideoCodecCapability.vp9Profile0(),
       ];
-      context.videoSendCodecsBlocklisted = [VideoCodecCapability.vp9Profile0()];
+      context.degradedVideoSendCodecs = [VideoCodecCapability.vp9Profile0()];
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(
           createIndexSignalBuffer(false, null, null, [

@@ -488,7 +488,7 @@ export default class MonitorTask
         this.context.logger.info(
           `Downgrading codec from ${this.context.meetingSupportedVideoSendCodecPreferences[0].codecName} to ${newMeetingSupportedVideoSendCodecPreferences[0].codecName} due to ${cause}`
         );
-        this.context.videoSendCodecsBlocklisted.push(
+        this.context.degradedVideoSendCodecs.push(
           this.context.meetingSupportedVideoSendCodecPreferences[0]
         );
         this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;

@@ -148,8 +148,8 @@ export default class AudioVideoControllerState {
   // that is provided to the peer connection, which will be ordered by priority.
   prioritizedSendVideoCodecCapabilities: VideoCodecCapability[] = [];
 
-  // Video codecs blocklisted to be used for sending due to encoding issues
-  videoSendCodecsBlocklisted: VideoCodecCapability[] = [];
+  // Video codecs caused degradation due to encoding issues
+  degradedVideoSendCodecs: VideoCodecCapability[] = [];
 
   videosPaused: VideoStreamIdSet | null = null;
 
