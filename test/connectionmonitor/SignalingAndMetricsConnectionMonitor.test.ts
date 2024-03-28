@@ -114,7 +114,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     videoDownstreamFrameHeight: RawMetrics = 100;
     videoDownstreamFrameWidth: RawMetrics = 100;
     audioPacketsSent: RawMetrics = 50;
-    totalPacketsReceived: number = 0;
+    totalBytesReceived: number = 0;
 
     getObservableMetrics(): { [id: string]: number } {
       return {
@@ -145,7 +145,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
           {
             type: 'candidate-pair',
             ...{
-              packetsReceived: this.totalPacketsReceived,
+              bytesReceived: this.totalBytesReceived,
             },
           },
         ],
@@ -154,7 +154,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
           {
             type: 'candidate-pair',
             ...{
-              packetsReceived: 0,
+              bytesReceived: 0,
             },
           },
         ],
@@ -287,12 +287,12 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
   });
 
-  it('can return without changing stats when total packets received is negative', () => {
-    testClientMetricReport.totalPacketsReceived = 4;
+  it('can return without changing stats when total bytes received is negative', () => {
+    testClientMetricReport.totalBytesReceived = 4;
     testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsReceived = 1;
     sendClientMetricReport(testClientMetricReport);
-    testClientMetricReport.totalPacketsReceived = 2;
+    testClientMetricReport.totalBytesReceived = 2;
     testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsReceived = 1;
     sendClientMetricReport(testClientMetricReport);
@@ -301,18 +301,18 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
   });
 
-  it('can reset and increment consecutive stats with no packets when packets received are followed by no packets', () => {
-    testClientMetricReport.totalPacketsReceived = 1;
+  it('can reset and increment consecutive stats with no bytes when bytes received are followed by no bytes', () => {
+    testClientMetricReport.totalBytesReceived = 1;
     testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsReceived = 1;
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveStatsWithNoPackets).to.equal(0);
-    testClientMetricReport.totalPacketsReceived = 1;
+    testClientMetricReport.totalBytesReceived = 1;
     testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsReceived = 0;
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveStatsWithNoPackets).to.equal(1);
-    testClientMetricReport.totalPacketsReceived = 1;
+    testClientMetricReport.totalBytesReceived = 1;
     testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsReceived = 0;
     sendClientMetricReport(testClientMetricReport);
