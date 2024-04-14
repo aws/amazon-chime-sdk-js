@@ -1122,6 +1122,7 @@ export default class DefaultAudioVideoController
       const encodingParam = this.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
       if (
         this.mayNeedRenegotiationForSimulcastLayerChange &&
+        this.meetingSessionContext.transceiverController.hasVideoInput() &&
         !this.negotiatedBitrateLayersAllocationRtpHeaderExtension()
       ) {
         this.logger.info('Needs regenotiation for local video simulcast layer change');

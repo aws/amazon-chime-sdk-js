@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
+- Avoid subscribes when simulcast is enabled but not currently sending
 
 ### Fixed
 
