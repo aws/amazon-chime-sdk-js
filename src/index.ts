@@ -289,6 +289,9 @@ import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
+import VideoEncodingConnectionHealthPolicyName from './connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
+import VideoEncodingCpuConnectionHealthPolicy from './connectionhealthpolicy/VideoEncodingCpuConnectionHealthPolicy';
+import VideoEncodingFramerateConnectionHealthPolicy from './connectionhealthpolicy/VideoEncodingFramerateConnectionHealthPolicy';
 import VideoEncodingParameters from './videouplinkbandwidthpolicy/VideoEncodingParameters';
 import VideoFXEventAttributes from './eventcontroller/VideoFXEventAttributes';
 import VideoFrameBuffer from './videoframeprocessor/VideoFrameBuffer';
@@ -639,6 +642,9 @@ export {
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
   VideoElementFactory,
+  VideoEncodingConnectionHealthPolicyName,
+  VideoEncodingCpuConnectionHealthPolicy,
+  VideoEncodingFramerateConnectionHealthPolicy,
   VideoEncodingParameters,
   VideoFXEventAttributes,
   VideoFrameBuffer,
