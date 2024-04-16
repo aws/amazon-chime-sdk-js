@@ -43,7 +43,7 @@ Conditions:
   ShouldDeployFetchCredentialLambda: !Equals [true, !Ref UseFetchCredentialLambda]
 Globals:
   Function:
-    Runtime: nodejs14.x
+    Runtime: nodejs20.x
     Timeout: 30
     MemorySize: 128
     Environment:

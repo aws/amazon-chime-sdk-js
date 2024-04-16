@@ -140,7 +140,7 @@ describe('DefaultAudioVideoController', () => {
 
   // For JoinAndReceiveIndexTask
   function makeJoinAckFrame(
-    withTurnCreds: boolean = true,
+    withJoinAckFrame: boolean = true,
     defaultServerSideNetworkAdaption: SdkServerSideNetworkAdaption = SdkServerSideNetworkAdaption.NONE
   ): Uint8Array {
     const joinAckFrame = SdkJoinAckFrame.create();
@@ -152,7 +152,7 @@ describe('DefaultAudioVideoController', () => {
     joinAckFrame.defaultServerSideNetworkAdaption = defaultServerSideNetworkAdaption;
     const joinAckSignal = SdkSignalFrame.create();
     joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
-    if (withTurnCreds) {
+    if (withJoinAckFrame) {
       joinAckSignal.joinack = joinAckFrame;
     }
     const buffer = SdkSignalFrame.encode(joinAckSignal).finish();
@@ -547,48 +547,6 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
 
-      await stop();
-      audioVideoController.removeObserver(observer);
-    });
-
-    it('can be started without a join ack frame containing turn credentials', async () => {
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController
-      );
-      let sessionStarted = false;
-      let sessionConnecting = false;
-      class TestObserver implements AudioVideoObserver {
-        audioVideoDidStart(): void {
-          // use this opportunity to verify that start is idempotent
-          audioVideoController.start();
-          sessionStarted = true;
-        }
-        audioVideoDidStartConnecting(): void {
-          sessionConnecting = true;
-        }
-      }
-      const observer = new TestObserver();
-      audioVideoController.addObserver(observer);
-      expect(audioVideoController.configuration).to.equal(configuration);
-      expect(audioVideoController.rtcPeerConnection).to.be.null;
-
-      await delay(defaultDelay);
-      audioVideoController.start();
-      await delay(defaultDelay);
-      webSocketAdapter.send(makeJoinAckFrame(false));
-      await delay(defaultDelay);
-      webSocketAdapter.send(makeIndexFrame());
-      await delay(300);
-      await sendICEEventAndSubscribeAckFrame();
-      await delay(defaultDelay);
-      await sendAudioStreamIdInfoFrame();
-      await delay(defaultDelay);
-      expect(sessionStarted).to.be.true;
-      expect(sessionConnecting).to.be.true;
       await stop();
       audioVideoController.removeObserver(observer);
     });
@@ -4477,7 +4435,7 @@ describe('DefaultAudioVideoController', () => {
 
     it('can be started', async () => {
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-      domMockBehavior.browserName = 'chrome';
+      domMockBehavior.browserName = 'chrome116';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       audioVideoController = new DefaultAudioVideoController(
         configuration,

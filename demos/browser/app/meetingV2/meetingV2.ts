@@ -637,7 +637,7 @@ export class DemoMeetingApp
       }
     );
 
-    if (this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
+    if (!this.defaultBrowserBehavior.supportsAudioRedundancy()) {
       // Firefox currently does not support audio redundancy through insertable streams or
       // script transform so disable the redundancy checkbox
       (document.getElementById('disable-audio-redundancy') as HTMLInputElement).disabled = true;
@@ -1586,9 +1586,10 @@ export class DemoMeetingApp
       this.toggleButton(button, isPromoted ? 'off' : 'disabled');
     }
 
-    // Additionally mute audio so it's not in an unexpected state when demoted
+    // Additionally mute audio and stop local video so it's not in an unexpected state when demoted
     if (!isPromoted) {
       this.audioVideo.realtimeMuteLocalAudio();
+      this.audioVideo.stopLocalVideoTile();
     }
   }
 
@@ -3008,8 +3009,12 @@ export class DemoMeetingApp
     // Set it for the content share stream if we can.
     const videoElem = document.getElementById('content-share-video') as HTMLVideoElement;
     if (this.defaultBrowserBehavior.supportsSetSinkId()) {
-      // @ts-ignore
-      videoElem.setSinkId(device);
+      try {
+        // @ts-ignore
+        await videoElem.setSinkId(device);
+      } catch (e) {
+        this.log('Failed to set audio output', e);
+      }
     }
 
     await this.audioVideo.chooseAudioOutput(device);
@@ -3968,7 +3973,7 @@ export class DemoMeetingApp
 
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     this.videoCodecPreferences = getCodecPreferences(chosenVideoSendCodec);
-    if (!['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
+    if (['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
       // Attempting to use simulcast with VP9 or AV1 will lead to unexpected behavior (e.g. SVC instead)
       this.enableSimulcast = false;
     }

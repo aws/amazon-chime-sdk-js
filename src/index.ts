@@ -216,7 +216,6 @@ import RealtimeSubscribeToAttendeeIdPresenceCallback from './realtimecontroller/
 import RealtimeVolumeIndicator from './realtimecontroller/RealtimeVolumeIndicator';
 import ReceiveAudioInputTask from './task/ReceiveAudioInputTask';
 import ReceiveRemoteVideoPauseResumeTask from './task/ReceiveRemoteVideoPauseResumeTask';
-import ReceiveTURNCredentialsTask from './task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
 import ReconnectController from './reconnectcontroller/ReconnectController';
@@ -290,6 +289,9 @@ import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
+import VideoEncodingConnectionHealthPolicyName from './connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
+import VideoEncodingCpuConnectionHealthPolicy from './connectionhealthpolicy/VideoEncodingCpuConnectionHealthPolicy';
+import VideoEncodingFramerateConnectionHealthPolicy from './connectionhealthpolicy/VideoEncodingFramerateConnectionHealthPolicy';
 import VideoEncodingParameters from './videouplinkbandwidthpolicy/VideoEncodingParameters';
 import VideoFXEventAttributes from './eventcontroller/VideoFXEventAttributes';
 import VideoFrameBuffer from './videoframeprocessor/VideoFrameBuffer';
@@ -566,7 +568,6 @@ export {
   RealtimeVolumeIndicator,
   ReceiveAudioInputTask,
   ReceiveRemoteVideoPauseResumeTask,
-  ReceiveTURNCredentialsTask,
   ReceiveVideoInputTask,
   ReceiveVideoStreamIndexTask,
   ReconnectController,
@@ -641,6 +642,9 @@ export {
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
   VideoElementFactory,
+  VideoEncodingConnectionHealthPolicyName,
+  VideoEncodingCpuConnectionHealthPolicy,
+  VideoEncodingFramerateConnectionHealthPolicy,
   VideoEncodingParameters,
   VideoFXEventAttributes,
   VideoFrameBuffer,

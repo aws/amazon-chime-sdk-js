@@ -85,7 +85,7 @@ describe('DefaultTransceiverController', () => {
   const context: AudioVideoControllerState = new AudioVideoControllerState();
 
   beforeEach(() => {
-    domMockBehavior.browserName = 'chrome';
+    domMockBehavior.browserName = 'chrome116';
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
     // Wrap the mock worker to initialize the RED worker since the worker code at the URL is not actually executed.

@@ -16,6 +16,7 @@ export default class VideoStreamDescription {
   width: number = 0;
   height: number = 0;
   timeEnabled: number = 0;
+  // Unused, should be removed in a future release
   disabledByWebRTC: boolean = false;
   disabledByUplinkPolicy: boolean = false;
   rid: string = '';
@@ -45,7 +46,6 @@ export default class VideoStreamDescription {
     newInfo.avgBitrateKbps = this.avgBitrateKbps;
     newInfo.maxFrameRate = this.maxFrameRate;
     newInfo.timeEnabled = this.timeEnabled;
-    newInfo.disabledByWebRTC = this.disabledByWebRTC;
     newInfo.disabledByUplinkPolicy = this.disabledByUplinkPolicy;
     newInfo.width = this.width;
     newInfo.height = this.height;
@@ -61,8 +61,7 @@ export default class VideoStreamDescription {
     descriptor.streamId = this.streamId;
     descriptor.groupId = this.groupId;
     descriptor.framerate = this.maxFrameRate;
-    descriptor.maxBitrateKbps =
-      this.disabledByUplinkPolicy || this.disabledByWebRTC ? 0 : this.maxBitrateKbps;
+    descriptor.maxBitrateKbps = this.disabledByUplinkPolicy ? 0 : this.maxBitrateKbps;
     descriptor.avgBitrateBps = this.avgBitrateKbps;
     return descriptor;
   }
