@@ -164,9 +164,15 @@
 					<div class="tsd-signature tsd-kind-icon">consecutive<wbr>High<wbr>Encode<wbr>Cpu<wbr>Threshold<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 10</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L53">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L58">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:58</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Consecutive seconds of high encode CPU to trigger video codec degradation in video encoding health monitoring.
+							Increasing the value results in less sensitive video codec degradaion and vice versa.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="consecutivevideoencodingfailurethreshold" class="tsd-anchor"></a>
@@ -174,9 +180,15 @@
 					<div class="tsd-signature tsd-kind-icon">consecutive<wbr>Video<wbr>Encoding<wbr>Failure<wbr>Threshold<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 5</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L55">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L71">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:71</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Consecutive seconds of zero encoded framerate to trigger video codec degradation in video encoding health monitoring.
+							Increasing the value results in less sensitive video codec degradaion and vice versa.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="cooldowntimems" class="tsd-anchor"></a>
@@ -234,9 +246,16 @@
 					<div class="tsd-signature tsd-kind-icon">high<wbr>Encode<wbr>Cpu<wbr>MsThreshold<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 500</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L54">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L65">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:65</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Encode time threshold to determine high CPU usage of software encoders in video encoding health monitoring.
+								Recuding the value results in video codec degradation due to high CPU usage software encoder to be triggered
+							at a lower CPU usage.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="initialhealth" class="tsd-anchor"></a>

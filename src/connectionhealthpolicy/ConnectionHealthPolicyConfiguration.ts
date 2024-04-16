@@ -50,7 +50,23 @@ export default class ConnectionHealthPolicyConfiguration {
     VideoEncodingCpuConnectionHealthPolicy,
     VideoEncodingFramerateConnectionHealthPolicy,
   ];
+
+  /**
+   * Consecutive seconds of high encode CPU to trigger video codec degradation in video encoding health monitoring.
+   * Increasing the value results in less sensitive video codec degradaion and vice versa.
+   */
   consecutiveHighEncodeCpuThreshold = 10;
+
+  /**
+   * Encode time threshold to determine high CPU usage of software encoders in video encoding health monitoring.
+   * Recuding the value results in video codec degradation due to high CPU usage software encoder to be triggered
+   * at a lower CPU usage.
+   */
   highEncodeCpuMsThreshold = 500;
+
+  /**
+   * Consecutive seconds of zero encoded framerate to trigger video codec degradation in video encoding health monitoring.
+   * Increasing the value results in less sensitive video codec degradaion and vice versa.
+   */
   consecutiveVideoEncodingFailureThreshold = 5;
 }

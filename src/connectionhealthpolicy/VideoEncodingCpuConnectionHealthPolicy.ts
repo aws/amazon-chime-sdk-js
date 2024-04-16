@@ -5,6 +5,7 @@ import BaseConnectionHealthPolicy from './BaseConnectionHealthPolicy';
 import ConnectionHealthData from './ConnectionHealthData';
 import ConnectionHealthPolicy from './ConnectionHealthPolicy';
 import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfiguration';
+import VideoEncodingConnectionHealthPolicyName from './VideoEncodingConnectionHealthPolicyName';
 
 export default class VideoEncodingCpuConnectionHealthPolicy
   extends BaseConnectionHealthPolicy
@@ -14,7 +15,7 @@ export default class VideoEncodingCpuConnectionHealthPolicy
   private consecutiveHighEncodeCpuCnt = 0;
 
   constructor(configuration: ConnectionHealthPolicyConfiguration, data: ConnectionHealthData) {
-    super(configuration, data, 'Video Encoding CPU Health');
+    super(configuration, data, VideoEncodingConnectionHealthPolicyName.VideoEncodingCpuHealth);
     this.consecutiveHighEncodeCpuThreshold = configuration.consecutiveHighEncodeCpuThreshold;
     this.highEncodeCpuMsThreshold = configuration.highEncodeCpuMsThreshold;
   }

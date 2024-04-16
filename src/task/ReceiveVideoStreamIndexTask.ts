@@ -222,15 +222,16 @@ export default class ReceiveVideoStreamIndexTask
     let willNeedUpdate = false;
 
     // Intersect `this.context.videoSendCodecPreferences` with `index.supportedReceiveCodecIntersection`
+    // and filter out any send video codecs we have determined to be degraded
     for (const capability of this.context.videoSendCodecPreferences) {
-      let isCapabilityDegraded = false;
-      for (const degradedCapability of this.context.degradedVideoSendCodecs) {
-        if (capability.equals(degradedCapability)) {
-          isCapabilityDegraded = true;
-          break;
-        }
-      }
-      if (isCapabilityDegraded) {
+      if (
+        this.context.degradedVideoSendCodecs.some(degradedCapability =>
+          capability.equals(degradedCapability)
+        )
+      ) {
+        this.logger.info(
+          `Skipping ${capability.codecName} since the codec has been identfied as degraded`
+        );
         continue;
       }
       for (const signaledCapability of index.supportedReceiveCodecIntersection) {

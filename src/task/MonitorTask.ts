@@ -13,6 +13,7 @@ import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/Conne
 import ReconnectionHealthPolicy from '../connectionhealthpolicy/ReconnectionHealthPolicy';
 import SendingAudioFailureConnectionHealthPolicy from '../connectionhealthpolicy/SendingAudioFailureConnectionHealthPolicy';
 import UnusableAudioWarningConnectionHealthPolicy from '../connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
+import VideoEncodingConnectionHealthPolicyName from '../connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
@@ -263,10 +264,10 @@ export default class MonitorTask
       this.applyHealthPolicy(policy, connectionHealthData, () => {
         this.degradeVideoCodec(policy.name);
         switch (policy.name) {
-          case 'Video Encoding CPU Health':
+          case VideoEncodingConnectionHealthPolicyName.VideoEncodingCpuHealth:
             this.context.statsCollector.videoCodecDegradationHighEncodeCpuDidReceive();
             break;
-          case 'Video Encoding framerate Health':
+          case VideoEncodingConnectionHealthPolicyName.VideoEncodingFramerateHealth:
             this.context.statsCollector.videoCodecDegradationEncodeFailureDidReceive();
             break;
         }
@@ -495,7 +496,9 @@ export default class MonitorTask
         this.context.audioVideoController.update({ needsRenegotiation: true });
       } else {
         this.context.logger.warn(
-          'Degrading video codec failed since there is no alternative codec to select'
+          `Degrading video codec failed since there is no alternative codec to select. Currently degraded codecs: ${this.context.degradedVideoSendCodecs
+            .map(capability => capability.codecName)
+            .join(',')}`
         );
       }
     }

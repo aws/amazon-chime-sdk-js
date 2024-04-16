@@ -5,6 +5,7 @@ import BaseConnectionHealthPolicy from './BaseConnectionHealthPolicy';
 import ConnectionHealthData from './ConnectionHealthData';
 import ConnectionHealthPolicy from './ConnectionHealthPolicy';
 import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfiguration';
+import VideoEncodingConnectionHealthPolicyName from './VideoEncodingConnectionHealthPolicyName';
 
 export default class VideoEncodingFramerateConnectionHealthPolicy
   extends BaseConnectionHealthPolicy
@@ -13,7 +14,11 @@ export default class VideoEncodingFramerateConnectionHealthPolicy
   private consecutiveEncodeFailureCnt = 0;
 
   constructor(configuration: ConnectionHealthPolicyConfiguration, data: ConnectionHealthData) {
-    super(configuration, data, 'Video Encoding framerate Health');
+    super(
+      configuration,
+      data,
+      VideoEncodingConnectionHealthPolicyName.VideoEncodingFramerateHealth
+    );
     this.consecutiveVideoEncodingFailureThreshold =
       configuration.consecutiveVideoEncodingFailureThreshold;
   }

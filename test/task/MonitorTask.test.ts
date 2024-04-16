@@ -1482,6 +1482,7 @@ describe('MonitorTask', () => {
         VideoCodecCapability.vp8(),
       ];
       context.videoSendCodecPreferences = [VideoCodecCapability.vp9Profile0()];
+      context.degradedVideoSendCodecs = [VideoCodecCapability.vp9Profile0()];
       // @ts-ignore
       task.degradeVideoCodec();
       expect(
