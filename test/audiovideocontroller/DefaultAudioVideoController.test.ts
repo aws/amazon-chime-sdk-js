@@ -1831,6 +1831,20 @@ describe('DefaultAudioVideoController', () => {
         hasVideoInput(): boolean {
           return true;
         }
+
+        localVideoTransceiver(): RTCRtpTransceiver {
+          const dummyTransceiver = {
+            mid: '1',
+            sender: new RTCRtpSender(),
+            receiver: {
+              track: {
+                kind: 'video',
+                enabled: true,
+              },
+            },
+          };
+          return dummyTransceiver as RTCRtpTransceiver;
+        }
       }
 
       // @ts-ignore
