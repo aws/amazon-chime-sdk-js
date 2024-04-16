@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
-- Avoid subscribes when simulcast is enabled but not currently sending
+
+- Avoid subscribes when simulcast is enabled but not currently sending, or when using server side network adaptation.
 
 ### Fixed
 
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
 - Fixed packets received check on Safari 17.3 and below
 
 ## [3.21.0] - 2024-02-12
