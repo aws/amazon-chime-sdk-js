@@ -358,7 +358,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('start', () => {
-    xit('can be started without policies in configuration', async () => {
+    it('can be started without policies in configuration', async () => {
       configuration.videoUplinkBandwidthPolicy = null;
       configuration.videoDownlinkBandwidthPolicy = null;
       audioVideoController = new DefaultAudioVideoController(
@@ -410,7 +410,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(obsever);
     });
 
-    xit('can be started with a pre-start', async () => {
+    it('can be started with a pre-start', async () => {
       configuration.videoUplinkBandwidthPolicy = null;
       configuration.videoDownlinkBandwidthPolicy = null;
       audioVideoController = new DefaultAudioVideoController(
@@ -457,7 +457,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can stop after only pre-start', async () => {
+    it('can stop after only pre-start', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -491,7 +491,7 @@ describe('DefaultAudioVideoController', () => {
       expect(audioVideoController.meetingSessionContext.signalingClient.ready()).to.be.false;
     });
 
-    xit('is resilient against pre-start errors', async () => {
+    it('is resilient against pre-start errors', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -511,7 +511,7 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
-    xit('can be started with null audio host url', async () => {
+    it('can be started with null audio host url', async () => {
       configuration.videoUplinkBandwidthPolicy = null;
       configuration.videoDownlinkBandwidthPolicy = null;
       configuration.urls.audioHostURL = null;
@@ -551,7 +551,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can be started with customized audio and video policies', async () => {
+    it('can be started with customized audio and video policies', async () => {
       const myUplinkPolicy = new NScaleVideoUplinkBandwidthPolicy('test');
       const myDownlinkPolicy = new AllHighestVideoBandwidthPolicy('test');
       configuration.videoUplinkBandwidthPolicy = myUplinkPolicy;
@@ -618,7 +618,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can be started with customized video simulcast downlink policy', async () => {
+    it('can be started with customized video simulcast downlink policy', async () => {
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
@@ -672,7 +672,7 @@ describe('DefaultAudioVideoController', () => {
       bindTileControllerSpy.restore();
     });
 
-    xit('can be started with default simulcast uplink and downlink policy', async () => {
+    it('can be started with default simulcast uplink and downlink policy', async () => {
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       const logger = new NoOpDebugLogger();
@@ -719,7 +719,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can be started with customized video simulcast uplink policy', async () => {
+    it('can be started with customized video simulcast uplink policy', async () => {
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
@@ -765,7 +765,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can be started and take a bandwidth update', async () => {
+    it('can be started and take a bandwidth update', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -813,7 +813,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can be started and take a bandwidth update without update transceiver controller method', async () => {
+    it('can be started and take a bandwidth update without update transceiver controller method', async () => {
       class TestVideoUplinkBandwidth extends NoVideoUplinkBandwidthPolicy {
         hasBandwidthPriority: boolean = false;
 
@@ -857,7 +857,7 @@ describe('DefaultAudioVideoController', () => {
       spy3.restore();
     });
 
-    xit('can be started and take a bandwidth update with update transceiver controller method', async () => {
+    it('can be started and take a bandwidth update with update transceiver controller method', async () => {
       const policy = new NScaleVideoUplinkBandwidthPolicy('test');
       const spy = sinon.spy(policy, 'updateTransceiverController');
       configuration.videoUplinkBandwidthPolicy = policy;
@@ -878,7 +878,7 @@ describe('DefaultAudioVideoController', () => {
       spy.restore();
     });
 
-    xit('can be started and stopped multiple times with transceiver controller set correctly', async function () {
+    it('can be started and stopped multiple times with transceiver controller set correctly', async function () {
       this.timeout(5000); // Need to increase the default mocha timeout of 2000ms
       const policy = new NScaleVideoUplinkBandwidthPolicy('test');
       const spy = sinon.spy(policy, 'setTransceiverController');
@@ -910,7 +910,7 @@ describe('DefaultAudioVideoController', () => {
       spy.restore();
     });
 
-    xit(
+    it(
       'can be started and stopped multiple times and subscribe and unsubscribe from media stream broker observer' +
         ' correctly',
       async function () {
@@ -942,7 +942,7 @@ describe('DefaultAudioVideoController', () => {
       }
     );
 
-    xit('can be started even when the stats collector has an issue starting due to an unsupported browser', async () => {
+    it('can be started even when the stats collector has an issue starting due to an unsupported browser', async () => {
       setUserAgent(SAFARI_13_USER_AGENT);
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -966,7 +966,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('handles an error', async () => {
+    it('handles an error', async () => {
       configuration.connectionTimeoutMs = 100;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -989,7 +989,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.called).to.be.true;
     });
 
-    xit('does not call the observer if it has been removed', async () => {
+    it('does not call the observer if it has been removed', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -1045,7 +1045,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can fail but does not reconnect', async () => {
+    it('can fail but does not reconnect', async () => {
       configuration.connectionTimeoutMs = 100;
       const logger = new NoOpDebugLogger();
       const spy = sinon.spy(logger, 'error');
@@ -1108,7 +1108,7 @@ describe('DefaultAudioVideoController', () => {
       await result;
     });
 
-    xit('can be started with SVC config', async () => {
+    it('can be started with SVC config', async () => {
       setUserAgent(CHROME_116_USER_AGENT);
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -1154,7 +1154,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('enable simulcast if both simulcast and SVC are selected', async () => {
+    it('enable simulcast if both simulcast and SVC are selected', async () => {
       setUserAgent(CHROME_116_USER_AGENT);
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -1202,7 +1202,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('stop', () => {
-    xit('can be started and stopped', async () => {
+    it('can be started and stopped', async () => {
       let called = false;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -1226,7 +1226,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can be stopped without having been started', () => {
+    it('can be stopped without having been started', () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -1238,7 +1238,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.stop();
     });
 
-    xit('can be stopped before stop and then stopped again', () => {
+    it('can be stopped before stop and then stopped again', () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -1252,7 +1252,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.stop();
     });
 
-    xit('disables reconnecting once stop is called', async () => {
+    it('disables reconnecting once stop is called', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -1294,7 +1294,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('update', () => {
-    xit('can be started and then start and stop a local video tile', async () => {
+    it('can be started and then start and stop a local video tile', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -1323,7 +1323,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit(
+    it(
       'can be started and then start and stop a local video tile if video uplink does not implement set transceiver' +
         ' controller',
       async () => {
@@ -1374,7 +1374,7 @@ describe('DefaultAudioVideoController', () => {
       }
     );
 
-    xit('restart local video if CreateSDP fails with IncompatibleSDP error', async () => {
+    it('restart local video if CreateSDP fails with IncompatibleSDP error', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -1415,7 +1415,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     }).timeout(5000);
 
-    xit('reconnects if the update fails with a task failed meeting status', async () => {
+    it('reconnects if the update fails with a task failed meeting status', async () => {
       let called = 0;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -1455,7 +1455,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     }).timeout(4000);
 
-    xit('will skip renegotiation if video streams are not initialized', async () => {
+    it('will skip renegotiation if video streams are not initialized', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -1477,7 +1477,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit('will not skip renegotiation if we explicitly request it', async () => {
+    it('will not skip renegotiation if we explicitly request it', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -1502,7 +1502,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    xit("will not skip renegotiation if we don't have a transceiver", async () => {
+    it("will not skip renegotiation if we don't have a transceiver", async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -1533,7 +1533,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    xit("will not skip renegotiation if transceiver controller doesn't have a mapping", async () => {
+    it("will not skip renegotiation if transceiver controller doesn't have a mapping", async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -1569,7 +1569,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    xit('will not skip renegotiation if we are switching simulcast streams', async () => {
+    it('will not skip renegotiation if we are switching simulcast streams', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
@@ -1626,7 +1626,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    xit('will not skip renegotiation if current video ids are somehow null', async () => {
+    it('will not skip renegotiation if current video ids are somehow null', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
@@ -1678,7 +1678,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    xit('will skip renegotiation if simulcast streams do not change', async () => {
+    it('will skip renegotiation if simulcast streams do not change', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
@@ -1806,7 +1806,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit('will not skip renegotiation if we are updating simulcast layer change without header extension', async () => {
+    it('will not skip renegotiation if we are updating simulcast layer change without header extension', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
@@ -1853,7 +1853,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    xit('will skip renegotiation if we are updating simulcast layer but not sending', async () => {
+    it('will skip renegotiation if we are updating simulcast layer but not sending', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
@@ -1900,7 +1900,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit('will skip renegotiation if we are only completing simulcast stream switches', async () => {
+    it('will skip renegotiation if we are only completing simulcast stream switches', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -1988,7 +1988,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit("will not skip renegotiation if we don't have setStreamId", async () => {
+    it("will not skip renegotiation if we don't have setStreamId", async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -2074,7 +2074,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    xit("will skip renegotiation even if we don't have tile", async () => {
+    it("will skip renegotiation even if we don't have tile", async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -2149,7 +2149,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit('will skip renegotiation if there are no changes', async () => {
+    it('will skip renegotiation if there are no changes', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -2210,7 +2210,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit('will not skip renegotiation if we are not only completing simulcast stream switches', async () => {
+    it('will not skip renegotiation if we are not only completing simulcast stream switches', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -2270,7 +2270,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    xit('will not send remoteVideoUpdate if streams are unchanged', async () => {
+    it('will not send remoteVideoUpdate if streams are unchanged', async () => {
       const logger = new NoOpDebugLogger();
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -2361,7 +2361,7 @@ describe('DefaultAudioVideoController', () => {
       expect(remoteVideoUpdateCalled).to.be.false;
     });
 
-    xit('will send removeVideoUpdate due to video preference', async () => {
+    it('will send removeVideoUpdate due to video preference', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
 
@@ -2480,7 +2480,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit('will send removeVideoUpdate due to video preference change', async () => {
+    it('will send removeVideoUpdate due to video preference change', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
 
@@ -2603,7 +2603,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit('will send removeVideoUpdate due to video preference removal', async () => {
+    it('will send removeVideoUpdate due to video preference removal', async () => {
       const logger = new NoOpDebugLogger();
 
       const policyConfig = new VideoPriorityBasedPolicyConfig();
@@ -2723,7 +2723,7 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
-    xit('will not skip renegotiation if video streams are not initialized with server side network adaptation', async () => {
+    it('will not skip renegotiation if video streams are not initialized with server side network adaptation', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       audioVideoController = new DefaultAudioVideoController(
@@ -2750,7 +2750,7 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
-    xit('will not send remoteVideoUpdate to video preference if missing preference', async () => {
+    it('will not send remoteVideoUpdate to video preference if missing preference', async () => {
       const logger = new NoOpDebugLogger();
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -2843,7 +2843,7 @@ describe('DefaultAudioVideoController', () => {
       expect(remoteVideoUpdateCalled).to.be.false;
     });
 
-    xit('will not send remoteVideoUpdate if videosToReceive changed but mid not found', async () => {
+    it('will not send remoteVideoUpdate if videosToReceive changed but mid not found', async () => {
       const logger = new NoOpDebugLogger();
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -2943,7 +2943,7 @@ describe('DefaultAudioVideoController', () => {
       expect(remoteVideoUpdateCalled).to.be.false;
     });
 
-    xit('will send remoteVideoUpdate if videosToReceive changed', async () => {
+    it('will send remoteVideoUpdate if videosToReceive changed', async () => {
       const logger = new NoOpDebugLogger();
 
       const policy = new VideoPriorityBasedPolicy(logger);
@@ -3058,7 +3058,7 @@ describe('DefaultAudioVideoController', () => {
       expect(remoteVideoUpdateCalled).to.be.true;
     });
 
-    xit('will send remoteVideoUpdate if videosToReceive changed with streamID 0', async () => {
+    it('will send remoteVideoUpdate if videosToReceive changed with streamID 0', async () => {
       const logger = new NoOpDebugLogger();
       const policyConfig = new VideoPriorityBasedPolicyConfig();
       policyConfig.serverSideNetworkAdaption =
@@ -3178,7 +3178,7 @@ describe('DefaultAudioVideoController', () => {
       expect(remoteVideoUpdateCalled).to.be.true;
     });
 
-    xit('will not send update if current videos ids are empty', async () => {
+    it('will not send update if current videos ids are empty', async () => {
       const logger = new NoOpDebugLogger();
       const policyConfig = new VideoPriorityBasedPolicyConfig();
       policyConfig.serverSideNetworkAdaption =
@@ -3294,7 +3294,7 @@ describe('DefaultAudioVideoController', () => {
       expect(remoteVideoUpdateCalled).to.be.false;
     });
 
-    xit('will not send remoteVideoUpdate if videosToReceive is empty', async () => {
+    it('will not send remoteVideoUpdate if videosToReceive is empty', async () => {
       const logger = new NoOpDebugLogger();
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -3386,7 +3386,7 @@ describe('DefaultAudioVideoController', () => {
       expect(remoteVideoUpdateCalled).to.be.false;
     });
 
-    xit('will skip renegotiation but not due to video preferences if videosToReceive remains same', async () => {
+    it('will skip renegotiation but not due to video preferences if videosToReceive remains same', async () => {
       const logger = new NoOpDebugLogger();
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -3484,7 +3484,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('restartLocalVideo', () => {
-    xit('restarts local video', async () => {
+    it('restarts local video', async () => {
       class TestDeviceController extends NoOpDeviceController {
         async acquireVideoInputStream(): Promise<MediaStream> {
           const mediaStream = new MediaStream();
@@ -3529,7 +3529,7 @@ describe('DefaultAudioVideoController', () => {
       expect(called).to.be.true;
     }).timeout(5000);
 
-    xit('can defer restartLocalVideo and performs a single update operation when the local video is turned off', async () => {
+    it('can defer restartLocalVideo and performs a single update operation when the local video is turned off', async () => {
       let called = false;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -3583,13 +3583,13 @@ describe('DefaultAudioVideoController', () => {
       );
     });
 
-    xit('throw error video stream has no track', () => {
+    it('throw error video stream has no track', () => {
       return expect(audioVideoController.replaceLocalVideo(new MediaStream())).to.be.rejectedWith(
         'could not acquire video track'
       );
     });
 
-    xit('Throw error if no peer connection is established', async () => {
+    it('Throw error if no peer connection is established', async () => {
       const stream = new MediaStream();
       const track = new MediaStreamTrack();
       // @ts-ignore
@@ -3600,7 +3600,7 @@ describe('DefaultAudioVideoController', () => {
       );
     });
 
-    xit('replaces video track', async () => {
+    it('replaces video track', async () => {
       const stream = new MediaStream();
       // @ts-ignore
       stream.id = '2';
@@ -3645,7 +3645,7 @@ describe('DefaultAudioVideoController', () => {
       await audioVideoController.removeObserver(observer);
     });
 
-    xit('Do not replace local video if local tile is null', async () => {
+    it('Do not replace local video if local tile is null', async () => {
       const stream = new MediaStream();
       // @ts-ignore
       stream.id = '2';
@@ -3698,13 +3698,13 @@ describe('DefaultAudioVideoController', () => {
         reconnectController
       );
     });
-    xit('fails if has no active audio stream', () => {
+    it('fails if has no active audio stream', () => {
       return expect(
         audioVideoController.replaceLocalAudio(new MediaStream())
       ).to.eventually.be.rejectedWith('could not acquire audio track');
     });
 
-    xit('Throw error if no peer connection is established', async () => {
+    it('Throw error if no peer connection is established', async () => {
       const stream = new MediaStream();
       const track = new MediaStreamTrack();
       // @ts-ignore
@@ -3715,7 +3715,7 @@ describe('DefaultAudioVideoController', () => {
       );
     });
 
-    xit('replaces audio track', async () => {
+    it('replaces audio track', async () => {
       const stream = new MediaStream();
       const track = new MediaStreamTrack();
       // @ts-ignore
@@ -3746,7 +3746,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('reject if transceiver fails to replaces audio track', async () => {
+    it('reject if transceiver fails to replaces audio track', async () => {
       const stream = new MediaStream();
       const track = new MediaStreamTrack();
       // @ts-ignore
@@ -3783,7 +3783,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('reconnect', () => {
-    xit('reconnects, calling audioVideoDidStartConnecting and audioVideoDidStart but not audioVideoDidStop', async () => {
+    it('reconnects, calling audioVideoDidStartConnecting and audioVideoDidStart but not audioVideoDidStop', async () => {
       const sequence: string[] = [];
       let startConnectingCalled = 0;
       let startCalled = 0;
@@ -3838,7 +3838,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     }).timeout(5000);
 
-    xit('publish meeting reconnected', async () => {
+    it('publish meeting reconnected', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -3873,7 +3873,7 @@ describe('DefaultAudioVideoController', () => {
       eventController.removeObserver(observer);
     }).timeout(5000);
 
-    xit('does not reconnect if canceled', async () => {
+    it('does not reconnect if canceled', async () => {
       let called = 0;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -3900,7 +3900,7 @@ describe('DefaultAudioVideoController', () => {
 
     // FinishGatheringICECandidatesTask does not throw the ICEGatheringTimeoutWorkaround error if
     // the session connection timeout is less than 5000ms.
-    xit('reconnects when the start operation fails with a non-Terminal meeting status such as ICEGatheringTimeoutWorkaround', function (done) {
+    it('reconnects when the start operation fails with a non-Terminal meeting status such as ICEGatheringTimeoutWorkaround', function (done) {
       this.timeout(20000);
 
       domMockBehavior.browserName = 'chrome';
@@ -3964,7 +3964,7 @@ describe('DefaultAudioVideoController', () => {
       });
     });
 
-    xit('reconnects when the start operation fails with a task failed meeting status', function (done) {
+    it('reconnects when the start operation fails with a task failed meeting status', function (done) {
       configuration.connectionTimeoutMs = 100;
       const logger = new NoOpDebugLogger();
       const spy = sinon.spy(logger, 'warn');
@@ -4013,7 +4013,7 @@ describe('DefaultAudioVideoController', () => {
       });
     });
 
-    xit('reconnects when the reconnect operation itself fails', done => {
+    it('reconnects when the reconnect operation itself fails', done => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'warn');
 
@@ -4053,7 +4053,7 @@ describe('DefaultAudioVideoController', () => {
       });
     });
 
-    xit('uses the custom connection health policy configuration if passed', done => {
+    it('uses the custom connection health policy configuration if passed', done => {
       // Set the missed pongs upper threshold to zero to force restarting the session.
       const connectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
       connectionHealthPolicyConfiguration.connectionWaitTimeMs = 0;
@@ -4098,7 +4098,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('reconnect for no attendee presence', () => {
-    xit('reconnects when the start operation fails due to no attendee presence event', function (done) {
+    it('reconnects when the start operation fails due to no attendee presence event', function (done) {
       this.timeout(15000);
 
       const logger = new NoOpDebugLogger();
@@ -4164,7 +4164,7 @@ describe('DefaultAudioVideoController', () => {
       });
     });
 
-    xit('does not reconnect for no attendee presence event if the attendee presence timeout is set to zero', function (done) {
+    it('does not reconnect for no attendee presence event if the attendee presence timeout is set to zero', function (done) {
       this.timeout(15000);
 
       const logger = new NoOpDebugLogger();
@@ -4232,7 +4232,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('getters', () => {
-    xit('returns a device controller for the mediaStreamBroker and deviceController getter', () => {
+    it('returns a device controller for the mediaStreamBroker and deviceController getter', () => {
       const mediaStreamBroker = new NoOpMediaStreamBroker();
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -4257,7 +4257,7 @@ describe('DefaultAudioVideoController', () => {
       );
     });
 
-    xit('handles VideoCallSwitchToViewOnly', async () => {
+    it('handles VideoCallSwitchToViewOnly', async () => {
       let called = false;
       const spy = sinon.spy(audioVideoController.videoTileController, 'removeLocalVideoTile');
       class TestObserver implements AudioVideoObserver {
@@ -4279,7 +4279,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('handles IncompatibleSDP', async () => {
+    it('handles IncompatibleSDP', async () => {
       let called = 0;
       const spy = sinon.spy(audioVideoController, 'restartLocalVideo');
       class TestObserver implements AudioVideoObserver {
@@ -4309,7 +4309,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('does not reconnect for the terminal status or the unknown status', async () => {
+    it('does not reconnect for the terminal status or the unknown status', async () => {
       let called = false;
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(_sessionStatus: MeetingSessionStatus): void {
@@ -4333,7 +4333,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('does not reconnect if the reconnectController is not set in the context', async () => {
+    it('does not reconnect if the reconnectController is not set in the context', async () => {
       const spy = sinon.spy(reconnectController, 'disableReconnect');
       audioVideoController.handleMeetingSessionStatus(
         new MeetingSessionStatus(MeetingSessionStatusCode.Left),
@@ -4345,7 +4345,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('pauseReceivingStream', () => {
-    xit('is no-op if meeting is not started', () => {
+    it('is no-op if meeting is not started', () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4357,7 +4357,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.pauseReceivingStream(0);
     });
 
-    xit('sends pause frame through signaling client', async () => {
+    it('sends pause frame through signaling client', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4378,7 +4378,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('resumeReceivingStream', () => {
-    xit('is no-op if meeting is not started', () => {
+    it('is no-op if meeting is not started', () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4390,7 +4390,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.resumeReceivingStream(0);
     });
 
-    xit('sends resume frame through signaling client', async () => {
+    it('sends resume frame through signaling client', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4412,7 +4412,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('setVideoCodecSendPreferences', () => {
-    xit('calls update', async () => {
+    it('calls update', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4432,7 +4432,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.callCount).to.equal(1);
     });
 
-    xit('does not trigger an update if invoked before the session starts.', async () => {
+    it('does not trigger an update if invoked before the session starts.', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4449,7 +4449,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('getRTCPeerConnectionStats', () => {
-    xit('calls getStats', async () => {
+    it('calls getStats', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4468,7 +4468,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.calledOnceWith()).to.be.true;
     });
 
-    xit('calls getStats with media stream strack', async () => {
+    it('calls getStats with media stream strack', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4488,7 +4488,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.calledOnceWith(track)).to.be.true;
     });
 
-    xit('return null if no peer connection is established', async () => {
+    it('return null if no peer connection is established', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4503,7 +4503,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('when simulcast is enabled', () => {
-    xit('will be automatically switched off if platform is not Chrome', async () => {
+    it('will be automatically switched off if platform is not Chrome', async () => {
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -4519,7 +4519,7 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
-    xit('can be started', async () => {
+    it('can be started', async () => {
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome116';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -4581,7 +4581,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('can be started for content share attendee', async () => {
+    it('can be started for content share attendee', async () => {
       const attendeeId = defaultAttendeeId + ContentShareConstants.Modality;
       configuration.credentials.attendeeId = attendeeId;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
@@ -4625,7 +4625,7 @@ describe('DefaultAudioVideoController', () => {
     });
   });
 
-  xit('can be started for content share attendee with UHD feature', async () => {
+  it('can be started for content share attendee with UHD feature', async () => {
     const attendeeId = defaultAttendeeId + ContentShareConstants.Modality;
     configuration.meetingFeatures.contentMaxResolution = VideoQualitySettings.VideoResolutionUHD;
     configuration.credentials.attendeeId = attendeeId;
@@ -4676,7 +4676,7 @@ describe('DefaultAudioVideoController', () => {
     audioVideoController.removeObserver(observer);
   });
 
-  xit('can be started for camera video attendee with FHD feature', async () => {
+  it('can be started for camera video attendee with FHD feature', async () => {
     const attendeeId = defaultAttendeeId;
     configuration.meetingFeatures.videoMaxResolution = VideoQualitySettings.VideoResolutionFHD;
     configuration.credentials.attendeeId = attendeeId;
@@ -4726,7 +4726,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('meeting events', () => {
-    xit('sends meeting events', async () => {
+    it('sends meeting events', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4759,7 +4759,7 @@ describe('DefaultAudioVideoController', () => {
       eventController.removeObserver(observer);
     });
 
-    xit('sends failure events', async () => {
+    it('sends failure events', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4799,7 +4799,7 @@ describe('DefaultAudioVideoController', () => {
       eventController.removeObserver(observer);
     });
 
-    xit('sends failure events with a non-empty error message', async () => {
+    it('sends failure events with a non-empty error message', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4840,7 +4840,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('getRemoteVideoSources', () => {
-    xit('should match index frame sources excluding self', async () => {
+    it('should match index frame sources excluding self', async () => {
       const compare = (a: VideoSource, b: VideoSource): number =>
         a.attendee.attendeeId.localeCompare(b.attendee.attendeeId);
 
@@ -4881,7 +4881,7 @@ describe('DefaultAudioVideoController', () => {
       expect(success).to.be.false;
     });
 
-    xit('should return an array of length 0, when videoStreamIndex is not initialized', async () => {
+    it('should return an array of length 0, when videoStreamIndex is not initialized', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4894,7 +4894,7 @@ describe('DefaultAudioVideoController', () => {
       expect(videoSources).to.have.lengthOf(0);
     });
 
-    xit('should return [] when called after meeting session is stopped', async () => {
+    it('should return [] when called after meeting session is stopped', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -4911,7 +4911,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('encodingSimulcastLayersDidChange', () => {
-    xit('observer should get called only when added', async () => {
+    it('observer should get called only when added', async () => {
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -4970,7 +4970,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('observer should get called', async () => {
+    it('observer should get called', async () => {
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -4997,7 +4997,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.calledOnce).to.be.true;
     });
 
-    xit('observer should not get called with non-simulcast policy', async () => {
+    it('observer should not get called with non-simulcast policy', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -5024,7 +5024,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('promoteToPrimaryMeeting & demoteFromPrimaryMeeting', () => {
-    xit('sends promotion through signaling client and waits for ack, demotes sends through signaling client', async () => {
+    it('sends promotion through signaling client and waits for ack, demotes sends through signaling client', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -5071,7 +5071,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('fails promotion if timeout', async () => {
+    it('fails promotion if timeout', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -5118,7 +5118,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('calls demotion observer when leave is received', async () => {
+    it('calls demotion observer when leave is received', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -5155,7 +5155,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    xit('calls demotion observer when disconnection occurs', async () => {
+    it('calls demotion observer when disconnection occurs', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -5199,7 +5199,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('setVideoMaxBandwidthKbps', () => {
-    xit('can set video max bandwidth', async () => {
+    it('can set video max bandwidth', async () => {
       const policy = new NScaleVideoUplinkBandwidthPolicy('test');
       const spy = sinon.spy(policy, 'setIdealMaxBandwidthKbps');
       configuration.videoUplinkBandwidthPolicy = policy;
@@ -5217,7 +5217,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.calledOnce).to.be.true;
     });
 
-    xit('can set video max bandwidth before meeting start', async () => {
+    it('can set video max bandwidth before meeting start', async () => {
       const policy = new NScaleVideoUplinkBandwidthPolicy('test');
       const spy = sinon.spy(policy, 'setIdealMaxBandwidthKbps');
       configuration.videoUplinkBandwidthPolicy = policy;
@@ -5235,7 +5235,7 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.calledOnce).to.be.true;
     });
 
-    xit('bandwidth has to be positive', () => {
+    it('bandwidth has to be positive', () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -5289,7 +5289,7 @@ describe('DefaultAudioVideoController', () => {
       );
     });
 
-    xit('Does nothing if meeting has not started yet', () => {
+    it('Does nothing if meeting has not started yet', () => {
       const replaceAudioSpy = sinon.spy(audioVideoController, 'replaceLocalAudio');
       mediaStreamBroker.addMediaStreamBrokerObserver(audioVideoController);
       mediaStreamBroker.triggerAudioInputChangeEvent(new MediaStream());
@@ -5298,7 +5298,7 @@ describe('DefaultAudioVideoController', () => {
       replaceAudioSpy.restore();
     });
 
-    xit('replace local audio', async () => {
+    it('replace local audio', async () => {
       const mediaStream = new MediaStream();
       const track = new MediaStreamTrack();
       // @ts-ignore
@@ -5314,7 +5314,7 @@ describe('DefaultAudioVideoController', () => {
       replaceAudioSpy.restore();
     });
 
-    xit('Try to acquire audio stream if receive undefined audio stream', async () => {
+    it('Try to acquire audio stream if receive undefined audio stream', async () => {
       await start();
       const replaceAudioSpy = sinon.spy(audioVideoController, 'replaceLocalAudio');
       const acquireAudioSpy = sinon.spy(mediaStreamBroker, 'acquireAudioInputStream');
@@ -5327,7 +5327,7 @@ describe('DefaultAudioVideoController', () => {
       acquireAudioSpy.restore();
     });
 
-    xit('throw error if failed to acquire audio input stream', async () => {
+    it('throw error if failed to acquire audio input stream', async () => {
       class FailedObserverMediaStreamBroker extends ObserverMediaStreamBroker {
         async acquireAudioInputStream(): Promise<MediaStream> {
           throw Error('Failed');
@@ -5401,7 +5401,7 @@ describe('DefaultAudioVideoController', () => {
       );
     });
 
-    xit('Does nothing if meeting has not started yet', () => {
+    it('Does nothing if meeting has not started yet', () => {
       const replaceVideoSpy = sinon.spy(audioVideoController, 'replaceLocalVideo');
       mediaStreamBroker.addMediaStreamBrokerObserver(audioVideoController);
       mediaStreamBroker.triggerVideoInputChangeEvent(new MediaStream());
@@ -5410,7 +5410,7 @@ describe('DefaultAudioVideoController', () => {
       replaceVideoSpy.restore();
     });
 
-    xit('Does nothing if local tile is not started yet', async () => {
+    it('Does nothing if local tile is not started yet', async () => {
       const mediaStream = new MediaStream();
       const track = new MediaStreamTrack();
       // @ts-ignore
@@ -5425,7 +5425,7 @@ describe('DefaultAudioVideoController', () => {
       replaceVideoSpy.restore();
     });
 
-    xit('replace local video if local tile started and video stream changes', async () => {
+    it('replace local video if local tile started and video stream changes', async () => {
       const mediaStream = new MediaStream();
       const track = new MediaStreamTrack();
       // @ts-ignore
@@ -5443,7 +5443,7 @@ describe('DefaultAudioVideoController', () => {
       replaceVideoSpy.restore();
     });
 
-    xit('stop local video if local tile started and video stream is undefined', async () => {
+    it('stop local video if local tile started and video stream is undefined', async () => {
       await start();
       audioVideoController.videoTileController.startLocalVideoTile();
       await sendICEEventAndSubscribeAckFrame();
