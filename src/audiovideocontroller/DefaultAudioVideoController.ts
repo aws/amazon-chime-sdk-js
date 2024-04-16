@@ -1009,9 +1009,11 @@ export default class DefaultAudioVideoController
       });
     }
     this.logger.info(
-      `Request to update remote videos with added: ${added}, updated: ${[
-        ...simulcastStreamUpdates.entries(),
-      ]}, removed: ${removed}`
+      `Request to update remote videos with added: [${added}], updated: [${Array.from(
+        simulcastStreamUpdates.entries()
+      )
+        .map(([key, value]) => `${key}->${value}`)
+        .join(',')}], removed: [${removed}]`
     );
 
     return {
