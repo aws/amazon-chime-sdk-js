@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import VideoEncodingCpuConnectionHealthPolicy from '../connectionhealthpolicy/VideoEncodingCpuConnectionHealthPolicy';
+import VideoEncodingFramerateConnectionHealthPolicy from '../connectionhealthpolicy/VideoEncodingFramerateConnectionHealthPolicy';
+
 export default class ConnectionHealthPolicyConfiguration {
   minHealth: number = 0;
   maxHealth: number = 1;
@@ -39,4 +42,31 @@ export default class ConnectionHealthPolicyConfiguration {
    * as the microphone may sometimes cause a delay in sending audio packets during the initial stages of a connection.
    */
   sendingAudioFailureInitialWaitTimeMs = 3000;
+
+  /**
+   * Policies and parameters related to video encoding health montoring
+   */
+  videoEncodingHealthPolicies = [
+    VideoEncodingCpuConnectionHealthPolicy,
+    VideoEncodingFramerateConnectionHealthPolicy,
+  ];
+
+  /**
+   * Consecutive seconds of high encode CPU to trigger video codec degradation in video encoding health monitoring.
+   * Increasing the value results in less sensitive video codec degradaion and vice versa.
+   */
+  consecutiveHighEncodeCpuThreshold = 10;
+
+  /**
+   * Encode time threshold to determine high CPU usage of software encoders in video encoding health monitoring.
+   * Recuding the value results in video codec degradation due to high CPU usage software encoder to be triggered
+   * at a lower CPU usage.
+   */
+  highEncodeCpuMsThreshold = 500;
+
+  /**
+   * Consecutive seconds of zero encoded framerate to trigger video codec degradation in video encoding health monitoring.
+   * Increasing the value results in less sensitive video codec degradaion and vice versa.
+   */
+  consecutiveVideoEncodingFailureThreshold = 5;
 }

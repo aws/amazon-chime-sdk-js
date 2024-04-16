@@ -15,9 +15,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.21.1] - 2024-03-28
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+- Fixed packets received check on Safari 17.3 and below
+
 ## [3.21.0] - 2024-02-12
 
 ### Added
+
+- Add automatic codec degradation logic when CPU usage of software encoder is high or video encoding of encoder fails.
 
 ### Removed
 
