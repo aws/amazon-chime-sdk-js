@@ -103,8 +103,7 @@ export default class RemoteVideoManager {
             videoSource.attendee = attendee;
             videoSources.push(videoSource);
         }
-        this.logger.info(`FUCK ${JSON.stringify(videoSources)}`)
-        this.downlinkPolicy.chooseRemoteVideoSources(videoSources)
+        this.downlinkPolicy.chooseRemoteVideoSources(videoSources);
     }
   }
 }
