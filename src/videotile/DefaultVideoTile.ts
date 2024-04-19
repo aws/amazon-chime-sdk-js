@@ -167,7 +167,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     contentHeight: number | null,
     streamId: number | null,
     externalUserId?: string,
-    groupId?: number
+    groupId?: number | null
   ): void {
     let tileUpdated = false;
     if (this.tileState.boundAttendeeId !== attendeeId) {
