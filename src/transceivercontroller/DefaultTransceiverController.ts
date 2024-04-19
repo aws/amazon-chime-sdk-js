@@ -400,7 +400,7 @@ export default class DefaultTransceiverController
   }
 
   getMidForGroupId(groupId: number): string | undefined {
-    return this.groupIdToTransceiver.get(groupId)?.mid;
+    return this.groupIdToTransceiver.get(groupId)?.mid ?? undefined;
   }
 
   protected transceiverIsVideo(transceiver: RTCRtpTransceiver): boolean {
