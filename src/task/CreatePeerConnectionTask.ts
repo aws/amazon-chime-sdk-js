@@ -166,6 +166,11 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       streamId = null;
     }
 
+    let groupId: number | null = this.context.videoStreamIndex.groupIdForStreamId(streamId);
+    if (typeof groupId === 'undefined') {
+      groupId = null;
+    }
+
     for (let i = 0; i < this.trackEvents.length; i++) {
       const trackEvent: string = this.trackEvents[i];
       const videoTracks = stream.getVideoTracks();
@@ -203,9 +208,18 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       height = cap.height as number;
     }
     const externalUserId = this.context.videoStreamIndex.externalUserIdForTrack(trackId);
-    tile.bindVideoStream(attendeeId, false, stream, width, height, streamId, externalUserId);
+    tile.bindVideoStream(
+      attendeeId,
+      false,
+      stream,
+      width,
+      height,
+      streamId,
+      externalUserId,
+      groupId
+    );
     this.logger.info(
-      `video track added, use tile=${tile.id()} track=${trackId} streamId=${streamId}`
+      `video track added, use tile=${tile.id()} track=${trackId} streamId=${streamId} groupId=${groupId}`
     );
 
     const endEvent = 'removetrack';
