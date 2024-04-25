@@ -5,11 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.22.0] - 2024-03-15
+
+### Added
+
+- Added `groupId` to `VideoTileState` for mapping metrics other then those from `getObservableVideoMetrics` when using server side network adaptation.
+
+### Removed
+
+### Changed
+
+- Avoid subscribes when simulcast is enabled but not currently sending, or when using server side network adaptation.
+
+### Fixed
+
+## [3.21.1] - 2024-03-28
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+- Fixed packets received check on Safari 17.3 and below
+
+## [3.21.0] - 2024-02-12
+
+### Added
+
+- Add automatic codec degradation logic when CPU usage of software encoder is high or video encoding of encoder fails.
+
+### Removed
+
+### Changed
+
+- Simplified simulcast uplink policy to not unnecesarily try to compensate for uplink bandwidth estimation.
+- Avoid unnecessary transceiver creation by using no-video policy for content share.
+
+### Fixed
+
+- Fixed unnecessary cropping on some camera capturers when simulcast was enabled.
+
 ## [3.20.0] - 2023-12-12
 
 ### Added
 
 - Add support for node 20 and drop support for node < 18.
+- Add support for H.264 profiles besides Constrained Baseline Profile.
+- Fix MeetingReadinessChecker demo by checking for audio `kind`
 
 ### Removed
 
@@ -18,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix reconnections when setting audio Attendee Capability to 'None' or 'Send' mid call. The connection health monitor will now look at all packets received on all candidate pairs instead of just audio received media packets.
-- Setup passthrough streams for insertable streams case in the redundant audio worker so that passthrough streams do not get blocked on the main thread
+- Setup passthrough streams for insertable streams case in the redundant audio worker so that passthrough streams do not get blocked on the main thread.
+- Disable redundant audio for Chrome 106 and earlier to fix video decoder failure on old Chrome versions with redundant audio turned on.
 
 ## [3.19.0] - 2023-09-20
 
@@ -80,6 +126,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Resolution constraint for content share
+
+- Remove unused legacy TURN credentials path.
 
 ### Changed
 - Improve reconnection behavior on signaling disconnection mid call or during join/subscribe

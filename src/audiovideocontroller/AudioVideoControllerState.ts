@@ -144,6 +144,14 @@ export default class AudioVideoControllerState {
   // all the other clients in the meeting.
   meetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] | undefined = undefined;
 
+  // Calculated as the list of available codec set in the (possibly munged) SDP answer
+  // that is provided to the peer connection, which will be ordered by priority.
+  prioritizedSendVideoCodecCapabilities: VideoCodecCapability[] = [];
+
+  // Video codecs that we have detected encoding issues with that we will
+  // avoid using even if they are provided in `videoSendCodecPreferences`
+  degradedVideoSendCodecs: VideoCodecCapability[] = [];
+
   videosPaused: VideoStreamIdSet | null = null;
 
   videoDuplexMode: SdkStreamServiceType | null = null;

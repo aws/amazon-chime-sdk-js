@@ -595,12 +595,11 @@ describe('DefaultMeetingReadinessChecker', () => {
       expect(result).to.equal(CheckAudioConnectivityFeedback.AudioNotReceived);
     });
 
-    it('success', async () => {
+    it('success with audio kind', async () => {
       domMockBehavior.rtcPeerConnectionGetStatsReports.push({
         bytesReceived: 100000,
         packetsReceived: 100,
         kind: 'audio',
-        mediaType: 'audio',
         type: 'inbound-rtp',
       });
       const result = await meetingReadinessCheckerController.checkAudioConnectivity(
@@ -614,7 +613,6 @@ describe('DefaultMeetingReadinessChecker', () => {
         bytesSent: 100000,
         packetsSent: 100,
         kind: 'audio',
-        mediaType: 'audio',
         type: 'outbound-rtp',
       });
       const result = await meetingReadinessCheckerController.checkAudioConnectivity(
@@ -669,14 +667,13 @@ describe('DefaultMeetingReadinessChecker', () => {
       expect(result).to.equal(CheckVideoConnectivityFeedback.VideoNotSent);
     });
 
-    it('success', async () => {
+    it('success with video kind', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
       domMockBehavior.rtcPeerConnectionGetStatsReports = [
         {
           bytesSent: 100000,
           packetsSent: 100,
           kind: 'video',
-          mediaType: 'video',
           type: 'outbound-rtp',
         },
       ];

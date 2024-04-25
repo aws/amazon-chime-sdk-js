@@ -80,13 +80,14 @@ import {
   MeetingSessionCredentials,
   POSTLogger,
   VideoCodecCapability,
+  AllHighestVideoBandwidthPolicy,
 } from 'amazon-chime-sdk-js';
 import { Modal } from 'bootstrap';
 
 import TestSound from './audio/TestSound';
 import MeetingToast from './util/MeetingToast'; MeetingToast; // Make sure this file is included in webpack
 import VideoTileCollection from './video/VideoTileCollection'
-import VideoPreferenceManager from './video/VideoPreferenceManager';
+import RemoteVideoManager from './video/RemoteVideoManager';
 import CircularCut from './video/filters/CircularCut';
 import EmojifyVideoFrameProcessor from './video/filters/EmojifyVideoFrameProcessor';
 import SegmentationProcessor from './video/filters/SegmentationProcessor';
@@ -294,12 +295,12 @@ export class DemoMeetingApp
   primaryMeetingSessionCredentials: MeetingSessionCredentials | undefined = undefined;
   meetingSession: MeetingSession | null = null;
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
+  allHighestDownlinkPolicy: AllHighestVideoBandwidthPolicy | null = null;
   audioVideo: AudioVideoFacade | null = null;
   deviceController: DefaultDeviceController | undefined = undefined;
   canStartLocalVideo: boolean = true;
   defaultBrowserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
   videoTileCollection: VideoTileCollection | undefined = undefined;
-  videoPreferenceManager: VideoPreferenceManager | undefined = undefined;
 
   // eslint-disable-next-line
   roster: Roster = new Roster();
@@ -637,7 +638,7 @@ export class DemoMeetingApp
       }
     );
 
-    if (this.defaultBrowserBehavior.hasFirefoxWebRTC()) {
+    if (!this.defaultBrowserBehavior.supportsAudioRedundancy()) {
       // Firefox currently does not support audio redundancy through insertable streams or
       // script transform so disable the redundancy checkbox
       (document.getElementById('disable-audio-redundancy') as HTMLInputElement).disabled = true;
@@ -667,25 +668,15 @@ export class DemoMeetingApp
       const serverSideNetworkAdaption = document.getElementById(
           'server-side-network-adaption'
       ) as HTMLSelectElement;
-      const paginationPageSize = document.getElementById(
-        'pagination-page-size'
-      ) as HTMLElement;
-      const paginationTitle = document.getElementById(
-        'pagination-title'
-      ) as HTMLElement;      
       const serverSideNetworkAdaptionTitle = document.getElementById(
           'server-side-network-adaption-title'
       ) as HTMLElement;
 
       if (this.usePriorityBasedDownlinkPolicy) {
         serverSideNetworkAdaption.style.display = 'block';
-        paginationPageSize.style.display = 'block';
-        paginationTitle.style.display = 'block';
         serverSideNetworkAdaptionTitle.style.display = 'block';
       } else {
         serverSideNetworkAdaption.style.display = 'none';
-        paginationTitle.style.display = 'none';
-        paginationPageSize.style.display = 'none';
         serverSideNetworkAdaptionTitle.style.display = 'none';
       }
     });
@@ -1586,9 +1577,10 @@ export class DemoMeetingApp
       this.toggleButton(button, isPromoted ? 'off' : 'disabled');
     }
 
-    // Additionally mute audio so it's not in an unexpected state when demoted
+    // Additionally mute audio and stop local video so it's not in an unexpected state when demoted
     if (!isPromoted) {
       this.audioVideo.realtimeMuteLocalAudio();
+      this.audioVideo.stopLocalVideoTile();
     }
   }
 
@@ -1885,6 +1877,9 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
+    } else {
+        this.allHighestDownlinkPolicy = new AllHighestVideoBandwidthPolicy(configuration.credentials.attendeeId);
+        configuration.videoDownlinkBandwidthPolicy = this.allHighestDownlinkPolicy;
     }
     configuration.disablePeriodicKeyframeRequestOnContentSender = this.disablePeriodicKeyframeRequestOnContentSender;
 
@@ -1944,7 +1939,7 @@ export class DemoMeetingApp
     let paginationPageSize = parseInt((document.getElementById('pagination-page-size') as HTMLSelectElement).value)
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
         this.meetingLogger,
-        this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
+        new RemoteVideoManager(this.meetingLogger, this.usePriorityBasedDownlinkPolicy  ? this.priorityBasedDownlinkPolicy : this.allHighestDownlinkPolicy),
         paginationPageSize)
     this.audioVideo.addObserver(this.videoTileCollection);
 
@@ -3008,8 +3003,12 @@ export class DemoMeetingApp
     // Set it for the content share stream if we can.
     const videoElem = document.getElementById('content-share-video') as HTMLVideoElement;
     if (this.defaultBrowserBehavior.supportsSetSinkId()) {
-      // @ts-ignore
-      videoElem.setSinkId(device);
+      try {
+        // @ts-ignore
+        await videoElem.setSinkId(device);
+      } catch (e) {
+        this.log('Failed to set audio output', e);
+      }
     }
 
     await this.audioVideo.chooseAudioOutput(device);
@@ -3940,50 +3939,42 @@ export class DemoMeetingApp
         this.requestedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
     }
 
+    const getCodecPreferences = (chosenCodec: string) => {
+      // We will always include H.264 CBP and VP8 and fallbacks when those are not the codecs selected, so that
+      // we always have a widely available codec in use.
+      switch (chosenCodec) {
+        case 'vp8':
+          return [VideoCodecCapability.vp8()];
+        case 'h264ConstrainedBaselineProfile':
+          return [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'h264BaselineProfile':
+          return [VideoCodecCapability.h264BaselineProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'h264MainProfile':
+          return [VideoCodecCapability.h264MainProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'h264HighProfile':
+          // Include both Constrained High (typically offered on Safari) and High
+          return [VideoCodecCapability.h264HighProfile(), VideoCodecCapability.h264ConstrainedHighProfile(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'av1Main':
+          return [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        case 'vp9Profile0':
+          return [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+        default:
+          // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
+          // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
+          return [];
+      }
+    }
+
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
-    switch (chosenVideoSendCodec) {
-      case 'vp8':
-        this.videoCodecPreferences = [VideoCodecCapability.vp8()];
-        break;
-      case 'h264ConstrainedBaselineProfile':
-        // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
-        this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        break;
-      case 'av1Main':
-        this.videoCodecPreferences = [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        this.enableSimulcast  = false; // simulcast does not work for AV1
-        break;
-      case 'vp9Profile0':
-        this.videoCodecPreferences = [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        this.enableSimulcast  = false; // simulcast does not work for VP9
-        break;
-      default:
-        // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
-        // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
-        break;
+    this.videoCodecPreferences = getCodecPreferences(chosenVideoSendCodec);
+    if (['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
+      // Attempting to use simulcast with VP9 or AV1 will lead to unexpected behavior (e.g. SVC instead)
+      this.enableSimulcast = false;
     }
 
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
-    switch (chosenContentSendCodec) {
-      case 'vp8':
-        this.contentCodecPreferences = [VideoCodecCapability.vp8()];
-        break;
-      case 'h264ConstrainedBaselineProfile':
-        // If `h264ConstrainedBaselineProfile` is explicitly selected, include VP8 as fallback
-        this.contentCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        break;
-      case 'av1Main':
-        this.contentCodecPreferences = [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        break;
-      case 'vp9Profile0':
-        this.contentCodecPreferences = [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
-        break;
-      default:
-        // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
-        // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
-        break;
-    }
-
+    this.contentCodecPreferences = getCodecPreferences(chosenContentSendCodec);
+  
     this.audioCapability = (document.getElementById('audioCapabilitySelect') as HTMLSelectElement).value;
     this.videoCapability = (document.getElementById('videoCapabilitySelect') as HTMLSelectElement).value;
     this.contentCapability = (document.getElementById('contentCapabilitySelect') as HTMLSelectElement).value;

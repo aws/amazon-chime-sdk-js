@@ -61,7 +61,6 @@ import ParallelGroupTask from '../task/ParallelGroupTask';
 import PromoteToPrimaryMeetingTask from '../task/PromoteToPrimaryMeetingTask';
 import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
 import ReceiveRemoteVideoPauseResume from '../task/ReceiveRemoteVideoPauseResumeTask';
-import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from '../task/ReceiveVideoStreamIndexTask';
 import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTask';
@@ -392,7 +391,6 @@ export default class DefaultAudioVideoController
       new ListenForVolumeIndicatorsTask(context),
       new SendAndReceiveDataMessagesTask(context),
       new JoinAndReceiveIndexTask(context),
-      new ReceiveTURNCredentialsTask(context),
       this.receiveIndexTask,
     ]).once();
 
@@ -1011,9 +1009,11 @@ export default class DefaultAudioVideoController
       });
     }
     this.logger.info(
-      `Request to update remote videos with added: ${added}, updated: ${[
-        ...simulcastStreamUpdates.entries(),
-      ]}, removed: ${removed}`
+      `Request to update remote videos with added: [${added}], updated: [${Array.from(
+        simulcastStreamUpdates.entries()
+      )
+        .map(([key, value]) => `${key}->${value}`)
+        .join(',')}], removed: [${removed}]`
     );
 
     return {
@@ -1036,6 +1036,10 @@ export default class DefaultAudioVideoController
       return false;
     }
 
+    // Similar to `updateRemoteVideosFromLastVideosToReceive`, we use `subscribeFrameSent` to cache the previous
+    // index so that we don't incorrectly mark a simulcast stream change (e.g. a sender switching from publishing [1, 3] to [2] to [1, 3])
+    // as the add or removal of a source
+    this.meetingSessionContext.videoStreamIndex.subscribeFrameSent();
     return true;
   }
 
@@ -1124,6 +1128,7 @@ export default class DefaultAudioVideoController
       const encodingParam = this.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
       if (
         this.mayNeedRenegotiationForSimulcastLayerChange &&
+        this.meetingSessionContext.transceiverController.hasVideoInput() &&
         !this.negotiatedBitrateLayersAllocationRtpHeaderExtension()
       ) {
         this.logger.info('Needs regenotiation for local video simulcast layer change');
@@ -1393,7 +1398,6 @@ export default class DefaultAudioVideoController
             new SerialGroupTask(this.logger, 'Signaling', [
               new OpenSignalingConnectionTask(this.meetingSessionContext),
               new JoinAndReceiveIndexTask(this.meetingSessionContext),
-              new ReceiveTURNCredentialsTask(this.meetingSessionContext),
             ]),
             new CreatePeerConnectionTask(this.meetingSessionContext),
           ]),

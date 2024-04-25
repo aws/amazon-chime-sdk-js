@@ -18,11 +18,7 @@ export default class AttachMediaInputTask extends BaseTask {
   async run(): Promise<void> {
     const transceiverController = this.context.transceiverController;
     transceiverController.setPeer(this.context.peer);
-    try {
-      transceiverController.setupLocalTransceivers();
-    } catch (error) {
-      throw error;
-    }
+    transceiverController.setupLocalTransceivers();
 
     const audioInput = this.context.activeAudioInput;
 

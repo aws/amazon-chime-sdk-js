@@ -400,7 +400,7 @@ export default class DefaultTransceiverController
   }
 
   getMidForGroupId(groupId: number): string | undefined {
-    return this.groupIdToTransceiver.get(groupId)?.mid;
+    return this.groupIdToTransceiver.get(groupId)?.mid ?? undefined;
   }
 
   protected transceiverIsVideo(transceiver: RTCRtpTransceiver): boolean {
@@ -548,7 +548,8 @@ export default class DefaultTransceiverController
         this.audioRedWorker,
         { type: 'ReceiverTransform' }
       );
-    } /* istanbul ignore else */ else if (supportsInsertableStreams) {
+      // eslint-disable-next-line
+    } else /* istanbul ignore else */ if (supportsInsertableStreams) {
       // @ts-ignore
       const sendStreams = this._localAudioTransceiver.sender.createEncodedStreams();
       // @ts-ignore
@@ -602,7 +603,8 @@ export default class DefaultTransceiverController
       transceiver.receiver.transform = new RTCRtpScriptTransform(this.audioRedWorker, {
         type: 'PassthroughTransform',
       });
-    } /* istanbul ignore else */ else if (supportsInsertableStreams) {
+      // eslint-disable-next-line
+    } else /* istanbul ignore else */ if (supportsInsertableStreams) {
       // @ts-ignore
       const sendStreams = transceiver.sender.createEncodedStreams();
       // @ts-ignore

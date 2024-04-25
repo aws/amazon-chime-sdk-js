@@ -110,6 +110,12 @@ export default class VideoTileState {
    */
   streamId: number | null = null;
 
+  /**
+   * The unique identifier published by server to associate with remote video source. It is defined in [[SignalingProtocol.proto]].
+   * Developers should avoid using this field directly.
+   */
+  groupId: number | null = null;
+
   clone(): VideoTileState {
     const cloned = new VideoTileState();
     cloned.tileId = this.tileId;
@@ -131,6 +137,7 @@ export default class VideoTileState {
     cloned.videoElementPhysicalWidthPixels = this.videoElementPhysicalWidthPixels;
     cloned.videoElementPhysicalHeightPixels = this.videoElementPhysicalHeightPixels;
     cloned.streamId = this.streamId;
+    cloned.groupId = this.groupId;
     return cloned;
   }
 }

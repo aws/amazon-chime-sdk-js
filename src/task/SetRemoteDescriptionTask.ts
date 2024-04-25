@@ -52,7 +52,13 @@ export default class SetRemoteDescriptionTask extends BaseTask {
           : this.context.videoSendCodecPreferences
       ).sdp;
     }
-    this.context.currentVideoSendCodec = new SDP(sdp).highestPriorityVideoSendCodec();
+    this.context.prioritizedSendVideoCodecCapabilities = new SDP(
+      sdp
+    ).prioritizedSendVideoCodecCapabilities();
+    this.context.currentVideoSendCodec =
+      this.context.prioritizedSendVideoCodecCapabilities.length > 0
+        ? this.context.prioritizedSendVideoCodecCapabilities[0]
+        : undefined;
 
     const mediaStream = this.context.activeVideoInput;
     if (mediaStream !== undefined) {
