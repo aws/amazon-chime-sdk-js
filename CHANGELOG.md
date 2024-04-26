@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `groupId` to `VideoTileState` for mapping metrics other then those from `getObservableVideoMetrics` when using server side network adaptation.
+- Added support for Node version 22
 
 ### Removed
 
