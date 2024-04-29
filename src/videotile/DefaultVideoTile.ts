@@ -166,7 +166,8 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     contentWidth: number | null,
     contentHeight: number | null,
     streamId: number | null,
-    externalUserId?: string
+    externalUserId?: string,
+    groupId?: number | null
   ): void {
     let tileUpdated = false;
     if (this.tileState.boundAttendeeId !== attendeeId) {
@@ -198,6 +199,10 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     }
     if (this.tileState.streamId !== streamId) {
       this.tileState.streamId = streamId;
+      tileUpdated = true;
+    }
+    if (this.tileState.groupId !== groupId) {
+      this.tileState.groupId = groupId;
       tileUpdated = true;
     }
     if (tileUpdated) {

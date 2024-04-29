@@ -35,7 +35,8 @@ export default interface VideoTile {
     contentWidth: number | null,
     contentHeight: number | null,
     streamId: number | null,
-    externalUserId?: string
+    externalUserId?: string,
+    groupId?: number | null
   ): void;
 
   /**

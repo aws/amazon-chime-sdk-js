@@ -80,13 +80,14 @@ import {
   MeetingSessionCredentials,
   POSTLogger,
   VideoCodecCapability,
+  AllHighestVideoBandwidthPolicy,
 } from 'amazon-chime-sdk-js';
 import { Modal } from 'bootstrap';
 
 import TestSound from './audio/TestSound';
 import MeetingToast from './util/MeetingToast'; MeetingToast; // Make sure this file is included in webpack
 import VideoTileCollection from './video/VideoTileCollection'
-import VideoPreferenceManager from './video/VideoPreferenceManager';
+import RemoteVideoManager from './video/RemoteVideoManager';
 import CircularCut from './video/filters/CircularCut';
 import EmojifyVideoFrameProcessor from './video/filters/EmojifyVideoFrameProcessor';
 import SegmentationProcessor from './video/filters/SegmentationProcessor';
@@ -294,12 +295,12 @@ export class DemoMeetingApp
   primaryMeetingSessionCredentials: MeetingSessionCredentials | undefined = undefined;
   meetingSession: MeetingSession | null = null;
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
+  allHighestDownlinkPolicy: AllHighestVideoBandwidthPolicy | null = null;
   audioVideo: AudioVideoFacade | null = null;
   deviceController: DefaultDeviceController | undefined = undefined;
   canStartLocalVideo: boolean = true;
   defaultBrowserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
   videoTileCollection: VideoTileCollection | undefined = undefined;
-  videoPreferenceManager: VideoPreferenceManager | undefined = undefined;
 
   // eslint-disable-next-line
   roster: Roster = new Roster();
@@ -667,25 +668,15 @@ export class DemoMeetingApp
       const serverSideNetworkAdaption = document.getElementById(
           'server-side-network-adaption'
       ) as HTMLSelectElement;
-      const paginationPageSize = document.getElementById(
-        'pagination-page-size'
-      ) as HTMLElement;
-      const paginationTitle = document.getElementById(
-        'pagination-title'
-      ) as HTMLElement;      
       const serverSideNetworkAdaptionTitle = document.getElementById(
           'server-side-network-adaption-title'
       ) as HTMLElement;
 
       if (this.usePriorityBasedDownlinkPolicy) {
         serverSideNetworkAdaption.style.display = 'block';
-        paginationPageSize.style.display = 'block';
-        paginationTitle.style.display = 'block';
         serverSideNetworkAdaptionTitle.style.display = 'block';
       } else {
         serverSideNetworkAdaption.style.display = 'none';
-        paginationTitle.style.display = 'none';
-        paginationPageSize.style.display = 'none';
         serverSideNetworkAdaptionTitle.style.display = 'none';
       }
     });
@@ -1886,6 +1877,9 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
+    } else {
+        this.allHighestDownlinkPolicy = new AllHighestVideoBandwidthPolicy(configuration.credentials.attendeeId);
+        configuration.videoDownlinkBandwidthPolicy = this.allHighestDownlinkPolicy;
     }
     configuration.disablePeriodicKeyframeRequestOnContentSender = this.disablePeriodicKeyframeRequestOnContentSender;
 
@@ -1945,7 +1939,7 @@ export class DemoMeetingApp
     let paginationPageSize = parseInt((document.getElementById('pagination-page-size') as HTMLSelectElement).value)
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
         this.meetingLogger,
-        this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
+        new RemoteVideoManager(this.meetingLogger, this.usePriorityBasedDownlinkPolicy  ? this.priorityBasedDownlinkPolicy : this.allHighestDownlinkPolicy),
         paginationPageSize)
     this.audioVideo.addObserver(this.videoTileCollection);
 

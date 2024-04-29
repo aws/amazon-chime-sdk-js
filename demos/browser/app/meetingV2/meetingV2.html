@@ -145,8 +145,7 @@
           </div>
           <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
             <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
-            <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction (new meetings
-              only)</label>
+            <label for="echo-reduction-capability" class="form-check-label">Use Echo Reduction</label>
           </div>
           <div class="form-check" id="disable-audio-redundancy-checkbox" style="text-align: left; display: block;">
             <input type="checkbox" id="disable-audio-redundancy" class="form-check-input">
@@ -213,6 +212,14 @@
             <input type="checkbox" id="svc" class="form-check-input">
             <label for="svc" class="form-check-label">Enable SVC for Chrome</label>
           </div>
+          <label id="pagination-title" for="pagination-page-size" style="padding-top:5px">Paginate displayed video tiles</label>
+          <select id="pagination-page-size" class="form-select" style="width:100%;">
+            <option value="1">1</option>
+            <option value="4">4</option>
+            <option value="9">9</option>
+            <option value="16">16</option>
+            <option value="25" selected>25</option>
+          </select>      
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
             <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
@@ -225,15 +232,6 @@
             <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
             <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video Quality Adaption</option>
           </select>
-          <label id="pagination-title" for="pagination-page-size" style="display: none; padding-top:5px">Paginate displayed video tiles</label>
-          <select id="pagination-page-size" class="form-select" style="width:100%; display: none;">
-            <option value="2">2</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="25" selected>25</option>
-          </select>      
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" checked id="preconnect" class="form-check-input">
             <label for="preconnect" class="form-check-label">Open signaling connection early</label>
