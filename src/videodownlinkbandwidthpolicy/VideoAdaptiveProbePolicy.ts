@@ -3,15 +3,30 @@
 
 import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import Logger from '../logger/Logger';
+import ServerSideNetworkAdaption from '../signalingclient/ServerSideNetworkAdaption';
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoPreference from './VideoPreference';
 import { VideoPreferences } from './VideoPreferences';
 import VideoPriorityBasedPolicy from './VideoPriorityBasedPolicy';
+import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
 
+/** [[VideoAdaptiveProbePolicy]] wraps [[VideoPriorityBasedPolicy]] with customized behavior to automatically
+ * assign a high preference to content share.
+ *
+ * @deprecated This class is not compatible with latest priority policy features (i.e. server side network adaptation),
+ * [[VideoPriorityBasedPolicy]] should be used instead. If high priority for content is desired it can be done trivially
+ * by the application.
+ */
 export default class VideoAdaptiveProbePolicy extends VideoPriorityBasedPolicy {
+  private static createConfig(): VideoPriorityBasedPolicyConfig {
+    const config = new VideoPriorityBasedPolicyConfig();
+    config.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
+    return config;
+  }
+
   constructor(protected logger: Logger) {
-    super(logger);
+    super(logger, VideoAdaptiveProbePolicy.createConfig());
     super.shouldPauseTiles = false;
     this.videoPreferences = undefined;
   }

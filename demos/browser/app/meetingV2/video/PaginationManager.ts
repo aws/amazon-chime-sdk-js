@@ -20,7 +20,9 @@ export default class PaginationManager<Type> {
   }
 
   remove(toRemove: Type) {
-    this.all.splice(this.all.indexOf(toRemove));
+    if (this.all.includes(toRemove)) {
+        this.all.splice(this.all.indexOf(toRemove));
+    }
   }
 
   removeIf(toRemoveFn: (value: Type) => boolean) {

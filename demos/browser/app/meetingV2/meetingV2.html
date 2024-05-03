@@ -212,6 +212,10 @@
             <input type="checkbox" id="svc" class="form-check-input">
             <label for="svc" class="form-check-label">Enable SVC for Chrome</label>
           </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
+            <label for="priority-downlink-policy" class="form-check-label">Enable remote video quality adaptation</label>
+          </div>
           <label id="pagination-title" for="pagination-page-size" style="padding-top:5px">Paginate displayed video tiles</label>
           <select id="pagination-page-size" class="form-select" style="width:100%;">
             <option value="1">1</option>
@@ -220,18 +224,6 @@
             <option value="16">16</option>
             <option value="25" selected>25</option>
           </select>      
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
-            <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
-              Policy</label>
-          </div>
-          <label id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</label>
-          <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
-            <option value="default">Default</option>
-            <option value="none">None (Deprecated)</option>
-            <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
-            <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video Quality Adaption</option>
-          </select>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" checked id="preconnect" class="form-check-input">
             <label for="preconnect" class="form-check-label">Open signaling connection early</label>

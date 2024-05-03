@@ -151,8 +151,9 @@ export default class VideoTileCollection implements AudioVideoObserver {
     for (const source of videoSources) {
         this.pagination.add(source.attendee.attendeeId);
     }
+    const localTileId = this.localTileId()
     this.pagination.removeIf((value: string) => {
-      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value)
+      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value) && (localTileId && this.tileIdToAttendeeId[localTileId] !== value);
     });
 
     // Update the preference manager explicitly as it needs to add default preferences
@@ -210,9 +211,19 @@ export default class VideoTileCollection implements AudioVideoObserver {
 
     if (tileState.boundVideoStream) {
         demoVideoTile.show(tileState.isContent);
+
+        if (tileState.localTile) {
+            this.pagination.add(tileState.boundAttendeeId);
+            this.updatePaginatedVisibleTiles();
+        }
     } else {
         // Hide non-active tiles that aren't just paused
         demoVideoTile.hide();
+
+        if (tileState.localTile) {
+            this.pagination.remove(tileState.boundAttendeeId);
+            this.updatePaginatedVisibleTiles();
+        }
     }
     this.updateLayout();
     this.layoutFeaturedTile();
@@ -444,8 +455,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
     for (let [index, videoTile] of this.tileIndexToDemoVideoTile.entries()) {
         if (attendeesToShow.includes(videoTile.attendeeId)) {
             videoTile.show(false);
-        } else if (index !== VideoTileCollection.LocalVideoTileIndex
-            && this.tileIndexToTileId[index] !== this.findContentTileId()) { // Always show local tile and content
+        } else if (this.tileIndexToTileId[index] !== this.findContentTileId()) { // Always show content
             videoTile.hide();
         }
     }
