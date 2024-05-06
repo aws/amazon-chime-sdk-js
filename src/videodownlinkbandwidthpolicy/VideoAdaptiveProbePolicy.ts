@@ -13,10 +13,6 @@ import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
 
 /** [[VideoAdaptiveProbePolicy]] wraps [[VideoPriorityBasedPolicy]] with customized behavior to automatically
  * assign a high preference to content share.
- *
- * @deprecated This class is not compatible with latest priority policy features (i.e. server side network adaptation),
- * [[VideoPriorityBasedPolicy]] should be used instead. If high priority for content is desired it can be done trivially
- * by the application.
  */
 export default class VideoAdaptiveProbePolicy extends VideoPriorityBasedPolicy {
   private static createConfig(): VideoPriorityBasedPolicyConfig {
@@ -26,6 +22,8 @@ export default class VideoAdaptiveProbePolicy extends VideoPriorityBasedPolicy {
   }
 
   constructor(protected logger: Logger) {
+    // We use a static function to create config because Typescript requires
+    // super(...) calls to be the first line in constructors
     super(logger, VideoAdaptiveProbePolicy.createConfig());
     super.shouldPauseTiles = false;
     this.videoPreferences = undefined;
