@@ -4,6 +4,25 @@
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
 
+export interface VideoTileResolutionObserver {
+    /**
+     * Called when the resolution of a  video tile changes.
+     * 
+     * @param attendeeId The unique identifier for the attendee whose video tile resolution has changed.
+     * @param newWidth The new width of the video element associated with the attendee's video tile, in pixels.
+     * @param newHeight The new height of the video element associated with the attendee's video tile, in pixels.
+     */
+    videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void;
+
+    /**
+     * Called when a  video tile is unbound from the video element.
+     *
+     * @param attendeeId The unique identifier for the attendee whose video tile has been unbound.
+     */
+    videoTileUnbound(attendeeId: string): void;
+}
+
+
 /**
  * [[VideoTileController]] allows one to manipulate how the underlying media
  * streams are assigned to video elements. The caller is responsible for laying
@@ -143,4 +162,18 @@ export default interface VideoTileController {
    * This can be used to capture the image data for a given tile.
    */
   captureVideoTile?(tileId: number): ImageData | null;
+
+      /**
+     * Registers an observer that will be notified when the resolution of the video element changes,
+     * or when the video element is unbound.
+     * @param observer An instance of VideoElementResolutionObserver that will receive update notifications.
+     */
+      registerVideoTileResolutionObserver?(observer: VideoTileResolutionObserver): void;
+    
+      /**
+       * Removes a previously registered observer, stopping it from receiving any further notifications.
+       * @param observer The observer to be removed from the notification queue.
+       */
+      removeVideoTileResolutionObserver?(observer: VideoTileResolutionObserver): void;
+  
 }

@@ -102,6 +102,7 @@ import DefaultTransceiverController from './transceivercontroller/DefaultTransce
 import DefaultTranscriptionController from './transcript/DefaultTranscriptionController';
 import DefaultUserAgentParser from './useragentparser/DefaultUserAgentParser';
 import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
+import DefaultVideoElementResolutionMonitor from './videotile/DefaultVideoElementResolutionMonitor';
 import DefaultVideoFrameProcessorPipeline from './videoframeprocessor/DefaultVideoFrameProcessorPipeline';
 import DefaultVideoFrameProcessorTimer from './videoframeprocessor/DefaultVideoFrameProcessorTimer';
 import DefaultVideoStreamIdSet from './videostreamidset/DefaultVideoStreamIdSet';
@@ -289,6 +290,7 @@ import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
+import VideoElementResolutionMonitor from './videotile/VideoElementResolutionMonitor';
 import VideoEncodingConnectionHealthPolicyName from './connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
 import VideoEncodingCpuConnectionHealthPolicy from './connectionhealthpolicy/VideoEncodingCpuConnectionHealthPolicy';
 import VideoEncodingFramerateConnectionHealthPolicy from './connectionhealthpolicy/VideoEncodingFramerateConnectionHealthPolicy';
@@ -448,6 +450,7 @@ export {
   DefaultTranscriptionController,
   DefaultUserAgentParser,
   DefaultVideoCaptureAndEncodeParameter,
+  DefaultVideoElementResolutionMonitor,
   DefaultVideoFrameProcessorPipeline,
   DefaultVideoFrameProcessorTimer,
   DefaultVideoStreamIdSet,
@@ -642,6 +645,7 @@ export {
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
   VideoElementFactory,
+  VideoElementResolutionMonitor,
   VideoEncodingConnectionHealthPolicyName,
   VideoEncodingCpuConnectionHealthPolicy,
   VideoEncodingFramerateConnectionHealthPolicy,
