@@ -280,7 +280,6 @@ export default class DefaultVideoTileController implements VideoTileController {
       observer.videoTileResolutionDidChange(attendeeId, newWidth, newHeight);
     }
   }
-
   private notifyRemoteObserversOfUnbound(attendeeId: string): void {
     for (const observer of this.resolutionObservers) {
       observer.videoTileUnbound(attendeeId);

@@ -10,7 +10,7 @@ import VideoElementResolutionMonitor from './VideoElementResolutionMonitor';
 import VideoTile from './VideoTile';
 import VideoTileState from './VideoTileState';
 
-export default class DefaultVideoTile implements DevicePixelRatioObserver, VideoTile {
+export default class DefaultVideoTile implements DevicePixelRatioObserver, VideoTile, VideoElementResolutionMonitor {
   private tileState: VideoTileState = new VideoTileState();
 
   /**
