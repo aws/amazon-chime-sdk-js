@@ -26,10 +26,11 @@ export default class VideoPriorityBasedPolicyConfig {
   private referenceBitrate: number = 0;
 
   /**
-   * Additional server side features to be enabled for network adaption. This
-   * may be overridden by the server. The default may be changed in future releases.
+   * Additional server side features to be enabled for network adaption. The only currently
+   * recommended value is `ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption`
    */
-  serverSideNetworkAdaption = ServerSideNetworkAdaption.Default;
+  serverSideNetworkAdaption =
+    ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
 
   /** Initializes a [[VideoPriorityBasedPolicyConfig]] with the network event delays.
    *

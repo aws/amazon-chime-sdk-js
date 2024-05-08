@@ -130,7 +130,8 @@ export default class VideoTileCollection implements AudioVideoObserver {
   constructor(private videoTileController: VideoTileControllerFacade,
     private logger: Logger,
     private remoteVideoManager: RemoteVideoManager,
-    private pageSize: number) {
+    private pageSize: number,
+    private localAttendeeId: string) {
     this.setupVideoTiles();
 
     if (!this.remoteVideoManager.supportsRemoteVideoPreferences()) {
@@ -151,8 +152,9 @@ export default class VideoTileCollection implements AudioVideoObserver {
     for (const source of videoSources) {
         this.pagination.add(source.attendee.attendeeId);
     }
+    const localTileId = this.localTileId()
     this.pagination.removeIf((value: string) => {
-      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value)
+      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value) && (localTileId && this.tileIdToAttendeeId[localTileId] !== value);
     });
 
     // Update the preference manager explicitly as it needs to add default preferences
@@ -161,7 +163,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
   }
 
   videoTileDidUpdate(tileState: VideoTileState): void {
-    console.log(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
+    this.logger.info(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
     if (!tileState.boundAttendeeId) {
       return;
     }
@@ -208,12 +210,20 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
     demoVideoTile.attendeeId = tileState.boundAttendeeId;
 
+    // We need to add local video or content to pagination from tile updates
+    const shouldUpdatePagination = tileState.localTile || (tileState.isContent && tileState.boundAttendeeId.startsWith(this.localAttendeeId));
     if (tileState.boundVideoStream) {
-        demoVideoTile.show(tileState.isContent);
+        if (shouldUpdatePagination) {
+            this.pagination.add(tileState.boundAttendeeId);
+        }
     } else {
         // Hide non-active tiles that aren't just paused
         demoVideoTile.hide();
+        if (shouldUpdatePagination) {
+            this.pagination.remove(tileState.boundAttendeeId);
+        }
     }
+    this.updatePaginatedVisibleTiles();
     this.updateLayout();
     this.layoutFeaturedTile();
   }
@@ -363,6 +373,9 @@ export default class VideoTileCollection implements AudioVideoObserver {
     for (const tile of this.videoTileController.getAllVideoTiles()) {
       const state = tile.state();
       if (state.isContent) {
+        if (state.boundAttendeeId.startsWith(this.localAttendeeId) && !this.pagination.currentPage().includes(state.boundAttendeeId)) {
+            return null;
+         }
         return state.tileId;
       }
     }
@@ -441,11 +454,10 @@ export default class VideoTileCollection implements AudioVideoObserver {
     // We need to manually control visibility of paused tiles anyways so we just do
     // everything here, even though the preference manager adding/removing will
     // result in tile callbacks as well.
-    for (let [index, videoTile] of this.tileIndexToDemoVideoTile.entries()) {
+    for (let videoTile of this.tileIndexToDemoVideoTile.values()) {
         if (attendeesToShow.includes(videoTile.attendeeId)) {
             videoTile.show(false);
-        } else if (index !== VideoTileCollection.LocalVideoTileIndex
-            && this.tileIndexToTileId[index] !== this.findContentTileId()) { // Always show local tile and content
+        } else {
             videoTile.hide();
         }
     }
