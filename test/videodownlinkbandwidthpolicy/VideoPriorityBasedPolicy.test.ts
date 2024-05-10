@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { ServerSideNetworkAdaption, VideoPriorityBasedPolicyConfig } from '../../src';
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
@@ -13,7 +14,6 @@ import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport'
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import ContentShareConstants from '../../src/contentsharecontroller/ContentShareConstants';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
-import ServerSideNetworkAdaption from '../../src/signalingclient/ServerSideNetworkAdaption';
 import {
   SdkBitrate,
   SdkBitrateFrame,
@@ -27,11 +27,9 @@ import VideoDownlinkObserver from '../../src/videodownlinkbandwidthpolicy/VideoD
 import VideoPreference from '../../src/videodownlinkbandwidthpolicy/VideoPreference';
 import { VideoPreferences } from '../../src/videodownlinkbandwidthpolicy/VideoPreferences';
 import VideoPriorityBasedPolicy from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
-import VideoPriorityBasedPolicyConfig from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig';
 import VideoQualityAdaptationPreference from '../../src/videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
-import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('VideoPriorityBasedPolicy', () => {
@@ -43,8 +41,6 @@ describe('VideoPriorityBasedPolicy', () => {
   let audioVideoController: AudioVideoTileController;
   let tileController: VideoTileController;
 
-  let domMockBuilder: DOMMockBuilder;
-  let behavior: DOMMockBehavior;
   interface DateNow {
     (): number;
   }
@@ -304,14 +300,9 @@ describe('VideoPriorityBasedPolicy', () => {
     startTime = Date.now();
     originalDateNow = Date.now;
     Date.now = mockDateNow;
-    behavior = new DOMMockBehavior();
-    domMockBuilder = new DOMMockBuilder(behavior);
     audioVideoController = new NoOpAudioVideoTileController();
     tileController = audioVideoController.videoTileController;
-    const policyConfig = new VideoPriorityBasedPolicyConfig();
-    // Most of the tests below are for the legacy path without server side network adaptation
-    policyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
-    policy = new VideoPriorityBasedPolicy(logger, policyConfig);
+    policy = new VideoPriorityBasedPolicy(logger);
     policy.bindToTileController(tileController);
     videoStreamIndex = new SimulcastVideoStreamIndex(logger);
   });
@@ -345,6 +336,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
   describe('worksWithoutTileController', () => {
     it('runs without tile controller', () => {
+      const policy = new VideoPriorityBasedPolicy(logger);
       updateIndexFrame(videoStreamIndex, 6, 0, 600);
       policy.updateIndex(videoStreamIndex);
       const preferences = VideoPreferences.prepare();
@@ -359,6 +351,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
   describe('default preference', () => {
     it('use default preference', () => {
+      const policy = new VideoPriorityBasedPolicy(logger);
       updateIndexFrame(videoStreamIndex, 1, 0, 1200);
       policy.updateIndex(videoStreamIndex);
       let resub = policy.wantsResubscribe();
@@ -396,9 +389,8 @@ describe('VideoPriorityBasedPolicy', () => {
     });
 
     it('use default preference with bandwidth probing', () => {
-      const config = new VideoPriorityBasedPolicyConfig();
-      config.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbing;
-      const policy = new VideoPriorityBasedPolicy(logger, config);
+      const policy = new VideoPriorityBasedPolicy(logger);
+      policy.setServerSideNetworkAdaption(ServerSideNetworkAdaption.BandwidthProbing);
 
       updateIndexFrame(videoStreamIndex, 1, 0, 1200);
       policy.updateIndex(videoStreamIndex);
@@ -437,6 +429,7 @@ describe('VideoPriorityBasedPolicy', () => {
     });
 
     it('pause tiles if not enough bandwidth for default preference', () => {
+      const policy = new VideoPriorityBasedPolicy(logger);
       policy.bindToTileController(tileController);
       updateIndexFrame(videoStreamIndex, 3, 0, 1000);
       policy.updateIndex(videoStreamIndex);
@@ -635,25 +628,6 @@ describe('VideoPriorityBasedPolicy', () => {
 
       // @ts-ignore
       expect(policy.videoPreferencesUpdated).to.be.false;
-
-      updateIndexFrame(videoStreamIndex, 3, 0, 600);
-      policy.updateIndex(videoStreamIndex);
-
-      const resub = policy.wantsResubscribe();
-      expect(resub).to.equal(true);
-      const received = policy.chooseSubscriptions();
-      expect(received.array()).to.deep.equal([2, 4, 6]);
-    });
-
-    it('Interprets default value as BandwidthProbingAndRemoteVideoQualityAdaption', async () => {
-      const config = new VideoPriorityBasedPolicyConfig();
-      config.serverSideNetworkAdaption = ServerSideNetworkAdaption.Default;
-      const policy = new VideoPriorityBasedPolicy(logger, config);
-
-      // @ts-ignore
-      expect(policy.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption).to.be.eq(
-        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption
-      );
 
       updateIndexFrame(videoStreamIndex, 3, 0, 600);
       policy.updateIndex(videoStreamIndex);
@@ -998,9 +972,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
     it('Probe fail with StableNetworkPreset', () => {
       updateIndexFrame(videoStreamIndex, 4, 300, 1200);
-      const policyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
-      policyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
-      policy.setVideoPriorityBasedPolicyConfigs(policyConfig);
+      policy.setVideoPriorityBasedPolicyConfigs(VideoPriorityBasedPolicyConfig.StableNetworkPreset);
       policy.updateIndex(videoStreamIndex);
       const preferences = VideoPreferences.prepare();
       preferences.add(new VideoPreference('attendee-1', 2));
@@ -1098,6 +1070,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
   describe('paused', () => {
     it('Tile added but not in subscribe', async () => {
+      const domMockBuilder = new DOMMockBuilder();
       const observer: VideoDownlinkObserver = {
         tileWillBePausedByDownlinkPolicy(_tileId: number) {},
         tileWillBeUnpausedByDownlinkPolicy(_tileId: number) {},
@@ -1529,9 +1502,8 @@ describe('VideoPriorityBasedPolicy', () => {
 
   describe('VideoPriorityBasedPolicyConfig', () => {
     it('will not instantly drop videos caused by dip during startup period', () => {
-      const policyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
-      policyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
-      policy.setVideoPriorityBasedPolicyConfigs(policyConfig);
+      const policy = new VideoPriorityBasedPolicy(logger);
+      policy.setVideoPriorityBasedPolicyConfigs(VideoPriorityBasedPolicyConfig.StableNetworkPreset);
       updateIndexFrame(videoStreamIndex, 1, 0, 1200);
       policy.updateIndex(videoStreamIndex);
       let resub = policy.wantsResubscribe();
@@ -1557,9 +1529,8 @@ describe('VideoPriorityBasedPolicy', () => {
     });
 
     it('unstable network with unstable preset', () => {
-      const policyConfig = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
-      policyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
-      policy.setVideoPriorityBasedPolicyConfigs(policyConfig);
+      const config = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
+      policy.setVideoPriorityBasedPolicyConfigs(config);
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
       const metricReport = new ClientMetricReport(logger);
@@ -1642,7 +1613,6 @@ describe('VideoPriorityBasedPolicy', () => {
 
     it('stable network with stable preset', () => {
       const config = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
-      config.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
       policy.setVideoPriorityBasedPolicyConfigs(config);
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
@@ -1764,6 +1734,7 @@ describe('VideoPriorityBasedPolicy', () => {
     });
 
     it('works with non goog stats', () => {
+      const policy = new VideoPriorityBasedPolicy(logger);
       updateIndexFrame(videoStreamIndex, 1, 0, 1200);
       policy.updateIndex(videoStreamIndex);
       let resub = policy.wantsResubscribe();

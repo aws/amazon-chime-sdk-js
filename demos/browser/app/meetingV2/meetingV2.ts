@@ -50,6 +50,7 @@ import {
   NoOpVideoFrameProcessor,
   VideoFxConfig,
   RemovableAnalyserNode,
+  ServerSideNetworkAdaption,
   SimulcastLayers,
   Transcript,
   TranscriptEvent,
@@ -62,6 +63,7 @@ import {
   VideoFrameProcessor,
   VideoInputDevice,
   VideoPriorityBasedPolicy,
+  VideoPriorityBasedPolicyConfig,
   VideoQualitySettings,
   VoiceFocusDeviceTransformer,
   VoiceFocusModelComplexity,
@@ -345,6 +347,7 @@ export class DemoMeetingApp
   enableSimulcast = false;
   enableSVC = false;
   usePriorityBasedDownlinkPolicy = false;
+  videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig;
   enablePin = false;
   echoReductionCapability = false;
   usingStereoMusicAudioProfile = false;
@@ -661,6 +664,21 @@ export class DemoMeetingApp
 
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
+
+      const serverSideNetworkAdaption = document.getElementById(
+          'server-side-network-adaption'
+      ) as HTMLSelectElement;
+      const serverSideNetworkAdaptionTitle = document.getElementById(
+          'server-side-network-adaption-title'
+      ) as HTMLElement;
+
+      if (this.usePriorityBasedDownlinkPolicy) {
+        serverSideNetworkAdaption.style.display = 'block';
+        serverSideNetworkAdaptionTitle.style.display = 'block';
+      } else {
+        serverSideNetworkAdaption.style.display = 'none';
+        serverSideNetworkAdaptionTitle.style.display = 'none';
+      }
     });
 
     const echoReductionCheckbox = (document.getElementById('echo-reduction-checkbox') as HTMLInputElement);
@@ -1841,7 +1859,22 @@ export class DemoMeetingApp
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     configuration.enableSVC = this.enableSVC;
     if (this.usePriorityBasedDownlinkPolicy) {
-        this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
+      const serverSideNetworkAdaptionDropDown = document.getElementById('server-side-network-adaption') as HTMLSelectElement;
+      switch (serverSideNetworkAdaptionDropDown.value) {
+        case 'default':
+          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.Default;
+          break;
+        case 'none':
+          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
+          break;
+        case 'enable-bandwidth-probing':
+          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbing;
+          break;
+        case 'enable-bandwidth-probing-and-video-adaption':
+          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
+          break;
+      }
+      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
     } else {

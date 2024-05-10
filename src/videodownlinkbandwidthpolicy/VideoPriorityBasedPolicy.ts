@@ -132,13 +132,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     protected logger: Logger,
     private videoPriorityBasedPolicyConfig: VideoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default
   ) {
-    if (
-      this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption ===
-      ServerSideNetworkAdaption.Default
-    ) {
-      this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption =
-        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
-    }
     this.reset();
   }
 
