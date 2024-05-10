@@ -283,6 +283,8 @@ export class DemoMeetingApp
 
   showActiveSpeakerScores = false;
   meeting: string | null = null;
+  meetinginfo: string | null  = null;
+  attendeeinfo: string | null  = null;
   name: string | null = null;
   voiceConnectorId: string | null = null;
   sipURI: string | null = null;
@@ -3460,15 +3462,24 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.sendJoinRequest(
-      this.meeting,
-      this.name,
-      this.region,
-      this.primaryExternalMeetingId,
-      this.audioCapability,
-      this.videoCapability,
-      this.contentCapability,
-    )).JoinInfo;
+    console.log(this.meetinginfo);
+    console.log(this.attendeeinfo);
+    if (!this.meetinginfo || !this.attendeeinfo) {
+      this.joinInfo = (await this.sendJoinRequest(
+        this.meeting,
+        this.name,
+        this.region,
+        this.primaryExternalMeetingId,
+        this.audioCapability,
+        this.videoCapability,
+        this.contentCapability,
+      )).JoinInfo;
+    }
+    this.joinInfo = {
+      Meeting: JSON.parse(this.meetinginfo),
+      Attendee: JSON.parse(this.attendeeinfo)
+    }
+    console.log(this.joinInfo);
     this.region = this.joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
@@ -3848,6 +3859,10 @@ export class DemoMeetingApp
   }
 
   private redirectFromAuthentication(quickjoin: boolean = false): void {
+    this.meetinginfo = (document.getElementById('inputMeetingInfo') as HTMLInputElement).value;
+    this.attendeeinfo = (document.getElementById('inputAttendeeInfo') as HTMLInputElement).value;
+    console.log(this.meetinginfo);
+    console.log(this.attendeeinfo);
     this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
     this.name = (document.getElementById('inputName') as HTMLInputElement).value;
     this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
