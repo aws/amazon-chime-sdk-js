@@ -400,9 +400,8 @@
 									<li><code>MeetingSessionStatusCode.OK</code>: <code>demoteFromPrimaryMeeting</code> was used to remove the attendee.</li>
 									<li><code>MeetingSessionStatusCode.AudioAuthenticationRejected</code>: <code>chime::DeleteAttendee</code> was called on the Primary
 									meeting attendee used in <code>promoteToPrimaryMeeting</code>.</li>
-									<li><code>MeetingSessionStatusCode.SignalingBadRequest</code>: Other failure, possibly due to disconnect
-										or timeout. These failures are likely retryable. Any disconnection will trigger an automatic
-									demotion to avoid unexpected or unwanted promotion state on reconnection.</li>
+									<li><code>MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted</code>: The client disconnected (and may be reconnecting).
+									Any disconnection will trigger an automatic demotion to avoid unexpected or unwanted promotion state on reconnection.</li>
 								</ul>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>

@@ -1285,17 +1285,6 @@ export default class DefaultAudioVideoController
       Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
     });
 
-    if (this.promotedToPrimaryMeeting && error) {
-      this.forEachObserver(observer => {
-        this.promotedToPrimaryMeeting = false;
-        Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
-          f.bind(observer)(
-            new MeetingSessionStatus(MeetingSessionStatusCode.SignalingInternalServerError)
-          )
-        );
-      });
-    }
-
     /* istanbul ignore else */
     if (this.eventController) {
       const {
@@ -1353,6 +1342,19 @@ export default class DefaultAudioVideoController
   }
 
   reconnect(status: MeetingSessionStatus, error: Error | null): boolean {
+    if (this.promotedToPrimaryMeeting) {
+      // If the client was promoted, we 'demote' them so that we don't get in any
+      // unusual or unexpected state on reconnect
+      this.promotedToPrimaryMeeting = false;
+      this.forEachObserver(observer => {
+        Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
+          f.bind(observer)(
+            new MeetingSessionStatus(MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted)
+          )
+        );
+      });
+    }
+
     const willRetry = this._reconnectController.retryWithBackoff(
       async () => {
         if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
