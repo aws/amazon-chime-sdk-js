@@ -449,11 +449,14 @@ message SdkVideoSubscriptionConfiguration {
     required string mid = 1;
     optional string attendee_id = 2;
     optional uint32 stream_id = 3;
+    optional uint32 group_id = 6;
     optional uint32 priority = 4;
     optional uint32 target_bitrate_kbps = 5;
-    optional uint32 group_id = 6;
+    optional uint32 target_width = 8;
+    optional uint32 target_height = 9;
     optional SdkVideoQualityAdaptationPreference quality_adaptation_preference = 7;
 }
+
 
 message SdkNotificationFrame {
     enum NotificationLevel {

@@ -70,12 +70,17 @@ export default class VideoPreference implements Eq, PartialOrd {
     switch (targetSize) {
       case TargetDisplaySize.Maximum:
         return VideoPreference.MAXIMUM_BITRATE_KBPS;
+      case TargetDisplaySize.VeryHigh:
       case TargetDisplaySize.High:
         return VideoPreference.HIGH_BITRATE_KBPS;
+      case TargetDisplaySize.MediumHigh:
       case TargetDisplaySize.Medium:
         return VideoPreference.MID_BITRATE_KBPS;
+      case TargetDisplaySize.MediumLow:
       case TargetDisplaySize.Low:
         return VideoPreference.LOW_BITRATE_KBPS;
+      default:
+        throw new Error('Unknown TargetDisplaySize');
     }
   }
 }

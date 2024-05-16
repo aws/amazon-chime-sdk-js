@@ -4939,14 +4939,20 @@ export interface ISdkVideoSubscriptionConfiguration {
     /** SdkVideoSubscriptionConfiguration streamId */
     streamId?: (number|null);
 
+    /** SdkVideoSubscriptionConfiguration groupId */
+    groupId?: (number|null);
+
     /** SdkVideoSubscriptionConfiguration priority */
     priority?: (number|null);
 
     /** SdkVideoSubscriptionConfiguration targetBitrateKbps */
     targetBitrateKbps?: (number|null);
 
-    /** SdkVideoSubscriptionConfiguration groupId */
-    groupId?: (number|null);
+    /** SdkVideoSubscriptionConfiguration targetWidth */
+    targetWidth?: (number|null);
+
+    /** SdkVideoSubscriptionConfiguration targetHeight */
+    targetHeight?: (number|null);
 
     /** SdkVideoSubscriptionConfiguration qualityAdaptationPreference */
     qualityAdaptationPreference?: (SdkVideoQualityAdaptationPreference|null);
@@ -4970,14 +4976,20 @@ export class SdkVideoSubscriptionConfiguration implements ISdkVideoSubscriptionC
     /** SdkVideoSubscriptionConfiguration streamId. */
     public streamId: number;
 
+    /** SdkVideoSubscriptionConfiguration groupId. */
+    public groupId: number;
+
     /** SdkVideoSubscriptionConfiguration priority. */
     public priority: number;
 
     /** SdkVideoSubscriptionConfiguration targetBitrateKbps. */
     public targetBitrateKbps: number;
 
-    /** SdkVideoSubscriptionConfiguration groupId. */
-    public groupId: number;
+    /** SdkVideoSubscriptionConfiguration targetWidth. */
+    public targetWidth: number;
+
+    /** SdkVideoSubscriptionConfiguration targetHeight. */
+    public targetHeight: number;
 
     /** SdkVideoSubscriptionConfiguration qualityAdaptationPreference. */
     public qualityAdaptationPreference: SdkVideoQualityAdaptationPreference;

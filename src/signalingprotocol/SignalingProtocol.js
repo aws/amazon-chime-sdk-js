@@ -13371,9 +13371,11 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
      * @property {string} mid SdkVideoSubscriptionConfiguration mid
      * @property {string|null} [attendeeId] SdkVideoSubscriptionConfiguration attendeeId
      * @property {number|null} [streamId] SdkVideoSubscriptionConfiguration streamId
+     * @property {number|null} [groupId] SdkVideoSubscriptionConfiguration groupId
      * @property {number|null} [priority] SdkVideoSubscriptionConfiguration priority
      * @property {number|null} [targetBitrateKbps] SdkVideoSubscriptionConfiguration targetBitrateKbps
-     * @property {number|null} [groupId] SdkVideoSubscriptionConfiguration groupId
+     * @property {number|null} [targetWidth] SdkVideoSubscriptionConfiguration targetWidth
+     * @property {number|null} [targetHeight] SdkVideoSubscriptionConfiguration targetHeight
      * @property {SdkVideoQualityAdaptationPreference|null} [qualityAdaptationPreference] SdkVideoSubscriptionConfiguration qualityAdaptationPreference
      */
 
@@ -13417,6 +13419,14 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
     SdkVideoSubscriptionConfiguration.prototype.streamId = 0;
 
     /**
+     * SdkVideoSubscriptionConfiguration groupId.
+     * @member {number} groupId
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.groupId = 0;
+
+    /**
      * SdkVideoSubscriptionConfiguration priority.
      * @member {number} priority
      * @memberof SdkVideoSubscriptionConfiguration
@@ -13433,12 +13443,20 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
     SdkVideoSubscriptionConfiguration.prototype.targetBitrateKbps = 0;
 
     /**
-     * SdkVideoSubscriptionConfiguration groupId.
-     * @member {number} groupId
+     * SdkVideoSubscriptionConfiguration targetWidth.
+     * @member {number} targetWidth
      * @memberof SdkVideoSubscriptionConfiguration
      * @instance
      */
-    SdkVideoSubscriptionConfiguration.prototype.groupId = 0;
+    SdkVideoSubscriptionConfiguration.prototype.targetWidth = 0;
+
+    /**
+     * SdkVideoSubscriptionConfiguration targetHeight.
+     * @member {number} targetHeight
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.targetHeight = 0;
 
     /**
      * SdkVideoSubscriptionConfiguration qualityAdaptationPreference.
@@ -13485,6 +13503,10 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.groupId);
         if (message.qualityAdaptationPreference != null && Object.hasOwnProperty.call(message, "qualityAdaptationPreference"))
             writer.uint32(/* id 7, wireType 0 =*/56).int32(message.qualityAdaptationPreference);
+        if (message.targetWidth != null && Object.hasOwnProperty.call(message, "targetWidth"))
+            writer.uint32(/* id 8, wireType 0 =*/64).uint32(message.targetWidth);
+        if (message.targetHeight != null && Object.hasOwnProperty.call(message, "targetHeight"))
+            writer.uint32(/* id 9, wireType 0 =*/72).uint32(message.targetHeight);
         return writer;
     };
 
@@ -13531,6 +13553,10 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
                     message.streamId = reader.uint32();
                     break;
                 }
+            case 6: {
+                    message.groupId = reader.uint32();
+                    break;
+                }
             case 4: {
                     message.priority = reader.uint32();
                     break;
@@ -13539,8 +13565,12 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
                     message.targetBitrateKbps = reader.uint32();
                     break;
                 }
-            case 6: {
-                    message.groupId = reader.uint32();
+            case 8: {
+                    message.targetWidth = reader.uint32();
+                    break;
+                }
+            case 9: {
+                    message.targetHeight = reader.uint32();
                     break;
                 }
             case 7: {
@@ -13592,15 +13622,21 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
         if (message.streamId != null && message.hasOwnProperty("streamId"))
             if (!$util.isInteger(message.streamId))
                 return "streamId: integer expected";
+        if (message.groupId != null && message.hasOwnProperty("groupId"))
+            if (!$util.isInteger(message.groupId))
+                return "groupId: integer expected";
         if (message.priority != null && message.hasOwnProperty("priority"))
             if (!$util.isInteger(message.priority))
                 return "priority: integer expected";
         if (message.targetBitrateKbps != null && message.hasOwnProperty("targetBitrateKbps"))
             if (!$util.isInteger(message.targetBitrateKbps))
                 return "targetBitrateKbps: integer expected";
-        if (message.groupId != null && message.hasOwnProperty("groupId"))
-            if (!$util.isInteger(message.groupId))
-                return "groupId: integer expected";
+        if (message.targetWidth != null && message.hasOwnProperty("targetWidth"))
+            if (!$util.isInteger(message.targetWidth))
+                return "targetWidth: integer expected";
+        if (message.targetHeight != null && message.hasOwnProperty("targetHeight"))
+            if (!$util.isInteger(message.targetHeight))
+                return "targetHeight: integer expected";
         if (message.qualityAdaptationPreference != null && message.hasOwnProperty("qualityAdaptationPreference"))
             switch (message.qualityAdaptationPreference) {
             default:
@@ -13631,12 +13667,16 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             message.attendeeId = String(object.attendeeId);
         if (object.streamId != null)
             message.streamId = object.streamId >>> 0;
+        if (object.groupId != null)
+            message.groupId = object.groupId >>> 0;
         if (object.priority != null)
             message.priority = object.priority >>> 0;
         if (object.targetBitrateKbps != null)
             message.targetBitrateKbps = object.targetBitrateKbps >>> 0;
-        if (object.groupId != null)
-            message.groupId = object.groupId >>> 0;
+        if (object.targetWidth != null)
+            message.targetWidth = object.targetWidth >>> 0;
+        if (object.targetHeight != null)
+            message.targetHeight = object.targetHeight >>> 0;
         switch (object.qualityAdaptationPreference) {
         default:
             if (typeof object.qualityAdaptationPreference === "number") {
@@ -13681,6 +13721,8 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             object.targetBitrateKbps = 0;
             object.groupId = 0;
             object.qualityAdaptationPreference = options.enums === String ? "BALANCED" : 1;
+            object.targetWidth = 0;
+            object.targetHeight = 0;
         }
         if (message.mid != null && message.hasOwnProperty("mid"))
             object.mid = message.mid;
@@ -13696,6 +13738,10 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
             object.groupId = message.groupId;
         if (message.qualityAdaptationPreference != null && message.hasOwnProperty("qualityAdaptationPreference"))
             object.qualityAdaptationPreference = options.enums === String ? $root.SdkVideoQualityAdaptationPreference[message.qualityAdaptationPreference] === undefined ? message.qualityAdaptationPreference : $root.SdkVideoQualityAdaptationPreference[message.qualityAdaptationPreference] : message.qualityAdaptationPreference;
+        if (message.targetWidth != null && message.hasOwnProperty("targetWidth"))
+            object.targetWidth = message.targetWidth;
+        if (message.targetHeight != null && message.hasOwnProperty("targetHeight"))
+            object.targetHeight = message.targetHeight;
         return object;
     };
 
