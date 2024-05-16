@@ -14,6 +14,8 @@ export default class SignalingClientVideoSubscriptionConfiguration {
   groupId?: number;
   priority?: number;
   targetBitrateKbps?: number;
+  targetWidth?: number;
+  targetHeight?: number;
   qualityAdaptationPreference?: VideoQualityAdaptationPreference;
 
   equals(other: this): boolean {
@@ -25,6 +27,8 @@ export default class SignalingClientVideoSubscriptionConfiguration {
       this.groupId === other.groupId &&
       this.priority === other.priority &&
       this.targetBitrateKbps === other.targetBitrateKbps &&
+      this.targetWidth === other.targetWidth &&
+      this.targetHeight === other.targetHeight &&
       this.qualityAdaptationPreference === other.qualityAdaptationPreference
     );
   }

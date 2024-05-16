@@ -7,24 +7,81 @@
  */
 export enum TargetDisplaySize {
   /**
-   * Low resolution video stream.
+   * Low resolution video stream, around 180p.
    */
   Low,
 
   /**
-   * Medium resolution video stream.
+   * Medium-low resolution video stream, around 240p.
+   */
+  MediumLow,
+
+  /**
+   * Medium resolution video stream, around 360p.
    */
   Medium,
 
+/**
+   * Medium resolution video stream, around 480p.
+   */
+MediumHigh,
+
+
   /**
-   * High resolution video stream.
+   * High resolution video stream, around 720p.
    */
   High,
 
+/**
+   * High resolution video stream, around 1080p.
+   */
+   VeryHigh,
+
   /**
-   * Maximum resolution video stream.
+   * Maximum resolution video stream. 2k, 4k, etc.
    */
   Maximum,
 }
+
+export function getTargetDisplaySizeForDimensions(width: number, height: number): TargetDisplaySize {
+    const longerEdge = Math.max(width, height);
+    
+    if (longerEdge <= 320) {
+        return TargetDisplaySize.Low;
+    } else if (longerEdge <= 426) {
+        return TargetDisplaySize.MediumLow;
+    } else if (longerEdge <= 640) {
+        return TargetDisplaySize.Medium;
+    } else if (longerEdge <= 854) {
+        return TargetDisplaySize.MediumHigh;
+    } else if (longerEdge <= 1280) {
+        return TargetDisplaySize.High;
+    } else if (longerEdge <= 1920) {
+        return TargetDisplaySize.VeryHigh;
+    } else {
+        return TargetDisplaySize.Maximum;
+    }
+}
+
+export function getDimensionsForTargetSize(targetSize: TargetDisplaySize): { width: number; height: number } {
+    switch (targetSize) {
+      case TargetDisplaySize.Low:
+        return { width: 320, height: 180 }; // 180p
+      case TargetDisplaySize.MediumLow:
+        return { width: 426, height: 240 }; // 240p
+      case TargetDisplaySize.Medium:
+        return { width: 640, height: 360 }; // 360p
+      case TargetDisplaySize.MediumHigh:
+        return { width: 854, height: 480 }; // 480p
+      case TargetDisplaySize.High:
+        return { width: 1280, height: 720 }; // 720p
+      case TargetDisplaySize.VeryHigh:
+        return { width: 1920, height: 1080 }; // 1080p
+      case TargetDisplaySize.Maximum:
+        return { width: 3840, height: 2160 }; // 4K
+      default:
+        throw new Error('Unknown TargetDisplaySize');
+    }
+  }
 
 export default TargetDisplaySize;

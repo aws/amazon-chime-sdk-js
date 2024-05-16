@@ -203,6 +203,8 @@ export default class DefaultSignalingClient implements SignalingClient {
     signalConfig.groupId = config.groupId;
     signalConfig.priority = config.priority;
     signalConfig.targetBitrateKbps = config.targetBitrateKbps;
+    signalConfig.targetWidth = config.targetWidth;
+    signalConfig.targetHeight = config.targetHeight;
     switch (config.qualityAdaptationPreference) {
       case VideoQualityAdaptationPreference.Balanced:
         signalConfig.qualityAdaptationPreference = SdkVideoQualityAdaptationPreference.BALANCED;

@@ -4,6 +4,7 @@
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import SignalingClientVideoSubscriptionConfiguration from '../signalingclient/SignalingClientVideoSubscriptionConfiguration';
 import type { Eq, PartialOrd } from '../utils/Types';
+import { getDimensionsForTargetSize } from './TargetDisplaySize';
 import VideoPreference from './VideoPreference';
 
 export function convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
@@ -45,6 +46,9 @@ export function convertVideoPreferencesToSignalingClientVideoSubscriptionConfigu
     // The signaling protocol expects 'higher' values for 'higher' priorities
     configuration.priority = Number.MAX_SAFE_INTEGER - preference.priority;
     configuration.targetBitrateKbps = preference.targetSizeToBitrateKbps(preference.targetSize);
+    const targetDimensions = getDimensionsForTargetSize(preference.targetSize);
+    configuration.targetWidth = targetDimensions.width;
+    configuration.targetHeight = targetDimensions.height;
     configuration.qualityAdaptationPreference = preference.degradationPreference;
     configurations.push(configuration);
   }

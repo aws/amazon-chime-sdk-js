@@ -20,7 +20,7 @@ import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController, { VideoTileResolutionObserver } from '../videotilecontroller/VideoTileController';
 import AllHighestVideoBandwidthPolicy from './AllHighestVideoBandwidthPolicy';
-import TargetDisplaySize from './TargetDisplaySize';
+import TargetDisplaySize, { getTargetDisplaySizeForDimensions } from './TargetDisplaySize';
 import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './VideoDownlinkObserver';
 import VideoPreference from './VideoPreference';
@@ -252,20 +252,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
     for (const pref of existingPrefs) {
         const resolution = this.resolutionMap.get(pref.attendeeId);
-        let targetDisplaySize = TargetDisplaySize.Maximum;
-
-        if (resolution) {
-            if (resolution.width < 360 && resolution.height < 240) {
-                targetDisplaySize = TargetDisplaySize.Low;
-            } else if (resolution.width < 640 && resolution.height < 480) {
-                targetDisplaySize = TargetDisplaySize.Medium;
-            } else if (resolution.width < 1280 && resolution.height < 720) {
-                targetDisplaySize = TargetDisplaySize.High;
-            }
-        } else {
-            targetDisplaySize = pref.targetSize;
-        }
-
+        const targetDisplaySize = resolution ? getTargetDisplaySizeForDimensions(resolution.width, resolution.height) : pref.targetSize;
         prefs.add(new VideoPreference(pref.attendeeId, pref.priority, targetDisplaySize));
     }
 
@@ -274,7 +261,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     } else {
         this.defaultVideoPreferences = prefs.build();
     }
-
+    this.pendingActionAfterUpdatedPreferences = true;
     this.logger.info(`hello ${JSON.stringify(this.getCurrentVideoPreferences())} and ${JSON.stringify(this.resolutionMap)}`)
 }
 
