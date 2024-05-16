@@ -246,6 +246,8 @@ export default class VideoTileCollection implements AudioVideoObserver {
   }
 
   private isLocalAttendee(attendeeId: string) {
+    // This covers both the actual local attendee ID and the attendee ID
+    // of any local content share
     return attendeeId.startsWith(this.localAttendeeId);
   }
 
