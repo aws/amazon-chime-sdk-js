@@ -2,51 +2,42 @@ name: Publish
 # When a new Github Release is created, publish to NPM
 on:
   release:
-    types: [published, edited]
+    types: [published]
 
 jobs:
-  # publish:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Package
-  #       uses: actions/checkout@v2
-  #       with:
-  #         ref: ${{ github.event.release.tag_name }}
-  #     - name: Setup Node environment
-  #       uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 16
-  #         registry-url: https://registry.npmjs.org/
-  #     - name: NPM Install
-  #       run: npm install
-  #     - name: NPM run build
-  #       run: npm run build
-  #     - name: Get npm tag name
-  #       id: npm_tag
-  #       run: |
-  #         npm_publish_tag=$(.github/script/get-npm-tag.js)
-  #         echo "Received NPM publish tag:" $npm_publish_tag
-  #         echo ::set-output name=npm_tag::$npm_publish_tag
-  #     - name: Publish to NPM with tag
-  #       run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - name: Setup Node environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - name: NPM Install
+        run: npm install
+      - name: NPM run build
+        run: npm run build
+      - name: Get npm tag name
+        id: npm_tag
+        run: |
+          npm_publish_tag=$(.github/script/get-npm-tag.js)
+          echo "Received NPM publish tag:" $npm_publish_tag
+          echo ::set-output name=npm_tag::$npm_publish_tag
+      - name: Publish to NPM with tag
+        run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
   deploy_chime_prod_demo:
-    # needs: publish
+    needs: publish
     name: Prod - Chime and ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        name:
-          [
-            ChimeProd,
-            ChimeSDKMeetingsProdIAD,
-            ChimeSDKMeetingsProdPDX,
-            ChimeSDKMeetingsProdFRA,
-            ChimeSDKMeetingsProdSIN,
-            ChimeSDKMeetingsIAD_ChimeSDKMediaPipelinesProdIAD,
-            Chime_ChimeSDKMediaPipelinesProdIAD,
-          ]
+        name: [ ChimeProd, ChimeSDKMeetingsProdIAD, ChimeSDKMeetingsProdPDX, ChimeSDKMeetingsProdFRA, ChimeSDKMeetingsProdSIN, ChimeSDKMeetingsIAD_ChimeSDKMediaPipelinesProdIAD, Chime_ChimeSDKMediaPipelinesProdIAD ]
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_DEFAULT_OUTPUT: text
