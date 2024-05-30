@@ -152,9 +152,8 @@ export default class VideoTileCollection implements AudioVideoObserver {
     for (const source of videoSources) {
         this.pagination.add(source.attendee.attendeeId);
     }
-    const localTileId = this.localTileId()
     this.pagination.removeIf((value: string) => {
-      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value) && (localTileId && this.tileIdToAttendeeId[localTileId] !== value);
+      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value) && !this.isLocalAttendee(value);
     });
 
     // Update the preference manager explicitly as it needs to add default preferences
@@ -211,7 +210,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
     demoVideoTile.attendeeId = tileState.boundAttendeeId;
 
     // We need to add local video or content to pagination from tile updates
-    const shouldUpdatePagination = tileState.localTile || (tileState.isContent && tileState.boundAttendeeId.startsWith(this.localAttendeeId));
+    const shouldUpdatePagination = this.isLocalAttendee(tileState.boundAttendeeId);
     if (tileState.boundVideoStream) {
         if (shouldUpdatePagination) {
             this.pagination.add(tileState.boundAttendeeId);
@@ -244,6 +243,12 @@ export default class VideoTileCollection implements AudioVideoObserver {
     demoVideoTile.nameplate = "";
     demoVideoTile.pauseState = "";
     this.updateLayout();
+  }
+
+  private isLocalAttendee(attendeeId: string) {
+    // This covers both the actual local attendee ID and the attendee ID
+    // of any local content share
+    return attendeeId.startsWith(this.localAttendeeId);
   }
 
   showVideoWebRTCStats(videoMetricReport: { [id: string]: { [id: string]: {} } }): void {
