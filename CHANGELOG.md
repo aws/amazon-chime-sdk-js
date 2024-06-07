@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Avoid subscribes when simulcast is enabled but not currently sending, or when using server side network adaptation.
+- Made server side network adaptation the default when creating `VideoPriorityBasedPolicy`.
 
 ### Fixed
 
