@@ -944,7 +944,7 @@ export default class DefaultAudioVideoController
     // `updateRemoteVideosFromLastVideosToReceive` does not actually send a subscribe but it uses
     // `subscribeFrameSent` to cache the previous index so that we are able to do switches (not add/removes)
     // for simulcast stream layer changes. See `subscribeFrameSent` for more details.
-    context.videoStreamIndex.subscribeFrameSent();
+    context.videoStreamIndex.remoteVideoUpdateSent();
     return true;
   }
 
@@ -1039,7 +1039,7 @@ export default class DefaultAudioVideoController
     // Similar to `updateRemoteVideosFromLastVideosToReceive`, we use `subscribeFrameSent` to cache the previous
     // index so that we don't incorrectly mark a simulcast stream change (e.g. a sender switching from publishing [1, 3] to [2] to [1, 3])
     // as the add or removal of a source
-    this.meetingSessionContext.videoStreamIndex.subscribeFrameSent();
+    this.meetingSessionContext.videoStreamIndex.remoteVideoUpdateSent();
     return true;
   }
 
