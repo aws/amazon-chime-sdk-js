@@ -308,11 +308,6 @@ function serve(host = '127.0.0.1:8080') {
           console.warn("Cloud media capture not available")
           respond(response, 500, 'application/json', JSON.stringify({}))
         }
-      } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
-        await chimeSDKMeetings.deleteMeeting({
-          MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
-        });
-        respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/start_transcription') {
         const languageCode = requestUrl.query.language;
         const region = requestUrl.query.region;
