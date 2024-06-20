@@ -21,6 +21,7 @@ import VideoStreamDescription from './VideoStreamDescription';
 export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   protected currentIndex: SdkIndexFrame | null = null;
   protected indexForSubscribe: SdkIndexFrame | null = null;
+  protected indexForLastRemoteVideoUpdate: SdkIndexFrame | null = null;
   protected currentSubscribeAck: SdkSubscribeAckFrame | null = null;
 
   // These are based on the index at the time of the last Subscribe Ack
@@ -135,6 +136,10 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   subscribeFrameSent(): void {
     // This is called just as a Subscribe is being sent.  Save corresponding Index
     this.indexForSubscribe = this.currentIndex;
+  }
+
+  remoteVideoUpdateSent(): void {
+    this.indexForLastRemoteVideoUpdate = this.currentIndex;
   }
 
   integrateSubscribeAckFrame(subscribeAck: SdkSubscribeAckFrame): void {
@@ -373,6 +378,16 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
         }
       }
     }
+
+    // Lastly check if it can be found in the index last used for remote video update
+    if (!!this.indexForLastRemoteVideoUpdate) {
+      for (const source of this.indexForLastRemoteVideoUpdate.sources) {
+        if (source.streamId === streamId) {
+          return source.groupId;
+        }
+      }
+    }
+
     return undefined;
   }
 

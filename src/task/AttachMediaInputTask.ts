@@ -58,6 +58,8 @@ export default class AttachMediaInputTask extends BaseTask {
       this.context.videoStreamIndex,
       this.context.videosToReceive
     );
+    // This will cache the current index so that we maintain the values over the course of the subscribe.
+    this.context.videoStreamIndex.subscribeFrameSent();
   }
 
   private setAudioCodecPreferences(): void {
