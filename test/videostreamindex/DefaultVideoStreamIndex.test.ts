@@ -1438,6 +1438,46 @@ describe('DefaultVideoStreamIndex', () => {
       expect(index.groupIdForStreamId(1)).to.equal(1);
       expect(index.groupIdForStreamId(6)).to.equal(undefined);
     });
+
+    it('returns correct groupId if exists in previous index', () => {
+      let indexFrame = new SdkIndexFrame({
+        sources: [
+          new SdkStreamDescriptor({
+            streamId: 1,
+            groupId: 1,
+            maxBitrateKbps: 1400,
+            avgBitrateBps: 1111 * 1000,
+            attendeeId: '688c',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 2,
+            groupId: 1,
+            maxBitrateKbps: 200,
+            attendeeId: '4d82',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 4,
+            groupId: 5,
+            maxBitrateKbps: 800,
+            attendeeId: 'a0ff',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+        ],
+      });
+      index.integrateIndexFrame(indexFrame);
+      expect(index.groupIdForStreamId(1)).to.equal(1);
+      expect(index.groupIdForStreamId(6)).to.equal(undefined);
+      index.remoteVideoUpdateSent();
+
+      indexFrame = new SdkIndexFrame({
+        sources: [],
+      });
+      index.integrateIndexFrame(indexFrame);
+      expect(index.groupIdForStreamId(1)).to.equal(1);
+      expect(index.groupIdForStreamId(6)).to.equal(undefined);
+    });
   });
 
   describe('streamIdInSameGroup', () => {
