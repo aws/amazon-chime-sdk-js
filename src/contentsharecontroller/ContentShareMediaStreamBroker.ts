@@ -66,7 +66,11 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     return {
       audio:
         !sourceId && new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()
-          ? true
+          ? {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false,
+            }
           : false,
       video: {
         ...(!sourceId && {

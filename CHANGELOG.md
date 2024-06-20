@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+ - Remove echoCancellation, autoGainControl, noiseSuppression from getDisplayMedia parameters as they apply processing when its not necessary.
 
 - Fixed rare race conditions with simulcast + server side network adaptation on third attendee join.
 

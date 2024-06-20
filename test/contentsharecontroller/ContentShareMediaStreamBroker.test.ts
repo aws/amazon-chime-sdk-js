@@ -181,7 +181,11 @@ describe('ContentShareMediaStreamBroker', () => {
       dommMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const streamConstraints: MediaStreamConstraints = {
-        audio: true,
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        },
         video: {
           frameRate: {
             max: 15,
