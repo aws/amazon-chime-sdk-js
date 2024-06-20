@@ -449,7 +449,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   }
 
   /**
-   * Sends the MetricFrame to Tincan via ProtoBuf.
+   * Sends the MetricFrame to media backend via ProtoBuf.
    */
   private sendClientMetricProtobuf(clientMetricFrame: SdkClientMetricFrame): void {
     this.signalingClient.sendClientMetrics(clientMetricFrame);
