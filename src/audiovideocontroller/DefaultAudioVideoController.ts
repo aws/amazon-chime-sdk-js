@@ -941,10 +941,9 @@ export default class DefaultAudioVideoController
     if (added.length !== 0 || removed.length !== 0) {
       return false;
     }
-    // `updateRemoteVideosFromLastVideosToReceive` does not actually send a subscribe but it uses
-    // `subscribeFrameSent` to cache the previous index so that we are able to do switches (not add/removes)
+    // We use `remoteVideoUpdateSent` to cache the previous index so that we are able to do switches (not add/removes)
     // for simulcast stream layer changes. See `subscribeFrameSent` for more details.
-    context.videoStreamIndex.subscribeFrameSent();
+    context.videoStreamIndex.remoteVideoUpdateSent();
     return true;
   }
 
@@ -1036,10 +1035,10 @@ export default class DefaultAudioVideoController
       return false;
     }
 
-    // Similar to `updateRemoteVideosFromLastVideosToReceive`, we use `subscribeFrameSent` to cache the previous
+    // Similar to `updateRemoteVideosFromLastVideosToReceive`, we use `remoteVideoUpdateSent` to cache the previous
     // index so that we don't incorrectly mark a simulcast stream change (e.g. a sender switching from publishing [1, 3] to [2] to [1, 3])
     // as the add or removal of a source
-    this.meetingSessionContext.videoStreamIndex.subscribeFrameSent();
+    this.meetingSessionContext.videoStreamIndex.remoteVideoUpdateSent();
     return true;
   }
 
@@ -1285,17 +1284,6 @@ export default class DefaultAudioVideoController
       Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
     });
 
-    if (this.promotedToPrimaryMeeting && error) {
-      this.forEachObserver(observer => {
-        this.promotedToPrimaryMeeting = false;
-        Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
-          f.bind(observer)(
-            new MeetingSessionStatus(MeetingSessionStatusCode.SignalingInternalServerError)
-          )
-        );
-      });
-    }
-
     /* istanbul ignore else */
     if (this.eventController) {
       const {
@@ -1353,6 +1341,19 @@ export default class DefaultAudioVideoController
   }
 
   reconnect(status: MeetingSessionStatus, error: Error | null): boolean {
+    if (this.promotedToPrimaryMeeting) {
+      // If the client was promoted, we 'demote' them so that we don't get in any
+      // unusual or unexpected state on reconnect
+      this.promotedToPrimaryMeeting = false;
+      this.forEachObserver(observer => {
+        Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
+          f.bind(observer)(
+            new MeetingSessionStatus(MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted)
+          )
+        );
+      });
+    }
+
     const willRetry = this._reconnectController.retryWithBackoff(
       async () => {
         if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {

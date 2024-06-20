@@ -1940,7 +1940,8 @@ export class DemoMeetingApp
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
         this.meetingLogger,
         new RemoteVideoManager(this.meetingLogger, this.usePriorityBasedDownlinkPolicy  ? this.priorityBasedDownlinkPolicy : this.allHighestDownlinkPolicy),
-        paginationPageSize)
+        paginationPageSize,
+        this.meetingSession.configuration.credentials.attendeeId)
     this.audioVideo.addObserver(this.videoTileCollection);
 
     this.contentShare = new ContentShareManager(this.meetingLogger, this.audioVideo, this.usingStereoMusicAudioProfile);

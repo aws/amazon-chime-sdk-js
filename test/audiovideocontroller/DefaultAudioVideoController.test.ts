@@ -5183,7 +5183,7 @@ describe('DefaultAudioVideoController', () => {
         audioVideoWasDemotedFromPrimaryMeeting(status: MeetingSessionStatus): void {
           demotionCalled = true;
           expect(status.statusCode()).to.equal(
-            MeetingSessionStatusCode.SignalingInternalServerError
+            MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted
           );
         }
       }

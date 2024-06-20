@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.23.0] - 2024-05-14
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+- Fixed rare race conditions with simulcast + server side network adaptation on third attendee join.
+
 ## [3.22.0] - 2024-03-15
 
 ### Added
@@ -20,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Avoid subscribes when simulcast is enabled but not currently sending, or when using server side network adaptation.
 
 ### Fixed
+
+- Fixed reconnections not triggering `audioVideoWasDemotedFromPrimaryMeeting`.
 
 ## [3.21.1] - 2024-03-28
 

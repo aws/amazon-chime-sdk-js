@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "3.22.0",
+  "version": "3.23.0",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -105,7 +105,7 @@
     "@types/ua-parser-js": "^0.7.35",
     "detect-browser": "^5.2.0",
     "pako": "^2.0.4",
-    "protobufjs": "^7.2.4",
+    "protobufjs": "^7.3.0",
     "resize-observer": "^1.0.0",
     "ua-parser-js": "^1.0.1"
   },
