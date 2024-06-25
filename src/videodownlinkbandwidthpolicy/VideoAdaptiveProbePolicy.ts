@@ -3,15 +3,28 @@
 
 import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import Logger from '../logger/Logger';
+import ServerSideNetworkAdaption from '../signalingclient/ServerSideNetworkAdaption';
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoPreference from './VideoPreference';
 import { VideoPreferences } from './VideoPreferences';
 import VideoPriorityBasedPolicy from './VideoPriorityBasedPolicy';
+import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
 
+/** [[VideoAdaptiveProbePolicy]] wraps [[VideoPriorityBasedPolicy]] with customized behavior to automatically
+ * assign a high preference to content share.
+ */
 export default class VideoAdaptiveProbePolicy extends VideoPriorityBasedPolicy {
+  private static createConfig(): VideoPriorityBasedPolicyConfig {
+    const config = new VideoPriorityBasedPolicyConfig();
+    config.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
+    return config;
+  }
+
   constructor(protected logger: Logger) {
-    super(logger);
+    // We use a static function to create config because Typescript requires
+    // super(...) calls to be the first line in constructors
+    super(logger, VideoAdaptiveProbePolicy.createConfig());
     super.shouldPauseTiles = false;
     this.videoPreferences = undefined;
   }
