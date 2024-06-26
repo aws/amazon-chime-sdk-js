@@ -9,6 +9,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { execSync } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 // Create a temporary tsconfig file to only transpile `RedundantAudioEncoder.ts`.
 const configDir = 'config';
@@ -29,7 +30,10 @@ fs.writeFileSync(`${configDir}/${redTsconfig}`, redTsconfigContent);
 // Run the `prebuild` script to generate `node_modules` since we will be using the `tsc` command from `node_modules`.
 function runCommandWithLogs(command) {
   try {
-    console.log(execSync(command).toString());
+    console.log(`Running command: ${command}`);
+    const output = execSync(command).toString();
+    console.log(output);
+    return output;
   } catch (error) {
     console.log(error.stdout.toString());
     console.error(error.toString());
@@ -39,7 +43,8 @@ function runCommandWithLogs(command) {
 runCommandWithLogs('npm run prebuild');
 
 // Transpile `RedundantAudioEncoder.ts`.
-runCommandWithLogs('./node_modules/typescript/bin/tsc --build config/tsconfig.red.json');
+let tscPath = path.resolve(`${runCommandWithLogs('npm root').replace(/\n/g, "")}/.bin/tsc`);
+runCommandWithLogs(`${tscPath} --build config/tsconfig.red.json`);
 
 // Remove the temporary tsconfig file.
 fs.unlinkSync(`${configDir}/${redTsconfig}`);
@@ -50,7 +55,7 @@ const redundantAudioEncoderWorkerCode = `${RedundantAudioEncoder.toString()}
 RedundantAudioEncoder.shouldLog = true;
 RedundantAudioEncoder.shouldReportStats = true;
 RedundantAudioEncoder.initializeWorker();
-`.replace(/"/g, '\'').replace(/\n/g, "\\n")
+`.replace(/"/g, '\'').replace(/\n/g, "\\n").replace(/\r/g, "\\r");
 
 const workerFileContent = `// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
