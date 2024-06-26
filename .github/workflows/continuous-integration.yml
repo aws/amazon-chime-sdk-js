@@ -45,7 +45,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test
@@ -71,7 +71,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test
@@ -97,7 +97,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test
@@ -126,7 +126,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test
@@ -154,7 +154,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test
@@ -183,7 +183,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test
@@ -215,7 +215,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test
@@ -241,7 +241,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test
@@ -267,7 +267,7 @@
           run: |
             source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
             check_if_integ_tests_required
-            echo ::set-output name=integ_test_required::$requires_integration_test
+            echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         - name: Setup GitHub Actions Host
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: ./.github/actions/setup-integration-test

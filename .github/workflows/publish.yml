@@ -26,7 +26,7 @@ jobs:
         run: |
           npm_publish_tag=$(.github/script/get-npm-tag.js)
           echo "Received NPM publish tag:" $npm_publish_tag
-          echo ::set-output name=npm_tag::$npm_publish_tag
+          echo "npm_tag=$npm_publish_tag" >> $GITHUB_OUTPUT
       - name: Publish to NPM with tag
         run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
         env:
@@ -63,7 +63,7 @@ jobs:
             if [[ *$npm_version* = *$current_version* ]]
             then
               echo "Version is published to npm:" $current_version
-              echo ::set-output name=npm_version::$current_version
+              echo "npm_version=$current_version" >> $GITHUB_OUTPUT
               break
             fi
 
