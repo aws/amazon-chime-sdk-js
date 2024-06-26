@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add automatic codec degradation logic when CPU usage of software encoder is high or video encoding of encoder fails. This will only occur if `setVideoCodecSendPreferences` is being called by the application.
 - Added `groupId` to `VideoTileState` for mapping metrics other then those from `getObservableVideoMetrics` when using server side network adaptation.
 - Added support for Node version 22
 
@@ -51,8 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.21.0] - 2024-02-12
 
 ### Added
-
-- Add automatic codec degradation logic when CPU usage of software encoder is high or video encoding of encoder fails.
 
 ### Removed
 
