@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed rare race conditions with simulcast + server side network adaptation on third attendee join.
 - Make redundant audio worker code generation script work on Windows
+- Do not no-op server side network adaptation pauses that happen immediately after subscribe
 
 ## [3.22.0] - 2024-03-15
 
