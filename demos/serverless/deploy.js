@@ -48,6 +48,7 @@ const supportedControlRegions = [
   'ca-central-1',
   'us-gov-east-1',
   'us-gov-west-1',
+  'af-south-1',
 ];
 
 let chimeSDKMediaPipelinesEndpoint = 'https://media-pipelines-chime.us-east-1.amazonaws.com';
@@ -59,6 +60,12 @@ const supportedMediaPipelinesControlRegions = [
   'eu-central-1',
   'us-east-1',
   'us-west-2',
+  'ap-south-1',
+  'ap-northeast-2',
+  'ap-southeast-2',
+  'ap-northeast-1',
+  'ca-central-1',
+  'eu-west-2',
 ];
 
 function usage() {
@@ -272,8 +279,8 @@ function ensureRegion() {
 }
 
 function ensureMediaPipelinesRegion() {
-  if (!(new Set(supportedMediaPipelinesControlRegions)).has(region)) {
-      console.error(`Amazon Chime SDK Media Pipelines does not support ${region} (control region). Specify one of the following regions: ${supportedMediaPipelinesControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html#sdk-media-pipelines for more information.`);
+  if (!(new Set(supportedMediaPipelinesControlRegions)).has(mediaPipelinesControlRegion)) {
+      console.error(`Amazon Chime SDK Media Pipelines does not support ${mediaPipelinesControlRegion} (control region). Specify one of the following regions: ${supportedMediaPipelinesControlRegions.join(', ')}.\nSee https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html#sdk-media-pipelines for more information.`);
       process.exit(1);
   }
 }
