@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MeetingSessionCredentials } from '..';
+import { MeetingSessionCredentials, ReceiveRemoteVideoPauseResumeTask } from '..';
 import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetector';
 import DefaultActiveSpeakerDetector from '../activespeakerdetector/DefaultActiveSpeakerDetector';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
@@ -145,6 +145,7 @@ export default class DefaultAudioVideoController
   // * `MonitorTask` which updates `videosToReceive`
   private receiveIndexTask: ReceiveVideoStreamIndexTask | undefined = undefined;
   private monitorTask: MonitorTask | undefined = undefined;
+  private receiveRemotePauseResumeTask: ReceiveRemoteVideoPauseResumeTask | undefined = undefined;
 
   destroyed = false;
 
@@ -406,7 +407,9 @@ export default class DefaultAudioVideoController
     const setLocalDescription = new SetLocalDescriptionTask(context).once(createSDP);
     const ice = new FinishGatheringICECandidatesTask(context).once(setLocalDescription);
     const subscribeAck = new SubscribeAndReceiveSubscribeAckTask(context).once(ice);
-    const receivePauseResume = new ReceiveRemoteVideoPauseResume(context).once(subscribeAck);
+
+    this.receiveRemotePauseResumeTask = new ReceiveRemoteVideoPauseResume(context);
+    this.receiveRemotePauseResumeTask.once(subscribeAck);
 
     // The ending is a delicate time: we need the connection as a whole to have a timeout,
     // and for the attendee presence timer to not start ticking until after the subscribe/ack.
@@ -418,7 +421,7 @@ export default class DefaultAudioVideoController
           // The order of these two matters. If canceled, the first one that's still running
           // will contribute any special rejection, and we don't want that to be "attendee not found"!
           subscribeAck,
-          receivePauseResume,
+          this.receiveRemotePauseResumeTask,
           needsToWaitForAttendeePresence
             ? new TimeoutTask(
                 this.logger,
@@ -1062,6 +1065,7 @@ export default class DefaultAudioVideoController
     const groupIdsToReceive = context.videosToReceive.array().map((streamId: number) => {
       return context.videoStreamIndex.groupIdForStreamId(streamId);
     });
+    this.receiveRemotePauseResumeTask.updateSubscribedGroupdIds(new Set(groupIdsToReceive));
 
     const currentConfigs = convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
       context,
@@ -1390,6 +1394,9 @@ export default class DefaultAudioVideoController
 
     this.meetingSessionContext.volumeIndicatorAdapter.onReconnect();
     this.connectionHealthData.reset();
+    this.receiveRemotePauseResumeTask = new ReceiveRemoteVideoPauseResume(
+      this.meetingSessionContext
+    );
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoReconnect'), [
         new TimeoutTask(
@@ -1415,6 +1422,7 @@ export default class DefaultAudioVideoController
             new FinishGatheringICECandidatesTask(this.meetingSessionContext),
             new SubscribeAndReceiveSubscribeAckTask(this.meetingSessionContext),
             new SetRemoteDescriptionTask(this.meetingSessionContext),
+            this.receiveRemotePauseResumeTask,
           ]),
           this.configuration.connectionTimeoutMs
         ),
