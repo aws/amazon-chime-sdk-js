@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed rare race conditions with simulcast + server side network adaptation on third attendee join.
 - Make redundant audio worker code generation script work on Windows
-- Do not no-op server side network adaptation pauses that happen immediately after subscribe
+- Do not drop server side network adaptation pauses that happen immediately after SDP negotiation, by pre-emptively creating a tile immediately when applications subscribes to one, and attaching the video track later.
 
 ## [3.22.0] - 2024-03-15
 

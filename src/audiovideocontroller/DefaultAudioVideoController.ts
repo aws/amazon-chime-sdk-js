@@ -1394,6 +1394,7 @@ export default class DefaultAudioVideoController
 
     this.meetingSessionContext.volumeIndicatorAdapter.onReconnect();
     this.connectionHealthData.reset();
+    this.receiveRemotePauseResumeTask = new ReceiveRemoteVideoPauseResume(this.meetingSessionContext);
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoReconnect'), [
         new TimeoutTask(
@@ -1419,6 +1420,7 @@ export default class DefaultAudioVideoController
             new FinishGatheringICECandidatesTask(this.meetingSessionContext),
             new SubscribeAndReceiveSubscribeAckTask(this.meetingSessionContext),
             new SetRemoteDescriptionTask(this.meetingSessionContext),
+            this.receiveRemotePauseResumeTask,
           ]),
           this.configuration.connectionTimeoutMs
         ),

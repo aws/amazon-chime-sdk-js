@@ -439,7 +439,7 @@ describe('ReceiveRemoteVideoPauseResumeTask', () => {
       task.updateSubscribedGroupdIds(new Set([]));
 
       // Manually pause
-      context.videoTileController.getVideoTileForAttendeeId('attendee-7').stateRef().paused = true;
+      context.videoTileController.getVideoTileForAttendeeId('attendee-7').pause();
 
       // then send resume frame
       task.handleSignalingClientEvent(resumeEvent);
