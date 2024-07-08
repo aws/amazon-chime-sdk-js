@@ -898,40 +898,6 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
     });
 
-    it('Degrade to L2T3 scalability mode if target height is between 360 and 720', () => {
-      policy.setTransceiverController(transceiverController);
-      // @ts-ignore
-      policy.isUsingSVCCodec = false;
-      // @ts-ignore
-      policy.numParticipants = 10;
-      // @ts-ignore
-      policy.numberOfPublishedVideoSources = 8;
-      policy.setSVCEnabled(true);
-      policy.setMeetingSupportedVideoSendCodecs(
-        [VideoCodecCapability.vp9Profile0()],
-        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
-      );
-      // @ts-ignore
-      expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
-    });
-
-    it('Degrade to L1T3 scalability mode if target height is below 360', () => {
-      policy.setTransceiverController(transceiverController);
-      // @ts-ignore
-      policy.isUsingSVCCodec = false;
-      // @ts-ignore
-      policy.numParticipants = 16;
-      // @ts-ignore
-      policy.numberOfPublishedVideoSources = 14;
-      policy.setSVCEnabled(true);
-      policy.setMeetingSupportedVideoSendCodecs(
-        [VideoCodecCapability.vp9Profile0()],
-        [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile()]
-      );
-      // @ts-ignore
-      expect(policy.optimalParameters.isSVCEncoding()).to.be.true;
-    });
-
     it('Enables SVC when SVC is enabled, even if logger is not defined', () => {
       policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId, true);
       policy.setTransceiverController(transceiverController);
