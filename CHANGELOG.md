@@ -9,9 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `DefaultDeviceController.suspendAudioContext` and `DefaultDeviceController.resumeAudioContext`. Suspending and resuming the resusable audio context is preferable to stopping and recreating if an audio context eventually needs to be used again.
+
 ### Removed
 
 ### Changed
+
 - Do not try to manually adjust SVC layers based off target resolution, as this may lead to an unnecessarily high minimum bitrate to subscribe to all remote videos. Instead rely on browser logic which drops any layers below around 135p.
 
 ### Fixed

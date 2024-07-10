@@ -130,7 +130,9 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#createemptyaudiodevice" class="tsd-kind-icon">create<wbr>Empty<wbr>Audio<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#getaudiocontext" class="tsd-kind-icon">get<wbr>Audio<wbr>Context</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#getintrinsicdeviceid" class="tsd-kind-icon">get<wbr>Intrinsic<wbr>Device<wbr>Id</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#resumeaudiocontext" class="tsd-kind-icon">resume<wbr>Audio<wbr>Context</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#setdefaultlatencyhint" class="tsd-kind-icon">set<wbr>Default<wbr>Latency<wbr>Hint</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#suspendaudiocontext" class="tsd-kind-icon">suspend<wbr>Audio<wbr>Context</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#synthesizeaudiodevice" class="tsd-kind-icon">synthesize<wbr>Audio<wbr>Device</a></li>
 							</ul>
 						</section>
@@ -315,7 +317,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#addmediastreambrokerobserver">addMediaStreamBrokerObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1527">src/devicecontroller/DefaultDeviceController.ts:1527</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1561">src/devicecontroller/DefaultDeviceController.ts:1561</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -690,7 +692,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#removemediastreambrokerobserver">removeMediaStreamBrokerObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1531">src/devicecontroller/DefaultDeviceController.ts:1531</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1565">src/devicecontroller/DefaultDeviceController.ts:1565</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -961,9 +963,17 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1516">src/devicecontroller/DefaultDeviceController.ts:1516</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1550">src/devicecontroller/DefaultDeviceController.ts:1550</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calls <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/close">close</a>
+										on reusable audio context. This more forceful the suspend and is not recommended
+										if you plan on reusing the Chime SDK, as it may lead to audio glitches (e.g. due to
+									<a href="https://issues.chromium.org/issues/40282750">https://issues.chromium.org/issues/40282750</a>).</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -995,7 +1005,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1496">src/devicecontroller/DefaultDeviceController.ts:1496</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1499">src/devicecontroller/DefaultDeviceController.ts:1499</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1003,6 +1013,7 @@
 									<p>Returns the Web Audio <code>AudioContext</code> used by the <a href="defaultdevicecontroller.html">DefaultDeviceController</a>. The <code>AudioContext</code>
 									is created lazily the first time this function is called.</p>
 								</div>
+								<p>This function will not attempt to recreate a stopped context, or resume a suspended one.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AudioContext</span></h4>
 							<p>a Web Audio <code>AudioContext</code></p>
@@ -1029,6 +1040,29 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="resumeaudiocontext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> resume<wbr>Audio<wbr>Context</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">resume<wbr>Audio<wbr>Context<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1537">src/devicecontroller/DefaultDeviceController.ts:1537</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calls <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/resume">resume</a>
+									on reusable audio context.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1063,6 +1097,32 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="suspendaudiocontext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> suspend<wbr>Audio<wbr>Context</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">suspend<wbr>Audio<wbr>Context<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1526">src/devicecontroller/DefaultDeviceController.ts:1526</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calls <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/suspend">suspend</a>
+										on reusable audio context. This is useful if you want an application to power down the
+										audio hardware when it will not be using an audio context for a while (i.e. if you
+										have an application that isn&#39;t always running a Chime SDK meeting). This is preferrable
+									to calling <a href="defaultdevicecontroller.html#closeaudiocontext">closeAudioContext</a></p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1206,7 +1266,13 @@
 								<a href="defaultdevicecontroller.html#getintrinsicdeviceid" class="tsd-kind-icon">get<wbr>Intrinsic<wbr>Device<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultdevicecontroller.html#resumeaudiocontext" class="tsd-kind-icon">resume<wbr>Audio<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="defaultdevicecontroller.html#setdefaultlatencyhint" class="tsd-kind-icon">set<wbr>Default<wbr>Latency<wbr>Hint</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultdevicecontroller.html#suspendaudiocontext" class="tsd-kind-icon">suspend<wbr>Audio<wbr>Context</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="defaultdevicecontroller.html#synthesizeaudiodevice" class="tsd-kind-icon">synthesize<wbr>Audio<wbr>Device</a>

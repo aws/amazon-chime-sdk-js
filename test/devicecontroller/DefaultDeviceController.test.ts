@@ -2421,6 +2421,22 @@ describe('DefaultDeviceController', () => {
       expect(audioContext).to.not.equal(audioContext2);
     });
 
+    it('can pause and resume an AudioContext instance', async () => {
+      const audioContext = DefaultDeviceController.getAudioContext();
+      await DefaultDeviceController.suspendAudioContext();
+      expect(audioContext.state).to.eq('suspended');
+      await DefaultDeviceController.resumeAudioContext();
+      expect(audioContext.state).to.eq('running');
+    });
+
+    it('no-ops resume or suspend before initial get', async () => {
+      await DefaultDeviceController.resumeAudioContext();
+      await DefaultDeviceController.suspendAudioContext();
+
+      const audioContext = DefaultDeviceController.getAudioContext();
+      expect(audioContext.state).to.eq('running');
+    });
+
     it('uses "playback" latency hint on Windows platform', () => {
       setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
       let usedContextOptions: AudioContextOptions;
