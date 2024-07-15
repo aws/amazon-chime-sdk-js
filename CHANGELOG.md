@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.23.0] - 2024-05-14
+## [3.24.0] - 2024-07-11
 
 ### Added
 
@@ -15,7 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.23.0] - 2024-05-14
+
+### Added
+
+- Added `DefaultDeviceController.suspendAudioContext` and `DefaultDeviceController.resumeAudioContext`. Suspending and resuming the resusable audio context is preferable to stopping and recreating if an audio context eventually needs to be used again.
+
+### Removed
+
+### Changed
+
+- Do not try to manually adjust SVC layers based off target resolution, as this may lead to an unnecessarily high minimum bitrate to subscribe to all remote videos. Instead rely on browser logic which drops any layers below around 135p.
+
+### Fixed
+
 - Fixed rare race conditions with simulcast + server side network adaptation on third attendee join.
+- Make redundant audio worker code generation script work on Windows
+- Do not drop server side network adaptation pauses that happen immediately after SDP negotiation, by pre-emptively creating a tile immediately when applications subscribes to one, and attaching the video track later.
 
 ## [3.22.0] - 2024-03-15
 
@@ -30,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Avoid subscribes when simulcast is enabled but not currently sending, or when using server side network adaptation.
+- Made server side network adaptation the default when creating `VideoPriorityBasedPolicy`.
 
 ### Fixed
 
