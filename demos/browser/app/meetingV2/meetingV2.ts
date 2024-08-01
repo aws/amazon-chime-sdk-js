@@ -79,6 +79,7 @@ import {
   POSTLogger,
   VideoCodecCapability,
   AllHighestVideoBandwidthPolicy,
+  NScaleVideoUplinkBandwidthPolicy,
 } from 'amazon-chime-sdk-js';
 import { Modal } from 'bootstrap';
 
@@ -254,6 +255,20 @@ interface TranscriptionStreamParams {
   vocabularyFilterNames?: string;
 }
 
+class PresenterAwareVideoUplinkBandwidthPolicy extends NScaleVideoUplinkBandwidthPolicy {
+    private isPresenter: boolean;
+
+    setHasBandwidthPriority(hasBandwidthPriority: boolean): void {
+        super.setHasBandwidthPriority(hasBandwidthPriority || this.isPresenter);
+    }
+
+    setIsPresenter(isPresenter: boolean): void {
+        this.isPresenter = isPresenter;
+        this.setHasBandwidthPriority(this.isPresenter);
+        this.updateTransceiverController();
+    }
+}
+
 export class DemoMeetingApp
     implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver, VideoDownlinkObserver {
   static readonly DID: string = '+17035550122';
@@ -294,6 +309,7 @@ export class DemoMeetingApp
   meetingSession: MeetingSession | null = null;
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
   allHighestDownlinkPolicy: AllHighestVideoBandwidthPolicy | null = null;
+  uplinkPolicy: PresenterAwareVideoUplinkBandwidthPolicy | null = null;
   audioVideo: AudioVideoFacade | null = null;
   deviceController: DefaultDeviceController | undefined = undefined;
   canStartLocalVideo: boolean = true;
@@ -910,8 +926,12 @@ export class DemoMeetingApp
     buttonMute.addEventListener('click', _e => {
       this.toggleButton('button-microphone');
       if (this.isButtonOn('button-microphone')) {
+        // Arbitrary setting here because I'm too lazy to add a button
+        this.uplinkPolicy.setIsPresenter(false)
         this.audioVideo.realtimeUnmuteLocalAudio();
       } else {
+        // Arbitrary setting here because I'm too lazy to add a button
+        this.uplinkPolicy.setIsPresenter(true)
         this.audioVideo.realtimeMuteLocalAudio();
       }
     });
@@ -1849,6 +1869,9 @@ export class DemoMeetingApp
         configuration.videoDownlinkBandwidthPolicy = this.allHighestDownlinkPolicy;
     }
     configuration.disablePeriodicKeyframeRequestOnContentSender = this.disablePeriodicKeyframeRequestOnContentSender;
+
+    this.uplinkPolicy = new PresenterAwareVideoUplinkBandwidthPolicy(configuration.credentials.attendeeId, true, this.meetingLogger);
+    configuration.videoUplinkBandwidthPolicy = this.uplinkPolicy;
 
     configuration.applicationMetadata = ApplicationMetadata.create('amazon-chime-sdk-js-demo', '2.0.0');
 
