@@ -174,7 +174,7 @@
             <option value="h264BaselineProfile">H.264 Baseline Profile</option>
             <option value="h264MainProfile">H.264 Main Profile</option>
             <option value="h264HighProfile">H.264 High Profile</option>
-            <option value="vp9Profile0" id="vp9-video-codec">VP9 Profile 0</option>
+            <option value="vp9Profile0" id="vp9-video-codec" selected>VP9 Profile 0</option>
             <option value="av1Main" id="av1Main-video-codec">AV1 Main Profile</option>
           </select>
           <label for="contentCodec"  style="text-align: left;">Preferred Content Send Codec:</label>
@@ -185,35 +185,35 @@
             <option value="h264BaselineProfile">H.264 Baseline Profile</option>
             <option value="h264MainProfile">H.264 Main Profile</option>
             <option value="h264HighProfile">H.264 High Profile</option>
-            <option value="vp9Profile0" id="vp9Profile0-content-codec">VP9 Profile 0</option>
-            <option value="av1Main"id="av1Main-content-codec">AV1 Main Profile</option>
+            <option value="vp9Profile0" id="vp9Profile0-content-codec" >VP9 Profile 0</option>
+            <option value="av1Main"id="av1Main-content-codec" selected>AV1 Main Profile</option>
           </select>
           <label for="videoFeature" id="videoFeatureTitle" style="text-align: left;">Meeting Maximum Camera Video Resolution:</label>
           <select name="videoFeature" class="form-select" id="videoFeatureSelect">
             <option value="none">Disable Camera Video</option>
-            <option value="hd" selected>HD 720p</option>
-            <option value="fhd">FHD 1080p (requires max attendee)</option>
+            <option value="hd">HD 720p</option>
+            <option value="fhd" selected>FHD 1080p (requires max attendee)</option>
           </select>
           <label for="contentFeature" id="contentFeatureTitle" style="text-align: left;">Meeting Maximum Content Share Resolution:</label>
             <select name="contentFeature" class="form-select" id="contentFeatureSelect">
               <option value="none">Disable Content Share</option>
-              <option value="fhd" selected>FHD 1080p</option>
-              <option value="uhd">UHD 2160p (requires max attendee)</option>
+              <option value="fhd" >FHD 1080p</option>
+              <option value="uhd" selected>UHD 2160p (requires max attendee)</option>
             </select>
           <div class="form-group row" style="text-align: left;">
             <label style="padding-top:5px" class="col-md-9 col-form-label">Max attendees allowed (range: 1 - 250):</label>
-            <input for="max-attendee-count" class="col-md-3" type="number" id="max-attendee-cnt">
+            <input for="max-attendee-count" class="col-md-3" type="number" id="max-attendee-cnt" value="25">
           </div>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="simulcast" class="form-check-input">
             <label for="simulcast" class="form-check-label">Enable Simulcast for Chrome</label>
           </div>
           <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="svc" class="form-check-input">
+            <input type="checkbox" checked id="svc" class="form-check-input">
             <label for="svc" class="form-check-label">Enable SVC for Chrome</label>
           </div>
           <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
+            <input type="checkbox" checked id="priority-downlink-policy" class="form-check-input">
             <label for="priority-downlink-policy" class="form-check-label">Enable remote video quality adaptation</label>
           </div>
           <label id="pagination-title" for="pagination-page-size" style="padding-top:5px">Paginate displayed video tiles</label>
