@@ -61,6 +61,7 @@ export default class VideoPreference implements Eq, PartialOrd {
     );
   }
 
+  private static readonly VERY_LOW_BITRATE_KBPS = 150;
   private static readonly LOW_BITRATE_KBPS = 300;
   private static readonly MID_BITRATE_KBPS = 600;
   private static readonly HIGH_BITRATE_KBPS = 1500;
@@ -79,8 +80,8 @@ export default class VideoPreference implements Eq, PartialOrd {
       case TargetDisplaySize.MediumLow:
       case TargetDisplaySize.Low:
         return VideoPreference.LOW_BITRATE_KBPS;
-      default:
-        throw new Error('Unknown TargetDisplaySize');
+      case TargetDisplaySize.Thumbnail:
+          return VideoPreference.VERY_LOW_BITRATE_KBPS;
     }
   }
 }
