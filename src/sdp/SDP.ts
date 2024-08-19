@@ -18,7 +18,7 @@ export default class SDP {
   private static videoLayersAllocationRtpHeaderExtensionUrl = `http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
 
   /**
-   * Construts a new [[SDP]] object
+   * Constructs a new [[SDP]] object
    */
   constructor(public sdp: string) {}
 
