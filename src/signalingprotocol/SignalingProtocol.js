@@ -39,6 +39,7 @@ $root.SdkSignalFrame = (function() {
      * @property {ISdkPrimaryMeetingJoinAckFrame|null} [primaryMeetingJoinAck] SdkSignalFrame primaryMeetingJoinAck
      * @property {ISdkPrimaryMeetingLeaveFrame|null} [primaryMeetingLeave] SdkSignalFrame primaryMeetingLeave
      * @property {ISdkNotificationFrame|null} [notification] SdkSignalFrame notification
+     * @property {ISdkVideoEncodingConfigFrame|null} [videoEncodingConfig] SdkSignalFrame videoEncodingConfig
      */
 
     /**
@@ -249,6 +250,14 @@ $root.SdkSignalFrame = (function() {
     SdkSignalFrame.prototype.notification = null;
 
     /**
+     * SdkSignalFrame videoEncodingConfig.
+     * @member {ISdkVideoEncodingConfigFrame|null|undefined} videoEncodingConfig
+     * @memberof SdkSignalFrame
+     * @instance
+     */
+    SdkSignalFrame.prototype.videoEncodingConfig = null;
+
+    /**
      * Creates a new SdkSignalFrame instance using the specified properties.
      * @function create
      * @memberof SdkSignalFrame
@@ -318,6 +327,8 @@ $root.SdkSignalFrame = (function() {
             $root.SdkPrimaryMeetingLeaveFrame.encode(message.primaryMeetingLeave, writer.uint32(/* id 28, wireType 2 =*/226).fork()).ldelim();
         if (message.notification != null && Object.hasOwnProperty.call(message, "notification"))
             $root.SdkNotificationFrame.encode(message.notification, writer.uint32(/* id 35, wireType 2 =*/282).fork()).ldelim();
+        if (message.videoEncodingConfig != null && Object.hasOwnProperty.call(message, "videoEncodingConfig"))
+            $root.SdkVideoEncodingConfigFrame.encode(message.videoEncodingConfig, writer.uint32(/* id 36, wireType 2 =*/290).fork()).ldelim();
         return writer;
     };
 
@@ -448,6 +459,10 @@ $root.SdkSignalFrame = (function() {
                     message.notification = $root.SdkNotificationFrame.decode(reader, reader.uint32());
                     break;
                 }
+            case 36: {
+                    message.videoEncodingConfig = $root.SdkVideoEncodingConfigFrame.decode(reader, reader.uint32());
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -514,6 +529,7 @@ $root.SdkSignalFrame = (function() {
         case 26:
         case 27:
         case 34:
+        case 35:
             break;
         }
         if (message.error != null && message.hasOwnProperty("error")) {
@@ -625,6 +641,11 @@ $root.SdkSignalFrame = (function() {
             var error = $root.SdkNotificationFrame.verify(message.notification);
             if (error)
                 return "notification." + error;
+        }
+        if (message.videoEncodingConfig != null && message.hasOwnProperty("videoEncodingConfig")) {
+            var error = $root.SdkVideoEncodingConfigFrame.verify(message.videoEncodingConfig);
+            if (error)
+                return "videoEncodingConfig." + error;
         }
         return null;
     };
@@ -745,6 +766,10 @@ $root.SdkSignalFrame = (function() {
         case 34:
             message.type = 34;
             break;
+        case "VIDEO_ENCODING_CONFIG":
+        case 35:
+            message.type = 35;
+            break;
         }
         if (object.error != null) {
             if (typeof object.error !== "object")
@@ -856,6 +881,11 @@ $root.SdkSignalFrame = (function() {
                 throw TypeError(".SdkSignalFrame.notification: object expected");
             message.notification = $root.SdkNotificationFrame.fromObject(object.notification);
         }
+        if (object.videoEncodingConfig != null) {
+            if (typeof object.videoEncodingConfig !== "object")
+                throw TypeError(".SdkSignalFrame.videoEncodingConfig: object expected");
+            message.videoEncodingConfig = $root.SdkVideoEncodingConfigFrame.fromObject(object.videoEncodingConfig);
+        }
         return message;
     };
 
@@ -901,6 +931,7 @@ $root.SdkSignalFrame = (function() {
             object.primaryMeetingJoinAck = null;
             object.primaryMeetingLeave = null;
             object.notification = null;
+            object.videoEncodingConfig = null;
         }
         if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
             if (typeof message.timestampMs === "number")
@@ -953,6 +984,8 @@ $root.SdkSignalFrame = (function() {
             object.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.toObject(message.primaryMeetingLeave, options);
         if (message.notification != null && message.hasOwnProperty("notification"))
             object.notification = $root.SdkNotificationFrame.toObject(message.notification, options);
+        if (message.videoEncodingConfig != null && message.hasOwnProperty("videoEncodingConfig"))
+            object.videoEncodingConfig = $root.SdkVideoEncodingConfigFrame.toObject(message.videoEncodingConfig, options);
         return object;
     };
 
@@ -1008,6 +1041,7 @@ $root.SdkSignalFrame = (function() {
      * @property {number} PRIMARY_MEETING_JOIN_ACK=26 PRIMARY_MEETING_JOIN_ACK value
      * @property {number} PRIMARY_MEETING_LEAVE=27 PRIMARY_MEETING_LEAVE value
      * @property {number} NOTIFICATION=34 NOTIFICATION value
+     * @property {number} VIDEO_ENCODING_CONFIG=35 VIDEO_ENCODING_CONFIG value
      */
     SdkSignalFrame.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -1033,6 +1067,7 @@ $root.SdkSignalFrame = (function() {
         values[valuesById[26] = "PRIMARY_MEETING_JOIN_ACK"] = 26;
         values[valuesById[27] = "PRIMARY_MEETING_LEAVE"] = 27;
         values[valuesById[34] = "NOTIFICATION"] = 34;
+        values[valuesById[35] = "VIDEO_ENCODING_CONFIG"] = 35;
         return values;
     })();
 
@@ -14039,6 +14074,233 @@ $root.SdkNotificationFrame = (function() {
     })();
 
     return SdkNotificationFrame;
+})();
+
+$root.SdkVideoEncodingConfigFrame = (function() {
+
+    /**
+     * Properties of a SdkVideoEncodingConfigFrame.
+     * @name ISdkVideoEncodingConfigFrame
+     * @interface ISdkVideoEncodingConfigFrame
+     * @property {number|null} [targetWidth] SdkVideoEncodingConfigFrame targetWidth
+     * @property {number|null} [targetHeight] SdkVideoEncodingConfigFrame targetHeight
+     */
+
+    /**
+     * Constructs a new SdkVideoEncodingConfigFrame.
+     * @name SdkVideoEncodingConfigFrame
+     * @classdesc Represents a SdkVideoEncodingConfigFrame.
+     * @implements ISdkVideoEncodingConfigFrame
+     * @constructor
+     * @param {ISdkVideoEncodingConfigFrame=} [properties] Properties to set
+     */
+    function SdkVideoEncodingConfigFrame(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkVideoEncodingConfigFrame targetWidth.
+     * @member {number} targetWidth
+     * @memberof SdkVideoEncodingConfigFrame
+     * @instance
+     */
+    SdkVideoEncodingConfigFrame.prototype.targetWidth = 0;
+
+    /**
+     * SdkVideoEncodingConfigFrame targetHeight.
+     * @member {number} targetHeight
+     * @memberof SdkVideoEncodingConfigFrame
+     * @instance
+     */
+    SdkVideoEncodingConfigFrame.prototype.targetHeight = 0;
+
+    /**
+     * Creates a new SdkVideoEncodingConfigFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {ISdkVideoEncodingConfigFrame=} [properties] Properties to set
+     * @returns {SdkVideoEncodingConfigFrame} SdkVideoEncodingConfigFrame instance
+     */
+    SdkVideoEncodingConfigFrame.create = function create(properties) {
+        return new SdkVideoEncodingConfigFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkVideoEncodingConfigFrame message. Does not implicitly {@link SdkVideoEncodingConfigFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {ISdkVideoEncodingConfigFrame} message SdkVideoEncodingConfigFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkVideoEncodingConfigFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.targetWidth != null && Object.hasOwnProperty.call(message, "targetWidth"))
+            writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.targetWidth);
+        if (message.targetHeight != null && Object.hasOwnProperty.call(message, "targetHeight"))
+            writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.targetHeight);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkVideoEncodingConfigFrame message, length delimited. Does not implicitly {@link SdkVideoEncodingConfigFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {ISdkVideoEncodingConfigFrame} message SdkVideoEncodingConfigFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkVideoEncodingConfigFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkVideoEncodingConfigFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkVideoEncodingConfigFrame} SdkVideoEncodingConfigFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkVideoEncodingConfigFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkVideoEncodingConfigFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    message.targetWidth = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.targetHeight = reader.uint32();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkVideoEncodingConfigFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkVideoEncodingConfigFrame} SdkVideoEncodingConfigFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkVideoEncodingConfigFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkVideoEncodingConfigFrame message.
+     * @function verify
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkVideoEncodingConfigFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.targetWidth != null && message.hasOwnProperty("targetWidth"))
+            if (!$util.isInteger(message.targetWidth))
+                return "targetWidth: integer expected";
+        if (message.targetHeight != null && message.hasOwnProperty("targetHeight"))
+            if (!$util.isInteger(message.targetHeight))
+                return "targetHeight: integer expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkVideoEncodingConfigFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkVideoEncodingConfigFrame} SdkVideoEncodingConfigFrame
+     */
+    SdkVideoEncodingConfigFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkVideoEncodingConfigFrame)
+            return object;
+        var message = new $root.SdkVideoEncodingConfigFrame();
+        if (object.targetWidth != null)
+            message.targetWidth = object.targetWidth >>> 0;
+        if (object.targetHeight != null)
+            message.targetHeight = object.targetHeight >>> 0;
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkVideoEncodingConfigFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {SdkVideoEncodingConfigFrame} message SdkVideoEncodingConfigFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkVideoEncodingConfigFrame.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.targetWidth = 0;
+            object.targetHeight = 0;
+        }
+        if (message.targetWidth != null && message.hasOwnProperty("targetWidth"))
+            object.targetWidth = message.targetWidth;
+        if (message.targetHeight != null && message.hasOwnProperty("targetHeight"))
+            object.targetHeight = message.targetHeight;
+        return object;
+    };
+
+    /**
+     * Converts this SdkVideoEncodingConfigFrame to JSON.
+     * @function toJSON
+     * @memberof SdkVideoEncodingConfigFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkVideoEncodingConfigFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkVideoEncodingConfigFrame
+     * @function getTypeUrl
+     * @memberof SdkVideoEncodingConfigFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkVideoEncodingConfigFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkVideoEncodingConfigFrame";
+    };
+
+    return SdkVideoEncodingConfigFrame;
 })();
 
 $root.SdkPrimaryMeetingJoinFrame = (function() {

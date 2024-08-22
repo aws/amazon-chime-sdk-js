@@ -74,6 +74,9 @@ export interface ISdkSignalFrame {
 
     /** SdkSignalFrame notification */
     notification?: (ISdkNotificationFrame|null);
+
+    /** SdkSignalFrame videoEncodingConfig */
+    videoEncodingConfig?: (ISdkVideoEncodingConfigFrame|null);
 }
 
 /** Represents a SdkSignalFrame. */
@@ -156,6 +159,9 @@ export class SdkSignalFrame implements ISdkSignalFrame {
 
     /** SdkSignalFrame notification. */
     public notification?: (ISdkNotificationFrame|null);
+
+    /** SdkSignalFrame videoEncodingConfig. */
+    public videoEncodingConfig?: (ISdkVideoEncodingConfigFrame|null);
 
     /**
      * Creates a new SdkSignalFrame instance using the specified properties.
@@ -260,7 +266,8 @@ export namespace SdkSignalFrame {
         PRIMARY_MEETING_JOIN = 25,
         PRIMARY_MEETING_JOIN_ACK = 26,
         PRIMARY_MEETING_LEAVE = 27,
-        NOTIFICATION = 34
+        NOTIFICATION = 34,
+        VIDEO_ENCODING_CONFIG = 35
     }
 }
 
@@ -5183,6 +5190,109 @@ export namespace SdkNotificationFrame {
         WARNING = 2,
         ERROR = 3
     }
+}
+
+/** Properties of a SdkVideoEncodingConfigFrame. */
+export interface ISdkVideoEncodingConfigFrame {
+
+    /** SdkVideoEncodingConfigFrame targetWidth */
+    targetWidth?: (number|null);
+
+    /** SdkVideoEncodingConfigFrame targetHeight */
+    targetHeight?: (number|null);
+}
+
+/** Represents a SdkVideoEncodingConfigFrame. */
+export class SdkVideoEncodingConfigFrame implements ISdkVideoEncodingConfigFrame {
+
+    /**
+     * Constructs a new SdkVideoEncodingConfigFrame.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkVideoEncodingConfigFrame);
+
+    /** SdkVideoEncodingConfigFrame targetWidth. */
+    public targetWidth: number;
+
+    /** SdkVideoEncodingConfigFrame targetHeight. */
+    public targetHeight: number;
+
+    /**
+     * Creates a new SdkVideoEncodingConfigFrame instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkVideoEncodingConfigFrame instance
+     */
+    public static create(properties?: ISdkVideoEncodingConfigFrame): SdkVideoEncodingConfigFrame;
+
+    /**
+     * Encodes the specified SdkVideoEncodingConfigFrame message. Does not implicitly {@link SdkVideoEncodingConfigFrame.verify|verify} messages.
+     * @param message SdkVideoEncodingConfigFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkVideoEncodingConfigFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkVideoEncodingConfigFrame message, length delimited. Does not implicitly {@link SdkVideoEncodingConfigFrame.verify|verify} messages.
+     * @param message SdkVideoEncodingConfigFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkVideoEncodingConfigFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkVideoEncodingConfigFrame message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkVideoEncodingConfigFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkVideoEncodingConfigFrame;
+
+    /**
+     * Decodes a SdkVideoEncodingConfigFrame message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkVideoEncodingConfigFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkVideoEncodingConfigFrame;
+
+    /**
+     * Verifies a SdkVideoEncodingConfigFrame message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkVideoEncodingConfigFrame message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkVideoEncodingConfigFrame
+     */
+    public static fromObject(object: { [k: string]: any }): SdkVideoEncodingConfigFrame;
+
+    /**
+     * Creates a plain object from a SdkVideoEncodingConfigFrame message. Also converts values to other types if specified.
+     * @param message SdkVideoEncodingConfigFrame
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkVideoEncodingConfigFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkVideoEncodingConfigFrame to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkVideoEncodingConfigFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
 /** Properties of a SdkPrimaryMeetingJoinFrame. */

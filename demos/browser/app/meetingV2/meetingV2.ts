@@ -105,12 +105,7 @@ let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
 })();
 
-let SHOULD_DIE_ON_FATALS = (() => {
-  const isLocal = document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
-  const fatalYes = document.location.search.includes('fatal=1');
-  const fatalNo = document.location.search.includes('fatal=0');
-  return fatalYes || (isLocal && !fatalNo);
-})();
+let SHOULD_DIE_ON_FATALS = false;
 
 
 export let fatal: (e: Error) => void;

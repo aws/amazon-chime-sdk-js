@@ -27,6 +27,7 @@ message SdkSignalFrame {
         PRIMARY_MEETING_JOIN_ACK = 26;
         PRIMARY_MEETING_LEAVE = 27;
         NOTIFICATION = 34;
+        VIDEO_ENCODING_CONFIG = 35;
     }
     required uint64 timestamp_ms = 1;
     required Type type = 2;
@@ -52,6 +53,7 @@ message SdkSignalFrame {
     optional SdkPrimaryMeetingJoinAckFrame primary_meeting_join_ack = 27;
     optional SdkPrimaryMeetingLeaveFrame primary_meeting_leave = 28;
     optional SdkNotificationFrame notification = 35;
+    optional SdkVideoEncodingConfigFrame video_encoding_config = 36;
 }
 
 message SdkErrorFrame {
@@ -466,6 +468,11 @@ message SdkNotificationFrame {
     }
     optional NotificationLevel level = 1 [default=ERROR];
     optional string message = 2;
+}
+
+message SdkVideoEncodingConfigFrame {
+    optional uint32 target_width = 1;
+    optional uint32 target_height = 2;
 }
 
 message SdkPrimaryMeetingJoinFrame {

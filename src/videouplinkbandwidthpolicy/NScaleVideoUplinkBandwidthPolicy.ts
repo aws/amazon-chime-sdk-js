@@ -60,6 +60,8 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private enableSVC: boolean = false;
   private isUsingSVCCodec: boolean = true;
   private numParticipants: number = 0;
+  private overrideTargetWidth: number | undefined = undefined;
+  private overrideTargetHeight: number | undefined = undefined;
 
   constructor(
     private selfAttendeeId: string,
@@ -166,18 +168,21 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   }
 
   maxBandwidthKbps(): number {
-    if (this.hasBandwidthPriority) {
-      return Math.trunc(this.idealMaxBandwidthKbps);
+    let rate = this.idealMaxBandwidthKbps;
+    if (!this.hasBandwidthPriority) {
+      if (this.getNumberOfPublishedVideoSources() <= 2) {
+        rate = this.idealMaxBandwidthKbps;
+      } else if (this.getNumberOfPublishedVideoSources() <= 4) {
+        rate = (this.idealMaxBandwidthKbps * 2) / 3;
+      } else {
+        rate =
+          ((544 / 11 + 14880 / (11 * this.getNumberOfPublishedVideoSources())) / 600) *
+          this.idealMaxBandwidthKbps;
+      }
     }
-    let rate = 0;
-    if (this.getNumberOfPublishedVideoSources() <= 2) {
-      rate = this.idealMaxBandwidthKbps;
-    } else if (this.getNumberOfPublishedVideoSources() <= 4) {
-      rate = (this.idealMaxBandwidthKbps * 2) / 3;
-    } else {
-      rate =
-        ((544 / 11 + 14880 / (11 * this.getNumberOfPublishedVideoSources())) / 600) *
-        this.idealMaxBandwidthKbps;
+    if (this.overrideTargetWidth && this.overrideTargetHeight) {
+      let overrideRateKbps = this.overrideTargetWidth * this.overrideTargetHeight * 1.6 / 1000 + 50;
+      return Math.trunc(Math.min(rate, overrideRateKbps));
     }
     return Math.trunc(rate);
   }
@@ -238,7 +243,8 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       setting.width !== undefined &&
       this.scaleResolution &&
       !this.hasBandwidthPriority &&
-      this.getNumberOfPublishedVideoSources() > 2
+      (this.getNumberOfPublishedVideoSources() > 2 || 
+      (this.overrideTargetWidth && this.overrideTargetHeight))
     ) {
       targetHeight =
         NScaleVideoUplinkBandwidthPolicy.targetHeightArray[
@@ -247,6 +253,12 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
             NScaleVideoUplinkBandwidthPolicy.targetHeightArray.length - 1
           )
         ][this.enableHighResolutionFeature ? 1 : 0];
+      if (targetHeight == 0) {
+        targetHeight = Math.min(setting.height, setting.width)
+      }
+      if (this.overrideTargetWidth && this.overrideTargetHeight) {
+        targetHeight = Math.min(targetHeight, Math.min(this.overrideTargetWidth, this.overrideTargetHeight))
+      }
       //Workaround for issue https://github.com/aws/amazon-chime-sdk-js/issues/2002
       if (targetHeight === 480 && this.browserBehavior?.disable480pResolutionScaleDown()) {
         targetHeight = 360;
@@ -314,5 +326,11 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       this.isUsingSVCCodec = isUsingSVCCodec;
       this.updateOptimalParameters();
     }
+  }
+
+  updateVideoEncodeResolution?(width: number, height: number): void {
+    this.overrideTargetWidth = width;
+    this.overrideTargetHeight = height;
+    this.updateOptimalParameters();
   }
 }

@@ -359,6 +359,15 @@ export default class MonitorTask
     }
 
     if (event.type === SignalingClientEventType.ReceivedSignalFrame) {
+      if (event.message.type === SdkSignalFrame.Type.VIDEO_ENCODING_CONFIG) {
+        this.logger.error(
+          `[DBG-MSG] Received encoding config from server: ${event.message.videoEncodingConfig.targetWidth}, ${event.message.videoEncodingConfig.targetHeight}`
+        );
+        this.context.videoUplinkBandwidthPolicy.updateVideoEncodeResolution(event.message.videoEncodingConfig.targetWidth, event.message.videoEncodingConfig.targetHeight);
+      }
+    }
+
+    if (event.type === SignalingClientEventType.ReceivedSignalFrame) {
       if (event.message.type === SdkSignalFrame.Type.NOTIFICATION) {
         switch (event.message.notification.level) {
           case SdkNotificationFrame.NotificationLevel.INFO:
