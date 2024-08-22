@@ -18,7 +18,9 @@ import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import VideoTile from '../videotile/VideoTile';
-import VideoTileController, { VideoTileResolutionObserver } from '../videotilecontroller/VideoTileController';
+import VideoTileController, {
+  VideoTileResolutionObserver,
+} from '../videotilecontroller/VideoTileController';
 import AllHighestVideoBandwidthPolicy from './AllHighestVideoBandwidthPolicy';
 import TargetDisplaySize, { getTargetDisplaySizeForDimensions } from './TargetDisplaySize';
 import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
@@ -59,7 +61,8 @@ const enum UseReceiveSet {
   PreProbe,
 }
 
-export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthPolicy, VideoTileResolutionObserver {
+export default class VideoPriorityBasedPolicy
+  implements VideoDownlinkBandwidthPolicy, VideoTileResolutionObserver {
   private static readonly DEFAULT_BANDWIDTH_KBPS = 2800;
   private static readonly STARTUP_PERIOD_MS = 6000;
   private static readonly LARGE_RATE_CHANGE_TRIGGER_PERCENT = 20;
@@ -127,7 +130,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   // Required if enabled server side bandwith probing (w/ or w/o quality adaption).
   private pendingActionAfterUpdatedPreferences: boolean;
   private wantsResubscribeObserver: (() => void) | undefined = undefined;
-  private resolutionMap = new Map<string, {width: number, height: number}>();
+  private resolutionMap = new Map<string, { width: number; height: number }>();
 
   constructor(
     protected logger: Logger,
@@ -178,7 +181,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   bindToTileController(tileController: VideoTileController): void {
     this.tileController = tileController;
     if (this.tileController.registerVideoTileResolutionObserver) {
-        this.tileController.registerVideoTileResolutionObserver(this)
+      this.tileController.registerVideoTileResolutionObserver(this);
     }
     this.logger.info('tileController bound');
   }
@@ -237,7 +240,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   }
 
   videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void {
-    this.resolutionMap.set(attendeeId, {width: newWidth, height: newHeight});
+    this.resolutionMap.set(attendeeId, { width: newWidth, height: newHeight });
     this.updateVideoPreferences();
   }
 
@@ -250,21 +253,23 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     const prefs = VideoPreferences.prepare();
     const existingPrefs = this.getCurrentVideoPreferences();
 
-    for (const pref of existingPrefs) {
+    if (existingPrefs) {
+      for (const pref of existingPrefs) {
         const resolution = this.resolutionMap.get(pref.attendeeId);
-        const targetDisplaySize = resolution ? getTargetDisplaySizeForDimensions(resolution.width, resolution.height) : pref.targetSize;
+        const targetDisplaySize = resolution
+          ? getTargetDisplaySizeForDimensions(resolution.width, resolution.height)
+          : pref.targetSize;
         prefs.add(new VideoPreference(pref.attendeeId, pref.priority, targetDisplaySize));
+      }
     }
 
     if (this.videoPreferences) {
-        this.videoPreferences = prefs.build();
+      this.videoPreferences = prefs.build();
     } else {
-        this.defaultVideoPreferences = prefs.build();
+      this.defaultVideoPreferences = prefs.build();
     }
     this.pendingActionAfterUpdatedPreferences = true;
-    this.logger.info(`hello ${JSON.stringify(this.getCurrentVideoPreferences())} and ${JSON.stringify(this.resolutionMap)}`)
-}
-
+  }
 
   private updateDefaultVideoPreferences(): void {
     const attendeeIds = new Set<string>();
@@ -1286,7 +1291,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     return logString;
   }
 
-  protected getCurrentVideoPreferences(): VideoPreferences {
+  protected getCurrentVideoPreferences(): VideoPreferences | undefined {
     return this.videoPreferences || this.defaultVideoPreferences;
   }
 

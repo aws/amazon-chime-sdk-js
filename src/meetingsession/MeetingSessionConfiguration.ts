@@ -7,6 +7,7 @@ import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import { toLowerCasePropertyNames } from '../utils/Utils';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
+import AutomaticVideoConfiguration from './AutomaticVideoConfiguration';
 import MeetingFeatures from './MeetingFeatures';
 import MeetingSessionCredentials from './MeetingSessionCredentials';
 import MeetingSessionURLs from './MeetingSessionURLs';
@@ -77,6 +78,17 @@ export default class MeetingSessionConfiguration {
    * Feature flag to enable Simulcast
    */
   enableSimulcastForUnifiedPlanChromiumBasedBrowsers: boolean = false;
+
+  /**
+   * Feature flag to indicate whether the client should select video features automatically
+   * If set to true, the client will ignore any other video feature selection (e.g., SVC, simulcast)
+   */
+  setVideoFeaturesAutomatically: boolean = false;
+
+  /**
+   * Feature flag to enable simulcast on supported browsers, which is determined by `BrowserBehavior.supportsSimulcast`
+   */
+  automaticVideoConfiguration: AutomaticVideoConfiguration = new AutomaticVideoConfiguration();
 
   /**
    * Feature flag to enable scalable video coding (SVC) on supported browsers, which is determined by `BrowserBehavior.supportsScalableVideoCoding`

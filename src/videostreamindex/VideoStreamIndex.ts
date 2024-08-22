@@ -155,4 +155,9 @@ export default interface VideoStreamIndex {
    * Returns send video stream ID that correspond to the Rid
    */
   sendVideoStreamIdFromRid(rid: string): number;
+
+  /**
+   * Update local video resolution
+   */
+  updateLocalVideoInputResolution(width: number, height: number): void;
 }

@@ -95,6 +95,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#addredundantaudiorecoverymetricsobserver" class="tsd-kind-icon">add<wbr>Redundant<wbr>Audio<wbr>Recovery<wbr>Metrics<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#degradevideoencoding" class="tsd-kind-icon">degrade<wbr>Video<wbr>Encoding</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#getmidforgroupid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Group<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#getmidforstreamid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Stream<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#hasvideoinput" class="tsd-kind-icon">has<wbr>Video<wbr>Input</a></li>
@@ -144,6 +145,34 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>observer: <a href="redundantaudiorecoverymetricsobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">RedundantAudioRecoveryMetricsObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="degradevideoencoding" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> degrade<wbr>Video<wbr>Encoding</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">degrade<wbr>Video<wbr>Encoding<span class="tsd-signature-symbol">(</span>cause<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transceivercontroller/TransceiverController.ts#L144">src/transceivercontroller/TransceiverController.ts:144</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Degrade video codec to an alternative codec and/or video uplink technique.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>cause: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -694,6 +723,9 @@
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="transceivercontroller.html#addredundantaudiorecoverymetricsobserver" class="tsd-kind-icon">add<wbr>Redundant<wbr>Audio<wbr>Recovery<wbr>Metrics<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="transceivercontroller.html#degradevideoencoding" class="tsd-kind-icon">degrade<wbr>Video<wbr>Encoding</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="transceivercontroller.html#getmidforgroupid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Group<wbr>Id</a>

@@ -71,6 +71,7 @@ import SubscribeAndReceiveSubscribeAckTask from '../task/SubscribeAndReceiveSubs
 import Task from '../task/Task';
 import TimeoutTask from '../task/TimeoutTask';
 import WaitForAttendeePresenceTask from '../task/WaitForAttendeePresenceTask';
+import AutomaticTransceiverController from '../transceivercontroller/AutomaticTransceiverController';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
 import SimulcastContentShareTransceiverController from '../transceivercontroller/SimulcastContentShareTransceiverController';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
@@ -80,6 +81,7 @@ import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparam
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import { convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration } from '../videodownlinkbandwidthpolicy/VideoPreferences';
+import VideoPriorityBasedPolicy from '../videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
@@ -87,6 +89,7 @@ import SimulcastVideoStreamIndex from '../videostreamindex/SimulcastVideoStreamI
 import DefaultVideoTileController from '../videotilecontroller/DefaultVideoTileController';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
+import AutomaticVideoUplinkPolicy from '../videouplinkbandwidthpolicy/AutomaticVideoUplinkBandwidthPolicy';
 import DefaultSimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import SimulcastUplinkObserver from '../videouplinkbandwidthpolicy/SimulcastUplinkObserver';
@@ -118,8 +121,6 @@ export default class DefaultAudioVideoController
   private static MAX_VOLUME_DECIBELS = -14;
   private static PING_PONG_INTERVAL_MS = 10000;
 
-  private enableSimulcast: boolean = false;
-  private enableSVC: boolean = false;
   private useUpdateTransceiverControllerForUplink: boolean = false;
   private totalRetryCount = 0;
   private startAudioVideoTimestamp: number = 0;
@@ -474,55 +475,10 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.audioMixController = this._audioMixController;
     this.meetingSessionContext.audioVideoController = this;
 
-    this.enableSimulcast =
-      this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
-      new DefaultBrowserBehavior().hasChromiumWebRTC();
-
-    if (this.enableSimulcast && this.configuration.enableSVC) {
-      this.logger.warn(
-        'SVC cannot be enabled at the same time as simulcast. Disabling SVC, using simulcast.'
-      );
-    }
-    this.enableSVC =
-      !this.enableSimulcast &&
-      this.configuration.enableSVC &&
-      new DefaultBrowserBehavior().supportsScalableVideoCoding();
-
-    const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
-
-    if (!useAudioConnection) {
-      this.logger.info(`Using video only transceiver controller`);
-      this.meetingSessionContext.transceiverController = new VideoOnlyTransceiverController(
-        this.logger,
-        this.meetingSessionContext.browserBehavior,
-        this.meetingSessionContext
-      );
-    } else if (this.enableSimulcast) {
-      this.logger.info(`Using transceiver controller with simulcast support`);
-      if (
-        new DefaultModality(this.configuration.credentials.attendeeId).hasModality(
-          DefaultModality.MODALITY_CONTENT
-        )
-      ) {
-        this.meetingSessionContext.transceiverController = new SimulcastContentShareTransceiverController(
-          this.logger,
-          this.meetingSessionContext.browserBehavior,
-          this.meetingSessionContext
-        );
-      } else {
-        this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
-          this.logger,
-          this.meetingSessionContext.browserBehavior,
-          this.meetingSessionContext
-        );
-      }
+    if (this.configuration.setVideoFeaturesAutomatically) {
+      this.configureVideoFeaturesAutomatically();
     } else {
-      this.logger.info(`Using default transceiver controller`);
-      this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
-        this.logger,
-        this.meetingSessionContext.browserBehavior,
-        this.meetingSessionContext
-      );
+      this.configureVideoFeatures();
     }
 
     this.meetingSessionContext.volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
@@ -533,61 +489,6 @@ export default class DefaultAudioVideoController
       this.configuration.credentials.attendeeId
     );
     this.meetingSessionContext.videoTileController = this._videoTileController;
-    this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
-    this.meetingSessionContext.videoUplinkBandwidthPolicy = this.configuration.videoUplinkBandwidthPolicy;
-    this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
-    this.meetingSessionContext.enableSVC = this.enableSVC;
-
-    if (this.enableSimulcast) {
-      let simulcastPolicy = this.meetingSessionContext
-        .videoUplinkBandwidthPolicy as SimulcastUplinkPolicy;
-      if (!simulcastPolicy) {
-        simulcastPolicy = new DefaultSimulcastUplinkPolicy(
-          this.configuration.credentials.attendeeId,
-          this.meetingSessionContext.logger
-        );
-        this.meetingSessionContext.videoUplinkBandwidthPolicy = simulcastPolicy;
-      }
-
-      simulcastPolicy.addObserver(this);
-
-      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
-        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
-          this.meetingSessionContext.logger
-        );
-      }
-
-      this.meetingSessionContext.videoStreamIndex = new SimulcastVideoStreamIndex(this.logger);
-    } else {
-      this.meetingSessionContext.enableSimulcast = false;
-      this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
-
-      if (!this.meetingSessionContext.videoUplinkBandwidthPolicy) {
-        this.meetingSessionContext.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
-          this.configuration.credentials.attendeeId,
-          !this.meetingSessionContext.browserBehavior.disableResolutionScaleDown(),
-          this.meetingSessionContext.logger,
-          this.meetingSessionContext.browserBehavior
-        );
-        this.meetingSessionContext.videoUplinkBandwidthPolicy.setSVCEnabled(this.enableSVC);
-      }
-      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
-        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
-          this.configuration.credentials.attendeeId
-        );
-      }
-
-      if (
-        this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController &&
-        this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController
-      ) {
-        this.useUpdateTransceiverControllerForUplink = true;
-        this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController(
-          this.meetingSessionContext.transceiverController
-        );
-      }
-      this.meetingSessionContext.audioProfile = this._audioProfile;
-    }
 
     if (
       new DefaultModality(this.configuration.credentials.attendeeId).hasModality(
@@ -678,6 +579,7 @@ export default class DefaultAudioVideoController
       this._reconnectController.startedConnectionAttempt(true);
     }
 
+    const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
     // No attendee presence event will be triggered if there is no audio connection.
     // Waiting for attendee presence is explicitly executed
     // if `attendeePresenceTimeoutMs` is configured to larger than 0.
@@ -1757,5 +1659,185 @@ export default class DefaultAudioVideoController
       }
     }
     await this.replaceLocalAudio(audioStream);
+  }
+
+  private configureVideoFeatures(): void {
+    const enableSimulcast =
+      this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
+      new DefaultBrowserBehavior().hasChromiumWebRTC();
+
+    if (enableSimulcast && this.configuration.enableSVC) {
+      this.logger.warn(
+        'SVC cannot be enabled at the same time as simulcast. Disabling SVC, using simulcast.'
+      );
+    }
+    const enableSVC =
+      !enableSimulcast &&
+      this.configuration.enableSVC &&
+      new DefaultBrowserBehavior().supportsScalableVideoCoding();
+
+    const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
+
+    if (!useAudioConnection) {
+      this.logger.info(`Using video only transceiver controller`);
+      this.meetingSessionContext.transceiverController = new VideoOnlyTransceiverController(
+        this.logger,
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
+      );
+    } else if (enableSimulcast) {
+      this.logger.info(`Using transceiver controller with simulcast support`);
+      if (
+        new DefaultModality(this.configuration.credentials.attendeeId).hasModality(
+          DefaultModality.MODALITY_CONTENT
+        )
+      ) {
+        this.meetingSessionContext.transceiverController = new SimulcastContentShareTransceiverController(
+          this.logger,
+          this.meetingSessionContext.browserBehavior,
+          this.meetingSessionContext
+        );
+      } else {
+        this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
+          this.logger,
+          this.meetingSessionContext.browserBehavior,
+          this.meetingSessionContext
+        );
+      }
+    } else {
+      this.logger.info(`Using default transceiver controller`);
+      this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
+        this.logger,
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
+      );
+    }
+
+    this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
+    this.meetingSessionContext.videoUplinkBandwidthPolicy = this.configuration.videoUplinkBandwidthPolicy;
+    this.meetingSessionContext.enableSimulcast = enableSimulcast;
+    this.meetingSessionContext.enableSVC = enableSVC;
+
+    if (enableSimulcast) {
+      let simulcastPolicy = this.meetingSessionContext
+        .videoUplinkBandwidthPolicy as SimulcastUplinkPolicy;
+      if (!simulcastPolicy) {
+        simulcastPolicy = new DefaultSimulcastUplinkPolicy(
+          this.configuration.credentials.attendeeId,
+          this.meetingSessionContext.logger
+        );
+        this.meetingSessionContext.videoUplinkBandwidthPolicy = simulcastPolicy;
+      }
+
+      simulcastPolicy.addObserver(this);
+
+      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
+        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
+          this.meetingSessionContext.logger
+        );
+      }
+
+      if (this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController) {
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController(
+          this.meetingSessionContext.transceiverController
+        );
+      }
+
+      this.meetingSessionContext.videoStreamIndex = new SimulcastVideoStreamIndex(this.logger);
+    } else {
+      this.meetingSessionContext.enableSimulcast = false;
+      this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
+
+      if (!this.meetingSessionContext.videoUplinkBandwidthPolicy) {
+        this.meetingSessionContext.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+          this.configuration.credentials.attendeeId,
+          !this.meetingSessionContext.browserBehavior.disableResolutionScaleDown(),
+          this.meetingSessionContext.logger,
+          this.meetingSessionContext.browserBehavior
+        );
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setSVCEnabled(enableSVC);
+      }
+      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
+        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
+          this.configuration.credentials.attendeeId
+        );
+      }
+
+      if (
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController &&
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController
+      ) {
+        this.useUpdateTransceiverControllerForUplink = true;
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController(
+          this.meetingSessionContext.transceiverController
+        );
+      }
+      this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+  }
+
+  private configureVideoFeaturesAutomatically(): void {
+    const isSimulcastSupported = new DefaultBrowserBehavior().hasChromiumWebRTC();
+    this.meetingSessionContext.enableSimulcast = isSimulcastSupported;
+    const automaticVideoConfiguration = this.configuration.automaticVideoConfiguration;
+
+    if (isSimulcastSupported) {
+      const simulcastPolicy = new AutomaticVideoUplinkPolicy(
+        this.configuration.credentials.attendeeId,
+        true,
+        this.meetingSessionContext.logger
+      );
+      this.meetingSessionContext.videoUplinkBandwidthPolicy = simulcastPolicy;
+
+      this.meetingSessionContext.transceiverController = new AutomaticTransceiverController(
+        this.logger,
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext,
+        automaticVideoConfiguration
+      );
+
+      if (this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController) {
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController(
+          this.meetingSessionContext.transceiverController
+        );
+      }
+
+      simulcastPolicy.addObserver(this);
+
+      this.meetingSessionContext.videoStreamIndex = new SimulcastVideoStreamIndex(this.logger);
+    } else {
+      this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
+        this.logger,
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
+      );
+
+      this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
+
+      this.meetingSessionContext.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+        this.configuration.credentials.attendeeId,
+        !this.meetingSessionContext.browserBehavior.disableResolutionScaleDown(),
+        this.meetingSessionContext.logger,
+        this.meetingSessionContext.browserBehavior
+      );
+
+      if (
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController &&
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController
+      ) {
+        this.useUpdateTransceiverControllerForUplink = true;
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController(
+          this.meetingSessionContext.transceiverController
+        );
+      }
+      this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+
+    this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
+    if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
+      this.meetingSessionContext.videoDownlinkBandwidthPolicy = automaticVideoConfiguration.usePriorityBasedDownlinkPolicyByDefault
+        ? new VideoPriorityBasedPolicy(this.meetingSessionContext.logger)
+        : new AllHighestVideoBandwidthPolicy(this.configuration.credentials.attendeeId);
+    }
   }
 }

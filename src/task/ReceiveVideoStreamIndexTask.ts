@@ -273,7 +273,8 @@ export default class ReceiveVideoStreamIndexTask
     if (this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs) {
       this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
         this.context.meetingSupportedVideoSendCodecPreferences,
-        this.context.videoSendCodecPreferences
+        this.context.videoSendCodecPreferences,
+        this.context.degradedVideoSendCodecs
       );
     }
 

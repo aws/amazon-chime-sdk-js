@@ -81,7 +81,7 @@ export default class VideoPreference implements Eq, PartialOrd {
       case TargetDisplaySize.Low:
         return VideoPreference.LOW_BITRATE_KBPS;
       case TargetDisplaySize.Thumbnail:
-          return VideoPreference.VERY_LOW_BITRATE_KBPS;
+        return VideoPreference.VERY_LOW_BITRATE_KBPS;
     }
   }
 }

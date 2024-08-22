@@ -693,7 +693,7 @@ export default class SDP {
   /**
    * Based off the provided preferences, this function will reorder the payload types listed in the `m=video` line.
    *
-   * This will be applied to the `a=sendrecv` section so it can be applied on either local or remote SDPs. It can be used to
+   * This will be applied to `a=sendrecv` and `a=inactive` sections so it can be applied on either local or remote SDPs. It can be used to
    * 'polyfill' `RTCRtpSender.setCodecPreferences' on the offer, but it can also be used on remote SDPs to force the
    * codec actually being send, since the send codec is currently dependent on the remote answer (i.e. `setCodecPreferences` doesn't actually
    * have any impact unless the remote side respects the order of codecs which is not true of the Chime SDK media backends).
@@ -703,14 +703,24 @@ export default class SDP {
     const sections = SDP.splitSections(srcSDP);
     // Note `findActiveCameraSection` looks for `sendrecv` video sections so it
     // works on both local and remote SDPs.
-    const cameraLineIndex: number = SDP.findActiveCameraSection(sections);
-    if (cameraLineIndex === -1) {
-      return new SDP(this.sdp);
+    for (let i = 0; i < sections.length; i++) {
+      const sec = sections[i];
+      if (/^m=video/.test(sec)) {
+        if (
+          sec.indexOf('sendrecv') > -1 ||
+          // RFC 4566: If none of the attributes "sendonly", "recvonly", "inactive",
+          // and "sendrecv" is present, "sendrecv" SHOULD be assumed as the
+          // default for sessions
+          (sec.indexOf('sendonly') === -1 &&
+            sec.indexOf('recvonly') === -1 &&
+            sec.indexOf('inactive') === -1) ||
+          sec.indexOf('inactive') > -1
+        ) {
+          sections[i] = this.sectionWithCodecPreferences(sec, preferences);
+        }
+      }
     }
-    sections[cameraLineIndex] = this.sectionWithCodecPreferences(
-      sections[cameraLineIndex],
-      preferences
-    );
+
     const newSDP = sections.join('');
     return new SDP(newSDP);
   }

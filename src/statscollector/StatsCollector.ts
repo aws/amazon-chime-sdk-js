@@ -298,6 +298,13 @@ export default class StatsCollector
         }
       }
     }
+    if (
+      'framesPerSecond' in metricMap &&
+      'framesPerSecond' in metricReport.currentMetrics &&
+      !('framesPerSecond' in rawMetricReport)
+    ) {
+      metricReport.currentMetrics['framesPerSecond'] = 0;
+    }
   }
 
   /**

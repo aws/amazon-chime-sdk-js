@@ -86,6 +86,11 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     }
   }
 
+  updateLocalVideoInputResolution(width: number, height: number): void {
+    this.videoStreamDescription.width = width;
+    this.videoStreamDescription.height = height;
+  }
+
   integrateIndexFrame(indexFrame: SdkIndexFrame): void {
     this.currentIndex = indexFrame;
 

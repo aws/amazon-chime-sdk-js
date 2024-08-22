@@ -82,6 +82,7 @@
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
 					<li><a href="../interfaces/videodownlinkbandwidthpolicy.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkBandwidthPolicy</a></li>
+					<li><span class="tsd-signature-type">VideoTileResolutionObserver</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -128,6 +129,8 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#supportedserversidenetworkadaptions" class="tsd-kind-icon">supported<wbr>Server<wbr>Side<wbr>Network<wbr>Adaptions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#updateindex" class="tsd-kind-icon">update<wbr>Index</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#updatemetrics" class="tsd-kind-icon">update<wbr>Metrics</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#videotileresolutiondidchange" class="tsd-kind-icon">video<wbr>Tile<wbr>Resolution<wbr>Did<wbr>Change</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#videotileunbound" class="tsd-kind-icon">video<wbr>Tile<wbr>Unbound</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#wantsalltemporallayersinindex" class="tsd-kind-icon">wants<wbr>All<wbr>Temporal<wbr>Layers<wbr>InIndex</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicy.html#wantsresubscribe" class="tsd-kind-icon">wants<wbr>Resubscribe</a></li>
 							</ul>
@@ -147,7 +150,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L129">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L133">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:133</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -172,7 +175,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Video<wbr>Preferences<span class="tsd-signature-symbol">:</span> <a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L85">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:85</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L88">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:88</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -189,7 +192,7 @@
 					<div class="tsd-signature tsd-kind-icon">observer<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/videodownlinkobserver.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoDownlinkObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L89">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:89</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L92">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:92</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -199,7 +202,7 @@
 					<div class="tsd-signature tsd-kind-icon">should<wbr>Pause<wbr>Tiles<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L86">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:86</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L89">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:89</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -209,7 +212,7 @@
 					<div class="tsd-signature tsd-kind-icon">tile<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTileController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L83">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:83</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L86">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:86</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -219,7 +222,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videostreamindex.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoStreamIndex</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L87">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:87</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L90">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:90</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -229,7 +232,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Preferences<span class="tsd-signature-symbol">:</span> <a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L84">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:84</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L87">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:87</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -239,7 +242,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Preferences<wbr>Updated<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L88">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L91">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:91</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -257,7 +260,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#addobserver">addObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L324">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:324</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L368">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:368</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -286,7 +289,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#bindtotilecontroller">bindToTileController</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L177">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:177</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L181">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:181</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -317,7 +320,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L566">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:566</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L610">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:610</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -334,7 +337,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L342">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:342</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L386">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:386</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -351,7 +354,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L189">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:189</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L196">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:196</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -375,7 +378,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#choosesubscriptions">chooseSubscriptions</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L306">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:306</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L350">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:350</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -402,7 +405,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#foreachobserver">forEachObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L332">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:332</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L376">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:376</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -449,7 +452,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1255">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1255</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1299">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1299</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="videopreferences.html" class="tsd-signature-type" data-tsd-kind="Class">VideoPreferences</a></h4>
@@ -467,7 +470,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#getserversidenetworkadaption">getServerSideNetworkAdaption</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1259">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1259</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1303">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1303</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -491,7 +494,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#getvideopreferences">getVideoPreferences</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1276">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1276</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1320">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1320</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -515,7 +518,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L328">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:328</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L372">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:372</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -544,7 +547,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#reset">reset</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L145">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:145</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L149">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:149</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -567,7 +570,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#setserversidenetworkadaption">setServerSideNetworkAdaption</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1263">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1263</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1307">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1307</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -596,7 +599,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L338">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:338</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L382">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:382</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -620,7 +623,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#setwantsresubscribeobserver">setWantsResubscribeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L182">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:182</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L189">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:189</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -662,7 +665,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#supportedserversidenetworkadaptions">supportedServerSideNetworkAdaptions</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1268">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1268</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1312">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1312</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -687,7 +690,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#updateindex">updateIndex</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L222">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:222</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L229">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:229</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -717,7 +720,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#updatemetrics">updateMetrics</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L258">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:258</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L302">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:302</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -736,6 +739,60 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="videotileresolutiondidchange" class="tsd-anchor"></a>
+					<h3>video<wbr>Tile<wbr>Resolution<wbr>Did<wbr>Change</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">video<wbr>Tile<wbr>Resolution<wbr>Did<wbr>Change<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newWidth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, newHeight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of VideoTileResolutionObserver.videoTileResolutionDidChange</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L242">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:242</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attendeeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>newWidth: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>newHeight: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="videotileunbound" class="tsd-anchor"></a>
+					<h3>video<wbr>Tile<wbr>Unbound</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">video<wbr>Tile<wbr>Unbound<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of VideoTileResolutionObserver.videoTileUnbound</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L247">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:247</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attendeeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="wantsalltemporallayersinindex" class="tsd-anchor"></a>
 					<h3>wants<wbr>All<wbr>Temporal<wbr>Layers<wbr>InIndex</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -746,7 +803,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#wantsalltemporallayersinindex">wantsAllTemporalLayersInIndex</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1287">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1287</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L1331">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:1331</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -772,7 +829,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#wantsresubscribe">wantsResubscribe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L290">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:290</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L334">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:334</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -882,6 +939,12 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="videoprioritybasedpolicy.html#updatemetrics" class="tsd-kind-icon">update<wbr>Metrics</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="videoprioritybasedpolicy.html#videotileresolutiondidchange" class="tsd-kind-icon">video<wbr>Tile<wbr>Resolution<wbr>Did<wbr>Change</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="videoprioritybasedpolicy.html#videotileunbound" class="tsd-kind-icon">video<wbr>Tile<wbr>Unbound</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="videoprioritybasedpolicy.html#wantsalltemporallayersinindex" class="tsd-kind-icon">wants<wbr>All<wbr>Temporal<wbr>Layers<wbr>InIndex</a>

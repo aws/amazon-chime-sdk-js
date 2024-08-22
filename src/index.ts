@@ -22,6 +22,9 @@ import AudioVideoControllerState from './audiovideocontroller/AudioVideoControll
 import AudioVideoEventAttributes from './eventcontroller/AudioVideoEventAttributes';
 import AudioVideoFacade from './audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from './audiovideoobserver/AudioVideoObserver';
+import AutomaticTransceiverController from './transceivercontroller/AutomaticTransceiverController';
+import AutomaticVideoConfiguration from './meetingsession/AutomaticVideoConfiguration';
+import AutomaticVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/AutomaticVideoUplinkBandwidthPolicy';
 import BackgroundBlurOptions from './backgroundblurprocessor/BackgroundBlurOptions';
 import BackgroundBlurProcessor from './backgroundblurprocessor/BackgroundBlurProcessor';
 import BackgroundBlurStrength from './backgroundblurprocessor/BackgroundBlurStrength';
@@ -327,6 +330,7 @@ import VideoTileFactory from './videotilefactory/VideoTileFactory';
 import VideoTileState from './videotile/VideoTileState';
 import VideoTransformDevice from './devicecontroller/VideoTransformDevice';
 import VideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
+import VideoUplinkTechnique from './videouplinkbandwidthpolicy/VideoUplinkTechnique';
 import VoiceFocusConfig from './voicefocus/VoiceFocusConfig';
 import VoiceFocusDeviceOptions from './voicefocus/VoiceFocusDeviceOptions';
 import VoiceFocusDeviceTransformer from './voicefocus/VoiceFocusDeviceTransformer';
@@ -373,6 +377,9 @@ export {
   AudioVideoEventAttributes,
   AudioVideoFacade,
   AudioVideoObserver,
+  AutomaticTransceiverController,
+  AutomaticVideoConfiguration,
+  AutomaticVideoUplinkBandwidthPolicy,
   BackgroundBlurOptions,
   BackgroundBlurProcessor,
   BackgroundBlurStrength,
@@ -685,6 +692,7 @@ export {
   VideoTileState,
   VideoTransformDevice,
   VideoUplinkBandwidthPolicy,
+  VideoUplinkTechnique,
   VoiceFocusConfig,
   VoiceFocusDeviceOptions,
   VoiceFocusDeviceTransformer,

@@ -12,6 +12,7 @@ import RedundantAudioEncoder from '../redundantaudioencoder/RedundantAudioEncode
 import RedundantAudioEncoderWorkerCode from '../redundantaudioencoderworkercode/RedundantAudioEncoderWorkerCode';
 import RedundantAudioRecoveryMetricsObserver from '../redundantaudiorecoverymetricsobserver/RedundantAudioRecoveryMetricsObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import TransceiverController from './TransceiverController';
@@ -847,5 +848,59 @@ export default class DefaultTransceiverController
     observer: RedundantAudioRecoveryMetricsObserver
   ): void {
     this.redMetricsObservers.delete(observer);
+  }
+
+  degradeVideoEncoding(cause: string): void {
+    // Degrade video codec if there are other codec options and current codec is not H264 CBP or VP8
+    if (
+      this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences !== undefined &&
+      this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences.length > 1 &&
+      !(
+        this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences[0].equals(
+          VideoCodecCapability.h264ConstrainedBaselineProfile()
+        ) ||
+        this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences[0].equals(
+          VideoCodecCapability.vp8()
+        )
+      )
+    ) {
+      const newMeetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] = [];
+      for (const capability of this.meetingSessionContext.videoSendCodecPreferences) {
+        if (
+          !capability.equals(
+            this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences[0]
+          )
+        ) {
+          newMeetingSupportedVideoSendCodecPreferences.push(capability);
+        }
+      }
+      if (newMeetingSupportedVideoSendCodecPreferences.length > 0) {
+        this.meetingSessionContext.logger.info(
+          `Downgrading codec from ${this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences[0].codecName} to ${newMeetingSupportedVideoSendCodecPreferences[0].codecName} due to ${cause}`
+        );
+        this.meetingSessionContext.degradedVideoSendCodecs.push(
+          this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences[0]
+        );
+        this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
+
+        if (
+          this.meetingSessionContext.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs
+        ) {
+          this.meetingSessionContext.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
+            this.meetingSessionContext.meetingSupportedVideoSendCodecPreferences,
+            this.meetingSessionContext.videoSendCodecPreferences,
+            this.meetingSessionContext.degradedVideoSendCodecs
+          );
+        }
+
+        this.meetingSessionContext.audioVideoController.update({ needsRenegotiation: true });
+      } else {
+        this.meetingSessionContext.logger.warn(
+          `Degrading video codec failed since there is no alternative codec to select. Currently degraded codecs: ${this.meetingSessionContext.degradedVideoSendCodecs
+            .map(capability => capability.codecName)
+            .join(',')}`
+        );
+      }
+    }
   }
 }

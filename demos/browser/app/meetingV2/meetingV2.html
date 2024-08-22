@@ -169,25 +169,25 @@
           </div>
           <label for="videoCodec"  style="text-align: left;">Preferred Video Send Codec:</label>
           <select name="videoCodec" class="form-select" id="videoCodecSelect">
-            <option value="default">Meeting Default</option>
+            <option value="default" selected>Meeting Default</option>
             <option value="vp8">VP8</option>
             <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
             <option value="h264BaselineProfile">H.264 Baseline Profile</option>
             <option value="h264MainProfile">H.264 Main Profile</option>
             <option value="h264HighProfile">H.264 High Profile</option>
-            <option value="vp9Profile0" id="vp9-video-codec" selected>VP9 Profile 0</option>
+            <option value="vp9Profile0" id="vp9-video-codec">VP9 Profile 0</option>
             <option value="av1Main" id="av1Main-video-codec">AV1 Main Profile</option>
           </select>
           <label for="contentCodec"  style="text-align: left;">Preferred Content Send Codec:</label>
           <select name="contentCodec" class="form-select" id="contentCodecSelect">
-            <option value="default">Meeting Default</option>
+            <option value="default" selected>Meeting Default</option>
             <option value="vp8">VP8</option>
             <option value="h264ConstrainedBaselineProfile">H.264 Constrained Baseline Profile</option>
             <option value="h264BaselineProfile">H.264 Baseline Profile</option>
             <option value="h264MainProfile">H.264 Main Profile</option>
             <option value="h264HighProfile">H.264 High Profile</option>
             <option value="vp9Profile0" id="vp9Profile0-content-codec" >VP9 Profile 0</option>
-            <option value="av1Main"id="av1Main-content-codec" selected>AV1 Main Profile</option>
+            <option value="av1Main"id="av1Main-content-codec">AV1 Main Profile</option>
           </select>
           <label for="videoFeature" id="videoFeatureTitle" style="text-align: left;">Meeting Maximum Camera Video Resolution:</label>
           <select name="videoFeature" class="form-select" id="videoFeatureSelect">
@@ -204,6 +204,14 @@
           <div class="form-group row" style="text-align: left;">
             <label style="padding-top:5px" class="col-md-9 col-form-label">Max attendees allowed (range: 1 - 250):</label>
             <input for="max-attendee-count" class="col-md-3" type="number" id="max-attendee-cnt" value="25">
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="automatic-video" class="form-check-input">
+            <label for="automatic-video" class="form-check-label">Select Video Features Automatically</label>
+          </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="low-power-mode" class="form-check-input">
+            <label for="low-power-mode" class="form-check-label">Enable low power mode</label>
           </div>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="simulcast" class="form-check-input">

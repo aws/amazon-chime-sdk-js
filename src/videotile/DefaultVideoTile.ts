@@ -6,11 +6,14 @@ import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatio
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
 import VideoTileController from '../videotilecontroller/VideoTileController';
-import VideoElementResolutionMonitor from './VideoElementResolutionMonitor';
+import VideoElementResolutionMonitor, {
+  VideoElementResolutionObserver,
+} from './VideoElementResolutionMonitor';
 import VideoTile from './VideoTile';
 import VideoTileState from './VideoTileState';
 
-export default class DefaultVideoTile implements DevicePixelRatioObserver, VideoTile, VideoElementResolutionMonitor {
+export default class DefaultVideoTile
+  implements DevicePixelRatioObserver, VideoTile, VideoElementResolutionMonitor {
   private tileState: VideoTileState = new VideoTileState();
 
   /**
@@ -287,6 +290,14 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     // `streamId` is not likely used by builders but we can't
     // be sure so send a tile state update just in case.
     this.tileController.sendTileStateUpdate(this.state());
+  }
+
+  registerObserver(observer: VideoElementResolutionObserver): void {
+    this.resolutionMonitor.registerObserver(observer);
+  }
+
+  removeObserver(observer: VideoElementResolutionObserver): void {
+    this.resolutionMonitor.removeObserver(observer);
   }
 
   private sendTileStateUpdate(): void {

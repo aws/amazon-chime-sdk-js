@@ -171,6 +171,10 @@ export default class AudioVideoControllerState {
   // This state is deprecated and unused.
   videoDeviceInformation: { [id: string]: string } = {};
 
+  // Flag to indicate whether the client should select video features automatically
+  // If set to true, the client will ignore any other video feature selection (e.g., SVC, simulcast)
+  setVideoFeaturesAutomatically: boolean = false;
+
   enableSimulcast: boolean = false;
 
   // If set to true, the client will actively try to use Scalable Video Coding (SVC) features

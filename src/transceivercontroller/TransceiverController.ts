@@ -137,4 +137,9 @@ export default interface TransceiverController {
   removeRedundantAudioRecoveryMetricsObserver?(
     observer: RedundantAudioRecoveryMetricsObserver
   ): void;
+
+  /**
+   * Degrade video codec to an alternative codec and/or video uplink technique.
+   */
+  degradeVideoEncoding?(cause: string): void;
 }

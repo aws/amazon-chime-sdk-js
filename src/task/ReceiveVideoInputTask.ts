@@ -126,6 +126,13 @@ export default class ReceiveVideoInputTask extends BaseTask {
         trackSettings.frameRate
       );
 
+      const videoQualitySettings = isContentAttendee
+        ? this.context.meetingSessionConfiguration.meetingFeatures.contentMaxResolution
+        : this.context.meetingSessionConfiguration.meetingFeatures.videoMaxResolution;
+      const inputWidth = Math.min(trackSettings.width, videoQualitySettings.videoWidth);
+      const inputHeight = Math.min(trackSettings.height, videoQualitySettings.videoHeight);
+      this.context.videoStreamIndex.updateLocalVideoInputResolution(inputWidth, inputHeight);
+
       const externalUserId = this.context.audioVideoController.configuration.credentials
         .externalUserId;
       localTile.bindVideoStream(

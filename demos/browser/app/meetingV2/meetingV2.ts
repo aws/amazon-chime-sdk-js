@@ -12,6 +12,7 @@ import {
   AudioProfile,
   AudioVideoFacade,
   AudioVideoObserver,
+  AutomaticVideoConfiguration,
   BackgroundBlurProcessor,
   BackgroundBlurVideoFrameProcessor,
   BackgroundBlurVideoFrameProcessorObserver,
@@ -348,6 +349,8 @@ export class DemoMeetingApp
   videoCapability: string;
   contentCapability: string;
 
+  setVideoFeaturesAutomatically = false;
+  enableLowPowerMode = false;
   enableSimulcast = false;
   enableSVC = false;
   usePriorityBasedDownlinkPolicy = false;
@@ -672,12 +675,19 @@ export class DemoMeetingApp
       (document.getElementById('av1Main-content-codec') as HTMLInputElement).remove();
     }
 
-    for (let id of ['videoCodecSelect', 'simulcast', 'svc']) {
+    for (let id of ['videoCodecSelect', 'simulcast', 'svc', 'automatic-video', 'low-power-mode']) {
       document.getElementById(id).addEventListener('change', () => {
-        this.setSimulcastAndSVC();
+        this.setVideoEncoding();
       });
     }
-    this.setSimulcastAndSVC();
+
+    // [TODO shisuss] remove
+    if (this.defaultBrowserBehavior.hasChromiumWebRTC()) {
+      (document.getElementById('automatic-video') as HTMLInputElement).checked = true;
+      (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked = true;
+    }
+
+    this.setVideoEncoding();
 
     document.getElementById('join-view-only').addEventListener('change', () => {
       this.isViewOnly = (document.getElementById('join-view-only') as HTMLInputElement).checked;
@@ -866,21 +876,21 @@ export class DemoMeetingApp
       this.log('Video input quality is changed');
       switch (videoInputQuality.value) {
         case '360p':
-          this.audioVideo.chooseVideoInputQuality(640, 360, 15);
+          this.audioVideo.chooseVideoInputQuality(640, 360, 30);
           this.maxBitrateKbps = 600;
           break;
         case '540p':
-          this.audioVideo.chooseVideoInputQuality(960, 540, 15);
+          this.audioVideo.chooseVideoInputQuality(960, 540, 30);
           this.maxBitrateKbps = 1400;
           break;
         case '720p':
-          this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
+          this.audioVideo.chooseVideoInputQuality(1280, 720, 30);
           this.maxBitrateKbps = 1500;
           break;
         case '1080p':
           // The 1080p dropdown will be removed if we haven't selected FHD meeting feature
           this.maxBitrateKbps = 2500;
-          this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
+          this.audioVideo.chooseVideoInputQuality(1920, 1080, 30);
           break;
       }
       this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
@@ -1877,6 +1887,12 @@ export class DemoMeetingApp
       configuration.attendeePresenceTimeoutMs = Number(timeoutMs);
     }
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
+    // [TODO: shisuss] add a config option to enable this
+    // [TODO: shisuss] use priorityBasedDownlinkPolicy in SDK
+    configuration.setVideoFeaturesAutomatically = this.setVideoFeaturesAutomatically;
+    if (this.enableLowPowerMode) {
+      configuration.automaticVideoConfiguration = new AutomaticVideoConfiguration(true);
+    }
     configuration.enableSVC = this.enableSVC;
     if (this.usePriorityBasedDownlinkPolicy) {
         this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
@@ -3844,11 +3860,21 @@ export class DemoMeetingApp
     }
   }
 
-  private setSimulcastAndSVC(): void {
+  private setVideoEncoding(): void {
+    const setVideoFeaturesAutomatically = (document.getElementById('automatic-video') as HTMLInputElement).checked;
+    this.setVideoFeaturesAutomatically = setVideoFeaturesAutomatically;
+    if (setVideoFeaturesAutomatically) {
+      (document.getElementById('low-power-mode') as HTMLInputElement).disabled = false;
+      this.enableLowPowerMode = (document.getElementById('low-power-mode') as HTMLInputElement).checked;
+    } else {
+      (document.getElementById('low-power-mode') as HTMLInputElement).checked = false;
+      (document.getElementById('low-power-mode') as HTMLInputElement).disabled = true;
+    }
+
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
-    const enableSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC()
-      && !(chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
+
+    const enableSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC() && !setVideoFeaturesAutomatically;
 
     if (enableSimulcastConfig) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = false;
@@ -3862,9 +3888,11 @@ export class DemoMeetingApp
     const enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
 
     const enableVideoSVCConfig = this.defaultBrowserBehavior.supportsScalableVideoCoding()
-      && (chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
+      && (chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0')
+      && !setVideoFeaturesAutomatically;
     const enableContentSVCConfig = this.defaultBrowserBehavior.supportsScalableVideoCoding()
-      && (chosenContentSendCodec === 'av1Main' || chosenContentSendCodec === 'vp9Profile0');
+      && (chosenContentSendCodec === 'av1Main' || chosenContentSendCodec === 'vp9Profile0')
+      && !setVideoFeaturesAutomatically;
 
     if (enableContentSVCConfig) {
       (document.getElementById('content-svc-config')).style.display = 'block';
@@ -3900,6 +3928,8 @@ export class DemoMeetingApp
     if (!this.enableSimulcast) {
       this.enableSVC = (document.getElementById('svc') as HTMLInputElement).checked;
     }
+    this.setVideoFeaturesAutomatically = (document.getElementById('automatic-video') as HTMLInputElement).checked;
+    this.enableLowPowerMode = (document.getElementById('low-power-mode') as HTMLInputElement).checked;
     this.maxAttendeeCount = parseInt((document.getElementById('max-attendee-cnt') as HTMLSelectElement).value);
     this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
     this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
@@ -3970,7 +4000,7 @@ export class DemoMeetingApp
         case 'av1Main':
           return [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         case 'vp9Profile0':
-          return [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+          return [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.vp8()];
         default:
           // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
           // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
@@ -3980,10 +4010,10 @@ export class DemoMeetingApp
 
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     this.videoCodecPreferences = getCodecPreferences(chosenVideoSendCodec);
-    if (['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
-      // Attempting to use simulcast with VP9 or AV1 will lead to unexpected behavior (e.g. SVC instead)
-      this.enableSimulcast = false;
-    }
+    // if (['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
+    //   // Attempting to use simulcast with VP9 or AV1 will lead to unexpected behavior (e.g. SVC instead)
+    //   this.enableSimulcast = false;
+    // }
 
     const createAttendeeOverride = (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value;
     const getMeetingOverride = (document.getElementById('get-meeting-override-input') as HTMLTextAreaElement).value;
