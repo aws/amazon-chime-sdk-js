@@ -197,6 +197,7 @@ import NoVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/NoVideoUp
 import NotFoundError from './devicecontroller/NotFoundError';
 import NotReadableError from './devicecontroller/NotReadableError';
 import OnceTask from './task/OnceTask';
+import OneSizeFitsAllUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/OneSizeFitsAllUplinkBandwidthPolicy';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
 import OverconstrainedError from './devicecontroller/OverconstrainedError';
 import POSTLogger from './logger/POSTLogger';
@@ -324,6 +325,7 @@ import VideoTileFactory from './videotilefactory/VideoTileFactory';
 import VideoTileState from './videotile/VideoTileState';
 import VideoTransformDevice from './devicecontroller/VideoTransformDevice';
 import VideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
+import VideoUplinkTechnique from './videouplinkbandwidthpolicy/VideoUplinkTechnique';
 import VoiceFocusConfig from './voicefocus/VoiceFocusConfig';
 import VoiceFocusDeviceOptions from './voicefocus/VoiceFocusDeviceOptions';
 import VoiceFocusDeviceTransformer from './voicefocus/VoiceFocusDeviceTransformer';
@@ -550,6 +552,7 @@ export {
   NotFoundError,
   NotReadableError,
   OnceTask,
+  OneSizeFitsAllUplinkBandwidthPolicy,
   OpenSignalingConnectionTask,
   OverconstrainedError,
   POSTLogger,
@@ -679,6 +682,7 @@ export {
   VideoTileState,
   VideoTransformDevice,
   VideoUplinkBandwidthPolicy,
+  VideoUplinkTechnique,
   VoiceFocusConfig,
   VoiceFocusDeviceOptions,
   VoiceFocusDeviceTransformer,

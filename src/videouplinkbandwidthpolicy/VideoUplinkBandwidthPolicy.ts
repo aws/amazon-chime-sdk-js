@@ -6,6 +6,7 @@ import TransceiverController from '../transceivercontroller/TransceiverControlle
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import ConnectionMetrics from './ConnectionMetrics';
+import VideoUplinkTechnique from './VideoUplinkTechnique';
 
 /**
  * A [[VideoUplinkBandwidthPolicy]] makes decisions about uplink video
@@ -121,4 +122,6 @@ export default interface VideoUplinkBandwidthPolicy {
   ): void;
 
   updateVideoEncodeResolution?(width: number, height: number): void;
+
+  setVideoUplinkTechnique?(technique: VideoUplinkTechnique): void;
 }

@@ -133,5 +133,7 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     toEncodingParams.maxBitrate = fromEncodingParams.maxBitrate;
     toEncodingParams.scaleResolutionDownBy = fromEncodingParams.scaleResolutionDownBy;
     toEncodingParams.maxFramerate = fromEncodingParams.maxFramerate;
+    // @ts-ignore
+    toEncodingParams.scalabilityMode = fromEncodingParams.scalabilityMode;
   }
 }
