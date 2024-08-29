@@ -280,6 +280,9 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
         }
       }
     }
+    if (('framesPerSecond' in metricMap) && ('framesPerSecond' in metricReport.currentMetrics) && !('framesPerSecond' in rawMetricReport)) {
+      metricReport.currentMetrics['framesPerSecond'] = 0;
+    }
   }
 
   /**

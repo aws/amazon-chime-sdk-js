@@ -66,13 +66,13 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
   private idealMaxBandwidthKbps = 1500;
   private hasBandwidthPriority: boolean = false;
   private newQualityMap = new Map<string, RTCRtpEncodingParameters>();
-  private newActiveStreams: ActiveStreams = ActiveStreams.kHiAndLow;
+  private newActiveStreams: ActiveStreams = ActiveStreams.kHi;
   private currentQualityMap = new Map<string, RTCRtpEncodingParameters>();
   private activeStreamsToPublish: ActiveStreams;
   private videoIndex: VideoStreamIndex | null = null;
   private transceiverController: SimulcastTransceiverController;
   private enableHighResolutionFeature: boolean = false;
-  private uplinkTechnique: VideoUplinkTechnique = VideoUplinkTechnique.SingleCast;
+  private uplinkTechnique: VideoUplinkTechnique = VideoUplinkTechnique.ScalableVideoCoding;
   private isUsingSVCCodec: boolean = true;
   private numParticipants: number = 0;
   private overrideTargetWidth: number | undefined = undefined;
@@ -94,14 +94,14 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.currentQualityMap = this.fillEncodingParamWithBitrates([
-      this.maxBandwidthKbps() * 0.2,
       0,
-      this.maxBandwidthKbps() * 0.8,
+      this.maxBandwidthKbps(),
+      0,
     ], 1);
     this.newQualityMap = this.fillEncodingParamWithBitrates([
-      this.maxBandwidthKbps() * 0.2,
       0,
-      this.maxBandwidthKbps() * 0.8,
+      this.maxBandwidthKbps(),
+      0,
     ], 1);
   }
 

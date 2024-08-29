@@ -648,6 +648,13 @@ export class DemoMeetingApp
         this.setSimulcastAndSVC();
       });
     }
+
+    // [TODO shisuss] remove
+    if (this.defaultBrowserBehavior.hasChromiumWebRTC()) {
+      (document.getElementById('videoCodecSelect') as HTMLSelectElement).value = "vp9Profile0";
+      (document.getElementById('simulcast') as HTMLInputElement).checked = true;
+    }
+
     this.setSimulcastAndSVC();
 
     document.getElementById('join-view-only').addEventListener('change', () => {
@@ -3797,8 +3804,8 @@ export class DemoMeetingApp
   private setSimulcastAndSVC(): void {
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
-    const enableSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC()
-      && !(chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
+    const enableSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC();
+    //  && !(chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
 
     if (enableSimulcastConfig) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = false;
@@ -3920,7 +3927,7 @@ export class DemoMeetingApp
         case 'av1Main':
           return [VideoCodecCapability.av1Main(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         case 'vp9Profile0':
-          return [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
+          return [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.vp8()];
         default:
           // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
           // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
@@ -3930,10 +3937,10 @@ export class DemoMeetingApp
 
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     this.videoCodecPreferences = getCodecPreferences(chosenVideoSendCodec);
-    if (['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
-      // Attempting to use simulcast with VP9 or AV1 will lead to unexpected behavior (e.g. SVC instead)
-      this.enableSimulcast = false;
-    }
+    // if (['av1Main', 'vp9Profile0'].includes(chosenVideoSendCodec)) {
+    //   // Attempting to use simulcast with VP9 or AV1 will lead to unexpected behavior (e.g. SVC instead)
+    //   this.enableSimulcast = false;
+    // }
 
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
     this.contentCodecPreferences = getCodecPreferences(chosenContentSendCodec);
