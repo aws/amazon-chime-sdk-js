@@ -56,6 +56,7 @@ import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVid
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
+import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -1460,7 +1461,7 @@ describe('MonitorTask', () => {
       ).to.be.true;
     });
 
-    it('should degrade when there is more than one codec preferences', async () => {
+    it('should degrade when there is more than one codec preferences with NScaleVideoUplinkBandwidthPolicy', async () => {
       context.meetingSupportedVideoSendCodecPreferences = [
         VideoCodecCapability.vp9Profile0(),
         VideoCodecCapability.vp8(),
@@ -1469,6 +1470,28 @@ describe('MonitorTask', () => {
         VideoCodecCapability.vp9Profile0(),
         VideoCodecCapability.vp8(),
       ];
+      context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+        'self',
+        true,
+        logger
+      );
+      // @ts-ignore
+      task.degradeVideoCodec();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
+      ).to.be.true;
+    });
+
+    it('should degrade when there is more than one codec preferences with DefaultSimulcastUplinkPolicy', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy('self', logger);
       // @ts-ignore
       task.degradeVideoCodec();
       expect(

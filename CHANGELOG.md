@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Update uplink policy at codec degradation triggered by encoding health monitor.
+
 ## [3.23.0] - 2024-05-14
 
 ### Added
