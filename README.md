@@ -47,7 +47,7 @@ In addition to the below, here is a list of [all blog posts about the Amazon Chi
 
 ### High level
 
-- [High Level Architecture — Building a Meeting Application With the Amazon Chime SDK](https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-using-the-amazon-chime-sdk/)
+- [High Level Overview - Amazon Chime SDK for Telemedicine Solution](https://aws.amazon.com/blogs/industries/chime-sdk-for-telemedicine-solution/)
 - [Understanding security in Amazon Chime Application and SDK](https://aws.amazon.com/blogs/business-productivity/understanding-security-in-the-amazon-chime-application-and-sdk/)
 
 ### Frontend
