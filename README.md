@@ -1,3 +1,5 @@
+[![Open in DevZero](https://assets.devzero.io/open-in-devzero.svg)](https://www.devzero.io/dashboard/recipes/new?repo-url=https://github.com/aws/amazon-chime-sdk-js)
+
 # Amazon Chime SDK for JavaScript
 
 [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12)
