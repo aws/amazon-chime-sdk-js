@@ -118,6 +118,7 @@ export default class SignalingAndMetricsConnectionMonitor
     this.lastTotalBytesReceived = totalBytesReceived;
     const stunMessagesReceived = totalStunMessagedReceived - this.lastTotalStunMessagesReceived;
     this.lastTotalStunMessagesReceived = totalStunMessagedReceived;
+
     if (
       typeof potentialAudioPacketsReceived === 'number' &&
       typeof potentialAudioFractionPacketsLostInbound === 'number'

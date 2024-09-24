@@ -2,13 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
+import SignalingClientAudioMixedStreamSubscriptionConfiguration from './SignalingClientAudioMixedStreamSubscriptionConfiguration';
+import SignalingClientAudioSingleStreamSubscriptionConfiguration from './SignalingClientAudioSingleStreamSubscriptionConfiguration';
+import SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration from './SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration';
 import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVideoSubscriptionConfiguration';
 
 /**
  * [[SignalingClientSubscribe]] contains settings for the Subscribe SignalFrame.
  */
 export default class SignalingClientSubscribe {
-  videoSubscriptionConfiguration: SignalingClientVideoSubscriptionConfiguration[] = [];
+    videoSubscriptionConfiguration: SignalingClientVideoSubscriptionConfiguration[] = [];
+    audioSingleStreamSubscriptionConfiguration: SignalingClientAudioSingleStreamSubscriptionConfiguration[] = [];
+    audioMixedStreamSubscriptionConfiguration: SignalingClientAudioMixedStreamSubscriptionConfiguration[] = [];
+    audioActiveSpeakerStreamSubscriptionConfiguration: SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration[] = [];
 
   /** Initializes a SignalingClientSubscribe with the given properties.
    *

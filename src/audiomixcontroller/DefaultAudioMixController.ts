@@ -52,7 +52,15 @@ export default class DefaultAudioMixController
       return;
     }
 
-    this.audioStream = stream;
+    if (!this.audioStream) {
+        this.audioStream = stream;
+      } else {
+        const newAudioTracks = stream.getAudioTracks();
+        // Add each audio track to the existing audioStream
+        newAudioTracks.forEach(track => {
+          this.audioStream.addTrack(track);
+        });
+      }
 
     try {
       await this.bindAudioMix();

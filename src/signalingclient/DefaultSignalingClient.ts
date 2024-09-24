@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { MeetingSessionCredentials } from '..';
+import SignalingClientAudioMixedStreamSubscriptionConfiguration from "./SignalingClientAudioMixedStreamSubscriptionConfiguration"
+import SignalingClientAudioSingleStreamSubscriptionConfiguration from "./SignalingClientAudioSingleStreamSubscriptionConfiguration"
+import SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration from "./SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration"
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import TimeoutScheduler from '../scheduler/TimeoutScheduler';
@@ -170,6 +173,21 @@ export default class DefaultSignalingClient implements SignalingClient {
       subscribeFrame.videoSubscriptionConfiguration = settings.videoSubscriptionConfiguration.map(
         this.convertSignalingClientVideoSubscriptionConfiguration
       );
+    }
+    if (settings.audioSingleStreamSubscriptionConfiguration.length > 0) {
+        subscribeFrame.audioSingleStreamSubscriptionConfigurations = settings.audioSingleStreamSubscriptionConfiguration.map(
+            (configuration: SignalingClientAudioSingleStreamSubscriptionConfiguration) => configuration.toSignaled()
+        )
+    }
+    if (settings.audioMixedStreamSubscriptionConfiguration.length > 0) {
+        subscribeFrame.audioMixedStreamSubscriptionConfigurations = settings.audioMixedStreamSubscriptionConfiguration.map(
+            (configuration: SignalingClientAudioMixedStreamSubscriptionConfiguration) => configuration.toSignaled()
+        )
+    }
+    if (settings.audioActiveSpeakerStreamSubscriptionConfiguration.length > 0) {
+        subscribeFrame.audioTopNStreamSubscriptionConfigurations = settings.audioActiveSpeakerStreamSubscriptionConfiguration.map(
+            (configuration: SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration) => configuration.toSignaled()
+        )
     }
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.SUBSCRIBE;

@@ -130,6 +130,9 @@ message SdkSubscribeFrame {
     optional bool audio_muted = 7;
     optional bytes compressed_sdp_offer = 8;
     repeated SdkVideoSubscriptionConfiguration video_subscription_configuration = 9;
+    repeated SdkAudioSingleStreamSubscriptionConfiguration audio_single_stream_subscription_configurations = 10;
+    repeated SdkAudioMixedStreamSubscriptionConfiguration audio_mixed_stream_subscription_configurations = 11;
+    repeated SdkAudioActiveSpeakerStreamSubscriptionConfiguration audio_top_n_stream_subscription_configurations = 12;
 }
 
 message SdkSubscribeAckFrame {
@@ -432,6 +435,19 @@ message SdkTranscriptEvent {
 
 message SdkTranscriptFrame {
     repeated SdkTranscriptEvent events = 1;
+}
+
+message SdkAudioSingleStreamSubscriptionConfiguration {
+    required string mid = 1;
+    required uint32 audio_stream_id = 2;
+}
+
+message SdkAudioMixedStreamSubscriptionConfiguration {
+    required string mid = 1;
+}
+
+message SdkAudioActiveSpeakerStreamSubscriptionConfiguration {
+    repeated string mids = 1;
 }
 
 message SdkRemoteVideoUpdateFrame {

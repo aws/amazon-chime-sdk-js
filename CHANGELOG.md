@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Set starting send bitrate to 1000kbps to reduce time of low resolution at start of connection
+
 ### Removed
 
 ### Changed

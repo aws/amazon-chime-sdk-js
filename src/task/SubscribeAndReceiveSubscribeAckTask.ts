@@ -8,6 +8,7 @@ import SDP from '../sdp/SDP';
 import ZLIBTextCompressor from '../sdp/ZLIBTextCompressor';
 import { serverSideNetworkAdaptionIsNoneOrDefault } from '../signalingclient/ServerSideNetworkAdaption';
 import SignalingClient from '../signalingclient/SignalingClient';
+import SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration from '../signalingclient/SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientSubscribe from '../signalingclient/SignalingClientSubscribe';
@@ -129,6 +130,24 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
         }),
         this.context.videoDownlinkBandwidthPolicy.getVideoPreferences()
       );
+    }
+
+    if (this.context.transceiverController.audioActiveSpeakerTransceivers !== undefined) {
+        let config = new SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration();
+        config.mids = [];
+
+        this.context.transceiverController
+            .audioActiveSpeakerTransceivers()
+            .forEach((transceiver, index) => {
+                if (transceiver.mid === null) {
+                    this.context.logger.warn(`Transceiver at index ${index} does not have 'mid' set yet.`);
+                    return;
+                }
+                config.mids.push(transceiver.mid);
+            })
+
+        subscribe.audioActiveSpeakerStreamSubscriptionConfiguration = [config];
+    
     }
     this.context.logger.info(`sending subscribe: ${JSON.stringify(subscribe)}`);
     this.context.signalingClient.subscribe(subscribe);

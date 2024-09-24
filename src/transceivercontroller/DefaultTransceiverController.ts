@@ -45,6 +45,7 @@ export default class DefaultTransceiverController
   private readonly audioRedPacketLossLongEvalPeriodMs = 15 * 1000; // 15s
   private readonly audioRedHoldDownTimeMs: number = 5 * 60 * 1000; // 5m
   private readonly redRecoveryTimeMs: number = 1 * 60 * 1000; // 1m
+  private _audioActiveSpeakerTransceivers: RTCRtpTransceiver[] = [];
 
   constructor(
     protected logger: Logger,
@@ -128,6 +129,7 @@ export default class DefaultTransceiverController
     this.destroyAudioRedWorkerAndStates();
     this._localCameraTransceiver = null;
     this._localAudioTransceiver = null;
+    this._audioActiveSpeakerTransceivers = [];
     this.videoSubscriptions = [];
     this.defaultMediaStream = null;
     this.peer = null;
@@ -184,7 +186,7 @@ export default class DefaultTransceiverController
   }
 
   async replaceAudioTrack(track: MediaStreamTrack): Promise<boolean> {
-    if (!this._localAudioTransceiver || this._localAudioTransceiver.direction !== 'sendrecv') {
+    if (!this._localAudioTransceiver || this._localAudioTransceiver.direction !== 'sendonly') {
       this.logger.info(`audio transceiver direction is not set up or not activated`);
       return false;
     }
@@ -435,7 +437,7 @@ export default class DefaultTransceiverController
     }
 
     if (track) {
-      transceiver.direction = 'sendrecv';
+      transceiver.direction = track.kind === 'audio' ? 'sendonly' : 'sendrecv';
     } else {
       transceiver.direction = 'inactive';
     }
@@ -847,5 +849,20 @@ export default class DefaultTransceiverController
     observer: RedundantAudioRecoveryMetricsObserver
   ): void {
     this.redMetricsObservers.delete(observer);
+  }
+
+  setupAudioActiveSpeakerTranceivers(): void {
+    if (this._audioActiveSpeakerTransceivers.length > 0) {
+        return;
+    }
+    for (let i = 0; i < 3; i++) {
+        this._audioActiveSpeakerTransceivers.push(this.peer.addTransceiver('audio', {
+            direction: 'recvonly'
+        }))
+      }
+  }
+
+  audioActiveSpeakerTransceivers(): RTCRtpTransceiver[] {
+      return this._audioActiveSpeakerTransceivers
   }
 }

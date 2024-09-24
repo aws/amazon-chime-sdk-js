@@ -1017,6 +1017,15 @@ export interface ISdkSubscribeFrame {
 
     /** SdkSubscribeFrame videoSubscriptionConfiguration */
     videoSubscriptionConfiguration?: (ISdkVideoSubscriptionConfiguration[]|null);
+
+    /** SdkSubscribeFrame audioSingleStreamSubscriptionConfigurations */
+    audioSingleStreamSubscriptionConfigurations?: (ISdkAudioSingleStreamSubscriptionConfiguration[]|null);
+
+    /** SdkSubscribeFrame audioMixedStreamSubscriptionConfigurations */
+    audioMixedStreamSubscriptionConfigurations?: (ISdkAudioMixedStreamSubscriptionConfiguration[]|null);
+
+    /** SdkSubscribeFrame audioTopNStreamSubscriptionConfigurations */
+    audioTopNStreamSubscriptionConfigurations?: (ISdkAudioActiveSpeakerStreamSubscriptionConfiguration[]|null);
 }
 
 /** Represents a SdkSubscribeFrame. */
@@ -1054,6 +1063,15 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
 
     /** SdkSubscribeFrame videoSubscriptionConfiguration. */
     public videoSubscriptionConfiguration: ISdkVideoSubscriptionConfiguration[];
+
+    /** SdkSubscribeFrame audioSingleStreamSubscriptionConfigurations. */
+    public audioSingleStreamSubscriptionConfigurations: ISdkAudioSingleStreamSubscriptionConfiguration[];
+
+    /** SdkSubscribeFrame audioMixedStreamSubscriptionConfigurations. */
+    public audioMixedStreamSubscriptionConfigurations: ISdkAudioMixedStreamSubscriptionConfiguration[];
+
+    /** SdkSubscribeFrame audioTopNStreamSubscriptionConfigurations. */
+    public audioTopNStreamSubscriptionConfigurations: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration[];
 
     /**
      * Creates a new SdkSubscribeFrame instance using the specified properties.
@@ -4811,6 +4829,303 @@ export class SdkTranscriptFrame implements ISdkTranscriptFrame {
 
     /**
      * Gets the default type url for SdkTranscriptFrame
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** Properties of a SdkAudioSingleStreamSubscriptionConfiguration. */
+export interface ISdkAudioSingleStreamSubscriptionConfiguration {
+
+    /** SdkAudioSingleStreamSubscriptionConfiguration mid */
+    mid: string;
+
+    /** SdkAudioSingleStreamSubscriptionConfiguration audioStreamId */
+    audioStreamId: number;
+}
+
+/** Represents a SdkAudioSingleStreamSubscriptionConfiguration. */
+export class SdkAudioSingleStreamSubscriptionConfiguration implements ISdkAudioSingleStreamSubscriptionConfiguration {
+
+    /**
+     * Constructs a new SdkAudioSingleStreamSubscriptionConfiguration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkAudioSingleStreamSubscriptionConfiguration);
+
+    /** SdkAudioSingleStreamSubscriptionConfiguration mid. */
+    public mid: string;
+
+    /** SdkAudioSingleStreamSubscriptionConfiguration audioStreamId. */
+    public audioStreamId: number;
+
+    /**
+     * Creates a new SdkAudioSingleStreamSubscriptionConfiguration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkAudioSingleStreamSubscriptionConfiguration instance
+     */
+    public static create(properties?: ISdkAudioSingleStreamSubscriptionConfiguration): SdkAudioSingleStreamSubscriptionConfiguration;
+
+    /**
+     * Encodes the specified SdkAudioSingleStreamSubscriptionConfiguration message. Does not implicitly {@link SdkAudioSingleStreamSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkAudioSingleStreamSubscriptionConfiguration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkAudioSingleStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkAudioSingleStreamSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkAudioSingleStreamSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkAudioSingleStreamSubscriptionConfiguration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkAudioSingleStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkAudioSingleStreamSubscriptionConfiguration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkAudioSingleStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioSingleStreamSubscriptionConfiguration;
+
+    /**
+     * Decodes a SdkAudioSingleStreamSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkAudioSingleStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioSingleStreamSubscriptionConfiguration;
+
+    /**
+     * Verifies a SdkAudioSingleStreamSubscriptionConfiguration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkAudioSingleStreamSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkAudioSingleStreamSubscriptionConfiguration
+     */
+    public static fromObject(object: { [k: string]: any }): SdkAudioSingleStreamSubscriptionConfiguration;
+
+    /**
+     * Creates a plain object from a SdkAudioSingleStreamSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @param message SdkAudioSingleStreamSubscriptionConfiguration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkAudioSingleStreamSubscriptionConfiguration, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkAudioSingleStreamSubscriptionConfiguration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioSingleStreamSubscriptionConfiguration
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** Properties of a SdkAudioMixedStreamSubscriptionConfiguration. */
+export interface ISdkAudioMixedStreamSubscriptionConfiguration {
+
+    /** SdkAudioMixedStreamSubscriptionConfiguration mid */
+    mid: string;
+}
+
+/** Represents a SdkAudioMixedStreamSubscriptionConfiguration. */
+export class SdkAudioMixedStreamSubscriptionConfiguration implements ISdkAudioMixedStreamSubscriptionConfiguration {
+
+    /**
+     * Constructs a new SdkAudioMixedStreamSubscriptionConfiguration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkAudioMixedStreamSubscriptionConfiguration);
+
+    /** SdkAudioMixedStreamSubscriptionConfiguration mid. */
+    public mid: string;
+
+    /**
+     * Creates a new SdkAudioMixedStreamSubscriptionConfiguration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkAudioMixedStreamSubscriptionConfiguration instance
+     */
+    public static create(properties?: ISdkAudioMixedStreamSubscriptionConfiguration): SdkAudioMixedStreamSubscriptionConfiguration;
+
+    /**
+     * Encodes the specified SdkAudioMixedStreamSubscriptionConfiguration message. Does not implicitly {@link SdkAudioMixedStreamSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkAudioMixedStreamSubscriptionConfiguration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkAudioMixedStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkAudioMixedStreamSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkAudioMixedStreamSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkAudioMixedStreamSubscriptionConfiguration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkAudioMixedStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkAudioMixedStreamSubscriptionConfiguration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkAudioMixedStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioMixedStreamSubscriptionConfiguration;
+
+    /**
+     * Decodes a SdkAudioMixedStreamSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkAudioMixedStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioMixedStreamSubscriptionConfiguration;
+
+    /**
+     * Verifies a SdkAudioMixedStreamSubscriptionConfiguration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkAudioMixedStreamSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkAudioMixedStreamSubscriptionConfiguration
+     */
+    public static fromObject(object: { [k: string]: any }): SdkAudioMixedStreamSubscriptionConfiguration;
+
+    /**
+     * Creates a plain object from a SdkAudioMixedStreamSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @param message SdkAudioMixedStreamSubscriptionConfiguration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkAudioMixedStreamSubscriptionConfiguration, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkAudioMixedStreamSubscriptionConfiguration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioMixedStreamSubscriptionConfiguration
+     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns The default type url
+     */
+    public static getTypeUrl(typeUrlPrefix?: string): string;
+}
+
+/** Properties of a SdkAudioActiveSpeakerStreamSubscriptionConfiguration. */
+export interface ISdkAudioActiveSpeakerStreamSubscriptionConfiguration {
+
+    /** SdkAudioActiveSpeakerStreamSubscriptionConfiguration mids */
+    mids?: (string[]|null);
+}
+
+/** Represents a SdkAudioActiveSpeakerStreamSubscriptionConfiguration. */
+export class SdkAudioActiveSpeakerStreamSubscriptionConfiguration implements ISdkAudioActiveSpeakerStreamSubscriptionConfiguration {
+
+    /**
+     * Constructs a new SdkAudioActiveSpeakerStreamSubscriptionConfiguration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration);
+
+    /** SdkAudioActiveSpeakerStreamSubscriptionConfiguration mids. */
+    public mids: string[];
+
+    /**
+     * Creates a new SdkAudioActiveSpeakerStreamSubscriptionConfiguration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkAudioActiveSpeakerStreamSubscriptionConfiguration instance
+     */
+    public static create(properties?: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration): SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
+
+    /**
+     * Encodes the specified SdkAudioActiveSpeakerStreamSubscriptionConfiguration message. Does not implicitly {@link SdkAudioActiveSpeakerStreamSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkAudioActiveSpeakerStreamSubscriptionConfiguration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkAudioActiveSpeakerStreamSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkAudioActiveSpeakerStreamSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkAudioActiveSpeakerStreamSubscriptionConfiguration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
+
+    /**
+     * Decodes a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
+
+    /**
+     * Verifies a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     */
+    public static fromObject(object: { [k: string]: any }): SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
+
+    /**
+     * Creates a plain object from a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @param message SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkAudioActiveSpeakerStreamSubscriptionConfiguration, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkAudioActiveSpeakerStreamSubscriptionConfiguration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+
+    /**
+     * Gets the default type url for SdkAudioActiveSpeakerStreamSubscriptionConfiguration
      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
      * @returns The default type url
      */

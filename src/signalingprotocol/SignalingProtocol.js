@@ -2900,6 +2900,9 @@ $root.SdkSubscribeFrame = (function() {
      * @property {boolean|null} [audioMuted] SdkSubscribeFrame audioMuted
      * @property {Uint8Array|null} [compressedSdpOffer] SdkSubscribeFrame compressedSdpOffer
      * @property {Array.<ISdkVideoSubscriptionConfiguration>|null} [videoSubscriptionConfiguration] SdkSubscribeFrame videoSubscriptionConfiguration
+     * @property {Array.<ISdkAudioSingleStreamSubscriptionConfiguration>|null} [audioSingleStreamSubscriptionConfigurations] SdkSubscribeFrame audioSingleStreamSubscriptionConfigurations
+     * @property {Array.<ISdkAudioMixedStreamSubscriptionConfiguration>|null} [audioMixedStreamSubscriptionConfigurations] SdkSubscribeFrame audioMixedStreamSubscriptionConfigurations
+     * @property {Array.<ISdkAudioActiveSpeakerStreamSubscriptionConfiguration>|null} [audioTopNStreamSubscriptionConfigurations] SdkSubscribeFrame audioTopNStreamSubscriptionConfigurations
      */
 
     /**
@@ -2914,6 +2917,9 @@ $root.SdkSubscribeFrame = (function() {
         this.sendStreams = [];
         this.receiveStreamIds = [];
         this.videoSubscriptionConfiguration = [];
+        this.audioSingleStreamSubscriptionConfigurations = [];
+        this.audioMixedStreamSubscriptionConfigurations = [];
+        this.audioTopNStreamSubscriptionConfigurations = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -2993,6 +2999,30 @@ $root.SdkSubscribeFrame = (function() {
     SdkSubscribeFrame.prototype.videoSubscriptionConfiguration = $util.emptyArray;
 
     /**
+     * SdkSubscribeFrame audioSingleStreamSubscriptionConfigurations.
+     * @member {Array.<ISdkAudioSingleStreamSubscriptionConfiguration>} audioSingleStreamSubscriptionConfigurations
+     * @memberof SdkSubscribeFrame
+     * @instance
+     */
+    SdkSubscribeFrame.prototype.audioSingleStreamSubscriptionConfigurations = $util.emptyArray;
+
+    /**
+     * SdkSubscribeFrame audioMixedStreamSubscriptionConfigurations.
+     * @member {Array.<ISdkAudioMixedStreamSubscriptionConfiguration>} audioMixedStreamSubscriptionConfigurations
+     * @memberof SdkSubscribeFrame
+     * @instance
+     */
+    SdkSubscribeFrame.prototype.audioMixedStreamSubscriptionConfigurations = $util.emptyArray;
+
+    /**
+     * SdkSubscribeFrame audioTopNStreamSubscriptionConfigurations.
+     * @member {Array.<ISdkAudioActiveSpeakerStreamSubscriptionConfiguration>} audioTopNStreamSubscriptionConfigurations
+     * @memberof SdkSubscribeFrame
+     * @instance
+     */
+    SdkSubscribeFrame.prototype.audioTopNStreamSubscriptionConfigurations = $util.emptyArray;
+
+    /**
      * Creates a new SdkSubscribeFrame instance using the specified properties.
      * @function create
      * @memberof SdkSubscribeFrame
@@ -3037,6 +3067,15 @@ $root.SdkSubscribeFrame = (function() {
         if (message.videoSubscriptionConfiguration != null && message.videoSubscriptionConfiguration.length)
             for (var i = 0; i < message.videoSubscriptionConfiguration.length; ++i)
                 $root.SdkVideoSubscriptionConfiguration.encode(message.videoSubscriptionConfiguration[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+        if (message.audioSingleStreamSubscriptionConfigurations != null && message.audioSingleStreamSubscriptionConfigurations.length)
+            for (var i = 0; i < message.audioSingleStreamSubscriptionConfigurations.length; ++i)
+                $root.SdkAudioSingleStreamSubscriptionConfiguration.encode(message.audioSingleStreamSubscriptionConfigurations[i], writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+        if (message.audioMixedStreamSubscriptionConfigurations != null && message.audioMixedStreamSubscriptionConfigurations.length)
+            for (var i = 0; i < message.audioMixedStreamSubscriptionConfigurations.length; ++i)
+                $root.SdkAudioMixedStreamSubscriptionConfiguration.encode(message.audioMixedStreamSubscriptionConfigurations[i], writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+        if (message.audioTopNStreamSubscriptionConfigurations != null && message.audioTopNStreamSubscriptionConfigurations.length)
+            for (var i = 0; i < message.audioTopNStreamSubscriptionConfigurations.length; ++i)
+                $root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration.encode(message.audioTopNStreamSubscriptionConfigurations[i], writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
         return writer;
     };
 
@@ -3116,6 +3155,24 @@ $root.SdkSubscribeFrame = (function() {
                     if (!(message.videoSubscriptionConfiguration && message.videoSubscriptionConfiguration.length))
                         message.videoSubscriptionConfiguration = [];
                     message.videoSubscriptionConfiguration.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 10: {
+                    if (!(message.audioSingleStreamSubscriptionConfigurations && message.audioSingleStreamSubscriptionConfigurations.length))
+                        message.audioSingleStreamSubscriptionConfigurations = [];
+                    message.audioSingleStreamSubscriptionConfigurations.push($root.SdkAudioSingleStreamSubscriptionConfiguration.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 11: {
+                    if (!(message.audioMixedStreamSubscriptionConfigurations && message.audioMixedStreamSubscriptionConfigurations.length))
+                        message.audioMixedStreamSubscriptionConfigurations = [];
+                    message.audioMixedStreamSubscriptionConfigurations.push($root.SdkAudioMixedStreamSubscriptionConfiguration.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 12: {
+                    if (!(message.audioTopNStreamSubscriptionConfigurations && message.audioTopNStreamSubscriptionConfigurations.length))
+                        message.audioTopNStreamSubscriptionConfigurations = [];
+                    message.audioTopNStreamSubscriptionConfigurations.push($root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration.decode(reader, reader.uint32()));
                     break;
                 }
             default:
@@ -3202,6 +3259,33 @@ $root.SdkSubscribeFrame = (function() {
                     return "videoSubscriptionConfiguration." + error;
             }
         }
+        if (message.audioSingleStreamSubscriptionConfigurations != null && message.hasOwnProperty("audioSingleStreamSubscriptionConfigurations")) {
+            if (!Array.isArray(message.audioSingleStreamSubscriptionConfigurations))
+                return "audioSingleStreamSubscriptionConfigurations: array expected";
+            for (var i = 0; i < message.audioSingleStreamSubscriptionConfigurations.length; ++i) {
+                var error = $root.SdkAudioSingleStreamSubscriptionConfiguration.verify(message.audioSingleStreamSubscriptionConfigurations[i]);
+                if (error)
+                    return "audioSingleStreamSubscriptionConfigurations." + error;
+            }
+        }
+        if (message.audioMixedStreamSubscriptionConfigurations != null && message.hasOwnProperty("audioMixedStreamSubscriptionConfigurations")) {
+            if (!Array.isArray(message.audioMixedStreamSubscriptionConfigurations))
+                return "audioMixedStreamSubscriptionConfigurations: array expected";
+            for (var i = 0; i < message.audioMixedStreamSubscriptionConfigurations.length; ++i) {
+                var error = $root.SdkAudioMixedStreamSubscriptionConfiguration.verify(message.audioMixedStreamSubscriptionConfigurations[i]);
+                if (error)
+                    return "audioMixedStreamSubscriptionConfigurations." + error;
+            }
+        }
+        if (message.audioTopNStreamSubscriptionConfigurations != null && message.hasOwnProperty("audioTopNStreamSubscriptionConfigurations")) {
+            if (!Array.isArray(message.audioTopNStreamSubscriptionConfigurations))
+                return "audioTopNStreamSubscriptionConfigurations: array expected";
+            for (var i = 0; i < message.audioTopNStreamSubscriptionConfigurations.length; ++i) {
+                var error = $root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration.verify(message.audioTopNStreamSubscriptionConfigurations[i]);
+                if (error)
+                    return "audioTopNStreamSubscriptionConfigurations." + error;
+            }
+        }
         return null;
     };
 
@@ -3277,6 +3361,36 @@ $root.SdkSubscribeFrame = (function() {
                 message.videoSubscriptionConfiguration[i] = $root.SdkVideoSubscriptionConfiguration.fromObject(object.videoSubscriptionConfiguration[i]);
             }
         }
+        if (object.audioSingleStreamSubscriptionConfigurations) {
+            if (!Array.isArray(object.audioSingleStreamSubscriptionConfigurations))
+                throw TypeError(".SdkSubscribeFrame.audioSingleStreamSubscriptionConfigurations: array expected");
+            message.audioSingleStreamSubscriptionConfigurations = [];
+            for (var i = 0; i < object.audioSingleStreamSubscriptionConfigurations.length; ++i) {
+                if (typeof object.audioSingleStreamSubscriptionConfigurations[i] !== "object")
+                    throw TypeError(".SdkSubscribeFrame.audioSingleStreamSubscriptionConfigurations: object expected");
+                message.audioSingleStreamSubscriptionConfigurations[i] = $root.SdkAudioSingleStreamSubscriptionConfiguration.fromObject(object.audioSingleStreamSubscriptionConfigurations[i]);
+            }
+        }
+        if (object.audioMixedStreamSubscriptionConfigurations) {
+            if (!Array.isArray(object.audioMixedStreamSubscriptionConfigurations))
+                throw TypeError(".SdkSubscribeFrame.audioMixedStreamSubscriptionConfigurations: array expected");
+            message.audioMixedStreamSubscriptionConfigurations = [];
+            for (var i = 0; i < object.audioMixedStreamSubscriptionConfigurations.length; ++i) {
+                if (typeof object.audioMixedStreamSubscriptionConfigurations[i] !== "object")
+                    throw TypeError(".SdkSubscribeFrame.audioMixedStreamSubscriptionConfigurations: object expected");
+                message.audioMixedStreamSubscriptionConfigurations[i] = $root.SdkAudioMixedStreamSubscriptionConfiguration.fromObject(object.audioMixedStreamSubscriptionConfigurations[i]);
+            }
+        }
+        if (object.audioTopNStreamSubscriptionConfigurations) {
+            if (!Array.isArray(object.audioTopNStreamSubscriptionConfigurations))
+                throw TypeError(".SdkSubscribeFrame.audioTopNStreamSubscriptionConfigurations: array expected");
+            message.audioTopNStreamSubscriptionConfigurations = [];
+            for (var i = 0; i < object.audioTopNStreamSubscriptionConfigurations.length; ++i) {
+                if (typeof object.audioTopNStreamSubscriptionConfigurations[i] !== "object")
+                    throw TypeError(".SdkSubscribeFrame.audioTopNStreamSubscriptionConfigurations: object expected");
+                message.audioTopNStreamSubscriptionConfigurations[i] = $root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration.fromObject(object.audioTopNStreamSubscriptionConfigurations[i]);
+            }
+        }
         return message;
     };
 
@@ -3297,6 +3411,9 @@ $root.SdkSubscribeFrame = (function() {
             object.sendStreams = [];
             object.receiveStreamIds = [];
             object.videoSubscriptionConfiguration = [];
+            object.audioSingleStreamSubscriptionConfigurations = [];
+            object.audioMixedStreamSubscriptionConfigurations = [];
+            object.audioTopNStreamSubscriptionConfigurations = [];
         }
         if (options.defaults) {
             object.duplex = options.enums === String ? "RX" : 1;
@@ -3338,6 +3455,21 @@ $root.SdkSubscribeFrame = (function() {
             object.videoSubscriptionConfiguration = [];
             for (var j = 0; j < message.videoSubscriptionConfiguration.length; ++j)
                 object.videoSubscriptionConfiguration[j] = $root.SdkVideoSubscriptionConfiguration.toObject(message.videoSubscriptionConfiguration[j], options);
+        }
+        if (message.audioSingleStreamSubscriptionConfigurations && message.audioSingleStreamSubscriptionConfigurations.length) {
+            object.audioSingleStreamSubscriptionConfigurations = [];
+            for (var j = 0; j < message.audioSingleStreamSubscriptionConfigurations.length; ++j)
+                object.audioSingleStreamSubscriptionConfigurations[j] = $root.SdkAudioSingleStreamSubscriptionConfiguration.toObject(message.audioSingleStreamSubscriptionConfigurations[j], options);
+        }
+        if (message.audioMixedStreamSubscriptionConfigurations && message.audioMixedStreamSubscriptionConfigurations.length) {
+            object.audioMixedStreamSubscriptionConfigurations = [];
+            for (var j = 0; j < message.audioMixedStreamSubscriptionConfigurations.length; ++j)
+                object.audioMixedStreamSubscriptionConfigurations[j] = $root.SdkAudioMixedStreamSubscriptionConfiguration.toObject(message.audioMixedStreamSubscriptionConfigurations[j], options);
+        }
+        if (message.audioTopNStreamSubscriptionConfigurations && message.audioTopNStreamSubscriptionConfigurations.length) {
+            object.audioTopNStreamSubscriptionConfigurations = [];
+            for (var j = 0; j < message.audioTopNStreamSubscriptionConfigurations.length; ++j)
+                object.audioTopNStreamSubscriptionConfigurations[j] = $root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration.toObject(message.audioTopNStreamSubscriptionConfigurations[j], options);
         }
         return object;
     };
@@ -13080,6 +13212,655 @@ $root.SdkTranscriptFrame = (function() {
     };
 
     return SdkTranscriptFrame;
+})();
+
+$root.SdkAudioSingleStreamSubscriptionConfiguration = (function() {
+
+    /**
+     * Properties of a SdkAudioSingleStreamSubscriptionConfiguration.
+     * @name ISdkAudioSingleStreamSubscriptionConfiguration
+     * @interface ISdkAudioSingleStreamSubscriptionConfiguration
+     * @property {string} mid SdkAudioSingleStreamSubscriptionConfiguration mid
+     * @property {number} audioStreamId SdkAudioSingleStreamSubscriptionConfiguration audioStreamId
+     */
+
+    /**
+     * Constructs a new SdkAudioSingleStreamSubscriptionConfiguration.
+     * @name SdkAudioSingleStreamSubscriptionConfiguration
+     * @classdesc Represents a SdkAudioSingleStreamSubscriptionConfiguration.
+     * @implements ISdkAudioSingleStreamSubscriptionConfiguration
+     * @constructor
+     * @param {ISdkAudioSingleStreamSubscriptionConfiguration=} [properties] Properties to set
+     */
+    function SdkAudioSingleStreamSubscriptionConfiguration(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkAudioSingleStreamSubscriptionConfiguration mid.
+     * @member {string} mid
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @instance
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.prototype.mid = "";
+
+    /**
+     * SdkAudioSingleStreamSubscriptionConfiguration audioStreamId.
+     * @member {number} audioStreamId
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @instance
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.prototype.audioStreamId = 0;
+
+    /**
+     * Creates a new SdkAudioSingleStreamSubscriptionConfiguration instance using the specified properties.
+     * @function create
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioSingleStreamSubscriptionConfiguration=} [properties] Properties to set
+     * @returns {SdkAudioSingleStreamSubscriptionConfiguration} SdkAudioSingleStreamSubscriptionConfiguration instance
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.create = function create(properties) {
+        return new SdkAudioSingleStreamSubscriptionConfiguration(properties);
+    };
+
+    /**
+     * Encodes the specified SdkAudioSingleStreamSubscriptionConfiguration message. Does not implicitly {@link SdkAudioSingleStreamSubscriptionConfiguration.verify|verify} messages.
+     * @function encode
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioSingleStreamSubscriptionConfiguration} message SdkAudioSingleStreamSubscriptionConfiguration message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        writer.uint32(/* id 1, wireType 2 =*/10).string(message.mid);
+        writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.audioStreamId);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkAudioSingleStreamSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkAudioSingleStreamSubscriptionConfiguration.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioSingleStreamSubscriptionConfiguration} message SdkAudioSingleStreamSubscriptionConfiguration message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkAudioSingleStreamSubscriptionConfiguration message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkAudioSingleStreamSubscriptionConfiguration} SdkAudioSingleStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioSingleStreamSubscriptionConfiguration();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    message.mid = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.audioStreamId = reader.uint32();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        if (!message.hasOwnProperty("mid"))
+            throw $util.ProtocolError("missing required 'mid'", { instance: message });
+        if (!message.hasOwnProperty("audioStreamId"))
+            throw $util.ProtocolError("missing required 'audioStreamId'", { instance: message });
+        return message;
+    };
+
+    /**
+     * Decodes a SdkAudioSingleStreamSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkAudioSingleStreamSubscriptionConfiguration} SdkAudioSingleStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkAudioSingleStreamSubscriptionConfiguration message.
+     * @function verify
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (!$util.isString(message.mid))
+            return "mid: string expected";
+        if (!$util.isInteger(message.audioStreamId))
+            return "audioStreamId: integer expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkAudioSingleStreamSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkAudioSingleStreamSubscriptionConfiguration} SdkAudioSingleStreamSubscriptionConfiguration
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkAudioSingleStreamSubscriptionConfiguration)
+            return object;
+        var message = new $root.SdkAudioSingleStreamSubscriptionConfiguration();
+        if (object.mid != null)
+            message.mid = String(object.mid);
+        if (object.audioStreamId != null)
+            message.audioStreamId = object.audioStreamId >>> 0;
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkAudioSingleStreamSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {SdkAudioSingleStreamSubscriptionConfiguration} message SdkAudioSingleStreamSubscriptionConfiguration
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.mid = "";
+            object.audioStreamId = 0;
+        }
+        if (message.mid != null && message.hasOwnProperty("mid"))
+            object.mid = message.mid;
+        if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
+            object.audioStreamId = message.audioStreamId;
+        return object;
+    };
+
+    /**
+     * Converts this SdkAudioSingleStreamSubscriptionConfiguration to JSON.
+     * @function toJSON
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkAudioSingleStreamSubscriptionConfiguration
+     * @function getTypeUrl
+     * @memberof SdkAudioSingleStreamSubscriptionConfiguration
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioSingleStreamSubscriptionConfiguration.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioSingleStreamSubscriptionConfiguration";
+    };
+
+    return SdkAudioSingleStreamSubscriptionConfiguration;
+})();
+
+$root.SdkAudioMixedStreamSubscriptionConfiguration = (function() {
+
+    /**
+     * Properties of a SdkAudioMixedStreamSubscriptionConfiguration.
+     * @name ISdkAudioMixedStreamSubscriptionConfiguration
+     * @interface ISdkAudioMixedStreamSubscriptionConfiguration
+     * @property {string} mid SdkAudioMixedStreamSubscriptionConfiguration mid
+     */
+
+    /**
+     * Constructs a new SdkAudioMixedStreamSubscriptionConfiguration.
+     * @name SdkAudioMixedStreamSubscriptionConfiguration
+     * @classdesc Represents a SdkAudioMixedStreamSubscriptionConfiguration.
+     * @implements ISdkAudioMixedStreamSubscriptionConfiguration
+     * @constructor
+     * @param {ISdkAudioMixedStreamSubscriptionConfiguration=} [properties] Properties to set
+     */
+    function SdkAudioMixedStreamSubscriptionConfiguration(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkAudioMixedStreamSubscriptionConfiguration mid.
+     * @member {string} mid
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @instance
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.prototype.mid = "";
+
+    /**
+     * Creates a new SdkAudioMixedStreamSubscriptionConfiguration instance using the specified properties.
+     * @function create
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioMixedStreamSubscriptionConfiguration=} [properties] Properties to set
+     * @returns {SdkAudioMixedStreamSubscriptionConfiguration} SdkAudioMixedStreamSubscriptionConfiguration instance
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.create = function create(properties) {
+        return new SdkAudioMixedStreamSubscriptionConfiguration(properties);
+    };
+
+    /**
+     * Encodes the specified SdkAudioMixedStreamSubscriptionConfiguration message. Does not implicitly {@link SdkAudioMixedStreamSubscriptionConfiguration.verify|verify} messages.
+     * @function encode
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioMixedStreamSubscriptionConfiguration} message SdkAudioMixedStreamSubscriptionConfiguration message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        writer.uint32(/* id 1, wireType 2 =*/10).string(message.mid);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkAudioMixedStreamSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkAudioMixedStreamSubscriptionConfiguration.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioMixedStreamSubscriptionConfiguration} message SdkAudioMixedStreamSubscriptionConfiguration message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkAudioMixedStreamSubscriptionConfiguration message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkAudioMixedStreamSubscriptionConfiguration} SdkAudioMixedStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioMixedStreamSubscriptionConfiguration();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    message.mid = reader.string();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        if (!message.hasOwnProperty("mid"))
+            throw $util.ProtocolError("missing required 'mid'", { instance: message });
+        return message;
+    };
+
+    /**
+     * Decodes a SdkAudioMixedStreamSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkAudioMixedStreamSubscriptionConfiguration} SdkAudioMixedStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkAudioMixedStreamSubscriptionConfiguration message.
+     * @function verify
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (!$util.isString(message.mid))
+            return "mid: string expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkAudioMixedStreamSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkAudioMixedStreamSubscriptionConfiguration} SdkAudioMixedStreamSubscriptionConfiguration
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkAudioMixedStreamSubscriptionConfiguration)
+            return object;
+        var message = new $root.SdkAudioMixedStreamSubscriptionConfiguration();
+        if (object.mid != null)
+            message.mid = String(object.mid);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkAudioMixedStreamSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {SdkAudioMixedStreamSubscriptionConfiguration} message SdkAudioMixedStreamSubscriptionConfiguration
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            object.mid = "";
+        if (message.mid != null && message.hasOwnProperty("mid"))
+            object.mid = message.mid;
+        return object;
+    };
+
+    /**
+     * Converts this SdkAudioMixedStreamSubscriptionConfiguration to JSON.
+     * @function toJSON
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkAudioMixedStreamSubscriptionConfiguration
+     * @function getTypeUrl
+     * @memberof SdkAudioMixedStreamSubscriptionConfiguration
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioMixedStreamSubscriptionConfiguration.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioMixedStreamSubscriptionConfiguration";
+    };
+
+    return SdkAudioMixedStreamSubscriptionConfiguration;
+})();
+
+$root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration = (function() {
+
+    /**
+     * Properties of a SdkAudioActiveSpeakerStreamSubscriptionConfiguration.
+     * @name ISdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @interface ISdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @property {Array.<string>|null} [mids] SdkAudioActiveSpeakerStreamSubscriptionConfiguration mids
+     */
+
+    /**
+     * Constructs a new SdkAudioActiveSpeakerStreamSubscriptionConfiguration.
+     * @name SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @classdesc Represents a SdkAudioActiveSpeakerStreamSubscriptionConfiguration.
+     * @implements ISdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @constructor
+     * @param {ISdkAudioActiveSpeakerStreamSubscriptionConfiguration=} [properties] Properties to set
+     */
+    function SdkAudioActiveSpeakerStreamSubscriptionConfiguration(properties) {
+        this.mids = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkAudioActiveSpeakerStreamSubscriptionConfiguration mids.
+     * @member {Array.<string>} mids
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @instance
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.prototype.mids = $util.emptyArray;
+
+    /**
+     * Creates a new SdkAudioActiveSpeakerStreamSubscriptionConfiguration instance using the specified properties.
+     * @function create
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioActiveSpeakerStreamSubscriptionConfiguration=} [properties] Properties to set
+     * @returns {SdkAudioActiveSpeakerStreamSubscriptionConfiguration} SdkAudioActiveSpeakerStreamSubscriptionConfiguration instance
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.create = function create(properties) {
+        return new SdkAudioActiveSpeakerStreamSubscriptionConfiguration(properties);
+    };
+
+    /**
+     * Encodes the specified SdkAudioActiveSpeakerStreamSubscriptionConfiguration message. Does not implicitly {@link SdkAudioActiveSpeakerStreamSubscriptionConfiguration.verify|verify} messages.
+     * @function encode
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioActiveSpeakerStreamSubscriptionConfiguration} message SdkAudioActiveSpeakerStreamSubscriptionConfiguration message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.mids != null && message.mids.length)
+            for (var i = 0; i < message.mids.length; ++i)
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.mids[i]);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkAudioActiveSpeakerStreamSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkAudioActiveSpeakerStreamSubscriptionConfiguration.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {ISdkAudioActiveSpeakerStreamSubscriptionConfiguration} message SdkAudioActiveSpeakerStreamSubscriptionConfiguration message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkAudioActiveSpeakerStreamSubscriptionConfiguration} SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    if (!(message.mids && message.mids.length))
+                        message.mids = [];
+                    message.mids.push(reader.string());
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkAudioActiveSpeakerStreamSubscriptionConfiguration} SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message.
+     * @function verify
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.mids != null && message.hasOwnProperty("mids")) {
+            if (!Array.isArray(message.mids))
+                return "mids: array expected";
+            for (var i = 0; i < message.mids.length; ++i)
+                if (!$util.isString(message.mids[i]))
+                    return "mids: string[] expected";
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkAudioActiveSpeakerStreamSubscriptionConfiguration} SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration)
+            return object;
+        var message = new $root.SdkAudioActiveSpeakerStreamSubscriptionConfiguration();
+        if (object.mids) {
+            if (!Array.isArray(object.mids))
+                throw TypeError(".SdkAudioActiveSpeakerStreamSubscriptionConfiguration.mids: array expected");
+            message.mids = [];
+            for (var i = 0; i < object.mids.length; ++i)
+                message.mids[i] = String(object.mids[i]);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {SdkAudioActiveSpeakerStreamSubscriptionConfiguration} message SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.mids = [];
+        if (message.mids && message.mids.length) {
+            object.mids = [];
+            for (var j = 0; j < message.mids.length; ++j)
+                object.mids[j] = message.mids[j];
+        }
+        return object;
+    };
+
+    /**
+     * Converts this SdkAudioActiveSpeakerStreamSubscriptionConfiguration to JSON.
+     * @function toJSON
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @function getTypeUrl
+     * @memberof SdkAudioActiveSpeakerStreamSubscriptionConfiguration
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkAudioActiveSpeakerStreamSubscriptionConfiguration.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkAudioActiveSpeakerStreamSubscriptionConfiguration";
+    };
+
+    return SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
 })();
 
 $root.SdkRemoteVideoUpdateFrame = (function() {
