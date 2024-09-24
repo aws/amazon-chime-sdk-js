@@ -45,6 +45,7 @@ export default class DefaultTransceiverController
   private readonly audioRedPacketLossLongEvalPeriodMs = 15 * 1000; // 15s
   private readonly audioRedHoldDownTimeMs: number = 5 * 60 * 1000; // 5m
   private readonly redRecoveryTimeMs: number = 1 * 60 * 1000; // 1m
+  private audioTopNTransceivers: RTCRtpTransceiver[] = [];
 
   constructor(
     protected logger: Logger,
@@ -184,7 +185,7 @@ export default class DefaultTransceiverController
   }
 
   async replaceAudioTrack(track: MediaStreamTrack): Promise<boolean> {
-    if (!this._localAudioTransceiver || this._localAudioTransceiver.direction !== 'sendrecv') {
+    if (!this._localAudioTransceiver || this._localAudioTransceiver.direction !== 'sendonly') {
       this.logger.info(`audio transceiver direction is not set up or not activated`);
       return false;
     }
@@ -435,7 +436,7 @@ export default class DefaultTransceiverController
     }
 
     if (track) {
-      transceiver.direction = 'sendrecv';
+      transceiver.direction = track.kind === 'audio' ? 'sendonly' : 'sendrecv';
     } else {
       transceiver.direction = 'inactive';
     }
@@ -468,9 +469,9 @@ export default class DefaultTransceiverController
 
   protected setupAudioRedWorker(): void {
     // @ts-ignore
-    const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform;
+    const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform && false;
     // @ts-ignore
-    const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedStreams;
+    const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedStreams && false;
 
     if (supportsRTCScriptTransform) {
       // This is the prefered approach according to
@@ -846,5 +847,20 @@ export default class DefaultTransceiverController
     observer: RedundantAudioRecoveryMetricsObserver
   ): void {
     this.redMetricsObservers.delete(observer);
+  }
+
+  setupTopNAudioTranceivers(): void {
+    if (this.audioTopNTransceivers.length > 0) {
+        return;
+    }
+    for (let i = 0; i < 3; i++) {
+        this.audioTopNTransceivers.push(this.peer.addTransceiver('audio', {
+            direction: 'recvonly'
+        }))
+      }
+  }
+
+  topNAudioTransceivers(): RTCRtpTransceiver[] {
+      return this.audioTopNTransceivers
   }
 }

@@ -245,6 +245,9 @@ import SetRemoteDescriptionTask from './task/SetRemoteDescriptionTask';
 import SigV4 from './sigv4/SigV4';
 import SignalingAndMetricsConnectionMonitor from './connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import SignalingClient from './signalingclient/SignalingClient';
+import SignalingClientAudioMixedStreamSubscriptionConfiguration from './signalingclient/SignalingClientAudioMixedStreamSubscriptionConfiguration';
+import SignalingClientAudioSingleStreamSubscriptionConfiguration from './signalingclient/SignalingClientAudioSingleStreamSubscriptionConfiguration';
+import SignalingClientAudioTopNStreamSubscriptionConfiguration from './signalingclient/SignalingClientAudioTopNStreamSubscriptionConfiguration';
 import SignalingClientConnectionRequest from './signalingclient/SignalingClientConnectionRequest';
 import SignalingClientEvent from './signalingclient/SignalingClientEvent';
 import SignalingClientEventType from './signalingclient/SignalingClientEventType';
@@ -597,6 +600,9 @@ export {
   SigV4,
   SignalingAndMetricsConnectionMonitor,
   SignalingClient,
+  SignalingClientAudioMixedStreamSubscriptionConfiguration,
+  SignalingClientAudioSingleStreamSubscriptionConfiguration,
+  SignalingClientAudioTopNStreamSubscriptionConfiguration,
   SignalingClientConnectionRequest,
   SignalingClientEvent,
   SignalingClientEventType,
