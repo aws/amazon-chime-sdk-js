@@ -17,6 +17,7 @@ export default class SignalingAndMetricsConnectionMonitor
   private isActive = false;
   private hasSeenValidCandidatePairMetricsBefore = false;
   private lastTotalBytesReceived = 0;
+  private lastTotalStunMessagesReceived = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -94,21 +95,41 @@ export default class SignalingAndMetricsConnectionMonitor
     // so we just use the raw report for now.
     const webrtcReport = clientMetricReport.getRTCStatsReport();
 
+    // We use candidate pair bytes received as a proxy for packets received
+    // since not all versions of all browsers have 'packetsReceived' for candidate pairs
     let totalBytesReceived = 0;
+    // We additionally check STUN messages received, in case backend is not sending RTP/RTCP
+    // which may happen in None attendee capability edge cases.
+    let totalStunMessagedReceived = 0;
     webrtcReport.forEach(stat => {
-      if (stat.type === 'candidate-pair' && stat.bytesReceived) {
-        totalBytesReceived += stat.bytesReceived;
+      if (stat.type === 'candidate-pair') {
+        if (stat.bytesReceived) {
+          totalBytesReceived += stat.bytesReceived;
+        }
+        if (stat.requestsReceived) {
+          totalStunMessagedReceived += stat.requestsReceived;
+        }
+        if (stat.responsesReceived) {
+          totalStunMessagedReceived += stat.responsesReceived;
+        }
       }
     });
     const bytesReceived = totalBytesReceived - this.lastTotalBytesReceived;
     this.lastTotalBytesReceived = totalBytesReceived;
+    const stunMessagesReceived = totalStunMessagedReceived - this.lastTotalStunMessagesReceived;
+    this.lastTotalStunMessagesReceived = totalStunMessagedReceived;
     if (
       typeof potentialAudioPacketsReceived === 'number' &&
       typeof potentialAudioFractionPacketsLostInbound === 'number'
     ) {
       audioPacketsReceived = potentialAudioPacketsReceived;
       audiofractionPacketsLostInbound = potentialAudioFractionPacketsLostInbound;
-      if (audioPacketsReceived < 0 || audiofractionPacketsLostInbound < 0 || bytesReceived < 0) {
+      if (
+        audioPacketsReceived < 0 ||
+        audiofractionPacketsLostInbound < 0 ||
+        bytesReceived < 0 ||
+        stunMessagesReceived < 0
+      ) {
         // The stats collector or logic above may emit negative numbers on this metric after reconnect
         // which we should not use.
         return;
@@ -125,9 +146,7 @@ export default class SignalingAndMetricsConnectionMonitor
       audiofractionPacketsLostInbound
     );
 
-    // We use candidate pair bytes received as a proxy for packets received
-    // since not all versions of all browsers have 'packetsReceived' for candidate pairs
-    if (bytesReceived > 0) {
+    if (bytesReceived > 0 || stunMessagesReceived > 0) {
       this.hasSeenValidCandidatePairMetricsBefore = true;
       this.connectionHealthData.setConsecutiveStatsWithNoPackets(0);
     } else if (this.hasSeenValidCandidatePairMetricsBefore) {

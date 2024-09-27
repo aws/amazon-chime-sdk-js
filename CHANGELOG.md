@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Include STUN packets in received packet reconnection check to mitigate edge cases when all attendee capabilities are 'None'
+
 ## [3.24.0] - 2024-07-11
 
 ### Added
