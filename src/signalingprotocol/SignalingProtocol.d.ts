@@ -1025,7 +1025,7 @@ export interface ISdkSubscribeFrame {
     audioMixedStreamSubscriptionConfigurations?: (ISdkAudioMixedStreamSubscriptionConfiguration[]|null);
 
     /** SdkSubscribeFrame audioTopNStreamSubscriptionConfigurations */
-    audioTopNStreamSubscriptionConfigurations?: (ISdkAudioTopNStreamSubscriptionConfiguration[]|null);
+    audioTopNStreamSubscriptionConfigurations?: (ISdkAudioActiveSpeakerStreamSubscriptionConfiguration[]|null);
 }
 
 /** Represents a SdkSubscribeFrame. */
@@ -1071,7 +1071,7 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
     public audioMixedStreamSubscriptionConfigurations: ISdkAudioMixedStreamSubscriptionConfiguration[];
 
     /** SdkSubscribeFrame audioTopNStreamSubscriptionConfigurations. */
-    public audioTopNStreamSubscriptionConfigurations: ISdkAudioTopNStreamSubscriptionConfiguration[];
+    public audioTopNStreamSubscriptionConfigurations: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration[];
 
     /**
      * Creates a new SdkSubscribeFrame instance using the specified properties.
@@ -5035,97 +5035,97 @@ export class SdkAudioMixedStreamSubscriptionConfiguration implements ISdkAudioMi
     public static getTypeUrl(typeUrlPrefix?: string): string;
 }
 
-/** Properties of a SdkAudioTopNStreamSubscriptionConfiguration. */
-export interface ISdkAudioTopNStreamSubscriptionConfiguration {
+/** Properties of a SdkAudioActiveSpeakerStreamSubscriptionConfiguration. */
+export interface ISdkAudioActiveSpeakerStreamSubscriptionConfiguration {
 
-    /** SdkAudioTopNStreamSubscriptionConfiguration mids */
+    /** SdkAudioActiveSpeakerStreamSubscriptionConfiguration mids */
     mids?: (string[]|null);
 }
 
-/** Represents a SdkAudioTopNStreamSubscriptionConfiguration. */
-export class SdkAudioTopNStreamSubscriptionConfiguration implements ISdkAudioTopNStreamSubscriptionConfiguration {
+/** Represents a SdkAudioActiveSpeakerStreamSubscriptionConfiguration. */
+export class SdkAudioActiveSpeakerStreamSubscriptionConfiguration implements ISdkAudioActiveSpeakerStreamSubscriptionConfiguration {
 
     /**
-     * Constructs a new SdkAudioTopNStreamSubscriptionConfiguration.
+     * Constructs a new SdkAudioActiveSpeakerStreamSubscriptionConfiguration.
      * @param [properties] Properties to set
      */
-    constructor(properties?: ISdkAudioTopNStreamSubscriptionConfiguration);
+    constructor(properties?: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration);
 
-    /** SdkAudioTopNStreamSubscriptionConfiguration mids. */
+    /** SdkAudioActiveSpeakerStreamSubscriptionConfiguration mids. */
     public mids: string[];
 
     /**
-     * Creates a new SdkAudioTopNStreamSubscriptionConfiguration instance using the specified properties.
+     * Creates a new SdkAudioActiveSpeakerStreamSubscriptionConfiguration instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns SdkAudioTopNStreamSubscriptionConfiguration instance
+     * @returns SdkAudioActiveSpeakerStreamSubscriptionConfiguration instance
      */
-    public static create(properties?: ISdkAudioTopNStreamSubscriptionConfiguration): SdkAudioTopNStreamSubscriptionConfiguration;
+    public static create(properties?: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration): SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
 
     /**
-     * Encodes the specified SdkAudioTopNStreamSubscriptionConfiguration message. Does not implicitly {@link SdkAudioTopNStreamSubscriptionConfiguration.verify|verify} messages.
-     * @param message SdkAudioTopNStreamSubscriptionConfiguration message or plain object to encode
+     * Encodes the specified SdkAudioActiveSpeakerStreamSubscriptionConfiguration message. Does not implicitly {@link SdkAudioActiveSpeakerStreamSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkAudioActiveSpeakerStreamSubscriptionConfiguration message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: ISdkAudioTopNStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified SdkAudioTopNStreamSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkAudioTopNStreamSubscriptionConfiguration.verify|verify} messages.
-     * @param message SdkAudioTopNStreamSubscriptionConfiguration message or plain object to encode
+     * Encodes the specified SdkAudioActiveSpeakerStreamSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkAudioActiveSpeakerStreamSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkAudioActiveSpeakerStreamSubscriptionConfiguration message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(message: ISdkAudioTopNStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encodeDelimited(message: ISdkAudioActiveSpeakerStreamSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a SdkAudioTopNStreamSubscriptionConfiguration message from the specified reader or buffer.
+     * Decodes a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns SdkAudioTopNStreamSubscriptionConfiguration
+     * @returns SdkAudioActiveSpeakerStreamSubscriptionConfiguration
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioTopNStreamSubscriptionConfiguration;
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
 
     /**
-     * Decodes a SdkAudioTopNStreamSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * Decodes a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns SdkAudioTopNStreamSubscriptionConfiguration
+     * @returns SdkAudioActiveSpeakerStreamSubscriptionConfiguration
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioTopNStreamSubscriptionConfiguration;
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
 
     /**
-     * Verifies a SdkAudioTopNStreamSubscriptionConfiguration message.
+     * Verifies a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): (string|null);
 
     /**
-     * Creates a SdkAudioTopNStreamSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * Creates a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns SdkAudioTopNStreamSubscriptionConfiguration
+     * @returns SdkAudioActiveSpeakerStreamSubscriptionConfiguration
      */
-    public static fromObject(object: { [k: string]: any }): SdkAudioTopNStreamSubscriptionConfiguration;
+    public static fromObject(object: { [k: string]: any }): SdkAudioActiveSpeakerStreamSubscriptionConfiguration;
 
     /**
-     * Creates a plain object from a SdkAudioTopNStreamSubscriptionConfiguration message. Also converts values to other types if specified.
-     * @param message SdkAudioTopNStreamSubscriptionConfiguration
+     * Creates a plain object from a SdkAudioActiveSpeakerStreamSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @param message SdkAudioActiveSpeakerStreamSubscriptionConfiguration
      * @param [options] Conversion options
      * @returns Plain object
      */
-    public static toObject(message: SdkAudioTopNStreamSubscriptionConfiguration, options?: $protobuf.IConversionOptions): { [k: string]: any };
+    public static toObject(message: SdkAudioActiveSpeakerStreamSubscriptionConfiguration, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
     /**
-     * Converts this SdkAudioTopNStreamSubscriptionConfiguration to JSON.
+     * Converts this SdkAudioActiveSpeakerStreamSubscriptionConfiguration to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
 
     /**
-     * Gets the default type url for SdkAudioTopNStreamSubscriptionConfiguration
+     * Gets the default type url for SdkAudioActiveSpeakerStreamSubscriptionConfiguration
      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
      * @returns The default type url
      */

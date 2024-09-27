@@ -8,7 +8,7 @@ import SDP from '../sdp/SDP';
 import ZLIBTextCompressor from '../sdp/ZLIBTextCompressor';
 import { serverSideNetworkAdaptionIsNoneOrDefault } from '../signalingclient/ServerSideNetworkAdaption';
 import SignalingClient from '../signalingclient/SignalingClient';
-import SignalingClientAudioTopNStreamSubscriptionConfiguration from '../signalingclient/SignalingClientAudioTopNStreamSubscriptionConfiguration';
+import SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration from '../signalingclient/SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientSubscribe from '../signalingclient/SignalingClientSubscribe';
@@ -132,12 +132,12 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       );
     }
 
-    if (this.context.transceiverController.topNAudioTransceivers !== undefined) {
-        let config = new SignalingClientAudioTopNStreamSubscriptionConfiguration();
+    if (this.context.transceiverController.AudioActiveSpeakerTransceivers !== undefined) {
+        let config = new SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration();
         config.mids = [];
 
         this.context.transceiverController
-        .topNAudioTransceivers()
+        .audioActiveSpeakerTransceivers()
         .forEach((transceiver, index) => {
             if (transceiver.mid === null) {
                 this.context.logger.warn(`Transceiver at index ${index} does not have 'mid' set yet.`);
@@ -146,7 +146,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
             config.mids.push(transceiver.mid);
         })
 
-        subscribe.audioTopNStreamSubscriptionConfiguration = [config];
+        subscribe.audioActiveSpeakerStreamSubscriptionConfiguration = [config];
     
     }
     this.context.logger.info(`sending subscribe: ${JSON.stringify(subscribe)}`);

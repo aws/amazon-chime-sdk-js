@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SdkAudioTopNStreamSubscriptionConfiguration } from "../signalingprotocol/SignalingProtocol";
+import { SdkAudioActiveSpeakerStreamSubscriptionConfiguration } from "../signalingprotocol/SignalingProtocol";
   
   /**
- * [[SignalingClientAudioTopNStreamSubscriptionConfiguration]] is an internal representation of
- * `SignalingProtocol.AudioTopNStreamSubscriptionConfiguration`
+ * [[SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration]] is an internal representation of
+ * `SignalingProtocol.AudioActiveSpeakerStreamSubscriptionConfiguration`
  */
-export default class SignalingClientAudioTopNStreamSubscriptionConfiguration {
+export default class SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration {
     mids?: string[];
   
     equals(other: this): boolean {
@@ -17,8 +17,8 @@ export default class SignalingClientAudioTopNStreamSubscriptionConfiguration {
       );
     }
 
-    toSignaled(): SdkAudioTopNStreamSubscriptionConfiguration {
-      let signaledConfig = new SdkAudioTopNStreamSubscriptionConfiguration();
+    toSignaled(): SdkAudioActiveSpeakerStreamSubscriptionConfiguration {
+      let signaledConfig = new SdkAudioActiveSpeakerStreamSubscriptionConfiguration();
       signaledConfig.mids = this.mids;
       return signaledConfig;
     }

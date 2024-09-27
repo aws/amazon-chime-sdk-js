@@ -19,7 +19,7 @@ export default class AttachMediaInputTask extends BaseTask {
     const transceiverController = this.context.transceiverController;
     transceiverController.setPeer(this.context.peer);
     transceiverController.setupLocalTransceivers();
-    transceiverController.setupTopNAudioTranceivers();
+    transceiverController.setupAudioActiveSpeakerTranceivers();
 
     const audioInput = this.context.activeAudioInput;
 

@@ -45,7 +45,7 @@ export default class DefaultTransceiverController
   private readonly audioRedPacketLossLongEvalPeriodMs = 15 * 1000; // 15s
   private readonly audioRedHoldDownTimeMs: number = 5 * 60 * 1000; // 5m
   private readonly redRecoveryTimeMs: number = 1 * 60 * 1000; // 1m
-  private audioTopNTransceivers: RTCRtpTransceiver[] = [];
+  private _audioActiveSpeakerTransceivers: RTCRtpTransceiver[] = [];
 
   constructor(
     protected logger: Logger,
@@ -469,9 +469,9 @@ export default class DefaultTransceiverController
 
   protected setupAudioRedWorker(): void {
     // @ts-ignore
-    const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform && false;
+    const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform;
     // @ts-ignore
-    const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedStreams && false;
+    const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedStreams;
 
     if (supportsRTCScriptTransform) {
       // This is the prefered approach according to
@@ -849,18 +849,18 @@ export default class DefaultTransceiverController
     this.redMetricsObservers.delete(observer);
   }
 
-  setupTopNAudioTranceivers(): void {
-    if (this.audioTopNTransceivers.length > 0) {
+  setupAudioActiveSpeakerTranceivers(): void {
+    if (this._audioActiveSpeakerTransceivers.length > 0) {
         return;
     }
     for (let i = 0; i < 3; i++) {
-        this.audioTopNTransceivers.push(this.peer.addTransceiver('audio', {
+        this._audioActiveSpeakerTransceivers.push(this.peer.addTransceiver('audio', {
             direction: 'recvonly'
         }))
       }
   }
 
-  topNAudioTransceivers(): RTCRtpTransceiver[] {
-      return this.audioTopNTransceivers
+  audioActiveSpeakerTransceivers(): RTCRtpTransceiver[] {
+      return this._audioActiveSpeakerTransceivers
   }
 }

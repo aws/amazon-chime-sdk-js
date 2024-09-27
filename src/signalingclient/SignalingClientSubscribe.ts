@@ -4,7 +4,7 @@
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import SignalingClientAudioMixedStreamSubscriptionConfiguration from './SignalingClientAudioMixedStreamSubscriptionConfiguration';
 import SignalingClientAudioSingleStreamSubscriptionConfiguration from './SignalingClientAudioSingleStreamSubscriptionConfiguration';
-import SignalingClientAudioTopNStreamSubscriptionConfiguration from './SignalingClientAudioTopNStreamSubscriptionConfiguration';
+import SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration from './SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration';
 import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVideoSubscriptionConfiguration';
 
 /**
@@ -14,7 +14,7 @@ export default class SignalingClientSubscribe {
     videoSubscriptionConfiguration: SignalingClientVideoSubscriptionConfiguration[] = [];
     audioSingleStreamSubscriptionConfiguration: SignalingClientAudioSingleStreamSubscriptionConfiguration[] = [];
     audioMixedStreamSubscriptionConfiguration: SignalingClientAudioMixedStreamSubscriptionConfiguration[] = [];
-    audioTopNStreamSubscriptionConfiguration: SignalingClientAudioTopNStreamSubscriptionConfiguration[] = [];
+    audioActiveSpeakerStreamSubscriptionConfiguration: SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration[] = [];
 
   /** Initializes a SignalingClientSubscribe with the given properties.
    *

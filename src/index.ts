@@ -247,7 +247,7 @@ import SignalingAndMetricsConnectionMonitor from './connectionmonitor/SignalingA
 import SignalingClient from './signalingclient/SignalingClient';
 import SignalingClientAudioMixedStreamSubscriptionConfiguration from './signalingclient/SignalingClientAudioMixedStreamSubscriptionConfiguration';
 import SignalingClientAudioSingleStreamSubscriptionConfiguration from './signalingclient/SignalingClientAudioSingleStreamSubscriptionConfiguration';
-import SignalingClientAudioTopNStreamSubscriptionConfiguration from './signalingclient/SignalingClientAudioTopNStreamSubscriptionConfiguration';
+import SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration from './signalingclient/SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration';
 import SignalingClientConnectionRequest from './signalingclient/SignalingClientConnectionRequest';
 import SignalingClientEvent from './signalingclient/SignalingClientEvent';
 import SignalingClientEventType from './signalingclient/SignalingClientEventType';
@@ -602,7 +602,7 @@ export {
   SignalingClient,
   SignalingClientAudioMixedStreamSubscriptionConfiguration,
   SignalingClientAudioSingleStreamSubscriptionConfiguration,
-  SignalingClientAudioTopNStreamSubscriptionConfiguration,
+  SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration,
   SignalingClientConnectionRequest,
   SignalingClientEvent,
   SignalingClientEventType,

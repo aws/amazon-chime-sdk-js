@@ -138,6 +138,6 @@ export default interface TransceiverController {
     observer: RedundantAudioRecoveryMetricsObserver
   ): void;
 
-  setupTopNAudioTranceivers?(): void;
-  topNAudioTransceivers?(): RTCRtpTransceiver[];
+  setupAudioActiveSpeakerTranceivers?(): void;
+  AudioActiveSpeakerTransceivers?(): RTCRtpTransceiver[];
 }

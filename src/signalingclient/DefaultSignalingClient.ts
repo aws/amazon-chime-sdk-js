@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MeetingSessionCredentials, SignalingClientAudioMixedStreamSubscriptionConfiguration, SignalingClientAudioSingleStreamSubscriptionConfiguration, SignalingClientAudioTopNStreamSubscriptionConfiguration } from '..';
+import { MeetingSessionCredentials, SignalingClientAudioMixedStreamSubscriptionConfiguration, SignalingClientAudioSingleStreamSubscriptionConfiguration, SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration } from '..';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import TimeoutScheduler from '../scheduler/TimeoutScheduler';
@@ -181,9 +181,9 @@ export default class DefaultSignalingClient implements SignalingClient {
             (configuration: SignalingClientAudioMixedStreamSubscriptionConfiguration) => configuration.toSignaled()
         )
     }
-    if (settings.audioTopNStreamSubscriptionConfiguration.length > 0) {
-        subscribeFrame.audioTopNStreamSubscriptionConfigurations = settings.audioTopNStreamSubscriptionConfiguration.map(
-            (configuration: SignalingClientAudioTopNStreamSubscriptionConfiguration) => configuration.toSignaled()
+    if (settings.audioActiveSpeakerStreamSubscriptionConfiguration.length > 0) {
+        subscribeFrame.audioActiveSpeakerStreamSubscriptionConfigurations = settings.audioActiveSpeakerStreamSubscriptionConfiguration.map(
+            (configuration: SignalingClientAudioActiveSpeakerStreamSubscriptionConfiguration) => configuration.toSignaled()
         )
     }
     const message = SdkSignalFrame.create();
