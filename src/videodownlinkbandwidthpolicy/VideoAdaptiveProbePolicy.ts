@@ -11,8 +11,23 @@ import { VideoPreferences } from './VideoPreferences';
 import VideoPriorityBasedPolicy from './VideoPriorityBasedPolicy';
 import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
 
-/** [[VideoAdaptiveProbePolicy]] wraps [[VideoPriorityBasedPolicy]] with customized behavior to automatically
- * assign a high preference to content share.
+/**
+ * [[VideoAdaptiveProbePolicy]] wraps [[VideoPriorityBasedPolicy]] with customized behavior to automatically
+ * assign a high preference to content share. This is a legacy policy used by default when simulcast is enabled, but
+ * all customers should be using `VideoPriorityBasedPolicy` instead, since this policy does not work with
+ * server side network adaptation.
+ *
+ * You can imitate this classes behavior using the `VideoPriorityBasedPolicy` with the following snippet
+ * ```
+ *   remoteVideoSourcesDidChange(videoSources: VideoSource[]) {
+ *     const videoPreferences = VideoPreferences.prepare();
+ *     for(const source of videoSources) {
+ *        const isContent = source.attendee.attendeeId.endsWith(ContentShareConstants.Modality);
+ *        videoPreferences.add(new VideoPreference(source.attendee.attendeeId, isContent ? 2: 1, TargetDisplaySize.High));
+ *     }
+ *     this.priorityBasedDownlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
+ *   }
+ * ```
  */
 export default class VideoAdaptiveProbePolicy extends VideoPriorityBasedPolicy {
   private static createConfig(): VideoPriorityBasedPolicyConfig {

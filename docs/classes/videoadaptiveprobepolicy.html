@@ -69,8 +69,20 @@
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p><a href="videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a> wraps <a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a> with customized behavior to automatically
-						assign a high preference to content share.</p>
+							assign a high preference to content share. This is a legacy policy used by default when simulcast is enabled, but
+							all customers should be using <code>VideoPriorityBasedPolicy</code> instead, since this policy does not work with
+						server side network adaptation.</p>
 					</div>
+					<p>You can imitate this classes behavior using the <code>VideoPriorityBasedPolicy</code> with the following snippet</p>
+					<pre><code><span style="color: #000000">  </span><span style="color: #795E26">remoteVideoSourcesDidChange</span><span style="color: #000000">(</span><span style="color: #001080">videoSources</span><span style="color: #000000">: </span><span style="color: #001080">VideoSource</span><span style="color: #000000">[]) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoPreferences</span><span style="color: #000000"> = </span><span style="color: #001080">VideoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">prepare</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">for</span><span style="color: #000000">(</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">source</span><span style="color: #000000"> </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #001080">videoSources</span><span style="color: #000000">) {</span>
+<span style="color: #000000">       </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">isContent</span><span style="color: #000000"> = </span><span style="color: #001080">source</span><span style="color: #000000">.</span><span style="color: #001080">attendee</span><span style="color: #000000">.</span><span style="color: #001080">attendeeId</span><span style="color: #000000">.</span><span style="color: #795E26">endsWith</span><span style="color: #000000">(</span><span style="color: #001080">ContentShareConstants</span><span style="color: #000000">.</span><span style="color: #001080">Modality</span><span style="color: #000000">);</span>
+<span style="color: #000000">       </span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">VideoPreference</span><span style="color: #000000">(</span><span style="color: #001080">source</span><span style="color: #000000">.</span><span style="color: #001080">attendee</span><span style="color: #000000">.</span><span style="color: #001080">attendeeId</span><span style="color: #000000">, </span><span style="color: #001080">isContent</span><span style="color: #000000"> ? </span><span style="color: #098658">2</span><span style="color: #000000">: </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">TargetDisplaySize</span><span style="color: #000000">.</span><span style="color: #001080">High</span><span style="color: #000000">));</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">priorityBasedDownlinkPolicy</span><span style="color: #000000">.</span><span style="color: #795E26">chooseRemoteVideoSources</span><span style="color: #000000">(</span><span style="color: #001080">videoPreferences</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">());</span>
+<span style="color: #000000">  }</span>
+</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -150,7 +162,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a>.<a href="videoprioritybasedpolicy.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L22">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L37">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:37</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -362,7 +374,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a>.<a href="videoprioritybasedpolicy.html#chooseremotevideosources">chooseRemoteVideoSources</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L71">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L86">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:86</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -563,7 +575,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a>.<a href="videoprioritybasedpolicy.html#reset">reset</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L32">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L47">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:47</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -707,7 +719,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a>.<a href="videoprioritybasedpolicy.html#updateindex">updateIndex</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L38">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L53">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
