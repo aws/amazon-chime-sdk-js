@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated guides and doc-strings to recommend `VideoPriorityBasedPolicy` over `VideoAdaptiveProbePolicy`.
+
 ### Fixed
 
 - Include STUN packets in received packet reconnection check to mitigate edge cases when all attendee capabilities are 'None'
