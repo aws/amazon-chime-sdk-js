@@ -17,7 +17,7 @@
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
-    "@aws-sdk/client-chime-sdk-meetings": "^3.477.0",
+    "@aws-sdk/client-chime-sdk-meetings": "^3.632.0",
     "amazon-chime-sdk-js": "file:../../.."
   },
   "license": "Apache-2.0",
