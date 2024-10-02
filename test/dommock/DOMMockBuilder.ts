@@ -164,6 +164,8 @@ export default class DOMMockBuilder {
 
         return true;
       }
+
+      terminate(): void {}
     };
 
     GlobalAny.WebSocket = class MockWebSocket {
