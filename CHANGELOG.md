@@ -5,7 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.23.0] - 2024-05-14
+## [3.25.0] - 2024-09-10
+
+### Added
+
+### Removed
+
+### Changed
+
+- Updated guides and doc-strings to recommend `VideoPriorityBasedPolicy` over `VideoAdaptiveProbePolicy`.
+
+### Fixed
+
+- Include STUN packets in received packet reconnection check to mitigate edge cases when all attendee capabilities are 'None'
+- Terminate audio RED worker before removing reference.
+
+## [3.24.0] - 2024-07-11
 
 ### Added
 
@@ -15,12 +30,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Update uplink policy at codec degradation triggered by encoding health monitor.
+
+## [3.23.0] - 2024-05-14
+
+### Added
+
+- Added `DefaultDeviceController.suspendAudioContext` and `DefaultDeviceController.resumeAudioContext`. Suspending and resuming the resusable audio context is preferable to stopping and recreating if an audio context eventually needs to be used again.
+
+### Removed
+
+### Changed
+
+- Do not try to manually adjust SVC layers based off target resolution, as this may lead to an unnecessarily high minimum bitrate to subscribe to all remote videos. Instead rely on browser logic which drops any layers below around 135p.
+
+### Fixed
+
 - Fixed rare race conditions with simulcast + server side network adaptation on third attendee join.
+- Make redundant audio worker code generation script work on Windows
+- Do not drop server side network adaptation pauses that happen immediately after SDP negotiation, by pre-emptively creating a tile immediately when applications subscribes to one, and attaching the video track later.
 
 ## [3.22.0] - 2024-03-15
 
 ### Added
 
+- Add automatic codec degradation logic when CPU usage of software encoder is high or video encoding of encoder fails. This will only occur if `setVideoCodecSendPreferences` is being called by the application.
 - Added `groupId` to `VideoTileState` for mapping metrics other then those from `getObservableVideoMetrics` when using server side network adaptation.
 - Added support for Node version 22
 
@@ -29,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Avoid subscribes when simulcast is enabled but not currently sending, or when using server side network adaptation.
+- Made server side network adaptation the default when creating `VideoPriorityBasedPolicy`.
 
 ### Fixed
 
@@ -49,8 +84,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.21.0] - 2024-02-12
 
 ### Added
-
-- Add automatic codec degradation logic when CPU usage of software encoder is high or video encoding of encoder fails.
 
 ### Removed
 

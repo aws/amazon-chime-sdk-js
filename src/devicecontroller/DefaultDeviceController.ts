@@ -1491,6 +1491,9 @@ export default class DefaultDeviceController
   /**
    * Returns the Web Audio `AudioContext` used by the {@link DefaultDeviceController}. The `AudioContext`
    * is created lazily the first time this function is called.
+   *
+   * This function will not attempt to recreate a stopped context, or resume a suspended one.
+   *
    * @returns a Web Audio `AudioContext`
    */
   static getAudioContext(): AudioContext {
@@ -1513,6 +1516,37 @@ export default class DefaultDeviceController
     return DefaultDeviceController.audioContext;
   }
 
+  /**
+   * Calls [suspend](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/suspend)
+   * on reusable audio context. This is useful if you want an application to power down the
+   * audio hardware when it will not be using an audio context for a while (i.e. if you
+   * have an application that isn't always running a Chime SDK meeting). This is preferrable
+   * to calling [[closeAudioContext]]
+   */
+  static async suspendAudioContext(): Promise<void> {
+    if (DefaultDeviceController.audioContext) {
+      return DefaultDeviceController.audioContext.suspend();
+    }
+    return Promise.resolve();
+  }
+
+  /**
+   * Calls [resume](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/resume)
+   * on reusable audio context.
+   */
+  static async resumeAudioContext(): Promise<void> {
+    if (DefaultDeviceController.audioContext) {
+      return DefaultDeviceController.audioContext.resume();
+    }
+    return Promise.resolve();
+  }
+
+  /**
+   * Calls [close](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/close)
+   * on reusable audio context. This more forceful the suspend and is not recommended
+   * if you plan on reusing the Chime SDK, as it may lead to audio glitches (e.g. due to
+   * https://issues.chromium.org/issues/40282750).
+   */
   static closeAudioContext(): void {
     if (DefaultDeviceController.audioContext) {
       try {

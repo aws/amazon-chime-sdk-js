@@ -50,7 +50,6 @@ import {
   NoOpVideoFrameProcessor,
   VideoFxConfig,
   RemovableAnalyserNode,
-  ServerSideNetworkAdaption,
   SimulcastLayers,
   Transcript,
   TranscriptEvent,
@@ -63,7 +62,6 @@ import {
   VideoFrameProcessor,
   VideoInputDevice,
   VideoPriorityBasedPolicy,
-  VideoPriorityBasedPolicyConfig,
   VideoQualitySettings,
   VoiceFocusDeviceTransformer,
   VoiceFocusModelComplexity,
@@ -101,6 +99,7 @@ import { getPOSTLogger } from './util/MeetingLogger';
 import Roster from './component/Roster';
 import ContentShareManager from './component/ContentShareManager';
 import { AudioBufferMediaStreamProvider, SynthesizedStereoMediaStreamProvider } from './util/mediastreamprovider/DemoMediaStreamProviders';
+
 import { BackgroundImageEncoding } from './util/BackgroundImage';
 
 let SHOULD_EARLY_CONNECT = (() => {
@@ -277,7 +276,7 @@ export class DemoMeetingApp
 
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
-  volumeIndicatorHandler:  (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
+  volumeIndicatorHandler: (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
   canUnmuteLocalAudioHandler: (undefined | ((canUnmute: boolean) => void)) = undefined;
   muteAndUnmuteLocalAudioHandler: (undefined | ((muted: boolean) => void)) = undefined;
   blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver) = undefined;
@@ -347,7 +346,6 @@ export class DemoMeetingApp
   enableSimulcast = false;
   enableSVC = false;
   usePriorityBasedDownlinkPolicy = false;
-  videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig;
   enablePin = false;
   echoReductionCapability = false;
   usingStereoMusicAudioProfile = false;
@@ -381,6 +379,7 @@ export class DemoMeetingApp
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
   joinInfo: any | undefined;
+  joinInfoOverride: any | undefined = undefined;
   deleteOwnAttendeeToLeave = false;
   disablePeriodicKeyframeRequestOnContentSender = false;
   allowAttendeeCapabilities = false;
@@ -521,6 +520,17 @@ export class DemoMeetingApp
       (document.getElementById('inputName') as HTMLInputElement).focus();
     } else {
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
+    }
+
+    if (new URL(window.location.href).searchParams.has('join-info-override')) {
+      const joinInfoOverride = JSON.parse(new URL(window.location.href).searchParams.get('join-info-override'));
+      (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value = JSON.stringify(joinInfoOverride.JoinInfo.Attendee, null, 4);
+      (document.getElementById('get-meeting-override-input') as HTMLTextAreaElement).value = JSON.stringify(joinInfoOverride.JoinInfo.Meeting, null, 4);
+      new Modal(document.getElementById('join-info-override-modal'), {}).show();
+
+      document.getElementById('join-info-override-join-button').addEventListener('click', () => {
+        this.isViewOnly = (document.getElementById('join-view-only') as HTMLInputElement).checked;
+      });
     }
   }
 
@@ -664,21 +674,6 @@ export class DemoMeetingApp
 
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
-
-      const serverSideNetworkAdaption = document.getElementById(
-          'server-side-network-adaption'
-      ) as HTMLSelectElement;
-      const serverSideNetworkAdaptionTitle = document.getElementById(
-          'server-side-network-adaption-title'
-      ) as HTMLElement;
-
-      if (this.usePriorityBasedDownlinkPolicy) {
-        serverSideNetworkAdaption.style.display = 'block';
-        serverSideNetworkAdaptionTitle.style.display = 'block';
-      } else {
-        serverSideNetworkAdaption.style.display = 'none';
-        serverSideNetworkAdaptionTitle.style.display = 'none';
-      }
     });
 
     const echoReductionCheckbox = (document.getElementById('echo-reduction-checkbox') as HTMLInputElement);
@@ -714,6 +709,11 @@ export class DemoMeetingApp
     });
 
     document.getElementById('quick-join').addEventListener('click', e => {
+      e.preventDefault();
+      this.redirectFromAuthentication(true);
+    });
+
+    document.getElementById('join-info-override-join-button').addEventListener('click', e => {
       e.preventDefault();
       this.redirectFromAuthentication(true);
     });
@@ -1859,22 +1859,7 @@ export class DemoMeetingApp
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     configuration.enableSVC = this.enableSVC;
     if (this.usePriorityBasedDownlinkPolicy) {
-      const serverSideNetworkAdaptionDropDown = document.getElementById('server-side-network-adaption') as HTMLSelectElement;
-      switch (serverSideNetworkAdaptionDropDown.value) {
-        case 'default':
-          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.Default;
-          break;
-        case 'none':
-          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
-          break;
-        case 'enable-bandwidth-probing':
-          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbing;
-          break;
-        case 'enable-bandwidth-probing-and-video-adaption':
-          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
-          break;
-      }
-      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
+        this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
     } else {
@@ -3493,7 +3478,7 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.sendJoinRequest(
+    this.joinInfo = this.joinInfoOverride ? this.joinInfoOverride.JoinInfo : (await this.sendJoinRequest(
       this.meeting,
       this.name,
       this.region,
@@ -3673,7 +3658,7 @@ export class DemoMeetingApp
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
-    if(this.behaviorAfterLeave === 'nothing') {
+    if (this.behaviorAfterLeave === 'nothing') {
       return;
     }
     this.log(`resetting stats`);
@@ -3973,6 +3958,20 @@ export class DemoMeetingApp
       this.enableSimulcast = false;
     }
 
+    const createAttendeeOverride = (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value;
+    const getMeetingOverride = (document.getElementById('get-meeting-override-input') as HTMLTextAreaElement).value;
+    if (createAttendeeOverride.length !== 0 && getMeetingOverride.length !== 0) {
+      this.joinInfoOverride = {
+        JoinInfo: {
+          Meeting: JSON.parse(getMeetingOverride),
+          Attendee: JSON.parse(createAttendeeOverride),
+        }
+      };
+      this.meeting = this.joinInfoOverride.JoinInfo.Meeting.Meeting.ExternalMeetingId;
+      this.name = this.joinInfoOverride.JoinInfo.Attendee.Attendee.ExternalUserId;
+      this.region = this.joinInfoOverride.JoinInfo.Meeting.Meeting.MediaRegion;
+    }
+
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
     this.contentCodecPreferences = getCodecPreferences(chosenContentSendCodec);
   
@@ -4053,9 +4052,9 @@ export class DemoMeetingApp
           }
           this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
 
-          // `this.primaryExternalMeetingId` may by the join request
+          // `this.primaryExternalMeetingId` may by set by the join request. Not relevant with overriden info.
           const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');
-          if (!this.primaryExternalMeetingId) {
+          if (!this.primaryExternalMeetingId || this.joinInfoOverride !== undefined) {
             buttonPromoteToPrimary.style.display = 'none';
           } else {
             this.setButtonVisibility('button-record-cloud', false);

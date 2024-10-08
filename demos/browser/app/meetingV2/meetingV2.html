@@ -139,7 +139,7 @@
             <input type="checkbox" id="join-muted" class="form-check-input"></input>
             <label for="join-muted-setting" class="form-check-label">Join Muted</label>
           </div>
-          <div class="form-check" style="text-align: left;">
+        <div class="form-check" style="text-align: left;">
             <input type="checkbox" id="webaudio" class="form-check-input">
             <label for="webaudio" class="form-check-label">Use WebAudio</label>
           </div>
@@ -212,6 +212,10 @@
             <input type="checkbox" id="svc" class="form-check-input">
             <label for="svc" class="form-check-label">Enable SVC for Chrome</label>
           </div>
+          <div class="form-check" style="text-align: left;">
+            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
+            <label for="priority-downlink-policy" class="form-check-label">Enable remote video quality adaptation</label>
+          </div>
           <label id="pagination-title" for="pagination-page-size" style="padding-top:5px">Paginate displayed video tiles</label>
           <select id="pagination-page-size" class="form-select" style="width:100%;">
             <option value="1">1</option>
@@ -220,18 +224,6 @@
             <option value="16">16</option>
             <option value="25" selected>25</option>
           </select>      
-          <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="priority-downlink-policy" class="form-check-input">
-            <label for="priority-downlink-policy" class="form-check-label">Use Priority-Based Downlink
-              Policy</label>
-          </div>
-          <label id="server-side-network-adaption-title" for="server-side-network-adaption" style="display: none; padding-top:5px">Server Side Network Adaption</label>
-          <select id="server-side-network-adaption" class="form-select" style="width:100%; display: none;">
-            <option value="default">Default</option>
-            <option value="none">None (Deprecated)</option>
-            <option value="enable-bandwidth-probing">Enable Bandwidth Probing (Deprecated)</option>
-            <option value="enable-bandwidth-probing-and-video-adaption" selected>Enable Bandwidth Probing and Video Quality Adaption</option>
-          </select>
           <div class="form-check" style="text-align: left;">
             <input type="checkbox" checked id="preconnect" class="form-check-input">
             <label for="preconnect" class="form-check-label">Open signaling connection early</label>
@@ -272,7 +264,71 @@
           </div>
         </fieldset>
       </div>
+      <button type="button" class="btn btn-outline-secondary mb-3" data-bs-toggle="modal" data-bs-target="#join-info-override-modal">Override Join Info</button>
       <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="additional-options-save-button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="join-info-override-modal" tabindex="-1" aria-labelledby="join-info-override-modal-label"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="width: 90%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="join-info-override-modal-label">Join Info Override</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Use the following overrides to enable joining meetings created from services that do not utilize the
+          serverless demo, for example, meetings created for your application, or meetings created in
+          different accounts. To get these response you can use the following CLI commands with appropriate
+          credentials</p>
+        <ul>
+          <li>
+            <code>aws chime-sdk-meetings create-attendee --meeting-id &lt;value&gt; --external-user-id &lt;value&gt; --region &lt;region&gt;</code>
+          </li>
+          <li><code>aws chime-sdk-meetings get-meeting --meeting-id &lt;value&gt; --region &lt;region&gt;</code></li>
+        </ul>
+        <div class="form-group">
+          <label for="create-attendee-override-input" class="mb-2">
+            <h6><a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">
+                CreateAttendee</a> Override</h6>
+          </label>
+          <textarea class="form-control" id="create-attendee-override-input" rows="7" placeholder='{
+  "Attendee": {
+      "ExternalUserId": "John",
+      "AttendeeId": "18ba3ce2-9d76-722f-6b58-2c2fe0db5c94",
+      "JoinToken": "..."
+  }
+}
+'></textarea>
+          <div class="form-group">
+            <label for="get-meeting-override-input" class="mb-2 mt-3">
+              <h6><a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_GetMeeting.html">
+                  GetMeeting</a> Override</h6>
+            </label>
+            <textarea class="form-control" id="get-meeting-override-input" rows="17" placeholder='{
+  "Meeting": {
+      "MeetingId": "35f23a2b-c4d7-413f-a299-2b1dc3f63314",
+      "ExternalMeetingId": "f7f76d4a-08ba-4001-8900-2b3fba4b6b3f",
+      "MediaRegion": "us-east-1",
+      "MediaPlacement": {
+          "AudioHostUrl": "...",
+          "AudioFallbackUrl": "...",
+          "SignalingUrl": "...",
+          "TurnControlUrl": "...",
+          "ScreenDataUrl": "...",
+          "ScreenViewingUrl": "...",
+          "ScreenSharingUrl": "...",
+          "EventIngestionUrl": "..."
+      }
+  }
+}'></textarea>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="join-info-override-join-button">Join
+        Meeting</button>
     </div>
   </div>
 </div>
