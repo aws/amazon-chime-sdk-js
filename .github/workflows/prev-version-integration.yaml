@@ -32,7 +32,7 @@ jobs:
         run: |
           prev_version=$(.github/script/get-prev-version)
           echo "Previous version:" $prev_version
-          echo ::set-output name=prev_version::$prev_version
+          echo "prev_version=$prev_version" >> $GITHUB_OUTPUT
       - name: Create a Job ID
         id: create-job-id
         uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c

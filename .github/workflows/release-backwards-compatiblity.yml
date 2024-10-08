@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
       - name: Version check for backward compatibility check
         id: version-check
-        run: echo "::set-output name=run-check::$(node .github/script/backward-compatibility-run-check.js)"
+        run: echo "run-check=$(node .github/script/backward-compatibility-run-check.js)" >> $GITHUB_OUTPUT
 
   release-integ-test:
     name: Run Backwards Compatible Integration Tests with Release Tarball
