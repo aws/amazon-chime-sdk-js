@@ -904,6 +904,11 @@ export class DemoMeetingApp
           // stopVideoProcessor should be called before join; it ensures that state variables and video processor stream are cleaned / removed before joining the meeting.
           // If stopVideoProcessor is not called then the state from preview screen will be carried into the in meeting experience and it will cause undesired side effects.
           await this.stopVideoProcessor();
+          // This open audio input from selection call is made to make sure that there is an audio input device as the user enters the meeting.
+          // This helps avoid a race condition where the user navigates from preview screen to meeting quickly. In this case, the AsyncScheduler task has not finished execution and the audio input device is not available.
+          // If an audio input device is already available, the device controller will reuse existing audio input device and this method call does not cause any noticeable performance impacts.
+          // TODO: In future, we should await the callback provided to AsyncScheduler and make sure the user can hit join button only after the callback has finished execution.
+          await this.openAudioInputFromSelection();
           await this.join();
           this.hideProgress('progress-join');
           this.displayButtonStates();
