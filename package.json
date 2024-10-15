@@ -8,7 +8,8 @@
     "libs",
     "build",
     "CHANGELOG.md",
-    "NOTICE"
+    "NOTICE",
+    "src"
   ],
   "engines": {
     "node": "^18 || ^19 || ^20 || ^22",
