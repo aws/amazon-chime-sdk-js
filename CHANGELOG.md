@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Avoid breaking audio input when external devices are disconnected on iOS browsers when using Web Audio by suspending and resuming the audio context in that case.
+
 ## [3.25.0] - 2024-09-10
 
 ### Added

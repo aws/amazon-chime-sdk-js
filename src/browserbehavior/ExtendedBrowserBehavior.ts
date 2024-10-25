@@ -38,4 +38,8 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
    * Returns whether the browser requires the "playback" latency hint for Web Audio.
    */
   requiresPlaybackLatencyHintForAudioContext(): boolean;
+  /**
+   * Returns whether the browser needs the audio context suspended and resumed when a device fails
+   */
+  requiresAudioContextResetOnDeviceFailureForWebAudio(): boolean;
 }
