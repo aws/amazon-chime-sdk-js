@@ -887,10 +887,22 @@ export default class DefaultDeviceController
   private async handleDeviceStreamEnded(kind: 'audio' | 'video', deviceId: string): Promise<void> {
     try {
       if (kind === 'audio') {
-        this.logger.warn(
-          `Audio input device which was active is no longer available, resetting to null device`
-        );
-        await this.startAudioInput(null); //Need to switch to empty audio device
+        if (
+          this.useWebAudio &&
+          this.browserBehavior.requiresAudioContextResetOnDeviceFailureForWebAudio()
+        ) {
+          this.logger.warn(
+            'Audio input device which was active is no longer available, suspending and resuming audio context before resetting to empty device to ensure packets are sent'
+          );
+          await this.stopAudioInput();
+          DefaultDeviceController.suspendAudioContext();
+          DefaultDeviceController.resumeAudioContext();
+        } else {
+          this.logger.warn(
+            'Audio input device which was active is no longer available, resetting to empty device to ensure packets are sent'
+          );
+        }
+        await this.startAudioInput(null);
       } else {
         this.logger.warn(
           `Video input device which was active is no longer available, stopping video`
@@ -1164,7 +1176,7 @@ export default class DefaultDeviceController
         if (kind === 'audio') {
           this.logger.info(`choosing null ${kind} device instead`);
           try {
-            newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
+            newDevice.stream = DefaultDeviceController.createEmptyAudioDevice();
             newDevice.constraints = null;
             await this.handleNewInputDevice(kind, newDevice);
           } catch (error) {
