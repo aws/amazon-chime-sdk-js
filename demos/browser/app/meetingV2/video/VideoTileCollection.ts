@@ -193,8 +193,17 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
 
     const videoElement = demoVideoTile.videoElement;
-    this.logger.info(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
-    this.videoTileController.bindVideoElement(tileState.tileId, this.tileIndexToDemoVideoTile.get(tileIndex).videoElement);
+    // this.logger.info(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
+    // this.videoTileController.bindVideoElement(tileState.tileId, this.tileIndexToDemoVideoTile.get(tileIndex).videoElement);
+
+    if (tileState.boundVideoStream) {
+      this.logger.info(`boundVideoStream attaching stream to element.`);
+      const videoTracks = tileState.boundVideoStream.getVideoTracks();
+      const mediaElement = document.getElementById('video-27') as HTMLVideoElement;
+      mediaElement.srcObject = new MediaStream();
+      videoTracks.forEach(track => (mediaElement.srcObject as MediaStream).addTrack(track));
+      mediaElement.play();
+    }
 
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
