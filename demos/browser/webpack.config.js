@@ -44,6 +44,7 @@ for (const stage of ['a', 'b', 'g', '']) {
 csp['connect-src'] += ' https://storage.googleapis.com';
 
 // 3. Access to jsdelivr for TensorFlow for background blur.
+csp['connect-src'] += ' https://cdn.jsdelivr.net';
 csp['script-src'] += ' https://cdn.jsdelivr.net';
 csp['script-src-elem'] += ' https://cdn.jsdelivr.net';
 

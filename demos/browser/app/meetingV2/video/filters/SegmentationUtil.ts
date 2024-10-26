@@ -28,6 +28,30 @@ const SEGMENTATION_DEPENDENCIES = [
     integrity: 'sha384-dPJ/sICXCqdh39bsuGLVFcOiRyeL/XcFrwiFrJq9oh7k1TCtsUKhX6UV2X4UuKU4',
     crossOrigin: 'anonymous',
   },
+
+  {
+    src: 'https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation@1.0.2/dist/body-segmentation.min.js',
+    integrity: 'sha384-+Nfhv06p9s0N4jXs3zpNZ1UB0eCNMyjl5J10gmOGdPdVjxB3B2xfdZ1F2YINuWO/',
+    crossOrigin: 'anonymous',
+  },
+
+  /*{
+    src: 'https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation@1.0.2/dist/body-segmentation.js',
+    integrity: 'sha384-0A3L9NwbWzCwUZsEe22mojzNTvKm2O+LKij9Cv1PRa3kMv8w1MYtwjfy93Cj/5oD',
+    crossOrigin: 'anonymous',
+  },*/
+  
+  {
+    src: 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@4.22.0/dist/tf-converter.min.js',
+    integrity: 'sha384-sTQbAoegStaraHP3ijlE4F66mBcvLpX2zRxhhZqVsfVTGLsKLw6X3AMEyo18XygJ',
+    crossOrigin: 'anonymous',
+  },
+
+  {
+    src: 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1675465747/selfie_segmentation.min.js',
+    integrity: 'sha384-YMriIdJi5bqCOhh4YoAKqRZBeHJVqHFu/bNwA1Mz1z+t93JHMomDEdujPgR0MQIk',
+    crossOrigin: 'anonymous',
+  },
 ];
 
 
