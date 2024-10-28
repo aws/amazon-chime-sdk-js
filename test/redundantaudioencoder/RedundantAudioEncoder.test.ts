@@ -810,6 +810,36 @@ describe('RedundantAudioEncoder', () => {
       expect(encoder['newestSequenceNumber']).to.equal(10);
     });
 
+    it('does not add packets without RED payload to primary packet log but calculates loss correctly by consuming sequence numbers', () => {
+      // Receive initial RED packet with good payload
+      let primaryHeader = createRedHeader(true, opusPayloadType, 0, payloadWithFec.byteLength);
+      let frame = createRTCEncodedAudioFrame(960, redPayloadType, 10);
+      frame.data = createRedPayload([primaryHeader], [payloadWithFec]);
+      encoder['receivePacketLogTransform'](frame, controller);
+
+      // Receive 10 packets without a proper RED payload.
+      // Today these are mostly padding packets for BWE
+      for (let seq = 11; seq <= 20; seq++) {
+        frame = createRTCEncodedAudioFrame(0, redPayloadType, seq);
+        encoder['receivePacketLogTransform'](frame, controller);
+      }
+
+      // Receive another RED packet with good payload
+      primaryHeader = createRedHeader(true, opusPayloadType, 0, payloadWithFec.byteLength);
+      frame = createRTCEncodedAudioFrame(1920, redPayloadType, 21);
+      frame.data = createRedPayload([primaryHeader], [payloadWithFec]);
+      encoder['receivePacketLogTransform'](frame, controller);
+
+      expect(encoder['hasTimestamp'](encoder['primaryPacketLog'], 960)).to.be.true;
+      expect(encoder['hasTimestamp'](encoder['primaryPacketLog'], 1920)).to.be.true;
+      expect(
+        encoder['primaryPacketLog'].window.filter(element => element !== undefined).length
+      ).to.equal(2);
+      expect(encoder['totalAudioPacketsExpected']).to.equal(12);
+      expect(encoder['totalAudioPacketsLost']).to.equal(0);
+      expect(encoder['newestSequenceNumber']).to.equal(21);
+    });
+
     it('updates red recovered and fec recovered correctly', () => {
       const redundantHeader2 = createRedHeader(
         false,
