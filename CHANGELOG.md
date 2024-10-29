@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Avoid breaking audio input when external devices are disconnected on iOS browsers when using Web Audio by suspending and resuming the audio context in that case.
+- Fixed incoming audio loss calculation when server side network adaption and redundant audio features are running together.
 
 ## [3.25.0] - 2024-09-10
 
