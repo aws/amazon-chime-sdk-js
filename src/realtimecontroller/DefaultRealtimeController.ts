@@ -418,7 +418,8 @@ export default class DefaultRealtimeController implements RealtimeController {
         fn(dataMessage);
       });
     } catch (e) {
-      // TODO: these are not fatal errors, but how can we bubble them up?
+      // We don't want to throw to our caller, but we still want to surface the error in the console
+      Promise.reject(e);
     }
   }
 
