@@ -5,9 +5,9 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import {
-  iterateEvery,
   getFormattedOffset,
   getRandomValues,
+  iterateEvery,
   SuppressedError,
   toLowerCasePropertyNames,
   wait,
@@ -169,7 +169,7 @@ describe('Utils', () => {
       expect(() => {
         // b/c JS can throw anything, SuppressedError has to handle anything as an error
         const a = new SuppressedError(undefined, undefined, undefined);
-        const values: any[] = [
+        const values = [
           'string',
           1,
           {},
@@ -220,7 +220,8 @@ describe('Utils', () => {
     });
 
     it('should throw an error when the data is not iterable', () => {
-      expect(() => iterateEvery(3 as any, () => {})).to.throw;
+      // @ts-expect-error 3 is not iterable
+      expect(() => iterateEvery(3, () => {})).to.throw;
     });
   });
 });

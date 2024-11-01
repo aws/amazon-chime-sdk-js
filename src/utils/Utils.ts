@@ -86,16 +86,19 @@ export function getRandomValues(buffer: Uint32Array): void {
  * https://github.com/tc39/proposal-explicit-resource-management?tab=readme-ov-file#the-suppressederror-error
  */
 export class SuppressedError extends Error {
-  constructor(readonly error: any, readonly suppressed?: SuppressedError, message?: string) {
-    super(
-      message ??
-        `${error && typeof error === 'object' && 'message' in error ? error.message : error}`
-    );
+  constructor(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public readonly error: any,
+    public readonly suppressed?: SuppressedError,
+    message?: string
+  ) {
+    /* istanbul ignore next -- because coverage can't detect all the branches */
+    super(message ?? `${error?.message ?? error}`);
   }
 }
 
 /**
- * Run a callback over the set of all values, absorb all errors, and re-throw any errors at the end.
+ * Run a callback over the set of all values, suppress any errors, and only throw after iteration completes.
  * @param iterable - The iterable to iterate over
  * @param callback - The callback to run on each iteration
  * @throws If any of the callbacks throw an error
@@ -103,7 +106,7 @@ export class SuppressedError extends Error {
 export function iterateEvery<T>(
   iterable: Iterable<T> | undefined | null,
   callback: (value: T) => void
-) {
+): void {
   if (!iterable) return;
   let suppressedError: SuppressedError | undefined;
   for (const value of iterable) {
