@@ -80,3 +80,40 @@ export function getRandomValues(buffer: Uint32Array): void {
     view.setUint32(0, Math.trunc(Math.random() * 2 ** 32), true);
   }
 }
+
+/**
+ * Shim for SuppressedError
+ * https://github.com/tc39/proposal-explicit-resource-management?tab=readme-ov-file#the-suppressederror-error
+ */
+export class SuppressedError extends Error {
+  constructor(readonly error: any, readonly suppressed?: SuppressedError, message?: string) {
+    super(
+      message ??
+        `${error && typeof error === 'object' && 'message' in error ? error.message : error}`
+    );
+  }
+}
+
+/**
+ * Run a callback over the set of all values, absorb all errors, and re-throw any errors at the end.
+ * @param iterable - The iterable to iterate over
+ * @param callback - The callback to run on each iteration
+ * @throws If any of the callbacks throw an error
+ */
+export function iterateEvery<T>(
+  iterable: Iterable<T> | undefined | null,
+  callback: (value: T) => void
+) {
+  if (!iterable) return;
+  let suppressedError: SuppressedError | undefined;
+  for (const value of iterable) {
+    try {
+      callback(value);
+    } catch (err) {
+      suppressedError = new SuppressedError(err, suppressedError);
+    }
+  }
+  if (suppressedError) {
+    throw suppressedError;
+  }
+}
