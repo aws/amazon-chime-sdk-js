@@ -4,6 +4,7 @@
 import './styleV2.scss';
 
 import {
+  AllHighestVideoBandwidthPolicy,
   ApplicationMetadata,
   AsyncScheduler,
   Attendee,
@@ -14,10 +15,12 @@ import {
   BackgroundBlurProcessor,
   BackgroundBlurVideoFrameProcessor,
   BackgroundBlurVideoFrameProcessorObserver,
+  BackgroundFilterPaths,
+  BackgroundFilterSpec,
+  BackgroundReplacementOptions,
   BackgroundReplacementProcessor,
   BackgroundReplacementVideoFrameProcessor,
   BackgroundReplacementVideoFrameProcessorObserver,
-  BackgroundReplacementOptions,
   ClientMetricReport,
   ConsoleLogger,
   ContentShareObserver,
@@ -26,6 +29,7 @@ import {
   DefaultAudioVideoController,
   DefaultBrowserBehavior,
   DefaultDeviceController,
+  DefaultEventController,
   DefaultMeetingEventReporter,
   DefaultMeetingSession,
   DefaultModality,
@@ -36,19 +40,22 @@ import {
   EventIngestionConfiguration,
   EventName,
   EventReporter,
-  LogLevel,
+  isAudioTransformDevice,
+  isDestroyable,
   Logger,
+  LogLevel,
   MeetingEventsClientConfiguration,
   MeetingSession,
   MeetingSessionConfiguration,
+  MeetingSessionCredentials,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
-  VideoFxProcessor,
   MeetingSessionVideoAvailability,
+  ModelSpecBuilder,
   MultiLogger,
   NoOpEventReporter,
   NoOpVideoFrameProcessor,
-  VideoFxConfig,
+  POSTLogger,
   RemovableAnalyserNode,
   SimulcastLayers,
   Transcript,
@@ -58,8 +65,11 @@ import {
   TranscriptItemType,
   TranscriptResult,
   Versioning,
+  VideoCodecCapability,
   VideoDownlinkObserver,
   VideoFrameProcessor,
+  VideoFxConfig,
+  VideoFxProcessor,
   VideoInputDevice,
   VideoPriorityBasedPolicy,
   VideoQualitySettings,
@@ -69,39 +79,31 @@ import {
   VoiceFocusPaths,
   VoiceFocusSpec,
   VoiceFocusTransformDevice,
-  isAudioTransformDevice,
-  isDestroyable,
-  BackgroundFilterSpec,
-  BackgroundFilterPaths,
-  ModelSpecBuilder,
-  DefaultEventController,
-  MeetingSessionCredentials,
-  POSTLogger,
-  VideoCodecCapability,
-  AllHighestVideoBandwidthPolicy,
 } from 'amazon-chime-sdk-js';
 import { Modal } from 'bootstrap';
 
 import TestSound from './audio/TestSound';
-import MeetingToast from './util/MeetingToast'; MeetingToast; // Make sure this file is included in webpack
-import VideoTileCollection from './video/VideoTileCollection'
+import MeetingToast from './util/MeetingToast';
+import VideoTileCollection from './video/VideoTileCollection';
 import RemoteVideoManager from './video/RemoteVideoManager';
 import CircularCut from './video/filters/CircularCut';
 import EmojifyVideoFrameProcessor from './video/filters/EmojifyVideoFrameProcessor';
-import SegmentationProcessor from './video/filters/SegmentationProcessor';
-import MediaPipeBodySegmentationProcessor from './video/filters/MediaPipeBodySegmentationProcessor';
+import MediaPipeBodySegmentationProcessor, {
+  SegmentationOption,
+} from './video/filters/MediaPipeBodySegmentationProcessor';
 import ResizeProcessor from './video/filters/ResizeProcessor';
-import {
-  loadBodyPixDependency,
-  platformCanSupportBodyPixWithoutDegradation,
-} from './video/filters/SegmentationUtil';
 import SyntheticVideoDeviceFactory from './video/SyntheticVideoDeviceFactory';
 import { getPOSTLogger } from './util/MeetingLogger';
 import Roster from './component/Roster';
 import ContentShareManager from './component/ContentShareManager';
-import { AudioBufferMediaStreamProvider, SynthesizedStereoMediaStreamProvider } from './util/mediastreamprovider/DemoMediaStreamProviders';
+import {
+  AudioBufferMediaStreamProvider,
+  SynthesizedStereoMediaStreamProvider,
+} from './util/mediastreamprovider/DemoMediaStreamProviders';
 
 import { BackgroundImageEncoding } from './util/BackgroundImage';
+
+MeetingToast; // Make sure this file is included in webpack
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -183,11 +185,13 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Emojify' | 'NoOp' | 'Segmentation - BodyPix' | 'Segmentation - MediaPipeBodySegmentation' | 'Resize (9/16)' | 'CircularCut' |
+type VideoFilterName = 'Emojify' | 'NoOp' | 'Resize (9/16)' | 'CircularCut' |
  'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 
  'Background Blur 40% CPU' | 'Background Replacement' | 'None' | 'Background Blur 2.0 - Low' |
  'Background Blur 2.0 - Medium' | 'Background Blur 2.0 - High' | 'Background Replacement 2.0 - (Beach)' |
- 'Background Replacement 2.0 - (Blue)' | 'Background Replacement 2.0 - (Default)';
+ 'Background Replacement 2.0 - (Blue)' | 'Background Replacement 2.0 - (Default)' |
+  'MediaPipeBodySegmentation - (Beach)' | 'MediaPipeBodySegmentation - (Blue)' |
+  'MediaPipeBodySegmentation - (Blur)';
 
 const BACKGROUND_BLUR_V1_LIST: VideoFilterName[] = [
   'Background Blur 10% CPU',
@@ -2738,19 +2742,6 @@ export class DemoMeetingApp
 
     if (this.areVideoFiltersSupported()) {
       filters = filters.concat(VIDEO_FILTERS);
-      if (platformCanSupportBodyPixWithoutDegradation()) {
-        if (!this.loadingBodyPixDependencyPromise) {
-          this.loadingBodyPixDependencyPromise = loadBodyPixDependency(this.loadingBodyPixDependencyTimeoutMs);
-        }
-        // do not use `await` to avoid blocking page loading
-        this.loadingBodyPixDependencyPromise.then(() => {
-          filters.push('Segmentation - BodyPix');
-          filters.push('Segmentation - MediaPipeBodySegmentation');
-          this.populateFilterList(isPreviewWindow, genericName, filters);
-        }).catch(err => {
-          this.log('Could not load BodyPix dependency', err);
-        });
-      }
 
       if (this.supportsBackgroundBlur) {
         filters.push('Background Blur 10% CPU');
@@ -2767,6 +2758,10 @@ export class DemoMeetingApp
       if (this.supportsVideoFx) {
         BACKGROUND_FILTER_V2_LIST.map(effectName => filters.push(effectName));
       }
+
+      filters.push('MediaPipeBodySegmentation - (Beach)');
+      filters.push('MediaPipeBodySegmentation - (Blue)');
+      filters.push('MediaPipeBodySegmentation - (Blur)');
     }
 
     this.populateFilterList(isPreviewWindow, genericName, filters);
@@ -3332,12 +3327,16 @@ export class DemoMeetingApp
       return new NoOpVideoFrameProcessor();
     }
 
-    if (videoFilter === 'Segmentation - BodyPix') {
-      return new SegmentationProcessor();
+    if (videoFilter === 'MediaPipeBodySegmentation - (Beach)') {
+      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BEACH);
     }
 
-    if (videoFilter === 'Segmentation - MediaPipeBodySegmentation') {
-      return new MediaPipeBodySegmentationProcessor();
+    if (videoFilter === 'MediaPipeBodySegmentation - (Blue)') {
+      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BLUE);
+    }
+
+    if (videoFilter === 'MediaPipeBodySegmentation - (Blur)') {
+      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BLUR);
     }
 
     if (videoFilter === 'Resize (9/16)') {

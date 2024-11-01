@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// eslint-disable-next-line
-declare var bodyPix: any;
-
-// eslint-disable-next-line
-declare var bodySegmentation: any;
+import * as bodySegmentation from '@tensorflow-models/body-segmentation';
 
 import {
   CanvasVideoFrameBuffer,
@@ -15,39 +11,53 @@ import {
 
 
 import { BackgroundImageEncoding } from '../../util/BackgroundImage';
+import { BodySegmenter } from '@tensorflow-models/body-segmentation/dist/body_segmenter';
+import {
+  Segmentation
+} from '@tensorflow-models/body-segmentation/dist/shared/calculators/interfaces/common_interfaces';
 
-const segmenterConfig = {
+const segmenterConfig: bodySegmentation.MediaPipeSelfieSegmentationMediaPipeModelConfig = {
   runtime: 'mediapipe', // or 'tfjs'
   solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation',
   modelType: 'general',
-  segmentBodyParts: true,
+}
+
+export enum SegmentationOption {
+  BLUR,
+  BLUE = 1,
+  BEACH = 2,
 }
 
 /**
- * [[SegmentationProcessors]] loads Tensorflow BodyPix model to perform image segmentation.
- * Please refer to https://www.npmjs.com/package/@tensorflow-models/body-pix/v/2.0.5.
+ * [[SegmentationProcessors]] loads Tensorflow Body Segmentation model to perform image segmentation.
+ * Please refer to https://www.npmjs.com/package/@tensorflow-models/body-segmentation
  */
 export default class MediaPipeBodySegmentationProcessor implements VideoFrameProcessor {
   private targetCanvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
   private canvasVideoFrameBuffer = new CanvasVideoFrameBuffer(this.targetCanvas);
   private sourceWidth: number = 0;
   private sourceHeight: number = 0;
+  // The foreground color (r,g,b,a) for visualizing pixels that belong to people.
   static FOREGROUND_COLOR = { r: 0, g: 0, b: 0, a: 0 };
+  // The background color (r,g,b,a) for visualizing pixels that don't belong to people.
   static BACKGROUND_COLOR = { r: 0, g: 0, b: 0, a: 255 };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private mask: any | undefined = undefined;
+  static BLUE_BACKGROUND_COLOR = { r: 0, g: 0, b: 255, a: 255 };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private model: any | undefined = undefined;
+  private segmenter: BodySegmenter | undefined = undefined;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private segmenter: any | undefined = undefined;
+  private segmentationOption: SegmentationOption;
 
   private backgroundReplacementCanvas: HTMLCanvasElement | undefined = undefined;
   private backgroundReplacementImage: HTMLImageElement | undefined = undefined;
 
-  constructor() {}
+  private drawContour: boolean = false;
+  private foregroundThreshold: number = 0.5;
+  private blurAmount: number = 10;
+
+  constructor(segmentationOption: SegmentationOption) {
+    this.segmentationOption = segmentationOption;
+  }
 
 
   /**
@@ -104,8 +114,7 @@ export default class MediaPipeBodySegmentationProcessor implements VideoFramePro
    */
   async loadReplacementBackground(imageURL: string): Promise<void> {
     try {
-      const backgroundImage = await this.loadImage(imageURL);
-      this.backgroundReplacementImage = backgroundImage;
+      this.backgroundReplacementImage =  await this.loadImage(imageURL);;
       this.resizeAndSetReplacementImage(this.backgroundReplacementImage);
     } catch (error) /* istanbul ignore next */ {
       // The following can only happen due to an intermittent network issue.
@@ -138,48 +147,94 @@ export default class MediaPipeBodySegmentationProcessor implements VideoFramePro
       this.targetCanvas.height = this.sourceHeight;
     }
 
+    const inputImageData = inputCanvas.getContext('2d').getImageData(0, 0, inputCanvas.width, inputCanvas.height);
+
+    // @ts-ignore
+    const segmentation = await this.segmenter.segmentPeople(inputCanvas);
+    if (segmentation) {
+      switch (this.segmentationOption) {
+        case SegmentationOption.BEACH:
+          await this.addBackgroundReplacement(segmentation, inputImageData, buffers);
+          break;
+        case SegmentationOption.BLUE:
+          await this.addBlueBackground(segmentation, inputImageData, buffers);
+          break;
+        case SegmentationOption.BLUR:
+          await this.addBlurEffect(segmentation, inputImageData, buffers);
+          break;
+        default:
+          break;
+      }
+    }
+    return buffers;
+  }
+
+  private async addBackgroundReplacement(segmentation: Segmentation[], inputImageData: ImageData, buffers: VideoFrameBuffer[]) {
+    if (!segmentation) {
+      return;
+    }
+    const mask = await bodySegmentation.toBinaryMask(
+        segmentation, MediaPipeBodySegmentationProcessor.FOREGROUND_COLOR, MediaPipeBodySegmentationProcessor.BACKGROUND_COLOR,
+        this.drawContour, this.foregroundThreshold);
+
+    if (!mask) {
+      return;
+    }
+
+    // Load and set the background image to target canvas
     if (!this.backgroundReplacementCanvas) {
       await this.loadReplacementBackground(await BackgroundImageEncoding());
     }
 
     this.targetCanvas.getContext('2d').drawImage(this.backgroundReplacementImage, 0, 0, this.sourceWidth, this.sourceHeight);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const segmentation = await this.segmenter.segmentPeople(inputCanvas);
-    if (segmentation) {
-      const drawContour = true;
-      const foregroundThreshold = 0.2;
-      this.mask = await bodySegmentation.toBinaryMask(
-        segmentation, MediaPipeBodySegmentationProcessor.FOREGROUND_COLOR, MediaPipeBodySegmentationProcessor.BACKGROUND_COLOR, drawContour, foregroundThreshold);
-    }
+    // Loop through the mask and fill in person pixels from the original image
+    const inputPixels = inputImageData.data;
+    const targetImageData = this.targetCanvas.getContext('2d').getImageData(0, 0, this.targetCanvas.width, this.targetCanvas.height);
 
-    if (this.mask) {
-      const inputImageData = inputCanvas.getContext('2d').getImageData(0, 0, inputCanvas.width, inputCanvas.height);
-      const inputPixels = inputImageData.data;
-
-      const targetImageData = this.targetCanvas.getContext('2d').getImageData(0, 0, this.targetCanvas.width, this.targetCanvas.height);
-  
-      for (let i = 3; i < targetImageData.data.length; i += 4) {
-        if (this.mask.data[i] !== 255) {
-          targetImageData.data[i-3] = inputPixels[i-3];
-          targetImageData.data[i-2] = inputPixels[i-2];
-          targetImageData.data[i-1] = inputPixels[i-1];
-          targetImageData.data[i] = inputPixels[i];
-        }
+    for (let i = 3; i < targetImageData.data.length; i += 4) {
+      if (mask.data[i] !== 255) {
+        targetImageData.data[i-3] = inputPixels[i-3];
+        targetImageData.data[i-2] = inputPixels[i-2];
+        targetImageData.data[i-1] = inputPixels[i-1];
+        targetImageData.data[i] = inputPixels[i];
       }
-
-      this.targetCanvas.getContext('2d').putImageData(targetImageData, 0, 0);
-
-      buffers[0] = this.canvasVideoFrameBuffer;
     }
 
-    return buffers;
+    this.targetCanvas.getContext('2d').putImageData(targetImageData, 0, 0);
+
+    buffers[0] = this.canvasVideoFrameBuffer;
+  }
+
+  private async addBlueBackground(segmentation: Segmentation[], inputImageData: ImageData, buffers: VideoFrameBuffer[]) {
+    if (!segmentation) {
+      return;
+    }
+    const mask = await bodySegmentation.toBinaryMask(
+      segmentation, MediaPipeBodySegmentationProcessor.FOREGROUND_COLOR, MediaPipeBodySegmentationProcessor.BLUE_BACKGROUND_COLOR,
+      this.drawContour, this.foregroundThreshold);
+
+    if (!mask) {
+      return;
+    }
+
+    await bodySegmentation.drawMask(this.targetCanvas, inputImageData, mask, 1);
+    buffers[0] = this.canvasVideoFrameBuffer;
+  }
+
+  private async addBlurEffect(segmentation: Segmentation[], inputImageData: ImageData, buffers: VideoFrameBuffer[]) {
+    if (!segmentation) {
+      return;
+    }
+    await bodySegmentation.drawBokehEffect(this.targetCanvas, inputImageData, segmentation, this.foregroundThreshold, this.blurAmount);
+
+    buffers[0] = this.canvasVideoFrameBuffer;
   }
 
   async destroy(): Promise<void> {
-    if (this.model) {
-      this.model.dispose();
+    if (this.segmenter) {
+      this.segmenter.dispose();
     }
-    this.model = undefined;
+    this.segmenter = undefined;
   }
 }
