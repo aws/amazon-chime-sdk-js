@@ -10,8 +10,8 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
   static readonly LOW_LEVEL_NAME: string = 'low';
   static readonly MID_LEVEL_NAME: string = 'mid';
   static readonly HIGH_LEVEL_NAME: string = 'hi';
-  static readonly NAME_ARR_ASCENDING = ['low', 'mid', 'hi'];
-  static readonly BITRATE_ARR_ASCENDING = [200, 400, 1100];
+  static readonly NAME_ARR_DECENDING = ['hi', 'mid', 'low'];
+  static readonly BITRATE_ARR_ASCENDING = [1100, 400, 200];
   protected videoQualityControlParameterMap: Map<string, RTCRtpEncodingParameters> = new Map<
     string,
     RTCRtpEncodingParameters
@@ -23,15 +23,15 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     meetingSessionContext?: AudioVideoControllerState
   ) {
     super(logger, browserBehavior, meetingSessionContext);
-    let scale = 4;
-    for (let i = 0; i < SimulcastTransceiverController.NAME_ARR_ASCENDING.length; i++) {
-      const ridName = SimulcastTransceiverController.NAME_ARR_ASCENDING[i];
+    let scale = 1;
+    for (let i = 0; i < SimulcastTransceiverController.NAME_ARR_DECENDING.length; i++) {
+      const ridName = SimulcastTransceiverController.NAME_ARR_DECENDING[i];
       this.videoQualityControlParameterMap.set(ridName, {
         rid: ridName,
         scaleResolutionDownBy: scale,
         maxBitrate: SimulcastTransceiverController.BITRATE_ARR_ASCENDING[i] * 1000,
       });
-      scale = scale / 2;
+      scale = scale * 2;
     }
   }
 

@@ -189,7 +189,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
 
   private encodingParametersEqual(): boolean {
     let different = false;
-    for (const ridName of SimulcastTransceiverController.NAME_ARR_ASCENDING) {
+    for (const ridName of SimulcastTransceiverController.NAME_ARR_DECENDING) {
       different =
         different ||
         !this.compareEncodingParameter(
@@ -258,7 +258,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
   ): Map<string, RTCRtpEncodingParameters> {
     const newMap = new Map<string, RTCRtpEncodingParameters>();
     const toBps = 1000;
-    const nameArr = SimulcastTransceiverController.NAME_ARR_ASCENDING;
+    const nameArr = SimulcastTransceiverController.NAME_ARR_DECENDING;
     const bitrateArr = bitratesKbps;
     // Don't scale the single simulcast stream regardless of its layer.
     let scale = this.shouldDisableSimulcast ? 1 : 4;

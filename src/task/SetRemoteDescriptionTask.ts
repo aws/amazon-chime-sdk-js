@@ -46,11 +46,23 @@ export default class SetRemoteDescriptionTask extends BaseTask {
       this.context.videoSendCodecPreferences !== undefined &&
       this.context.videoSendCodecPreferences.length > 0
     ) {
-      sdp = new SDP(sdp).withVideoSendCodecPreferences(
-        this.context.meetingSupportedVideoSendCodecPreferences !== undefined
-          ? this.context.meetingSupportedVideoSendCodecPreferences
-          : this.context.videoSendCodecPreferences
-      ).sdp;
+      if (this.context.meetingSupportedVideoSendCodecPreferences === undefined) {
+        sdp = new SDP(sdp).withVideoSendCodecPreferences(this.context.videoSendCodecPreferences).sdp;
+      } else {
+        const videoSendCodecPreferences: VideoCodecCapability[] = [];
+        for (const capability of this.context.meetingSupportedVideoSendCodecPreferences) {
+          if (!this.context.degradedVideoSendCodecs.some(degradedCapability =>
+            capability.equals(degradedCapability)
+          )) {
+            videoSendCodecPreferences.push(capability);
+          }
+        }
+        sdp = new SDP(sdp).withVideoSendCodecPreferences(
+          videoSendCodecPreferences.length === 0
+            ? this.context.videoSendCodecPreferences
+            : videoSendCodecPreferences
+        ).sdp;
+      }
     }
     this.context.prioritizedSendVideoCodecCapabilities = new SDP(
       sdp

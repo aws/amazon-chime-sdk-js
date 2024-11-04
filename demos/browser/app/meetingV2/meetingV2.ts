@@ -835,21 +835,21 @@ export class DemoMeetingApp
       this.log('Video input quality is changed');
       switch (videoInputQuality.value) {
         case '360p':
-          this.audioVideo.chooseVideoInputQuality(640, 360, 15);
+          this.audioVideo.chooseVideoInputQuality(640, 360, 30);
           this.maxBitrateKbps = 600;
           break;
         case '540p':
-          this.audioVideo.chooseVideoInputQuality(960, 540, 15);
+          this.audioVideo.chooseVideoInputQuality(960, 540, 30);
           this.maxBitrateKbps = 1400;
           break;
         case '720p':
-          this.audioVideo.chooseVideoInputQuality(1280, 720, 15);
+          this.audioVideo.chooseVideoInputQuality(1280, 720, 30);
           this.maxBitrateKbps = 1500;
           break;
         case '1080p':
           // The 1080p dropdown will be removed if we haven't selected FHD meeting feature
           this.maxBitrateKbps = 2500;
-          this.audioVideo.chooseVideoInputQuality(1920, 1080, 15);
+          this.audioVideo.chooseVideoInputQuality(1920, 1080, 30);
           break;
       }
       this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);

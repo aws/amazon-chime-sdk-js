@@ -642,12 +642,12 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   }
 
   private addVideoCodecDegradationMetrics(customStatsReports: CustomStatsReport[]): void {
-    const videoUpstreamSsrc = this.clientMetricReport.getVideoUpstreamSsrc();
-    if (videoUpstreamSsrc !== null) {
+    const videoUpstreamSsrcs = this.clientMetricReport.getVideoUpstreamSsrcs();
+    if (videoUpstreamSsrcs.length !== 0) {
       customStatsReports.push({
         kind: 'video',
         type: 'outbound-rtp',
-        ssrc: videoUpstreamSsrc,
+        ssrc: videoUpstreamSsrcs[0],
         timestamp: Date.now(),
         videoCodecDegradationHighEncodeCpu: this.videoCodecDegradationHighEncodeCpuCount,
         videoCodecDegradationEncodeFailure: this.videoCodecDegradationEncodeFailureCount,

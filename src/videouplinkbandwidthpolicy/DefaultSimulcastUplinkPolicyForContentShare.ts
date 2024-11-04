@@ -30,7 +30,7 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
   chooseEncodingParameters(): Map<string, RTCRtpEncodingParameters> {
     const newMap = new Map<string, RTCRtpEncodingParameters>();
     const toBps = 1000;
-    const nameArr = SimulcastContentShareTransceiverController.NAME_ARR_ASCENDING;
+    const nameArr = SimulcastContentShareTransceiverController.NAME_ARR_DECENDING;
     newMap.set(nameArr[0], {
       rid: nameArr[0],
       active: true,

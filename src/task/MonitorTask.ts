@@ -30,6 +30,7 @@ import {
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import { Maybe } from '../utils/Types';
 import VideoTileState from '../videotile/VideoTileState';
+import VideoUplinkTechnique from '../videouplinkbandwidthpolicy/VideoUplinkTechnique';
 import BaseTask from './BaseTask';
 
 /*
@@ -54,6 +55,9 @@ export default class MonitorTask
   private pendingMetricsReport: ClientMetricReport | undefined = undefined;
   private isMeetingConnected: boolean = false;
   private videoEncodingHealthPolicies: ConnectionHealthPolicy[] = [];
+
+  private videoEncodingTechniquePreferences: VideoUplinkTechnique[] = [VideoUplinkTechnique.ScalableVideoCoding, VideoUplinkTechnique.Simulcast, VideoUplinkTechnique.SingleCast];
+  private videoEncodingTechniqueIndex = 0;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -262,6 +266,9 @@ export default class MonitorTask
 
     for (const policy of this.videoEncodingHealthPolicies) {
       this.applyHealthPolicy(policy, connectionHealthData, () => {
+        this.logger.error(
+          `[DBG-MSG] trying to degrade encoding`
+        );
         this.degradeVideoCodec(policy.name);
         switch (policy.name) {
           case VideoEncodingConnectionHealthPolicyName.VideoEncodingCpuHealth:
@@ -479,37 +486,93 @@ export default class MonitorTask
   private degradeVideoCodec(cause: string): void {
     // Degrade video codec if there are other codec options and current codec is not H264 CBP or VP8
     if (
-      this.context.meetingSupportedVideoSendCodecPreferences !== undefined &&
-      this.context.meetingSupportedVideoSendCodecPreferences.length > 1 &&
+      this.context.prioritizedSendVideoCodecCapabilities !== undefined &&
+      this.context.prioritizedSendVideoCodecCapabilities.length > 1 &&
       !(
-        this.context.meetingSupportedVideoSendCodecPreferences[0].equals(
+        this.context.prioritizedSendVideoCodecCapabilities[0].equals(
           VideoCodecCapability.h264ConstrainedBaselineProfile()
         ) ||
-        this.context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
+        this.context.prioritizedSendVideoCodecCapabilities[0].equals(VideoCodecCapability.vp8())
       )
     ) {
       const newMeetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] = [];
       for (const capability of this.context.videoSendCodecPreferences) {
-        if (!capability.equals(this.context.meetingSupportedVideoSendCodecPreferences[0])) {
-          newMeetingSupportedVideoSendCodecPreferences.push(capability);
+        if (this.context.meetingSupportedVideoSendCodecPreferences.some(supportedCapability =>
+            capability.equals(supportedCapability)
+          ) && !capability.equals(this.context.prioritizedSendVideoCodecCapabilities[0])
+          && !this.context.degradedVideoSendCodecs.some(degradedCodec =>
+            capability.equals(degradedCodec)
+          )
+        ) {
+          if (this.isVideoEncodeTechniqueSupported(capability.codecName, this.videoEncodingTechniquePreferences[this.videoEncodingTechniqueIndex]))
+            newMeetingSupportedVideoSendCodecPreferences.push(capability);
         }
       }
       if (newMeetingSupportedVideoSendCodecPreferences.length > 0) {
         this.context.logger.info(
           `Downgrading codec from ${this.context.meetingSupportedVideoSendCodecPreferences[0].codecName} to ${newMeetingSupportedVideoSendCodecPreferences[0].codecName} due to ${cause}`
         );
+        this.context.logger.info(
+          `[DBG-MSG] Downgrading codec from ${this.context.meetingSupportedVideoSendCodecPreferences[0].codecName} to ${newMeetingSupportedVideoSendCodecPreferences[0].codecName} due to ${cause}`
+        );
         this.context.degradedVideoSendCodecs.push(
           this.context.meetingSupportedVideoSendCodecPreferences[0]
         );
-        this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
+
+        if (this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs) {
+          this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
+            this.context.meetingSupportedVideoSendCodecPreferences,
+            this.context.videoSendCodecPreferences,
+            this.context.degradedVideoSendCodecs
+          );
+        }
+
         this.context.audioVideoController.update({ needsRenegotiation: true });
       } else {
-        this.context.logger.warn(
-          `Degrading video codec failed since there is no alternative codec to select. Currently degraded codecs: ${this.context.degradedVideoSendCodecs
-            .map(capability => capability.codecName)
-            .join(',')}`
-        );
+        this.degradeVideoEncodingTechinque();
+        // this.context.logger.warn(
+        //   `Degrading video codec failed since there is no alternative codec to select. Currently degraded codecs: ${this.context.degradedVideoSendCodecs
+        //     .map(capability => capability.codecName)
+        //     .join(',')}`
+        // );
       }
+    } else { // [DBG-MSG] to be improved
+      this.degradeVideoEncodingTechinque();
+    }
+  }
+
+  private degradeVideoEncodingTechinque() {
+    this.context.logger.info(
+      `[DBG-MSG] Downgrading technique from ${this.videoEncodingTechniqueIndex}`
+    );
+    if (this.context.videoUplinkBandwidthPolicy.setVideoUplinkTechnique) {
+      if (this.videoEncodingTechniqueIndex + 1 < this.videoEncodingTechniquePreferences.length) {
+        this.videoEncodingTechniqueIndex += 1;
+        this.context.degradedVideoSendCodecs = [];
+        this.context.videoUplinkBandwidthPolicy.setVideoUplinkTechnique(this.videoEncodingTechniquePreferences[this.videoEncodingTechniqueIndex])
+        if (this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs) {
+          this.context.logger.info(
+            `[DBG-MSG] Downgrading executed`
+          );
+          this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
+            this.context.meetingSupportedVideoSendCodecPreferences,
+            this.context.videoSendCodecPreferences,
+            this.context.degradedVideoSendCodecs
+          );
+        }
+        this.context.audioVideoController.update({ needsRenegotiation: true });
+      }
+    }
+  }
+
+  private isVideoEncodeTechniqueSupported(codecName: string, technique: VideoUplinkTechnique): boolean {
+    switch (codecName) {
+      case "VP9":
+        return true;
+      case "AV1":
+        return true;
+      default:
+        return technique === VideoUplinkTechnique.Simulcast || technique === VideoUplinkTechnique.SingleCast;
     }
   }
 }

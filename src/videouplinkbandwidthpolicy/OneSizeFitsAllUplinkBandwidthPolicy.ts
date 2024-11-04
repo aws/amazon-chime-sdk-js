@@ -19,6 +19,7 @@ const enum ActiveStreams {
   kHi,
   kHiAndLow,
   kHiAndMid,
+  kHiMidAndLow,
 }
 
 /** OneSizeFitsAllUplinkPolicy implements capture and encode
@@ -69,7 +70,6 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
   private newActiveStreams: ActiveStreams = ActiveStreams.kHi;
   private currentQualityMap = new Map<string, RTCRtpEncodingParameters>();
   private activeStreamsToPublish: ActiveStreams;
-  private videoIndex: VideoStreamIndex | null = null;
   private transceiverController: SimulcastTransceiverController;
   private enableHighResolutionFeature: boolean = false;
   private uplinkTechnique: VideoUplinkTechnique = VideoUplinkTechnique.ScalableVideoCoding;
@@ -94,13 +94,13 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.currentQualityMap = this.fillEncodingParamWithBitrates([
-      0,
       this.maxBandwidthKbps(),
+      0,
       0,
     ], 1);
     this.newQualityMap = this.fillEncodingParamWithBitrates([
-      0,
       this.maxBandwidthKbps(),
+      0,
       0,
     ], 1);
   }
@@ -249,7 +249,7 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
 
   private encodingParametersEqual(): boolean {
     let different = false;
-    for (const ridName of SimulcastTransceiverController.NAME_ARR_ASCENDING) {
+    for (const ridName of SimulcastTransceiverController.NAME_ARR_DECENDING) {
       different =
         different ||
         !this.compareEncodingParameter(
@@ -270,12 +270,12 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
   ): Map<string, RTCRtpEncodingParameters> {
     const newMap = new Map<string, RTCRtpEncodingParameters>();
     const toBps = 1000;
-    const nameArr = SimulcastTransceiverController.NAME_ARR_ASCENDING;
+    const nameArr = SimulcastTransceiverController.NAME_ARR_DECENDING;
     const bitrateArr = bitratesKbps;
-    // Don't scale the single simulcast stream regardless of its layer.
-    let scale = this.newActiveStreams == ActiveStreams.kHi ? baseScaleFactor : baseScaleFactor * 4;
     const enableSVC = this.uplinkTechnique == VideoUplinkTechnique.ScalableVideoCoding
       && this.numParticipants > 2 && this.isUsingSVCCodec
+    // Don't scale the single simulcast stream regardless of its layer.
+    let scale = baseScaleFactor;
     for (let i = 0; i < nameArr.length; i++) {
       const ridName = nameArr[i];
       newMap.set(ridName, {
@@ -287,7 +287,7 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
         // @ts-ignore
         scalabilityMode: enableSVC ? 'L3T3' : 'L1T1',
       });
-      scale = scale / 2;
+      scale = scale * 2;
     }
 
     return newMap;
@@ -339,28 +339,28 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
       new BitrateParameters(),
     ];
 
-    if (this.uplinkTechnique != VideoUplinkTechnique.Simulcast) {
+    if (this.uplinkTechnique == VideoUplinkTechnique.Simulcast) {
       const shouldDisableSimulcast = this.getNumberOfPublishedVideoSources() >= 0 && this.getNumberOfPublishedVideoSources() <= 2
       if (shouldDisableSimulcast) {
         this.newActiveStreams = ActiveStreams.kHi;
-        bitrates[0].maxBitrateKbps = 0;
-        bitrates[1].maxBitrateKbps = this.maxBandwidthKbps();
+        bitrates[0].maxBitrateKbps = this.maxBandwidthKbps();
+        bitrates[1].maxBitrateKbps = 0;
         bitrates[2].maxBitrateKbps = 0;
       } else if (this.getNumberOfPublishedVideoSources() <= 4) {
         this.newActiveStreams = ActiveStreams.kHiAndLow;
-        bitrates[0].maxBitrateKbps = this.maxBandwidthKbps() * 0.2;
+        bitrates[0].maxBitrateKbps = this.maxBandwidthKbps() * 0.8;
         bitrates[1].maxBitrateKbps = 0;
-        bitrates[2].maxBitrateKbps = this.maxBandwidthKbps() * 0.8;
+        bitrates[2].maxBitrateKbps = this.maxBandwidthKbps() * 0.2;
       } else {
         this.newActiveStreams = ActiveStreams.kHiAndMid;
-        bitrates[0].maxBitrateKbps = 0;
+        bitrates[0].maxBitrateKbps = this.maxBandwidthKbps() * 0.7;
         bitrates[1].maxBitrateKbps = this.maxBandwidthKbps() * 0.3;
-        bitrates[2].maxBitrateKbps = this.maxBandwidthKbps() * 0.7;
+        bitrates[2].maxBitrateKbps = 0;
       }
     } else {
       this.newActiveStreams = ActiveStreams.kHi;
-      bitrates[0].maxBitrateKbps = 0;
-      bitrates[1].maxBitrateKbps = this.maxBandwidthKbps();
+      bitrates[0].maxBitrateKbps = this.maxBandwidthKbps();
+      bitrates[1].maxBitrateKbps = 0;
       bitrates[2].maxBitrateKbps = 0;
     }
     return bitrates.map((v, _i, _a) => {
@@ -384,12 +384,9 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
 
   private getQualityMapString(params: Map<string, RTCRtpEncodingParameters>): string {
     let qualityString = '';
-    const localDescriptions = this.videoIndex.localStreamDescriptions();
-    if (localDescriptions.length === 3) {
-      params.forEach((value: RTCRtpEncodingParameters) => {
-        qualityString += `{ rid: ${value.rid} active:${value.active} maxBitrate:${value.maxBitrate}}`;
-      });
-    }
+    params.forEach((value: RTCRtpEncodingParameters) => {
+      qualityString += `{ rid: ${value.rid} active:${value.active} maxBitrate:${value.maxBitrate}}`;
+    });
     return qualityString;
   }
 
@@ -399,9 +396,18 @@ export default class OneSizeFitsAllUplinkPolicy implements SimulcastUplinkPolicy
 
   setMeetingSupportedVideoSendCodecs(
     meetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] | undefined,
-    videoSendCodecPreferences: VideoCodecCapability[]
+    videoSendCodecPreferences: VideoCodecCapability[],
+    degradedVideoSendCodecs: VideoCodecCapability[]
   ): void {
-    const codecs = meetingSupportedVideoSendCodecPreferences ?? videoSendCodecPreferences;
+    const codecPreferences = meetingSupportedVideoSendCodecPreferences ?? videoSendCodecPreferences;
+    const codecs: VideoCodecCapability[] = [];
+    for (const codecPreference of codecPreferences) {
+      if (!degradedVideoSendCodecs.some(degradedCodec =>
+        codecPreference.equals(degradedCodec)
+      )) {
+        codecs.push(codecPreference);
+      }
+    }
 
     const isUsingSVCCodec =
       codecs.length > 0 &&

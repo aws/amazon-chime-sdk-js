@@ -315,9 +315,18 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
 
   setMeetingSupportedVideoSendCodecs(
     meetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] | undefined,
-    videoSendCodecPreferences: VideoCodecCapability[]
+    videoSendCodecPreferences: VideoCodecCapability[],
+    degradedVideoSendCodecs: VideoCodecCapability[]
   ): void {
-    const codecs = meetingSupportedVideoSendCodecPreferences ?? videoSendCodecPreferences;
+    const codecPreferences = meetingSupportedVideoSendCodecPreferences ?? videoSendCodecPreferences;
+    const codecs: VideoCodecCapability[] = [];
+    for (const codecPreference of codecPreferences) {
+      if (!degradedVideoSendCodecs.some(degradedCodec =>
+        codecPreference.equals(degradedCodec)
+      )) {
+        codecs.push(codecPreference);
+      }
+    }
 
     const isUsingSVCCodec =
       codecs.length > 0 &&

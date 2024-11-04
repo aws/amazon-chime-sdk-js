@@ -742,19 +742,21 @@ export default class ClientMetricReport {
   }
 
   /**
-   * Get ssrc of upstream video stream
-   * @returns ssrc of video upstream stream if it exists, otherwise null
+   * Get ssrcs of upstream video streams
+   * @returns ssrcs of video upstream streams
    */
-  getVideoUpstreamSsrc(): number | null {
+  getVideoUpstreamSsrcs(): number[]{
+    const ssrcs: number[] = []
     for (const ssrc in this.streamMetricReports) {
       if (
         this.streamMetricReports[ssrc].mediaType === MediaType.VIDEO &&
         this.streamMetricReports[ssrc].direction === Direction.UPSTREAM
       ) {
-        return Number(ssrc);
+        console.log(`[DBG-MSG] upstream ssrc ${ssrc}`);
+        ssrcs.push(Number(ssrc));
       }
     }
-    return null;
+    return ssrcs;
   }
 
   /**
@@ -790,6 +792,11 @@ export default class ClientMetricReport {
             const metricValue = this.getObservableVideoMetricValue(metricName, Number(ssrc));
             if (!isNaN(metricValue)) {
               metric[metricName] = metricValue;
+            }
+            if (metricName === 'videoUpstreamTotalEncodeTimePerSecond') {
+              this.logger.error(
+                `[DBG-MSG] ${metricName}, ${metricValue} ${ssrc}`
+              );
             }
           }
         }

@@ -7,7 +7,7 @@ import Logger from '../logger/Logger';
 import SimulcastTransceiverController from './SimulcastTransceiverController';
 
 export default class SimulcastContentShareTransceiverController extends SimulcastTransceiverController {
-  static readonly NAME_ARR_ASCENDING = ['low', 'hi'];
+  static readonly NAME_ARR_DECENDING = ['low', 'hi'];
   static readonly BITRATE_ARR_ASCENDING = [300, 1200];
 
   constructor(
@@ -18,8 +18,8 @@ export default class SimulcastContentShareTransceiverController extends Simulcas
     super(logger, browserBehavior, meetingSessionContext);
     let scale = 2;
     this.videoQualityControlParameterMap = new Map<string, RTCRtpEncodingParameters>();
-    for (let i = 0; i < SimulcastContentShareTransceiverController.NAME_ARR_ASCENDING.length; i++) {
-      const ridName = SimulcastContentShareTransceiverController.NAME_ARR_ASCENDING[i];
+    for (let i = 0; i < SimulcastContentShareTransceiverController.NAME_ARR_DECENDING.length; i++) {
+      const ridName = SimulcastContentShareTransceiverController.NAME_ARR_DECENDING[i];
       this.videoQualityControlParameterMap.set(ridName, {
         rid: ridName,
         scaleResolutionDownBy: scale,

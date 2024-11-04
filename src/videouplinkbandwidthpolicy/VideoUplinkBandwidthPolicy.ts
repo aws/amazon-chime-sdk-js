@@ -118,7 +118,8 @@ export default interface VideoUplinkBandwidthPolicy {
    */
   setMeetingSupportedVideoSendCodecs?(
     meetingSupportedVideoSendCodecs: VideoCodecCapability[] | undefined,
-    videoSendCodecPreferences: VideoCodecCapability[]
+    videoSendCodecPreferences: VideoCodecCapability[],
+    degradedVideoSendCodecs: VideoCodecCapability[]
   ): void;
 
   updateVideoEncodeResolution?(width: number, height: number): void;

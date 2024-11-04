@@ -21,6 +21,7 @@ export default class VideoEncodingCpuConnectionHealthPolicy
   }
 
   health(): number {
+    console.log(`[DBG-MSG] ${this.currentData.isVideoEncoderHardware}, ${this.currentData.videoEncodingTimeInMs}`);
     const cpuUsageIsHigh =
       !this.currentData.isVideoEncoderHardware &&
       (this.currentData.videoEncodingTimeInMs >= this.highEncodeCpuMsThreshold ||
