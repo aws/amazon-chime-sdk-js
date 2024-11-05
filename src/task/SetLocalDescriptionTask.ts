@@ -3,7 +3,6 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
-import DefaultModality from '../modality/DefaultModality';
 import SDP from '../sdp/SDP';
 import BaseTask from './BaseTask';
 
@@ -56,16 +55,20 @@ export default class SetLocalDescriptionTask extends BaseTask {
       sdp = new SDP(sdp).removeH264SupportFromSendSection().sdp;
     }
 
-    // We set content hint to `motion` as a workaround for the issue Chrome cannot enable temporal
+    // The default start bitrate is 300kbps. While this is a reasonable starting point with respect
+    // to network adaptation, the encoding bitrate does not adjust as quickly as the estimate, which
+    // can quickly max out on a clear network after a few seconds. Thus it will often take 10-25 seconds
+    // for the encode bitrate/resolution to reach the intended value. The network adaptation detects issues quick enough
+    // that raising it to 1000kbps is not much concern, on most networks the congestion controller
+    // will react to network restrictions before the first keyframe is even generated!
+    //
+    // Note that this is also important with regards to content share with SVC enabled,
+    // as we set content hint to `motion` as a workaround for the issue that Chrome cannot enable temporal
     // scalability for screen share https://bugs.chromium.org/p/chromium/issues/detail?id=1433486
     // As a side effect, content share may start at a low resolution and take a long time to adapt,
-    // especially when there is limited motion on screen. To mitigate the problem, we set a starting
-    // bitrate of 100 kbps for content share with SVC enabled.
-    const attendeeId = this.context.audioVideoController.configuration.credentials.attendeeId;
-    const isContent = new DefaultModality(attendeeId).hasModality(DefaultModality.MODALITY_CONTENT);
-    if (isContent && this.context.audioVideoController.configuration.enableSVC) {
-      sdp = new SDP(sdp).withStartingVideoSendBitrate(100).sdp;
-    }
+    // especially when there is limited motion on screen, if we do not set this slightly higher starting
+    // bitrate.
+    sdp = new SDP(sdp).withStartingVideoSendBitrate(1000).sdp;
 
     if (
       this.context.videoSendCodecPreferences !== undefined &&
