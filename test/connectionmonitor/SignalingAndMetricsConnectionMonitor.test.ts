@@ -472,6 +472,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     sendClientMetricReport(clientMetricReport);
     expect(connectionHealthData.isVideoEncoderHardware).to.be.false;
     expect(connectionHealthData.videoEncodingTimeInMs).to.equal(0);
+    expect(connectionHealthData.videoEncodingTimePerFrameInMs).to.equal(0);
     expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
     expect(connectionHealthData.videoInputFps).to.equal(0);
     expect(connectionHealthData.videoEncodeFps).to.equal(0);
@@ -500,6 +501,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     sendClientMetricReport(clientMetricReport);
     expect(connectionHealthData.isVideoEncoderHardware).to.be.false;
     expect(connectionHealthData.videoEncodingTimeInMs).to.equal(0);
+    expect(connectionHealthData.videoEncodingTimePerFrameInMs).to.equal(0);
     expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
     expect(connectionHealthData.videoInputFps).to.equal(0);
     expect(connectionHealthData.videoEncodeFps).to.equal(0);
@@ -515,7 +517,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     upstreamReport.mediaType = MediaType.VIDEO;
     upstreamReport.direction = Direction.UPSTREAM;
     upstreamReport.previousMetrics['totalEncodeTime'] = 1.0;
-    upstreamReport.currentMetrics['totalEncodeTime'] = 1.1;
+    upstreamReport.currentMetrics['totalEncodeTime'] = 1.3;
     upstreamReport.currentMetrics['framesPerSecond'] = 15;
     upstreamReport.previousMetrics['framesEncoded'] = 0;
     upstreamReport.currentMetrics['framesEncoded'] = 15;
@@ -543,9 +545,55 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     audioVideoController.videoTileController.startLocalVideoTile();
     sendClientMetricReport(clientMetricReport);
     expect(connectionHealthData.isVideoEncoderHardware).to.be.true;
-    expect(Math.trunc(connectionHealthData.videoEncodingTimeInMs)).to.equal(100);
+    expect(Math.trunc(connectionHealthData.videoEncodingTimeInMs)).to.equal(300);
+    expect(Math.trunc(connectionHealthData.videoEncodingTimePerFrameInMs)).to.equal(20);
     expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
     expect(connectionHealthData.videoInputFps).to.equal(15);
     expect(connectionHealthData.videoEncodeFps).to.equal(15);
+  });
+
+  it('does translate data when upstream metric is available with 0 encoded frame', async () => {
+    const index = prepareIndex([1, 2]);
+    const clientMetricReport = new ClientMetricReport(new NoOpDebugLogger(), index, 'attendee-1');
+    clientMetricReport.currentTimestampMs = 2000;
+    clientMetricReport.previousTimestampMs = 1000;
+    const upstreamSsrc = 1;
+    const upstreamReport = new StreamMetricReport();
+    upstreamReport.mediaType = MediaType.VIDEO;
+    upstreamReport.direction = Direction.UPSTREAM;
+    upstreamReport.previousMetrics['totalEncodeTime'] = 1.0;
+    upstreamReport.currentMetrics['totalEncodeTime'] = 1.0;
+    upstreamReport.currentMetrics['framesPerSecond'] = 0;
+    upstreamReport.previousMetrics['framesEncoded'] = 0;
+    upstreamReport.currentMetrics['framesEncoded'] = 0;
+    upstreamReport.currentStringMetrics['encoderImplementation'] = 'ExternalEncoder';
+    upstreamReport.currentObjectMetrics['qualityLimitationDurations'] = {
+      cpu: 0.0,
+      other: 0.0,
+    };
+    upstreamReport.previousObjectMetrics['qualityLimitationDurations'] = {
+      cpu: 0.0,
+      other: 0.0,
+    };
+    clientMetricReport.streamMetricReports[upstreamSsrc] = upstreamReport;
+    clientMetricReport.rtcStatsReport = new Map<string, RawMetrics>([
+      [
+        'candidatePairId1',
+        {
+          type: 'candidate-pair',
+          ...{
+            packetsReceived: 0,
+          },
+        },
+      ],
+    ]);
+    audioVideoController.videoTileController.startLocalVideoTile();
+    sendClientMetricReport(clientMetricReport);
+    expect(connectionHealthData.isVideoEncoderHardware).to.be.true;
+    expect(Math.trunc(connectionHealthData.videoEncodingTimeInMs)).to.equal(0);
+    expect(Math.trunc(connectionHealthData.videoEncodingTimePerFrameInMs)).to.equal(0);
+    expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
+    expect(connectionHealthData.videoInputFps).to.equal(0);
+    expect(connectionHealthData.videoEncodeFps).to.equal(0);
   });
 });
