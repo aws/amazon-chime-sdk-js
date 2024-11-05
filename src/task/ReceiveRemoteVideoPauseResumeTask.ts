@@ -15,6 +15,7 @@ import BaseTask from './BaseTask';
  * `VideoDownlinkBandwidthPolicy.getServerSideNetworkAdaption()` == `BandwidthProbingAndRemoteVideoQualityAdaption`)
  * which indicates remote video sources that have been paused or resumed and updates [[VideoDownlinkBandwidthPolicy]]
  * and [[VideoTileController]]
+ *
  */
 export default class ReceiveRemoteVideoPauseResume
   extends BaseTask
@@ -36,6 +37,32 @@ export default class ReceiveRemoteVideoPauseResume
     this.context.removableObservers.push(this);
   }
 
+  updateSubscribedGroupdIds(groupIds: Set<number>): void {
+    const existingVideoTileIds = new Set<number>();
+    for (const groupId of groupIds) {
+      const attendeeId = this.context.videoStreamIndex.attendeeIdForGroupId(groupId);
+      if (attendeeId.length === 0) {
+        this.logger.warn(`Could not find attendee ID for newly subscribed group ID ${groupId}`);
+        continue;
+      }
+      let videoTile = this.context.videoTileController.getVideoTileForAttendeeId(attendeeId);
+      if (videoTile === undefined) {
+        this.logger.info(
+          `No existing video tile for attendee ID ${attendeeId} with new group ID ${groupId}. Creating new one.`
+        );
+        videoTile = this.context.videoTileController.addVideoTile();
+        videoTile.bindVideoStream(attendeeId, false, null, 0, 0, 0, null);
+      }
+      existingVideoTileIds.add(videoTile.id());
+    }
+
+    this.serverPausedVideoTileIds.forEach(id => {
+      if (!existingVideoTileIds.has(id)) {
+        this.serverPausedVideoTileIds.delete(id);
+      }
+    });
+  }
+
   handleSignalingClientEvent(event: SignalingClientEvent): void {
     if (
       event.type !== SignalingClientEventType.ReceivedSignalFrame ||
@@ -48,8 +75,8 @@ export default class ReceiveRemoteVideoPauseResume
     // @ts-ignore: force cast to SdkPauseFrame
     const pauseResumeFrame: SdkPauseResumeFrame = event.message.pause;
     const messageType = event.message.type;
-    this.context.logger.info(
-      `received new ${
+    this.logger.info(
+      `Received new ${
         messageType === SdkSignalFrame.Type.PAUSE ? 'pause' : 'resume'
       } frame: ${JSON.stringify(pauseResumeFrame)}`
     );
@@ -65,11 +92,16 @@ export default class ReceiveRemoteVideoPauseResume
 
     const tiles = pauseResumeFrame.groupIds.map((groupId: number) => {
       const attendeeId = this.context.videoStreamIndex.attendeeIdForGroupId(groupId);
+      if (attendeeId.length === 0) {
+        this.logger.warn(`Could not find attendee ID for paused group ID ${groupId}`);
+        return undefined;
+      }
       return this.context.videoTileController.getVideoTileForAttendeeId(attendeeId);
     });
 
     for (const tile of tiles) {
       if (tile === undefined) {
+        // Warning is logged above
         continue;
       }
       if (messageType === SdkSignalFrame.Type.PAUSE) {
@@ -85,6 +117,7 @@ export default class ReceiveRemoteVideoPauseResume
           tile.pause();
         }
       } else {
+        // Don't resume user paused video tiles
         if (tile.state().paused && this.serverPausedVideoTileIds.has(tile.id())) {
           this.serverPausedVideoTileIds.delete(tile.id());
           this.context.videoDownlinkBandwidthPolicy.forEachObserver(

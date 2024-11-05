@@ -888,7 +888,7 @@ describe('DefaultSignalingClient', () => {
       testObjects.signalingClient.openConnection(testObjects.request);
     });
 
-    it('closes the connection when WebSocket receives the "close" event, e.g., from Tincan', done => {
+    it('closes the connection when WebSocket receives the "close" event, e.g., from media backend', done => {
       const testObjects = createTestObjects();
       class TestObserver implements SignalingClientObserver {
         handleSignalingClientEvent(event: SignalingClientEvent): void {

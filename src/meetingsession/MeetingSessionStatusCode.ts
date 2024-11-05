@@ -177,6 +177,14 @@ export enum MeetingSessionStatusCode {
   AudioVideoWasRemovedFromPrimaryMeeting,
 
   /**
+   * This is only used in promotion functions and will not be provided in any `audioVideoDidStop` calls.
+   *
+   * The attendee was automatically demoted following a disconnection. The attendee must re-premote itself to the
+   * primary meeting.
+   */
+  AudioVideoDisconnectedWhilePromoted,
+
+  /**
    * This is only used internally and will not be provided in any `audioVideoDidStop` calls.
    *
    * Reserved.

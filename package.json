@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "3.20.0",
+  "version": "3.26.0",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -11,7 +11,7 @@
     "NOTICE"
   ],
   "engines": {
-    "node": "^18 || ^19 || ^20",
+    "node": "^18 || ^19 || ^20 || ^22",
     "npm": "^8 || ^9 || ^10"
   },
   "scripts": {
@@ -89,6 +89,7 @@
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
     "prettier": "^2.1.2",
+    "protobufjs-cli": "^1.1.2",
     "rimraf": "^3.0.2",
     "sinon": "^7.3.2",
     "spawn-wrap": "^2.0.0",
@@ -104,7 +105,7 @@
     "@types/ua-parser-js": "^0.7.35",
     "detect-browser": "^5.2.0",
     "pako": "^2.0.4",
-    "protobufjs": "^7.2.4",
+    "protobufjs": "^7.3.0",
     "resize-observer": "^1.0.0",
     "ua-parser-js": "^1.0.1"
   },

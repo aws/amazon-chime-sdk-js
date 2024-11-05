@@ -302,6 +302,8 @@ message SdkMetric {
         RTC_SPK_TOTAL_RECOVERED_RED = 100;
         RTC_SPK_TOTAL_RECOVERED_FEC = 101;
         VIDEO_QUALITY_LIMITATION_DURATION_CPU = 102;
+        VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU = 103;
+        VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE = 104;
     }
     optional Type type = 1;
     optional double value = 2;
@@ -481,7 +483,11 @@ message SdkMeetingSessionCredentials {
 
 enum SdkVideoCodecCapability {
     VP8 = 1;
+    H264_BASELINE_PROFILE = 2;
     H264_CONSTRAINED_BASELINE_PROFILE = 3;
+    H264_MAIN_PROFILE = 4;
+    H264_HIGH_PROFILE = 5;
+    H264_CONSTRAINED_HIGH_PROFILE = 6;
     VP9_PROFILE_0 = 8;
     AV1_MAIN_PROFILE = 11;
 };

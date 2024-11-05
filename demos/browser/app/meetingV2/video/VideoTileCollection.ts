@@ -11,7 +11,7 @@ import {
   VideoTileState,
 } from 'amazon-chime-sdk-js';
 
-import VideoPreferenceManager from './VideoPreferenceManager';
+import RemoteVideoManager from './RemoteVideoManager';
 import PaginationManager from './PaginationManager';
 import { DemoVideoTile } from './VideoTile'; DemoVideoTile; // Make sure this file is included in webpack
 
@@ -129,44 +129,40 @@ export default class VideoTileCollection implements AudioVideoObserver {
 
   constructor(private videoTileController: VideoTileControllerFacade,
     private logger: Logger,
-    private videoPreferenceManager?: VideoPreferenceManager,
-    pageSize?: number) {
+    private remoteVideoManager: RemoteVideoManager,
+    private pageSize: number,
+    private localAttendeeId: string) {
     this.setupVideoTiles();
 
-    if (this.videoPreferenceManager === undefined) {
+    if (!this.remoteVideoManager.supportsRemoteVideoPreferences()) {
       // Don't show priority related configuration if we don't support it
       for (let i = 0; i <= TileOrganizer.MaxTiles; i++) {
         this.tileIndexToDemoVideoTile.get(i).showRemoteVideoPreferences = false;
       }
-    } else {
-        // Pagination is only possible with priority based policy
-        this.pagination = new PaginationManager<string>(pageSize);
-        document.getElementById('video-paginate-left').addEventListener('click', (event: Event) => { this.paginateLeft() });
-        document.getElementById('video-paginate-right').addEventListener('click', (event: Event) => { this.paginateRight() });
-        this.updatePaginatedVisibleTiles();
     }
+
+    this.pagination = new PaginationManager<string>(this.pageSize);
+    document.getElementById('video-paginate-left').addEventListener('click', (event: Event) => { this.paginateLeft() });
+    document.getElementById('video-paginate-right').addEventListener('click', (event: Event) => { this.paginateRight() });
+    this.updatePaginatedVisibleTiles();
   }
 
   remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
-    if (this.videoPreferenceManager === undefined) {
-      return;
-    }
-
     // Add these sources to the pagination list
     for (const source of videoSources) {
         this.pagination.add(source.attendee.attendeeId);
     }
     this.pagination.removeIf((value: string) => {
-      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value)
+      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value) && !this.isLocalAttendee(value);
     });
 
     // Update the preference manager explicitly as it needs to add default preferences
-    this.videoPreferenceManager.ensureDefaultPreferences(videoSources);
+    this.remoteVideoManager.ensureDefaultPreferences(videoSources);
     this.updatePaginatedVisibleTiles();
   }
 
   videoTileDidUpdate(tileState: VideoTileState): void {
-    console.log(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
+    this.logger.info(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
     if (!tileState.boundAttendeeId) {
       return;
     }
@@ -181,7 +177,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
       demoVideoTile.pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
     }
 
-    if (this.videoPreferenceManager !== undefined && !tileState.localTile) { // No current config possible on local tile
+    if (this.remoteVideoManager.supportsRemoteVideoPreferences() && !tileState.localTile) { // No current config possible on local tile
       this.logger.info('adding config listeners for tileIndex ' + tileIndex);
       demoVideoTile.targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
       this.tileIndexToTargetResolutionEventListener[tileIndex] = this.createTargetResolutionListener(tileState);
@@ -213,12 +209,20 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
     demoVideoTile.attendeeId = tileState.boundAttendeeId;
 
+    // We need to add local video or content to pagination from tile updates
+    const shouldUpdatePagination = this.isLocalAttendee(tileState.boundAttendeeId);
     if (tileState.boundVideoStream) {
-        demoVideoTile.show(tileState.isContent);
+        if (shouldUpdatePagination) {
+            this.pagination.add(tileState.boundAttendeeId);
+        }
     } else {
         // Hide non-active tiles that aren't just paused
         demoVideoTile.hide();
+        if (shouldUpdatePagination) {
+            this.pagination.remove(tileState.boundAttendeeId);
+        }
     }
+    this.updatePaginatedVisibleTiles();
     this.updateLayout();
     this.layoutFeaturedTile();
   }
@@ -239,6 +243,12 @@ export default class VideoTileCollection implements AudioVideoObserver {
     demoVideoTile.nameplate = "";
     demoVideoTile.pauseState = "";
     this.updateLayout();
+  }
+
+  private isLocalAttendee(attendeeId: string) {
+    // This covers both the actual local attendee ID and the attendee ID
+    // of any local content share
+    return attendeeId.startsWith(this.localAttendeeId);
   }
 
   showVideoWebRTCStats(videoMetricReport: { [id: string]: { [id: string]: {} } }): void {
@@ -281,6 +291,11 @@ export default class VideoTileCollection implements AudioVideoObserver {
       const tileId = videoTile.id();
       const tileIndex = this.tileIdToTileIndex[tileId];
       const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
+      if (demoVideoTile === undefined) {
+        // Demo tile doesn't exist yet, we probably haven't received any frame
+        continue;
+      }
+
       if (tileState.localTile || tileState.isContent) {
         uplinkCount++;
         demoVideoTile.collectVideoStats(VideoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream', uplinkStats);
@@ -363,6 +378,9 @@ export default class VideoTileCollection implements AudioVideoObserver {
     for (const tile of this.videoTileController.getAllVideoTiles()) {
       const state = tile.state();
       if (state.isContent) {
+        if (state.boundAttendeeId.startsWith(this.localAttendeeId) && !this.pagination.currentPage().includes(state.boundAttendeeId)) {
+            return null;
+         }
         return state.tileId;
       }
     }
@@ -398,7 +416,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
   }
 
   private updateLayout(): void {
-    this.tileArea.className = `v-grid size-${this.videoTileCount()}`;
+    this.tileArea.className = `v-grid size-${this.pagination.currentPage().length}`;
 
     const localTileId = this.localTileId();
     const activeTile = this.activeTileId();
@@ -409,11 +427,6 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
   }
 
-  private videoTileCount(): number {
-    return (
-      this.tileOrganizer.remoteTileCount + (this.videoTileController.hasStartedLocalVideoTile() ? 1 : 0)
-    );
-  }
 
   private localTileId(): number | null {
     return this.videoTileController.hasStartedLocalVideoTile()
@@ -441,16 +454,15 @@ export default class VideoTileCollection implements AudioVideoObserver {
     // Refresh visible attendees incase ones have been added
     let attendeesToShow = this.pagination.currentPage();
     this.logger.info(`Showing current page ${JSON.stringify(attendeesToShow)}`)
-    this.videoPreferenceManager.visibleAttendees = attendeesToShow;
+    this.remoteVideoManager.visibleAttendees = attendeesToShow;
 
     // We need to manually control visibility of paused tiles anyways so we just do
     // everything here, even though the preference manager adding/removing will
     // result in tile callbacks as well.
-    for (let [index, videoTile] of this.tileIndexToDemoVideoTile.entries()) {
+    for (let videoTile of this.tileIndexToDemoVideoTile.values()) {
         if (attendeesToShow.includes(videoTile.attendeeId)) {
             videoTile.show(false);
-        } else if (index !== VideoTileCollection.LocalVideoTileIndex
-            && this.tileIndexToTileId[index] !== this.findContentTileId()) { // Always show local tile and content
+        } else {
             videoTile.hide();
         }
     }
@@ -470,7 +482,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
       const value = (event.target as HTMLInputElement).value;
       this.logger.info(`target resolution changed for: ${attendeeId} to ${value}`);
       const targetDisplaySize = ConfigLevelToTargetDisplaySize[value as ConfigLevel];
-      this.videoPreferenceManager.setAttendeeTargetDisplaySize(attendeeId, targetDisplaySize);
+      this.remoteVideoManager.setAttendeeTargetDisplaySize(attendeeId, targetDisplaySize);
     }
   }
 
@@ -484,7 +496,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
       const value = (event.target as HTMLInputElement).value;
       this.logger.info(`priority changed for: ${attendeeId} to ${value}`);
       const priority = ConfigLevelToVideoPriority[value as ConfigLevel];
-      this.videoPreferenceManager.setAttendeePriority(attendeeId, priority);
+      this.remoteVideoManager.setAttendeePriority(attendeeId, priority);
     }
   }
 
@@ -498,7 +510,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
       const value = (event.target as HTMLInputElement).value;
       const preference = StringToVideoQualityAdaptationPreference[value as DegrationPreferenceString];
       this.logger.info(`degradation preference changed for: ${attendeeId} to ${preference}`);
-      this.videoPreferenceManager.setAttendeeDegradationPreference(attendeeId, preference);
+      this.remoteVideoManager.setAttendeeDegradationPreference(attendeeId, preference);
     }
   }
 

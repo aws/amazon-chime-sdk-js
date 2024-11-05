@@ -14,6 +14,7 @@ import DefaultModality from '../modality/DefaultModality';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import { Maybe } from '../utils/Types';
+import NoVideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoTile from '../videotile/VideoTile';
 import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 import DefaultSimulcastUplinkPolicyForContentShare from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
@@ -39,6 +40,7 @@ export default class DefaultContentShareController
     contentShareConfiguration.credentials.joinToken =
       configuration.credentials.joinToken + ContentShareConstants.Modality;
     contentShareConfiguration.meetingFeatures = configuration.meetingFeatures.clone();
+    contentShareConfiguration.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     return contentShareConfiguration;
   }
 
@@ -196,7 +198,7 @@ export default class DefaultContentShareController
 
   private setupContentShareEvents(): void {
     // We use realtimeSubscribeToAttendeeIdPresence instead of audioVideoDidStart because audioVideoDidStart fires
-    // before the capacity check in Tincan while when realtimeSubscribeToAttendeeIdPresence fires, we know the
+    // before the capacity check in the media backend while when realtimeSubscribeToAttendeeIdPresence fires, we know the
     // content attendee has been able to pass the capacity check and join the call so we can start the local
     // content share video
     this.attendeeAudioVideo.realtimeController.realtimeSubscribeToAttendeeIdPresence(

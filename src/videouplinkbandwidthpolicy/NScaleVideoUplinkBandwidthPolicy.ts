@@ -264,7 +264,8 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       if ((this.numParticipants >= 0 && this.numParticipants < 3) || !this.isUsingSVCCodec) {
         scalabilityMode = 'L1T1';
       } else {
-        scalabilityMode = targetHeight >= 720 ? 'L3T3' : targetHeight >= 360 ? 'L2T3' : 'L1T3';
+        // We do not limit the number of layers depending on input resolution, however Chrome will drop anything below around 135p.
+        scalabilityMode = 'L3T3';
       }
       this.logger?.info(
         `calculateEncodingParameters: SVC: ${this.enableSVC}    participants: ${

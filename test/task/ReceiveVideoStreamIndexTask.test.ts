@@ -723,13 +723,38 @@ describe('ReceiveVideoStreamIndexTask', () => {
           createIndexSignalBuffer(false, null, null, [
             SdkVideoCodecCapability.VP8,
             SdkVideoCodecCapability.VP9_PROFILE_0,
-            SdkVideoCodecCapability.AV1_MAIN,
+            SdkVideoCodecCapability.AV1_MAIN_PROFILE,
           ])
         );
         await delay(behavior.asyncWaitMs + 10);
         expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
           VideoCodecCapability.vp8(),
           VideoCodecCapability.vp9Profile0(),
+        ]);
+        done();
+      });
+
+      task.run();
+    });
+
+    it('calculates intersection with degraded codecs', done => {
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp8(),
+        VideoCodecCapability.h264(),
+        VideoCodecCapability.vp9Profile0(),
+      ];
+      context.degradedVideoSendCodecs = [VideoCodecCapability.vp9Profile0()];
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(
+          createIndexSignalBuffer(false, null, null, [
+            SdkVideoCodecCapability.VP8,
+            SdkVideoCodecCapability.VP9_PROFILE_0,
+            SdkVideoCodecCapability.AV1_MAIN_PROFILE,
+          ])
+        );
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
+          VideoCodecCapability.vp8(),
         ]);
         done();
       });
@@ -777,6 +802,10 @@ describe('ReceiveVideoStreamIndexTask', () => {
       );
       context.videoSendCodecPreferences = [VideoCodecCapability.h264(), VideoCodecCapability.vp8()];
       context.currentVideoSendCodec = VideoCodecCapability.h264();
+      context.prioritizedSendVideoCodecCapabilities = [
+        VideoCodecCapability.h264(),
+        VideoCodecCapability.vp8(),
+      ];
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(
           createIndexSignalBuffer(false, null, null, [SdkVideoCodecCapability.VP8])
@@ -786,6 +815,40 @@ describe('ReceiveVideoStreamIndexTask', () => {
           VideoCodecCapability.vp8(),
         ]);
         expect(audioVideoControllerSpy.calledWith({ needsRenegotiation: true })).to.be.true;
+        done();
+      });
+
+      task.run();
+    });
+
+    it('does not request update if we do not support the higher preference codec', done => {
+      const audioVideoControllerSpy: sinon.SinonSpy = sinon.spy(
+        context.audioVideoController,
+        'update'
+      );
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp9(),
+        VideoCodecCapability.vp8(),
+        VideoCodecCapability.h264(),
+      ];
+      context.currentVideoSendCodec = VideoCodecCapability.vp8();
+      context.prioritizedSendVideoCodecCapabilities = [
+        VideoCodecCapability.vp8(),
+        VideoCodecCapability.h264(),
+      ];
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(
+          createIndexSignalBuffer(false, null, null, [
+            SdkVideoCodecCapability.VP9_PROFILE_0,
+            SdkVideoCodecCapability.VP8,
+          ])
+        );
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.meetingSupportedVideoSendCodecPreferences).to.be.deep.equal([
+          VideoCodecCapability.vp9(),
+          VideoCodecCapability.vp8(),
+        ]);
+        expect(audioVideoControllerSpy.calledWith({ needsRenegotiation: true })).to.be.false;
         done();
       });
 
@@ -804,7 +867,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
           createIndexSignalBuffer(false, null, null, [
             SdkVideoCodecCapability.VP8,
             SdkVideoCodecCapability.VP9_PROFILE_0,
-            SdkVideoCodecCapability.AV1_MAIN,
+            SdkVideoCodecCapability.AV1_MAIN_PROFILE,
           ])
         );
         await delay(behavior.asyncWaitMs + 10);

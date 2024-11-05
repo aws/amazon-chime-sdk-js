@@ -213,6 +213,28 @@ describe('JoinAndReceiveIndexTask', () => {
       expect(context.videoSubscriptionLimit).to.equal(10);
     });
 
+    it('can handle a joinack signal without a join ack frame', async () => {
+      const joinAckSignal = SdkSignalFrame.create();
+      joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
+
+      const joinAckBuffer = SdkSignalFrame.encode(joinAckSignal).finish();
+      joinAckSignalBuffer = new Uint8Array(joinAckBuffer.length + 1);
+      joinAckSignalBuffer[0] = 0x5;
+      joinAckSignalBuffer.set(joinAckBuffer, 1);
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(context.indexFrame).to.not.equal(null);
+      expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
+    });
+
     it('should set video subscription limit to default value when join ack frame has empty video subscription limit', async () => {
       const joinAckFrame = SdkJoinAckFrame.create();
       joinAckFrame.videoSubscriptionLimit = 0;

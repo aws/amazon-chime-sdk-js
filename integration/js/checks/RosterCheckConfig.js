@@ -1,6 +1,6 @@
 
 class RosterCheckConfig {
-  constructor(checkCount = 10, waitTimeMs = 1000){
+  constructor(checkCount = 10, waitTimeMs = 2000){
     this.checkCount = checkCount;
     this.waitTimeMs = waitTimeMs;
   }

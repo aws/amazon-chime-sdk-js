@@ -62,7 +62,7 @@ function serve(host = '127.0.0.1:8080') {
       } else if (process.env.DEBUG) {
         // For internal debugging - ignore this
         const debug = require('./debug.js');
-        const debugResponse = debug.debug(request);
+        const debugResponse = await debug.debug(request);
         respond(response, debugResponse.status, 'application/json', JSON.stringify(debugResponse.response, null, 2));
       } else if (request.method === 'POST' && requestUrl.pathname === '/join') {
         if (!requestUrl.query.title || !requestUrl.query.name) {
@@ -308,11 +308,6 @@ function serve(host = '127.0.0.1:8080') {
           console.warn("Cloud media capture not available")
           respond(response, 500, 'application/json', JSON.stringify({}))
         }
-      } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
-        await chimeSDKMeetings.deleteMeeting({
-          MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
-        });
-        respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/start_transcription') {
         const languageCode = requestUrl.query.language;
         const region = requestUrl.query.region;

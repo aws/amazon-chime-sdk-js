@@ -20,7 +20,6 @@ The Amazon Chime SDK for JavaScript, in conjunction with WebRTC, allows you to c
       - [Adjust local video quality](#adjust-local-video-quality)
       - [Turning off local video](#turning-off-local-video)
       - [Configure a video uplink policy](#configure-a-video-uplink-policy)
-      - [Pause remote attendee video](#pause-remote-attendee-video)
       - [Use active speaker detection](#use-active-speaker-detection)
       - [Configure a video downlink policy](#configure-a-video-downlink-policy)
     - [Use video simulcast](#use-video-simulcast)
@@ -119,6 +118,7 @@ In the absence of packet loss, keep in mind that the sender uplink and receiver 
 You can choose a video quality of up to 1280x720 (720p) at 30 fps using [chooseVideoInputQuality(width, height, frameRate)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality) and [setVideoMaxBandwidthKbps(maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setvideomaxbandwidthkbps) APIs before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.
 
 Example:
+
 ```js
 // 360p
 meetingSession.audioVideo.chooseVideoInputQuality(640, 360, 15);
@@ -157,21 +157,15 @@ You can also observe the [connectionDidSuggestStopVideo](https://aws.github.io/a
 
 The SDK by default uses the [NScaleVideoUplinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/nscalevideouplinkbandwidthpolicy.html) which monitors number of participants in the meeting and automatically scales down the maxBandwidthKbps as the number of remote video tiles increases. This can be customized by implementing a [VideoUplinkBandwidth Policy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy) and setting it in the [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy) class.
 
-#### Pause remote attendee video
-
-When more video is being received than available estimated downlink bandwidth can support, the event [videoNotReceivingEnoughData](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata) can is triggered with a list of attendee IDs and the bandwidth being consumed due to them. You can use this information to selectively pause attendees that are sending the highest bitrate video streams using [pauseVideoTile](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile). When a video tile is paused, the action only affects your client. It does not pause the video for other attendees.
-
 #### Use active speaker detection
 
 You can use the [active speaker detector](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#5d-subscribe-to-an-active-speaker-detector-optional) to show only the video of the active speakers and pause other videos.
 
 #### Configure a video downlink policy
 
-By default the SDK uses the [AllHighestVideoBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html), but [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) is used if simulcast is enabled. [AllHighestVideoBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html) subscribes to the highest quality video of all participants and [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) tries to subscribe to videos based on the browser downlink estimate, dropping videos in case of not enough bandwidth.
+By default the SDK uses the [AllHighestVideoBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html) which will not adapt to local receive network conditions and always subscribes to the highest quality video of all participant, but [VideoPriorityBasedPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy.html) will downgrade or pause videos in response to network constraints. Additional configuration of that policy is required to select which remote videos to subscribe to, see [the guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html) for more information. Downgrades are only possible if [simulcast or SVC is enabled](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#).
 
 You can customize the default downlink policy by setting the [VideoDownlinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) in [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) class.
-
-*Browser clients currently only send one stream resolution. You would only need to use this function if you were also using the Amazon Chime SDK for iOS or the Amazon Chime SDK for Android.*
 
 ### Use video simulcast
 

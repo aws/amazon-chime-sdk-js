@@ -140,7 +140,7 @@ describe('DefaultAudioVideoController', () => {
 
   // For JoinAndReceiveIndexTask
   function makeJoinAckFrame(
-    withTurnCreds: boolean = true,
+    withJoinAckFrame: boolean = true,
     defaultServerSideNetworkAdaption: SdkServerSideNetworkAdaption = SdkServerSideNetworkAdaption.NONE
   ): Uint8Array {
     const joinAckFrame = SdkJoinAckFrame.create();
@@ -152,7 +152,7 @@ describe('DefaultAudioVideoController', () => {
     joinAckFrame.defaultServerSideNetworkAdaption = defaultServerSideNetworkAdaption;
     const joinAckSignal = SdkSignalFrame.create();
     joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
-    if (withTurnCreds) {
+    if (withJoinAckFrame) {
       joinAckSignal.joinack = joinAckFrame;
     }
     const buffer = SdkSignalFrame.encode(joinAckSignal).finish();
@@ -547,48 +547,6 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
 
-      await stop();
-      audioVideoController.removeObserver(observer);
-    });
-
-    it('can be started without a join ack frame containing turn credentials', async () => {
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController
-      );
-      let sessionStarted = false;
-      let sessionConnecting = false;
-      class TestObserver implements AudioVideoObserver {
-        audioVideoDidStart(): void {
-          // use this opportunity to verify that start is idempotent
-          audioVideoController.start();
-          sessionStarted = true;
-        }
-        audioVideoDidStartConnecting(): void {
-          sessionConnecting = true;
-        }
-      }
-      const observer = new TestObserver();
-      audioVideoController.addObserver(observer);
-      expect(audioVideoController.configuration).to.equal(configuration);
-      expect(audioVideoController.rtcPeerConnection).to.be.null;
-
-      await delay(defaultDelay);
-      audioVideoController.start();
-      await delay(defaultDelay);
-      webSocketAdapter.send(makeJoinAckFrame(false));
-      await delay(defaultDelay);
-      webSocketAdapter.send(makeIndexFrame());
-      await delay(300);
-      await sendICEEventAndSubscribeAckFrame();
-      await delay(defaultDelay);
-      await sendAudioStreamIdInfoFrame();
-      await delay(defaultDelay);
-      expect(sessionStarted).to.be.true;
-      expect(sessionConnecting).to.be.true;
       await stop();
       audioVideoController.removeObserver(observer);
     });
@@ -1638,6 +1596,10 @@ describe('DefaultAudioVideoController', () => {
         getMidForStreamId(streamId: number): string | undefined {
           return streamId.toString();
         }
+
+        hasVideoInput(): boolean {
+          return true;
+        }
       }
 
       // @ts-ignore
@@ -1799,8 +1761,33 @@ describe('DefaultAudioVideoController', () => {
           };
         }
       }
+
+      class TestTransceiverController extends DefaultTransceiverController {
+        getMidForStreamId(streamId: number): string | undefined {
+          return streamId.toString();
+        }
+
+        hasVideoInput(): boolean {
+          return true;
+        }
+
+        localVideoTransceiver(): RTCRtpTransceiver {
+          const dummyTransceiver = {
+            mid: '1',
+            sender: new MockRTCRtpSender(),
+            receiver: {
+              track: {
+                kind: 'video',
+                enabled: true,
+              },
+            },
+          };
+          return dummyTransceiver as RTCRtpTransceiver;
+        }
+      }
+
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController.localVideoTransceiver().sender = new MockRTCRtpSender();
+      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
         1,
@@ -1836,8 +1823,32 @@ describe('DefaultAudioVideoController', () => {
 
       await start();
 
+      class TestTransceiverController extends DefaultTransceiverController {
+        getMidForStreamId(streamId: number): string | undefined {
+          return streamId.toString();
+        }
+
+        hasVideoInput(): boolean {
+          return true;
+        }
+
+        localVideoTransceiver(): RTCRtpTransceiver {
+          const dummyTransceiver = {
+            mid: '1',
+            sender: new RTCRtpSender(),
+            receiver: {
+              track: {
+                kind: 'video',
+                enabled: true,
+              },
+            },
+          };
+          return dummyTransceiver as RTCRtpTransceiver;
+        }
+      }
+
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController.localVideoTransceiver().sender = new RTCRtpSender();
+      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
         1,
@@ -1854,6 +1865,53 @@ describe('DefaultAudioVideoController', () => {
       // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
       expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
         .false;
+    });
+
+    it('will skip renegotiation if we are updating simulcast layer but not sending', async () => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'info');
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      class TestTransceiverController extends DefaultTransceiverController {
+        getMidForStreamId(streamId: number): string | undefined {
+          return streamId.toString();
+        }
+
+        hasVideoInput(): boolean {
+          return false;
+        }
+      }
+
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
+        1,
+      ]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([1]);
+
+      await start();
+
+      // @ts-ignore
+      audioVideoController.mayNeedRenegotiationForSimulcastLayerChange = true;
+      audioVideoController.update({ needsRenegotiation: false });
+
+      await stop();
+
+      // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
+      expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
+        .true;
     });
 
     it('will skip renegotiation if we are only completing simulcast stream switches', async () => {
@@ -4477,7 +4535,7 @@ describe('DefaultAudioVideoController', () => {
 
     it('can be started', async () => {
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-      domMockBehavior.browserName = 'chrome';
+      domMockBehavior.browserName = 'chrome116';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -5125,7 +5183,7 @@ describe('DefaultAudioVideoController', () => {
         audioVideoWasDemotedFromPrimaryMeeting(status: MeetingSessionStatus): void {
           demotionCalled = true;
           expect(status.statusCode()).to.equal(
-            MeetingSessionStatusCode.SignalingInternalServerError
+            MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted
           );
         }
       }
