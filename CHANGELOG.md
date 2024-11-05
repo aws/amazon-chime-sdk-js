@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Add per-frame encoding time in video encoding CPU connection health policy
+
 ### Fixed
 
 - Prevent DataMessage callback errors from killing a meeting

@@ -12,19 +12,23 @@ export default class VideoEncodingCpuConnectionHealthPolicy
   implements ConnectionHealthPolicy {
   private readonly consecutiveHighEncodeCpuThreshold: number;
   private readonly highEncodeCpuMsThreshold: number;
+  private readonly highEncodeCpuMsPerFrameThreshold: number;
   private consecutiveHighEncodeCpuCnt = 0;
 
   constructor(configuration: ConnectionHealthPolicyConfiguration, data: ConnectionHealthData) {
     super(configuration, data, VideoEncodingConnectionHealthPolicyName.VideoEncodingCpuHealth);
     this.consecutiveHighEncodeCpuThreshold = configuration.consecutiveHighEncodeCpuThreshold;
     this.highEncodeCpuMsThreshold = configuration.highEncodeCpuMsThreshold;
+    this.highEncodeCpuMsPerFrameThreshold = configuration.highEncodeCpuMsPerFrameThreshold;
   }
 
   health(): number {
+    const videoEncodingTimeIsHigh =
+      this.currentData.videoEncodingTimeInMs >= this.highEncodeCpuMsThreshold &&
+      this.currentData.videoEncodingTimePerFrameInMs >= this.highEncodeCpuMsPerFrameThreshold;
     const cpuUsageIsHigh =
       !this.currentData.isVideoEncoderHardware &&
-      (this.currentData.videoEncodingTimeInMs >= this.highEncodeCpuMsThreshold ||
-        this.currentData.cpuLimitationDuration > 0);
+      (videoEncodingTimeIsHigh || this.currentData.cpuLimitationDuration > 0);
     if (cpuUsageIsHigh) {
       this.consecutiveHighEncodeCpuCnt++;
       if (this.consecutiveHighEncodeCpuCnt > this.consecutiveHighEncodeCpuThreshold) {
