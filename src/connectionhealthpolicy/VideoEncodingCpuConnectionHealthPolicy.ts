@@ -23,6 +23,9 @@ export default class VideoEncodingCpuConnectionHealthPolicy
   }
 
   health(): number {
+    // Checking both per-frame and total encode time as we do not want video codec fallback in two conditions:
+    // 1. High per-frame encode time with low framerate (e.g., high resolution, low framerate content share)
+    // 2. High framerate with low per-frame encode time (e.g., high framerate SVC)
     const videoEncodingTimeIsHigh =
       this.currentData.videoEncodingTimeInMs >= this.highEncodeCpuMsThreshold &&
       this.currentData.videoEncodingTimePerFrameInMs >= this.highEncodeCpuMsPerFrameThreshold;
