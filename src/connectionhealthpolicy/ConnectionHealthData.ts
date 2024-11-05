@@ -15,6 +15,7 @@ export default class ConnectionHealthData {
   audioSpeakerDelayMs = 0;
   isVideoEncoderHardware = false;
   videoEncodingTimeInMs = 0;
+  videoEncodingTimePerFrameInMs = 0;
   cpuLimitationDuration = 0;
   videoInputFps = 0;
   videoEncodeFps = 0;
@@ -48,6 +49,7 @@ export default class ConnectionHealthData {
     this.lastGoodSignalTimestampMs = Date.now();
     this.isVideoEncoderHardware = false;
     this.videoEncodingTimeInMs = 0;
+    this.videoEncodingTimePerFrameInMs = 0;
     this.cpuLimitationDuration = 0;
     this.videoInputFps = 0;
     this.videoEncodeFps = 0;
@@ -91,6 +93,7 @@ export default class ConnectionHealthData {
     cloned.audioSpeakerDelayMs = this.audioSpeakerDelayMs;
     cloned.isVideoEncoderHardware = this.isVideoEncoderHardware;
     cloned.videoEncodingTimeInMs = this.videoEncodingTimeInMs;
+    cloned.videoEncodingTimePerFrameInMs = this.videoEncodingTimePerFrameInMs;
     cloned.cpuLimitationDuration = this.cpuLimitationDuration;
     cloned.videoInputFps = this.videoInputFps;
     cloned.videoEncodeFps = this.videoEncodeFps;
@@ -125,6 +128,9 @@ export default class ConnectionHealthData {
   }
   setVideoEncodingTimeInMs(stats: number): void {
     this.videoEncodingTimeInMs = stats;
+  }
+  setVideoEncodingTimePerFrameInMs(stats: number): void {
+    this.videoEncodingTimePerFrameInMs = stats;
   }
   setCpuLimitationDuration(stats: number): void {
     this.cpuLimitationDuration = stats;
