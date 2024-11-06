@@ -14,6 +14,7 @@ env:
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
   MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
   SLACK_JS_SDK_DEV_CORE_WEBHOOK: ${{secrets.SLACK_JS_SDK_DEV_CORE_WEBHOOK}}
+  PRE_RUN_SCRIPT_URL: ${{secrets.PRE_RUN_SCRIPT_URL}}
 
 jobs:
   browser-compatibility-audio:
