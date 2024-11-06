@@ -179,7 +179,7 @@ export default class SignalingAndMetricsConnectionMonitor
     const ssrc = clientMetricReport.getVideoUpstreamSsrc();
     if (!isLocalVideoTileStarted || ssrc === null) {
       this.connectionHealthData.setIsVideoEncoderHardware(false);
-      this.connectionHealthData.setVideoEncodingTimeInMs(0);
+      this.connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
       this.connectionHealthData.setCpuLimitationDuration(0);
       this.connectionHealthData.setVideoInputFps(0);
       this.connectionHealthData.setVideoEncodeFps(0);
@@ -206,9 +206,12 @@ export default class SignalingAndMetricsConnectionMonitor
       'videoUpstreamFramesEncodedPerSecond',
       ssrc
     );
+    const videoEncodingTimePerFrameInMs =
+      videoEncodeFps > 0 ? videoEncodingTimeInMs / videoEncodeFps : 0;
 
     this.connectionHealthData.setIsVideoEncoderHardware(Boolean(isHardwareEncoder));
     this.connectionHealthData.setVideoEncodingTimeInMs(videoEncodingTimeInMs);
+    this.connectionHealthData.setVideoEncodingTimePerFrameInMs(videoEncodingTimePerFrameInMs);
     this.connectionHealthData.setCpuLimitationDuration(cpuLimitationDuration);
     this.connectionHealthData.setVideoInputFps(videoInputFps);
     this.connectionHealthData.setVideoEncodeFps(videoEncodeFps);
