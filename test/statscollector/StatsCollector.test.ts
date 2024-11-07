@@ -815,4 +815,59 @@ describe('StatsCollector', () => {
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
     });
   });
+
+  describe('When it has an upstream video stream', () => {
+    it('adds a custom metric for video codec degradation', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          const rtcStatsReports = _clientMetricReport.customStatsReports;
+          let foundReport = false;
+          // @ts-ignore
+          rtcStatsReports.forEach(report => {
+            if (report.kind === 'video') {
+              if (report.type === 'outbound-rtp') {
+                foundReport = true;
+                expect(report.ssrc).to.equal(1);
+                expect(report.videoCodecDegradationHighEncodeCpu).to.equal(1);
+                expect(report.videoCodecDegradationEncodeFailure).to.equal(2);
+              }
+            }
+          });
+          expect(foundReport).to.be.true;
+          statsCollector.stop();
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'outbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          qualityLimitationDurations: {
+            cpu: 1.0,
+            other: 0.0,
+          },
+        },
+      ];
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      statsCollector.videoCodecDegradationHighEncodeCpuDidReceive();
+      statsCollector.videoCodecDegradationEncodeFailureDidReceive();
+      statsCollector.videoCodecDegradationEncodeFailureDidReceive();
+    });
+  });
 });
