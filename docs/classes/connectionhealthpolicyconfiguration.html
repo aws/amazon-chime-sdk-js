@@ -95,6 +95,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="connectionhealthpolicyconfiguration.html#fourbarstimems" class="tsd-kind-icon">four<wbr>Bars<wbr>Time<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="connectionhealthpolicyconfiguration.html#fractionalloss" class="tsd-kind-icon">fractional<wbr>Loss</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="connectionhealthpolicyconfiguration.html#goodsignaltimems" class="tsd-kind-icon">good<wbr>Signal<wbr>Time<wbr>Ms</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="connectionhealthpolicyconfiguration.html#highencodecpumsperframethreshold" class="tsd-kind-icon">high<wbr>Encode<wbr>Cpu<wbr>MsPer<wbr>Frame<wbr>Threshold</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="connectionhealthpolicyconfiguration.html#highencodecpumsthreshold" class="tsd-kind-icon">high<wbr>Encode<wbr>Cpu<wbr>MsThreshold</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="connectionhealthpolicyconfiguration.html#initialhealth" class="tsd-kind-icon">initial<wbr>Health</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="connectionhealthpolicyconfiguration.html#maxhealth" class="tsd-kind-icon">max<wbr>Health</a></li>
@@ -180,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">consecutive<wbr>Video<wbr>Encoding<wbr>Failure<wbr>Threshold<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 5</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L71">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L79">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:79</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -239,6 +240,24 @@
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L22">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:22</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="highencodecpumsperframethreshold" class="tsd-anchor"></a>
+					<h3>high<wbr>Encode<wbr>Cpu<wbr>MsPer<wbr>Frame<wbr>Threshold</h3>
+					<div class="tsd-signature tsd-kind-icon">high<wbr>Encode<wbr>Cpu<wbr>MsPer<wbr>Frame<wbr>Threshold<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 15</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L73">src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts:73</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Encode time per frame threshold to determine high CPU usage of software encoders in video encoding health
+								monitoring. Recuding the value results in video codec degradation due to high CPU usage software encoder to
+								be triggered at a lower CPU usage. Note that encoder counts each SVC spatial layer of a frame as an encoded
+							frame. The magnification in framerate should be considered when configuring this parameter with SVC enabled.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="highencodecpumsthreshold" class="tsd-anchor"></a>
@@ -502,6 +521,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="connectionhealthpolicyconfiguration.html#goodsignaltimems" class="tsd-kind-icon">good<wbr>Signal<wbr>Time<wbr>Ms</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="connectionhealthpolicyconfiguration.html#highencodecpumsperframethreshold" class="tsd-kind-icon">high<wbr>Encode<wbr>Cpu<wbr>MsPer<wbr>Frame<wbr>Threshold</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="connectionhealthpolicyconfiguration.html#highencodecpumsthreshold" class="tsd-kind-icon">high<wbr>Encode<wbr>Cpu<wbr>MsThreshold</a>

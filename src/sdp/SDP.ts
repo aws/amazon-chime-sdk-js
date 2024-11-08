@@ -927,8 +927,9 @@ export default class SDP {
         // `x-google-start-bitrate` is an unofficial flag that has existed in libwebrtc since its release and is unlikely
         // to be removed without notification.
         //
-        // libwebrtc reference: https://webrtc.googlesource.com/src/+/b6ef1a736ee94d97cc28f3bd59b826c716a3278f/media/base/media_constants.cc#97
-        const newLine = line + `;x-google-start-bitrate=${bitrateKbps * 1000}`;
+        // libwebrtc constant: https://webrtc.googlesource.com/src/+/b6ef1a736ee94d97cc28f3bd59b826c716a3278f/media/base/media_constants.cc#97
+        // libwebrtc parsing:  https://webrtc.googlesource.com/src/+/61c5e86dca59b0ac8240444e7df5c31da27ee40f/media/engine/webrtc_media_engine.cc#172
+        const newLine = line + `;x-google-start-bitrate=${bitrateKbps}`;
         dstLines.push(newLine);
       } else {
         dstLines.push(line);
