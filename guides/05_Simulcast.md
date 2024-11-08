@@ -5,9 +5,7 @@ The uplink policy controls the configuration of the renditions through camera ca
 
 Simulcast is currently disabled by default. To enable it [MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers) must be set. Currently, only Chrome 76 and above is supported.
 
-The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) downlink policy adaptively subscribes to the best simulcast layer and is automatically selected if [[MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers) is set to true.
-
-If you want more fine-grained control of which simulcast layer to subscribe, please use [VideoPriorityBasedPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy). More details about priority-based downlink policy can be 
+When enabling simulcast, you should use [VideoPriorityBasedPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy) to allow switching between layers in response to application use-cases or network adaptation. More details about priority-based downlink policy can be 
 found [here](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html).
 
 - [Video Simulcast](#video-simulcast)
@@ -52,25 +50,6 @@ The table entries represent the maximum configuration.  When CPU and bandwidth c
 
 Note that simulcast is disabled when there are only 2 or fewer attendees.  This is because WebRTC has additional functionality to request lower bitrates from the remote end, and we will forward these requests if there are no competing receivers (i.e. if the receiving estimates it has 200kbps downlink bandwidth available, this will be sent and relayed in a message to the sending client).  Therefore there is no need for simulcast based adaption.
 
-### Downlink  Bandwidth Policy
-
-The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) adds functionality to take advantage of video simulcast.  The goal of this policy is to leave the complexity of managing the downlink bandwidth and decision of which streams to request inside the SDK and remove that burden from the application.  The policy monitors numerous pieces of information and uses that to determine which streams to subscribe to.  The data considered are:
-
-1. Message from infrastructure enumerating video streams from each remote client
-2. Estimated downlink bandwidth from WebRTC library
-3. Media metrics such as packet loss and used bandwidth
-4. Stream type - Screen share or camera device
-
-The policy works by listening to any changes in the information listed above.  Anytime there is a change it re-evaluates the best mix of remote videos to fit within the target downlink bandwidth.  The policy is currently configured to try to request as many remote clients as possible, then increase resolution where possible.  It prioritizes screen share video above people video.  If there is insufficient bandwidth to request all far participants then only a certain number will be seen.
-
-Applications will receive notifications of remote video being added or removed through the [videoTileDidUpdate](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate) and [videoTileWasRemoved](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved) callbacks. You can use [encodingSimulcastLayersDidChange](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingSimulcastLayersDidChange) to know when the selected upstream simulcast resolutions change.
-
-If the application pauses a remote video by calling [pauseVideoTile](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile), then this policy will not include that remote video in the list of available streams and therefore will not automatically subscribe or unsubscribe from it while it is in the paused state.
-
-When using the policy it is recommended that applications do not take action on the downlink monitoring metrics from [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive) since it may conflict with decisions being made within the policy.
-
-The VideoAdaptiveProbePolicy can be used with or without simulcast.  To enable it without simulcast set the [MeetingSessionConfiguration.videoDownlinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) to [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html).  If simulcast is not active, then the policy will only be able to add or remove remote videos.
-
 ### Creating a simulcast enabled meeting
 
 First, create a meeting session configuration.
@@ -101,8 +80,8 @@ in the created [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-
 ```javascript
 configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
 
-//Specify the apdative probe downlink policy
-configuration.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(logger);
+// Specify the apdative probe downlink policy
+configuration.videoDownlinkBandwidthPolicy = new VideoPriorityBasedPolicy(logger);
 ```
 
 Now create a meeting session with the simulcast enabled meeting session configuration.
@@ -116,7 +95,7 @@ const meetingSession = new DefaultMeetingSession(
 );
 ```
 
-This `meetingSession` is now simulcast enabled and will have the `videoUplinkBandwidthPolicy` set to [DefaultSimulcastUplinkPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/defaultsimulcastuplinkPolicy.html) and `videoDownlinkBandwidthPolicy` set to [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html). Due to these policies, the local and remote video resolutions may change. The video resolution depends on the available simulcast streams. The available simlucast streams are dependent on the number of attendees and the current bandwidth estimations. Check "Simulcast resolutions and behavior" section in this guide for more information.
+This `meetingSession` is now simulcast enabled and will have the `videoUplinkBandwidthPolicy` set to [DefaultSimulcastUplinkPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/defaultsimulcastuplinkPolicy.html). Due to these policies, the local and remote video resolutions may change. The video resolution depends on the available simulcast streams. The available simlucast streams are dependent on the number of attendees and the current bandwidth estimations. Check "Simulcast resolutions and behavior" section in this guide for more information.
 
 ### Receive upstream simulcast layer change notification
 

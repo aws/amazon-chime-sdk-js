@@ -493,6 +493,14 @@ export default class MonitorTask
           this.context.meetingSupportedVideoSendCodecPreferences[0]
         );
         this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
+
+        if (this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs) {
+          this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
+            this.context.meetingSupportedVideoSendCodecPreferences,
+            this.context.videoSendCodecPreferences
+          );
+        }
+
         this.context.audioVideoController.update({ needsRenegotiation: true });
       } else {
         this.context.logger.warn(
