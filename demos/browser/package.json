@@ -36,6 +36,7 @@
     "@aws-sdk/client-chime-sdk-meetings": "^3.477.0",
     "@aws-sdk/client-chime-sdk-messaging": "^3.477.0",
     "@aws-sdk/client-sts": "^3.477.0",
+    "@tensorflow-models/body-segmentation": "^1.0.2",
     "amazon-chime-sdk-js": "file:../..",
     "bootstrap": "^5.1.3",
     "compression": "^1.7.4",

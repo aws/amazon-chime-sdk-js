@@ -46,6 +46,8 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   private clientMetricReport: ClientMetricReport;
   private redRecoveryMetricReport: RedundantAudioRecoveryMetricReport = new RedundantAudioRecoveryMetricReport();
   private lastRedRecoveryMetricReportConsumedTimestampMs: number = 0;
+  private videoCodecDegradationHighEncodeCpuCount: number = 0;
+  private videoCodecDegradationEncodeFailureCount: number = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -447,7 +449,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   }
 
   /**
-   * Sends the MetricFrame to Tincan via ProtoBuf.
+   * Sends the MetricFrame to media backend via ProtoBuf.
    */
   private sendClientMetricProtobuf(clientMetricFrame: SdkClientMetricFrame): void {
     this.signalingClient.sendClientMetrics(clientMetricFrame);
@@ -545,6 +547,17 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     // Add custom stats for reporting.
     const customStatsReports: CustomStatsReport[] = [];
     this.maybeAddRedRecoveryMetrics(customStatsReports);
+    // We cannot use 'this.clientMetricsReport.getVideoUpstreamSsrc()' because the value
+    // is dependent on the call to 'this.processRawMetricReports()' below, i.e. it depends on
+    // the previous handling of raw metrics reports. This would lead to the addition of custom metrics
+    // for streams that may no longer exist, e.g. after a reconnection, which will then stick around
+    // perpetually
+    const videoUpstreamSsrc = this.getVideoUpstreamSsrcFromRawMetricReports(
+      filteredRawMetricReports
+    );
+    if (videoUpstreamSsrc !== null) {
+      this.addVideoCodecDegradationMetrics(customStatsReports, videoUpstreamSsrc);
+    }
     this.clientMetricReport.customStatsReports = customStatsReports;
     filteredRawMetricReports.push(...customStatsReports);
 
@@ -617,5 +630,52 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     });
 
     this.lastRedRecoveryMetricReportConsumedTimestampMs = this.redRecoveryMetricReport.currentTimestampMs;
+  }
+
+  /**
+   * Receive video codec degradation event due to high encode CPU usage
+   * from MonitorTask and increment counter
+   */
+  videoCodecDegradationHighEncodeCpuDidReceive(): void {
+    this.videoCodecDegradationHighEncodeCpuCount += 1;
+  }
+
+  /**
+   * Receive video codec degradation event due to hardware encoder failure
+   * from MonitorTask and increment counter
+   */
+  videoCodecDegradationEncodeFailureDidReceive(): void {
+    this.videoCodecDegradationEncodeFailureCount += 1;
+  }
+
+  private addVideoCodecDegradationMetrics(
+    customStatsReports: CustomStatsReport[],
+    videoUpstreamSsrc: number
+  ): void {
+    customStatsReports.push({
+      kind: 'video',
+      type: 'outbound-rtp',
+      ssrc: videoUpstreamSsrc,
+      timestamp: Date.now(),
+      videoCodecDegradationHighEncodeCpu: this.videoCodecDegradationHighEncodeCpuCount,
+      videoCodecDegradationEncodeFailure: this.videoCodecDegradationEncodeFailureCount,
+    });
+    this.videoCodecDegradationHighEncodeCpuCount = 0;
+    this.videoCodecDegradationEncodeFailureCount = 0;
+  }
+
+  private getVideoUpstreamSsrcFromRawMetricReports(
+    rawMetricReports: RawMetricReport[]
+  ): number | null {
+    for (const rawMetricReport of rawMetricReports) {
+      if (
+        this.isStreamRawMetricReport(rawMetricReport.type) &&
+        this.getMediaType(rawMetricReport) === MediaType.VIDEO &&
+        this.getDirectionType(rawMetricReport) === Direction.UPSTREAM
+      ) {
+        return rawMetricReport.ssrc;
+      }
+    }
+    return null;
   }
 }

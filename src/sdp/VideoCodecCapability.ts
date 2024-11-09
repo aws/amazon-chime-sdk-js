@@ -18,19 +18,32 @@ export default class VideoCodecCapability implements Eq {
   ) {}
 
   equals(other: this): boolean {
-    return (
-      other !== undefined &&
-      this.codecName === other.codecName &&
-      this.codecCapability.mimeType === other.codecCapability.mimeType &&
-      this.codecCapability.clockRate === other.codecCapability.clockRate &&
-      this.codecCapability.sdpFmtpLine === other.codecCapability.sdpFmtpLine
-    );
+    if (other === undefined) {
+      return false;
+    }
+
+    if (
+      this.codecName !== other.codecName ||
+      this.codecCapability.mimeType !== other.codecCapability.mimeType ||
+      this.codecCapability.clockRate !== other.codecCapability.clockRate
+    ) {
+      return false;
+    }
+
+    const thisFmtpLine = this.codecCapability.sdpFmtpLine
+      ? this.cleanupFmtpLine(this.codecCapability.sdpFmtpLine, this.codecName)
+      : '';
+    const otherFmtpLine = other.codecCapability.sdpFmtpLine
+      ? this.cleanupFmtpLine(other.codecCapability.sdpFmtpLine, other.codecName)
+      : '';
+    return thisFmtpLine === otherFmtpLine;
   }
 
   /**
    * Returns whether the codec capability fmtp line matches. This will not
    * attempt to match H.264 profile levels (e.g. 5.2, 3.1), see internal comments for
-   * more detailed information.
+   * more detailed information. This function takes care of checking for an
+   * expected payload type as well.
    *
    * This function is meant to only be used internally.
    */
@@ -40,7 +53,28 @@ export default class VideoCodecCapability implements Eq {
       return false;
     }
 
-    if (this.codecName === 'H264') {
+    const prefix = `a=fmtp:${expectedPayloadType} `;
+    if (!line.startsWith(prefix)) {
+      return false;
+    }
+    const fmtpLineFromSdp = line.substring(prefix.length);
+
+    return (
+      this.cleanupFmtpLine(fmtpLineFromSdp, this.codecName) ===
+      this.cleanupFmtpLine(codecCapabilityFmtpLine, this.codecName)
+    );
+  }
+
+  /**
+   * Helper function to clean up the FMTP line by removing unnecessary parameters
+   * and normalizing certain codec-specific attributes.
+   */
+  private cleanupFmtpLine(fmtpLine: string, codecName: string): string {
+    // Remove starting bitrate parameter which isn't relevant to matching.
+    const bitrateRegex = /;x-google-start-bitrate=\d+/g;
+    let cleanedLine = fmtpLine.replace(bitrateRegex, '');
+
+    if (codecName === 'H264') {
       // Given that most H.264 decoders for the past decade can support level 5.2, we do not bother checking the Profile Level
       // with regards to canonically defined, meeting wide, H.264 profile options (i.e. we intentionally do not split up `h264HighProfile`
       // into `h264HighProfileLevel52, `h264HighProfileLevel31`, etc.).
@@ -49,17 +83,10 @@ export default class VideoCodecCapability implements Eq {
       //
       // If maximum compatability with H.264 is desired by a builder they should stick to H.264 Constrained Baseline Profile.
       const profileLevelIdRegex = /profile-level-id=([0-9a-f]{4})[0-9a-f]{2}/i;
-      const modifiedCodecCapabilityFmtpLine = codecCapabilityFmtpLine.replace(
-        profileLevelIdRegex,
-        'profile-level-id=$1'
-      );
-      const modifiedLine = line.replace(profileLevelIdRegex, 'profile-level-id=$1');
-
-      return modifiedLine.startsWith(
-        `a=fmtp:${expectedPayloadType} ${modifiedCodecCapabilityFmtpLine}`
-      );
+      cleanedLine = cleanedLine.replace(profileLevelIdRegex, 'profile-level-id=$1');
     }
-    return line.startsWith(`a=fmtp:${expectedPayloadType} ${codecCapabilityFmtpLine}`);
+
+    return cleanedLine;
   }
 
   /**

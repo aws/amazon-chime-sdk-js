@@ -117,7 +117,7 @@ export default class MeetingSessionConfiguration {
    */
   disablePeriodicKeyframeRequestOnContentSender: boolean = false;
 
-  /*
+  /**
    * Additional features in the meeting
    */
   meetingFeatures: MeetingFeatures = new MeetingFeatures();

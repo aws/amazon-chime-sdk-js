@@ -5,6 +5,100 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.26.0] - 2024-10-07
+
+### Added
+
+### Removed
+
+### Changed
+
+- Set starting send bitrate to 1000kbps to reduce time of low resolution at start of connection
+- Add per-frame encoding time in video encoding CPU connection health policy
+
+### Fixed
+
+- Avoid breaking audio input when external devices are disconnected on iOS browsers when using Web Audio by suspending and resuming the audio context in that case.
+- Fixed incoming audio loss calculation when server side network adaption and redundant audio features are running together.
+- Prevent DataMessage callback errors from killing a meeting
+- Do not store metrics for video send stream that no longer exists after reconnection
+
+## [3.25.0] - 2024-09-10
+
+### Added
+
+### Removed
+
+### Changed
+
+- Updated guides and doc-strings to recommend `VideoPriorityBasedPolicy` over `VideoAdaptiveProbePolicy`.
+
+### Fixed
+
+- Include STUN packets in received packet reconnection check to mitigate edge cases when all attendee capabilities are 'None'
+- Terminate audio RED worker before removing reference.
+
+## [3.24.0] - 2024-07-11
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+- Update uplink policy at codec degradation triggered by encoding health monitor.
+
+## [3.23.0] - 2024-05-14
+
+### Added
+
+- Added `DefaultDeviceController.suspendAudioContext` and `DefaultDeviceController.resumeAudioContext`. Suspending and resuming the resusable audio context is preferable to stopping and recreating if an audio context eventually needs to be used again.
+
+### Removed
+
+### Changed
+
+- Do not try to manually adjust SVC layers based off target resolution, as this may lead to an unnecessarily high minimum bitrate to subscribe to all remote videos. Instead rely on browser logic which drops any layers below around 135p.
+
+### Fixed
+
+- Fixed rare race conditions with simulcast + server side network adaptation on third attendee join.
+- Make redundant audio worker code generation script work on Windows
+- Do not drop server side network adaptation pauses that happen immediately after SDP negotiation, by pre-emptively creating a tile immediately when applications subscribes to one, and attaching the video track later.
+
+## [3.22.0] - 2024-03-15
+
+### Added
+
+- Add automatic codec degradation logic when CPU usage of software encoder is high or video encoding of encoder fails. This will only occur if `setVideoCodecSendPreferences` is being called by the application.
+- Added `groupId` to `VideoTileState` for mapping metrics other then those from `getObservableVideoMetrics` when using server side network adaptation.
+- Added support for Node version 22
+
+### Removed
+
+### Changed
+
+- Avoid subscribes when simulcast is enabled but not currently sending, or when using server side network adaptation.
+- Made server side network adaptation the default when creating `VideoPriorityBasedPolicy`.
+
+### Fixed
+
+- Fixed reconnections not triggering `audioVideoWasDemotedFromPrimaryMeeting`.
+
+## [3.21.1] - 2024-03-28
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+- Fixed packets received check on Safari 17.3 and below
+
 ## [3.21.0] - 2024-02-12
 
 ### Added
@@ -41,15 +135,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.19.0] - 2023-09-20
 
 ### Added
+
 - Add support for high-definition WebRTC sessions with 1080p webcam video and 4K screen share. Developers can choose video encoding bitrates up to 2.5Mbps, frame rates up to 30fps, and the codec, including new options VP9, AV1, and scalable video coding (SVC).
 - Update AWS SDK version to 3.477.0
 
 ### Removed
 
 ### Changed
+
 - Revert: Improve reconnection behavior on signaling disconnection mid call or during join/subscribe. This was leading to unexpected `AudioJoinedFromAnotherDevice` events in certain edge conditions. It will be re-released in a later version.
 
 ### Fixed
+
 - Prevent video processing with filters from being throttled when an attendees meeting tab moves into the background.
 - Do not allow redundant audio worker to enqueue any audio payloads larger than 1000 bytes to avoid permanently stopping the audio flow.
 - Make uplink loss estimation more accurate so that redundant audio does not turn off prematurely.
@@ -63,6 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
 - Save the redundant audio worker code during build time so that the worker code stays intact and is able to be loaded
 
 ## [3.18.1] - 2023-09-29
@@ -74,11 +172,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
 - Fixed bug that prevented sending and receiving audio, video, and content share when using Simulcast and Redundant Audio at the same time
 
 ## [3.18.0] - 2023-09-11
 
 ### Added
+
 - Support sending and receiving redundant audio data to help reduce the effects of packet loss on audio quality. See README for more details.
 - Send a few additional metrics to backend
 
@@ -87,6 +187,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
 - Fixed audio send failing for the rest of the meeting when writing frames larger than 1000 bytes in Chrome, which could be caused by sending redundant audio
 
 ## [3.17.0] - 2023-08-15
@@ -97,11 +198,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a new meeting event, `deviceLabelTriggerFailed`, for device label trigger failures. By default, the Chime SDK for JavaScript requests access to the microphone and camera in order to retrieve device labels. The SDK will send the `deviceLabelTriggerFailed` event when either the microphone, camera or both requests fail. (Before this PR, the SDK would emit `audioInputFailed` and `videoInputFailed` events simultaneously, which could lead to confusion.) If a custom function is supplied with `meetingSession.audioVideo.setDeviceLabelTrigger`, the SDK will send this event when the custom function is not successful.
 
 ### Removed
+
 - Resolution constraint for content share
 
 - Remove unused legacy TURN credentials path.
 
 ### Changed
+
 - Improve reconnection behavior on signaling disconnection mid call or during join/subscribe
 
 ### Fixed
@@ -302,7 +405,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `AbortError` when turning video ON in Safari.
-- `MessagingSession` reconnects with refreshed endpoint and credentials if needed.  `EndpointUrl` on `MessagingSessionConfiguration` is deprecated as it is resolved by calling `getMessagingSessionEndpoint` internally.
+- `MessagingSession` reconnects with refreshed endpoint and credentials if needed. `EndpointUrl` on `MessagingSessionConfiguration` is deprecated as it is resolved by calling `getMessagingSessionEndpoint` internally.
 
 ## [3.6.0] - 2022-06-23
 
@@ -344,7 +447,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix an issue for mute local when there is no audio input.
 - Fix trucation of video subscriptions not occuring if the resubscribe was driven by `MonitorTask`.
 - Fix protobuf generation script for upgrade.
-- Optional chain signaling client observer removal to fix [issue](https://github.com/aws/amazon-chime-sdk-js/issues/2265) if  `audioVideo.stop()` is called before `audioVideo.start()`.
+- Optional chain signaling client observer removal to fix [issue](https://github.com/aws/amazon-chime-sdk-js/issues/2265) if `audioVideo.stop()` is called before `audioVideo.start()`.
 
 ## [3.4.0] - 2022-05-24
 

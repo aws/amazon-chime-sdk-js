@@ -887,10 +887,22 @@ export default class DefaultDeviceController
   private async handleDeviceStreamEnded(kind: 'audio' | 'video', deviceId: string): Promise<void> {
     try {
       if (kind === 'audio') {
-        this.logger.warn(
-          `Audio input device which was active is no longer available, resetting to null device`
-        );
-        await this.startAudioInput(null); //Need to switch to empty audio device
+        if (
+          this.useWebAudio &&
+          this.browserBehavior.requiresAudioContextResetOnDeviceFailureForWebAudio()
+        ) {
+          this.logger.warn(
+            'Audio input device which was active is no longer available, suspending and resuming audio context before resetting to empty device to ensure packets are sent'
+          );
+          await this.stopAudioInput();
+          DefaultDeviceController.suspendAudioContext();
+          DefaultDeviceController.resumeAudioContext();
+        } else {
+          this.logger.warn(
+            'Audio input device which was active is no longer available, resetting to empty device to ensure packets are sent'
+          );
+        }
+        await this.startAudioInput(null);
       } else {
         this.logger.warn(
           `Video input device which was active is no longer available, stopping video`
@@ -1164,7 +1176,7 @@ export default class DefaultDeviceController
         if (kind === 'audio') {
           this.logger.info(`choosing null ${kind} device instead`);
           try {
-            newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
+            newDevice.stream = DefaultDeviceController.createEmptyAudioDevice();
             newDevice.constraints = null;
             await this.handleNewInputDevice(kind, newDevice);
           } catch (error) {
@@ -1491,6 +1503,9 @@ export default class DefaultDeviceController
   /**
    * Returns the Web Audio `AudioContext` used by the {@link DefaultDeviceController}. The `AudioContext`
    * is created lazily the first time this function is called.
+   *
+   * This function will not attempt to recreate a stopped context, or resume a suspended one.
+   *
    * @returns a Web Audio `AudioContext`
    */
   static getAudioContext(): AudioContext {
@@ -1513,6 +1528,37 @@ export default class DefaultDeviceController
     return DefaultDeviceController.audioContext;
   }
 
+  /**
+   * Calls [suspend](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/suspend)
+   * on reusable audio context. This is useful if you want an application to power down the
+   * audio hardware when it will not be using an audio context for a while (i.e. if you
+   * have an application that isn't always running a Chime SDK meeting). This is preferrable
+   * to calling [[closeAudioContext]]
+   */
+  static async suspendAudioContext(): Promise<void> {
+    if (DefaultDeviceController.audioContext) {
+      return DefaultDeviceController.audioContext.suspend();
+    }
+    return Promise.resolve();
+  }
+
+  /**
+   * Calls [resume](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/resume)
+   * on reusable audio context.
+   */
+  static async resumeAudioContext(): Promise<void> {
+    if (DefaultDeviceController.audioContext) {
+      return DefaultDeviceController.audioContext.resume();
+    }
+    return Promise.resolve();
+  }
+
+  /**
+   * Calls [close](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/close)
+   * on reusable audio context. This more forceful the suspend and is not recommended
+   * if you plan on reusing the Chime SDK, as it may lead to audio glitches (e.g. due to
+   * https://issues.chromium.org/issues/40282750).
+   */
   static closeAudioContext(): void {
     if (DefaultDeviceController.audioContext) {
       try {

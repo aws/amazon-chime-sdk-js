@@ -286,5 +286,168 @@ describe('ReceiveRemoteVideoPauseResumeTask', () => {
       //@ts-ignore
       expect(tile8.state().paused).to.be.false;
     });
+
+    it('Will create new video tile for paused video if one does not already exist', async () => {
+      context.videoTileController = new DefaultVideoTileController(
+        new DefaultVideoTileFactory(),
+        context.audioVideoController,
+        null
+      );
+
+      const policy = new VideoAdaptiveProbePolicy(new NoOpDebugLogger());
+      class MockObserver implements VideoDownlinkObserver {
+        tileWillBePausedByDownlinkPolicy = sinon.stub();
+        tileWillBeUnpausedByDownlinkPolicy = sinon.stub();
+      }
+      const observer = new MockObserver();
+      policy.addObserver(observer);
+      context.videoDownlinkBandwidthPolicy = policy;
+
+      // first send pause frame
+      const frame = SdkPauseResumeFrame.create();
+      frame.groupIds = [7, 8];
+      frame.streamIds = new DefaultVideoStreamIdSet([7, 8]).array();
+      const pauseFrame = SdkSignalFrame.create();
+      pauseFrame.type = SdkSignalFrame.Type.PAUSE;
+      pauseFrame.pause = frame;
+      const event = new SignalingClientEvent(
+        signalingClient,
+        SignalingClientEventType.ReceivedSignalFrame,
+        pauseFrame
+      );
+      await task.run();
+
+      // Additional test to no-op pauses that we don't expect
+      context.videoStreamIndex = prepareIndex([]);
+      task.updateSubscribedGroupdIds(new Set([7]));
+      task.handleSignalingClientEvent(event);
+
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7')).to.be.undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8')).to.be.undefined;
+
+      context.videoStreamIndex = prepareIndex([7, 8]);
+      task.updateSubscribedGroupdIds(new Set([7, 8]));
+      task.handleSignalingClientEvent(event);
+
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7').state().paused).to
+        .be.true;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8').state().paused).to
+        .be.true;
+
+      // Add a stream without messing with previous
+      context.videoStreamIndex = prepareIndex([7, 8, 9]);
+      task.updateSubscribedGroupdIds(new Set([7, 8, 9]));
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7').state().paused).to
+        .be.true;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8').state().paused).to
+        .be.true;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-9')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-9').state().paused).to
+        .be.false;
+
+      // then send resume frame
+      const resumeFrame = SdkSignalFrame.create();
+      resumeFrame.type = SdkSignalFrame.Type.RESUME;
+      const frame2 = SdkPauseResumeFrame.create();
+      frame2.groupIds = [7, 8];
+      resumeFrame.pause = frame2;
+      const event2 = new SignalingClientEvent(
+        signalingClient,
+        SignalingClientEventType.ReceivedSignalFrame,
+        resumeFrame
+      );
+      task.handleSignalingClientEvent(event2);
+
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7').state().paused).to
+        .be.false;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8').state().paused).to
+        .be.false;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-9')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-9').state().paused).to
+        .be.false;
+    });
+
+    it('Will not resume user paused tiles', async () => {
+      context.videoTileController = new DefaultVideoTileController(
+        new DefaultVideoTileFactory(),
+        context.audioVideoController,
+        null
+      );
+
+      const policy = new VideoAdaptiveProbePolicy(new NoOpDebugLogger());
+      class MockObserver implements VideoDownlinkObserver {
+        tileWillBePausedByDownlinkPolicy = sinon.stub();
+        tileWillBeUnpausedByDownlinkPolicy = sinon.stub();
+      }
+      const observer = new MockObserver();
+      policy.addObserver(observer);
+      context.videoDownlinkBandwidthPolicy = policy;
+
+      const pausedResumeFrame = SdkPauseResumeFrame.create();
+      pausedResumeFrame.groupIds = [7, 8];
+      pausedResumeFrame.streamIds = new DefaultVideoStreamIdSet([7, 8]).array();
+      const pauseFrame = SdkSignalFrame.create();
+      pauseFrame.type = SdkSignalFrame.Type.PAUSE;
+      pauseFrame.pause = pausedResumeFrame;
+      const pauseEvent = new SignalingClientEvent(
+        signalingClient,
+        SignalingClientEventType.ReceivedSignalFrame,
+        pauseFrame
+      );
+      await task.run();
+
+      const resumeFrame = SdkSignalFrame.create();
+      resumeFrame.type = SdkSignalFrame.Type.RESUME;
+      const frame2 = SdkPauseResumeFrame.create();
+      frame2.groupIds = [7, 8];
+      frame2.streamIds = new DefaultVideoStreamIdSet([7, 8]).array();
+      resumeFrame.pause = frame2;
+      const resumeEvent = new SignalingClientEvent(
+        signalingClient,
+        SignalingClientEventType.ReceivedSignalFrame,
+        resumeFrame
+      );
+
+      context.videoStreamIndex = prepareIndex([7, 8]);
+      task.updateSubscribedGroupdIds(new Set([7, 8]));
+      task.handleSignalingClientEvent(pauseEvent);
+
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7').state().paused).to
+        .be.true;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-8').state().paused).to
+        .be.true;
+
+      // Additional test to allow reseting paused groups
+      task.updateSubscribedGroupdIds(new Set([]));
+
+      // Manually pause
+      context.videoTileController.getVideoTileForAttendeeId('attendee-7').pause();
+
+      // then send resume frame
+      task.handleSignalingClientEvent(resumeEvent);
+
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7')).to.not.be
+        .undefined;
+      expect(context.videoTileController.getVideoTileForAttendeeId('attendee-7').state().paused).to
+        .be.true;
+    });
   });
 });

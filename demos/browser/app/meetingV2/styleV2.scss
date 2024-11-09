@@ -1016,6 +1016,10 @@ a.markdown:active {
   max-width: 480px;
 }
 
+#join-info-override-modal .modal-content {
+  max-width: 600px;
+}
+
 .modal-content-header {
   display: flex;
   flex-direction: row;

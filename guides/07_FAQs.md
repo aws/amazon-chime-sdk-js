@@ -78,6 +78,12 @@
     - [How can I speed up my meeting join times?](#how-can-i-speed-up-my-meeting-join-times)
   - [Messaging](#messaging)
     - [How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?](#how-do-i-receive-amazon-chime-sdk-channel-messages-without-using-the-amazon-chime-sdk-for-javascript)
+  - [Mobile SDK](#mobile-sdk)
+    - [How to determine if a meeting session stop will be self-recoverable or terminal?](#how-to-determine-if-a-meeting-session-stop-will-be-self-recoverable-or-terminal)
+    - [What does each `MeetingSessionStatusCode` mean?](#what-does-each-meetingsessionstatuscode-mean)
+    - [How should I handle each `MeetingSessionStatusCode` in my application?](#how-should-i-handle-each-meetingsessionstatuscode-in-my-application)
+    - [How to reproduce each `MeetingSessionStatusCode`?](#how-to-reproduce-each-meetingsessionstatuscode)
+
 
 
 ## General questions
@@ -621,3 +627,57 @@ Meeting join comprises several steps, one of which is establishing a signaling c
 
 Follow the instructions in the ["Using websockets to receive messages" developer guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/websockets.html#connect-api).
 To sign the URL in Python, use the example code in the [GitHub issue #1241](https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541).
+
+## Mobile SDK
+
+### How to determine if a meeting session stop will be self-recoverable or terminal?
+Your application should not rely on `MeetingSessionStatusCode` for determining if the session stop is self-recoverable or terminal, instead, your should subscribe to `AudioVideoObserver` callbacks. When a self-recoverable session stop happens(i.e. caused by a poor network connection), `AudioVideoObserver.audioSessionDidDrop()` will be triggered, and Chime SDK will retry connecting automatically, if the session is successfully reconnected, `AudioVideoObserver.audioSessionDidStart(reconnecting: true)` will be triggered, your application should start handling the success of the reonnecting at this point; when a terminal session stop happens or retries have been exhausted, `AudioVideoObserver.audioSessionDidStopWithStatus(MeetingSessionStatus)` will be triggered, in this case any further retry will not be helpful, you application should handle the session stop accordingly based on the `MeetingSessionStatusCode`, and notify user if needed.
+
+### What does each `MeetingSessionStatusCode` mean?
+
+The definition of each `MeetingSessionStatusCode` can be found [here](https://aws.github.io/amazon-chime-sdk-ios/Enums/MeetingSessionStatusCode.html) for iOS and [here](https://aws.github.io/amazon-chime-sdk-android/amazon-chime-sdk/com.amazonaws.services.chime.sdk.meetings.session/-meeting-session-status-code/index.html) for Android.
+
+### How should I handle each `MeetingSessionStatusCode` in my application?
+`MeetingSessionStatusCode` provides additional details for the MeetingSessionStatus received for a session. The primary use is in callbacks of AudioVideoObserver. Specifically, they are utilized in `AudioVideoObserver.audioSessionDidStopWithStatus(MeetingSessionStatus)`/`AudioVideoObserver.videoSessionDidStartWithStatus(MeetingSessionStatus)`/`AudioVideoObserver.videoSessionDidStopWithStatus(MeetingSessionStatus)` for iOS, and their equivalents for Android. There are also usages in ReplicatedMeetings, they have been documented separately([iOS](https://github.com/aws/amazon-chime-sdk-ios/blob/master/guides/replicated_meetings.md)/[Android](https://github.com/aws/amazon-chime-sdk-android/blob/master/guides/replicated_meetings.md)).
+
+These status codes can be used for logging, debugging, and notification to end users, but in most cases should not be used for any retry behavior, as Chime SDK will already be retrying non-terminal errors. The table below illustrates how each code should be handled.
+
+| `MeetingSessionStatusCode` | Callbacks | How to handle |
+| -------- | ------- | ------- |
+| OK(iOS/Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)`  `videoSessionDidStartWithStatus(MeetingSessionStatus)`  `videoSessionDidStopWithStatus(MeetingSessionStatus)` | This code indicates the audio/video sessions on the device have been started/stopped without any errors. When received from AudioVideoObserver callbacks, your application may want to notify your user about the success of session start/stop.
+| Left(Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)`  `videoSessionDidStopWithStatus(MeetingSessionStatus)` | It indicates the meeting session on the device has been disconnected due to the attendee leave, nothing to handle except notify your application user about the session stop. |
+| networkBecomePoor(iOS)  NetworkBecamePoor(Android) | `connectionDidBecomePoor()` | Your application not be receiving this code directly, `AudioVideoObserver.connectionDidBecomePoor()` will be triggered instead. You can subscribe to this callback and notify your application user about the network issue, however, you should not retry connect the meeting session, Chime SDK will handle it. When retries are exhausted, the meeting session will stop completely, `audioSessionDidStopWithStatus(MeetingSessionStatus)` will be triggered then. |
+| audioServerHungup(iOS)  audioServiceUnavailable(iOS)  AudioServiceUnavailable(Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | There is an issue with Amazon Chime SDK service itself, the meeting session on the device has been terminated at this point, you will not be able to rejoin, your application should notify user about the session termination. Depends on your application design/user-flow, you could re-try/re-join the session, however, this may not work if the issue is not transient. |
+| audioJoinedFromAnotherDevice(iOS)  AudioJoinedFromAnotherDevice(Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | The attendee joined the meeting from another device. The meeting session on current device has been disconnected, your application should not retry connecting. |
+| audioInternalServerError(iOS) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | When received the code from the callback, the meeting session on the device has been terminated due to audio issues, the issue could be audio device related, or with Amazon Chime SDK service itself, you will not be able to rejoin the meeting, your application should notify user about the session termination. |
+| audioAuthenticationRejected(iOS)  AudioAuthenticationRejected(Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | When received this code from the callback, the meeting session on the device has been terminated because the attendee information is invalid, you will not be able to rejoin the meeting, your application should notify user about the session termination. |
+| audioCallAtCapacity(iOS) AudioCallAtCapacity(Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | When received this code from the callback, the meeting session on the device has been terminated due to the meeting is at full capacity, the service supports up to 250 attendees. You will not be able to rejoin the meeting, your application should notify user about the session termination. |
+| audioDisconnectAudio(iOS) AudioDisconnectAudio(Android)  connectionHealthReconnect(iOS)  ConnectionHealthReconnect(Android) | None | This is only used internally by the AWS service and will not be provided in any AudioVideoObserver callbacks. |
+| audioCallEnded(iOS)  AudioCallEnded(Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | The meeting session has been ended on Amazon Chime SDK service side. When received this code from the callback, the meeting session on the device has been terminated, you will not be able to rejoin the meeting, your application should notify user about the session termination. |
+| videoServiceUnavailable(iOS)  VideoServiceFailed(Android) | `videoSessionDidStopWithStatus(MeetingSessionStatus)` | There was an internal server error related to video. This may indicate some issue with the camera device, or an issue with the Amazon Chime SDK service itself. When received thie code from the callback, you will not be able to join the video session, however, the audio session may still be working. Your application should notify user about the video session termination. |
+| videoAtCapacityViewOnly(iOS)  VideoAtCapacityViewOnly(Android) | `videoSessionDidStartWithStatus(MeetingSessionStatus)` | When received thie code from the callback, it indicates the video session on the device is in "receive only" mode due to capacity reached. Your local video source will not be sent to other attendess, however, you will still be able to receive video streams from other attendees. |
+| audioInputDeviceNotResponding(iOS)  AudioOutputDeviceNotResponding(Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | When receveid this code from the callback, it indicates the meeting session on the device has been terminated due to audio input device related issues. You will not be able to rejoin the meeting, your application should notify user about the session termination. |
+| audioOutputDeviceNotResponding(iOS)  AudioInputDeviceNotResponding(Android) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | When receveid this code from the callback, it indicates the meeting session on the device has been terminated due to audio output device related issues. You will not be able to rejoin the meeting, your application should notify user about the session termination. |
+| unknown(iOS) | `audioSessionDidStopWithStatus(MeetingSessionStatus)` | When received this code from the callback, it indicates the meeting session has been terminated due to an status that the mobile SDK is not able to map. You will not be able to rejoin the meeting, your application should notify user about the session termination. |
+
+### How to reproduce each `MeetingSessionStatusCode`?
+Below is the list of `MeetingSessionStatusCode` that you can reproduce for each AudioVideoObserver callback, please note some of the codes(i.e., audioServiceUnavailable) due to Amazon Chime SDK service issues, which cannot be reproduced on mobile Chime SDK client. 
+
+| `MeetingSessionStatusCode` | audioSessionDidStopWithStaus() | videoSessionDidStartWithStatus() | videoSessionDidStopWithStatus() | connectionDidBecomePoor()
+| -------- | ------- | ------- | ------- | ------- |
+| OK(iOS/Android) | During a valid call session, call meetingsession.audioVideo.stop(). | With a valid meeting join info, call meetingSession.audioVideo.start(). | During a valid call session, call meetingsession.audioVideo.stop(). | N/A |
+| Left(Android) | N/A | N/A | N/A | N/A |
+| networkBecomePoor(iOS) NetworkBecamePoor(Android) | N/A | N/A | N/A | During a valid call session, disconnect the network on your iOS/Android device. | 
+| audioServerHungup(iOS) audioServiceUnavailable(iOS) AudioServiceUnavailable(Android) | Chime SDK service issue, cannot be reproduced on your mobile device. | N/A | N/A | N/A |
+| audioJoinedFromAnotherDevice(iOS) AudioJoinedFromAnotherDevice(Android) | During a valid call session, use the same meeting join info to join the call on another device, the callback will be called on the original device. | N/A | N/A | N/A |
+| audioInternalServerError(iOS) | Chime SDK service issue, cannot be reproduced on mobile device. | N/A | N/A | N/A |
+| audioAuthenticationRejected(iOS) AudioAuthenticationRejected(Android) | Use an invalid join token([link](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_Attendee.html#chimesdk-Type-meeting-chime_Attendee-JoinToken)) to join the call. | N/A | N/A | N/A |
+| audioCallAtCapacity(iOS) AudioCallAtCapacity(Android) | Start a Chime call session, have 250 attendee join the session, get another attendee to join the session, you will get this code. This does not apply to Amazon Connect use case. | N/A | N/A | N/A |
+| audioDisconnectAudio(iOS) AudioDisconnectAudio(Android) connectionHealthReconnect(iOS) ConnectionHealthReconnect(Android) | N/A | N/A | N/A | N/A |
+| audioCallEnded(iOS) AudioCallEnded(Android) | N/A (Not being used) | N/A | N/A | N/A |
+| videoServiceUnavailable(iOS) VideoServiceFailed(Android) | N/A | Chime SDK service issue, cannot be reproduced on mobile device. | Chime SDK service issue, cannot be reproduced on mobile device. | N/A |
+| videoAtCapacityViewOnly(iOS) VideoAtCapacityViewOnly(Android) | N/A | Ttart a Chime call session, have 25 attendee join the session and start their videos, get another attendee to join the session, you will get this code. This does not apply to Amazon Connect use case. | N/A | N/A |
+| audioInputDeviceNotResponding(iOS) AudioOutputDeviceNotResponding(Android) | This is due to audio input stream not starting properly, unable to reproduce this code, maybe try to physically disable your mic... | N/A | N/A | N/A |
+| audioOutputDeviceNotResponding(iOS) AudioInputDeviceNotResponding(Android) | This is due to audio input stream not starting properly, unable to reproduce this code, maybe try to physically disable your mic... | N/A | N/A | N/A |
+| unknown(iOS) | This will be returned when there is an code that mobile SDK is not able to handle, currently if you disable the network connection on your device, wait for the reconnect exhausts | N/A | N/A | N/A |
+

@@ -35,6 +35,21 @@ describe('VideoCodecCapability', () => {
       mimeType: 'video/test2',
       clockRate: 80000,
     });
+    const codec4WithBitrate = new VideoCodecCapability('TestCodec', {
+      mimeType: 'video/test3',
+      clockRate: 90000,
+      sdpFmtpLine: 'profile-level-id=42e01f;x-google-start-bitrate=1000',
+    });
+    const codec4WithoutBitrate = new VideoCodecCapability('TestCodec', {
+      mimeType: 'video/test3',
+      clockRate: 90000,
+      sdpFmtpLine: 'profile-level-id=42e01f',
+    });
+    const codec4WithoutFmtp = new VideoCodecCapability('TestCodec', {
+      mimeType: 'video/test3',
+      clockRate: 90000,
+      sdpFmtpLine: 'profile-level-id=42e01f',
+    });
 
     it('should return true for the same codec', () => {
       expect(codec1.equals(codec2)).to.be.true;
@@ -42,6 +57,14 @@ describe('VideoCodecCapability', () => {
 
     it('should return false for different codecs', () => {
       expect(codec1.equals(codec3)).to.be.false;
+    });
+
+    it('should return true for same codecs with different start bitrates', () => {
+      expect(codec4WithBitrate.equals(codec4WithoutBitrate)).to.be.true;
+    });
+
+    it('should return false for same codecs with different fmtp lines', () => {
+      expect(codec4WithBitrate.equals(codec4WithoutFmtp)).to.be.true;
     });
   });
 
@@ -77,6 +100,12 @@ describe('VideoCodecCapability', () => {
       vp8Capability.codecCapability.sdpFmtpLine = undefined;
       const line = 'a=fmtp:97 codec-specific-param';
       expect(vp8Capability.fmtpLineMatches(line, 97)).to.be.false;
+    });
+
+    it('should return true for matching fmtp lines that have different starting bitrates', () => {
+      const vp9Profile0Capability = VideoCodecCapability.vp9Profile0();
+      const line = 'a=fmtp:97 profile-id=0;x-google-start-bitrate=1000';
+      expect(vp9Profile0Capability.fmtpLineMatches(line, 97)).to.be.true;
     });
   });
 

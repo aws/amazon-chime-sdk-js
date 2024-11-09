@@ -97,9 +97,8 @@ export default interface AudioVideoObserver {
    * * `MeetingSessionStatusCode.OK`: `demoteFromPrimaryMeeting` was used to remove the attendee.
    * * `MeetingSessionStatusCode.AudioAuthenticationRejected`: `chime::DeleteAttendee` was called on the Primary
    *   meeting attendee used in `promoteToPrimaryMeeting`.
-   * * `MeetingSessionStatusCode.SignalingBadRequest`: Other failure, possibly due to disconnect
-   *   or timeout. These failures are likely retryable. Any disconnection will trigger an automatic
-   *   demotion to avoid unexpected or unwanted promotion state on reconnection.
+   * * `MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted`: The client disconnected (and may be reconnecting).
+   *   Any disconnection will trigger an automatic demotion to avoid unexpected or unwanted promotion state on reconnection.
    */
   audioVideoWasDemotedFromPrimaryMeeting?(status: MeetingSessionStatus): void;
 }

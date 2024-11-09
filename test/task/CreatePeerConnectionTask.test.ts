@@ -343,6 +343,68 @@ describe('CreatePeerConnectionTask', () => {
         bindVideoStreamSpy.restore();
       });
 
+      it('bind video stream with specific stream and group id', async () => {
+        let called = false;
+
+        const attendeeIdForTrack = 'attendee-id';
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+
+          streamIdForTrack(_trackId: string): number {
+            return 1;
+          }
+
+          groupIdForStreamId(streamId: number): number {
+            expect(streamId).to.be.equal(1);
+            return 2;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+
+        class TestVideoTileController extends DefaultVideoTileController {
+          getVideoTileForAttendeeId(attendeeId: string): VideoTile | undefined {
+            expect(attendeeId).to.equal(attendeeIdForTrack);
+            called = true;
+            return super.getVideoTileForAttendeeId(attendeeId);
+          }
+        }
+        const videoTileController = new TestVideoTileController(
+          new DefaultVideoTileFactory(),
+          context.audioVideoController,
+          logger
+        );
+
+        context.videoTileController = videoTileController;
+        const tile = videoTileController.addVideoTile();
+        tile.bindVideoStream(attendeeIdForTrack, false, null, 0, 0, 0, '');
+
+        const addVideoTileSpy: sinon.SinonSpy = sinon.spy(videoTileController, 'addVideoTile');
+        const bindVideoStreamSpy = sinon.spy(tile, 'bindVideoStream');
+
+        await task.run();
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+        await delay(domMockBehavior.asyncWaitMs + 10);
+        expect(called).to.be.true;
+        expect(addVideoTileSpy.called).to.be.false;
+        expect(
+          bindVideoStreamSpy.calledWithMatch(
+            attendeeIdForTrack,
+            false,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            sinon.match.any as any,
+            0,
+            0,
+            1,
+            '',
+            2
+          )
+        ).to.be.true;
+        addVideoTileSpy.restore();
+        bindVideoStreamSpy.restore();
+      });
+
       it('Fall back to use haveVideoTileForAttendeeId if getVideoTileForAttendeeId is not implemented', async () => {
         let hasVideoTileCalled = false;
         let addVideoTileCalled = false;

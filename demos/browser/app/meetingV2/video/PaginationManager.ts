@@ -5,7 +5,7 @@ export default class PaginationManager<Type> {
   private currentPageStart: number = 0;
 
   private all = new Array<Type>();
-  
+
   constructor(private pageSize: number) {}
 
   currentPage(): Array<Type> {
@@ -20,7 +20,9 @@ export default class PaginationManager<Type> {
   }
 
   remove(toRemove: Type) {
-    this.all.splice(this.all.indexOf(toRemove));
+    if (this.all.includes(toRemove)) {
+      this.all.splice(this.all.indexOf(toRemove), 1);
+    }
   }
 
   removeIf(toRemoveFn: (value: Type) => boolean) {
@@ -28,7 +30,7 @@ export default class PaginationManager<Type> {
     if (index === -1) {
       return;
     }
-    this.all.splice(index,1);
+    this.all.splice(index, 1);
   }
 
   hasNextPage(): boolean {
@@ -36,7 +38,7 @@ export default class PaginationManager<Type> {
   }
 
   nextPage(): void {
-    if (!this.hasNextPage) {
+    if (!this.hasNextPage()) {
       return;
     }
     this.currentPageStart += this.pageSize;
@@ -47,6 +49,8 @@ export default class PaginationManager<Type> {
   }
 
   previousPage(): void {
-    this.currentPageStart -= this.pageSize;
+    if (this.hasPreviousPage()) {
+      this.currentPageStart -= this.pageSize;
+    }
   }
 }

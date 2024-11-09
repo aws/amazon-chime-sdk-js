@@ -117,6 +117,8 @@ export default class MeetingSessionStatus {
         return 'The meeting ended because attendee removed.';
       case MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting:
         return 'The Primary meeting credentials provided are no longer valid. chime::DeleteAttendee may have been called on them.';
+      case MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted:
+        return 'The client disconnected while promoted, which will automatically demote. The attendee must promote again to participate.';
       case MeetingSessionStatusCode.AudioDisconnectAudio:
         return 'The audio connection failed.';
       /* istanbul ignore next */

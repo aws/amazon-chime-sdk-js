@@ -4,6 +4,7 @@
 import './styleV2.scss';
 
 import {
+  AllHighestVideoBandwidthPolicy,
   ApplicationMetadata,
   AsyncScheduler,
   Attendee,
@@ -14,10 +15,12 @@ import {
   BackgroundBlurProcessor,
   BackgroundBlurVideoFrameProcessor,
   BackgroundBlurVideoFrameProcessorObserver,
+  BackgroundFilterPaths,
+  BackgroundFilterSpec,
+  BackgroundReplacementOptions,
   BackgroundReplacementProcessor,
   BackgroundReplacementVideoFrameProcessor,
   BackgroundReplacementVideoFrameProcessorObserver,
-  BackgroundReplacementOptions,
   ClientMetricReport,
   ConsoleLogger,
   ContentShareObserver,
@@ -26,6 +29,7 @@ import {
   DefaultAudioVideoController,
   DefaultBrowserBehavior,
   DefaultDeviceController,
+  DefaultEventController,
   DefaultMeetingEventReporter,
   DefaultMeetingSession,
   DefaultModality,
@@ -36,21 +40,23 @@ import {
   EventIngestionConfiguration,
   EventName,
   EventReporter,
-  LogLevel,
+  isAudioTransformDevice,
+  isDestroyable,
   Logger,
+  LogLevel,
   MeetingEventsClientConfiguration,
   MeetingSession,
   MeetingSessionConfiguration,
+  MeetingSessionCredentials,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
-  VideoFxProcessor,
   MeetingSessionVideoAvailability,
+  ModelSpecBuilder,
   MultiLogger,
   NoOpEventReporter,
   NoOpVideoFrameProcessor,
-  VideoFxConfig,
+  POSTLogger,
   RemovableAnalyserNode,
-  ServerSideNetworkAdaption,
   SimulcastLayers,
   Transcript,
   TranscriptEvent,
@@ -59,11 +65,13 @@ import {
   TranscriptItemType,
   TranscriptResult,
   Versioning,
+  VideoCodecCapability,
   VideoDownlinkObserver,
   VideoFrameProcessor,
+  VideoFxConfig,
+  VideoFxProcessor,
   VideoInputDevice,
   VideoPriorityBasedPolicy,
-  VideoPriorityBasedPolicyConfig,
   VideoQualitySettings,
   VoiceFocusDeviceTransformer,
   VoiceFocusModelComplexity,
@@ -71,36 +79,31 @@ import {
   VoiceFocusPaths,
   VoiceFocusSpec,
   VoiceFocusTransformDevice,
-  isAudioTransformDevice,
-  isDestroyable,
-  BackgroundFilterSpec,
-  BackgroundFilterPaths,
-  ModelSpecBuilder,
-  DefaultEventController,
-  MeetingSessionCredentials,
-  POSTLogger,
-  VideoCodecCapability,
 } from 'amazon-chime-sdk-js';
 import { Modal } from 'bootstrap';
 
 import TestSound from './audio/TestSound';
-import MeetingToast from './util/MeetingToast'; MeetingToast; // Make sure this file is included in webpack
-import VideoTileCollection from './video/VideoTileCollection'
-import VideoPreferenceManager from './video/VideoPreferenceManager';
+import MeetingToast from './util/MeetingToast';
+import VideoTileCollection from './video/VideoTileCollection';
+import RemoteVideoManager from './video/RemoteVideoManager';
 import CircularCut from './video/filters/CircularCut';
 import EmojifyVideoFrameProcessor from './video/filters/EmojifyVideoFrameProcessor';
-import SegmentationProcessor from './video/filters/SegmentationProcessor';
+import MediaPipeBodySegmentationProcessor, {
+  SegmentationOption,
+} from './video/filters/MediaPipeBodySegmentationProcessor';
 import ResizeProcessor from './video/filters/ResizeProcessor';
-import {
-  loadBodyPixDependency,
-  platformCanSupportBodyPixWithoutDegradation,
-} from './video/filters/SegmentationUtil';
 import SyntheticVideoDeviceFactory from './video/SyntheticVideoDeviceFactory';
 import { getPOSTLogger } from './util/MeetingLogger';
 import Roster from './component/Roster';
 import ContentShareManager from './component/ContentShareManager';
-import { AudioBufferMediaStreamProvider, SynthesizedStereoMediaStreamProvider } from './util/mediastreamprovider/DemoMediaStreamProviders';
+import {
+  AudioBufferMediaStreamProvider,
+  SynthesizedStereoMediaStreamProvider,
+} from './util/mediastreamprovider/DemoMediaStreamProviders';
+
 import { BackgroundImageEncoding } from './util/BackgroundImage';
+
+MeetingToast; // Make sure this file is included in webpack
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -182,11 +185,13 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Emojify' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'CircularCut' |
+type VideoFilterName = 'Emojify' | 'NoOp' | 'Resize (9/16)' | 'CircularCut' |
  'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 
  'Background Blur 40% CPU' | 'Background Replacement' | 'None' | 'Background Blur 2.0 - Low' |
  'Background Blur 2.0 - Medium' | 'Background Blur 2.0 - High' | 'Background Replacement 2.0 - (Beach)' |
- 'Background Replacement 2.0 - (Blue)' | 'Background Replacement 2.0 - (Default)';
+ 'Background Replacement 2.0 - (Blue)' | 'Background Replacement 2.0 - (Default)' |
+  'MediaPipeBodySegmentation - (Beach)' | 'MediaPipeBodySegmentation - (Blue)' |
+  'MediaPipeBodySegmentation - (Blur)';
 
 const BACKGROUND_BLUR_V1_LIST: VideoFilterName[] = [
   'Background Blur 10% CPU',
@@ -276,7 +281,7 @@ export class DemoMeetingApp
 
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
-  volumeIndicatorHandler:  (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
+  volumeIndicatorHandler: (undefined | ((attendeeId: string, volume: number, muted: boolean, signalStrength: number) => void)) = undefined;
   canUnmuteLocalAudioHandler: (undefined | ((canUnmute: boolean) => void)) = undefined;
   muteAndUnmuteLocalAudioHandler: (undefined | ((muted: boolean) => void)) = undefined;
   blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver) = undefined;
@@ -294,12 +299,12 @@ export class DemoMeetingApp
   primaryMeetingSessionCredentials: MeetingSessionCredentials | undefined = undefined;
   meetingSession: MeetingSession | null = null;
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
+  allHighestDownlinkPolicy: AllHighestVideoBandwidthPolicy | null = null;
   audioVideo: AudioVideoFacade | null = null;
   deviceController: DefaultDeviceController | undefined = undefined;
   canStartLocalVideo: boolean = true;
   defaultBrowserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
   videoTileCollection: VideoTileCollection | undefined = undefined;
-  videoPreferenceManager: VideoPreferenceManager | undefined = undefined;
 
   // eslint-disable-next-line
   roster: Roster = new Roster();
@@ -346,7 +351,6 @@ export class DemoMeetingApp
   enableSimulcast = false;
   enableSVC = false;
   usePriorityBasedDownlinkPolicy = false;
-  videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig;
   enablePin = false;
   echoReductionCapability = false;
   usingStereoMusicAudioProfile = false;
@@ -380,6 +384,7 @@ export class DemoMeetingApp
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
   joinInfo: any | undefined;
+  joinInfoOverride: any | undefined = undefined;
   deleteOwnAttendeeToLeave = false;
   disablePeriodicKeyframeRequestOnContentSender = false;
   allowAttendeeCapabilities = false;
@@ -520,6 +525,17 @@ export class DemoMeetingApp
       (document.getElementById('inputName') as HTMLInputElement).focus();
     } else {
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
+    }
+
+    if (new URL(window.location.href).searchParams.has('join-info-override')) {
+      const joinInfoOverride = JSON.parse(new URL(window.location.href).searchParams.get('join-info-override'));
+      (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value = JSON.stringify(joinInfoOverride.JoinInfo.Attendee, null, 4);
+      (document.getElementById('get-meeting-override-input') as HTMLTextAreaElement).value = JSON.stringify(joinInfoOverride.JoinInfo.Meeting, null, 4);
+      new Modal(document.getElementById('join-info-override-modal'), {}).show();
+
+      document.getElementById('join-info-override-join-button').addEventListener('click', () => {
+        this.isViewOnly = (document.getElementById('join-view-only') as HTMLInputElement).checked;
+      });
     }
   }
 
@@ -663,31 +679,6 @@ export class DemoMeetingApp
 
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
-
-      const serverSideNetworkAdaption = document.getElementById(
-          'server-side-network-adaption'
-      ) as HTMLSelectElement;
-      const paginationPageSize = document.getElementById(
-        'pagination-page-size'
-      ) as HTMLElement;
-      const paginationTitle = document.getElementById(
-        'pagination-title'
-      ) as HTMLElement;      
-      const serverSideNetworkAdaptionTitle = document.getElementById(
-          'server-side-network-adaption-title'
-      ) as HTMLElement;
-
-      if (this.usePriorityBasedDownlinkPolicy) {
-        serverSideNetworkAdaption.style.display = 'block';
-        paginationPageSize.style.display = 'block';
-        paginationTitle.style.display = 'block';
-        serverSideNetworkAdaptionTitle.style.display = 'block';
-      } else {
-        serverSideNetworkAdaption.style.display = 'none';
-        paginationTitle.style.display = 'none';
-        paginationPageSize.style.display = 'none';
-        serverSideNetworkAdaptionTitle.style.display = 'none';
-      }
     });
 
     const echoReductionCheckbox = (document.getElementById('echo-reduction-checkbox') as HTMLInputElement);
@@ -723,6 +714,11 @@ export class DemoMeetingApp
     });
 
     document.getElementById('quick-join').addEventListener('click', e => {
+      e.preventDefault();
+      this.redirectFromAuthentication(true);
+    });
+
+    document.getElementById('join-info-override-join-button').addEventListener('click', e => {
       e.preventDefault();
       this.redirectFromAuthentication(true);
     });
@@ -1868,24 +1864,12 @@ export class DemoMeetingApp
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     configuration.enableSVC = this.enableSVC;
     if (this.usePriorityBasedDownlinkPolicy) {
-      const serverSideNetworkAdaptionDropDown = document.getElementById('server-side-network-adaption') as HTMLSelectElement;
-      switch (serverSideNetworkAdaptionDropDown.value) {
-        case 'default':
-          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.Default;
-          break;
-        case 'none':
-          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
-          break;
-        case 'enable-bandwidth-probing':
-          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbing;
-          break;
-        case 'enable-bandwidth-probing-and-video-adaption':
-          this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
-          break;
-      }
-      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
+        this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
+    } else {
+        this.allHighestDownlinkPolicy = new AllHighestVideoBandwidthPolicy(configuration.credentials.attendeeId);
+        configuration.videoDownlinkBandwidthPolicy = this.allHighestDownlinkPolicy;
     }
     configuration.disablePeriodicKeyframeRequestOnContentSender = this.disablePeriodicKeyframeRequestOnContentSender;
 
@@ -1945,8 +1929,9 @@ export class DemoMeetingApp
     let paginationPageSize = parseInt((document.getElementById('pagination-page-size') as HTMLSelectElement).value)
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
         this.meetingLogger,
-        this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
-        paginationPageSize)
+        new RemoteVideoManager(this.meetingLogger, this.usePriorityBasedDownlinkPolicy  ? this.priorityBasedDownlinkPolicy : this.allHighestDownlinkPolicy),
+        paginationPageSize,
+        this.meetingSession.configuration.credentials.attendeeId)
     this.audioVideo.addObserver(this.videoTileCollection);
 
     this.contentShare = new ContentShareManager(this.meetingLogger, this.audioVideo, this.usingStereoMusicAudioProfile);
@@ -2757,18 +2742,6 @@ export class DemoMeetingApp
 
     if (this.areVideoFiltersSupported()) {
       filters = filters.concat(VIDEO_FILTERS);
-      if (platformCanSupportBodyPixWithoutDegradation()) {
-        if (!this.loadingBodyPixDependencyPromise) {
-          this.loadingBodyPixDependencyPromise = loadBodyPixDependency(this.loadingBodyPixDependencyTimeoutMs);
-        }
-        // do not use `await` to avoid blocking page loading
-        this.loadingBodyPixDependencyPromise.then(() => {
-          filters.push('Segmentation');
-          this.populateFilterList(isPreviewWindow, genericName, filters);
-        }).catch(err => {
-          this.log('Could not load BodyPix dependency', err);
-        });
-      }
 
       if (this.supportsBackgroundBlur) {
         filters.push('Background Blur 10% CPU');
@@ -2785,6 +2758,10 @@ export class DemoMeetingApp
       if (this.supportsVideoFx) {
         BACKGROUND_FILTER_V2_LIST.map(effectName => filters.push(effectName));
       }
+
+      filters.push('MediaPipeBodySegmentation - (Beach)');
+      filters.push('MediaPipeBodySegmentation - (Blue)');
+      filters.push('MediaPipeBodySegmentation - (Blur)');
     }
 
     this.populateFilterList(isPreviewWindow, genericName, filters);
@@ -3350,8 +3327,16 @@ export class DemoMeetingApp
       return new NoOpVideoFrameProcessor();
     }
 
-    if (videoFilter === 'Segmentation') {
-      return new SegmentationProcessor();
+    if (videoFilter === 'MediaPipeBodySegmentation - (Beach)') {
+      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BEACH);
+    }
+
+    if (videoFilter === 'MediaPipeBodySegmentation - (Blue)') {
+      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BLUE);
+    }
+
+    if (videoFilter === 'MediaPipeBodySegmentation - (Blur)') {
+      return new MediaPipeBodySegmentationProcessor(SegmentationOption.BLUR);
     }
 
     if (videoFilter === 'Resize (9/16)') {
@@ -3498,7 +3483,7 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.sendJoinRequest(
+    this.joinInfo = this.joinInfoOverride ? this.joinInfoOverride.JoinInfo : (await this.sendJoinRequest(
       this.meeting,
       this.name,
       this.region,
@@ -3678,7 +3663,7 @@ export class DemoMeetingApp
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
-    if(this.behaviorAfterLeave === 'nothing') {
+    if (this.behaviorAfterLeave === 'nothing') {
       return;
     }
     this.log(`resetting stats`);
@@ -3978,6 +3963,20 @@ export class DemoMeetingApp
       this.enableSimulcast = false;
     }
 
+    const createAttendeeOverride = (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value;
+    const getMeetingOverride = (document.getElementById('get-meeting-override-input') as HTMLTextAreaElement).value;
+    if (createAttendeeOverride.length !== 0 && getMeetingOverride.length !== 0) {
+      this.joinInfoOverride = {
+        JoinInfo: {
+          Meeting: JSON.parse(getMeetingOverride),
+          Attendee: JSON.parse(createAttendeeOverride),
+        }
+      };
+      this.meeting = this.joinInfoOverride.JoinInfo.Meeting.Meeting.ExternalMeetingId;
+      this.name = this.joinInfoOverride.JoinInfo.Attendee.Attendee.ExternalUserId;
+      this.region = this.joinInfoOverride.JoinInfo.Meeting.Meeting.MediaRegion;
+    }
+
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
     this.contentCodecPreferences = getCodecPreferences(chosenContentSendCodec);
   
@@ -4058,9 +4057,9 @@ export class DemoMeetingApp
           }
           this.audioVideo.setVideoMaxBandwidthKbps(this.maxBitrateKbps);
 
-          // `this.primaryExternalMeetingId` may by the join request
+          // `this.primaryExternalMeetingId` may by set by the join request. Not relevant with overriden info.
           const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');
-          if (!this.primaryExternalMeetingId) {
+          if (!this.primaryExternalMeetingId || this.joinInfoOverride !== undefined) {
             buttonPromoteToPrimary.style.display = 'none';
           } else {
             this.setButtonVisibility('button-record-cloud', false);
