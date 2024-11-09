@@ -337,6 +337,20 @@ describe('DefaultBrowserBehavior', () => {
     });
   });
 
+  describe('latency hint', () => {
+    it('Detects browsers not requiring audio context suspension on device failure', () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresAudioContextResetOnDeviceFailureForWebAudio()).to
+        .be.false;
+    });
+
+    it('Detects browsers requiring audio context suspension on device failure', () => {
+      setUserAgent(CHROME_IOS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresAudioContextResetOnDeviceFailureForWebAudio()).to
+        .be.true;
+    });
+  });
+
   describe('SVC support', () => {
     it('Does not support SVC for non chrome browser', () => {
       setUserAgent(FIREFOX_MAC_USER_AGENT);

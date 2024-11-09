@@ -1427,7 +1427,7 @@ describe('DefaultRealtimeController', () => {
       expectError(fatal, 'Oh no');
     });
 
-    it('handles a receive message callback that throws', () => {
+    it('does not throw when it receives a message callback that throws', () => {
       const fatal = sinon.stub();
       rt.realtimeSubscribeToFatalError(fatal);
       rt.realtimeSubscribeToReceiveDataMessage('foo', _m => {
@@ -1436,7 +1436,7 @@ describe('DefaultRealtimeController', () => {
 
       const message = new DataMessage(Date.now(), 'foo', new Uint8Array(), 'abc', 'def', false);
       rt.realtimeReceiveDataMessage(message);
-      expectError(fatal, 'Oh no');
+      expect(fatal.called).to.be.false;
     });
   });
 });

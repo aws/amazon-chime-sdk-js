@@ -124,6 +124,8 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     videoDownstreamFrameWidth: RawMetrics = 100;
     audioPacketsSent: RawMetrics = 50;
     totalBytesReceived: number = 0;
+    totalRequestsReceived: number = 0;
+    totalResponsesReceived: number = 0;
 
     getObservableMetrics(): { [id: string]: number } {
       return {
@@ -155,6 +157,8 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
             type: 'candidate-pair',
             ...{
               bytesReceived: this.totalBytesReceived,
+              requestsReceived: this.totalRequestsReceived,
+              responsesReceived: this.totalResponsesReceived,
             },
           },
         ],
@@ -164,6 +168,8 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
             type: 'candidate-pair',
             ...{
               bytesReceived: 0,
+              requestsReceived: 0,
+              responsesReceived: 0,
             },
           },
         ],
@@ -319,7 +325,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
   });
 
-  it('can return without changing stats when total bytes received is negative', () => {
+  it('can return without changing stats when total packets received is negative', () => {
     testClientMetricReport.totalBytesReceived = 4;
     testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsReceived = 1;
@@ -333,7 +339,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     expect(lastPacketLossInboundTimestampMsCalled).to.equal(false);
   });
 
-  it('can reset and increment consecutive stats with no bytes when bytes received are followed by no bytes', () => {
+  it('can reset and increment consecutive stats with no packets when packets received are followed by no packets', () => {
     testClientMetricReport.totalBytesReceived = 1;
     testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsReceived = 1;
@@ -341,14 +347,45 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     expect(consecutiveStatsWithNoPackets).to.equal(0);
     testClientMetricReport.totalBytesReceived = 1;
     testClientMetricReport.fractionLoss = 0;
-    testClientMetricReport.audioPacketsReceived = 0;
+    testClientMetricReport.audioPacketsReceived = 1;
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveStatsWithNoPackets).to.equal(1);
     testClientMetricReport.totalBytesReceived = 1;
     testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 1;
+    sendClientMetricReport(testClientMetricReport);
+    expect(consecutiveStatsWithNoPackets).to.equal(2);
+  });
+
+  it('can reset and increment consecutive stats with no packets when stun packets received are followed by no packets', () => {
+    testClientMetricReport.totalBytesReceived = 0;
+    testClientMetricReport.totalRequestsReceived = 1;
+    testClientMetricReport.totalResponsesReceived = 0;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 0;
+    sendClientMetricReport(testClientMetricReport);
+    expect(consecutiveStatsWithNoPackets).to.equal(0);
+    testClientMetricReport.totalBytesReceived = 0;
+    testClientMetricReport.totalRequestsReceived = 1;
+    testClientMetricReport.totalResponsesReceived = 0;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 0;
+    sendClientMetricReport(testClientMetricReport);
+    expect(consecutiveStatsWithNoPackets).to.equal(1);
+    testClientMetricReport.totalBytesReceived = 0;
+    testClientMetricReport.totalRequestsReceived = 1;
+    testClientMetricReport.totalResponsesReceived = 0;
+    testClientMetricReport.fractionLoss = 0;
     testClientMetricReport.audioPacketsReceived = 0;
     sendClientMetricReport(testClientMetricReport);
     expect(consecutiveStatsWithNoPackets).to.equal(2);
+    testClientMetricReport.totalBytesReceived = 0;
+    testClientMetricReport.totalRequestsReceived = 1;
+    testClientMetricReport.totalResponsesReceived = 1;
+    testClientMetricReport.fractionLoss = 0;
+    testClientMetricReport.audioPacketsReceived = 0;
+    sendClientMetricReport(testClientMetricReport);
+    expect(consecutiveStatsWithNoPackets).to.equal(0);
   });
 
   it('can set last packet loss inbound timestamp due to no packets', () => {
@@ -435,6 +472,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     sendClientMetricReport(clientMetricReport);
     expect(connectionHealthData.isVideoEncoderHardware).to.be.false;
     expect(connectionHealthData.videoEncodingTimeInMs).to.equal(0);
+    expect(connectionHealthData.videoEncodingTimePerFrameInMs).to.equal(0);
     expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
     expect(connectionHealthData.videoInputFps).to.equal(0);
     expect(connectionHealthData.videoEncodeFps).to.equal(0);
@@ -463,6 +501,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     sendClientMetricReport(clientMetricReport);
     expect(connectionHealthData.isVideoEncoderHardware).to.be.false;
     expect(connectionHealthData.videoEncodingTimeInMs).to.equal(0);
+    expect(connectionHealthData.videoEncodingTimePerFrameInMs).to.equal(0);
     expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
     expect(connectionHealthData.videoInputFps).to.equal(0);
     expect(connectionHealthData.videoEncodeFps).to.equal(0);
@@ -478,7 +517,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     upstreamReport.mediaType = MediaType.VIDEO;
     upstreamReport.direction = Direction.UPSTREAM;
     upstreamReport.previousMetrics['totalEncodeTime'] = 1.0;
-    upstreamReport.currentMetrics['totalEncodeTime'] = 1.1;
+    upstreamReport.currentMetrics['totalEncodeTime'] = 1.3;
     upstreamReport.currentMetrics['framesPerSecond'] = 15;
     upstreamReport.previousMetrics['framesEncoded'] = 0;
     upstreamReport.currentMetrics['framesEncoded'] = 15;
@@ -506,9 +545,55 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     audioVideoController.videoTileController.startLocalVideoTile();
     sendClientMetricReport(clientMetricReport);
     expect(connectionHealthData.isVideoEncoderHardware).to.be.true;
-    expect(Math.trunc(connectionHealthData.videoEncodingTimeInMs)).to.equal(100);
+    expect(Math.trunc(connectionHealthData.videoEncodingTimeInMs)).to.equal(300);
+    expect(Math.trunc(connectionHealthData.videoEncodingTimePerFrameInMs)).to.equal(20);
     expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
     expect(connectionHealthData.videoInputFps).to.equal(15);
     expect(connectionHealthData.videoEncodeFps).to.equal(15);
+  });
+
+  it('does translate data when upstream metric is available with 0 encoded frame', async () => {
+    const index = prepareIndex([1, 2]);
+    const clientMetricReport = new ClientMetricReport(new NoOpDebugLogger(), index, 'attendee-1');
+    clientMetricReport.currentTimestampMs = 2000;
+    clientMetricReport.previousTimestampMs = 1000;
+    const upstreamSsrc = 1;
+    const upstreamReport = new StreamMetricReport();
+    upstreamReport.mediaType = MediaType.VIDEO;
+    upstreamReport.direction = Direction.UPSTREAM;
+    upstreamReport.previousMetrics['totalEncodeTime'] = 1.0;
+    upstreamReport.currentMetrics['totalEncodeTime'] = 1.0;
+    upstreamReport.currentMetrics['framesPerSecond'] = 0;
+    upstreamReport.previousMetrics['framesEncoded'] = 0;
+    upstreamReport.currentMetrics['framesEncoded'] = 0;
+    upstreamReport.currentStringMetrics['encoderImplementation'] = 'ExternalEncoder';
+    upstreamReport.currentObjectMetrics['qualityLimitationDurations'] = {
+      cpu: 0.0,
+      other: 0.0,
+    };
+    upstreamReport.previousObjectMetrics['qualityLimitationDurations'] = {
+      cpu: 0.0,
+      other: 0.0,
+    };
+    clientMetricReport.streamMetricReports[upstreamSsrc] = upstreamReport;
+    clientMetricReport.rtcStatsReport = new Map<string, RawMetrics>([
+      [
+        'candidatePairId1',
+        {
+          type: 'candidate-pair',
+          ...{
+            packetsReceived: 0,
+          },
+        },
+      ],
+    ]);
+    audioVideoController.videoTileController.startLocalVideoTile();
+    sendClientMetricReport(clientMetricReport);
+    expect(connectionHealthData.isVideoEncoderHardware).to.be.true;
+    expect(Math.trunc(connectionHealthData.videoEncodingTimeInMs)).to.equal(0);
+    expect(Math.trunc(connectionHealthData.videoEncodingTimePerFrameInMs)).to.equal(0);
+    expect(connectionHealthData.cpuLimitationDuration).to.equal(0);
+    expect(connectionHealthData.videoInputFps).to.equal(0);
+    expect(connectionHealthData.videoEncodeFps).to.equal(0);
   });
 });

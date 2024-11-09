@@ -56,6 +56,7 @@ import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVid
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
+import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -971,7 +972,8 @@ describe('MonitorTask', () => {
 
       it('does not degrade video codec when metrics are normal with software encoder', () => {
         connectionHealthData.setIsVideoEncoderHardware(false);
-        connectionHealthData.setVideoEncodingTimeInMs(20);
+        connectionHealthData.setVideoEncodingTimeInMs(300);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(10);
         connectionHealthData.setCpuLimitationDuration(0);
         connectionHealthData.setVideoInputFps(15);
         connectionHealthData.setVideoEncodeFps(15);
@@ -986,7 +988,8 @@ describe('MonitorTask', () => {
 
       it('does not degrade video codec when metrics are normal with hardware encoder', () => {
         connectionHealthData.setIsVideoEncoderHardware(true);
-        connectionHealthData.setVideoEncodingTimeInMs(30);
+        connectionHealthData.setVideoEncodingTimeInMs(450);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(10);
         connectionHealthData.setCpuLimitationDuration(0);
         connectionHealthData.setVideoInputFps(15);
         connectionHealthData.setVideoEncodeFps(15);
@@ -1001,8 +1004,11 @@ describe('MonitorTask', () => {
 
       it('does degrade video codec when software encoding CPU is constantly high', () => {
         connectionHealthData.setIsVideoEncoderHardware(false);
-        connectionHealthData.setVideoEncodingTimeInMs(600);
+        connectionHealthData.setVideoEncodingTimeInMs(900);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(60);
         connectionHealthData.setCpuLimitationDuration(0);
+        connectionHealthData.setVideoInputFps(15);
+        connectionHealthData.setVideoEncodeFps(15);
         for (let i = 0; i < 15; i++) {
           task.connectionHealthDidChange(connectionHealthData);
         }
@@ -1014,6 +1020,7 @@ describe('MonitorTask', () => {
 
       it('does degrade video codec when video quality is limited due to CPU', () => {
         connectionHealthData.setIsVideoEncoderHardware(false);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
         connectionHealthData.setVideoEncodingTimeInMs(0);
         connectionHealthData.setCpuLimitationDuration(1);
         for (let i = 0; i < 15; i++) {
@@ -1027,6 +1034,7 @@ describe('MonitorTask', () => {
 
       it('does degrade video codec when video encoding fails', () => {
         connectionHealthData.setIsVideoEncoderHardware(true);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
         connectionHealthData.setVideoEncodingTimeInMs(0);
         connectionHealthData.setCpuLimitationDuration(1);
         connectionHealthData.setVideoInputFps(15);
@@ -1460,7 +1468,7 @@ describe('MonitorTask', () => {
       ).to.be.true;
     });
 
-    it('should degrade when there is more than one codec preferences', async () => {
+    it('should degrade when there is more than one codec preferences with NScaleVideoUplinkBandwidthPolicy', async () => {
       context.meetingSupportedVideoSendCodecPreferences = [
         VideoCodecCapability.vp9Profile0(),
         VideoCodecCapability.vp8(),
@@ -1469,6 +1477,28 @@ describe('MonitorTask', () => {
         VideoCodecCapability.vp9Profile0(),
         VideoCodecCapability.vp8(),
       ];
+      context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+        'self',
+        true,
+        logger
+      );
+      // @ts-ignore
+      task.degradeVideoCodec();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
+      ).to.be.true;
+    });
+
+    it('should degrade when there is more than one codec preferences with DefaultSimulcastUplinkPolicy', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy('self', logger);
       // @ts-ignore
       task.degradeVideoCodec();
       expect(

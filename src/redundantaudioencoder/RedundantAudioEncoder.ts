@@ -362,8 +362,27 @@ export default class RedundantAudioEncoder {
       }
     }
 
-    // The last block was never found. This is a bad packet.
+    // The last block was never found. The packet we received
+    // does not have a good RED payload.
     if (!gotLastBlock) {
+      // Note that sequence numbers only exist for
+      // incoming audio frames.
+      if (primarySequenceNumber !== undefined) {
+        // This could be a possible padding packet used
+        // for BWE with a good sequence number.
+        // Create a dummy encoding to make sure loss values
+        // are calculated correctly by consuming sequence number.
+        // Note that for the receive side, we process packets only
+        // for loss/recovery calculations and forward the original
+        // packet without changing it even in the error case.
+        encodings.push({
+          payload: frame,
+          isRedundant: false,
+          seq: primarySequenceNumber,
+        });
+        return encodings;
+      }
+      // This is a bad packet.
       return null;
     }
 
@@ -659,8 +678,8 @@ export default class RedundantAudioEncoder {
       }
     }
     this.maybeReportLossStats(
-      encodings[encodings.length - 1].timestamp,
-      frameMetadata.synchronizationSource
+      frameMetadata.synchronizationSource,
+      encodings[encodings.length - 1].timestamp
     );
     this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
   }
@@ -759,8 +778,12 @@ export default class RedundantAudioEncoder {
    *
    * @param timestamp : Timestamp of most recent primary packet
    */
-  private maybeReportLossStats(timestamp: number, ssrc: number): void {
-    if (timestamp - this.lastLossReportTimestamp < this.lossReportInterval) return;
+  private maybeReportLossStats(ssrc: number, timestamp?: number): void {
+    if (
+      timestamp === undefined ||
+      timestamp - this.lastLossReportTimestamp < this.lossReportInterval
+    )
+      return;
 
     /* istanbul ignore next */
     if (RedundantAudioEncoder.shouldReportStats) {
@@ -784,7 +807,10 @@ export default class RedundantAudioEncoder {
    * @param packetLog : The packetlog to add the timestamp to
    * @param timestamp : The timestamp that should be added
    */
-  private addTimestamp(packetLog: RedundantAudioEncoder.PacketLog, timestamp: number): void {
+  private addTimestamp(packetLog: RedundantAudioEncoder.PacketLog, timestamp?: number): void {
+    if (timestamp === undefined) {
+      return;
+    }
     packetLog.window[packetLog.index] = timestamp;
     packetLog.index = (packetLog.index + 1) % packetLog.windowSize;
   }
@@ -1485,7 +1511,7 @@ export default class RedundantAudioEncoder {
 
 namespace RedundantAudioEncoder {
   export interface Encoding {
-    timestamp: number;
+    timestamp?: number;
     seq?: number;
     payload: ArrayBuffer;
     isRedundant?: boolean;

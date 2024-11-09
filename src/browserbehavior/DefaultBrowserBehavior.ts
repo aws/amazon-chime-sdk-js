@@ -263,16 +263,22 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   requiresDisablingH264Encoding(): boolean {
-    return (
-      (this.isIOSSafari() || this.isIOSChrome() || this.isIOSFirefox()) &&
-      (this.version() === '15.1.0' || /( OS 15_1)/i.test(navigator.userAgent))
-    );
+    return this.isIOS() && (this.version() === '15.1.0' || /( OS 15_1)/i.test(navigator.userAgent));
   }
 
   // In Safari, a hidden video element can show a black screen.
   // See https://bugs.webkit.org/show_bug.cgi?id=241152 for more information.
   requiresVideoPlayWorkaround(): boolean {
     return this.isSafari();
+  }
+
+  requiresAudioContextResetOnDeviceFailureForWebAudio(): boolean {
+    // In iOS Safari, when an audio media stream fails (i.e. in the case of being
+    // unplugged), the audio context becomes broken, and e.g. stops transmitting
+    // audio. This can be mitigated by suspending and resuming the context.
+    //
+    // The WebKit bug is https://bugs.webkit.org/show_bug.cgi?id=232640
+    return this.isIOS();
   }
 
   /**
@@ -334,5 +340,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   private isPixel3(): boolean {
     return /( pixel 3)/i.test(navigator.userAgent);
+  }
+
+  private isIOS(): boolean {
+    // Is one of the supported iOS browsers
+    return this.isIOSSafari() || this.isIOSChrome() || this.isIOSFirefox();
   }
 }
