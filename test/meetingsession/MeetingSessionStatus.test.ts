@@ -38,6 +38,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.NoAttendeePresent,
     MeetingSessionStatusCode.AudioAttendeeRemoved,
     MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting,
+    MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted,
     MeetingSessionStatusCode.AudioDisconnectAudio,
   ];
 

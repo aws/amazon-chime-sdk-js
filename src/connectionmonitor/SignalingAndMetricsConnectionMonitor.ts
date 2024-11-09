@@ -15,8 +15,9 @@ import ConnectionMonitor from './ConnectionMonitor';
 export default class SignalingAndMetricsConnectionMonitor
   implements ConnectionMonitor, PingPongObserver, AudioVideoObserver {
   private isActive = false;
-  private hasSeenValidPacketMetricsBefore = false;
-  private lastTotalPacketsReceived = 0;
+  private hasSeenValidCandidatePairMetricsBefore = false;
+  private lastTotalBytesReceived = 0;
+  private lastTotalStunMessagesReceived = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -87,28 +88,48 @@ export default class SignalingAndMetricsConnectionMonitor
       this.connectionHealthData.setAudioSpeakerDelayMs(audioSpeakerDelayMs);
     }
 
-    // To get the total packets received, including RTCP, we need to sum up
+    // To get the total bytes received, including RTCP, we need to sum up
     // all candidate pair metrics (in case the candidate pair changes).
     //
     // The stats collector currently doesn't account for candidate pair stats
     // so we just use the raw report for now.
     const webrtcReport = clientMetricReport.getRTCStatsReport();
 
-    let totalPacketsReceived = 0;
+    // We use candidate pair bytes received as a proxy for packets received
+    // since not all versions of all browsers have 'packetsReceived' for candidate pairs
+    let totalBytesReceived = 0;
+    // We additionally check STUN messages received, in case backend is not sending RTP/RTCP
+    // which may happen in None attendee capability edge cases.
+    let totalStunMessagedReceived = 0;
     webrtcReport.forEach(stat => {
-      if (stat.type === 'candidate-pair' && stat.packetsReceived) {
-        totalPacketsReceived += stat.packetsReceived;
+      if (stat.type === 'candidate-pair') {
+        if (stat.bytesReceived) {
+          totalBytesReceived += stat.bytesReceived;
+        }
+        if (stat.requestsReceived) {
+          totalStunMessagedReceived += stat.requestsReceived;
+        }
+        if (stat.responsesReceived) {
+          totalStunMessagedReceived += stat.responsesReceived;
+        }
       }
     });
-    const packetsReceived = totalPacketsReceived - this.lastTotalPacketsReceived;
-    this.lastTotalPacketsReceived = totalPacketsReceived;
+    const bytesReceived = totalBytesReceived - this.lastTotalBytesReceived;
+    this.lastTotalBytesReceived = totalBytesReceived;
+    const stunMessagesReceived = totalStunMessagedReceived - this.lastTotalStunMessagesReceived;
+    this.lastTotalStunMessagesReceived = totalStunMessagedReceived;
     if (
       typeof potentialAudioPacketsReceived === 'number' &&
       typeof potentialAudioFractionPacketsLostInbound === 'number'
     ) {
       audioPacketsReceived = potentialAudioPacketsReceived;
       audiofractionPacketsLostInbound = potentialAudioFractionPacketsLostInbound;
-      if (audioPacketsReceived < 0 || audiofractionPacketsLostInbound < 0 || packetsReceived < 0) {
+      if (
+        audioPacketsReceived < 0 ||
+        audiofractionPacketsLostInbound < 0 ||
+        bytesReceived < 0 ||
+        stunMessagesReceived < 0
+      ) {
         // The stats collector or logic above may emit negative numbers on this metric after reconnect
         // which we should not use.
         return;
@@ -124,10 +145,11 @@ export default class SignalingAndMetricsConnectionMonitor
       this.connectionHealthData.fractionPacketsLostInboundInLastMinute,
       audiofractionPacketsLostInbound
     );
-    if (packetsReceived > 0) {
-      this.hasSeenValidPacketMetricsBefore = true;
+
+    if (bytesReceived > 0 || stunMessagesReceived > 0) {
+      this.hasSeenValidCandidatePairMetricsBefore = true;
       this.connectionHealthData.setConsecutiveStatsWithNoPackets(0);
-    } else if (this.hasSeenValidPacketMetricsBefore) {
+    } else if (this.hasSeenValidCandidatePairMetricsBefore) {
       this.connectionHealthData.setConsecutiveStatsWithNoPackets(
         this.connectionHealthData.consecutiveStatsWithNoPackets + 1
       );
@@ -138,6 +160,7 @@ export default class SignalingAndMetricsConnectionMonitor
     if (typeof metricReport.audioPacketsSent === 'number') {
       this.updateAudioPacketsSentInConnectionHealth(metricReport.audioPacketsSent);
     }
+    this.updateVideoEncodingHealth(clientMetricReport);
     this.updateConnectionHealth();
   }
 
@@ -149,6 +172,49 @@ export default class SignalingAndMetricsConnectionMonitor
         this.connectionHealthData.consecutiveStatsWithNoAudioPacketsSent + 1
       );
     }
+  }
+
+  private updateVideoEncodingHealth(clientMetricReport: ClientMetricReport): void {
+    const isLocalVideoTileStarted = this.audioVideoController.videoTileController.hasStartedLocalVideoTile();
+    const ssrc = clientMetricReport.getVideoUpstreamSsrc();
+    if (!isLocalVideoTileStarted || ssrc === null) {
+      this.connectionHealthData.setIsVideoEncoderHardware(false);
+      this.connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
+      this.connectionHealthData.setCpuLimitationDuration(0);
+      this.connectionHealthData.setVideoInputFps(0);
+      this.connectionHealthData.setVideoEncodeFps(0);
+      return;
+    }
+
+    const isHardwareEncoder = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamEncoderImplementation',
+      ssrc
+    );
+    const videoEncodingTimeInMs = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamTotalEncodeTimePerSecond',
+      ssrc
+    );
+    const cpuLimitationDuration = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamCpuQualityLimitationDurationPerSecond',
+      ssrc
+    );
+    const videoInputFps = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamFramesInputPerSecond',
+      ssrc
+    );
+    const videoEncodeFps = clientMetricReport.getObservableVideoMetricValue(
+      'videoUpstreamFramesEncodedPerSecond',
+      ssrc
+    );
+    const videoEncodingTimePerFrameInMs =
+      videoEncodeFps > 0 ? videoEncodingTimeInMs / videoEncodeFps : 0;
+
+    this.connectionHealthData.setIsVideoEncoderHardware(Boolean(isHardwareEncoder));
+    this.connectionHealthData.setVideoEncodingTimeInMs(videoEncodingTimeInMs);
+    this.connectionHealthData.setVideoEncodingTimePerFrameInMs(videoEncodingTimePerFrameInMs);
+    this.connectionHealthData.setCpuLimitationDuration(cpuLimitationDuration);
+    this.connectionHealthData.setVideoInputFps(videoInputFps);
+    this.connectionHealthData.setVideoEncodeFps(videoEncodeFps);
   }
 
   private addToMinuteWindow(array: number[], value: number): void {

@@ -31,6 +31,7 @@ import MeetingSessionVideoAvailability from '../../src/meetingsession/MeetingSes
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import VideoCodecCapability from '../../src/sdp/VideoCodecCapability';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../../src/signalingclient/SignalingClientEventType';
@@ -55,6 +56,7 @@ import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVid
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
+import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -445,93 +447,6 @@ describe('MonitorTask', () => {
       const clientMetricReport = new ClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
-    });
-
-    it('could trigger resubscription', done => {
-      // eslint-disable-next-line
-      type RawMetrics = any;
-      class TestClientMetricReport extends ClientMetricReport {
-        packetsReceived: RawMetrics = null;
-        fractionLoss: RawMetrics = null;
-        videoPacketSentPerSecond: RawMetrics = 1000;
-        videoUpstreamBitrate: RawMetrics = 100;
-        availableOutgoingBitrate: RawMetrics = 1200 * 1000;
-        availableIncomingBitrate: RawMetrics = 1000 * 1000;
-
-        getObservableMetrics(): { [id: string]: number } {
-          return {
-            audioPacketsReceived: this.packetsReceived,
-            audioPacketsReceivedFractionLoss: this.fractionLoss,
-            videoPacketSentPerSecond: this.videoPacketSentPerSecond,
-            videoUpstreamBitrate: this.videoUpstreamBitrate,
-            availableOutgoingBitrate: this.availableOutgoingBitrate,
-            availableIncomingBitrate: this.availableIncomingBitrate,
-          };
-        }
-      }
-      let firstTimeUplink = 0;
-      let firstTimeDownlink = 0;
-      class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
-        updateMetrics(_metricReport: ClientMetricReport): void {
-          return;
-        }
-
-        wantsResubscribe(): boolean {
-          firstTimeDownlink += 1;
-          if (firstTimeDownlink % 2 === 0) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-      }
-      class TestVideoUplinkPolicy extends DefaultSimulcastUplinkPolicy {
-        wantsResubscribe(): boolean {
-          if (firstTimeUplink < 4) {
-            firstTimeUplink += 1;
-            return false;
-          } else {
-            firstTimeUplink += 1;
-            return true;
-          }
-        }
-      }
-      context.videoTileController.startLocalVideoTile();
-      context.videoStreamIndex = new SimulcastVideoStreamIndex(logger);
-
-      context.videoUplinkBandwidthPolicy = new TestVideoUplinkPolicy('self', logger);
-      context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger);
-      const spy = sinon.spy(context.audioVideoController, 'update');
-      // task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
-      const metric = 'bytesReceived';
-      const streamMetricReport = new StreamMetricReport();
-      streamMetricReport.previousMetrics[metric] = 30 * 1000;
-      streamMetricReport.currentMetrics[metric] = 80 * 1000;
-      streamMetricReport.streamId = 1;
-      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
-      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
-
-      const streamMetricReportAudio = new StreamMetricReport();
-      streamMetricReportAudio.previousMetrics[metric] = 10 * 1000;
-      streamMetricReportAudio.currentMetrics[metric] = 100 * 1000;
-      streamMetricReportAudio.streamId = 0;
-      streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
-      streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
-
-      const clientMetricReport = new TestClientMetricReport(logger);
-      clientMetricReport.streamMetricReports[1] = streamMetricReport;
-      clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
-      task.metricsDidReceive(clientMetricReport);
-      task.metricsDidReceive(clientMetricReport);
-      task.metricsDidReceive(clientMetricReport);
-      task.metricsDidReceive(clientMetricReport);
-      task.metricsDidReceive(clientMetricReport);
-      new TimeoutScheduler(100).start(() => {
-        // @ts-ignore
-        expect(context.videoUplinkBandwidthPolicy.lastUplinkBandwidthKbps).to.equal(1200);
-        expect(spy.called).to.be.true;
-        done();
-      });
     });
   });
 
@@ -1054,6 +969,84 @@ describe('MonitorTask', () => {
         task.connectionHealthDidChange(connectionHealthData);
         expect(spy.called).to.be.false;
       });
+
+      it('does not degrade video codec when metrics are normal with software encoder', () => {
+        connectionHealthData.setIsVideoEncoderHardware(false);
+        connectionHealthData.setVideoEncodingTimeInMs(300);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(10);
+        connectionHealthData.setCpuLimitationDuration(0);
+        connectionHealthData.setVideoInputFps(15);
+        connectionHealthData.setVideoEncodeFps(15);
+        for (let i = 0; i < 15; i++) {
+          task.connectionHealthDidChange(connectionHealthData);
+        }
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+      });
+
+      it('does not degrade video codec when metrics are normal with hardware encoder', () => {
+        connectionHealthData.setIsVideoEncoderHardware(true);
+        connectionHealthData.setVideoEncodingTimeInMs(450);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(10);
+        connectionHealthData.setCpuLimitationDuration(0);
+        connectionHealthData.setVideoInputFps(15);
+        connectionHealthData.setVideoEncodeFps(15);
+        for (let i = 0; i < 15; i++) {
+          task.connectionHealthDidChange(connectionHealthData);
+        }
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+      });
+
+      it('does degrade video codec when software encoding CPU is constantly high', () => {
+        connectionHealthData.setIsVideoEncoderHardware(false);
+        connectionHealthData.setVideoEncodingTimeInMs(900);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(60);
+        connectionHealthData.setCpuLimitationDuration(0);
+        connectionHealthData.setVideoInputFps(15);
+        connectionHealthData.setVideoEncodeFps(15);
+        for (let i = 0; i < 15; i++) {
+          task.connectionHealthDidChange(connectionHealthData);
+        }
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(1);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+      });
+
+      it('does degrade video codec when video quality is limited due to CPU', () => {
+        connectionHealthData.setIsVideoEncoderHardware(false);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
+        connectionHealthData.setVideoEncodingTimeInMs(0);
+        connectionHealthData.setCpuLimitationDuration(1);
+        for (let i = 0; i < 15; i++) {
+          task.connectionHealthDidChange(connectionHealthData);
+        }
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(1);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+      });
+
+      it('does degrade video codec when video encoding fails', () => {
+        connectionHealthData.setIsVideoEncoderHardware(true);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
+        connectionHealthData.setVideoEncodingTimeInMs(0);
+        connectionHealthData.setCpuLimitationDuration(1);
+        connectionHealthData.setVideoInputFps(15);
+        connectionHealthData.setVideoEncodeFps(0);
+        for (let i = 0; i < 9; i++) {
+          task.connectionHealthDidChange(connectionHealthData);
+        }
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(1);
+      });
     });
   });
 
@@ -1431,6 +1424,102 @@ describe('MonitorTask', () => {
           'Received notification from server with unknown level null: Mock notification with invalid level'
         )
       );
+    });
+  });
+
+  describe('degradeVideoCodec', () => {
+    it('should ignore if meeting supported video send codec preferences is not defined', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = undefined;
+      // @ts-ignore
+      task.degradeVideoCodec();
+    });
+
+    it('should ignore if meeting supported video send codec preferences have only one codec', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [VideoCodecCapability.vp9Profile0()];
+      // @ts-ignore
+      task.degradeVideoCodec();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(
+          VideoCodecCapability.vp9Profile0()
+        )
+      ).to.be.true;
+    });
+
+    it('should ignore if codec being used is H.264 CBP or VP8', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.vp8(),
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+      ];
+      // @ts-ignore
+      task.degradeVideoCodec();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
+      ).to.be.true;
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.h264ConstrainedBaselineProfile(),
+        VideoCodecCapability.vp8(),
+      ];
+      // @ts-ignore
+      task.degradeVideoCodec();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(
+          VideoCodecCapability.h264ConstrainedBaselineProfile()
+        )
+      ).to.be.true;
+    });
+
+    it('should degrade when there is more than one codec preferences with NScaleVideoUplinkBandwidthPolicy', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+        'self',
+        true,
+        logger
+      );
+      // @ts-ignore
+      task.degradeVideoCodec();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
+      ).to.be.true;
+    });
+
+    it('should degrade when there is more than one codec preferences with DefaultSimulcastUplinkPolicy', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy('self', logger);
+      // @ts-ignore
+      task.degradeVideoCodec();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
+      ).to.be.true;
+    });
+
+    it('should ignore when there is no codec intersection', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoSendCodecPreferences = [VideoCodecCapability.vp9Profile0()];
+      context.degradedVideoSendCodecs = [VideoCodecCapability.vp9Profile0()];
+      // @ts-ignore
+      task.degradeVideoCodec();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(
+          VideoCodecCapability.vp9Profile0()
+        )
+      ).to.be.true;
     });
   });
 });

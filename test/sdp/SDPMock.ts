@@ -787,64 +787,64 @@ a=rtcp-fb:96 ccm fir\r
 a=rtcp-fb:96 nack\r
 a=rtcp-fb:96 nack pli\r
 a=rtpmap:97 rtx/90000\r
-a=fmtp:97 apt=96;x-google-start-bitrate=1000000\r
+a=fmtp:97 apt=96;x-google-start-bitrate=1000\r
 a=rtpmap:98 VP9/90000\r
 a=rtcp-fb:98 goog-remb\r
 a=rtcp-fb:98 transport-cc\r
 a=rtcp-fb:98 ccm fir\r
 a=rtcp-fb:98 nack\r
 a=rtcp-fb:98 nack pli\r
-a=fmtp:98 profile-id=0;x-google-start-bitrate=1000000\r
+a=fmtp:98 profile-id=0;x-google-start-bitrate=1000\r
 a=rtpmap:99 rtx/90000\r
-a=fmtp:99 apt=98;x-google-start-bitrate=1000000\r
+a=fmtp:99 apt=98;x-google-start-bitrate=1000\r
 a=rtpmap:100 VP9/90000\r
 a=rtcp-fb:100 goog-remb\r
 a=rtcp-fb:100 transport-cc\r
 a=rtcp-fb:100 ccm fir\r
 a=rtcp-fb:100 nack\r
 a=rtcp-fb:100 nack pli\r
-a=fmtp:100 profile-id=2;x-google-start-bitrate=1000000\r
+a=fmtp:100 profile-id=2;x-google-start-bitrate=1000\r
 a=rtpmap:101 rtx/90000\r
-a=fmtp:101 apt=100;x-google-start-bitrate=1000000\r
+a=fmtp:101 apt=100;x-google-start-bitrate=1000\r
 a=rtpmap:102 H264/90000\r
 a=rtcp-fb:102 goog-remb\r
 a=rtcp-fb:102 transport-cc\r
 a=rtcp-fb:102 ccm fir\r
 a=rtcp-fb:102 nack\r
 a=rtcp-fb:102 nack pli\r
-a=fmtp:102 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42001f;x-google-start-bitrate=1000000\r
+a=fmtp:102 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42001f;x-google-start-bitrate=1000\r
 a=rtpmap:122 rtx/90000\r
-a=fmtp:122 apt=102;x-google-start-bitrate=1000000\r
+a=fmtp:122 apt=102;x-google-start-bitrate=1000\r
 a=rtpmap:127 H264/90000\r
 a=rtcp-fb:127 goog-remb\r
 a=rtcp-fb:127 transport-cc\r
 a=rtcp-fb:127 ccm fir\r
 a=rtcp-fb:127 nack\r
 a=rtcp-fb:127 nack pli\r
-a=fmtp:127 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42001f;x-google-start-bitrate=1000000\r
+a=fmtp:127 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42001f;x-google-start-bitrate=1000\r
 a=rtpmap:121 rtx/90000\r
-a=fmtp:121 apt=127;x-google-start-bitrate=1000000\r
+a=fmtp:121 apt=127;x-google-start-bitrate=1000\r
 a=rtpmap:125 H264/90000\r
 a=rtcp-fb:125 goog-remb\r
 a=rtcp-fb:125 transport-cc\r
 a=rtcp-fb:125 ccm fir\r
 a=rtcp-fb:125 nack\r
 a=rtcp-fb:125 nack pli\r
-a=fmtp:125 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f;x-google-start-bitrate=1000000\r
+a=fmtp:125 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f;x-google-start-bitrate=1000\r
 a=rtpmap:107 rtx/90000\r
-a=fmtp:107 apt=125;x-google-start-bitrate=1000000\r
+a=fmtp:107 apt=125;x-google-start-bitrate=1000\r
 a=rtpmap:108 H264/90000\r
 a=rtcp-fb:108 goog-remb\r
 a=rtcp-fb:108 transport-cc\r
 a=rtcp-fb:108 ccm fir\r
 a=rtcp-fb:108 nack\r
 a=rtcp-fb:108 nack pli\r
-a=fmtp:108 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f;x-google-start-bitrate=1000000\r
+a=fmtp:108 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f;x-google-start-bitrate=1000\r
 a=rtpmap:109 rtx/90000\r
-a=fmtp:109 apt=108;x-google-start-bitrate=1000000\r
+a=fmtp:109 apt=108;x-google-start-bitrate=1000\r
 a=rtpmap:124 red/90000\r
 a=rtpmap:120 rtx/90000\r
-a=fmtp:120 apt=124;x-google-start-bitrate=1000000\r
+a=fmtp:120 apt=124;x-google-start-bitrate=1000\r
 a=rtpmap:123 ulpfec/90000\r
 a=ssrc:138036785 cname:87eXz3QiQBBvJFID\r
 a=ssrc:138036785 msid:j5DVeGxmzCUECATU1d9Ni641UdUJ86wVscmP ecf9934b-2914-4e1d-a2f8-8bbd1fb31b8c\r

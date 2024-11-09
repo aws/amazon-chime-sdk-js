@@ -120,24 +120,13 @@ export default class ReceiveVideoInputTask extends BaseTask {
       );
       const trackSettings = videoTracks[0].getSettings();
 
-      if (this.context.enableSimulcast) {
-        // For video, we currently let uplink policy to specify constraints for simulcast. This logic should be removed in the future.
-        const constraint = this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
-        this.context.logger.info(`simulcast: choose constraint ${JSON.stringify(constraint)}`);
-        try {
-          await videoTracks[0].applyConstraints(constraint);
-        } catch (error) {
-          this.context.logger.info('simulcast: pass video without more constraint');
-        }
-      } else {
-        this.checkAndApplyVideoConstraint(
-          isContentAttendee,
-          videoTracks[0],
-          trackSettings.width,
-          trackSettings.height,
-          trackSettings.frameRate
-        );
-      }
+      this.checkAndApplyVideoConstraint(
+        isContentAttendee,
+        videoTracks[0],
+        trackSettings.width,
+        trackSettings.height,
+        trackSettings.frameRate
+      );
 
       const externalUserId = this.context.audioVideoController.configuration.credentials
         .externalUserId;
@@ -151,9 +140,8 @@ export default class ReceiveVideoInputTask extends BaseTask {
         externalUserId
       );
 
-      for (let i = 0; i < videoTracks.length; i++) {
-        const track = videoTracks[i];
-        this.logger.info(`using video device label=${track.label} id=${track.id}`);
+      for (const track of videoTracks) {
+        this.logger.info(`Using video device label=${track.label} id=${track.id}`);
         this.context.videoDeviceInformation['current_camera_name'] = track.label;
         this.context.videoDeviceInformation['current_camera_id'] = track.id;
       }

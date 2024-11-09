@@ -400,7 +400,7 @@ export default class DefaultTransceiverController
   }
 
   getMidForGroupId(groupId: number): string | undefined {
-    return this.groupIdToTransceiver.get(groupId)?.mid;
+    return this.groupIdToTransceiver.get(groupId)?.mid ?? undefined;
   }
 
   protected transceiverIsVideo(transceiver: RTCRtpTransceiver): boolean {
@@ -631,6 +631,7 @@ export default class DefaultTransceiverController
     if (this.audioRedWorker) {
       URL.revokeObjectURL(this.audioRedWorkerURL);
       this.audioRedWorkerURL = null;
+      this.audioRedWorker.terminate();
       this.audioRedWorker = null;
       this.currentNumRedundantEncodings = 0;
       this.lastRedHolddownTimerStartTimestampMs = 0;
