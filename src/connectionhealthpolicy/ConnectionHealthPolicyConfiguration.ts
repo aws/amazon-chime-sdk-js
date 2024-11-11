@@ -65,6 +65,14 @@ export default class ConnectionHealthPolicyConfiguration {
   highEncodeCpuMsThreshold = 500;
 
   /**
+   * Encode time per frame threshold to determine high CPU usage of software encoders in video encoding health
+   * monitoring. Recuding the value results in video codec degradation due to high CPU usage software encoder to
+   * be triggered at a lower CPU usage. Note that encoder counts each SVC spatial layer of a frame as an encoded
+   * frame. The magnification in framerate should be considered when configuring this parameter with SVC enabled.
+   */
+  highEncodeCpuMsPerFrameThreshold = 15;
+
+  /**
    * Consecutive seconds of zero encoded framerate to trigger video codec degradation in video encoding health monitoring.
    * Increasing the value results in less sensitive video codec degradaion and vice versa.
    */

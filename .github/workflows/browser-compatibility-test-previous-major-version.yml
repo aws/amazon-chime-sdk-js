@@ -13,6 +13,7 @@ env:
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
   MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
+  PRE_RUN_SCRIPT_URL: ${{secrets.PRE_RUN_SCRIPT_URL}}
 
 jobs:
   get-previous-version:

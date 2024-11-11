@@ -7,6 +7,8 @@ import * as sinon from 'sinon';
 import {
   getFormattedOffset,
   getRandomValues,
+  iterateEvery,
+  SuppressedError,
   toLowerCasePropertyNames,
   wait,
 } from '../../src/utils/Utils';
@@ -135,14 +137,91 @@ describe('Utils', () => {
   });
 
   describe('getRandomValues', () => {
-    describe('getRandomValues', () => {
-      it('should handle catch block for Node environment', () => {
-        const buffer = new Uint32Array(1);
-        const dataViewSpy = sinon.spy(DataView.prototype, 'setUint32');
-        getRandomValues(buffer);
-        expect(dataViewSpy.calledOnce).to.be.true;
-        dataViewSpy.restore();
+    it('should handle catch block for Node environment', () => {
+      const buffer = new Uint32Array(1);
+      const dataViewSpy = sinon.spy(DataView.prototype, 'setUint32');
+      getRandomValues(buffer);
+      expect(dataViewSpy.calledOnce).to.be.true;
+      dataViewSpy.restore();
+    });
+  });
+
+  describe('SuppressedError', () => {
+    it('should properly construct a SuppressedError', () => {
+      const err = new Error('bad');
+
+      // string message
+      const a = new SuppressedError(err, undefined, 'message');
+      expect(a.message).to.eq('message');
+      expect(a.suppressed).to.be.undefined;
+
+      // value-as-error stringified
+      const b = new SuppressedError(1, a);
+      expect(b.message).to.eq('1');
+      expect(b.suppressed).to.eq(a);
+
+      // error.message
+      const c = new SuppressedError(err);
+      expect(c.message).to.eq('bad');
+    });
+
+    it('should suppress anything', () => {
+      expect(() => {
+        // b/c JS can throw anything, SuppressedError has to handle anything as an error
+        const a = new SuppressedError(undefined, undefined, undefined);
+        const values = [
+          'string',
+          1,
+          {},
+          [],
+          new Date(),
+          new Map(),
+          new Set(),
+          globalThis,
+          null,
+          Symbol('error'),
+        ];
+        values.forEach((value, i) => {
+          new SuppressedError(value, a, i.toString());
+        });
+      }).not.to.throw;
+    });
+  });
+
+  describe('iterateEvery', () => {
+    it('should iterate over every value even if some callbacks throw and collect all errors into a single SuppressedError', () => {
+      const values = [1, 2, 3, 4, 5, 6];
+      const evens = values.filter(a => a % 2 === 0);
+      const throwEven = sinon.spy((a: number) => {
+        if (a % 2 === 0) throw new Error(`${a}`);
       });
+      let error = undefined;
+      try {
+        iterateEvery(values, throwEven);
+      } catch (err) {
+        error = err;
+      }
+      expect(throwEven.callCount).to.eq(values.length);
+      expect(throwEven.exceptions.filter(e => !!e).length).to.eq(evens.length);
+      expect(error).to.be.instanceof(SuppressedError);
+
+      const messages: string[] = [];
+      let se = error instanceof SuppressedError ? error : undefined;
+      while (se) {
+        messages.push(se.message);
+        se = se.suppressed;
+      }
+      expect(messages).to.eql(evens.map(n => n.toString()).reverse());
+    });
+
+    it('should not throw an error for null or undefined', () => {
+      expect(() => iterateEvery(null, () => {})).not.to.throw;
+      expect(() => iterateEvery(undefined, () => {})).not.to.throw;
+    });
+
+    it('should throw an error when the data is not iterable', () => {
+      // @ts-expect-error 3 is not iterable
+      expect(() => iterateEvery(3, () => {})).to.throw;
     });
   });
 });
