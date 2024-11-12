@@ -547,7 +547,17 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     // Add custom stats for reporting.
     const customStatsReports: CustomStatsReport[] = [];
     this.maybeAddRedRecoveryMetrics(customStatsReports);
-    this.addVideoCodecDegradationMetrics(customStatsReports);
+    // We cannot use 'this.clientMetricsReport.getVideoUpstreamSsrc()' because the value
+    // is dependent on the call to 'this.processRawMetricReports()' below, i.e. it depends on
+    // the previous handling of raw metrics reports. This would lead to the addition of custom metrics
+    // for streams that may no longer exist, e.g. after a reconnection, which will then stick around
+    // perpetually
+    const videoUpstreamSsrc = this.getVideoUpstreamSsrcFromRawMetricReports(
+      filteredRawMetricReports
+    );
+    if (videoUpstreamSsrc !== null) {
+      this.addVideoCodecDegradationMetrics(customStatsReports, videoUpstreamSsrc);
+    }
     this.clientMetricReport.customStatsReports = customStatsReports;
     filteredRawMetricReports.push(...customStatsReports);
 
@@ -638,19 +648,34 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     this.videoCodecDegradationEncodeFailureCount += 1;
   }
 
-  private addVideoCodecDegradationMetrics(customStatsReports: CustomStatsReport[]): void {
-    const videoUpstreamSsrc = this.clientMetricReport.getVideoUpstreamSsrc();
-    if (videoUpstreamSsrc !== null) {
-      customStatsReports.push({
-        kind: 'video',
-        type: 'outbound-rtp',
-        ssrc: videoUpstreamSsrc,
-        timestamp: Date.now(),
-        videoCodecDegradationHighEncodeCpu: this.videoCodecDegradationHighEncodeCpuCount,
-        videoCodecDegradationEncodeFailure: this.videoCodecDegradationEncodeFailureCount,
-      });
-    }
+  private addVideoCodecDegradationMetrics(
+    customStatsReports: CustomStatsReport[],
+    videoUpstreamSsrc: number
+  ): void {
+    customStatsReports.push({
+      kind: 'video',
+      type: 'outbound-rtp',
+      ssrc: videoUpstreamSsrc,
+      timestamp: Date.now(),
+      videoCodecDegradationHighEncodeCpu: this.videoCodecDegradationHighEncodeCpuCount,
+      videoCodecDegradationEncodeFailure: this.videoCodecDegradationEncodeFailureCount,
+    });
     this.videoCodecDegradationHighEncodeCpuCount = 0;
     this.videoCodecDegradationEncodeFailureCount = 0;
+  }
+
+  private getVideoUpstreamSsrcFromRawMetricReports(
+    rawMetricReports: RawMetricReport[]
+  ): number | null {
+    for (const rawMetricReport of rawMetricReports) {
+      if (
+        this.isStreamRawMetricReport(rawMetricReport.type) &&
+        this.getMediaType(rawMetricReport) === MediaType.VIDEO &&
+        this.getDirectionType(rawMetricReport) === Direction.UPSTREAM
+      ) {
+        return rawMetricReport.ssrc;
+      }
+    }
+    return null;
   }
 }

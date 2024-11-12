@@ -5,18 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
-
-### Removed
-
-### Changed
-
-### Fixed
-
-- Prevent DataMessage callback errors from killing a meeting
-
 ## [3.26.0] - 2024-10-07
 
 ### Added
@@ -25,10 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Set starting send bitrate to 1000kbps to reduce time of low resolution at start of connection
+- Add per-frame encoding time in video encoding CPU connection health policy
+
 ### Fixed
 
 - Avoid breaking audio input when external devices are disconnected on iOS browsers when using Web Audio by suspending and resuming the audio context in that case.
 - Fixed incoming audio loss calculation when server side network adaption and redundant audio features are running together.
+- Prevent DataMessage callback errors from killing a meeting
+- Do not store metrics for video send stream that no longer exists after reconnection
 
 ## [3.25.0] - 2024-09-10
 

@@ -137,6 +137,7 @@ class AppPage {
 
   async closeAdditionalOptions() {
     let additionalOptionsSaveButton = await this.driver.findElement(elements.additionalOptionsSaveButton);
+    await this.waitForElement(additionalOptionsSaveButton, 3000);
     await clickElement(this.driver, additionalOptionsSaveButton);
     await TestUtils.waitAround(200);
   }
