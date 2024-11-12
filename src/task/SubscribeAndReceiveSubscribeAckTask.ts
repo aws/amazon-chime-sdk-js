@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
+import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import SDP from '../sdp/SDP';
 import ZLIBTextCompressor from '../sdp/ZLIBTextCompressor';
 import { serverSideNetworkAdaptionIsNoneOrDefault } from '../signalingclient/ServerSideNetworkAdaption';
@@ -65,9 +67,6 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.videoStreamIndex.integrateUplinkPolicyDecision([param]);
     }
 
-    // This will cache the current index so that we maintain the values over the course of the subscribe.
-    this.context.videoStreamIndex.subscribeFrameSent();
-
     // See comment above `fixUpSubscriptionOrder`
     const videoSubscriptions = this.fixUpSubscriptionOrder(
       localSdp,
@@ -79,7 +78,15 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX;
 
     let compressedSDPOffer: Uint8Array | null;
-    const localSdpOffer = localSdp;
+    let localSdpOffer = localSdp;
+    if (
+      this.context.videoUplinkBandwidthPolicy.wantsVideoDependencyDescriptorRtpHeaderExtension ===
+        undefined ||
+      !this.context.videoUplinkBandwidthPolicy.wantsVideoDependencyDescriptorRtpHeaderExtension()
+    ) {
+      // See note above similar code in `SetLocalDescriptionTask`.
+      localSdpOffer = new SDP(localSdpOffer).withoutDependencyDescriptorRtpHeaderExtension().sdp;
+    }
 
     if (this.context.serverSupportsCompression) {
       // If the server supports compression, then send the compressed version of the sdp
@@ -91,7 +98,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       );
       localSdp = '';
     }
-    this.context.previousSdpOffer = new SDP(localSdpOffer);
+    this.context.previousSdpOffer = new SDP(localSdp);
 
     const subscribe = new SignalingClientSubscribe(
       this.context.meetingSessionConfiguration.credentials.attendeeId,
@@ -212,6 +219,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
   private receiveSubscribeAck(): Promise<SdkSubscribeAckFrame> {
     return new Promise((resolve, reject) => {
+      const context = this.context;
       class Interceptor implements SignalingClientObserver, TaskCanceler {
         constructor(private signalingClient: SignalingClient) {}
 
@@ -225,11 +233,22 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
         }
 
         handleSignalingClientEvent(event: SignalingClientEvent): void {
-          if (event.type === SignalingClientEventType.WebSocketClosed) {
-            // Forwarding of this message to the controller will be completed by MonitorTask
-            this.cancel();
+          if (event.isConnectionTerminated()) {
+            const message = `SubscribeAndReceiveSubscribeAckTask connection was terminated with code ${event.closeCode} and reason: ${event.closeReason}`;
+            context.logger.warn(message);
+
+            let statusCode: MeetingSessionStatusCode = MeetingSessionStatusCode.TaskFailed;
+            if (event.closeCode >= 4500 && event.closeCode < 4600) {
+              statusCode = MeetingSessionStatusCode.SignalingInternalServerError;
+            }
+            context.audioVideoController.handleMeetingSessionStatus(
+              new MeetingSessionStatus(statusCode),
+              new Error(message)
+            );
             return;
-          } else if (
+          }
+
+          if (
             event.type !== SignalingClientEventType.ReceivedSignalFrame ||
             event.message.type !== SdkSignalFrame.Type.SUBSCRIBE_ACK
           ) {

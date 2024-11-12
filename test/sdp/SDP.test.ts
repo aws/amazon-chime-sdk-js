@@ -462,6 +462,8 @@ describe('SDP', () => {
         sdpObj.withVideoSendCodecPreferences([
           VideoCodecCapability.h264(),
           VideoCodecCapability.vp8(),
+          VideoCodecCapability.vp9Profile0(),
+          VideoCodecCapability.av1Main(),
         ]).sdp
       ).to.deep.equal(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
     });
@@ -474,6 +476,57 @@ describe('SDP', () => {
           VideoCodecCapability.vp8(),
         ]).sdp
       ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_H264_CBP_THEN_VP8);
+    });
+
+    it('Will not update SDP with unexpected rtpmap lines', () => {
+      const modifiedSdp = SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO.replace(
+        /a=rtpmap:125/g,
+        'a=rtpmap:hello'
+      );
+
+      const sdpObj = new SDP(modifiedSdp);
+      expect(
+        sdpObj.withVideoSendCodecPreferences([
+          VideoCodecCapability.h264ConstrainedBaselineProfile(),
+          VideoCodecCapability.vp8(),
+        ]).sdp
+      ).to.deep.equal(modifiedSdp);
+    });
+
+    it('Updates priority of VP9 profile0 video send codes', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      expect(
+        sdpObj.withVideoSendCodecPreferences([
+          VideoCodecCapability.vp9Profile0(),
+          VideoCodecCapability.av1Main(),
+        ]).sdp
+      ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_VP9_PROFILE0);
+    });
+
+    it('Updates priority of VP9 video send codes without profile ID', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_VP9_NO_PROFILE_ID);
+      expect(
+        sdpObj.withVideoSendCodecPreferences([
+          VideoCodecCapability.vp9Profile0(),
+          VideoCodecCapability.av1Main(),
+        ]).sdp
+      ).to.deep.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_PREFERS_VP9_NO_PROFILE_ID);
+    });
+
+    it('Updates priority of mutliple H.264 video send codes', () => {
+      const original = new SDP(SDPMock.LOCAL_OFFER_WITH_MULTIPLE_H264_PROFILES);
+      const expected = SDPMock.LOCAL_OFFER_WITH_MULTIPLE_H264_PROFILES.replace(
+        'm=video 9 UDP/TLS/RTP/SAVPF 96 97 102 103 104 105 106 107 108 109 127 125 39 40 45 46 98 99 100 101 112 113 116 117 118',
+        'm=video 9 UDP/TLS/RTP/SAVPF 127 112 102 106 96 97 103 104 105 107 108 109 125 39 40 45 46 98 99 100 101 113 116 117 118'
+      );
+      expect(
+        original.withVideoSendCodecPreferences([
+          VideoCodecCapability.h264MainProfile(),
+          VideoCodecCapability.h264HighProfile(),
+          VideoCodecCapability.h264BaselineProfile(),
+          VideoCodecCapability.h264ConstrainedBaselineProfile(),
+        ]).sdp
+      ).to.deep.equal(expected);
     });
   });
 
@@ -489,18 +542,23 @@ describe('SDP', () => {
     });
 
     it('Returns undefined for faulty m line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_M_LINE);
       expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
     });
 
     it('Returns undefined for faulty rtpmap line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE);
-      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+      expect(sdpObj.highestPriorityVideoSendCodec().equals(VideoCodecCapability.vp9Profile0())).to
+        .be.true;
     });
 
     it('Returns undefined for faulty name/clockrate line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE_CLOCKRATE);
-      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+      expect(sdpObj.highestPriorityVideoSendCodec().equals(VideoCodecCapability.vp9Profile0())).to
+        .be.true;
     });
 
     it('Returns expected value for codec with fmtp line', () => {
@@ -508,9 +566,93 @@ describe('SDP', () => {
       expect(sdpObj.highestPriorityVideoSendCodec().equals(VideoCodecCapability.h264())).to.be.true;
     });
 
-    it('Returns undefined for faulty fmtp line', () => {
+    it('Can handle faulty fmtp line', () => {
       const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_H264_PREFERRED_FAULTY_FMTP_LINE);
-      expect(sdpObj.highestPriorityVideoSendCodec()).to.equal(undefined);
+      expect(sdpObj.highestPriorityVideoSendCodec().codecName).to.equal('H264');
+      expect(sdpObj.highestPriorityVideoSendCodec().codecCapability.sdpFmtpLine).to.equal(
+        undefined
+      );
+    });
+  });
+
+  describe('prioritizedSendVideoCodecCapabilities', () => {
+    it('Returns empty list if no video', () => {
+      const sdpObj = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()).to.deep.equal([]);
+    });
+
+    it('Returns expected value', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()[0].equals(VideoCodecCapability.vp8()))
+        .to.be.true;
+    });
+
+    it('Returns empty list for faulty m line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_M_LINE);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()).to.deep.equal([]);
+    });
+
+    it('Returns undefined for faulty rtpmap line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE);
+      expect(
+        sdpObj.prioritizedSendVideoCodecCapabilities()[0].equals(VideoCodecCapability.vp9Profile0())
+      ).to.be.true;
+    });
+
+    it('Returns undefined for faulty name/clockrate line', () => {
+      // Peer connection wouldn't accept a broken answer/offer like this anyways
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FAULTY_RTPMAP_LINE_CLOCKRATE);
+      expect(
+        sdpObj.prioritizedSendVideoCodecCapabilities()[0].equals(VideoCodecCapability.vp9Profile0())
+      ).to.be.true;
+    });
+
+    it('Returns expected value for codec with fmtp line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_H264_PREFERRED);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()[0].equals(VideoCodecCapability.h264()))
+        .to.be.true;
+    });
+
+    it('Can handle faulty fmtp line', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_H264_PREFERRED_FAULTY_FMTP_LINE);
+      expect(sdpObj.prioritizedSendVideoCodecCapabilities()[0].codecName).to.equal('H264');
+      expect(
+        sdpObj.prioritizedSendVideoCodecCapabilities()[0].codecCapability.sdpFmtpLine
+      ).to.equal(undefined);
+    });
+  });
+
+  describe('getAudioPayloadTypes', () => {
+    it('Returns expected values for red and opus codecs', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_RED);
+      const payloadTypes = sdpObj.getAudioPayloadTypes();
+      expect(payloadTypes.get('opus')).to.equal(111);
+      expect(payloadTypes.get('red')).to.equal(63);
+    });
+
+    it('Returns payload type 0 if the rtpmap attribute was not found for RED and Opus codecs', () => {
+      const sdpObj = new SDP(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_RED_BUT_MISSING_RED_AND_OPUS_RTPMAP_ATTRIBUTES
+      );
+      const payloadTypes = sdpObj.getAudioPayloadTypes();
+      expect(payloadTypes.get('opus')).to.equal(0);
+      expect(payloadTypes.get('red')).to.equal(0);
+    });
+  });
+
+  describe('withStartingVideoSendBitrate', () => {
+    it('Returns original if no video', () => {
+      const sdpObj = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      expect(sdpObj.withStartingVideoSendBitrate(1000)).to.equal(sdpObj);
+    });
+
+    it('Adds starting video send bitrate', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      expect(sdpObj.withStartingVideoSendBitrate(1000).sdp).to.deep.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_STARTING_VIDEO_SEND_BITRATE
+      );
     });
   });
 });

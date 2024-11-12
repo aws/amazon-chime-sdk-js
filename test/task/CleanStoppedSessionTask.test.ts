@@ -4,11 +4,11 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoController from '../../src/audiovideocontroller/AudioVideoController';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
 import Logger from '../../src/logger/Logger';
@@ -44,7 +44,6 @@ describe('CleanStoppedSessionTask', () => {
 
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder | null = null;
-  let browserBehavior: BrowserBehavior;
   let task: Task;
   let webSocketAdapter: DefaultWebSocketAdapter;
   let signalingClient: SignalingClient;
@@ -67,8 +66,9 @@ describe('CleanStoppedSessionTask', () => {
 
   beforeEach(async () => {
     domMockBuilder = new DOMMockBuilder(behavior);
-    browserBehavior = new DefaultBrowserBehavior();
     context = new AudioVideoControllerState();
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
     context.realtimeController = context.audioVideoController.realtimeController;
@@ -78,7 +78,8 @@ describe('CleanStoppedSessionTask', () => {
     context.connectionMonitor = new TestConnectionMonitor();
     context.transceiverController = new DefaultTransceiverController(
       context.logger,
-      browserBehavior
+      context.browserBehavior,
+      context
     );
     context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();

@@ -8,7 +8,7 @@ import { SdkServerSideNetworkAdaption } from '../signalingprotocol/SignalingProt
  */
 export enum ServerSideNetworkAdaption {
   /**
-   * No features enabled, but this value may switch to 'BandwidthProbingAndRemoteVideoQualityAdaption' in a later release.
+   * This value will currently be overwritten to `BandwidthProbingAndRemoteVideoQualityAdaption`
    */
   Default,
 

@@ -1,5 +1,28 @@
 # Migration from SDK v2 to SDK v3
 
+- [Migration from SDK v2 to SDK v3](#migration-from-sdk-v2-to-sdk-v3)
+  - [Installation](#installation)
+  - [Device controller](#device-controller)
+    - [Updates to the audio input API](#updates-to-the-audio-input-api)
+    - [Updates to the video input API](#updates-to-the-video-input-api)
+    - [Updates to the audio output API](#updates-to-the-audio-output-api)
+    - [Updates to the video preview APIs](#updates-to-the-video-preview-apis)
+    - [Updates to the video input quality API](#updates-to-the-video-input-quality-api)
+    - [Removing synthesize video API](#removing-synthesize-video-api)
+  - [Messaging](#messaging)
+    - [Remove AWS global object from `MessagingSessionConfiguration.ts`](#remove-aws-global-object-from-messagingsessionconfigurationts)
+    - [Update `messagingSession.start` to return `Promise<void>` instead of `void`](#update-messagingsessionstart-to-return-promisevoid-instead-of-void)
+  - [Meeting Status Code](#meeting-status-code)
+  - [AudioVideo events](#audiovideo-events)
+  - [`MeetingSessionPOSTLogger` to `POSTLogger`](#meetingsessionpostlogger-to-postlogger)
+  - [Event Controller](#event-controller)
+    - [Update implementation of custom `EventController`](#update-implementation-of-custom-eventcontroller)
+    - [Update creation of `EventController`.](#update-creation-of-eventcontroller)
+    - [Update `eventDidReceive` observer](#update-eventdidreceive-observer)
+  - [WebRTC Metrics](#webrtc-metrics)
+    - [Get raw RTCStatsReport](#get-raw-rtcstatsreport)
+
+
 ## Installation
 
 Installation involves adjusting your `package.json` to depend on version `3.0.0`.

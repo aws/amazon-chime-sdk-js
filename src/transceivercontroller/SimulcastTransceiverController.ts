@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import Logger from '../logger/Logger';
 import DefaultTransceiverController from './DefaultTransceiverController';
@@ -16,8 +17,12 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     RTCRtpEncodingParameters
   >();
 
-  constructor(logger: Logger, browserBehavior: BrowserBehavior) {
-    super(logger, browserBehavior);
+  constructor(
+    logger: Logger,
+    browserBehavior: BrowserBehavior,
+    meetingSessionContext?: AudioVideoControllerState
+  ) {
+    super(logger, browserBehavior, meetingSessionContext);
     let scale = 4;
     for (let i = 0; i < SimulcastTransceiverController.NAME_ARR_ASCENDING.length; i++) {
       const ridName = SimulcastTransceiverController.NAME_ARR_ASCENDING[i];
@@ -48,23 +53,23 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     if (!oldParam.encodings) {
       oldParam.encodings = newEncodingParams;
     } else {
-      for (let i = 0; i < oldParam.encodings.length; i++) {
-        if (oldParam.encodings[i].rid === SimulcastTransceiverController.LOW_LEVEL_NAME) {
+      for (const encoding of oldParam.encodings) {
+        if (encoding.rid === SimulcastTransceiverController.LOW_LEVEL_NAME) {
           this.copyEncodingParams(
             encodingParamMap.get(SimulcastTransceiverController.LOW_LEVEL_NAME),
-            oldParam.encodings[i]
+            encoding
           );
         }
-        if (oldParam.encodings[i].rid === SimulcastTransceiverController.MID_LEVEL_NAME) {
+        if (encoding.rid === SimulcastTransceiverController.MID_LEVEL_NAME) {
           this.copyEncodingParams(
             encodingParamMap.get(SimulcastTransceiverController.MID_LEVEL_NAME),
-            oldParam.encodings[i]
+            encoding
           );
         }
-        if (oldParam.encodings[i].rid === SimulcastTransceiverController.HIGH_LEVEL_NAME) {
+        if (encoding.rid === SimulcastTransceiverController.HIGH_LEVEL_NAME) {
           this.copyEncodingParams(
             encodingParamMap.get(SimulcastTransceiverController.HIGH_LEVEL_NAME),
-            oldParam.encodings[i]
+            encoding
           );
         }
       }
@@ -93,11 +98,16 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
         direction: 'inactive',
         streams: [this.defaultMediaStream],
       });
+
+      if (this.meetingSessionContext?.audioProfile?.hasRedundancyEnabled()) {
+        // This will perform additional necessary setup for the audio transceiver.
+        this.setupAudioRedWorker();
+      }
     }
 
     if (!this._localCameraTransceiver) {
       const encodingParams = Array.from(this.videoQualityControlParameterMap.values());
-      this._localCameraTransceiver = this.peer.addTransceiver('video', {
+      this._localCameraTransceiver = this.addTransceiver('video', {
         direction: 'inactive',
         streams: [this.defaultMediaStream],
         sendEncodings: encodingParams,

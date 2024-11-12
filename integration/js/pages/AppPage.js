@@ -31,7 +31,7 @@ function findAllElements() {
     dataMessageSendInput: By.id('send-message'),
     sipAuthenticateButton: By.id('button-sip-authenticate'),
     roster: By.id('roster'),
-    participants: By.css('li'),
+    participants: By.css('#roster>li'),
     switchToSipFlow: By.id('to-sip-flow'),
 
     authenticationFlow: By.id('flow-authenticate'),
@@ -137,6 +137,7 @@ class AppPage {
 
   async closeAdditionalOptions() {
     let additionalOptionsSaveButton = await this.driver.findElement(elements.additionalOptionsSaveButton);
+    await this.waitForElement(additionalOptionsSaveButton, 3000);
     await clickElement(this.driver, additionalOptionsSaveButton);
     await TestUtils.waitAround(200);
   }

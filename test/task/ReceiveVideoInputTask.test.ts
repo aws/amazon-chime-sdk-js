@@ -6,6 +6,7 @@ import * as sinon from 'sinon';
 
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
@@ -17,10 +18,11 @@ import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideo
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
-import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 
 interface MockMediaStreamBrokerConfigs {
   acquireVideoInputDeviceSucceeds: boolean;
+  useMockedVideoStream: boolean;
 }
 
 class MockMediaStreamBroker extends NoOpMediaStreamBroker {
@@ -30,6 +32,14 @@ class MockMediaStreamBroker extends NoOpMediaStreamBroker {
 
   acquireVideoInputStream(): Promise<MediaStream> {
     if (this.configs.acquireVideoInputDeviceSucceeds) {
+      if (this.configs.useMockedVideoStream) {
+        const mediaStream = new MediaStream();
+        const track = new MediaStreamTrack() as StoppableMediaStreamTrack;
+        // @ts-ignore
+        track.kind = 'video';
+        mediaStream.addTrack(track);
+        return Promise.resolve(mediaStream);
+      }
       const constraints: MediaStreamConstraints = { video: true, audio: false };
       return navigator.mediaDevices.getUserMedia(constraints);
     } else {
@@ -90,44 +100,8 @@ describe('ReceiveVideoInputTask', () => {
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: false,
       });
-      const task = new ReceiveVideoInputTask(context);
-      await task.run();
-      assert.exists(context.activeVideoInput);
-    });
-
-    it('will acquire the video input and query constraint (unicast - content with video track constraint)', async () => {
-      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
-      context.enableSimulcast = false;
-      context.meetingSessionConfiguration.credentials.attendeeId = 'foo-attendee#content';
-      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
-        'attendee',
-        new NoOpLogger()
-      );
-      context.videoTileController.startLocalVideoTile();
-      context.mediaStreamBroker = new MockMediaStreamBroker({
-        acquireVideoInputDeviceSucceeds: true,
-      });
-
-      const task = new ReceiveVideoInputTask(context);
-      await task.run();
-      assert.exists(context.activeVideoInput);
-    });
-
-    it('will acquire the video input and query constraint (unicast - content without video track constraint)', async () => {
-      domMockBehavior.applyConstraintSucceeds = false;
-      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
-      context.enableSimulcast = false;
-      context.meetingSessionConfiguration.credentials.attendeeId = 'foo-attendee#content';
-      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
-        'attendee',
-        new NoOpLogger()
-      );
-      context.videoTileController.startLocalVideoTile();
-      context.mediaStreamBroker = new MockMediaStreamBroker({
-        acquireVideoInputDeviceSucceeds: true,
-      });
-
       const task = new ReceiveVideoInputTask(context);
       await task.run();
       assert.exists(context.activeVideoInput);
@@ -143,6 +117,7 @@ describe('ReceiveVideoInputTask', () => {
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: false,
       });
       const task = new ReceiveVideoInputTask(context);
       await task.run();
@@ -160,6 +135,7 @@ describe('ReceiveVideoInputTask', () => {
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: false,
       });
       const task = new ReceiveVideoInputTask(context);
       await task.run();
@@ -169,6 +145,7 @@ describe('ReceiveVideoInputTask', () => {
     it('will stop if an active video input is available', async () => {
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: false,
       });
       context.activeVideoInput = new MediaStream();
       assert.exists(context.activeVideoInput);
@@ -187,6 +164,7 @@ describe('ReceiveVideoInputTask', () => {
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: false,
+        useMockedVideoStream: false,
       });
       const task = new ReceiveVideoInputTask(context);
       await task.run();
@@ -197,6 +175,7 @@ describe('ReceiveVideoInputTask', () => {
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: false,
+        useMockedVideoStream: false,
       });
       const task = new ReceiveVideoInputTask(context);
       await task.run();
@@ -215,6 +194,97 @@ describe('ReceiveVideoInputTask', () => {
       await task.run();
       expect(context.activeVideoInput.getVideoTracks()).to.be.empty;
     });
+
+    it('will not apply constraint if content does not exceed limit', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 2560,
+        height: 1440,
+        deviceId: '',
+      };
+      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      context.meetingSessionConfiguration.credentials.attendeeId = 'attendee#content';
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+        'attendee',
+        new NoOpLogger()
+      );
+      context.videoTileController.startLocalVideoTile();
+      context.mediaStreamBroker = new MockMediaStreamBroker({
+        acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: true,
+      });
+      context.meetingSessionConfiguration.meetingFeatures.contentMaxResolution =
+        VideoQualitySettings.VideoResolutionUHD;
+      const task = new ReceiveVideoInputTask(context);
+      await task.run();
+      assert.exists(context.activeVideoInput);
+    });
+
+    it('will apply constraint if exceeds limit', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 2560,
+        height: 1440,
+        deviceId: '',
+      };
+      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      context.meetingSessionConfiguration.credentials.attendeeId = 'attendee#content';
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+        'attendee',
+        new NoOpLogger()
+      );
+      context.videoTileController.startLocalVideoTile();
+      context.mediaStreamBroker = new MockMediaStreamBroker({
+        acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: true,
+      });
+      context.meetingSessionConfiguration.meetingFeatures.contentMaxResolution =
+        VideoQualitySettings.VideoResolutionFHD;
+      const task = new ReceiveVideoInputTask(context);
+      await task.run();
+      assert.exists(context.activeVideoInput);
+    });
+
+    it('will throw error if apply content constraint failed', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 2560,
+        height: 1440,
+        deviceId: '',
+      };
+      domMockBehavior.applyConstraintSucceeds = false;
+      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      context.meetingSessionConfiguration.credentials.attendeeId = 'attendee#content';
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+        'attendee',
+        new NoOpLogger()
+      );
+      context.videoTileController.startLocalVideoTile();
+      context.mediaStreamBroker = new MockMediaStreamBroker({
+        acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: true,
+      });
+      context.meetingSessionConfiguration.meetingFeatures.contentMaxResolution =
+        VideoQualitySettings.VideoResolutionFHD;
+      const task = new ReceiveVideoInputTask(context);
+      await task.run();
+      assert.exists(context.activeVideoInput);
+    });
+
+    it('will throw error if apply video constraint failed', async () => {
+      domMockBehavior.applyConstraintSucceeds = false;
+      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      context.meetingSessionConfiguration.credentials.attendeeId = 'attendee';
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+        'attendee',
+        new NoOpLogger()
+      );
+      context.videoTileController.startLocalVideoTile();
+      context.mediaStreamBroker = new MockMediaStreamBroker({
+        acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: false,
+      });
+      const task = new ReceiveVideoInputTask(context);
+      await task.run();
+      assert.exists(context.activeVideoInput);
+    });
   });
 
   describe('run with simulcast enabled', () => {
@@ -231,6 +301,7 @@ describe('ReceiveVideoInputTask', () => {
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,
+        useMockedVideoStream: false,
       });
       const task = new ReceiveVideoInputTask(context);
       task.run().then(() => {

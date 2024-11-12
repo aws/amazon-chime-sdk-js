@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { RedundantAudioRecoveryMetricReport } from '../../src';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
@@ -513,6 +514,87 @@ describe('StatsCollector', () => {
       });
     });
 
+    it('add object metric when there is object type metrics and current value is undefined', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'outbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          qualityLimitationDurations: {
+            cpu: 1.0,
+            other: 0.0,
+          },
+        },
+      ];
+
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('add object metric when there is object type metrics and current value is not undefined', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'outbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          qualityLimitationDurations: {
+            cpu: 1.0,
+            other: 0.0,
+          },
+        },
+      ];
+
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.UPSTREAM;
+      streamMetricReport.currentMetrics['packetsLost'] = 10;
+      streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
+      streamMetricReport.currentObjectMetrics['qualityLimitationDurations'] = {
+        cpu: 1.0,
+        other: 0.0,
+      };
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      // @ts-ignore
+      statsCollector.clientMetricReport.streamMetricReports[1] = streamMetricReport;
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
     it('stream metric report and videoStreamIndex has streams and there are existing streamMetricReports', done => {
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
         allStreams(): DefaultVideoStreamIdSet {
@@ -584,7 +666,7 @@ describe('StatsCollector', () => {
       });
     });
 
-    it('adds the metric frame from the stream metric report when videoStreamIndex has streams and value in null type', done => {
+    it('adds the metric frame from the stream metric report when videoStreamIndex has streams and value in unknown type', done => {
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
         allStreams(): DefaultVideoStreamIdSet {
           return new DefaultVideoStreamIdSet([1, 2, 3]);
@@ -601,7 +683,7 @@ describe('StatsCollector', () => {
           kind: 'video',
           packetsLost: 10,
           jitterBufferDelay: 100,
-          decoderImplementation: null,
+          decoderImplementation: true,
         },
       ];
 
@@ -658,6 +740,134 @@ describe('StatsCollector', () => {
         expect(spy.calledOnce).to.be.false;
         done();
       });
+    });
+  });
+
+  describe('When it has a red recovery metric report', () => {
+    it('adds it to stats report as audio inbound-rtp-red', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          const rtcStatsReports = _clientMetricReport.customStatsReports;
+          let foundReport = false;
+          // @ts-ignore
+          rtcStatsReports.forEach(report => {
+            if (report.kind === 'audio') {
+              if (report.type === 'inbound-rtp-red') {
+                foundReport = true;
+                expect(report.totalAudioPacketsExpected).to.equal(7);
+                expect(report.totalAudioPacketsLost).to.equal(5);
+                expect(report.totalAudioPacketsRecoveredRed).to.equal(3);
+                expect(report.totalAudioPacketsRecoveredFec).to.equal(2);
+              }
+            }
+          });
+          expect(foundReport).to.be.true;
+          statsCollector.stop();
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.recoveryMetricsDidReceive({
+        currentTimestampMs: 1000,
+        totalAudioPacketsExpected: 7,
+        totalAudioPacketsLost: 5,
+        totalAudioPacketsRecoveredRed: 3,
+        totalAudioPacketsRecoveredFec: 2,
+      } as RedundantAudioRecoveryMetricReport);
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+    });
+
+    it('does not add it to stats report if already processed', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          const rtcStatsReports = _clientMetricReport.customStatsReports;
+          let foundReport = false;
+          // @ts-ignore
+          rtcStatsReports.forEach(report => {
+            if (report.kind === 'audio') {
+              if (report.type === 'inbound-rtp-red') {
+                foundReport = true;
+              }
+            }
+          });
+          expect(foundReport).to.be.false;
+          statsCollector.stop();
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.recoveryMetricsDidReceive({
+        currentTimestampMs: 1000,
+        totalAudioPacketsExpected: 7,
+        totalAudioPacketsLost: 5,
+        totalAudioPacketsRecoveredRed: 3,
+        totalAudioPacketsRecoveredFec: 2,
+      } as RedundantAudioRecoveryMetricReport);
+      statsCollector['lastRedRecoveryMetricReportConsumedTimestampMs'] = 1000;
+      statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+    });
+  });
+
+  describe('When it has an upstream video stream', () => {
+    it('adds a custom metric for video codec degradation', done => {
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [];
+
+      class TestObserver implements AudioVideoObserver {
+        metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
+          const rtcStatsReports = _clientMetricReport.customStatsReports;
+          let foundReport = false;
+          // @ts-ignore
+          rtcStatsReports.forEach(report => {
+            if (report.kind === 'video') {
+              if (report.type === 'outbound-rtp') {
+                foundReport = true;
+                expect(report.ssrc).to.equal(1);
+                expect(report.videoCodecDegradationHighEncodeCpu).to.equal(1);
+                expect(report.videoCodecDegradationEncodeFailure).to.equal(2);
+              }
+            }
+          });
+          expect(foundReport).to.be.true;
+          statsCollector.stop();
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'outbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          qualityLimitationDurations: {
+            cpu: 1.0,
+            other: 0.0,
+          },
+        },
+      ];
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      statsCollector.videoCodecDegradationHighEncodeCpuDidReceive();
+      statsCollector.videoCodecDegradationEncodeFailureDidReceive();
+      statsCollector.videoCodecDegradationEncodeFailureDidReceive();
     });
   });
 });

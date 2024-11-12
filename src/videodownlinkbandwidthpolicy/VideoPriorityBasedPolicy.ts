@@ -26,6 +26,7 @@ import VideoDownlinkObserver from './VideoDownlinkObserver';
 import VideoPreference from './VideoPreference';
 import { VideoPreferences } from './VideoPreferences';
 import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
+import VideoQualityAdaptationPreference from './VideoQualityAdaptationPreference';
 
 /** @internal */
 class LinkMediaStats {
@@ -98,7 +99,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   private pausedBwAttendeeIds: Set<string> = new Set<string>();
   private downlinkStats: LinkMediaStats;
   private prevDownlinkStats: LinkMediaStats;
-  private prevRemoteInfos: VideoStreamDescription[];
+  // This list only contains the `VideoStreamDescription` for sources
+  // from attendees that we actually have preferences for.
+  private previousStreamsWithPreference: VideoStreamDescription[];
   private rateProbeState: RateProbeState;
   private startupPeriod: boolean;
   private usingPrevTargetRate: boolean;
@@ -129,6 +132,13 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     protected logger: Logger,
     private videoPriorityBasedPolicyConfig: VideoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default
   ) {
+    if (
+      this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption ===
+      ServerSideNetworkAdaption.Default
+    ) {
+      this.videoPriorityBasedPolicyConfig.serverSideNetworkAdaption =
+        ServerSideNetworkAdaption.BandwidthProbingAndRemoteVideoQualityAdaption;
+    }
     this.reset();
   }
 
@@ -341,8 +351,17 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.cleanBwPausedTiles(remoteInfos);
     this.handleAppPausedStreams(chosenStreams, remoteInfos);
 
-    const sameStreamChoices = this.availStreamsSameAsLast(remoteInfos);
+    const attendeeIdToPreference = new Map<string, VideoPreference>();
+    for (const preference of this.getCurrentVideoPreferences()) {
+      attendeeIdToPreference.set(preference.attendeeId, preference);
+    }
+    // We can pre-emptively filter to just remote stream descriptions for remote video sources we already
+    // have configuration for. We do not care about streams we aren't going to subscribe to.
+    const remoteInfosWithPreference = remoteInfos.filter((stream: VideoStreamDescription) => {
+      return attendeeIdToPreference.has(stream.attendeeId);
+    });
 
+    const sameStreamChoices = !this.streamsWithPreferenceDidChange(remoteInfosWithPreference);
     const noMajorChange = !this.startupPeriod && sameStreamChoices;
 
     // If no major changes then don't allow subscribes for the allowed amount of time
@@ -354,15 +373,15 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     }
 
     // Sort streams by bitrate ascending.
-    remoteInfos.sort((a, b) => {
+    remoteInfosWithPreference.sort((a, b) => {
       if (a.maxBitrateKbps === b.maxBitrateKbps) {
         return a.streamId - b.streamId;
       }
       return a.maxBitrateKbps - b.maxBitrateKbps;
     });
 
-    // Convert 0 avg bitrates to max and handle special cases
-    for (const info of remoteInfos) {
+    // Convert 0 avg bitrates to max, handle special cases, and remove upgrades that downgrade resolution or framerate
+    for (const info of remoteInfosWithPreference) {
       if (info.avgBitrateKbps === 0 || info.avgBitrateKbps > info.maxBitrateKbps) {
         // Content can be a special case
         if (info.attendeeId.endsWith(ContentShareConstants.Modality) && info.maxBitrateKbps < 100) {
@@ -372,6 +391,93 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
         }
       }
     }
+
+    const streamIdsToRemove = new Set<number>();
+    for (const preference of this.getCurrentVideoPreferences()) {
+      const streamsForAttendees = remoteInfosWithPreference.filter(
+        (description: VideoStreamDescription) => {
+          return description.attendeeId === preference.attendeeId;
+        }
+      );
+      if (streamsForAttendees.length < 3) {
+        // If `streamsForAttendees.length` is 0, they are stale preference for remote video that no longer exists
+        // if 1 or 2, there is nothing to filter out
+        continue;
+      }
+      let maxFrameRate = 15;
+      let maxPixels = 320 * 480;
+      streamsForAttendees.forEach((stream: VideoStreamDescription) => {
+        maxFrameRate = Math.max(maxFrameRate, stream.maxFrameRate);
+        maxPixels = Math.max(maxPixels, stream.totalPixels());
+      });
+      streamsForAttendees.sort((a: VideoStreamDescription, b: VideoStreamDescription) => {
+        if (
+          preference.degradationPreference === VideoQualityAdaptationPreference.MaintainResolution
+        ) {
+          // This may seem counter-intuitive but given we want to upgrade resolution first, and framerate
+          // last, we want to sort by framerate first, and resolution only if framerate is close.
+          //
+          // That way, e.g. the first three streams will all contain increases in resolution. We will skip any down
+          // grades in resolution (i.e. to hop to a higher framerate stream) in the section below
+          if (Math.abs(a.maxFrameRate - b.maxFrameRate) < 2) {
+            return a.totalPixels() - b.totalPixels();
+          }
+          return a.maxFrameRate - b.maxFrameRate;
+        } else if (
+          preference.degradationPreference === VideoQualityAdaptationPreference.MaintainFramerate
+        ) {
+          // See note above, but swap resolution for framerate
+          if (a.totalPixels() === b.totalPixels()) {
+            return a.maxFrameRate - b.maxFrameRate;
+          }
+          return a.totalPixels() - b.totalPixels();
+        } else {
+          // In 'balanced' mode, we want a slight preference towards upgrading resolution first
+          // when moving up the bitrate ladder, so we weigh the bitrate by a framerate
+          // and resolution derived value that is tuned to be reasonable in most cases. This attempts to
+          // mimic the diagrams in the guide.
+          //
+          // A higher constant makes the policy prefer resolution to framerate more at lower values
+          const framerateExponentConstant = 5;
+          // A higher constant here makes the policy prefer framerate to resolution more at higher values
+          const resolutionBaseConstant = 2;
+          const weighByFramerate = (stream: VideoStreamDescription): number => {
+            return (
+              stream.avgBitrateKbps *
+              Math.pow(
+                2,
+                ((framerateExponentConstant * stream.maxFrameRate) / maxFrameRate) *
+                  Math.pow(resolutionBaseConstant * 2, stream.totalPixels() / maxPixels)
+              )
+            );
+          };
+          return weighByFramerate(a) - weighByFramerate(b);
+        }
+      });
+
+      let lastInfo = undefined;
+      // Downgrades during recovery are unusual and jarring. Here we will strip out any (these should result in paths that
+      // match those in the priority downlink policy guide).
+      for (const info of streamsForAttendees) {
+        if (lastInfo !== undefined) {
+          if (
+            (info.maxFrameRate < lastInfo.maxFrameRate &&
+              Math.abs(lastInfo.maxFrameRate - info.maxFrameRate) > 2) ||
+            info.totalPixels() < lastInfo.totalPixels()
+          ) {
+            streamIdsToRemove.add(info.streamId);
+            continue;
+          }
+        }
+        lastInfo = info;
+      }
+    }
+    const filteredRemoteAttendeesWithPreference = remoteInfosWithPreference.filter(
+      (info: VideoStreamDescription) => {
+        return !streamIdsToRemove.has(info.streamId);
+      }
+    );
+    this.logger.info(`Filtered to ${JSON.stringify(filteredRemoteAttendeesWithPreference)}`);
 
     const rates: PolicyRates = {
       targetDownlinkBitrate: 0,
@@ -389,6 +495,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       currentEstimated
     );
 
+    // `priorityPolicy` assumes that we have sorted `filteredRemoteAttendeesWithPreference` in order of quality
     if (this.probeFailed) {
       // When probe failed, we set timeBeforeAllowSubscribeMs to 3x longer
       // Since we have passed the subscribe interval now, we will try to probe again
@@ -401,7 +508,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
     const upgradeStream: VideoStreamDescription = this.priorityPolicy(
       rates,
-      remoteInfos,
+      filteredRemoteAttendeesWithPreference,
       chosenStreams
     );
 
@@ -420,7 +527,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       this.lastUpgradeRateKbps = 0;
     }
 
-    this.prevRemoteInfos = remoteInfos;
+    this.previousStreamsWithPreference = remoteInfosWithPreference;
     this.videoPreferencesUpdated = false;
 
     if (subscriptionChoice === UseReceiveSet.PreviousOptimal) {
@@ -431,14 +538,14 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     if (subscriptionChoice === UseReceiveSet.PreProbe) {
       const subscribedRate = this.calculateSubscribeRate(this.preProbeNonPausedReceiveStreams);
       this.optimalReceiveStreams = this.preProbeReceiveStreams.slice();
-      this.processBwPausedStreams(remoteInfos, this.preProbeNonPausedReceiveStreams);
+      this.processBwPausedStreams(remoteInfosWithPreference, this.preProbeNonPausedReceiveStreams);
       this.logger.info('bwe: Use Pre-Probe subscription subscribedRate:' + subscribedRate);
       return;
     }
 
     this.optimalNonPausedReceiveStreams = chosenStreams.slice();
     const lastNumberPaused = this.pausedBwAttendeeIds.size;
-    this.processBwPausedStreams(remoteInfos, chosenStreams);
+    this.processBwPausedStreams(remoteInfosWithPreference, chosenStreams);
 
     if (
       this.logger.getLogLevel() <= LogLevel.INFO &&
@@ -564,7 +671,15 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       this.usingPrevTargetRate = false;
     }
 
-    return targetBitrate;
+    // Cap total receive bitrate at 15000 kbps
+    if (targetBitrate > 15000) {
+      this.logger.warn(
+        'bwe: ' +
+          targetBitrate +
+          ' exceeds maximum limit (15000). Limit TargetDisplaySize with VideoPreferences to avoid this.'
+      );
+    }
+    return Math.min(targetBitrate, 15000);
   }
 
   private setProbeState(newState: RateProbeState): boolean {
@@ -891,6 +1006,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     }
   }
 
+  // `remoteInfos` is assumed to be provided in order of increasing quality
   private priorityPolicy(
     rates: PolicyRates,
     remoteInfos: VideoStreamDescription[],
@@ -936,7 +1052,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
             if (info.attendeeId === preference.attendeeId) {
               const index = chosenStreams.findIndex(
                 stream =>
-                  stream.groupId === info.groupId && stream.maxBitrateKbps < info.maxBitrateKbps
+                  stream.groupId === info.groupId &&
+                  stream.maxBitrateKbps <= info.maxBitrateKbps &&
+                  stream.avgBitrateKbps < info.avgBitrateKbps
               );
               if (index !== -1) {
                 const increaseKbps = info.avgBitrateKbps - chosenStreams[index].avgBitrateKbps;
@@ -1000,38 +1118,43 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   }
 
   private canUpgrade(
-    bitrateKbp: number,
+    bitrateKbps: number,
     targetResolution: TargetDisplaySize,
-    targetBitrateKbp: number,
+    targetBitrateKbps: number,
     isContent: boolean
   ): boolean {
-    // For content share, even if the higher quality stream has a high max bitrate of 1200 kbps for example
-    // the avg bitrate can be way lower so have to make sure that we do not update to a higher bitrate than the
-    // target value.
-    // This does not apply to video as video uplink bandwidth could change the max bitrate value without resubscribing
-    // so the max bitrate value might not be up-to-date on the downlink side. Also in the case of video, the avg
-    // bitrate is close to the actual max bitrate.
     let canUpgrade = false;
-    if (isContent) {
-      // Content simulcast only have 2 layers right now so we always upgrade if the target resolution is high and
-      // skip if the target resolution is low. If the target resolution is medium then fall back to use avg bitrate
-      // as video.
-      if (targetResolution === TargetDisplaySize.High) {
-        canUpgrade = true;
-      } else if (targetResolution === TargetDisplaySize.Medium && bitrateKbp <= targetBitrateKbp) {
-        canUpgrade = true;
-      }
-    } else if (bitrateKbp <= targetBitrateKbp) {
+    // For both video and content, we want to interpret `TargetDisplaySize.High` as a request for the best quality
+    // video, and should ignore the value of the target bitrate.
+    if (targetResolution === TargetDisplaySize.High) {
+      // For both video and content, we want to interpret `TargetDisplaySize.High` as a request for the best quality
+      // video, and should ignore the value of the target bitrate.
+      canUpgrade = true;
+    } else if (!isContent && bitrateKbps <= targetBitrateKbps) {
+      // For content share, even if the higher quality stream has a high max bitrate of 1200 kbps for example
+      // the avg bitrate can be way lower so have to make sure that we do not update to a higher bitrate than the
+      // target value (i.e. if `targetResolution === TargetDisplaySize.Low`).
+      //
+      // This does not apply to video as video uplink bandwidth could change the max bitrate value without resubscribing
+      // so the max bitrate value might not be up-to-date on the downlink side. Also in the case of video, the avg
+      // bitrate is close to the actual max bitrate.
+      canUpgrade = true;
+    } else if (
+      isContent &&
+      targetResolution === TargetDisplaySize.Medium &&
+      bitrateKbps <= targetBitrateKbps
+    ) {
+      // If the target resolution is medium then fall back to use avg bitrate as video.
       canUpgrade = true;
     }
     if (canUpgrade) {
       this.logger.info(
-        `bwe: canUpgrade: bitrateKbp: ${bitrateKbp} targetBitrateKbp: ${targetBitrateKbp}`
+        `bwe: canUpgrade: bitrateKbps: ${bitrateKbps} targetBitrateKbps: ${targetBitrateKbps}`
       );
       return true;
     }
     this.logger.info(
-      `bwe: cannot Upgrade: bitrateKbp: ${bitrateKbp} targetBitrateKbp: ${targetBitrateKbp}`
+      `bwe: cannot Upgrade: bitrateKbps: ${bitrateKbps} targetBitrateKbps: ${targetBitrateKbps}`
     );
     return false;
   }
@@ -1053,28 +1176,28 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     return streamCount > 1;
   }
 
-  private availStreamsSameAsLast(remoteInfos: VideoStreamDescription[]): boolean {
+  private streamsWithPreferenceDidChange(remoteInfos: VideoStreamDescription[]): boolean {
     if (
-      this.prevRemoteInfos === undefined ||
-      remoteInfos.length !== this.prevRemoteInfos.length ||
+      this.previousStreamsWithPreference === undefined ||
+      remoteInfos.length !== this.previousStreamsWithPreference.length ||
       this.videoPreferencesUpdated === true
     ) {
-      return false;
+      return true;
     }
 
     for (const info of remoteInfos) {
-      const infoMatch = this.prevRemoteInfos.find(
+      const infoMatch = this.previousStreamsWithPreference.find(
         prevInfo =>
           prevInfo.groupId === info.groupId &&
           prevInfo.streamId === info.streamId &&
           prevInfo.maxBitrateKbps === info.maxBitrateKbps
       );
       if (infoMatch === undefined) {
-        return false;
+        return true;
       }
     }
 
-    return true;
+    return false;
   }
 
   private chosenStreamsSameAsLast(chosenStreams: VideoStreamDescription[]): boolean {
@@ -1159,5 +1282,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       preferences = dummyPreferences.build();
     }
     return preferences;
+  }
+
+  wantsAllTemporalLayersInIndex(): boolean {
+    return true;
   }
 }

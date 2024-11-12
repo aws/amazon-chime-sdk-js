@@ -47,6 +47,8 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Linux; Android 10; LM-G710 Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.115 Mobile Safari/537.36';
   const IPAD_SAFARI_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15';
+  const CHROME_116_MAC_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -332,6 +334,63 @@ describe('DefaultBrowserBehavior', () => {
     it('Detects browsers requiring "playback" latency hint', () => {
       setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
       expect(new DefaultBrowserBehavior().requiresPlaybackLatencyHintForAudioContext()).to.be.true;
+    });
+  });
+
+  describe('latency hint', () => {
+    it('Detects browsers not requiring audio context suspension on device failure', () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresAudioContextResetOnDeviceFailureForWebAudio()).to
+        .be.false;
+    });
+
+    it('Detects browsers requiring audio context suspension on device failure', () => {
+      setUserAgent(CHROME_IOS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().requiresAudioContextResetOnDeviceFailureForWebAudio()).to
+        .be.true;
+    });
+  });
+
+  describe('SVC support', () => {
+    it('Does not support SVC for non chrome browser', () => {
+      setUserAgent(FIREFOX_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsScalableVideoCoding()).to.be.false;
+    });
+
+    it('Does not support SVC for chrome earlier than version 111', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsScalableVideoCoding()).to.be.false;
+    });
+
+    it('Supports SVC for chrome version 111 or later', () => {
+      setUserAgent(CHROME_116_MAC_USER_AGENT);
+      // @ts-ignore
+      expect(new DefaultBrowserBehavior().engine()).to.equal('Blink');
+      // @ts-ignore
+      expect(new DefaultBrowserBehavior().engineMajorVersion()).to.equal(116);
+      expect(new DefaultBrowserBehavior().supportsScalableVideoCoding()).to.be.true;
+    });
+  });
+
+  describe('Audio redundancy support', () => {
+    it('Does not support audio redundancy for firefox', () => {
+      setUserAgent(FIREFOX_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.false;
+    });
+
+    it('Does not support audio redundancy for chrome earlier than version 107', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.false;
+    });
+
+    it('Supports audio redundancy for chrome version 107 or later', () => {
+      setUserAgent(CHROME_116_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.true;
+    });
+
+    it('Supports audio redundancy for Safari', () => {
+      setUserAgent(SAFARI_USER_AGENT);
+      expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.true;
     });
   });
 });

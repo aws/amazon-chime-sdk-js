@@ -78,6 +78,7 @@
 				<ul class="tsd-hierarchy">
 					<li><a href="../classes/defaultaudiovideofacade.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultAudioVideoFacade</a></li>
 					<li><a href="../classes/defaultcontentsharecontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultContentShareController</a></li>
+					<li><a href="../classes/defaulttransceivercontroller.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultTransceiverController</a></li>
 					<li><a href="../classes/monitortask.html" class="tsd-signature-type" data-tsd-kind="Class">MonitorTask</a></li>
 					<li><a href="../classes/signalingandmetricsconnectionmonitor.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingAndMetricsConnectionMonitor</a></li>
 				</ul>
@@ -201,7 +202,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideoobserver/AudioVideoObserver.ts#L104">src/audiovideoobserver/AudioVideoObserver.ts:104</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/audiovideoobserver/AudioVideoObserver.ts#L103">src/audiovideoobserver/AudioVideoObserver.ts:103</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -214,9 +215,8 @@
 									<li><code>MeetingSessionStatusCode.OK</code>: <code>demoteFromPrimaryMeeting</code> was used to remove the attendee.</li>
 									<li><code>MeetingSessionStatusCode.AudioAuthenticationRejected</code>: <code>chime::DeleteAttendee</code> was called on the Primary
 									meeting attendee used in <code>promoteToPrimaryMeeting</code>.</li>
-									<li><code>MeetingSessionStatusCode.SignalingBadRequest</code>: Other failure, possibly due to disconnect
-										or timeout. These failures are likely retryable. Any disconnection will trigger an automatic
-									demotion to avoid unexpected or unwanted promotion state on reconnection.</li>
+									<li><code>MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted</code>: The client disconnected (and may be reconnecting).
+									Any disconnection will trigger an automatic demotion to avoid unexpected or unwanted promotion state on reconnection.</li>
 								</ul>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>

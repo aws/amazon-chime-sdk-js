@@ -6,6 +6,7 @@ import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import Destroyable from '../destroyable/Destroyable';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
@@ -13,6 +14,7 @@ import DefaultModality from '../modality/DefaultModality';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import { Maybe } from '../utils/Types';
+import NoVideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoTile from '../videotile/VideoTile';
 import ContentShareSimulcastEncodingParameters from '../videouplinkbandwidthpolicy/ContentShareSimulcastEncodingParameters';
 import DefaultSimulcastUplinkPolicyForContentShare from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
@@ -37,6 +39,8 @@ export default class DefaultContentShareController
     contentShareConfiguration.credentials.externalUserId = configuration.credentials.externalUserId;
     contentShareConfiguration.credentials.joinToken =
       configuration.credentials.joinToken + ContentShareConstants.Modality;
+    contentShareConfiguration.meetingFeatures = configuration.meetingFeatures.clone();
+    contentShareConfiguration.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     return contentShareConfiguration;
   }
 
@@ -73,8 +77,25 @@ export default class DefaultContentShareController
     }
   }
 
+  enableSVCForContentShare(enable: boolean): void {
+    if (enable) {
+      this.contentAudioVideo.configuration.enableSVC = true;
+    } else {
+      this.contentAudioVideo.configuration.enableSVC = false;
+    }
+  }
+
   async startContentShare(stream: MediaStream): Promise<void> {
     if (!stream) {
+      return;
+    }
+    if (
+      this.contentAudioVideo.configuration.meetingFeatures.contentMaxResolution ===
+      VideoQualitySettings.VideoDisabled
+    ) {
+      this.contentAudioVideo.logger.info(
+        'Could not start content because max content resolution was set to None'
+      );
       return;
     }
     this.mediaStreamBroker.mediaStream = stream;
@@ -177,7 +198,7 @@ export default class DefaultContentShareController
 
   private setupContentShareEvents(): void {
     // We use realtimeSubscribeToAttendeeIdPresence instead of audioVideoDidStart because audioVideoDidStart fires
-    // before the capacity check in Tincan while when realtimeSubscribeToAttendeeIdPresence fires, we know the
+    // before the capacity check in the media backend while when realtimeSubscribeToAttendeeIdPresence fires, we know the
     // content attendee has been able to pass the capacity check and join the call so we can start the local
     // content share video
     this.attendeeAudioVideo.realtimeController.realtimeSubscribeToAttendeeIdPresence(

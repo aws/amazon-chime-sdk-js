@@ -72,6 +72,121 @@
 							<h1>Frequently Asked Questions</h1>
 						</a>
 					</div>
+					<ul>
+						<li><a href="#frequently-asked-questions">Frequently Asked Questions</a><ul>
+								<li><a href="#general-questions">General questions</a><ul>
+										<li><a href="#what-is-the-amazon-chime-sdk">What is the Amazon Chime SDK?</a></li>
+										<li><a href="#how-much-does-the-amazon-chime-sdk-cost">How much does the Amazon Chime SDK cost?</a></li>
+										<li><a href="#i-have-a-question-not-addressed-in-this-faq-what-is-my-next-step">I have a question not addressed in this FAQ. What is my next step?</a></li>
+										<li><a href="#can-i-use-the-amazon-chime-application-to-join-an-amazon-chime-sdk-meeting">Can I use the Amazon Chime application to join an Amazon Chime SDK meeting?</a></li>
+										<li><a href="#does-the-meetingsnotificationsconfiguration-only-support-sqs-queues-in-us-east-1">Does the MeetingsNotificationsConfiguration only support SQS queues in us-east-1?</a></li>
+										<li><a href="#how-can-i-learn-about-interruptions-to-the-amazon-chime-service">How can I learn about interruptions to the Amazon Chime service?</a></li>
+									</ul>
+								</li>
+								<li><a href="#browser-support">Browser support</a><ul>
+										<li><a href="#what-browsers-are-supported-by-the-amazon-chime-sdk-for-javascript">What browsers are supported by the Amazon Chime SDK for JavaScript?</a></li>
+										<li><a href="#is-the-amazon-chime-sdk-supported-on-mobile-browsers">Is the Amazon Chime SDK supported on mobile browsers?</a></li>
+									</ul>
+								</li>
+								<li><a href="#known-browser-issues">Known browser issues</a><ul>
+										<li><a href="#in-macos-safari-audio-stops-playing-when-i-minimize-or-move-the-window-to-the-background-is-this-a-known-issue">In macOS Safari, audio stops playing when I minimize or move the window to the background. Is this a known issue?</a></li>
+										<li><a href="#i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue">I am unable to select an audio output device in some browsers, is this a known issue?</a></li>
+										<li><a href="#i-am-getting-cannot-select-audio-output-device-this-browser-does-not-support-setsinkid-error-on-the-browser-console-is-this-a-known-issue">I am getting <code>Cannot select audio output device. This browser does not support setSinkId</code> error on the browser console. Is this a known issue?</a></li>
+										<li><a href="#my-video-disappears-in-safari-browsers-is-this-a-known-issue">My video disappears in Safari browsers, is this a known issue?</a></li>
+										<li><a href="#i-cannot-join-meeting-in-firefox-with-no-audio-and-video-permission-due-to-no-ice-candidates-were-gathered-error-is-this-a-known-issue">I cannot join meeting in Firefox with no audio and video permission due to <code>no ice candidates were gathered</code> error, is this a known issue?</a></li>
+									</ul>
+								</li>
+								<li><a href="#known-build-issues">Known Build Issues</a><ul>
+										<li><a href="#why-is-my-build-failing-after-upgrading-to-amazon-chime-sdk-for-javascript-370">Why is my build failing after upgrading to Amazon Chime SDK for JavaScript 3.7.0?</a><ul>
+												<li><a href="#rollup">Rollup</a></li>
+												<li><a href="#esbuild">Esbuild</a></li>
+												<li><a href="#using-amazon-chime-sdk-for-javascript-in-nuxt2-framework">Using Amazon Chime SDK for JavaScript in Nuxt2 framework</a></li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li><a href="#meetings">Meetings</a><ul>
+										<li><a href="#how-do-users-authenticate-into-a-meeting">How do users authenticate into a meeting?</a></li>
+										<li><a href="#when-does-an-amazon-chime-sdk-meeting-end">When does an Amazon Chime SDK meeting end?</a></li>
+										<li><a href="#how-many-simultaneous-meetings-can-be-hosted-in-an-account-can-this-limit-be-raised">How many simultaneous meetings can be hosted in an account? Can this limit be raised?</a></li>
+										<li><a href="#how-many-attendees-can-join-an-amazon-chime-sdk-meeting-can-this-limit-be-raised">How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?</a></li>
+										<li><a href="#what-happens-to-the-subsequent-participants-who-try-to-turn-on-the-local-video-when-the-maximum-number-of-video-senders-is-already-reached">What happens to the subsequent participants who try to turn on the local video when the maximum number of video senders is already reached?</a></li>
+										<li><a href="#can-i-schedule-amazon-chime-sdk-meetings-ahead-of-time">Can I schedule Amazon Chime SDK meetings ahead of time?</a></li>
+										<li><a href="#what-happens-when-i-try-to-re-use-same-attendee-response-to-join-a-meeting-twice">What happens when I try to re-use same attendee response to join a meeting twice?</a></li>
+										<li><a href="#what-does-it-mean-when-the-amazon-chime-sdk-for-javascript-throws-an-error-with-status-code-signalingbadrequest-meetingended-or-signalinginternalservererror-while-establishing-a-signaling-connection-to-the-chime-servers">What does it mean when the Amazon Chime SDK for JavaScript throws an error with status code <code>SignalingBadRequest</code>, <code>MeetingEnded</code>, or <code>SignalingInternalServerError</code> while establishing a signaling connection to the Chime servers?</a></li>
+										<li><a href="#when-does-the-amazon-chime-sdk-retry-the-connection-can-i-customize-this-retry-behavior">When does the Amazon Chime SDK retry the connection? Can I customize this retry behavior?</a></li>
+										<li><a href="#what-should-my-application-do-in-response-to-the-status-codes-in-audiovideodidstop">What should my application do in response to the status codes in <code>audioVideoDidStop</code>?</a></li>
+										<li><a href="#what-is-the-timeout-for-connect-and-reconnect-and-where-can-i-configure-the-value">What is the timeout for connect and reconnect and where can I configure the value?</a></li>
+									</ul>
+								</li>
+								<li><a href="#media">Media</a><ul>
+										<li><a href="#which-media-regions-is-the-amazon-chime-sdk-available-in-how-do-i-choose-the-best-media-region-to-place-my-meetings">Which media regions is the Amazon Chime SDK available in? How do I choose the best media region to place my meetings?</a></li>
+										<li><a href="#how-do-i-choose-video-resolution-frame-rate-and-bitrate">How do I choose video resolution, frame rate and bitrate?</a></li>
+										<li><a href="#how-can-i-stream-music-or-video-into-a-meeting">How can I stream music or video into a meeting?</a></li>
+										<li><a href="#when-i-stream-video-in-chrome-other-attendees-see-a-black-screen-is-this-a-known-issue">When I stream video in Chrome, other attendees see a black screen. Is this a known issue?</a></li>
+										<li><a href="#how-do-i-broadcast-an-amazon-chime-sdk-meeting">How do I broadcast an Amazon Chime SDK meeting?</a></li>
+										<li><a href="#how-can-i-adjust-my-application-to-perform-better-under-different-network-conditions">How can I adjust my application to perform better under different network conditions?</a></li>
+										<li><a href="#does-amazon-chime-sdk-support-simulcast">Does Amazon Chime SDK support simulcast?</a></li>
+										<li><a href="#does-the-sdk-support-remote-mute-where-one-attendee-can-mute-another">Does the SDK support remote mute where one attendee can mute another?</a></li>
+										<li><a href="#how-do-i-get-connection-indicator-for-media-quality">How do I get connection indicator for media quality?</a></li>
+									</ul>
+								</li>
+								<li><a href="#demos">Demos</a><ul>
+										<li><a href="#i-want-to-build-a-react-application-that-uses-the-amazon-chime-sdk-do-you-have-a-sample-application-that-i-can-reference">I want to build a React application that uses the Amazon Chime SDK. Do you have a sample application that I can reference?</a></li>
+										<li><a href="#i-want-to-build-a-react-native-application-that-uses-the-amazon-chime-sdk-do-you-have-a-sample-application-i-can-reference">I want to build a React Native application that uses the Amazon Chime SDK. Do you have a sample application I can reference?</a></li>
+										<li><a href="#do-i-get-billed-for-using-the-demos">Do I get billed for using the demos?</a></li>
+										<li><a href="#does-amazon-chime-sdk-support-recording-functionality">Does Amazon Chime SDK support recording functionality?</a></li>
+									</ul>
+								</li>
+								<li><a href="#debugging">Debugging</a><ul>
+										<li><a href="#how-can-i-get-amazon-chime-sdk-logs-for-debugging">How can I get Amazon Chime SDK logs for debugging?</a></li>
+										<li><a href="#how-do-i-file-an-issue-for-the-amazon-chime-sdk-for-javascript">How do I file an issue for the Amazon Chime SDK for JavaScript?</a></li>
+									</ul>
+								</li>
+								<li><a href="#networking">Networking</a><ul>
+										<li><a href="#what-are-the-subnets-and-ports-used-by-an-application-using-the-aws-sdk">What are the subnets and ports used by an application using the AWS SDK?</a></li>
+										<li><a href="#what-are-the-subnets-and-ports-used-by-a-client-running-the-amazon-chime-sdk">What are the subnets and ports used by a client running the Amazon Chime SDK?</a></li>
+										<li><a href="#can-a-client-running-the-amazon-chime-sdk-connect-to-the-service-via-a-proxy">Can a client running the Amazon Chime SDK connect to the service via a proxy?</a></li>
+									</ul>
+								</li>
+								<li><a href="#mobile-browser">Mobile browser</a><ul>
+										<li><a href="#is-screen-capture-supported-on-mobile-browsers">Is screen capture supported on mobile browsers?</a></li>
+										<li><a href="#will-amazon-chime-sdk-for-javascript-meetings-work-in-chrome-and-firefox-in-ios">Will Amazon Chime SDK for JavaScript meetings work in Chrome and Firefox in iOS?</a></li>
+										<li><a href="#i-notice-that-my-clients-lose-audio-and-drop-from-the-meeting-if-the-chrome-browser-on-android-stays-in-background-for-several-minutes-is-that-a-known-issue">I notice that my clients lose audio and drop from the meeting if the Chrome browser on Android stays in background for several minutes, is that a known issue?</a></li>
+										<li><a href="#i-only-see-iphone-or-ipad-microphone-as-audio-input-in-ios-device-is-that-a-known-issue">I only see iPhone or iPad microphone as audio input in iOS device, is that a known issue?</a></li>
+										<li><a href="#i-can-hear-clicking-noise-from-an-attendee-using-iphone-x-devices-x-xs-and-xr">I can hear clicking noise from an attendee using iPhone X devices (X, XS, and XR).</a></li>
+										<li><a href="#i-cannot-hear-audio-from-other-attendees-using-ios-devices-after-i-unplug-my-wired-headset">I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.</a></li>
+										<li><a href="#i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safarichromefirefox-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue"><strong>I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari/Chrome/Firefox in iOS and frozen tile in Chrome in Android, is this a known issue?</strong></a></li>
+										<li><a href="#when-i-join-a-meeting-in-chrome-in-android-8-or-9-with-speakerphone-other-people-could-not-hear-me-switch-to-default-mic-fixes-the-issue"><strong>When I join a meeting in Chrome in Android 8 or 9 with speakerphone, other people could not hear me. Switch to default mic fixes the issue.</strong></a></li>
+										<li><a href="#why-can-i-not-grab-device-labels-in-android-webview"><strong>Why can I not grab device labels in Android Webview?</strong></a></li>
+										<li><a href="#i-see-a-slate-which-says-your-client-does-not-support-hardware-acceleration-when-i-enable-video-on-my-device">I see a slate which says &quot;Your client does not support hardware acceleration&quot; when I enable video on my device?</a></li>
+										<li><a href="#i-am-not-able-to-join-an-amazon-chime-sdk-meeting-from-an-android-11-device-running-chromium-83-based-browsers-such-as-samsung-internet-version-13-or-chrome-version-83-is-this-a-known-issue">I am not able to join an Amazon Chime SDK meeting from an Android 11 device running Chromium 83 based browsers, such as Samsung Internet (Version 13) or Chrome (Version 83). Is this a known issue?</a></li>
+										<li><a href="#does-amazon-voice-focus-support-the-samsung-internet-browser">Does Amazon Voice Focus support the Samsung Internet browser?</a></li>
+									</ul>
+								</li>
+								<li><a href="#audio-and-video">Audio and video</a><ul>
+										<li><a href="#my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefined-what-could-be-the-reason">My clients are unable to join the meeting and I see <code>navigator.mediaDevices is undefined</code>, what could be the reason?</a></li>
+										<li><a href="#how-can-i-create-a-video-tile-layout-for-my-application">How can I create a video tile layout for my application?</a></li>
+										<li><a href="#after-leaving-a-meeting-the-camera-led-is-still-on-indicating-that-the-camera-has-not-been-released-what-could-be-wrong">After leaving a meeting, the camera LED is still on indicating that the camera has not been released. What could be wrong?</a></li>
+										<li><a href="#my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue">My clients are unable to successfully join audio calls from Safari, they get a <code>failed to get audio device for constraints null: Type error</code>, what could be the issue?</a></li>
+										<li><a href="#how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera">How can I show a custom UX when the browser prompts the user for permission to use microphone and camera?</a></li>
+										<li><a href="#how-can-i-speed-up-my-meeting-join-times">How can I speed up my meeting join times?</a></li>
+									</ul>
+								</li>
+								<li><a href="#messaging">Messaging</a><ul>
+										<li><a href="#how-do-i-receive-amazon-chime-sdk-channel-messages-without-using-the-amazon-chime-sdk-for-javascript">How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?</a></li>
+									</ul>
+								</li>
+								<li><a href="#mobile-sdk">Mobile SDK</a><ul>
+										<li><a href="#how-to-determine-if-a-meeting-session-stop-will-be-self-recoverable-or-terminal">How to determine if a meeting session stop will be self-recoverable or terminal?</a></li>
+										<li><a href="#what-does-each-meetingsessionstatuscode-mean">What does each <code>MeetingSessionStatusCode</code> mean?</a></li>
+										<li><a href="#how-should-i-handle-each-meetingsessionstatuscode-in-my-application">How should I handle each <code>MeetingSessionStatusCode</code> in my application?</a></li>
+										<li><a href="#how-to-reproduce-each-meetingsessionstatuscode">How to reproduce each <code>MeetingSessionStatusCode</code>?</a></li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
 					<a href="#general-questions" id="general-questions" style="color: inherit; text-decoration: none;">
 						<h2>General questions</h2>
 					</a>
@@ -566,8 +681,228 @@
 						<h3>How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?</h3>
 					</a>
 					<p>Follow the instructions in the <a href="https://docs.aws.amazon.com/chime-sdk/latest/dg/websockets.html#connect-api">&quot;Using websockets to receive messages&quot; developer guide</a>.
-						To sign the URL in Python, use the example code in the <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541">GitHub issue #1241</a>.
-					<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
+					To sign the URL in Python, use the example code in the <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541">GitHub issue #1241</a>.</p>
+					<a href="#mobile-sdk" id="mobile-sdk" style="color: inherit; text-decoration: none;">
+						<h2>Mobile SDK</h2>
+					</a>
+					<a href="#how-to-determine-if-a-meeting-session-stop-will-be-self-recoverable-or-terminal" id="how-to-determine-if-a-meeting-session-stop-will-be-self-recoverable-or-terminal" style="color: inherit; text-decoration: none;">
+						<h3>How to determine if a meeting session stop will be self-recoverable or terminal?</h3>
+					</a>
+					<p>Your application should not rely on <code>MeetingSessionStatusCode</code> for determining if the session stop is self-recoverable or terminal, instead, your should subscribe to <code>AudioVideoObserver</code> callbacks. When a self-recoverable session stop happens(i.e. caused by a poor network connection), <code>AudioVideoObserver.audioSessionDidDrop()</code> will be triggered, and Chime SDK will retry connecting automatically, if the session is successfully reconnected, <code>AudioVideoObserver.audioSessionDidStart(reconnecting: true)</code> will be triggered, your application should start handling the success of the reonnecting at this point; when a terminal session stop happens or retries have been exhausted, <code>AudioVideoObserver.audioSessionDidStopWithStatus(MeetingSessionStatus)</code> will be triggered, in this case any further retry will not be helpful, you application should handle the session stop accordingly based on the <code>MeetingSessionStatusCode</code>, and notify user if needed.</p>
+					<a href="#what-does-each-meetingsessionstatuscode-mean" id="what-does-each-meetingsessionstatuscode-mean" style="color: inherit; text-decoration: none;">
+						<h3>What does each <code>MeetingSessionStatusCode</code> mean?</h3>
+					</a>
+					<p>The definition of each <code>MeetingSessionStatusCode</code> can be found <a href="https://aws.github.io/amazon-chime-sdk-ios/Enums/MeetingSessionStatusCode.html">here</a> for iOS and <a href="https://aws.github.io/amazon-chime-sdk-android/amazon-chime-sdk/com.amazonaws.services.chime.sdk.meetings.session/-meeting-session-status-code/index.html">here</a> for Android.</p>
+					<a href="#how-should-i-handle-each-meetingsessionstatuscode-in-my-application" id="how-should-i-handle-each-meetingsessionstatuscode-in-my-application" style="color: inherit; text-decoration: none;">
+						<h3>How should I handle each <code>MeetingSessionStatusCode</code> in my application?</h3>
+					</a>
+					<p><code>MeetingSessionStatusCode</code> provides additional details for the MeetingSessionStatus received for a session. The primary use is in callbacks of AudioVideoObserver. Specifically, they are utilized in <code>AudioVideoObserver.audioSessionDidStopWithStatus(MeetingSessionStatus)</code>/<code>AudioVideoObserver.videoSessionDidStartWithStatus(MeetingSessionStatus)</code>/<code>AudioVideoObserver.videoSessionDidStopWithStatus(MeetingSessionStatus)</code> for iOS, and their equivalents for Android. There are also usages in ReplicatedMeetings, they have been documented separately(<a href="https://github.com/aws/amazon-chime-sdk-ios/blob/master/guides/replicated_meetings.md">iOS</a>/<a href="https://github.com/aws/amazon-chime-sdk-android/blob/master/guides/replicated_meetings.md">Android</a>).</p>
+					<p>These status codes can be used for logging, debugging, and notification to end users, but in most cases should not be used for any retry behavior, as Chime SDK will already be retrying non-terminal errors. The table below illustrates how each code should be handled.</p>
+					<table>
+						<thead>
+							<tr>
+								<th><code>MeetingSessionStatusCode</code></th>
+								<th>Callbacks</th>
+								<th>How to handle</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>OK(iOS/Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code>  <code>videoSessionDidStartWithStatus(MeetingSessionStatus)</code>  <code>videoSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>This code indicates the audio/video sessions on the device have been started/stopped without any errors. When received from AudioVideoObserver callbacks, your application may want to notify your user about the success of session start/stop.</td>
+							</tr>
+							<tr>
+								<td>Left(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code>  <code>videoSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>It indicates the meeting session on the device has been disconnected due to the attendee leave, nothing to handle except notify your application user about the session stop.</td>
+							</tr>
+							<tr>
+								<td>networkBecomePoor(iOS)  NetworkBecamePoor(Android)</td>
+								<td><code>connectionDidBecomePoor()</code></td>
+								<td>Your application not be receiving this code directly, <code>AudioVideoObserver.connectionDidBecomePoor()</code> will be triggered instead. You can subscribe to this callback and notify your application user about the network issue, however, you should not retry connect the meeting session, Chime SDK will handle it. When retries are exhausted, the meeting session will stop completely, <code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code> will be triggered then.</td>
+							</tr>
+							<tr>
+								<td>audioServerHungup(iOS)  audioServiceUnavailable(iOS)  AudioServiceUnavailable(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>There is an issue with Amazon Chime SDK service itself, the meeting session on the device has been terminated at this point, you will not be able to rejoin, your application should notify user about the session termination. Depends on your application design/user-flow, you could re-try/re-join the session, however, this may not work if the issue is not transient.</td>
+							</tr>
+							<tr>
+								<td>audioJoinedFromAnotherDevice(iOS)  AudioJoinedFromAnotherDevice(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>The attendee joined the meeting from another device. The meeting session on current device has been disconnected, your application should not retry connecting.</td>
+							</tr>
+							<tr>
+								<td>audioInternalServerError(iOS)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>When received the code from the callback, the meeting session on the device has been terminated due to audio issues, the issue could be audio device related, or with Amazon Chime SDK service itself, you will not be able to rejoin the meeting, your application should notify user about the session termination.</td>
+							</tr>
+							<tr>
+								<td>audioAuthenticationRejected(iOS)  AudioAuthenticationRejected(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>When received this code from the callback, the meeting session on the device has been terminated because the attendee information is invalid, you will not be able to rejoin the meeting, your application should notify user about the session termination.</td>
+							</tr>
+							<tr>
+								<td>audioCallAtCapacity(iOS) AudioCallAtCapacity(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>When received this code from the callback, the meeting session on the device has been terminated due to the meeting is at full capacity, the service supports up to 250 attendees. You will not be able to rejoin the meeting, your application should notify user about the session termination.</td>
+							</tr>
+							<tr>
+								<td>audioDisconnectAudio(iOS) AudioDisconnectAudio(Android)  connectionHealthReconnect(iOS)  ConnectionHealthReconnect(Android)</td>
+								<td>None</td>
+								<td>This is only used internally by the AWS service and will not be provided in any AudioVideoObserver callbacks.</td>
+							</tr>
+							<tr>
+								<td>audioCallEnded(iOS)  AudioCallEnded(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>The meeting session has been ended on Amazon Chime SDK service side. When received this code from the callback, the meeting session on the device has been terminated, you will not be able to rejoin the meeting, your application should notify user about the session termination.</td>
+							</tr>
+							<tr>
+								<td>videoServiceUnavailable(iOS)  VideoServiceFailed(Android)</td>
+								<td><code>videoSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>There was an internal server error related to video. This may indicate some issue with the camera device, or an issue with the Amazon Chime SDK service itself. When received thie code from the callback, you will not be able to join the video session, however, the audio session may still be working. Your application should notify user about the video session termination.</td>
+							</tr>
+							<tr>
+								<td>videoAtCapacityViewOnly(iOS)  VideoAtCapacityViewOnly(Android)</td>
+								<td><code>videoSessionDidStartWithStatus(MeetingSessionStatus)</code></td>
+								<td>When received thie code from the callback, it indicates the video session on the device is in &quot;receive only&quot; mode due to capacity reached. Your local video source will not be sent to other attendess, however, you will still be able to receive video streams from other attendees.</td>
+							</tr>
+							<tr>
+								<td>audioInputDeviceNotResponding(iOS)  AudioOutputDeviceNotResponding(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>When receveid this code from the callback, it indicates the meeting session on the device has been terminated due to audio input device related issues. You will not be able to rejoin the meeting, your application should notify user about the session termination.</td>
+							</tr>
+							<tr>
+								<td>audioOutputDeviceNotResponding(iOS)  AudioInputDeviceNotResponding(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>When receveid this code from the callback, it indicates the meeting session on the device has been terminated due to audio output device related issues. You will not be able to rejoin the meeting, your application should notify user about the session termination.</td>
+							</tr>
+							<tr>
+								<td>unknown(iOS)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>When received this code from the callback, it indicates the meeting session has been terminated due to an status that the mobile SDK is not able to map. You will not be able to rejoin the meeting, your application should notify user about the session termination.</td>
+							</tr>
+					</tbody></table>
+					<a href="#how-to-reproduce-each-meetingsessionstatuscode" id="how-to-reproduce-each-meetingsessionstatuscode" style="color: inherit; text-decoration: none;">
+						<h3>How to reproduce each <code>MeetingSessionStatusCode</code>?</h3>
+					</a>
+					<p>Below is the list of <code>MeetingSessionStatusCode</code> that you can reproduce for each AudioVideoObserver callback, please note some of the codes(i.e., audioServiceUnavailable) due to Amazon Chime SDK service issues, which cannot be reproduced on mobile Chime SDK client.</p>
+					<table>
+						<thead>
+							<tr>
+								<th><code>MeetingSessionStatusCode</code></th>
+								<th>audioSessionDidStopWithStaus()</th>
+								<th>videoSessionDidStartWithStatus()</th>
+								<th>videoSessionDidStopWithStatus()</th>
+								<th>connectionDidBecomePoor()</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>OK(iOS/Android)</td>
+								<td>During a valid call session, call meetingsession.audioVideo.stop().</td>
+								<td>With a valid meeting join info, call meetingSession.audioVideo.start().</td>
+								<td>During a valid call session, call meetingsession.audioVideo.stop().</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>Left(Android)</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>networkBecomePoor(iOS) NetworkBecamePoor(Android)</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>During a valid call session, disconnect the network on your iOS/Android device.</td>
+							</tr>
+							<tr>
+								<td>audioServerHungup(iOS) audioServiceUnavailable(iOS) AudioServiceUnavailable(Android)</td>
+								<td>Chime SDK service issue, cannot be reproduced on your mobile device.</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioJoinedFromAnotherDevice(iOS) AudioJoinedFromAnotherDevice(Android)</td>
+								<td>During a valid call session, use the same meeting join info to join the call on another device, the callback will be called on the original device.</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioInternalServerError(iOS)</td>
+								<td>Chime SDK service issue, cannot be reproduced on mobile device.</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioAuthenticationRejected(iOS) AudioAuthenticationRejected(Android)</td>
+								<td>Use an invalid join token(<a href="https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_meeting-chime_Attendee.html#chimesdk-Type-meeting-chime_Attendee-JoinToken">link</a>) to join the call.</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioCallAtCapacity(iOS) AudioCallAtCapacity(Android)</td>
+								<td>Start a Chime call session, have 250 attendee join the session, get another attendee to join the session, you will get this code. This does not apply to Amazon Connect use case.</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioDisconnectAudio(iOS) AudioDisconnectAudio(Android) connectionHealthReconnect(iOS) ConnectionHealthReconnect(Android)</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioCallEnded(iOS) AudioCallEnded(Android)</td>
+								<td>N/A (Not being used)</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>videoServiceUnavailable(iOS) VideoServiceFailed(Android)</td>
+								<td>N/A</td>
+								<td>Chime SDK service issue, cannot be reproduced on mobile device.</td>
+								<td>Chime SDK service issue, cannot be reproduced on mobile device.</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>videoAtCapacityViewOnly(iOS) VideoAtCapacityViewOnly(Android)</td>
+								<td>N/A</td>
+								<td>Ttart a Chime call session, have 25 attendee join the session and start their videos, get another attendee to join the session, you will get this code. This does not apply to Amazon Connect use case.</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioInputDeviceNotResponding(iOS) AudioOutputDeviceNotResponding(Android)</td>
+								<td>This is due to audio input stream not starting properly, unable to reproduce this code, maybe try to physically disable your mic...</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioOutputDeviceNotResponding(iOS) AudioInputDeviceNotResponding(Android)</td>
+								<td>This is due to audio input stream not starting properly, unable to reproduce this code, maybe try to physically disable your mic...</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>unknown(iOS)</td>
+								<td>This will be returned when there is an code that mobile SDK is not able to handle, currently if you disable the network connection on your device, wait for the reconnect exhausts</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+					</tbody></table>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>

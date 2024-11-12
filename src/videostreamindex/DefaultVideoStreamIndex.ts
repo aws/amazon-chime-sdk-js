@@ -21,6 +21,7 @@ import VideoStreamDescription from './VideoStreamDescription';
 export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   protected currentIndex: SdkIndexFrame | null = null;
   protected indexForSubscribe: SdkIndexFrame | null = null;
+  protected indexForLastRemoteVideoUpdate: SdkIndexFrame | null = null;
   protected currentSubscribeAck: SdkSubscribeAckFrame | null = null;
 
   // These are based on the index at the time of the last Subscribe Ack
@@ -36,6 +37,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   protected streamToExternalUserIdMap: Map<number, string> | null = null;
 
   private videoStreamDescription = new VideoStreamDescription();
+  private sendVideoStreamId: number = 0;
   constructor(protected logger: Logger) {
     this.videoStreamDescription.trackLabel = 'AmazonChimeExpressVideo';
     this.videoStreamDescription.streamId = 2;
@@ -68,6 +70,9 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       description.streamId = source.streamId;
       description.maxBitrateKbps = source.maxBitrateKbps;
       description.avgBitrateKbps = this.convertBpsToKbps(source.avgBitrateBps);
+      description.width = source.width;
+      description.height = source.height;
+      description.maxFrameRate = source.framerate;
       streamInfos.push(description);
     });
     return streamInfos;
@@ -133,6 +138,10 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     this.indexForSubscribe = this.currentIndex;
   }
 
+  remoteVideoUpdateSent(): void {
+    this.indexForLastRemoteVideoUpdate = this.currentIndex;
+  }
+
   integrateSubscribeAckFrame(subscribeAck: SdkSubscribeAckFrame): void {
     this.currentSubscribeAck = subscribeAck;
 
@@ -144,6 +153,15 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     this.subscribeStreamToExternalUserIdMap = this.buildStreamExternalUserIdMap(
       this.indexForSubscribe
     );
+
+    this.sendVideoStreamId = 0;
+    if (
+      subscribeAck.allocations &&
+      subscribeAck.allocations !== undefined &&
+      subscribeAck.allocations.length > 0
+    ) {
+      this.sendVideoStreamId = subscribeAck.allocations[0].streamId;
+    }
   }
 
   integrateBitratesFrame(bitrates: ISdkBitrateFrame): void {
@@ -360,6 +378,16 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
         }
       }
     }
+
+    // Lastly check if it can be found in the index last used for remote video update
+    if (!!this.indexForLastRemoteVideoUpdate) {
+      for (const source of this.indexForLastRemoteVideoUpdate.sources) {
+        if (source.streamId === streamId) {
+          return source.groupId;
+        }
+      }
+    }
+
     return undefined;
   }
 
@@ -419,6 +447,10 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       }
     }
     return paused;
+  }
+
+  sendVideoStreamIdFromRid(_rid: string): number {
+    return this.sendVideoStreamId;
   }
 
   private buildTrackToStreamMap(subscribeAck: SdkSubscribeAckFrame): Map<string, number> {

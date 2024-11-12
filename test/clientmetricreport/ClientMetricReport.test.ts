@@ -376,6 +376,140 @@ describe('ClientMetricReport', () => {
     });
   });
 
+  describe('averageCpuQualityLimitationDurationPerSecondInMilliseconds', () => {
+    const metricName = 'metric-name';
+
+    it('return 0 when interval is non-positive', () => {
+      const ssrc = 1;
+      clientMetricReport.currentTimestampMs = 1000;
+      clientMetricReport.previousTimestampMs = 1000;
+      const report = new StreamMetricReport();
+      report.previousObjectMetrics[metricName] = {
+        cpu: 1.0,
+        other: 0.0,
+      };
+      report.currentObjectMetrics[metricName] = {
+        cpu: 1.0,
+        other: 0.0,
+      };
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(
+        clientMetricReport.averageCpuQualityLimitationDurationPerSecondInMilliseconds(
+          metricName,
+          ssrc
+        )
+      ).to.equal(0);
+    });
+
+    it('return 0 when there is no current value', () => {
+      const ssrc = 1;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      const report = new StreamMetricReport();
+      report.previousObjectMetrics[metricName] = {
+        cpu: 1.0,
+        other: 0.0,
+      };
+      report.currentObjectMetrics[metricName] = {
+        other: 0.0,
+      };
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(
+        clientMetricReport.averageCpuQualityLimitationDurationPerSecondInMilliseconds(
+          metricName,
+          ssrc
+        )
+      ).to.equal(0);
+    });
+
+    it('derive the correct value', () => {
+      const ssrc = 1;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      const report = new StreamMetricReport();
+      report.previousObjectMetrics[metricName] = {
+        cpu: 1.0,
+        other: 0.0,
+      };
+      report.currentObjectMetrics[metricName] = {
+        cpu: 2.0,
+        other: 0.0,
+      };
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(
+        clientMetricReport.averageCpuQualityLimitationDurationPerSecondInMilliseconds(
+          metricName,
+          ssrc
+        )
+      ).to.equal(1000);
+    });
+
+    it('return 0 when diff is negative', () => {
+      const ssrc = 1;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      const report = new StreamMetricReport();
+      report.previousObjectMetrics[metricName] = {
+        cpu: 1.0,
+        other: 0.0,
+      };
+      report.currentObjectMetrics[metricName] = {
+        cpu: 0.0,
+        other: 0.0,
+      };
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(
+        clientMetricReport.averageCpuQualityLimitationDurationPerSecondInMilliseconds(
+          metricName,
+          ssrc
+        )
+      ).to.equal(0);
+    });
+
+    it('treat undefined previous value as 0', () => {
+      const ssrc = 1;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      const report = new StreamMetricReport();
+      report.previousObjectMetrics[metricName] = {
+        other: 0.0,
+      };
+      report.currentObjectMetrics[metricName] = {
+        cpu: 0.5,
+        other: 0.0,
+      };
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(
+        clientMetricReport.averageCpuQualityLimitationDurationPerSecondInMilliseconds(
+          metricName,
+          ssrc
+        )
+      ).to.equal(500);
+    });
+
+    it('treat interval is 1 when previous timestamp is not positive', () => {
+      const ssrc = 1;
+      clientMetricReport.currentTimestampMs = 10;
+      clientMetricReport.previousTimestampMs = 0;
+      const report = new StreamMetricReport();
+      report.previousObjectMetrics[metricName] = {
+        cpu: 0.0,
+        other: 0.0,
+      };
+      report.currentObjectMetrics[metricName] = {
+        cpu: 1.0,
+        other: 0.0,
+      };
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      expect(
+        clientMetricReport.averageCpuQualityLimitationDurationPerSecondInMilliseconds(
+          metricName,
+          ssrc
+        )
+      ).to.equal(1000);
+    });
+  });
+
   describe('getMetricMap', () => {
     it('returns the global metric map if not passing the media type and the direction', () => {
       expect(clientMetricReport.getMetricMap()).to.equal(clientMetricReport.globalMetricMap);

@@ -34,6 +34,15 @@ export class DemoVideoTile extends HTMLElement {
         <input type="radio" class="btn-check" name="level" value="max" id="priority-max">
         <label class="btn btn-secondary" id="priority-max-label" title="max" for="max">Max</label>
       </form>
+      <h6 class="dropdown-header degradation-preference-header">Video Quality Degradation Preference</h6>
+      <form class="btn-group video-tile-config-toggle degradation-preference-toggle">
+        <input type="radio" class="btn-check" name="level" value="balanced" id="degradation-preference-balanced" checked>
+        <label class="btn btn-secondary" id="degradation-preference-balanced-label" for="balanced">Balanced</label>
+        <input type="radio" class="btn-check" name="level" value="maintainResolution" id="degradation-preference-resolution">
+        <label class="btn btn-secondary" id="degradation-preference-resolution-label" for="maintainResolution">Maintain Resolution</label>
+        <input type="radio" class="btn-check" name="level" value="maintainFramerate" id="degradation-preference-framerate">
+        <label class="btn btn-secondary" id="degradation-preference-framerate-label" for="maintainFramerate">Maintain Framerate</label>
+      </form>
     </div>
   </div>
 `;
@@ -48,7 +57,10 @@ export class DemoVideoTile extends HTMLElement {
     // (putting the input within the label doesn't work in Bootstrap 5), so we manually update these IDs to make them
     // unique
     const nonUniqueInputAndLabelIdPrefixes = [
-      'priority-low', 'priority-medium', 'priority-high', 'priority-max', 'resolution-low', 'resolution-medium', 'resolution-high', 'resolution-max'];
+      'priority-low', 'priority-medium', 'priority-high', 'priority-max',
+      'resolution-low', 'resolution-medium', 'resolution-high', 'resolution-max',
+      'degradation-preference-balanced', 'degradation-preference-resolution', 'degradation-preference-framerate'
+    ];
     for (const prefix of nonUniqueInputAndLabelIdPrefixes) {
       this.querySelector(`#${prefix}`).id = `${prefix}-${tileIndex}`;
       this.querySelector(`#${prefix}-label`).setAttribute('for', `${prefix}-${tileIndex}`);
@@ -68,6 +80,8 @@ export class DemoVideoTile extends HTMLElement {
     (this.querySelector('.target-resolution-toggle') as HTMLElement).style.display = display;
     (this.querySelector('.video-priority-header') as HTMLElement).style.display = display;
     (this.querySelector('.video-priority-toggle') as HTMLElement).style.display = display;
+    (this.querySelector('.degradation-preference-header') as HTMLElement).style.display = display;
+    (this.querySelector('.degradation-preference-toggle') as HTMLElement).style.display = display;
   }
 
   show(isContent: boolean) {
@@ -138,6 +152,32 @@ export class DemoVideoTile extends HTMLElement {
     }
   };
 
+  collectVideoStats(
+    keyStatstoShow: { [key: string]: string },
+    metricsData: { [id: string]: { [key: string]: number } },
+    streamDirection: string,
+    stats: Map<string, number>,
+  ): void {
+    const streams = metricsData ? Object.keys(metricsData) : [];
+    if (streams.length === 0) {
+      return;
+    }
+
+    for (const ssrc of streams) {
+      for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
+        if (keyStatstoShow[metricName]) {
+          if (stats.has(metricName)) {
+            const currValue = stats.get(metricName);
+            stats.set(metricName, currValue + value);
+          } else {
+            stats.set(metricName, value);
+          }
+        }
+      }
+    }
+  };
+
+
   public get videoElement(): HTMLVideoElement {
     return this.querySelector('.video-tile-video');
   }
@@ -175,6 +215,10 @@ export class DemoVideoTile extends HTMLElement {
 
   public get videoPriorityRadioElement(): HTMLFormElement {
     return this.querySelector('.video-priority-toggle');
+  }
+
+  public get videoDegradationPreferenceRadioElement(): HTMLFormElement {
+    return this.querySelector('.degradation-preference-toggle');
   }
 
   async connectedCallback() {

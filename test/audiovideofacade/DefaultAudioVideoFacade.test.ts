@@ -65,6 +65,8 @@ describe('DefaultAudioVideoFacade', () => {
     removeContentShareObserver(_observer: ContentShareObserver): void {}
 
     forEachContentShareObserver(_observerFunc: (observer: ContentShareObserver) => void): void {}
+
+    enableSVCForContentShare(_enable: boolean): void {}
   }
 
   class NoOpContentShareObserver implements ContentShareObserver {
@@ -664,6 +666,12 @@ describe('DefaultAudioVideoFacade', () => {
     it('will call enableSimulcastForContentShare', () => {
       const spy = sinon.spy(contentShareController, 'enableSimulcastForContentShare');
       facade.enableSimulcastForContentShare(true);
+      spy.calledOnceWith(true);
+    });
+
+    it('will call enableSVCForContentShare', () => {
+      const spy = sinon.spy(contentShareController, 'enableSVCForContentShare');
+      facade.enableSVCForContentShare(true);
       spy.calledOnceWith(true);
     });
 

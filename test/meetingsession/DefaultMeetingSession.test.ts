@@ -227,6 +227,47 @@ describe('DefaultMeetingSession', () => {
         ).to.be.true;
         mockBuilder.cleanup();
       });
+
+      it('enables simulcast when both simulcast and SVC are enabled', () => {
+        const domBehavior = new DOMMockBehavior();
+        domBehavior.browserName = 'chrome';
+        const mockBuilder = new DOMMockBuilder(domBehavior);
+        const config = new NoOpAudioVideoController().configuration;
+
+        config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+        config.enableSVC = true;
+        const session = new DefaultMeetingSession(
+          config,
+          new NoOpLogger(),
+          new NoOpDeviceController()
+        );
+        expect(session).to.exist;
+        expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
+          true
+        );
+        expect(session.configuration.enableSVC).to.equal(false);
+        mockBuilder.cleanup();
+      });
+    });
+
+    describe('construct with SVC', function () {
+      it('disables SVC when browser does not support SVC', () => {
+        setUserAgent(OPERA_USERAGENT);
+        const domBehavior = new DOMMockBehavior();
+        domBehavior.browserName = 'chrome';
+        const mockBuilder = new DOMMockBuilder(domBehavior);
+        const config = new NoOpAudioVideoController().configuration;
+
+        config.enableSVC = true;
+        const session = new DefaultMeetingSession(
+          config,
+          new NoOpLogger(),
+          new NoOpDeviceController()
+        );
+        expect(session).to.exist;
+        expect(session.configuration.enableSVC).to.equal(false);
+        mockBuilder.cleanup();
+      });
     });
 
     it('will contstruct an event controller', async () => {

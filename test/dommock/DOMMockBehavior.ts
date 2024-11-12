@@ -24,6 +24,7 @@ export default class DOMMockBehavior {
   setSinkIdSupported: boolean = true;
   navigatorProduct: string = '';
   undefinedDocument: boolean = false;
+  supportsAudioRedCodec: boolean = true;
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   FakeTURNCredentialsBody: Promise<object> = new Promise((resolve, _reject) => {

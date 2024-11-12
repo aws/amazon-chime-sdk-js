@@ -278,7 +278,12 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     const checkAudioConnectivityMetricsObserver: AudioVideoObserver = {
       metricsDidReceive(clientMetricReport: ClientMetricReport) {
         clientMetricReport.getRTCStatsReport().forEach(report => {
-          if (report.type === 'inbound-rtp' && report.mediaType === 'audio') {
+          // TODO: remove mediaType in next version as it is deprecated
+          // mediaType was deprecated and replaced with kind
+          if (
+            report.type === 'inbound-rtp' &&
+            (report.mediaType === 'audio' || report.kind === 'audio')
+          ) {
             audioConnectivityMetrics.packetsReceived = report.packetsReceived;
           }
         });
@@ -334,7 +339,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       metricsDidReceive(clientMetricReport: ClientMetricReport) {
         const rawStats = clientMetricReport.getRTCStatsReport();
         rawStats.forEach(report => {
-          if (report.type === 'outbound-rtp' && report.mediaType === 'video') {
+          // TODO: remove mediaType in next version as it is deprecated
+          if (
+            report.type === 'outbound-rtp' &&
+            (report.mediaType === 'video' || report.kind === 'video')
+          ) {
             packetsSent = report.packetsSent;
           }
         });

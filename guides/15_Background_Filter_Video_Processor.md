@@ -4,6 +4,24 @@ For updated versions of background blur and background replacement, please use t
 
 # Integrating background filters into your Amazon Chime SDK for JavaScript application
 
+- [Integrating background filters into your Amazon Chime SDK for JavaScript application](#integrating-background-filters-into-your-amazon-chime-sdk-for-javascript-application)
+  - [What is a background filter?](#what-is-a-background-filter)
+  - [Background filter on the web](#background-filter-on-the-web)
+  - [Can I use a background filter in my application?](#can-i-use-a-background-filter-in-my-application)
+    - [Browser compatibility](#browser-compatibility)
+    - [SIMD support](#simd-support)
+    - [Content delivery, caching and bandwidth](#content-delivery-caching-and-bandwidth)
+  - [Preparing your application](#preparing-your-application)
+    - [Content Security Policy](#content-security-policy)
+    - [Cross-Origin Opener Policy](#cross-origin-opener-policy)
+  - [Checking for support before offering a background filter](#checking-for-support-before-offering-a-background-filter)
+  - [Adding a background filter to your application](#adding-a-background-filter-to-your-application)
+    - [Replacing the background image for a BackgroundReplacementProcessor mid stream](#replacing-the-background-image-for-a-backgroundreplacementprocessor-mid-stream)
+  - [Configuration](#configuration)
+    - [CPU Utilization mitigation](#cpu-utilization-mitigation)
+  - [Observer notifications](#observer-notifications)
+
+
 ## What is a background filter?
 
 The background filter API allows builders to enable background filter on a video stream. You can select from background blur filter or replacement filter processors. To add a background filter to a video stream the builder needs to create a `VideoFrameProcessor` using `BackgroundBlurVideoFrameProcessor` or `BackgroundReplacementVideoFrameProcessor` and then insert that processor into a `VideoTransformDevice`. The background filter processor uses a TensorFlow Lite (TFLite) machine learning (ML) model along with JavaScript Web Workers and WebAssembly (WASM) to apply the filter to the background of each frame in the video stream. These assets are downloaded at runtime when the background filter processor is created and not provided in the source directly.

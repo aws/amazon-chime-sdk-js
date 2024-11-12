@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
+import { AudioProfile } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -20,12 +22,14 @@ import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpoli
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
+chai.use(chaiAsPromised);
+
 describe('AttachMediaInputTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
 
   const logger = new NoOpDebugLogger();
-  const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
+  let domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder | null = null;
   let task: Task;
@@ -53,9 +57,11 @@ describe('AttachMediaInputTask', () => {
     };
     context.peer = new RTCPeerConnection(configuration);
     context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     context.transceiverController = new DefaultTransceiverController(
       logger,
-      context.browserBehavior
+      context.browserBehavior,
+      context
     );
     // @ts-ignore
     const audioTrack = new MediaStreamTrack('attach-media-input-task-audio-track-id', 'audio');
@@ -86,6 +92,21 @@ describe('AttachMediaInputTask', () => {
   describe('run', () => {
     it('can be run', done => {
       task.run().then(() => done());
+    });
+
+    it('throws if setupLocalTransceivers throws', async () => {
+      class TestTransceiverController extends DefaultTransceiverController {
+        setupLocalTransceivers(): void {
+          throw new Error('bogus setupLocalTransceivers error');
+        }
+      }
+      context.transceiverController = new TestTransceiverController(
+        logger,
+        context.browserBehavior,
+        context
+      );
+      task = new AttachMediaInputTask(context);
+      await expect(task.run()).to.be.rejectedWith('bogus setupLocalTransceivers error');
     });
 
     it('attaches audio track', done => {
@@ -154,6 +175,48 @@ describe('AttachMediaInputTask', () => {
         const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('inactive');
         expect(videoTransceiver.sender.track).to.equal(null);
+        done();
+      });
+    });
+
+    it('sets the correct audio codec preference if audio redundancy is disabled', done => {
+      task.run().then(() => {
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        // @ts-ignore
+        const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
+        expect(audioTransceiverCodecs[0].mimeType).to.equal('audio/opus');
+        const redCodecIndex = audioTransceiverCodecs.findIndex(c => c.mimeType === 'audio/red');
+        expect(redCodecIndex).to.equal(-1);
+        done();
+      });
+    });
+
+    it('sets the correct audio codec preference if audio redundancy is enabled', done => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBehavior.supportsAudioRedCodec = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.audioProfile = new AudioProfile();
+      task.run().then(() => {
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        // @ts-ignore
+        const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
+        expect(audioTransceiverCodecs[0].mimeType).to.equal('audio/red');
+        done();
+      });
+    });
+
+    it('does not call setCodecPreferences if red codec is not supported even if audio redundancy config is enabled', done => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'chrome';
+      domMockBehavior.supportsAudioRedCodec = false;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.audioProfile = new AudioProfile();
+      task.run().then(() => {
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        // @ts-ignore
+        const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
+        expect(audioTransceiverCodecs.length).to.equal(0);
         done();
       });
     });

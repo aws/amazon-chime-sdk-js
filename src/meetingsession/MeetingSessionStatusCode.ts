@@ -177,21 +177,19 @@ export enum MeetingSessionStatusCode {
   AudioVideoWasRemovedFromPrimaryMeeting,
 
   /**
+   * This is only used in promotion functions and will not be provided in any `audioVideoDidStop` calls.
+   *
+   * The attendee was automatically demoted following a disconnection. The attendee must re-premote itself to the
+   * primary meeting.
+   */
+  AudioVideoDisconnectedWhilePromoted,
+
+  /**
    * This is only used internally and will not be provided in any `audioVideoDidStop` calls.
    *
    * Reserved.
    */
   AudioDisconnectAudio,
-
-  /**
-   * The websocket signalling channel was closed unexpectedly mid-meeting. This may be due to:
-   * * A client side network change, e.g. switching WiFi networks (most typical).
-   * * A backend detecting client side issues (e.g. decryption issues), and snapping
-   *   the connection to force a reconnection.
-   * * Unexpected backend issues, e.g. AWS networking issues.
-   * The latter two are less common.
-   */
-  SignalChannelClosedUnexpectedly,
 }
 
 export default MeetingSessionStatusCode;

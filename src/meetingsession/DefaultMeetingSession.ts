@@ -68,6 +68,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       this.eventController
     );
     this._deviceController = deviceController;
+    this.logger.info(`MeetingFeatures: ${JSON.stringify(configuration.meetingFeatures)}`);
     const contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(this._logger);
     this.contentShareController = new DefaultContentShareController(
       contentShareMediaStreamBroker,
@@ -181,6 +182,18 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
         this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
         this.logger.info('Simulcast is only supported on Chromium-based browsers');
       }
+
+      if (this._configuration.enableSVC) {
+        this._configuration.enableSVC = false;
+        this.logger.info('SVC is not successfully enabled since simulcast is enabled');
+      }
+    }
+
+    if (this._configuration.enableSVC && !browserBehavior.supportsScalableVideoCoding()) {
+      this._configuration.enableSVC = false;
+      this.logger.info(
+        'SVC is only supported on Chromium-based browsers with version 111 or above'
+      );
     }
   }
 

@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Logger from '../logger/Logger';
 import {
   SdkBitrateFrame,
   SdkIndexFrame,
@@ -29,12 +28,8 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
 
   private _localStreamInfos: VideoStreamDescription[] = [];
 
-  private _lastBitRateMsgTime: number;
-
-  constructor(logger: Logger) {
-    super(logger);
-    this._lastBitRateMsgTime = Date.now();
-  }
+  // Map send rid to stream Id
+  private _sendRidToVideoStreamIdMap: Map<string, number> = new Map<string, number>();
 
   localStreamDescriptions(): VideoStreamDescription[] {
     const clonedDescriptions: VideoStreamDescription[] = [];
@@ -58,6 +53,7 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
         newInfo.maxBitrateKbps = targetMaxBitrateKbps;
         newInfo.maxFrameRate = targetMaxFrameRate;
         newInfo.disabledByUplinkPolicy = targetMaxBitrateKbps === 0 ? true : false;
+        newInfo.rid = encodingParams[i].rid;
         if (targetMaxBitrateKbps !== 0) {
           newInfo.timeEnabled = Date.now();
         }
@@ -76,9 +72,6 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
       this._localStreamInfos[localStreamIndex].maxFrameRate = targetMaxFrameRate;
       this._localStreamInfos[localStreamIndex].disabledByUplinkPolicy =
         targetMaxBitrateKbps === 0 ? true : false;
-      if (this._localStreamInfos[localStreamIndex].disabledByUplinkPolicy === true) {
-        this._localStreamInfos[localStreamIndex].disabledByWebRTC = false;
-      }
       localStreamIndex++;
     }
 
@@ -118,39 +111,13 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
       }
     }
 
-    for (let i = 0; i < this._localStreamInfos.length; i++) {
-      this._localStreamInfos[i].disabledByWebRTC = false;
-      const streamId = this._localStreamInfos[i].streamId;
-      if (this._localStreamInfos[i].disabledByUplinkPolicy) {
-        continue;
-      }
-      if (this.streamIdToBitrateKbpsMap.has(streamId)) {
-        const avgBitrateKbps = this.streamIdToBitrateKbpsMap.get(streamId);
-        if (
-          avgBitrateKbps === SimulcastVideoStreamIndex.NOT_SENDING_STREAM_BITRATE &&
-          this._lastBitRateMsgTime - this._localStreamInfos[i].timeEnabled >
-            SimulcastVideoStreamIndex.BitratesMsgFrequencyMs
-        ) {
-          this._localStreamInfos[i].disabledByWebRTC = true;
-        }
-      } else {
-        // Do not flag as disabled if it was recently enabled
-        if (
-          this._lastBitRateMsgTime - this._localStreamInfos[i].timeEnabled >
-          SimulcastVideoStreamIndex.BitratesMsgFrequencyMs
-        ) {
-          this._localStreamInfos[i].disabledByWebRTC = true;
-        }
-      }
-    }
-    this._lastBitRateMsgTime = Date.now();
     this.logLocalStreamDescriptions();
   }
 
   private logLocalStreamDescriptions(): void {
     let msg = '';
     for (const desc of this._localStreamInfos) {
-      msg += `streamId=${desc.streamId} maxBitrate=${desc.maxBitrateKbps} disabledByWebRTC=${desc.disabledByWebRTC} disabledByUplink=${desc.disabledByUplinkPolicy}\n`;
+      msg += `streamId=${desc.streamId} maxBitrate=${desc.maxBitrateKbps} disabledByUplink=${desc.disabledByUplinkPolicy}\n`;
     }
     this.logger.debug(() => {
       return msg;
@@ -189,6 +156,7 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
     }
 
     let localStreamStartIndex = 0;
+    this._sendRidToVideoStreamIdMap.clear();
     for (const allocation of subscribeAck.allocations) {
       // track label is what we offered to the server
       if (this._localStreamInfos.length < localStreamStartIndex + 1) {
@@ -203,7 +171,19 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
           SimulcastVideoStreamIndex.UNSEEN_STREAM_BITRATE
         );
       }
+      this._sendRidToVideoStreamIdMap.set(
+        this._localStreamInfos[localStreamStartIndex].rid,
+        allocation.streamId
+      );
       localStreamStartIndex++;
     }
+  }
+
+  sendVideoStreamIdFromRid(rid: string): number {
+    let res = 0;
+    if (this._sendRidToVideoStreamIdMap.has(rid)) {
+      res = this._sendRidToVideoStreamIdMap.get(rid);
+    }
+    return res;
   }
 }

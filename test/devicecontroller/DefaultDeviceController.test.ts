@@ -51,6 +51,8 @@ describe('DefaultDeviceController', () => {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
   const CHROMIUM_EDGE_WINDOWS_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3729.48 Safari/537.36 Edg/79.1.96.24';
+  const CHROME_IOS_USER_AGENT =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.50 (KHTML, like Gecko) CriOS/95.0.4638.50 Mobile/14E5239e Safari/604.1';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -2421,6 +2423,22 @@ describe('DefaultDeviceController', () => {
       expect(audioContext).to.not.equal(audioContext2);
     });
 
+    it('can pause and resume an AudioContext instance', async () => {
+      const audioContext = DefaultDeviceController.getAudioContext();
+      await DefaultDeviceController.suspendAudioContext();
+      expect(audioContext.state).to.eq('suspended');
+      await DefaultDeviceController.resumeAudioContext();
+      expect(audioContext.state).to.eq('running');
+    });
+
+    it('no-ops resume or suspend before initial get', async () => {
+      await DefaultDeviceController.resumeAudioContext();
+      await DefaultDeviceController.suspendAudioContext();
+
+      const audioContext = DefaultDeviceController.getAudioContext();
+      expect(audioContext.state).to.eq('running');
+    });
+
     it('uses "playback" latency hint on Windows platform', () => {
       setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
       let usedContextOptions: AudioContextOptions;
@@ -2622,6 +2640,35 @@ describe('DefaultDeviceController', () => {
       expect(audioInputStreamEndedCallCount).to.equal(1);
       expect(await audioStreamPromise).to.not.deep.equal(stream);
       deviceController.removeDeviceChangeObserver(observer1);
+    });
+
+    it('calls ended for string device ID and suspends audio context for iOS', async () => {
+      setUserAgent(CHROME_IOS_USER_AGENT);
+      enableWebAudio(true);
+
+      const suspendAudioContextSpy = sinon.spy(DefaultDeviceController, 'suspendAudioContext');
+      const resumeAudioContextSpy = sinon.spy(DefaultDeviceController, 'resumeAudioContext');
+
+      let audioInputStreamEndedCallCount = 0;
+      const observer: DeviceChangeObserver = {
+        audioInputStreamEnded: (_deviceId: string): void => {
+          audioInputStreamEndedCallCount += 1;
+        },
+      };
+      deviceController.addDeviceChangeObserver(observer);
+
+      const mockAudioStream = getMediaStreamDevice('sample');
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      await deviceController.startAudioInput(mockAudioStream);
+
+      (mockAudioStream.getTracks()[0] as StoppableMediaStreamTrack).externalStop();
+      await delay(100);
+      expect(audioInputStreamEndedCallCount).to.equal(1);
+      expect(suspendAudioContextSpy.calledOnce).to.be.true;
+      expect(resumeAudioContextSpy.calledOnce).to.be.true;
+
+      suspendAudioContextSpy.restore();
+      resumeAudioContextSpy.restore();
     });
 
     it('calls ended for constraints', async () => {

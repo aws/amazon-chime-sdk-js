@@ -921,6 +921,7 @@ a.markdown:active {
 
 .video-tile-config-toggle {
   padding: 0.5rem;
+  width: 100%;
 }
 
 .stats-info {
@@ -1013,6 +1014,10 @@ a.markdown:active {
   padding-right: 20px;
   padding-bottom: 20px;
   max-width: 480px;
+}
+
+#join-info-override-modal .modal-content {
+  max-width: 600px;
 }
 
 .modal-content-header {

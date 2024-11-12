@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MeetingSessionCredentials } from '..';
+import { MeetingSessionCredentials, ReceiveRemoteVideoPauseResumeTask } from '..';
 import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetector';
 import DefaultActiveSpeakerDetector from '../activespeakerdetector/DefaultActiveSpeakerDetector';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
@@ -13,6 +13,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import Destroyable from '../destroyable/Destroyable';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
@@ -60,7 +61,6 @@ import ParallelGroupTask from '../task/ParallelGroupTask';
 import PromoteToPrimaryMeetingTask from '../task/PromoteToPrimaryMeetingTask';
 import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
 import ReceiveRemoteVideoPauseResume from '../task/ReceiveRemoteVideoPauseResumeTask';
-import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from '../task/ReceiveVideoStreamIndexTask';
 import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTask';
@@ -119,6 +119,7 @@ export default class DefaultAudioVideoController
   private static PING_PONG_INTERVAL_MS = 10000;
 
   private enableSimulcast: boolean = false;
+  private enableSVC: boolean = false;
   private useUpdateTransceiverControllerForUplink: boolean = false;
   private totalRetryCount = 0;
   private startAudioVideoTimestamp: number = 0;
@@ -144,6 +145,7 @@ export default class DefaultAudioVideoController
   // * `MonitorTask` which updates `videosToReceive`
   private receiveIndexTask: ReceiveVideoStreamIndexTask | undefined = undefined;
   private monitorTask: MonitorTask | undefined = undefined;
+  private receiveRemotePauseResumeTask: ReceiveRemoteVideoPauseResumeTask | undefined = undefined;
 
   destroyed = false;
 
@@ -287,6 +289,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.eventController = this.eventController;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
     this.meetingSessionContext.videoSendCodecPreferences = this.videoSendCodecPreferences;
+    this.meetingSessionContext.audioProfile = this._audioProfile;
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
@@ -389,7 +392,6 @@ export default class DefaultAudioVideoController
       new ListenForVolumeIndicatorsTask(context),
       new SendAndReceiveDataMessagesTask(context),
       new JoinAndReceiveIndexTask(context),
-      new ReceiveTURNCredentialsTask(context),
       this.receiveIndexTask,
     ]).once();
 
@@ -405,7 +407,9 @@ export default class DefaultAudioVideoController
     const setLocalDescription = new SetLocalDescriptionTask(context).once(createSDP);
     const ice = new FinishGatheringICECandidatesTask(context).once(setLocalDescription);
     const subscribeAck = new SubscribeAndReceiveSubscribeAckTask(context).once(ice);
-    const receivePauseResume = new ReceiveRemoteVideoPauseResume(context).once(subscribeAck);
+
+    this.receiveRemotePauseResumeTask = new ReceiveRemoteVideoPauseResume(context);
+    this.receiveRemotePauseResumeTask.once(subscribeAck);
 
     // The ending is a delicate time: we need the connection as a whole to have a timeout,
     // and for the attendee presence timer to not start ticking until after the subscribe/ack.
@@ -417,7 +421,7 @@ export default class DefaultAudioVideoController
           // The order of these two matters. If canceled, the first one that's still running
           // will contribute any special rejection, and we don't want that to be "attendee not found"!
           subscribeAck,
-          receivePauseResume,
+          this.receiveRemotePauseResumeTask,
           needsToWaitForAttendeePresence
             ? new TimeoutTask(
                 this.logger,
@@ -453,13 +457,24 @@ export default class DefaultAudioVideoController
       this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
+    if (this.enableSimulcast && this.configuration.enableSVC) {
+      this.logger.warn(
+        'SVC cannot be enabled at the same time as simulcast. Disabling SVC, using simulcast.'
+      );
+    }
+    this.enableSVC =
+      !this.enableSimulcast &&
+      this.configuration.enableSVC &&
+      new DefaultBrowserBehavior().supportsScalableVideoCoding();
+
     const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
 
     if (!useAudioConnection) {
       this.logger.info(`Using video only transceiver controller`);
       this.meetingSessionContext.transceiverController = new VideoOnlyTransceiverController(
         this.logger,
-        this.meetingSessionContext.browserBehavior
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
       );
     } else if (this.enableSimulcast) {
       this.logger.info(`Using transceiver controller with simulcast support`);
@@ -470,19 +485,22 @@ export default class DefaultAudioVideoController
       ) {
         this.meetingSessionContext.transceiverController = new SimulcastContentShareTransceiverController(
           this.logger,
-          this.meetingSessionContext.browserBehavior
+          this.meetingSessionContext.browserBehavior,
+          this.meetingSessionContext
         );
       } else {
         this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
           this.logger,
-          this.meetingSessionContext.browserBehavior
+          this.meetingSessionContext.browserBehavior,
+          this.meetingSessionContext
         );
       }
     } else {
       this.logger.info(`Using default transceiver controller`);
       this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
         this.logger,
-        this.meetingSessionContext.browserBehavior
+        this.meetingSessionContext.browserBehavior,
+        this.meetingSessionContext
       );
     }
 
@@ -497,6 +515,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
     this.meetingSessionContext.videoUplinkBandwidthPolicy = this.configuration.videoUplinkBandwidthPolicy;
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
+    this.meetingSessionContext.enableSVC = this.enableSVC;
 
     if (this.enableSimulcast) {
       let simulcastPolicy = this.meetingSessionContext
@@ -529,6 +548,7 @@ export default class DefaultAudioVideoController
           this.meetingSessionContext.logger,
           this.meetingSessionContext.browserBehavior
         );
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.setSVCEnabled(this.enableSVC);
       }
       if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
         this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
@@ -546,6 +566,31 @@ export default class DefaultAudioVideoController
         );
       }
       this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+
+    if (
+      new DefaultModality(this.configuration.credentials.attendeeId).hasModality(
+        DefaultModality.MODALITY_CONTENT
+      )
+    ) {
+      const enableUhdContent =
+        this.configuration.meetingFeatures.contentMaxResolution ===
+        VideoQualitySettings.VideoResolutionUHD;
+      if (enableUhdContent) {
+        // Increase default bandwidth for content share since this is not yet configuration that can be exposed
+        // without using simulcast
+        this.setVideoMaxBandwidthKbps(2500);
+      }
+      this.meetingSessionContext.videoUplinkBandwidthPolicy.setHighResolutionFeatureEnabled(
+        enableUhdContent
+      );
+    } else {
+      const enableFhdVideo =
+        this.configuration.meetingFeatures.videoMaxResolution ===
+        VideoQualitySettings.VideoResolutionFHD;
+      this.meetingSessionContext.videoUplinkBandwidthPolicy.setHighResolutionFeatureEnabled(
+        enableFhdVideo
+      );
     }
 
     if (this.meetingSessionContext.videoUplinkBandwidthPolicy && this.maxUplinkBandwidthKbps) {
@@ -707,11 +752,6 @@ export default class DefaultAudioVideoController
 
   /* @internal */
   stopReturningPromise(): Promise<void> {
-    // We need to ensure this disables reconnection before any other steps are taken,
-    // in case something during close is triggering a reconnection (e.g. websocket
-    // close)
-    this._reconnectController.disableReconnect();
-
     // In order to avoid breaking backward compatibility, when only the
     // signaling connection is established we appear to not be connected.
     // We handle this by simply disconnecting the websocket directly.
@@ -732,6 +772,7 @@ export default class DefaultAudioVideoController
     */
     return new Promise((resolve, reject) => {
       this.sessionStateController.perform(SessionStateControllerAction.Disconnect, () => {
+        this._reconnectController.disableReconnect();
         this.logger.info('attendee left meeting, session will not be reconnected');
         this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.Left), false, null)
           .then(resolve)
@@ -903,10 +944,9 @@ export default class DefaultAudioVideoController
     if (added.length !== 0 || removed.length !== 0) {
       return false;
     }
-    // `updateRemoteVideosFromLastVideosToReceive` does not actually send a subscribe but it uses
-    // `subscribeFrameSent` to cache the previous index so that we are able to do switches (not add/removes)
+    // We use `remoteVideoUpdateSent` to cache the previous index so that we are able to do switches (not add/removes)
     // for simulcast stream layer changes. See `subscribeFrameSent` for more details.
-    context.videoStreamIndex.subscribeFrameSent();
+    context.videoStreamIndex.remoteVideoUpdateSent();
     return true;
   }
 
@@ -971,9 +1011,11 @@ export default class DefaultAudioVideoController
       });
     }
     this.logger.info(
-      `Request to update remote videos with added: ${added}, updated: ${[
-        ...simulcastStreamUpdates.entries(),
-      ]}, removed: ${removed}`
+      `Request to update remote videos with added: [${added}], updated: [${Array.from(
+        simulcastStreamUpdates.entries()
+      )
+        .map(([key, value]) => `${key}->${value}`)
+        .join(',')}], removed: [${removed}]`
     );
 
     return {
@@ -996,6 +1038,10 @@ export default class DefaultAudioVideoController
       return false;
     }
 
+    // Similar to `updateRemoteVideosFromLastVideosToReceive`, we use `remoteVideoUpdateSent` to cache the previous
+    // index so that we don't incorrectly mark a simulcast stream change (e.g. a sender switching from publishing [1, 3] to [2] to [1, 3])
+    // as the add or removal of a source
+    this.meetingSessionContext.videoStreamIndex.remoteVideoUpdateSent();
     return true;
   }
 
@@ -1019,6 +1065,7 @@ export default class DefaultAudioVideoController
     const groupIdsToReceive = context.videosToReceive.array().map((streamId: number) => {
       return context.videoStreamIndex.groupIdForStreamId(streamId);
     });
+    this.receiveRemotePauseResumeTask.updateSubscribedGroupdIds(new Set(groupIdsToReceive));
 
     const currentConfigs = convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
       context,
@@ -1084,6 +1131,7 @@ export default class DefaultAudioVideoController
       const encodingParam = this.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
       if (
         this.mayNeedRenegotiationForSimulcastLayerChange &&
+        this.meetingSessionContext.transceiverController.hasVideoInput() &&
         !this.negotiatedBitrateLayersAllocationRtpHeaderExtension()
       ) {
         this.logger.info('Needs regenotiation for local video simulcast layer change');
@@ -1240,17 +1288,6 @@ export default class DefaultAudioVideoController
       Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
     });
 
-    if (this.promotedToPrimaryMeeting && error) {
-      this.forEachObserver(observer => {
-        this.promotedToPrimaryMeeting = false;
-        Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
-          f.bind(observer)(
-            new MeetingSessionStatus(MeetingSessionStatusCode.SignalingInternalServerError)
-          )
-        );
-      });
-    }
-
     /* istanbul ignore else */
     if (this.eventController) {
       const {
@@ -1308,6 +1345,19 @@ export default class DefaultAudioVideoController
   }
 
   reconnect(status: MeetingSessionStatus, error: Error | null): boolean {
+    if (this.promotedToPrimaryMeeting) {
+      // If the client was promoted, we 'demote' them so that we don't get in any
+      // unusual or unexpected state on reconnect
+      this.promotedToPrimaryMeeting = false;
+      this.forEachObserver(observer => {
+        Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
+          f.bind(observer)(
+            new MeetingSessionStatus(MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted)
+          )
+        );
+      });
+    }
+
     const willRetry = this._reconnectController.retryWithBackoff(
       async () => {
         if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
@@ -1344,6 +1394,9 @@ export default class DefaultAudioVideoController
 
     this.meetingSessionContext.volumeIndicatorAdapter.onReconnect();
     this.connectionHealthData.reset();
+    this.receiveRemotePauseResumeTask = new ReceiveRemoteVideoPauseResume(
+      this.meetingSessionContext
+    );
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoReconnect'), [
         new TimeoutTask(
@@ -1353,7 +1406,6 @@ export default class DefaultAudioVideoController
             new SerialGroupTask(this.logger, 'Signaling', [
               new OpenSignalingConnectionTask(this.meetingSessionContext),
               new JoinAndReceiveIndexTask(this.meetingSessionContext),
-              new ReceiveTURNCredentialsTask(this.meetingSessionContext),
             ]),
             new CreatePeerConnectionTask(this.meetingSessionContext),
           ]),
@@ -1370,6 +1422,7 @@ export default class DefaultAudioVideoController
             new FinishGatheringICECandidatesTask(this.meetingSessionContext),
             new SubscribeAndReceiveSubscribeAckTask(this.meetingSessionContext),
             new SetRemoteDescriptionTask(this.meetingSessionContext),
+            this.receiveRemotePauseResumeTask,
           ]),
           this.configuration.connectionTimeoutMs
         ),
@@ -1479,21 +1532,21 @@ export default class DefaultAudioVideoController
     }
     if (status.isFailure() || status.isTerminal()) {
       if (this.meetingSessionContext.reconnectController) {
-        const willReconnect = this.reconnect(status, error);
-        if (willReconnect) {
+        const willRetry = this.reconnect(status, error);
+        if (willRetry) {
           this.logger.warn(
-            `The audio video controller will reconnect due to status code ${
-              MeetingSessionStatusCode[status.statusCode()]
-            }${error ? ` and error: ${error.message}` : ``}`
+            `will retry due to status code ${MeetingSessionStatusCode[status.statusCode()]}${
+              error ? ` and error: ${error.message}` : ``
+            }`
           );
         } else {
           this.logger.error(
-            `The audio video controller failed with status code ${
-              MeetingSessionStatusCode[status.statusCode()]
-            }${error ? ` and error: ${error.message}` : ``}`
+            `failed with status code ${MeetingSessionStatusCode[status.statusCode()]}${
+              error ? ` and error: ${error.message}` : ``
+            }`
           );
         }
-        return willReconnect;
+        return willRetry;
       }
     }
     return false;

@@ -3,7 +3,8 @@
 
 import * as chai from 'chai';
 
-import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
+import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -16,7 +17,6 @@ import {
   SdkTrackMapping,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastTransceiverController from '../../src/transceivercontroller/SimulcastTransceiverController';
-import TransceiverController from '../../src/transceivercontroller/TransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIdSet from '../../src/videostreamidset/VideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
@@ -27,19 +27,20 @@ describe('SimulcastTransceiverController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const logger = new NoOpLogger(LogLevel.DEBUG);
   const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
-  let tc: TransceiverController;
+  let tc: SimulcastTransceiverController;
   let domMockBuilder: DOMMockBuilder;
-  let browser: BrowserBehavior;
+  const context: AudioVideoControllerState = new AudioVideoControllerState();
 
   beforeEach(() => {
     domMockBehavior.browserName = 'firefox';
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
-    browser = new DefaultBrowserBehavior();
-    tc = new SimulcastTransceiverController(logger, browser);
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
+    tc = new SimulcastTransceiverController(logger, context.browserBehavior, context);
   });
 
   afterEach(() => {
-    tc = new SimulcastTransceiverController(logger, browser);
+    tc = new SimulcastTransceiverController(logger, context.browserBehavior, context);
     domMockBuilder.cleanup();
   });
 
@@ -67,6 +68,29 @@ describe('SimulcastTransceiverController', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setupLocalTransceivers();
       expect(peer.getTransceivers().length).to.equal(0);
+    });
+
+    it('can set up transceivers without the meeting session context', () => {
+      tc = new SimulcastTransceiverController(logger, context.browserBehavior);
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      expect(peer.getTransceivers().length).to.equal(2);
+      // Without the meeting session context, the RED worker should not be created.
+      expect(tc['audioRedWorker']).to.be.null;
+
+      const transceivers = peer.getTransceivers();
+      expect(transceivers.length).to.equal(2);
+
+      const audioTransceiver = transceivers[0];
+      expect(audioTransceiver.direction).to.equal('inactive');
+      expect(audioTransceiver.receiver.track.kind).to.equal('audio');
+      expect(audioTransceiver.sender.track.kind).to.equal('audio');
+
+      const videoTransceiver = transceivers[1];
+      expect(videoTransceiver.direction).to.equal('inactive');
+      expect(videoTransceiver.receiver.track.kind).to.equal('video');
+      expect(videoTransceiver.sender.track.kind).to.equal('video');
     });
 
     it('can set up transceivers once', () => {

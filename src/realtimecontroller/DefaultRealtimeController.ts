@@ -5,6 +5,7 @@ import DataMessage from '../datamessage/DataMessage';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import DefaultTranscriptionController from '../transcript/DefaultTranscriptionController';
 import TranscriptionController from '../transcript/TranscriptionController';
+import { iterateEvery } from '../utils/Utils';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
 import RealtimeController from './RealtimeController';
 import RealtimeState from './RealtimeState';
@@ -413,13 +414,12 @@ export default class DefaultRealtimeController implements RealtimeController {
 
   realtimeReceiveDataMessage(dataMessage: DataMessage): void {
     try {
-      if (this.state.receiveDataMessageCallbacks.has(dataMessage.topic)) {
-        for (const fn of this.state.receiveDataMessageCallbacks.get(dataMessage.topic)) {
-          fn(dataMessage);
-        }
-      }
+      iterateEvery(this.state.receiveDataMessageCallbacks.get(dataMessage.topic), fn => {
+        fn(dataMessage);
+      });
     } catch (e) {
-      this.onError(e);
+      // We don't want to throw to our caller, but we still want to surface the error in the console
+      Promise.reject(e);
     }
   }
 

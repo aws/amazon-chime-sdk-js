@@ -99,6 +99,7 @@
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#audiointernalservererror" class="tsd-kind-icon">Audio<wbr>Internal<wbr>Server<wbr>Error</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#audiojoinedfromanotherdevice" class="tsd-kind-icon">Audio<wbr>Joined<wbr>From<wbr>Another<wbr>Device</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#audioserviceunavailable" class="tsd-kind-icon">Audio<wbr>Service<wbr>Unavailable</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#audiovideodisconnectedwhilepromoted" class="tsd-kind-icon">Audio<wbr>Video<wbr>Disconnected<wbr>While<wbr>Promoted</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#audiovideowasremovedfromprimarymeeting" class="tsd-kind-icon">Audio<wbr>Video<wbr>Was<wbr>Removed<wbr>From<wbr>Primary<wbr>Meeting</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#connectionhealthreconnect" class="tsd-kind-icon">Connection<wbr>Health<wbr>Reconnect</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#icegatheringtimeoutworkaround" class="tsd-kind-icon">ICEGathering<wbr>Timeout<wbr>Workaround</a></li>
@@ -108,7 +109,6 @@
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#noattendeepresent" class="tsd-kind-icon">No<wbr>Attendee<wbr>Present</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#ok" class="tsd-kind-icon">OK</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#realtimeapifailed" class="tsd-kind-icon">Realtime<wbr>Api<wbr>Failed</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#signalchannelclosedunexpectedly" class="tsd-kind-icon">Signal<wbr>Channel<wbr>Closed<wbr>Unexpectedly</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#signalingbadrequest" class="tsd-kind-icon">Signaling<wbr>Bad<wbr>Request</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#signalinginternalservererror" class="tsd-kind-icon">Signaling<wbr>Internal<wbr>Server<wbr>Error</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="meetingsessionstatuscode.html#signalingrequestfailed" class="tsd-kind-icon">Signaling<wbr>Request<wbr>Failed</a></li>
@@ -175,10 +175,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="audiodisconnectaudio" class="tsd-anchor"></a>
 					<h3>Audio<wbr>Disconnect<wbr>Audio</h3>
-					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Disconnect<wbr>Audio<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 23</span></div>
+					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Disconnect<wbr>Audio<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 24</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L184">src/meetingsession/MeetingSessionStatusCode.ts:184</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L192">src/meetingsession/MeetingSessionStatusCode.ts:192</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -252,6 +252,23 @@
 							<p>There was an internal server error related to audio. This may indicate some issue with the audio device, or an issue with
 							the Amazon Chime SDK service itself.</p>
 						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="audiovideodisconnectedwhilepromoted" class="tsd-anchor"></a>
+					<h3>Audio<wbr>Video<wbr>Disconnected<wbr>While<wbr>Promoted</h3>
+					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Video<wbr>Disconnected<wbr>While<wbr>Promoted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 23</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L185">src/meetingsession/MeetingSessionStatusCode.ts:185</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This is only used in promotion functions and will not be provided in any <code>audioVideoDidStop</code> calls.</p>
+						</div>
+						<p>The attendee was automatically demoted following a disconnection. The attendee must re-premote itself to the
+						primary meeting.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -394,28 +411,6 @@
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The <a href="../interfaces/realtimecontroller.html">RealtimeController</a> failed in some way. This indicates an issue with the callback function provided to RealtimeController APIs (e.g. a callback is throwing an error).</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="signalchannelclosedunexpectedly" class="tsd-anchor"></a>
-					<h3>Signal<wbr>Channel<wbr>Closed<wbr>Unexpectedly</h3>
-					<div class="tsd-signature tsd-kind-icon">Signal<wbr>Channel<wbr>Closed<wbr>Unexpectedly<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 24</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionStatusCode.ts#L194">src/meetingsession/MeetingSessionStatusCode.ts:194</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The websocket signalling channel was closed unexpectedly mid-meeting. This may be due to:</p>
-							<ul>
-								<li>A client side network change, e.g. switching WiFi networks (most typical).</li>
-								<li>A backend detecting client side issues (e.g. decryption issues), and snapping
-								the connection to force a reconnection.</li>
-								<li>Unexpected backend issues, e.g. AWS networking issues.
-								The latter two are less common.</li>
-							</ul>
 						</div>
 					</div>
 				</section>
@@ -584,6 +579,9 @@
 								<a href="meetingsessionstatuscode.html#audioserviceunavailable" class="tsd-kind-icon">Audio<wbr>Service<wbr>Unavailable</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="meetingsessionstatuscode.html#audiovideodisconnectedwhilepromoted" class="tsd-kind-icon">Audio<wbr>Video<wbr>Disconnected<wbr>While<wbr>Promoted</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 								<a href="meetingsessionstatuscode.html#audiovideowasremovedfromprimarymeeting" class="tsd-kind-icon">Audio<wbr>Video<wbr>Was<wbr>Removed<wbr>From<wbr>Primary<wbr>Meeting</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
@@ -609,9 +607,6 @@
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 								<a href="meetingsessionstatuscode.html#realtimeapifailed" class="tsd-kind-icon">Realtime<wbr>Api<wbr>Failed</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="meetingsessionstatuscode.html#signalchannelclosedunexpectedly" class="tsd-kind-icon">Signal<wbr>Channel<wbr>Closed<wbr>Unexpectedly</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 								<a href="meetingsessionstatuscode.html#signalingbadrequest" class="tsd-kind-icon">Signaling<wbr>Bad<wbr>Request</a>

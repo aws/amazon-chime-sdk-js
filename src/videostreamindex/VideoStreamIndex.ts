@@ -20,14 +20,20 @@ export default interface VideoStreamIndex {
   integrateIndexFrame(indexFrame: SdkIndexFrame): void;
 
   /**
-   * This function caches the currently ingested index frame (and may be eventually renamed). It can
-   * use the stored index as a backup for map functions like `groupIdForStreamId` and can be used for:
-   *   * Maintaining consistent information during a subscribe even if an index is received concurrently
-   *   * Maintaining information about previous senders simulcast streams to enable stream switching, e.g.
-   *     if a sender is transmitting low/hi and switches to just low, receivers need the previous index
-   *     to be able to know what group ID the high stream corresponds to.
+   * This function caches the currently ingested index frame for subscribe related activities (e.g. mapping tracks).
+   *
+   * The index will also use the stored index as a backup for map functions like `groupIdForStreamId`so that we can maintain information
+   * about previous senders simulcast streams to enable stream switching, e.g. if a sender is transmitting low/hi and
+   * switches to just low, receivers need the previous index to be able to know what group ID the high stream corresponds to.
    */
   subscribeFrameSent(): void;
+
+  /**
+   * This function caches the currently ingested index frame specifically as a backup for map functions like `groupIdForStreamId`so that we can maintain information
+   * about previous senders simulcast streams to enable stream switching, e.g. if a sender is transmitting low/hi and
+   * switches to just low, receivers need the previously used index to be able to know what group ID the high stream corresponds to.
+   */
+  remoteVideoUpdateSent(): void;
 
   /**
    * Saves [[SdkSubscribeAckFrame]] in [[VideoStreamIndex]]
@@ -144,4 +150,9 @@ export default interface VideoStreamIndex {
    * Returns the cloned array of [[VideoStreamDescription]] corresponding to remote streams
    */
   remoteStreamDescriptions(): VideoStreamDescription[];
+
+  /**
+   * Returns send video stream ID that correspond to the Rid
+   */
+  sendVideoStreamIdFromRid(rid: string): number;
 }

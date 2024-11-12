@@ -11,22 +11,13 @@ Parameters:
     Description: The AWS SDK Chime REGION
     Default: "us-east-1"
     Type: String
-  UseChimeSDKMeetings:
-    Description: Use boolean to switch between Chime and ChimeSDKMeetings Client
-    Default: true
-    Type: String
-    AllowedValues: [true, false]
-  ChimeEndpoint:
-    Description: The AWS SDK Chime endpoint
-    Default: "https://service.chime.aws.amazon.com"
-    Type: String
   ChimeServicePrincipal:
     Description: "The principal that will capture to the S3 bucket"
     Default: "chime.amazonaws.com"
     Type: String
   ChimeSDKMeetingsEndpoint:
     Description: The AWS Chime SDK Meetings endpoint
-    Default: "https://service.chime.aws.amazon.com"
+    Default: ""
     Type: String
   ChimeMediaCaptureS3BucketPrefix:
     Description: Prefix of S3 bucket to write capture artifacts.  The bucket name will be suffixed with the region.
@@ -45,11 +36,6 @@ Parameters:
     Description: The AWS Chime SDK Media Pipelines endpoint
     Default: "https://media-pipelines-chime.us-east-1.amazonaws.com"
     Type: String
-  UseChimeSDKMediaPipelines:
-    Description: Use boolean to switch between Chime and ChimeSDKMediaPipelines Client
-    Default: true
-    Type: String
-    AllowedValues: [ true, false ]
 
 
 Conditions:
@@ -57,7 +43,7 @@ Conditions:
   ShouldDeployFetchCredentialLambda: !Equals [true, !Ref UseFetchCredentialLambda]
 Globals:
   Function:
-    Runtime: nodejs14.x
+    Runtime: nodejs20.x
     Timeout: 30
     MemorySize: 128
     Environment:
@@ -66,12 +52,9 @@ Globals:
         SQS_QUEUE_ARN: !GetAtt MeetingNotificationsQueue.Arn
         BROWSER_LOG_GROUP_NAME: !Ref ChimeBrowserLogs
         BROWSER_MEETING_EVENT_LOG_GROUP_NAME: !Ref ChimeBrowserMeetingEventLogs
-        CHIME_ENDPOINT: !Ref ChimeEndpoint
         REGION: !Ref Region
-        USE_CHIME_SDK_MEETINGS: !Ref UseChimeSDKMeetings
         CHIME_SDK_MEETINGS_ENDPOINT: !Ref ChimeSDKMeetingsEndpoint
         MEDIA_PIPELINES_CONTROL_REGION: !Ref MediaPipelinesControlRegion
-        USE_CHIME_SDK_MEDIA_PIPELINES: !Ref UseChimeSDKMediaPipelines
         CHIME_SDK_MEDIA_PIPELINES_ENDPOINT: !Ref ChimeSDKMediaPipelinesEndpoint
         BROWSER_EVENT_INGESTION_LOG_GROUP_NAME: !Ref ChimeBrowserEventIngestionLogs
         CAPTURE_S3_DESTINATION_PREFIX: !Ref ChimeMediaCaptureS3BucketPrefix

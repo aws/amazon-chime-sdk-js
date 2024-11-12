@@ -1,58 +1,38 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const AWS = require('aws-sdk');
+const { ChimeSDKMediaPipelines } = require('@aws-sdk/client-chime-sdk-media-pipelines');
+const { ChimeSDKMeetings } = require('@aws-sdk/client-chime-sdk-meetings');
+const { CloudWatchLogs } = require('@aws-sdk/client-cloudwatch-logs');
+const { DynamoDB } = require('@aws-sdk/client-dynamodb');
+const { Ivs } = require('@aws-sdk/client-ivs');
+
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { metricScope } = require('aws-embedded-metrics');
 
 // Store meetings in a DynamoDB table so attendees can join by meeting title
-const ddb = new AWS.DynamoDB();
+const ddb = new DynamoDB();
 
-// Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
-const endpoint = process.env.CHIME_ENDPOINT;
 const currentRegion = process.env.REGION;
-const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS;
 const chimeSDKMeetingsEndpoint = process.env.CHIME_SDK_MEETINGS_ENDPOINT;
 const mediaPipelinesControlRegion = process.env.MEDIA_PIPELINES_CONTROL_REGION;
-const useChimeSDKMediaPipelines = process.env.USE_CHIME_SDK_MEDIA_PIPELINES;
 const chimeSDKMediaPipelinesEndpoint = process.env.CHIME_SDK_MEDIA_PIPELINES_ENDPOINT;
-// Create an AWS SDK Chime object.
-// Use the MediaRegion property below in CreateMeeting to select the region
-// the meeting is hosted in.
-const chime = new AWS.Chime({ region: 'us-east-1' });
-const ivs = new AWS.IVS({ apiVersion: '2020-07-14' });
-// Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
-chime.endpoint = new AWS.Endpoint(endpoint);
 
-const chimeSDKMeetings = new AWS.ChimeSDKMeetings({region: currentRegion});
-if (chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChimeSDKMeetings === 'true'){
-  chimeSDKMeetings.endpoint = new AWS.Endpoint(chimeSDKMeetingsEndpoint);
-}
+const ivs = new Ivs({
+  // The key apiVersion is no longer supported in v3, and can be removed.
+  // @deprecated The client uses the "latest" apiVersion.
+  apiVersion: '2020-07-14',
+});
 
-// return chime meetings SDK client just for Echo Reduction for now.
-function getClientForMeeting(meeting) {
-  if (useChimeSDKMeetings === 'true') {
-    return chimeSDKMeetings;
-  }
-  if (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE') {
-    return chimeSDKMeetings;
-  }
-  return chime;
-}
+
+const chimeSDKMeetings = new ChimeSDKMeetings({ region: currentRegion, endpoint: chimeSDKMeetingsEndpoint });
 
 // Create an AWS SDK Media Pipelines object.
-const chimeSdkMediaPipelines = new AWS.ChimeSDKMediaPipelines({ region: mediaPipelinesControlRegion });
-if (useChimeSDKMediaPipelines === 'true') {
-  chimeSdkMediaPipelines.endpoint = new AWS.Endpoint(chimeSDKMediaPipelinesEndpoint);
-}
-
-function getClientForMediaCapturePipelines() {
-  if (useChimeSDKMediaPipelines === 'true') {
-    return chimeSdkMediaPipelines;
-  }
-  return chime;
-}
+const chimeSdkMediaPipelines = new ChimeSDKMediaPipelines({
+  region: mediaPipelinesControlRegion,
+  endpoint: chimeSDKMediaPipelinesEndpoint
+});
 
 // Read resource names from the environment
 const {
@@ -83,8 +63,6 @@ exports.join = async (event, context) => {
   // Look up the meeting by its title
   let meeting = await getMeeting(query.title);
 
-  let client = getClientForMeeting(meeting);
-
   let primaryMeeting = undefined
   if (query.primaryExternalMeetingId) {
     primaryMeeting = await getMeeting(query.primaryExternalMeetingId)
@@ -93,9 +71,9 @@ exports.join = async (event, context) => {
     } else if (meetingIdFormat.test(query.primaryExternalMeetingId)) {
       // Just in case, check if we were passed a regular meeting ID instead of an external ID
       try {
-        primaryMeeting = await client.getMeeting({
+        primaryMeeting = await chimeSDKMeetings.getMeeting({
           MeetingId: query.primaryExternalMeetingId
-        }).promise();
+        });
         if (primaryMeeting !== undefined) {
           console.info(`Retrieved primary meeting id ${primaryMeeting.Meeting.MeetingId}`);
           await putMeeting(query.primaryExternalMeetingId, primaryMeeting);
@@ -116,9 +94,9 @@ exports.join = async (event, context) => {
     // If the meeting does not exist, check if we were passed in a meeting ID instead of an external meeting ID.  If so, use that one
     try {
       if (meetingIdFormat.test(query.title)) {
-        meeting = await client.getMeeting({
+        meeting = await chimeSDKMeetings.getMeeting({
           MeetingId: query.title
-        }).promise();
+        });
       }
     } catch (error) {
       console.info("Meeting ID doesn't exist as a conference ID: " + error);
@@ -145,17 +123,45 @@ exports.join = async (event, context) => {
       if (primaryMeeting !== undefined) {
         request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
       }
-      if (query.ns_es === 'true') {
-        client = chimeSDKMeetings;
-        request.MeetingFeatures = {
-          Audio: {
-            // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+      if (query.ns_es === 'true' || 
+            query.v_rs === 'FHD' || 
+            query.v_rs === 'None' || 
+            query.c_rs === 'UHD' ||
+            query.c_rs === 'None' ||
+            query.a_cnt > 1 && query.a_cnt <= 250) {
+        request.MeetingFeatures = {};
+        if (query.ns_es === 'true') {
+          request.MeetingFeatures.Audio = {
             EchoReduction: 'AVAILABLE'
           }
-        };
+        }
+        if (query.v_rs === 'FHD' || query.v_rs === 'None') {
+          request.MeetingFeatures.Video = {
+            MaxResolution: query.v_rs
+          }
+        }
+        if (query.c_rs === 'UHD' || query.c_rs === 'None') {
+          request.MeetingFeatures.Content = {
+            MaxResolution: query.c_rs
+          }
+        }
+        if (query.a_cnt > 1 && query.a_cnt <= 250) {
+          request.MeetingFeatures.Attendee = {
+            MaxCount: Number(query.a_cnt)
+          }
+        }
       }
-      console.info('Creating new meeting: ' + JSON.stringify(request));
-      meeting = await client.createMeeting(request).promise();
+      try {
+        console.info('Creating new meeting: ' + JSON.stringify(request));
+        meeting = await chimeSDKMeetings.createMeeting(request);
+      } catch (error) {
+        console.error('Failed to create new meeting: ' + JSON.stringify(error));
+        let statusCode = 400;
+        if (error.code == "ServiceFailureException" || error.code == "ServiceUnavailableException"){
+          statusCode = 500;
+        }
+        return response(statusCode, 'application/json', JSON.stringify({ error: error.message }));
+      }
 
       // Extend meeting with primary external meeting ID if it exists
       if (primaryMeeting !== undefined) {
@@ -180,7 +186,7 @@ exports.join = async (event, context) => {
     ExternalUserId: `${uuidv4().substring(0, 8)}#${query.name}`.substring(0, 64),
   };
 
-  if (useChimeSDKMeetings === 'true' && query.attendeeAudioCapability && !query.primaryExternalMeetingId) {
+  if (query.attendeeAudioCapability && !query.primaryExternalMeetingId) {
     createAttendeeRequest['Capabilities'] = {
       Audio : query.attendeeAudioCapability,
       Video : query.attendeeVideoCapability,
@@ -188,30 +194,39 @@ exports.join = async (event, context) => {
     };
   }
 
-  const attendee = (await client.createAttendee(createAttendeeRequest).promise());
+  try {
+    const attendee = (await chimeSDKMeetings.createAttendee(createAttendeeRequest));
 
-  // Return the meeting and attendee responses. The client will use these
-  // to join the meeting.
-  let joinResponse = {
-    JoinInfo: {
-      Meeting: meeting,
-      Attendee: attendee,
-    },
+    // Return the meeting and attendee responses. The client will use these
+    // to join the meeting.
+    let joinResponse = {
+      JoinInfo: {
+        Meeting: meeting,
+        Attendee: attendee,
+      },
+    }
+    if (meeting.Meeting.PrimaryExternalMeetingId !== undefined) {
+      // Put this where it expects it, since it is not technically part of create meeting response
+      joinResponse.JoinInfo.PrimaryExternalMeetingId = meeting.Meeting.PrimaryExternalMeetingId;
+    }
+    return response(200, 'application/json', JSON.stringify(joinResponse, null, 2));
+  } catch (error) {
+    console.error('Failed to create new attendee: ' + JSON.stringify(error));
+    let statusCode = 400;
+    if (error.code == "ServiceFailureException" || error.code == "ServiceUnavailableException"){
+      statusCode = 500;
+    }
+    return response(statusCode, 'application/json', JSON.stringify({ error: error.message }));
   }
-  if (meeting.Meeting.PrimaryExternalMeetingId !== undefined) {
-    // Put this where it expects it, since it is not technically part of create meeting response
-    joinResponse.JoinInfo.PrimaryExternalMeetingId = meeting.Meeting.PrimaryExternalMeetingId;
-  }
-  return response(200, 'application/json', JSON.stringify(joinResponse, null, 2));
+  
 };
 
 exports.end = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
-  let client = getClientForMeeting(meeting);
 
   // End the meeting. All attendee connections will hang up.
-  await client.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId }).promise();
+  await chimeSDKMeetings.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId });
   return response(200, 'application/json', JSON.stringify({}));
 };
 
@@ -220,13 +235,12 @@ exports.end = async (event, context) => {
 exports.deleteAttendee = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
-  let client = getClientForMeeting(meeting);
 
   // End the meeting. All attendee connections will hang up.
-  await client.deleteAttendee({
+  await chimeSDKMeetings.deleteAttendee({
     MeetingId: meeting.Meeting.MeetingId,
     AttendeeId: event.queryStringParameters.attendeeId,
-  }).promise();
+  });
 
   return response(200, 'application/json', JSON.stringify({}));
 };
@@ -237,13 +251,11 @@ exports.get_attendee = async (event) => {
     return response(400, 'application/json', JSON.stringify({ error: 'Need parameters: title, id' }));
   }
   const meeting = await getMeeting(query.title);
-  const client = await getClientForMeeting(meeting);
-  const attendeeResponse = await client
+  const attendeeResponse = await chimeSDKMeetings
     .getAttendee({
       MeetingId: meeting.Meeting.MeetingId,
       AttendeeId: query.id,
-    })
-    .promise();
+    });
   return response(200, 'application/json', JSON.stringify(attendeeResponse, null, 2));
 };
 
@@ -265,8 +277,7 @@ exports.update_attendee_capabilities = async (event) => {
     );
   }
   const meeting = await getMeeting(query.title);
-  const client = getClientForMeeting(meeting);
-  const attendeeCapsResponse = await client
+  const attendeeCapsResponse = await chimeSDKMeetings
     .updateAttendeeCapabilities({
       MeetingId: meeting.Meeting.MeetingId,
       AttendeeId: query.attendeeId,
@@ -275,8 +286,7 @@ exports.update_attendee_capabilities = async (event) => {
         Video: query.videoCapability,
         Content: query.contentCapability,
       },
-    })
-    .promise();
+    });
   return response(200, 'application/json', JSON.stringify(attendeeCapsResponse));
 };
 
@@ -298,8 +308,7 @@ exports.batch_update_attendee_capabilities_except = async (event) => {
     );
   }
   const meeting = await getMeeting(query.title);
-  const client = getClientForMeeting(meeting);
-  const attendeeCapsExceptResponse = await client
+  const attendeeCapsExceptResponse = await chimeSDKMeetings
     .batchUpdateAttendeeCapabilitiesExcept({
       MeetingId: meeting.Meeting.MeetingId,
       ExcludedAttendeeIds: query.attendeeIds.split(',').map((attendeeId) => {
@@ -310,15 +319,13 @@ exports.batch_update_attendee_capabilities_except = async (event) => {
         Video: query.videoCapability,
         Content: query.contentCapability,
       },
-    })
-    .promise();
+    });
   return response(200, 'application/json', JSON.stringify(attendeeCapsExceptResponse));
 };
 
 exports.start_transcription = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
-  let client = getClientForMeeting(meeting);
 
   const languageCode = event.queryStringParameters.language;
   const region = event.queryStringParameters.region;
@@ -392,22 +399,21 @@ exports.start_transcription = async (event, context) => {
   }
 
   // start transcription for the meeting
-  await client.startMeetingTranscription({
+  await chimeSDKMeetings.startMeetingTranscription({
     MeetingId: meeting.Meeting.MeetingId,
     TranscriptionConfiguration: transcriptionConfiguration
-  }).promise();
+  });
   return response(200, 'application/json', JSON.stringify({}));
 };
 
 exports.stop_transcription = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
-  let client = getClientForMeeting(meeting);
 
   // stop transcription for the meeting
-  await client.stopMeetingTranscription({
+  await chimeSDKMeetings.stopMeetingTranscription({
     MeetingId: meeting.Meeting.MeetingId
-  }).promise();
+  });
   return response(200, 'application/json', JSON.stringify({}));
 };
 
@@ -424,7 +430,7 @@ exports.start_capture = async (event, context) => {
     SinkArn: captureS3Destination,
   };
   console.log("Creating new media capture pipeline: ", request)
-  pipelineInfo = await getClientForMediaCapturePipelines().createMediaCapturePipeline(request).promise();
+  pipelineInfo = await chimeSdkMediaPipelines.createMediaCapturePipeline(request);
 
   await putCapturePipeline(event.queryStringParameters.title, pipelineInfo)
   console.log("Successfully created media capture pipeline: ", pipelineInfo);
@@ -436,9 +442,9 @@ exports.end_capture = async (event, context) => {
   // Fetch the capture info by title
   const pipelineInfo = await getCapturePipeline(event.queryStringParameters.title);
   if (pipelineInfo) {
-    await getClientForMediaCapturePipelines().deleteMediaCapturePipeline({
+    await chimeSdkMediaPipelines.deleteMediaCapturePipeline({
       MediaPipelineId: pipelineInfo.MediaCapturePipeline.MediaPipelineId
-    }).promise();
+    });
     return response(200, 'application/json', JSON.stringify({}));
   } else {
     return response(500, 'application/json', JSON.stringify({ msg: "No pipeline to stop for this meeting" }))
@@ -459,7 +465,7 @@ exports.start_live_connector = async (event, context) => {
   const params = {
     name: ivsChannelName,
   };
-  const ivsCreateChannelResponse = await ivs.createChannel(params).promise();
+  const ivsCreateChannelResponse = await ivs.createChannel(params);
   ivsPlaybackUrl = ivsCreateChannelResponse.channel.playbackUrl
   ivsEndpoint = ivsCreateChannelResponse.channel.ingestEndpoint
   ivsStreamKey = ivsCreateChannelResponse.streamKey.value
@@ -496,7 +502,7 @@ exports.start_live_connector = async (event, context) => {
         ]
       };
   console.log("Creating new media live connector pipeline: ", request)
-  liveConnectorPipelineInfo = await chimeSdkMediaPipelines.createMediaLiveConnectorPipeline(request).promise();
+  liveConnectorPipelineInfo = await chimeSdkMediaPipelines.createMediaLiveConnectorPipeline(request);
   await putLiveConnectorPipeline(event.queryStringParameters.title, liveConnectorPipelineInfo)
   await putIvsArn(event.queryStringParameters.title, ivsChannelArn)
   console.log("Successfully created media live connector pipeline: ", liveConnectorPipelineInfo)
@@ -509,13 +515,13 @@ exports.end_live_connector = async (event, context) => {
   const liveConnectorPipelineInfo = await getLiveConnectorPipeline(event.queryStringParameters.title);
   if (liveConnectorPipelineInfo) {
     const ivsChannelArn = await getIvsArn(event.queryStringParameters.title)
-    await getClientForMediaCapturePipelines().deleteMediaPipeline({
+    await chimeSdkMediaPipelines.deleteMediaPipeline({
       MediaPipelineId: liveConnectorPipelineInfo.MediaLiveConnectorPipeline.MediaPipelineId
-    }).promise();
+    });
 
     try {
       await delay(3000);
-      await ivs.deleteChannel({arn: ivsChannelArn}).promise()
+      await ivs.deleteChannel({arn: ivsChannelArn})
     }
     catch (e) {
       console.log("error deleting ivs :" + e)
@@ -535,11 +541,7 @@ exports.stereo_audio_file = async (event, context) => {
 };
 
 exports.fetch_credentials = async (event, context) => {
-  const awsCredentials = {
-    accessKeyId: AWS.config.credentials.accessKeyId,
-    secretAccessKey: AWS.config.credentials.secretAccessKey,
-    sessionToken: AWS.config.credentials.sessionToken,
-  };
+  const awsCredentials = await chimeSDKMeetings.config.credentials();
 
   return response(200, 'application/json', JSON.stringify(awsCredentials));
 };
@@ -629,7 +631,7 @@ async function getMeeting(title) {
         S: title
       },
     },
-  }).promise();
+  });
   return result.Item ? JSON.parse(result.Item.Data.S) : null;
 }
 
@@ -644,7 +646,7 @@ async function putMeeting(title, meeting) {
         N: `${Math.floor(Date.now() / 1000) + 60 * 60 * 24}` // clean up meeting record one day from now
       }
     }
-  }).promise();
+  });
 }
 
 // Retrieves capture data for a meeting by title
@@ -656,7 +658,7 @@ async function getCapturePipeline(title) {
         S: title
       }
     }
-  }).promise();
+  });
   return result.Item && result.Item.CaptureData ? JSON.parse(result.Item.CaptureData.S) : null;
 }
 
@@ -671,7 +673,7 @@ async function putCapturePipeline(title, capture) {
     ExpressionAttributeValues: {
       ":capture": { S: JSON.stringify(capture) }
     }
-  }).promise()
+  })
 }
 
 // Retrieves live connector data for a meeting by title
@@ -683,7 +685,7 @@ async function getLiveConnectorPipeline(title) {
         S: title
       }
     }
-  }).promise();
+  });
   return result.Item && result.Item.LiveConnectorData ? JSON.parse(result.Item.LiveConnectorData.S) : null;
 }
 
@@ -698,7 +700,7 @@ async function putLiveConnectorPipeline(title, liveConnector) {
     ExpressionAttributeValues: {
       ":liveConnector": {S: JSON.stringify(liveConnector)}
     }
-  }).promise()
+  })
 }
 
 // Retrieves live connector data for a meeting by title
@@ -710,7 +712,7 @@ async function getIvsArn(title) {
         S: title
       }
     }
-  }).promise();
+  });
   return result.Item && result.Item.IvsArnData ? JSON.parse(result.Item.IvsArnData.S) : null;
 }
 
@@ -725,7 +727,7 @@ async function putIvsArn(title, ivsArn) {
     ExpressionAttributeValues: {
       ":ivsArn": {S: JSON.stringify(ivsArn)}
     }
-  }).promise()
+  })
 }
 
 
@@ -739,7 +741,11 @@ async function putLogEvents(event, logGroupName, createLogEvents) {
     return response(200, 'application/json', JSON.stringify({}));
   }
 
-  const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+  const cloudWatchClient = new CloudWatchLogs({
+    // The key apiVersion is no longer supported in v3, and can be removed.
+    // @deprecated The client uses the "latest" apiVersion.
+    apiVersion: '2014-03-28',
+  });
   const putLogEventsInput = {
     logGroupName,
     logStreamName: createLogStreamName(body.meetingId, body.attendeeId),
@@ -751,7 +757,7 @@ async function putLogEvents(event, logGroupName, createLogEvents) {
   }
 
   try {
-    await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
+    await cloudWatchClient.putLogEvents(putLogEventsInput);
   } catch (error) {
     const errorMessage = `Failed to put CloudWatch log events with error ${error} and params ${JSON.stringify(putLogEventsInput)}`;
     if (error.code === 'InvalidSequenceTokenException' || error.code === 'DataAlreadyAcceptedException') {
@@ -769,7 +775,7 @@ async function ensureLogStream(cloudWatchClient, logGroupName, logStreamName) {
   const logStreamsResult = await cloudWatchClient.describeLogStreams({
     logGroupName: logGroupName,
     logStreamNamePrefix: logStreamName,
-  }).promise();
+  });
   const foundStream = logStreamsResult.logStreams.find(logStream => logStream.logStreamName === logStreamName);
   if (foundStream) {
     return foundStream.uploadSequenceToken;
@@ -777,7 +783,7 @@ async function ensureLogStream(cloudWatchClient, logGroupName, logStreamName) {
   await cloudWatchClient.createLogStream({
     logGroupName: logGroupName,
     logStreamName: logStreamName,
-  }).promise();
+  });
   return null;
 }
 
@@ -788,11 +794,15 @@ async function createLogStream(event, logGroupName) {
       error: 'Required properties: meetingId, attendeeId'
     }));
   }
-  const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+  const cloudWatchClient = new CloudWatchLogs({
+    // The key apiVersion is no longer supported in v3, and can be removed.
+    // @deprecated The client uses the "latest" apiVersion.
+    apiVersion: '2014-03-28',
+  });
   await cloudWatchClient.createLogStream({
     logGroupName,
     logStreamName: createLogStreamName(body.meetingId, body.attendeeId)
-  }).promise();
+  });
   return response(200, 'application/json', JSON.stringify({}));
 }
 

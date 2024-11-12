@@ -116,6 +116,10 @@ export default class DOMMockBuilder {
       new TimeoutScheduler(mockBehavior.asyncWaitMs).start(func);
     };
 
+    GlobalAny.window = GlobalAny;
+
+    GlobalAny.self = GlobalAny.window;
+
     GlobalAny.MessageEvent = class MockMessageEvent {
       data: ArrayBuffer;
 
@@ -132,6 +136,36 @@ export default class DOMMockBuilder {
         this.code = init.code;
         this.reason = init.reason;
       }
+    };
+
+    GlobalAny.Blob = DOMBlobMock;
+
+    GlobalAny.Worker = class DOMWorkerMock {
+      url: string;
+
+      constructor(stringUrl: string) {
+        this.url = stringUrl;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+      onmessage(event: MessageEvent): any {}
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      postMessage(message: any): void {
+        const msgEvent = new MessageEvent('message', { data: message });
+        if (self.onmessage) self.onmessage(msgEvent);
+      }
+
+      dispatchEvent(event: Event): boolean {
+        if (event.type === 'rtctransform') {
+          // @ts-ignore
+          if (self.onrtctransform) self.onrtctransform(<RTCTransformEvent>event);
+        }
+
+        return true;
+      }
+
+      terminate(): void {}
     };
 
     GlobalAny.WebSocket = class MockWebSocket {
@@ -615,9 +649,12 @@ export default class DOMMockBuilder {
       'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Mobile/15E148 Safari/604.1';
     const SAMSUNG_INTERNET_USERAGENT =
       'Mozilla/5.0 (Linux; Android 11; Pixel 3a XL) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/13.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
+    const CHROME_116_MAC_USER_AGENT =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36';
 
     const USER_AGENTS = new Map<string, string>();
     USER_AGENTS.set('chrome', CHROME_USERAGENT);
+    USER_AGENTS.set('chrome116', CHROME_116_MAC_USER_AGENT);
     USER_AGENTS.set('firefox', FIREFOX_USERAGENT);
     USER_AGENTS.set('safari', SAFARI_USERAGENT);
     USER_AGENTS.set('safari12', SAFARI12_USERAGENT);
@@ -654,8 +691,6 @@ export default class DOMMockBuilder {
       },
     };
 
-    GlobalAny.window = GlobalAny;
-
     GlobalAny.Audio = class MockAudio {
       constructor(public src?: string) {}
     };
@@ -664,6 +699,45 @@ export default class DOMMockBuilder {
       track: typeof GlobalAny.MediaStreamTrack;
       streams: typeof GlobalAny.MediaStream[] = [];
       constructor(public type: string, _eventInitDict?: EventInit) {}
+    };
+
+    GlobalAny.ReadableStream = class MockReadableStream {
+      private _locked: boolean = false;
+
+      get locked(): boolean {
+        return this._locked;
+      }
+
+      pipeThrough(transformStream: TransformStream): ReadableStream {
+        this._locked = true;
+        return transformStream.readable;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      pipeTo(destination: WritableStream): Promise<any> {
+        this._locked = true;
+        // @ts-ignore
+        destination['_locked'] = true;
+        return new Promise(() => {});
+      }
+    };
+
+    GlobalAny.WritableStream = class MockWritableStream {
+      private _locked: boolean = false;
+
+      get locked(): boolean {
+        return this._locked;
+      }
+    };
+
+    GlobalAny.TransformStream = class MockTransformStream {
+      readonly readable: ReadableStream;
+      readonly writable: WritableStream;
+
+      constructor() {
+        this.readable = new ReadableStream();
+        this.writable = new WritableStream();
+      }
     };
 
     GlobalAny.RTCSessionDescription = class MockSessionDescription {
@@ -893,12 +967,50 @@ export default class DOMMockBuilder {
       }
     };
 
+    GlobalAny.RTCRtpScriptTransformer = class MockRTCRtpScriptTransformer {
+      readonly readable: ReadableStream;
+      readonly writable: WritableStream;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readonly options: any;
+    };
+
+    GlobalAny.RTCTransformEvent = class MockRTCTransformEvent extends Event {
+      // @ts-ignore
+      constructor(type: string, public readonly transformer: RTCRtpScriptTransformer) {
+        super(type);
+      }
+    };
+
+    // This mock is based on the specification at https://www.w3.org/TR/webrtc-encoded-transform/.
+    GlobalAny.RTCRtpScriptTransform = class MockRTCRtpScriptTransform
+      // @ts-ignore
+      implements RTCRtpScriptTransformer {
+      readonly readable: ReadableStream;
+      readonly writable: WritableStream;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readonly options: any;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      constructor(worker: Worker, options?: any) {
+        const writeTransform = new TransformStream();
+        const readTransform = new TransformStream();
+        this.writable = writeTransform.writable;
+        this.readable = readTransform.readable;
+        this.options = options;
+
+        // @ts-ignore
+        const transformEvent = new RTCTransformEvent('rtctransform', this);
+        worker.dispatchEvent(transformEvent);
+      }
+    };
+
     GlobalAny.RTCRtpTransceiver = class MockRTCRtpTransceiver {
       readonly direction: RTCRtpTransceiverDirection;
       readonly receiver: RTCRtpReceiver;
       readonly sender: RTCRtpSender;
       readonly mid: string;
       currentDirection: string;
+      codecs: RTCRtpCodecCapability[] = [];
 
       constructor(trackOrKind: MediaStreamTrack | string, init?: RTCRtpTransceiverInit) {
         this.direction = init.direction;
@@ -920,19 +1032,32 @@ export default class DOMMockBuilder {
         }
         this.mid = 'mock-mid-id';
       }
+
+      setCodecPreferences(codecs: RTCRtpCodecCapability[]): void {
+        this.codecs = codecs;
+      }
     };
 
     GlobalAny.RTCRtpReceiver = class MockRTCRtpReceiver {
       readonly track: MediaStreamTrack;
+      // @ts-ignore
+      transform?: RTCRtpScriptTransform;
 
       constructor(track: MediaStreamTrack) {
         this.track = track;
+      }
+
+      createEncodedStreams(): TransformStream {
+        return new TransformStream();
       }
     };
 
     GlobalAny.RTCRtpSender = class MockRTCRtpSender {
       track: MediaStreamTrack;
       parameter: RTCRtpSendParameters;
+      // @ts-ignore
+      transform?: RTCRtpScriptTransform;
+
       constructor(track: MediaStreamTrack) {
         this.track = track;
         this.parameter = {
@@ -958,6 +1083,70 @@ export default class DOMMockBuilder {
       setParameters(param: RTCRtpSendParameters): Promise<void> {
         this.parameter = param;
         return;
+      }
+
+      createEncodedStreams(): TransformStream {
+        return new TransformStream();
+      }
+
+      static getCapabilities(kind: string): RTCRtpCapabilities | null {
+        if (kind === 'video') {
+          return null;
+        }
+        // @ts-ignore
+        const codecs = [
+          {
+            channels: 2,
+            clockRate: 48000,
+            mimeType: 'audio/opus',
+            sdpFmtpLine: 'minptime=10;useinbandfec=1',
+          },
+          {
+            channels: 1,
+            clockRate: 8000,
+            mimeType: 'audio/G722',
+          },
+          {
+            channels: 1,
+            clockRate: 8000,
+            mimeType: 'audio/PCMU',
+          },
+          {
+            channels: 1,
+            clockRate: 8000,
+            mimeType: 'audio/PCMA',
+          },
+          {
+            channels: 1,
+            clockRate: 8000,
+            mimeType: 'audio/CN',
+          },
+          {
+            channels: 1,
+            clockRate: 48000,
+            mimeType: 'audio/telephone-event',
+          },
+          {
+            channels: 1,
+            clockRate: 8000,
+            mimeType: 'audio/telephone-event',
+          },
+        ] as RTCRtpCodecCapability;
+        if (mockBehavior?.supportsAudioRedCodec) {
+          const redCodec = {
+            channels: 2,
+            clockRate: 48000,
+            mimeType: 'audio/red',
+            sdpFmtpLine: '111/111',
+          };
+          // @ts-ignore
+          codecs.splice(1, 0, redCodec);
+        }
+        // @ts-ignore
+        const capabilities = {
+          codecs: codecs,
+        } as RTCRtpCapabilities;
+        return capabilities;
       }
     };
 
@@ -1046,6 +1235,7 @@ export default class DOMMockBuilder {
       }
     };
 
+    GlobalAny.Blob = DOMBlobMock;
     GlobalAny.matchMedia = function mockMatchMedia(_query: string): MediaQueryList {
       return new GlobalAny.MediaQueryList();
     };
@@ -1337,15 +1527,6 @@ export default class DOMMockBuilder {
       disconnect(): void {}
     };
 
-    GlobalAny.crypto = {
-      getRandomValues(_data: Uint32Array): Uint32Array {
-        return new Uint32Array([
-          Math.trunc(Math.random() * 2 ** 32),
-          Math.trunc(Math.random() * 2 ** 32),
-        ]);
-      },
-    };
-
     GlobalAny.HTMLVideoElement = class MockHTMLVideoElement {
       refSrcObject: MediaStream;
       width: number;
@@ -1629,9 +1810,14 @@ export default class DOMMockBuilder {
     delete GlobalAny.Response;
     delete GlobalAny.navigator;
      */
+    delete GlobalAny.window;
+    delete GlobalAny.self;
     delete GlobalAny.RTCPeerConnectionIceEvent;
     delete GlobalAny.RTCIceCandidate;
     delete GlobalAny.RTCPeerConnection;
+    delete GlobalAny.RTCRtpScriptTransformer;
+    delete GlobalAny.RTCTransformEvent;
+    delete GlobalAny.RTCRtpScriptTransform;
     delete GlobalAny.RTCRtpTransceiver;
     delete GlobalAny.RTCRtpReceiver;
     delete GlobalAny.RTCRtpSender;
@@ -1639,7 +1825,6 @@ export default class DOMMockBuilder {
     delete GlobalAny.MediaStreamTrack;
     delete GlobalAny.MediaStream;
     delete GlobalAny.MediaDevices;
-    delete GlobalAny.window;
     delete GlobalAny.devicePixelRatio;
     delete GlobalAny.MediaQueryList;
     delete GlobalAny.matchMedia;
@@ -1652,6 +1837,5 @@ export default class DOMMockBuilder {
     delete GlobalAny.AudioBuffer;
     delete GlobalAny.MediaStreamAudioDestinationNode;
     delete GlobalAny.MediaStreamAudioSourceNode;
-    delete GlobalAny.crypto;
   }
 }

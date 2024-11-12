@@ -72,31 +72,84 @@
 							<h1>Integrating background filters into a client application<a id="background-filters"></a></h1>
 						</a>
 					</div>
+					<ul>
+						<li><a href="#integrating-background-filters-into-a-client-application">Integrating background filters into a client application</a></li>
+						<li><a href="#about-using-background-filters">About using background filters</a><ul>
+								<li><a href="#using-the-cross-origin-opener-policy">Using the cross-origin opener policy</a></li>
+								<li><a href="#simd-support">SIMD support</a></li>
+								<li><a href="#webgl2-support">WebGL2 support</a></li>
+								<li><a href="#content-delivery-and-bandwidth">Content delivery and bandwidth</a></li>
+								<li><a href="#browser-compatibility">Browser compatibility</a></li>
+							</ul>
+						</li>
+						<li><a href="#using-a-content-security-policy">Using a Content Security Policy</a><ul>
+								<li><a href="#required-csp-directives">Required CSP Directives</a><ul>
+										<li><a href="#script-policy">Script Policy</a></li>
+										<li><a href="#worker-policy">Worker Policy</a></li>
+										<li><a href="#webassembly-policy">WebAssembly Policy</a></li>
+									</ul>
+								</li>
+								<li><a href="#optional-csp-directives">Optional CSP Directives</a><ul>
+										<li><a href="#background-image-policy">Background Image Policy</a></li>
+									</ul>
+								</li>
+								<li><a href="#example-csp-declaration">Example CSP Declaration</a></li>
+								<li><a href="#csp-errors">CSP Errors</a></li>
+							</ul>
+						</li>
+						<li><a href="#adding-background-filters-to-your-application">Adding background filters to your application</a><ul>
+								<li><a href="#checking-for-support-before-offering-a-filter">Checking for support before offering a filter</a></li>
+								<li><a href="#creating-a-videofxconfig-object">Creating a VideoFxConfig object</a></li>
+								<li><a href="#creating-a-videofxprocessor-object">Creating a VideoFxProcessor object</a></li>
+								<li><a href="#creating-the-videotransformdevice-object">Creating the VideoTransformDevice object</a></li>
+								<li><a href="#tuning-resource-utilization">Tuning resource utilization</a></li>
+								<li><a href="#starting-video-input">Starting video input</a></li>
+								<li><a href="#stopping-video-input">Stopping video input</a></li>
+							</ul>
+						</li>
+						<li><a href="#example-background-filter">Example background filter</a></li>
+					</ul>
+					<hr>
 					<p>This section explains how to programmatically filter video backgrounds by using background blur 2.0 and background replacement 2.0. To add a background filter to a video stream, you need to create a <code>VideoFxProcessor</code> that contains a <code>VideoFxConfig</code> object. You then insert that processor into a <code>VideoTransformDevice</code>.</p>
 					<p>The background filter processor uses a TensorFlow Lite machine learning model, JavaScript Web Workers, and WebAssembly to apply a filter to the background of each frame in the video stream. These assets are downloaded at runtime when you create a <code>VideoFxProcessor</code>.</p>
 					<p>The new background blur and replacement filters are integrated into the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/browser">browser demo application on GitHub</a>. To try it out, launch the demo with <code>npm run start</code>, join the meeting, then click the camera to enable video. From the video filter drop down, choose one of the <strong>Background Blur 2.0</strong> or <strong>Background Replacement 2.0</strong> options.</p>
 					<p><strong>Topics</strong></p>
 					<ul>
+						<li><a href="#integrating-background-filters-into-a-client-application">Integrating background filters into a client application</a></li>
 						<li><a href="#about-using-background-filters">About using background filters</a><ul>
-								<li><a href="#cross-origin-policy">Using the cross-origin opener policy</a></li>
+								<li><a href="#using-the-cross-origin-opener-policy">Using the cross-origin opener policy</a></li>
 								<li><a href="#simd-support">SIMD support</a></li>
 								<li><a href="#webgl2-support">WebGL2 support</a></li>
-								<li><a href="#delivery-caching-bandwidth">Content delivery and bandwidth</a></li>
-								<li><a href="#filters-browser-compat">Browser compatibility</a></li>
+								<li><a href="#content-delivery-and-bandwidth">Content delivery and bandwidth</a></li>
+								<li><a href="#browser-compatibility">Browser compatibility</a></li>
 							</ul>
 						</li>
-						<li><a href="#content-security">Using a content security policy</a></li>
-						<li><a href="#add-filters">Adding background filters to your application</a><ul>
-								<li><a href="#support-check">Checking for support before offering a filter</a></li>
-								<li><a href="#create-videofxconfig">Creating a VideoFxConfig object</a></li>
-								<li><a href="#create-videofxprocessor">Creating a VideoFxProcessor object</a></li>
-								<li><a href="#create-video-transform">Creating the VideoTransformDevice object</a></li>
-								<li><a href="#tuning">Tuning resource utilization</a></li>
-								<li><a href="#start-video-input">Starting video input</a></li>
-								<li><a href="#stop-video-input">Stopping video input</a></li>
+						<li><a href="#using-a-content-security-policy">Using a Content Security Policy</a><ul>
+								<li><a href="#required-csp-directives">Required CSP Directives</a><ul>
+										<li><a href="#script-policy">Script Policy</a></li>
+										<li><a href="#worker-policy">Worker Policy</a></li>
+										<li><a href="#webassembly-policy">WebAssembly Policy</a></li>
+									</ul>
+								</li>
+								<li><a href="#optional-csp-directives">Optional CSP Directives</a><ul>
+										<li><a href="#background-image-policy">Background Image Policy</a></li>
+									</ul>
+								</li>
+								<li><a href="#example-csp-declaration">Example CSP Declaration</a></li>
+								<li><a href="#csp-errors">CSP Errors</a></li>
 							</ul>
 						</li>
-						<li><a href="#example-bg-filter">Example background filter</a></li>
+						<li><a href="#adding-background-filters-to-your-application">Adding background filters to your application</a><ul>
+								<li><a href="#checking-for-support-before-offering-a-filter">Checking for support before offering a filter</a></li>
+								<li><a href="#creating-a-videofxconfig-object">Creating a VideoFxConfig object</a></li>
+								<li><a href="#creating-a-videofxprocessor-object">Creating a VideoFxProcessor object</a></li>
+								<li><a href="#creating-the-videotransformdevice-object">Creating the VideoTransformDevice object</a></li>
+								<li><a href="#tuning-resource-utilization">Tuning resource utilization</a></li>
+								<li><a href="#starting-video-input">Starting video input</a></li>
+								<li><a href="#stopping-video-input">Stopping video input</a></li>
+							</ul>
+						</li>
+						<li><a href="#example-background-filter">Example background filter</a></li>
 					</ul>
 					<a href="#about-using-background-filters" id="about-using-background-filters" style="color: inherit; text-decoration: none;">
 						<h1>About using background filters<a id="about-using-background-filters"></a></h1>

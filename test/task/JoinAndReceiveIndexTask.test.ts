@@ -6,6 +6,7 @@ import * as sinon from 'sinon';
 
 import { AllHighestVideoBandwidthPolicy } from '../../src';
 import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -19,7 +20,6 @@ import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingCl
 import ServerSideNetworkAdaption from '../../src/signalingclient/ServerSideNetworkAdaption';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
 import {
-  SdkErrorFrame,
   SdkIndexFrame,
   SdkJoinAckFrame,
   SdkServerSideNetworkAdaption,
@@ -56,6 +56,7 @@ describe('JoinAndReceiveIndexTask', () => {
     context.logger = logger;
     context.signalingClient = signalingClient;
     context.browserBehavior = new DefaultBrowserBehavior();
+    context.audioProfile = new AudioProfile();
     context.meetingSessionConfiguration = new MeetingSessionConfiguration();
     context.meetingSessionConfiguration.urls = new MeetingSessionURLs();
     context.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy('self');
@@ -132,6 +133,68 @@ describe('JoinAndReceiveIndexTask', () => {
       }
     });
 
+    it('can process a websocket close indicating there was an internal server error', async () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.SignalingInternalServerError);
+        receivedStatus = true;
+        return true;
+      };
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.close(4500, 'service unavailable');
+      });
+      new TimeoutScheduler(200).start(() => {
+        // Simulate task cancellation due to close message being received
+        task.cancel();
+      });
+      try {
+        await task.run();
+        expect(false).to.equal(true);
+      } catch {
+        expect(context.indexFrame).to.equal(null);
+        expect(context.turnCredentials).to.equal(null);
+        expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
+        expect(receivedStatus).to.equal(true);
+      }
+    });
+
+    it('can process a websocket close indicating there was a generic bad request', async () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.SignalingBadRequest);
+        receivedStatus = true;
+        return true;
+      };
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.close(4400, 'bad request');
+      });
+      new TimeoutScheduler(200).start(() => {
+        // Simulate task cancellation due to close message being received
+        task.cancel();
+      });
+      try {
+        await task.run();
+        expect(false).to.equal(true);
+      } catch {
+        expect(context.indexFrame).to.equal(null);
+        expect(context.turnCredentials).to.equal(null);
+        expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
+        expect(receivedStatus).to.equal(true);
+      }
+    });
+
     it('can run and receive join ack and index frame', async () => {
       await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
@@ -150,47 +213,26 @@ describe('JoinAndReceiveIndexTask', () => {
       expect(context.videoSubscriptionLimit).to.equal(10);
     });
 
-    it('can process a join ack indicating there was a generic bad request', async () => {
-      // @ts-ignore
-      let receivedStatus = false;
-      context.audioVideoController.handleMeetingSessionStatus = (
-        status: MeetingSessionStatus,
-        _error: Error
-      ): boolean => {
-        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.SignalingBadRequest);
-        receivedStatus = true;
-        return true;
-      };
-      await delay(behavior.asyncWaitMs + 10);
-      expect(signalingClient.ready()).to.equal(true);
-      await delay(behavior.asyncWaitMs + 10);
-      expect(signalingClient.ready()).to.equal(true);
-
-      const errorFrame = SdkErrorFrame.create();
-      errorFrame.description = 'Failed!';
-      errorFrame.status = 400;
+    it('can handle a joinack signal without a join ack frame', async () => {
       const joinAckSignal = SdkSignalFrame.create();
       joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
-      joinAckSignal.error = errorFrame;
 
       const joinAckBuffer = SdkSignalFrame.encode(joinAckSignal).finish();
       joinAckSignalBuffer = new Uint8Array(joinAckBuffer.length + 1);
       joinAckSignalBuffer[0] = 0x5;
       joinAckSignalBuffer.set(joinAckBuffer, 1);
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
       new TimeoutScheduler(100).start(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
       });
-
-      try {
-        await task.run();
-        // Should throw exception
-        expect(false).to.equal(true);
-      } catch {
-        expect(context.indexFrame).to.equal(null);
-        expect(context.turnCredentials).to.equal(null);
-        expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
-        expect(receivedStatus).to.equal(true);
-      }
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(context.indexFrame).to.not.equal(null);
+      expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
     });
 
     it('should set video subscription limit to default value when join ack frame has empty video subscription limit', async () => {

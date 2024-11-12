@@ -30,9 +30,16 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
    */
   supportDownlinkBandwidthEstimation(): boolean;
   supportsVideoLayersAllocationRtpHeaderExtension(): boolean;
+  supportsDependencyDescriptorRtpHeaderExtension(): boolean;
+  supportsScalableVideoCoding(): boolean;
+  supportsAudioRedundancy(): boolean;
   disable480pResolutionScaleDown(): boolean;
   /**
    * Returns whether the browser requires the "playback" latency hint for Web Audio.
    */
   requiresPlaybackLatencyHintForAudioContext(): boolean;
+  /**
+   * Returns whether the browser needs the audio context suspended and resumed when a device fails
+   */
+  requiresAudioContextResetOnDeviceFailureForWebAudio(): boolean;
 }

@@ -73,6 +73,39 @@
 						</a>
 					</div>
 					<p>The Amazon Chime SDK for JavaScript, in conjunction with WebRTC, allows you to configure quality and bandwidth options for meeting sessions. It provides both automatic and manual controls to adapt to changing network conditions. Finding the right balance of quality and performance can be challenging when either the client&#39;s network or CPU is constrained. As network reliability and available bandwidth decrease, quality and functionality trade-offs must be made in real time to preserve the viability of the meeting. This guide gives an overview of challenges associated with devices and networks, degradation detection mechanisms, and mitigations for various levels of degradation.</p>
+					<ul>
+						<li><a href="#quality-bandwidth-and-connectivity">Quality, Bandwidth, and Connectivity</a><ul>
+								<li><a href="#goals">Goals</a></li>
+								<li><a href="#challenges">Challenges</a></li>
+								<li><a href="#detection-mechanisms">Detection Mechanisms</a><ul>
+										<li><a href="#events-for-monitoring-local-attendee-downlink">Events for monitoring local attendee downlink</a></li>
+										<li><a href="#events-for-monitoring-remote-attendee-uplink">Events for monitoring remote attendee uplink</a></li>
+										<li><a href="#metrics-exposed-directly-from-the-webrtc-peer-connection">Metrics exposed directly from the WebRTC peer connection</a></li>
+										<li><a href="#events-for-monitoring-currently-active-simulast-layers">Events for monitoring currently active simulast layers</a></li>
+									</ul>
+								</li>
+								<li><a href="#mitigations">Mitigations</a><ul>
+										<li><a href="#automatic-mitigations">Automatic mitigations</a></li>
+										<li><a href="#mitigations-to-conserve-cpu">Mitigations to conserve CPU</a><ul>
+												<li><a href="#application-profiling">Application profiling</a></li>
+												<li><a href="#choose-a-lower-local-video-quality">Choose a lower local video quality</a></li>
+												<li><a href="#pause-remote-videos">Pause remote videos</a></li>
+											</ul>
+										</li>
+										<li><a href="#mitigations-to-conserve-bandwidth">Mitigations to conserve bandwidth</a><ul>
+												<li><a href="#adjust-local-video-quality">Adjust local video quality</a></li>
+												<li><a href="#turning-off-local-video">Turning off local video</a></li>
+												<li><a href="#configure-a-video-uplink-policy">Configure a video uplink policy</a></li>
+												<li><a href="#use-active-speaker-detection">Use active speaker detection</a></li>
+												<li><a href="#configure-a-video-downlink-policy">Configure a video downlink policy</a></li>
+											</ul>
+										</li>
+										<li><a href="#use-video-simulcast">Use video simulcast</a></li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
 					<a href="#goals" id="goals" style="color: inherit; text-decoration: none;">
 						<h2>Goals</h2>
 					</a>
@@ -271,10 +304,6 @@
 						<h4>Configure a video uplink policy</h4>
 					</a>
 					<p>The SDK by default uses the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/nscalevideouplinkbandwidthpolicy.html">NScaleVideoUplinkBandwidthPolicy</a> which monitors number of participants in the meeting and automatically scales down the maxBandwidthKbps as the number of remote video tiles increases. This can be customized by implementing a <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy">VideoUplinkBandwidth Policy</a> and setting it in the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy">MeetingSessionConfiguration</a> class.</p>
-					<a href="#pause-remote-attendee-video" id="pause-remote-attendee-video" style="color: inherit; text-decoration: none;">
-						<h4>Pause remote attendee video</h4>
-					</a>
-					<p>When more video is being received than available estimated downlink bandwidth can support, the event <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata">videoNotReceivingEnoughData</a> can is triggered with a list of attendee IDs and the bandwidth being consumed due to them. You can use this information to selectively pause attendees that are sending the highest bitrate video streams using <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile">pauseVideoTile</a>. When a video tile is paused, the action only affects your client. It does not pause the video for other attendees.</p>
 					<a href="#use-active-speaker-detection" id="use-active-speaker-detection" style="color: inherit; text-decoration: none;">
 						<h4>Use active speaker detection</h4>
 					</a>
@@ -282,14 +311,13 @@
 					<a href="#configure-a-video-downlink-policy" id="configure-a-video-downlink-policy" style="color: inherit; text-decoration: none;">
 						<h4>Configure a video downlink policy</h4>
 					</a>
-					<p>By default the SDK uses the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html">AllHighestVideoBandwidthPolicy</a>, but <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a> is used if simulcast is enabled. <a href="https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html">AllHighestVideoBandwidthPolicy</a> subscribes to the highest quality video of all participants and <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a> tries to subscribe to videos based on the browser downlink estimate, dropping videos in case of not enough bandwidth.</p>
+					<p>By default the SDK uses the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html">AllHighestVideoBandwidthPolicy</a> which will not adapt to local receive network conditions and always subscribes to the highest quality video of all participant, but <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a> will downgrade or pause videos in response to network constraints. Additional configuration of that policy is required to select which remote videos to subscribe to, see <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html">the guide</a> for more information. Downgrades are only possible if <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#">simulcast or SVC is enabled</a>.</p>
 					<p>You can customize the default downlink policy by setting the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy">VideoDownlinkBandwidthPolicy</a> in <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy">MeetingSessionConfiguration</a> class.</p>
-					<p><em>Browser clients currently only send one stream resolution. You would only need to use this function if you were also using the Amazon Chime SDK for iOS or the Amazon Chime SDK for Android.</em></p>
 					<a href="#use-video-simulcast" id="use-video-simulcast" style="color: inherit; text-decoration: none;">
 						<h3>Use video simulcast</h3>
 					</a>
-					<p>Simulcast is a standardized technique in WebRTC to enhance video quality in a multi-party call. Amazon Chime SDK for JavaScript provides a video simulcast solution for Chromium-based browsers. To use simulcast, please refer to the documentation <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#">here</a>.
-					<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Quality%20Bandwidth_Connectivity%20feedback">Give feedback on this guide</a></p>
+					<p>Simulcast is a standardized technique in WebRTC to enhance video quality in a multi-party call. Amazon Chime SDK for JavaScript provides a video simulcast solution for Chromium-based browsers. To use simulcast, please refer to the documentation <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#">here</a>.</p>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Quality%20Bandwidth_Connectivity%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>

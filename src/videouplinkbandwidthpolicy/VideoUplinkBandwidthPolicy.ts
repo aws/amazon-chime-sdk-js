@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
@@ -60,7 +61,7 @@ export default interface VideoUplinkBandwidthPolicy {
   updateConnectionMetric(metrics: ConnectionMetrics): void;
 
   /**
-   * Returns the selected [[MediaTrackConstraints]] to update
+   * This function is deprecated and unused, and will be removed in a future release.
    */
   chooseMediaTrackConstraints(): MediaTrackConstraints;
 
@@ -84,4 +85,38 @@ export default interface VideoUplinkBandwidthPolicy {
    * This method should not throw.
    */
   updateTransceiverController?(): void;
+
+  /**
+   * Set if high resultion feature (i.e., 1080p for camera and 4k for content) is enabled.
+   */
+  setHighResolutionFeatureEnabled?(enabled: boolean): void;
+
+  /**
+   * Set whether to enable scalable video coding (SVC)
+   */
+  setSVCEnabled?(enable: boolean): void;
+
+  /**
+   * Dependency descriptors can be used by the backend to designate spatial or temporal layers
+   * on a single encoding. Along with the video layers allocation exension this will
+   * result in the ability for remote attendees to subscribe to individual layers below the top.
+   *
+   * If the send transceiver is in a state where the layers allocation extension is not matching up with
+   * the dependency descriptor extension, or we simply don't want to allow for the seperation of spatial
+   * or temporal layers, we can remove the dependency descriptor from the SDP.
+   */
+  wantsVideoDependencyDescriptorRtpHeaderExtension?(): boolean;
+
+  /**
+   * Called when the intersection of the client's video codec send preferences
+   * and the meeting's video codec receive preferences is updated.
+   * @param meetingSupportedVideoSendCodecs - The intersection;
+   * undefined if the intersection is empty.
+   * @param videoSendCodecPreferences - The original preferences to use as a
+   * fallback when the intersection is empty.
+   */
+  setMeetingSupportedVideoSendCodecs?(
+    meetingSupportedVideoSendCodecs: VideoCodecCapability[] | undefined,
+    videoSendCodecPreferences: VideoCodecCapability[]
+  ): void;
 }

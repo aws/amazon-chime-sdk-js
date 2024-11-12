@@ -97,10 +97,12 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#choosemediatrackconstraints" class="tsd-kind-icon">choose<wbr>Media<wbr>Track<wbr>Constraints</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#maxbandwidthkbps" class="tsd-kind-icon">max<wbr>Bandwidth<wbr>Kbps</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#sethasbandwidthpriority" class="tsd-kind-icon">set<wbr>Has<wbr>Bandwidth<wbr>Priority</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#sethighresolutionfeatureenabled" class="tsd-kind-icon">set<wbr>High<wbr>Resolution<wbr>Feature<wbr>Enabled</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#setidealmaxbandwidthkbps" class="tsd-kind-icon">set<wbr>Ideal<wbr>Max<wbr>Bandwidth<wbr>Kbps</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#updateconnectionmetric" class="tsd-kind-icon">update<wbr>Connection<wbr>Metric</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#updateindex" class="tsd-kind-icon">update<wbr>Index</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#wantsresubscribe" class="tsd-kind-icon">wants<wbr>Resubscribe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="novideouplinkbandwidthpolicy.html#wantsvideodependencydescriptorrtpheaderextension" class="tsd-kind-icon">wants<wbr>Video<wbr>Dependency<wbr>Descriptor<wbr>Rtp<wbr>Header<wbr>Extension</a></li>
 							</ul>
 						</section>
 					</div>
@@ -191,7 +193,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns the selected [[MediaTrackConstraints]] to update</p>
+									<p>This function is deprecated and unused, and will be removed in a future release.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MediaTrackConstraints</span></h4>
@@ -244,6 +246,35 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>_hasBandwidthPriority: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="sethighresolutionfeatureenabled" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> set<wbr>High<wbr>Resolution<wbr>Feature<wbr>Enabled</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>High<wbr>Resolution<wbr>Feature<wbr>Enabled<span class="tsd-signature-symbol">(</span>_enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videouplinkbandwidthpolicy.html">VideoUplinkBandwidthPolicy</a>.<a href="../interfaces/videouplinkbandwidthpolicy.html#sethighresolutionfeatureenabled">setHighResolutionFeatureEnabled</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy.ts#L31">src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy.ts:31</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set if high resultion feature (i.e., 1080p for camera and 4k for content) is enabled.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>_enabled: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -362,6 +393,34 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="wantsvideodependencydescriptorrtpheaderextension" class="tsd-anchor"></a>
+					<h3>wants<wbr>Video<wbr>Dependency<wbr>Descriptor<wbr>Rtp<wbr>Header<wbr>Extension</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">wants<wbr>Video<wbr>Dependency<wbr>Descriptor<wbr>Rtp<wbr>Header<wbr>Extension<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videouplinkbandwidthpolicy.html">VideoUplinkBandwidthPolicy</a>.<a href="../interfaces/videouplinkbandwidthpolicy.html#wantsvideodependencydescriptorrtpheaderextension">wantsVideoDependencyDescriptorRtpHeaderExtension</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy.ts#L32">src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy.ts:32</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Dependency descriptors can be used by the backend to designate spatial or temporal layers
+										on a single encoding. Along with the video layers allocation exension this will
+									result in the ability for remote attendees to subscribe to individual layers below the top.</p>
+								</div>
+								<p>If the send transceiver is in a state where the layers allocation extension is not matching up with
+									the dependency descriptor extension, or we simply don&#39;t want to allow for the seperation of spatial
+								or temporal layers, we can remove the dependency descriptor from the SDP.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -398,6 +457,9 @@
 								<a href="novideouplinkbandwidthpolicy.html#sethasbandwidthpriority" class="tsd-kind-icon">set<wbr>Has<wbr>Bandwidth<wbr>Priority</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="novideouplinkbandwidthpolicy.html#sethighresolutionfeatureenabled" class="tsd-kind-icon">set<wbr>High<wbr>Resolution<wbr>Feature<wbr>Enabled</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="novideouplinkbandwidthpolicy.html#setidealmaxbandwidthkbps" class="tsd-kind-icon">set<wbr>Ideal<wbr>Max<wbr>Bandwidth<wbr>Kbps</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -408,6 +470,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="novideouplinkbandwidthpolicy.html#wantsresubscribe" class="tsd-kind-icon">wants<wbr>Resubscribe</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="novideouplinkbandwidthpolicy.html#wantsvideodependencydescriptorrtpheaderextension" class="tsd-kind-icon">wants<wbr>Video<wbr>Dependency<wbr>Descriptor<wbr>Rtp<wbr>Header<wbr>Extension</a>
 							</li>
 						</ul>
 					</li>

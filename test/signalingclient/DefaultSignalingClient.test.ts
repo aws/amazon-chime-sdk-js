@@ -37,6 +37,7 @@ import {
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import { wait } from '../../src/utils/Utils';
+import VideoQualityAdaptationPreference from '../../src/videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import VideoStreamDescription from '../../src/videostreamindex/VideoStreamDescription';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
@@ -633,6 +634,8 @@ describe('DefaultSignalingClient', () => {
             addedConfig.mid = 'midToAdd';
             addedConfig.attendeeId = 'attendeeId';
             addedConfig.streamId = 1;
+            addedConfig.qualityAdaptationPreference =
+              VideoQualityAdaptationPreference.MaintainFramerate;
             event.client.remoteVideoUpdate([addedConfig], ['midToRemove']);
           }
         }
@@ -669,6 +672,8 @@ describe('DefaultSignalingClient', () => {
             addedConfig.mid = 'midToAdd';
             addedConfig.attendeeId = 'attendeeId';
             addedConfig.streamId = 1;
+            addedConfig.qualityAdaptationPreference =
+              VideoQualityAdaptationPreference.MaintainResolution;
             event.client.remoteVideoUpdate([addedConfig], ['midToRemove']);
           }
         }
@@ -883,7 +888,7 @@ describe('DefaultSignalingClient', () => {
       testObjects.signalingClient.openConnection(testObjects.request);
     });
 
-    it('closes the connection when WebSocket receives the "close" event, e.g., from Tincan', done => {
+    it('closes the connection when WebSocket receives the "close" event, e.g., from media backend', done => {
       const testObjects = createTestObjects();
       class TestObserver implements SignalingClientObserver {
         handleSignalingClientEvent(event: SignalingClientEvent): void {

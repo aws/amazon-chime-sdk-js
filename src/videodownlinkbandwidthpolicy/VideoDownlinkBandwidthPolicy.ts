@@ -101,4 +101,12 @@ export default interface VideoDownlinkBandwidthPolicy {
    * to indicate any added, updated, or removed video preferences.
    */
   getVideoPreferences?(): VideoPreferences;
+
+  /**
+   * Used to indicate that this policy can handle the increased complexity
+   * required to deal with layers of different frame rates (i.e. balances
+   * tradeoffs of resolution vs. frame rate, will not degrade resolution or
+   * framerate during recovery, etc.)
+   */
+  wantsAllTemporalLayersInIndex?(): boolean;
 }

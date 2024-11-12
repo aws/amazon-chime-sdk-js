@@ -11,7 +11,8 @@ export default class DefaultVideoCaptureAndEncodeParameter
     private cameraFrameRate: number,
     private maxEncodeBitrateKbps: number,
     private isSimulcast: boolean,
-    private scaleResolutionDownBy: number = 1
+    private scaleResolutionDownBy: number = 1,
+    private isSVC: boolean = false
   ) {}
 
   equal(other: DefaultVideoCaptureAndEncodeParameter): boolean {
@@ -22,7 +23,8 @@ export default class DefaultVideoCaptureAndEncodeParameter
       other.encodeBitrates().length === this.encodeBitrates().length &&
       other.encodeScaleResolutionDownBy().length === this.encodeScaleResolutionDownBy().length &&
       other.encodeWidths().length === this.encodeWidths().length &&
-      other.encodeHeights().length === this.encodeHeights().length;
+      other.encodeHeights().length === this.encodeHeights().length &&
+      other.isSVCEncoding() === this.isSVC;
 
     if (checkForEqual) {
       for (let i = 0; i < other.encodeWidths().length; i++) {
@@ -48,7 +50,8 @@ export default class DefaultVideoCaptureAndEncodeParameter
       this.cameraFrameRate,
       this.maxEncodeBitrateKbps,
       this.isSimulcast,
-      this.scaleResolutionDownBy
+      this.scaleResolutionDownBy,
+      this.isSVC
     );
   }
 
@@ -79,5 +82,9 @@ export default class DefaultVideoCaptureAndEncodeParameter
 
   encodeHeights(): number[] {
     return [this.cameraHeight];
+  }
+
+  isSVCEncoding(): boolean {
+    return this.isSVC;
   }
 }
