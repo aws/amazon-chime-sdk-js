@@ -13,6 +13,7 @@
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "sourceMap": true,
+    "inlineSources": true,
     "stripInternal": true,
     "target": "ES2015",
     "esModuleInterop": true
