@@ -437,16 +437,16 @@ export default class DefaultSignalingClient implements SignalingClient {
     this.webSocket.addEventListener('close', this.closeEventHandler);
     this.webSocket.addEventListener('error', () => {
       if (this.isClosing && !this.wasOpened) {
-        this.logger.info('ignoring error closing signaling while connecting');
+        this.logger.info('Signaling WebSocket ignoring error closing while connecting');
         return;
       }
       if (this.wasOpened) {
-        this.logger.error('received error while connected');
+        this.logger.error('Signaling WebSocket received error while connected');
         this.sendEvent(
           new SignalingClientEvent(this, SignalingClientEventType.WebSocketError, null)
         );
       } else {
-        this.logger.error('failed to connect');
+        this.logger.error('Signaling WebSocket received error while connecting');
         this.sendEvent(
           new SignalingClientEvent(this, SignalingClientEventType.WebSocketFailed, null)
         );

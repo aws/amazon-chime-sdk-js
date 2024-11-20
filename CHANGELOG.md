@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set starting send bitrate to 1000kbps to reduce time of low resolution at start of connection
 - Add per-frame encoding time in video encoding CPU connection health policy
 - Replace substr with substring
+- Improve some log strings
 
 ### Fixed
 
