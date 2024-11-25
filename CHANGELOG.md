@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed incoming audio loss calculation when server side network adaption and redundant audio features are running together.
 - Prevent DataMessage callback errors from killing a meeting
 - Do not store metrics for video send stream that no longer exists after reconnection
+- Send audio downstream decoder loss and jitter buffer size to backend as intended, for internal debugging
 
 ## [3.25.0] - 2024-09-10
 
