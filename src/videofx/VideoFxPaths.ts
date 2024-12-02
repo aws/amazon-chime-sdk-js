@@ -4,7 +4,7 @@
 /**
  * An interface to define the asset paths that will be loaded from CDN for video effects during meeting
  */
-export default interface VideoFxPaths {
+export interface VideoFxPaths {
   /**
    * Base path for CDN
    */
@@ -20,3 +20,5 @@ export default interface VideoFxPaths {
    */
   fxLibPath: string;
 }
+
+export default VideoFxPaths;
