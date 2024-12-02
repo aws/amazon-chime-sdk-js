@@ -81,7 +81,7 @@ export default class SendAndReceiveDataMessagesTask
       messageFrame.messages = [message];
       this.context.signalingClient.sendDataMessage(messageFrame);
     } else {
-      this.context.logger.error('Signaling client is not ready');
+      this.context.logger.error('Cannot send data message because signaling client is not ready');
     }
   };
 
