@@ -105,6 +105,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videofxprocessor.html#geteffectconfig" class="tsd-kind-icon">get<wbr>Effect<wbr>Config</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videofxprocessor.html#process" class="tsd-kind-icon">process</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videofxprocessor.html#seteffectconfig" class="tsd-kind-icon">set<wbr>Effect<wbr>Config</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videofxprocessor.html#setvideofxspec" class="tsd-kind-icon">set<wbr>Video<wbr>FxSpec</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videofxprocessor.html#create" class="tsd-kind-icon">create</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="videofxprocessor.html#issupported" class="tsd-kind-icon">is<wbr>Supported</a></li>
 							</ul>
@@ -190,7 +191,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L656">src/videofx/VideoFxProcessor.ts:656</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L661">src/videofx/VideoFxProcessor.ts:661</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -245,7 +246,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L340">src/videofx/VideoFxProcessor.ts:340</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L345">src/videofx/VideoFxProcessor.ts:345</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -268,17 +269,40 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="create" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a>, effectConfig<span class="tsd-signature-symbol">: </span><a href="../interfaces/videofxconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoFxConfig</a>, processingBudgetPerFrame<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="videofxprocessor.html" class="tsd-signature-type" data-tsd-kind="Class">VideoFxProcessor</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setvideofxspec" class="tsd-anchor"></a>
+					<h3>set<wbr>Video<wbr>FxSpec</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Video<wbr>FxSpec<span class="tsd-signature-symbol">(</span>videoFxSpec<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">default</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L831">src/videofx/VideoFxProcessor.ts:831</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L334">src/videofx/VideoFxProcessor.ts:334</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>videoFxSpec: <span class="tsd-signature-type">default</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="create" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type" data-tsd-kind="Interface">Logger</a>, effectConfig<span class="tsd-signature-symbol">: </span><a href="../interfaces/videofxconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoFxConfig</a>, processingBudgetPerFrame<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, spec<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">default</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="videofxprocessor.html" class="tsd-signature-type" data-tsd-kind="Class">VideoFxProcessor</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L836">src/videofx/VideoFxProcessor.ts:836</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -305,6 +329,9 @@
 								<li>
 									<h5>processingBudgetPerFrame: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> spec: <span class="tsd-signature-type">default</span></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="videofxprocessor.html" class="tsd-signature-type" data-tsd-kind="Class">VideoFxProcessor</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -320,7 +347,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L759">src/videofx/VideoFxProcessor.ts:759</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videofx/VideoFxProcessor.ts#L764">src/videofx/VideoFxProcessor.ts:764</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -380,6 +407,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="videofxprocessor.html#seteffectconfig" class="tsd-kind-icon">set<wbr>Effect<wbr>Config</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="videofxprocessor.html#setvideofxspec" class="tsd-kind-icon">set<wbr>Video<wbr>FxSpec</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="videofxprocessor.html#create" class="tsd-kind-icon">create</a>
