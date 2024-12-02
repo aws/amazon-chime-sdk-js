@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.26.0] - 2024-10-07
 
 ### Added
+- Add interface for custom CDN paths for VideoFxProcessor
 
 ### Removed
 

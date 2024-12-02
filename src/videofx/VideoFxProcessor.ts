@@ -19,16 +19,15 @@ import { VideoFxAssetParams } from './VideoFxAssetParams';
 import { VideoFxCanvasOpsManager } from './VideoFxCanvasOpsManager';
 import VideoFxConfig from './VideoFxConfig';
 import {
-  CDN_BASE_PATH,
   DEFAULT_STREAM_PARAMETERS,
-  FXLIB_PATH,
+  DEFAULT_VIDEO_FX_SPEC,
   RESOURCE_CONSTRAINTS,
   SEGMENTATION_MODEL,
   WORKER_MSG,
-  WORKER_PATH,
 } from './VideoFxConstants';
 import { VideoFxRenderer } from './VideoFxRenderer';
 import { VideoFxSegmentationRateManager } from './VideoFxSegmentationRateManager';
+import VideoFxSpec from './VideoFxSpec';
 import { VideoFxStreamParameters } from './VideoFxStreamParameters';
 
 /**
@@ -62,6 +61,7 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
   private outputCanvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
   private canvasVideoFrameBuffer = new CanvasVideoFrameBuffer(this.outputCanvas);
   private eventController?: EventController | undefined;
+  private videoFxSpec: VideoFxSpec = DEFAULT_VIDEO_FX_SPEC;
 
   /**
    * Initializes a new instance of [[VideoFxProcessor]] with a default NoOp [[VideoFxConfig]].
@@ -331,6 +331,11 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
     };
   }
 
+  setVideoFxSpec(videoFxSpec: VideoFxSpec): void {
+    if (videoFxSpec.paths) {
+      this.videoFxSpec.paths = videoFxSpec.paths;
+    }
+  }
   /**
    * Update the [[VideoFxProcessor]] to apply a new set of effects by updating the instance property
    * [[VideoFxConfig]]. If the effectConfig parameter fails validation, an error is thrown and there is
@@ -564,7 +569,7 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
     try {
       // Determine engine worker path from versioning of the SDK worker
       const engineWorkerPath = this.getPathFromVideoFxAssetParams(
-        CDN_BASE_PATH + WORKER_PATH,
+        this.videoFxSpec.paths.cdnBasePath + this.videoFxSpec.paths.workerPath,
         videoFxAssetParams
       );
 
@@ -593,7 +598,7 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
     this.engineWorker.postMessage({
       msg: WORKER_MSG.BUILD_ENGINE_REQUEST,
       payload: {
-        cdnBasePath: CDN_BASE_PATH,
+        cdnBasePath: this.videoFxSpec.paths.cdnBasePath,
         sdkVersioningParams: videoFxAssetParams,
       },
     });
@@ -615,7 +620,7 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
   private async loadFxLib(videoFxAssetParams: VideoFxAssetParams): Promise<void> {
     // Determine engine worker path from versioning of the SDK worker
     const fxLibPath = this.getPathFromVideoFxAssetParams(
-      CDN_BASE_PATH + FXLIB_PATH,
+      this.videoFxSpec.paths.cdnBasePath + this.videoFxSpec.paths.fxLibPath,
       videoFxAssetParams
     );
 
@@ -831,14 +836,17 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
   static async create(
     logger: Logger,
     effectConfig: VideoFxConfig,
-    processingBudgetPerFrame: number = RESOURCE_CONSTRAINTS.DEFAULT_PROCESSING_BUDGET_PER_FRAME
+    processingBudgetPerFrame: number = RESOURCE_CONSTRAINTS.DEFAULT_PROCESSING_BUDGET_PER_FRAME,
+    spec?: VideoFxSpec
   ): Promise<VideoFxProcessor> {
     // Create the videoFxProcessor
     const videoFxProcessor: VideoFxProcessor = new VideoFxProcessor(
       logger,
       processingBudgetPerFrame
     );
-
+    if (spec) {
+      videoFxProcessor.setVideoFxSpec(spec);
+    }
     // Load the required assets and set desired effect config
     try {
       await videoFxProcessor.loadAssets();
