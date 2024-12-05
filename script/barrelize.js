@@ -72,8 +72,6 @@ const ignoredTypes = [
   'VideoFxBackgroundBlurRenderingUnit',
   'VideoFxBackgroundReplacementRenderingUnit',
   'VideoFxModelSpec',
-  'VideoFxSpec',
-  'VideoFxPaths',
   'VideoFxAssetParams',
 
   // Ignore utils

@@ -301,7 +301,9 @@ import VideoFrameProcessorPipelineObserver from './videoframeprocessor/VideoFram
 import VideoFrameProcessorTimer from './videoframeprocessor/VideoFrameProcessorTimer';
 import VideoFxBlurStrength from './videofx/VideoFxBlurStrength';
 import VideoFxConfig from './videofx/VideoFxConfig';
+import VideoFxPaths from './videofx/VideoFxPaths';
 import VideoFxProcessor from './videofx/VideoFxProcessor';
+import VideoFxSpec from './videofx/VideoFxSpec';
 import VideoInputDevice from './devicecontroller/VideoInputDevice';
 import VideoLogEvent from './statscollector/VideoLogEvent';
 import VideoOnlyTransceiverController from './transceivercontroller/VideoOnlyTransceiverController';
@@ -654,7 +656,9 @@ export {
   VideoFrameProcessorTimer,
   VideoFxBlurStrength,
   VideoFxConfig,
+  VideoFxPaths,
   VideoFxProcessor,
+  VideoFxSpec,
   VideoInputDevice,
   VideoLogEvent,
   VideoOnlyTransceiverController,

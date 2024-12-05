@@ -3,6 +3,8 @@
 
 // These are constants relating to communication between the VideoFxProcessor
 // and the VideoFxEngine
+import VideoFxSpec from './VideoFxSpec';
+
 export const WORKER_MSG = {
   BUILD_ENGINE_REQUEST: 'BuildEngineRequest',
   BUILD_ENGINE_RESPONSE: 'BuildEngineResponse',
@@ -64,3 +66,11 @@ export const CDN_BASE_PATH: string = 'https://static.sdkassets.chime.aws';
 const MFX_ASSET_PATH = '/ml_media_fx/otherassets';
 export const WORKER_PATH: string = `${MFX_ASSET_PATH}/worker.js`;
 export const FXLIB_PATH: string = `${MFX_ASSET_PATH}/fxlib.js`;
+
+export const DEFAULT_VIDEO_FX_SPEC: VideoFxSpec = {
+  paths: {
+    cdnBasePath: CDN_BASE_PATH,
+    workerPath: WORKER_PATH,
+    fxLibPath: FXLIB_PATH,
+  },
+};
