@@ -71,5 +71,5 @@ runs:
       shell: bash
       if: runner.os == 'Linux'
       run: |
-          sudo echo "127.0.0.1 localhost:8080" | sudo tee -a /etc/hosts
+          sudo echo "127.0.0.1 testsite" | sudo tee -a /etc/hosts
       
