@@ -13,6 +13,9 @@ env:
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
   MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
 
+permissions:
+  id-token: write   # This is required for requesting the JWT
+
 jobs:
   prev-version-integ:
     name: Previous Version Integration Tests
@@ -41,10 +44,10 @@ jobs:
       - name: Echo Job ID
         run: echo "${{ steps.create-job-id.outputs.uuid }}"
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          role-session-name: ${{ env.TEST_TYPE }}
           aws-region: us-east-1
       - name: Setup Sauce Connect
         uses: saucelabs/sauce-connect-action@v2

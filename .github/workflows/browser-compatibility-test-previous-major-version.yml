@@ -15,6 +15,9 @@ env:
   MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
   PRE_RUN_SCRIPT_URL: ${{secrets.PRE_RUN_SCRIPT_URL}}
 
+permissions:
+  id-token: write   # This is required for requesting the JWT
+
 jobs:
   get-previous-version:
     name: Get Previous Major Version
@@ -50,8 +53,8 @@ jobs:
         with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Audio Compatibility Test
         run: npm run test:browser-compatibility-audio
   browser-compatibility-video-previous-major-version:
@@ -72,8 +75,8 @@ jobs:
         with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Video Compatibility Test
         run: npm run test:browser-compatibility-video
   browser-compatibility-content-share-previous-major-version:
@@ -95,8 +98,8 @@ jobs:
         with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Content Share Compatibility Test
         run: npm run test:browser-compatibility-content-share
   browser-compatibility-data-message-previous-major-version:
@@ -118,8 +121,8 @@ jobs:
         with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Data Message Compatibility Test
         run: npm run test:browser-compatibility-data-message
   browser-compatibility-meeting-readiness-checker-previous-major-version:
@@ -141,8 +144,8 @@ jobs:
         with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Meeting Readiness Checker Compatibility Test
         run: npm run test:browser-compatibility-meeting-readiness-checker
   browser-compatibility-background-blur-previous-major-version:
@@ -164,8 +167,8 @@ jobs:
         with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Background Blur Compatibility Test
         run: npm run test:browser-compatibility-background-blur
   browser-compatibility-linux-audio-previous-major-version:
@@ -188,8 +191,8 @@ jobs:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
             sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Linux Audio Compatibility Test
           run: npm run test:linux-browser-compatibility-audio
   browser-compatibility-linux-video-previous-major-version:
@@ -212,8 +215,8 @@ jobs:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
             sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Linux Video Compatibility Test
           run: npm run test:linux-browser-compatibility-video
   browser-compatibility-linux-content-share-previous-major-version:
@@ -236,8 +239,8 @@ jobs:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
             sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Linux Content Share Compatibility Test
           run: npm run test:linux-browser-compatibility-content-share
   browser-compatibility-linux-other-previous-major-version:
@@ -260,8 +263,8 @@ jobs:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
             sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Linux Other Compatibility Test
           run: npm run test:linux-browser-compatibility-other
   browser-compatibility-results-report-previous-major-version:
