@@ -14,6 +14,9 @@
     SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
     PRE_RUN_SCRIPT_URL: ${{secrets.PRE_RUN_SCRIPT_URL}}
 
+  permissions:
+    id-token: write   # This is required for requesting the JWT
+
   jobs:
     build:
       name: Build and Run Unit Tests
@@ -52,8 +55,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Content Share Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-content-share-test-suite-one
@@ -78,8 +81,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Content Share Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-content-share-test-suite-two
@@ -104,8 +107,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Background Blur Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-background-blur
@@ -133,8 +136,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Audio Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-audio
@@ -161,8 +164,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Setup userArn
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: integration/js/script/test-setup
@@ -190,8 +193,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Data Message Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-data-message
@@ -222,8 +225,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Transcription Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-transcription
@@ -248,8 +251,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Video Integ Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-video
@@ -274,8 +277,8 @@
           with:
             sauce-username: ${{ secrets.SAUCE_USERNAME }}
             sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+            aws-role-session-name: ${{ env.TEST_TYPE }}
         - name: Run Video Test App Integ Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-video-test-app
