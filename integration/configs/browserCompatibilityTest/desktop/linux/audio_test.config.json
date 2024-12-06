@@ -10,7 +10,7 @@
       "noOfThreads": 1,
       "testImpl": "AudioTest.js",
       "payload": {
-        "url": "http://localhost:8080/?earlyConnect=1",
+        "url": "http://testsite:8080/?earlyConnect=1",
         "retry": 2
       }
     }
