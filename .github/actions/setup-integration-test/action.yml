@@ -72,5 +72,3 @@ runs:
       if: runner.os == 'Linux'
       run: |
           sudo echo "127.0.0.1 testsite" | sudo tee -a /etc/hosts
-
-      
