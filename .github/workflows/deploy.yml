@@ -7,20 +7,23 @@ on:
   push:
     branches: [ main, 'release-**.x' ]
 
+permissions:
+  id-token: write   # This is required for requesting the JWT
+
 jobs:
-  deploy_chime_alpha_demo:
-    name: Alpha - Chime Client - Deploy Meeting Demo And Meeting Readiness Checker Demos
+  deploy_chime_sdk_demo:
+    name: Deploy Meeting and Meeting Readiness Checker Demos - Media Prod
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1
         AWS_DEFAULT_OUTPUT: text
-        NAME: ChimeAlpha
+        NAME: DEMO
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          role-session-name: deploy-demo-app
           aws-region: us-east-1
       - name: Checkout Package
         uses: actions/checkout@v2
@@ -31,22 +34,22 @@ jobs:
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
         run: script/deploy-canary-demo
-  deploy_chime_beta_demo:
-    name: Beta - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
+
+  deploy_chime_sdk_demo_gamma:
+    name: Deploy Meeting and Meeting Readiness Checker Demos - Media Gamma
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1
         AWS_DEFAULT_OUTPUT: text
-        NAME: ChimeBeta
-        GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
+        NAME: GAMMA
         GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
         GAMMA_CHIME_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_SERVICE_PRINCIPAL}}
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.BETA_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.BETA_AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          role-session-name: deploy-demo-app
           aws-region: us-east-1
       - name: Checkout Package
         uses: actions/checkout@v2
@@ -57,209 +60,4 @@ jobs:
       - name: Run Deployment Script
         if: ${{ github.ref == 'refs/heads/main' }}
         run: script/deploy-canary-demo
-      - name: Run Deployment Script Previous Major Version
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev
-  deploy_chime_sdk_meetings_beta_demo:
-    name: Beta - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
-    runs-on: ubuntu-latest
-    env:
-        AWS_DEFAULT_REGION: us-east-1
-        AWS_DEFAULT_OUTPUT: text
-        NAME: ChimeSDKMeetingsBeta
-        GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
-        GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
-        GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1}}
-        GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1}}
-        GAMMA_CHIME_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_SERVICE_PRINCIPAL}}
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.BETA_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.BETA_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install SAM CLI
-        run: script/github-action-awscli-installation
-      - name: Run Deployment Script
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo
-      - name: Run Deployment Script Previous Major Version
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev
-  deploy_ChimeSDKMeetings_ChimeSDKMediaPipelines_beta_demo:
-    name: Beta - ChimeSDKMeetings Client ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
-    runs-on: ubuntu-latest
-    env:
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_DEFAULT_OUTPUT: text
-      NAME: ChimeSDKMeetings_ChimeSDKMediaPipelinesBeta
-      GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
-      GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
-      GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1}}
-      GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1}}
-      GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL}}
-      GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1}}
-      GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_EU_CENTRAL_1}}
-      GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_AP_SOUTHEAST_1}}
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.BETA_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.BETA_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install SAM CLI
-        run: script/github-action-awscli-installation
-      - name: Run Deployment Script
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo
-      - name: Run Deployment Script Previous Major Version
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev
-  deploy_Chime_ChimeSDKMediaPipelines_beta_demo:
-    name: Beta - Chime Client ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
-    runs-on: ubuntu-latest
-    env:
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_DEFAULT_OUTPUT: text
-      NAME: Chime_ChimeSDKMediaPipelinesBeta
-      GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
-      GAMMA_CHIME_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_US_EAST_1}}
-      GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1}}
-      GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1}}
-      GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_SERVICE_PRINCIPAL}}
-      GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_US_EAST_1}}
-      GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_EU_CENTRAL_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_EU_CENTRAL_1}}
-      GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_AP_SOUTHEAST_1: ${{secrets.GAMMA_CHIME_MEDIA_PIPELINES_ENDPOINT_AP_SOUTHEAST_1}}
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.BETA_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.BETA_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install SAM CLI
-        run: script/github-action-awscli-installation
-      - name: Run Deployment Script
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo
-      - name: Run Deployment Script Previous Major Version
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev
-  deploy_chime_gamma_demo:
-    name: Gamma - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
-    runs-on: ubuntu-latest
-    env:
-        AWS_DEFAULT_REGION: us-east-1
-        AWS_DEFAULT_OUTPUT: text
-        NAME: ChimeGamma
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.GAMMA_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.GAMMA_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install SAM CLI
-        run: script/github-action-awscli-installation
-      - name: Run Deployment Script
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo
-      - name: Run Deployment Script Previous Major Version
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev
-  deploy_chime_sdk_meetings_gamma_demo:
-    name: Gamma - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
-    runs-on: ubuntu-latest
-    env:
-        AWS_DEFAULT_REGION: us-east-1
-        AWS_DEFAULT_OUTPUT: text
-        NAME: ChimeSDKMeetingsGamma
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.GAMMA_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.GAMMA_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install SAM CLI
-        run: script/github-action-awscli-installation
-      - name: Run Deployment Script
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo
-      - name: Run Deployment Script Previous Major Version
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev
-  deploy_ChimeSDKMeetings_ChimeSDKMediaPipelines_gamma_demo:
-    name: Gamma - ChimeSDKMeetings Client ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
-    runs-on: ubuntu-latest
-    env:
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_DEFAULT_OUTPUT: text
-      NAME:  ChimeSDKMeetings_ChimeSDKMediaPipelines_gamma
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.GAMMA_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.GAMMA_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install SAM CLI
-        run: script/github-action-awscli-installation
-      - name: Run Deployment Script
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo
-      - name: Run Deployment Script Previous Major Version
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev
-  deploy_Chime_ChimeSDKMediaPipelines_gamma_demo:
-    name: Gamma - Chime Client ChimeSDKMediaPipelines Client - Deploy the Serverless Meeting Demos
-    runs-on: ubuntu-latest
-    env:
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_DEFAULT_OUTPUT: text
-      NAME: Chime_ChimeSDKMediaPipelines_gamma
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.GAMMA_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.GAMMA_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install SAM CLI
-        run: script/github-action-awscli-installation
-      - name: Run Deployment Script
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: script/deploy-canary-demo
-      - name: Run Deployment Script Previous Major Version
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev
+  
