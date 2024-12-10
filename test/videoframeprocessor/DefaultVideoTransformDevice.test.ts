@@ -360,6 +360,16 @@ describe('DefaultVideoTransformDevice', () => {
     });
   });
 
+  describe('framerate configuration', () => {
+    it('can set and get framerate', async () => {
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test', [processor]);
+      expect(device.framerate).equal(15); // Current default
+      device.framerate = 30;
+      expect(device.framerate).equal(30);
+    });
+  });
+
   describe('observer callback', () => {
     it('processingDidStart', async () => {
       const obs = new MockObserver();

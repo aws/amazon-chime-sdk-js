@@ -195,4 +195,12 @@ export default class DefaultVideoTransformDevice
       }, 0);
     }
   }
+
+  get framerate(): number {
+    return this.pipe.framerate;
+  }
+
+  set framerate(value: number) {
+    this.pipe.framerate = value;
+  }
 }
