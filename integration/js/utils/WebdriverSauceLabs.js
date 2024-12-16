@@ -85,6 +85,10 @@ const getChromeOptions = capabilities => {
     }
   }
 
+  if (capabilities.platform.toUpperCase() === 'LINUX') {
+    chromeOptions['args'].push('--enable-features=WebRTCPipeWireCapturer')
+  }
+
   /**
    * Recently, SauceLabs loads the web page in test and runs into "Your connection is not private" error.
    * Content share test is also failing with WebSocket connection failed issues which SauceLabs says may
