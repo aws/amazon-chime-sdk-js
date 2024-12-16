@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  id-token: write   # This is required for requesting the JWT
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -33,15 +36,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
   deploy_chime_prod_demo:
     needs: publish
-    name: Prod - Chime and ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
+    name: Deploy Meeting Demos with the latest NPM release
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        name: [ ChimeProd, ChimeSDKMeetingsProdIAD, ChimeSDKMeetingsProdPDX, ChimeSDKMeetingsProdFRA, ChimeSDKMeetingsProdSIN, ChimeSDKMeetingsIAD_ChimeSDKMediaPipelinesProdIAD, Chime_ChimeSDKMediaPipelinesProdIAD ]
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_DEFAULT_OUTPUT: text
-      NAME: ${{ matrix.name }}
+      NAME: PROD
     steps:
       - name: Verify the npm version is available
         id: npm_version
@@ -72,10 +72,10 @@ jobs:
             done
         shell: bash
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.PROD_CANARY_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.PROD_CANARY_AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_CANARY_PROD }}
+          role-session-name: publish-demo-deployment
           aws-region: us-east-1
       - name: Checkout Package
         uses: actions/checkout@v2

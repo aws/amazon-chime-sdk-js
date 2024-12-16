@@ -10,7 +10,7 @@
       "noOfThreads": 1,
       "testImpl": "ContentShareVideoTest.js",
       "payload": {
-        "url": "http://localhost:8080/",
+        "url": "http://testsite:8080/",
         "retry": 2
       }
     }

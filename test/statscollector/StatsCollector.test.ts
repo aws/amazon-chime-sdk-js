@@ -19,6 +19,7 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
+import { SdkClientMetricFrame, SdkMetric } from '../../src/signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../../src/statscollector/AudioLogEvent';
 import StatsCollector from '../../src/statscollector/StatsCollector';
 import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
@@ -726,6 +727,177 @@ describe('StatsCollector', () => {
       new TimeoutScheduler(interval + 5).start(() => {
         statsCollector.stop();
         done();
+      });
+    });
+    it('adds decoderLoss metric when concealedSamples and totalSamplesReceived are present', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPAudioStream',
+          type: 'inbound-rtp',
+          kind: 'audio',
+          ssrc: 12345,
+          concealedSamples: 500,
+          totalSamplesReceived: 1000,
+        },
+      ];
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      const spy = sinon.spy(signalingClient, 'sendClientMetrics');
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        try {
+          statsCollector.stop();
+
+          const sentMetricFrame = spy.getCall(0).args[0] as SdkClientMetricFrame;
+
+          const decoderLossMetric = sentMetricFrame.streamMetricFrames[0]?.metrics.find(
+            metric => metric.type === SdkMetric.Type.RTC_SPK_FRACTION_DECODER_LOSS_PERCENT
+          );
+
+          expect(decoderLossMetric).to.exist;
+          expect(decoderLossMetric.value).to.equal((500 / 1000) * 100);
+
+          spy.restore();
+          done();
+        } catch (error) {
+          spy.restore();
+          done(error);
+        }
+      });
+    });
+
+    it('adds jitterBufferMs metric when jitterBufferDelay and jitterBufferEmittedCount are present', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPAudioStream',
+          type: 'inbound-rtp',
+          kind: 'audio',
+          ssrc: 12345,
+          jitterBufferDelay: 0.8,
+          jitterBufferEmittedCount: 200,
+        },
+      ];
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      const spy = sinon.spy(signalingClient, 'sendClientMetrics');
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        try {
+          statsCollector.stop();
+
+          const sentMetricFrame = spy.getCall(0).args[0] as SdkClientMetricFrame;
+
+          const jitterBufferMsMetric = sentMetricFrame.streamMetricFrames[0]?.metrics.find(
+            metric => metric.type === SdkMetric.Type.RTC_SPK_JITTER_BUFFER_MS
+          );
+
+          expect(jitterBufferMsMetric).to.exist;
+          expect(jitterBufferMsMetric.value).to.equal((0.8 / 200) * 1000);
+
+          spy.restore();
+          done();
+        } catch (error) {
+          spy.restore();
+          done(error);
+        }
+      });
+    });
+
+    it('does not send decoderLoss metric when dependencies are missing', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPAudioStream',
+          type: 'inbound-rtp',
+          kind: 'audio',
+          ssrc: 12345,
+          totalSamplesReceived: 1000,
+        },
+      ];
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      const spy = sinon.spy(signalingClient, 'sendClientMetrics');
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        try {
+          statsCollector.stop();
+
+          const sentMetricFrame = spy.getCall(0).args[0] as SdkClientMetricFrame;
+
+          const decoderLossMetric = sentMetricFrame.streamMetricFrames[0]?.metrics.find(
+            metric => metric.type === SdkMetric.Type.RTC_SPK_FRACTION_DECODER_LOSS_PERCENT
+          );
+
+          expect(decoderLossMetric).to.not.exist;
+
+          spy.restore();
+          done();
+        } catch (error) {
+          spy.restore();
+          done(error);
+        }
+      });
+    });
+
+    it('does not send jitterBufferMs metric when dependencies are missing', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPAudioStream',
+          type: 'inbound-rtp',
+          kind: 'audio',
+          ssrc: 12345,
+          jitterBufferDelay: 0.8,
+        },
+      ];
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+      const spy = sinon.spy(signalingClient, 'sendClientMetrics');
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        try {
+          statsCollector.stop();
+
+          const sentMetricFrame = spy.getCall(0).args[0] as SdkClientMetricFrame;
+
+          const jitterBufferMsMetric = sentMetricFrame.streamMetricFrames[0]?.metrics.find(
+            metric => metric.type === SdkMetric.Type.RTC_SPK_JITTER_BUFFER_MS
+          );
+
+          expect(jitterBufferMsMetric).to.not.exist;
+
+          spy.restore();
+          done();
+        } catch (error) {
+          spy.restore();
+          done(error);
+        }
       });
     });
   });

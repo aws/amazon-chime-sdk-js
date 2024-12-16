@@ -422,18 +422,38 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
         streamMetricReport.direction
       );
 
-      for (const metricName in streamMetricReport.currentMetrics) {
-        this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
-      }
-
-      for (const metricName in streamMetricReport.currentStringMetrics) {
-        this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
-      }
-
-      for (const metricName in streamMetricReport.currentObjectMetrics) {
-        this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
+      // We loop over 'metricMap' instead of the members of 'streamMetricReport' because
+      // the latter does not include metrics (e.g. audio downstream 'decoderLoss') that are
+      // entirely dependent on other metrics (in this case 'concealedSamples' and 'totalSamplesReceived')
+      // for their calculation
+      for (const metricName in metricMap) {
+        if (this.hasMetricDependenciesInReport(metricName, streamMetricReport)) {
+          this.addMetricFrame(metricName, clientMetricFrame, metricMap[metricName], Number(ssrc));
+        }
       }
     }
+  }
+
+  private hasMetricDependenciesInReport(
+    metricName: string,
+    streamMetricReport: StreamMetricReport
+  ): boolean {
+    // Unfortunately the metrics maps do not expose their dependencies so we have to manually
+    // hard code them for metrics we know have them
+    const isSpecialMetricAndHasDependencies =
+      (metricName === 'decoderLoss' &&
+        streamMetricReport.currentMetrics['concealedSamples'] !== undefined &&
+        streamMetricReport.currentMetrics['totalSamplesReceived'] !== undefined) ||
+      (metricName === 'jitterBufferMs' &&
+        streamMetricReport.currentMetrics['jitterBufferDelay'] !== undefined &&
+        streamMetricReport.currentMetrics['jitterBufferEmittedCount'] !== undefined);
+
+    return (
+      isSpecialMetricAndHasDependencies ||
+      metricName in streamMetricReport.currentMetrics ||
+      metricName in streamMetricReport.currentStringMetrics ||
+      metricName in streamMetricReport.currentObjectMetrics
+    );
   }
 
   /**

@@ -5,9 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.27.0] - 2024-12-11
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
 ## [3.26.0] - 2024-10-07
 
 ### Added
+- Add interface for custom CDN paths for VideoFxProcessor
+
+- Allow setting framerate on `DefaultVideoTransformDevice`
 
 ### Removed
 
@@ -16,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set starting send bitrate to 1000kbps to reduce time of low resolution at start of connection
 - Add per-frame encoding time in video encoding CPU connection health policy
 - Replace substr with substring
+- Improve some log strings
 
 ### Fixed
 
@@ -23,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed incoming audio loss calculation when server side network adaption and redundant audio features are running together.
 - Prevent DataMessage callback errors from killing a meeting
 - Do not store metrics for video send stream that no longer exists after reconnection
+- Send audio downstream decoder loss and jitter buffer size to backend as intended, for internal debugging
 
 ## [3.25.0] - 2024-09-10
 

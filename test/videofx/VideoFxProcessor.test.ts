@@ -20,6 +20,7 @@ import {
   SEGMENTATION_MODEL,
 } from '../../src/videofx/VideoFxConstants';
 import VideoFxProcessor from '../../src/videofx/VideoFxProcessor';
+import VideoFxSpec from '../../src/videofx/VideoFxSpec';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import MockEngineWorker from './MockEngineWorker';
@@ -33,6 +34,7 @@ describe('VideoFxProcessor', () => {
   let eventController: EventController;
   let fxProcessor: VideoFxProcessor;
   let fxConfig: VideoFxConfig;
+  let fxSpec: VideoFxSpec;
 
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
@@ -972,6 +974,21 @@ describe('VideoFxProcessor', () => {
       await VideoFxProcessor.create(logger, fxConfig);
       const expectedInfo = `VideoFx worker received unknown event msg: {"msg":"invalidMessage"}`;
       expect(infoSpy.calledWith(expectedInfo)).to.be.true;
+    });
+  });
+
+  describe('setVideoFxSpec', () => {
+    it('should set video fx spec ', async () => {
+      fxSpec = {
+        paths: {
+          cdnBasePath: 'https://new-cdn.example.com/',
+          workerPath: 'new-worker.js',
+          fxLibPath: 'new-fxlib.js',
+        },
+      };
+      mockEngineWorker.stubAllAssetsLoad();
+      mockFxLib.stubSuccess();
+      await expect(VideoFxProcessor.create(logger, fxConfig, undefined, fxSpec)).to.not.be.rejected;
     });
   });
 });
