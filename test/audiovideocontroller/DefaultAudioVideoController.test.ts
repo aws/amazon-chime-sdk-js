@@ -63,7 +63,6 @@ import {
   SdkTurnCredentials,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
-import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
 import OpenSignalingConnectionTask from '../../src/task/OpenSignalingConnectionTask';
 import { wait as delay } from '../../src/utils/Utils';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
@@ -4889,8 +4888,6 @@ describe('DefaultAudioVideoController', () => {
 
       await start();
 
-      reconnectController.disableReconnect();
-
       await delay(300);
       webSocketAdapter.send(makeIndexFrameWithAttendees(attendeesToMakeIndexFrame));
 
@@ -4899,11 +4896,6 @@ describe('DefaultAudioVideoController', () => {
       expect(receivedVideoSources.sort(compare)).to.eql(expectedVideoSources.sort(compare));
 
       await stop();
-
-      // Forcibly clean up the stats collector so it doesn't spam after the test runs.
-      // This will _eventually_ get cleaned by the main CleanStoppedSessionTask, but that takes a while.
-      // @ts-ignore
-      await new CleanStoppedSessionTask(audioVideoController.meetingSessionContext).run();
     });
 
     it('should return an array of length 0, when videoStreamIndex is not initialized', async () => {
