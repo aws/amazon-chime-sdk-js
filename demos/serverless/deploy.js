@@ -59,6 +59,7 @@ const supportedMediaPipelinesControlRegions = [
   'eu-central-1',
   'us-east-1',
   'us-west-2',
+	'ca-central-1'
 ];
 
 function usage() {

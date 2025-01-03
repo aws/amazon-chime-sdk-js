@@ -826,6 +826,9 @@ function response(statusCode, contentType, body, isBase64Encoded = false) {
       'Cross-Origin-Opener-Policy': 'same-origin', 
       // enable shared array buffer for videoFxProcessor
       'Cross-Origin-Embedder-Policy': 'require-corp',
+	  'Access-Control-Allow-Headers': '*',
+	  'Access-Control-Allow-Methods': '*',
+	  'Access-Control-Allow-Origin': '*',
     },
     body: body,
     isBase64Encoded,
