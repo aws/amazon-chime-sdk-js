@@ -22,7 +22,7 @@ import VideoFxProcessor from '../../src/videofx/VideoFxProcessor';
 import MockEngineWorker from '../../test/videofx/MockEngineWorker';
 import MockFxLib from '../../test/videofx/MockFxLib';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
-import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 
 describe('DefaultVideoTransformDevice', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -31,7 +31,7 @@ describe('DefaultVideoTransformDevice', () => {
   let domMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
   let mockVideoStream: MediaStream;
-  let mockVideoTrack: MediaStreamTrack;
+  let mockVideoTrack: StoppableMediaStreamTrack;
 
   class MockObserver implements DefaultVideoTransformDeviceObserver {
     processingDidStart = sinon.stub();
@@ -77,7 +77,7 @@ describe('DefaultVideoTransformDevice', () => {
     // @ts-ignore
     mockVideoStream.id = 'sample';
     // @ts-ignore
-    mockVideoTrack = new MediaStreamTrack('test', 'video');
+    mockVideoTrack = new MediaStreamTrack('test', 'video') as StoppableMediaStreamTrack;
     mockVideoStream.addTrack(mockVideoTrack);
   });
 
@@ -357,6 +357,16 @@ describe('DefaultVideoTransformDevice', () => {
       // Clean up resources
       processor.destroy();
       transformDevice.stop();
+    });
+  });
+
+  describe('framerate configuration', () => {
+    it('can set and get framerate', async () => {
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test', [processor]);
+      expect(device.framerate).equal(15); // Current default
+      device.framerate = 30;
+      expect(device.framerate).equal(30);
     });
   });
 

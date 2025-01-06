@@ -144,6 +144,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     this.inputVideoStream = inputMediaStream;
     const settings = this.inputVideoStream.getVideoTracks()[0].getSettings();
     this.logger.info(`processing pipeline input stream settings ${JSON.stringify(settings)}`);
+    this.framerate = settings.frameRate;
     this.canvasOutput.width = settings.width;
     this.canvasOutput.height = settings.height;
     this.videoInput.addEventListener('loadedmetadata', this.process);

@@ -14,7 +14,7 @@ import VideoFrameProcessor from '../../src/videoframeprocessor/VideoFrameProcess
 import VideoFrameProcessorPipelineObserver from '../../src/videoframeprocessor/VideoFrameProcessorPipelineObserver';
 import VideoFrameProcessorTimer from '../../src/videoframeprocessor/VideoFrameProcessorTimer';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
-import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 
 /**
  * [[MockVideoFrameProcessorTimer]] uses just `setTimeout` to avoid the complexity of
@@ -40,7 +40,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
   let domMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
   let mockVideoStream: MediaStream;
-  let mockVideoTrack: MediaStreamTrack;
+  let mockVideoTrack: StoppableMediaStreamTrack;
   let proc: VideoFrameProcessor;
   const mockTimer = new MockVideoFrameProcessorTimer();
 
@@ -73,8 +73,11 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     mockVideoStream = new MediaStream();
     // @ts-ignore
     mockVideoStream.id = mockStreamId;
-    // @ts-ignore
-    mockVideoTrack = new MediaStreamTrack('attach-media-input-task-video-track-id', 'video');
+    mockVideoTrack = new MediaStreamTrack(
+      // @ts-ignore
+      'attach-media-input-task-video-track-id',
+      'video'
+    ) as StoppableMediaStreamTrack;
     mockVideoStream.addTrack(mockVideoTrack);
     proc = new NoOpVideoFrameProcessor();
     pipe = new DefaultVideoFrameProcessorPipeline(logger, [proc], mockTimer);

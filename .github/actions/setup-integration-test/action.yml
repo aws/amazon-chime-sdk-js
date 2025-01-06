@@ -67,10 +67,8 @@ runs:
     - name: Clean Install
       run: npm ci
       shell: bash
-    - name: Add localhost 8080 host to /etc/hosts for Linux only
+    - name: Add testsite host to /etc/hosts for Linux only (fixes 500 internal error when loading the test page)
       shell: bash
       if: runner.os == 'Linux'
       run: |
           sudo echo "127.0.0.1 testsite" | sudo tee -a /etc/hosts
-
-      
