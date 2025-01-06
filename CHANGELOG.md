@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Match framerate in `DefaultVideoFrameProcessorPipeline` with input stream
 
 ## [3.26.0] - 2024-10-07
 

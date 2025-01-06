@@ -17,6 +17,7 @@ import UserMediaState from './UserMediaState';
 
 export interface StoppableMediaStreamTrack extends MediaStreamTrack {
   streamDeviceID: string | undefined;
+  framerate: number;
 
   // This stops the track _and dispatches 'ended'_.
   // https://stackoverflow.com/a/55960232
@@ -30,6 +31,9 @@ export interface StoppableMediaStreamTrack extends MediaStreamTrack {
 
   // Tracks know their source device ID. This lets us fake it in tests.
   setStreamDeviceID(id: string | undefined): void;
+
+  // Tracks know their framerate as a setting, this lets us fake it in tests.
+  setFramerate(framerate: number): void;
 }
 
 // eslint-disable-next-line
@@ -287,6 +291,7 @@ export default class DOMMockBuilder {
       readyState: MediaStreamTrackState = 'live';
 
       streamDeviceID = mockBehavior.mediaStreamTrackSettings?.deviceId || uuidv1();
+      framerate = 15;
 
       readonly id: string;
       readonly kind: string = '';
@@ -364,6 +369,10 @@ export default class DOMMockBuilder {
         this.streamDeviceID = id;
       }
 
+      setFramerate(framerate: number): void {
+        this.framerate = framerate;
+      }
+
       // This stops the track _and dispatches 'ended'_.
       // https://stackoverflow.com/a/55960232
       externalStop(): void {
@@ -397,6 +406,7 @@ export default class DOMMockBuilder {
           height: mockBehavior.mediaStreamTrackSettings.height,
           facingMode: mockBehavior.mediaStreamTrackSettings.facingMode,
           groupId: mockBehavior.mediaStreamTrackSettings.groupId,
+          frameRate: this.framerate,
         };
       }
 
