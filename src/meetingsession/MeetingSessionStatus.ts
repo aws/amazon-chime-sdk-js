@@ -30,6 +30,7 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.RealtimeApiFailed:
       case MeetingSessionStatusCode.TaskFailed:
       case MeetingSessionStatusCode.NoAttendeePresent:
+      case MeetingSessionStatusCode.SignalingChannelClosedUnexpectedly:
         return true;
       default:
         return false;
@@ -121,6 +122,8 @@ export default class MeetingSessionStatus {
         return 'The client disconnected while promoted, which will automatically demote. The attendee must promote again to participate.';
       case MeetingSessionStatusCode.AudioDisconnectAudio:
         return 'The audio connection failed.';
+      case MeetingSessionStatusCode.SignalingChannelClosedUnexpectedly:
+        return 'The signaling channel was closed unexpectedly. This may be due to a network change or backend detected failure.';
       /* istanbul ignore next */
       default: {
         // You get a compile-time error if you do not handle any status code.
