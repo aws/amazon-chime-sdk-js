@@ -720,6 +720,157 @@ Resources:
             Path: /get_attendee
             Method: GET
 Outputs:
+  ChimeSdkIndexLambdaArn:
+    Description: "ARN of the ChimeSdkIndexLambda"
+    Value: !GetAtt ChimeSdkIndexLambda.Arn
+    Export:
+      Name: ChimeSdkIndexLambdaArn
+
+  ChimeSdkAudioFileLambdaArn:
+    Description: "ARN of the ChimeSdkAudioFileLambda"
+    Value: !GetAtt ChimeSdkAudioFileLambda.Arn
+    Export:
+      Name: ChimeSdkAudioFileLambdaArn
+
+  ChimeSdkStereoAudioFileLambdaArn:
+    Description: "ARN of the ChimeSdkStereoAudioFileLambda"
+    Value: !GetAtt ChimeSdkStereoAudioFileLambda.Arn
+    Export:
+      Name: ChimeSdkStereoAudioFileLambdaArn
+
+  ChimeSdkJoinLambdaArn:
+    Description: "ARN of the ChimeSdkJoinLambda"
+    Value: !GetAtt ChimeSdkJoinLambda.Arn
+    Export:
+      Name: ChimeSdkJoinLambdaArn
+
+  ChimeSdkDeleteAttendeeLambdaArn:
+    Description: "ARN of the ChimeSdkDeleteAttendeeLambda"
+    Value: !GetAtt ChimeSdkDeleteAttendeeLambda.Arn
+    Export:
+      Name: ChimeSdkDeleteAttendeeLambdaArn
+
+  ChimeSdkEndLambdaArn:
+    Description: "ARN of the ChimeSdkEndLambda"
+    Value: !GetAtt ChimeSdkEndLambda.Arn
+    Export:
+      Name: ChimeSdkEndLambdaArn
+
+  ChimeSdkStartCaptureLambdaArn:
+    Description: "ARN of the ChimeSdkStartCaptureLambda"
+    Value: !GetAtt ChimeSdkStartCaptureLambda.Arn
+    Export:
+      Name: ChimeSdkStartCaptureLambdaArn
+
+  ChimeSdkEndCaptureLambdaArn:
+    Description: "ARN of the ChimeSdkEndCaptureLambda"
+    Value: !GetAtt ChimeSdkEndCaptureLambda.Arn
+    Export:
+      Name: ChimeSdkEndCaptureLambdaArn
+
+  ChimeSdkStartLiveConnectorLambdaArn:
+    Description: "ARN of the ChimeSdkStartLiveConnectorLambda"
+    Value: !GetAtt ChimeSdkStartLiveConnectorLambda.Arn
+    Export:
+      Name: ChimeSdkStartLiveConnectorLambdaArn
+
+  ChimeSdkEndLiveConnectorLambdaArn:
+    Description: "ARN of the ChimeSdkEndLiveConnectorLambda"
+    Value: !GetAtt ChimeSdkEndLiveConnectorLambda.Arn
+    Export:
+      Name: ChimeSdkEndLiveConnectorLambdaArn
+
+  ChimeSQSQueueLambdaArn:
+    Description: "ARN of the ChimeSQSQueueLambda"
+    Value: !GetAtt ChimeSQSQueueLambda.Arn
+    Export:
+      Name: ChimeSQSQueueLambdaArn
+
+  ChimeEventBridgeLambdaArn:
+    Description: "ARN of the ChimeEventBridgeLambda"
+    Condition: ShouldUseEventBridge
+    Value: !GetAtt ChimeEventBridgeLambda.Arn
+    Export:
+      Name: ChimeEventBridgeLambdaArn
+
+  ChimeSdkBrowserLogsLambdaArn:
+    Description: "ARN of the ChimeSdkBrowserLogsLambda"
+    Value: !GetAtt ChimeSdkBrowserLogsLambda.Arn
+    Export:
+      Name: ChimeSdkBrowserLogsLambdaArn
+
+  ChimeSdkBrowserMeetingEventLogsLambdaArn:
+    Description: "ARN of the ChimeSdkBrowserMeetingEventLogsLambda"
+    Value: !GetAtt ChimeSdkBrowserMeetingEventLogsLambda.Arn
+    Export:
+      Name: ChimeSdkBrowserMeetingEventLogsLambdaArn
+
+  ChimeSdkBrowserEventIngestionLogsLambdaArn:
+    Description: "ARN of the ChimeSdkBrowserEventIngestionLogsLambda"
+    Value: !GetAtt ChimeSdkBrowserEventIngestionLogsLambda.Arn
+    Export:
+      Name: ChimeSdkBrowserEventIngestionLogsLambdaArn
+
+  ChimeSdkBrowserEventIngestionLogStreamLambdaArn:
+    Description: "ARN of the ChimeSdkBrowserEventIngestionLogStreamLambda"
+    Value: !GetAtt ChimeSdkBrowserEventIngestionLogStreamLambda.Arn
+    Export:
+      Name: ChimeSdkBrowserEventIngestionLogStreamLambdaArn
+
+  ChimeSdkBrowserCreateLogStreamLambdaArn:
+    Description: "ARN of the ChimeSdkBrowserCreateLogStreamLambda"
+    Value: !GetAtt ChimeSdkBrowserCreateLogStreamLambda.Arn
+    Export:
+      Name: ChimeSdkBrowserCreateLogStreamLambdaArn
+
+  ChimeSdkBrowserCreateBrowserEventLogStreamLambdaArn:
+    Description: "ARN of the ChimeSdkBrowserCreateBrowserEventLogStreamLambda"
+    Value: !GetAtt ChimeSdkBrowserCreateBrowserEventLogStreamLambda.Arn
+    Export:
+      Name: ChimeSdkBrowserCreateBrowserEventLogStreamLambdaArn
+
+  ChimeSdkStartTranscriptionLambdaArn:
+    Description: "ARN of the ChimeSdkStartTranscriptionLambda"
+    Value: !GetAtt ChimeSdkStartTranscriptionLambda.Arn
+    Export:
+      Name: ChimeSdkStartTranscriptionLambdaArn
+
+  ChimeSdkStopTranscriptionLambdaArn:
+    Description: "ARN of the ChimeSdkStopTranscriptionLambda"
+    Value: !GetAtt ChimeSdkStopTranscriptionLambda.Arn
+    Export:
+      Name: ChimeSdkStopTranscriptionLambdaArn
+
+  ChimeSdkUpdateAttendeeCapabilitiesLambdaArn:
+    Description: "ARN of the ChimeSdkUpdateAttendeeCapabilitiesLambda"
+    Value: !GetAtt ChimeSdkUpdateAttendeeCapabilitiesLambda.Arn
+    Export:
+      Name: ChimeSdkUpdateAttendeeCapabilitiesLambdaArn
+
+  ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaArn:
+    Description: "ARN of the ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambda"
+    Value: !GetAtt ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambda.Arn
+    Export:
+      Name: ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaArn
+
+  ChimeSdkGetAttendeeLambdaArn:
+    Description: "ARN of the ChimeSdkGetAttendeeLambda"
+    Value: !GetAtt ChimeSdkGetAttendeeLambda.Arn
+    Export:
+      Name: ChimeSdkGetAttendeeLambdaArn
+
+  ChimeSQSQueueArn:
+    Description: "ARN of the ChimeSQSQueue"
+    Value: !GetAtt MeetingNotificationsQueue.Arn
+    Export:
+      Name: ChimeSQSQueueArn
+
+  DynamodbMeetingsTableArn:
+    Description: "ARN of the Dynamodb Meetings table"
+    Value: !GetAtt Meetings.Arn
+    Export:
+      Name: DynamodbMeetingsTableArn
+
   ApiURL:
     Description: "API endpoint URL for Prod environment"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

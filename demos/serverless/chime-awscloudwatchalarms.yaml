@@ -1,0 +1,924 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create CloudWatch Alarms for Chime Lambda functions and SQS queue
+Resources:
+  SQSQueueApproximateAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSQSQueueApproximateAgeAlarm
+      MetricName: ApproximateAgeOfOldestMessage
+      Namespace: AWS/SQS
+      Statistic: Maximum
+      Period: 60   
+      EvaluationPeriods: 1
+      Threshold: 60  
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when the ApproximateAgeOfOldestMessage exceeds 1 minutes"
+      Dimensions:
+        - Name: QueueName
+          Value: !Select [5, !Split [":", !ImportValue ChimeSQSQueueArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkIndexLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkIndexLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkIndexLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkIndexLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkAudioFileLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkAudioFileLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkAudioFileLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkAudioFileLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkStereoAudioFileLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkStereoAudioFileLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkStereoAudioFileLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkStereoAudioFileLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkEndLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkEndLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkEndLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkEndLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkStartCaptureLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkStartCaptureLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkStartCaptureLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkStartCaptureLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkEndCaptureLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkEndCaptureLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkEndCaptureLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkEndCaptureLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkStartLiveConnectorLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkStartLiveConnectorLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkStartLiveConnectorLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkStartLiveConnectorLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkEndLiveConnectorLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkEndLiveConnectorLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkEndLiveConnectorLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkEndLiveConnectorLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSQSQueueLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSQSQueueLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSQSQueueLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSQSQueueLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  
+  ChimeSdkBrowserLogsLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserLogsLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserLogsLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserLogsLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserMeetingEventLogsLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserMeetingEventLogsLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserMeetingEventLogsLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserMeetingEventLogsLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserEventIngestionLogsLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserEventIngestionLogsLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserEventIngestionLogsLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserEventIngestionLogsLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserEventIngestionLogStreamLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserEventIngestionLogStreamLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserEventIngestionLogStreamLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserEventIngestionLogStreamLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserCreateLogStreamLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserCreateLogStreamLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserCreateLogStreamLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserCreateLogStreamLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserCreateBrowserEventLogStreamLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserCreateBrowserEventLogStreamLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserCreateBrowserEventLogStreamLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserCreateBrowserEventLogStreamLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sAWSTemplateFormatVersion: '2010-09-09'
+      TreatMissingData: notBreaching
+      
+  ChimeSdkIndexLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkIndexLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkIndexLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkIndexLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkAudioFileLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkAudioFileLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkAudioFileLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkAudioFileLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkStereoAudioFileLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkStereoAudioFileLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkStereoAudioFileLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkStereoAudioFileLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkEndLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkEndLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkEndLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkEndLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkStartCaptureLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkStartCaptureLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkStartCaptureLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkStartCaptureLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkEndCaptureLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkEndCaptureLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkEndCaptureLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkEndCaptureLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkStartLiveConnectorLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkStartLiveConnectorLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkStartLiveConnectorLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkStartLiveConnectorLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkEndLiveConnectorLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkEndLiveConnectorLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60  
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkEndLiveConnectorLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkEndLiveConnectorLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSQSQueueLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSQSQueueLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSQSQueueLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSQSQueueLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserLogsLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserLogsLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserLogsLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserLogsLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserMeetingEventLogsLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserMeetingEventLogsLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserMeetingEventLogsLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserMeetingEventLogsLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserEventIngestionLogsLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserEventIngestionLogsLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserEventIngestionLogsLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserEventIngestionLogsLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserEventIngestionLogStreamLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserEventIngestionLogStreamLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserEventIngestionLogStreamLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserEventIngestionLogStreamLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserCreateLogStreamLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserCreateLogStreamLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserCreateLogStreamLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserCreateLogStreamLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBrowserCreateBrowserEventLogStreamLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBrowserCreateBrowserEventLogStreamLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBrowserCreateBrowserEventLogStreamLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBrowserCreateBrowserEventLogStreamLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkStartTranscriptionLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkStartTranscriptionLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkStartTranscriptionLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkStartTranscriptionLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+  
+  ChimeSdkStopTranscriptionLambdaAlarm:   
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkStopTranscriptionLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkStopTranscriptionLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkStopTranscriptionLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkUpdateAttendeeCapabilitiesLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkUpdateAttendeeCapabilitiesLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60 
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkUpdateAttendeeCapabilitiesLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkUpdateAttendeeCapabilitiesLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkGetAttendeeLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkGetAttendeeLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkGetAttendeeLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkGetAttendeeLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkJoinLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkJoinLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkJoinLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkJoinLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  ChimeSdkDeleteAttendeeLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ChimeSdkDeleteAttendeeLambdaErrors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when ChimeSdkDeleteAttendeeLambda has more than 1 error in 1 minutes"
+      Dimensions:
+        - Name: FunctionName
+          Value: !Select [6, !Split [":", !ImportValue ChimeSdkDeleteAttendeeLambdaArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  DynamodbMeetingsTableReadCapacityAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: DynamodbMeetingsTableReadCapacityAlarm
+      MetricName: ConsumedReadCapacityUnits
+      Namespace: AWS/DynamoDB
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 50
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when DynamoDB Meetings table read capacity exceeds 50 units in 1 minute"
+      Dimensions:
+        - Name: TableName
+          Value: !Select [1, !Split ["/", !ImportValue DynamodbMeetingsTableArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
+  DynamodbMeetingsTableWriteCapacityAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: DynamodbMeetingsTableWriteCapacityAlarm
+      MetricName: ConsumedWriteCapacityUnits
+      Namespace: AWS/DynamoDB
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 50
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmDescription: "Alarm when DynamoDB Meetings table write capacity exceeds 50 units in 1 minute"
+      Dimensions:
+        - Name: TableName
+          Value: !Select [1, !Split ["/", !ImportValue DynamodbMeetingsTableArn]]
+      AlarmActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      OKActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      InsufficientDataActions:
+        - arn:aws:sns:ca-central-1:427174714230:SNS_Slack_Topic
+      TreatMissingData: notBreaching
+
