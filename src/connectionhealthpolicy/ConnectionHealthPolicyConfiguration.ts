@@ -62,7 +62,7 @@ export default class ConnectionHealthPolicyConfiguration {
    * Recuding the value results in video codec degradation due to high CPU usage software encoder to be triggered
    * at a lower CPU usage.
    */
-  highEncodeCpuMsThreshold = 1; // [DBG-MSG] remove
+  highEncodeCpuMsThreshold = 500;
 
   /**
    * Consecutive seconds of zero encoded framerate to trigger video codec degradation in video encoding health monitoring.

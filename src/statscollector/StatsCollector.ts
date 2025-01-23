@@ -292,7 +292,11 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     this.clientMetricReport.currentSsrcs = {};
     const timeStamp = Date.now();
     for (const rawMetricReport of rawMetricReports) {
-      const isStream = this.isStreamRawMetricReport(rawMetricReport.type);
+      if (rawMetricReport.type === 'media-source' && rawMetricReport.kind === 'video') {
+        const videoUpstreamSsrcs = this.clientMetricReport.getVideoUpstreamSsrcs();
+        rawMetricReport.ssrc = videoUpstreamSsrcs[0];
+      }
+      const isStream = this.isStreamRawMetricReport(rawMetricReport);
       if (isStream) {
         const existingStreamMetricReport = this.clientMetricReport.streamMetricReports[
           Number(rawMetricReport.ssrc)
@@ -461,14 +465,15 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   /**
    * Checks if the type of RawMetricReport is stream related.
    */
-  private isStreamRawMetricReport(type: string): boolean {
+  private isStreamRawMetricReport(rawMetricReport: RawMetricReport): boolean {
     return [
       'inbound-rtp',
       'inbound-rtp-red',
       'outbound-rtp',
       'remote-inbound-rtp',
       'remote-outbound-rtp',
-    ].includes(type);
+    ].includes(rawMetricReport.type) ||
+    (rawMetricReport.type === 'media-source' && rawMetricReport.kind === 'video');
   }
 
   /**

@@ -47,6 +47,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   localStreamDescriptions(): VideoStreamDescription[] {
     // localStreamDescriptions are used to construct IndexFrame
     // old behavior for single video is to have streamId and groupId trackLabel fixed as the follows
+    this.logger.info(`[DBG-MSG-RES] localStreamDescriptions ${this.videoStreamDescription.width}, ${this.videoStreamDescription.height}`);
     return [this.videoStreamDescription.clone()];
   }
 
@@ -84,6 +85,11 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       this.videoStreamDescription.maxBitrateKbps = encodingParam.maxBitrate / 1000;
       this.videoStreamDescription.maxFrameRate = encodingParam.maxFramerate;
     }
+  }
+
+  updateLocalVideoInputResolution(width: number, height: number): void {
+    this.videoStreamDescription.width = width;
+    this.videoStreamDescription.height = height;
   }
 
   integrateIndexFrame(indexFrame: SdkIndexFrame): void {

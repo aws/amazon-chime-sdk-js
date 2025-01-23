@@ -162,6 +162,8 @@ export default class DefaultSignalingClient implements SignalingClient {
         // which is the exact old behavior
         const streamDescription = settings.videoStreamDescriptions[i].clone();
         streamDescription.attendeeId = settings.attendeeId;
+        this.logger.info(`[DBG-MSG-RES] streamDescription ${streamDescription.width}, ${streamDescription.height}`);
+        this.logger.info(`[DBG-MSG-RES] videoStreamDescriptions ${streamDescription.toStreamDescriptor().width}, ${streamDescription.toStreamDescriptor().height}`);
         subscribeFrame.sendStreams.push(streamDescription.toStreamDescriptor());
       }
     }

@@ -63,6 +63,8 @@ export default class VideoStreamDescription {
     descriptor.framerate = this.maxFrameRate;
     descriptor.maxBitrateKbps = this.disabledByUplinkPolicy ? 0 : this.maxBitrateKbps;
     descriptor.avgBitrateBps = this.avgBitrateKbps;
+    descriptor.width = this.width;
+    descriptor.height = this.height;
     return descriptor;
   }
 

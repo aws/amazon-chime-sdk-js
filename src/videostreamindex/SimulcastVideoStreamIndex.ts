@@ -81,6 +81,13 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
     }
   }
 
+  updateLocalVideoInputResolution(width: number, height: number): void {
+    for (const localStreamInfo of this._localStreamInfos) {
+      localStreamInfo.width = width;
+      localStreamInfo.height = height;
+    }
+  }
+
   integrateBitratesFrame(bitrateFrame: SdkBitrateFrame): void {
     super.integrateBitratesFrame(bitrateFrame);
 
