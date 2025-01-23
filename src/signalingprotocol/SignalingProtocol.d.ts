@@ -2948,6 +2948,7 @@ export namespace SdkMetric {
         VIDEO_DISCARDED_PPS = 47,
         VIDEO_PLIS_SENT = 48,
         VIDEO_RECEIVED_JITTER_MS = 49,
+        VIDEO_INPUT_HEIGHT = 60,
         VIDEO_ENCODE_HEIGHT = 64,
         VIDEO_SENT_QP_SUM = 66,
         VIDEO_DECODE_HEIGHT = 69,
@@ -2970,7 +2971,11 @@ export namespace SdkMetric {
         RTC_SPK_TOTAL_RECOVERED_FEC = 101,
         VIDEO_QUALITY_LIMITATION_DURATION_CPU = 102,
         VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU = 103,
-        VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE = 104
+        VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE = 104,
+        VIDEO_RENDER_HEIGHT = 105,
+        VIDEO_RENDER_WIDTH = 106,
+        VIDEO_INPUT_WIDTH = 107,
+        VIDEO_SENT_JITTER_MS = 108
     }
 }
 
@@ -2988,6 +2993,9 @@ export interface ISdkStreamMetricFrame {
 
     /** SdkStreamMetricFrame dimensions */
     dimensions?: (ISdkStreamDimension[]|null);
+
+    /** SdkStreamMetricFrame mediaType */
+    mediaType?: (SdkStreamMediaType|null);
 }
 
 /** Represents a SdkStreamMetricFrame. */
@@ -3010,6 +3018,9 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
 
     /** SdkStreamMetricFrame dimensions. */
     public dimensions: ISdkStreamDimension[];
+
+    /** SdkStreamMetricFrame mediaType. */
+    public mediaType: SdkStreamMediaType;
 
     /**
      * Creates a new SdkStreamMetricFrame instance using the specified properties.

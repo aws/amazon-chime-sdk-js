@@ -281,6 +281,7 @@ message SdkMetric {
         VIDEO_DISCARDED_PPS = 47;
         VIDEO_PLIS_SENT = 48;
         VIDEO_RECEIVED_JITTER_MS = 49;
+        VIDEO_INPUT_HEIGHT = 60;
         VIDEO_ENCODE_HEIGHT = 64;
         VIDEO_SENT_QP_SUM = 66;
         VIDEO_DECODE_HEIGHT = 69;
@@ -304,6 +305,10 @@ message SdkMetric {
         VIDEO_QUALITY_LIMITATION_DURATION_CPU = 102;
         VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU = 103;
         VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE = 104;
+        VIDEO_RENDER_HEIGHT = 105;
+        VIDEO_RENDER_WIDTH = 106;
+        VIDEO_INPUT_WIDTH = 107;
+        VIDEO_SENT_JITTER_MS = 108;
     }
     optional Type type = 1;
     optional double value = 2;
@@ -314,6 +319,7 @@ message SdkStreamMetricFrame {
     optional uint32 group_id = 4;
     repeated SdkMetric metrics = 5;
     repeated SdkStreamDimension dimensions = 6;
+    optional SdkStreamMediaType media_type = 7;
 }
 
 message SdkClientMetricFrame {

@@ -6,6 +6,7 @@ import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatio
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
 import VideoTileController from '../videotilecontroller/VideoTileController';
+import VideoElementResolutionMonitor from './VideoElementResolutionMonitor';
 import VideoTile from './VideoTile';
 import VideoTileState from './VideoTileState';
 
@@ -121,7 +122,8 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     tileId: number,
     localTile: boolean,
     private tileController: VideoTileController,
-    private devicePixelRatioMonitor: DevicePixelRatioMonitor
+    private devicePixelRatioMonitor: DevicePixelRatioMonitor,
+    private resolutionMonitor: VideoElementResolutionMonitor = undefined
   ) {
     this.tileState.tileId = tileId;
     this.tileState.localTile = localTile;
@@ -214,6 +216,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     let tileUpdated = false;
     if (this.tileState.boundVideoElement !== videoElement) {
       this.tileState.boundVideoElement = videoElement;
+      this.resolutionMonitor?.bindVideoElement(this.tileState.boundVideoElement);
       tileUpdated = true;
     }
     if (this.tileState.boundVideoElement !== null) {

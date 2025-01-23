@@ -361,6 +361,12 @@ describe('StatsCollector', () => {
             kind: 'audio',
           })
         ).to.be.true;
+        expect(
+          statsCollector.isValidStandardRawMetric({
+            type: 'media-source',
+            kind: 'video',
+          })
+        ).to.be.true;
 
         statsCollector.stop();
       });
@@ -583,6 +589,105 @@ describe('StatsCollector', () => {
         cpu: 1.0,
         other: 0.0,
       };
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      // @ts-ignore
+      statsCollector.clientMetricReport.streamMetricReports[1] = streamMetricReport;
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('add render resolution for downstream video stream', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+
+        attendeeIdForStreamId(streamId: number): string {
+          return `attendee-${streamId}`;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'inbound-rtp',
+          kind: 'video',
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+          decoderImplementation: 'FFmpeg',
+        },
+      ];
+
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+      streamMetricReport.currentMetrics['packetsLost'] = 10;
+      streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.videoTileResolutionDidChange('attendee-1', 1280, 720);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      // @ts-ignore
+      statsCollector.clientMetricReport.streamMetricReports[1] = streamMetricReport;
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.videoTileUnbound('attendee-1');
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('add capture resolution for upstream video stream', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([1, 2, 3]);
+        }
+
+        streamIdForSSRC(_ssrcId: number): number {
+          return 1;
+        }
+
+        attendeeIdForStreamId(streamId: number): string {
+          return `attendee-${streamId}`;
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'outbound-rtp',
+          kind: 'video',
+          ssrc: 1,
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+        },
+        {
+          id: 'MediaSource',
+          type: 'media-source',
+          kind: 'video',
+          width: 1280,
+          jitterBufferDelay: 720,
+        },
+      ];
+
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.UPSTREAM;
+      streamMetricReport.currentMetrics['packetsLost'] = 10;
+      streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
 
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));

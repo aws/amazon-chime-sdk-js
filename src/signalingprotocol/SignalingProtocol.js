@@ -7733,6 +7733,7 @@ $root.SdkMetric = (function() {
             case 47:
             case 48:
             case 49:
+            case 60:
             case 64:
             case 66:
             case 69:
@@ -7756,6 +7757,10 @@ $root.SdkMetric = (function() {
             case 102:
             case 103:
             case 104:
+            case 105:
+            case 106:
+            case 107:
+            case 108:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -7979,6 +7984,10 @@ $root.SdkMetric = (function() {
         case 49:
             message.type = 49;
             break;
+        case "VIDEO_INPUT_HEIGHT":
+        case 60:
+            message.type = 60;
+            break;
         case "VIDEO_ENCODE_HEIGHT":
         case 64:
             message.type = 64;
@@ -8070,6 +8079,22 @@ $root.SdkMetric = (function() {
         case "VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE":
         case 104:
             message.type = 104;
+            break;
+        case "VIDEO_RENDER_HEIGHT":
+        case 105:
+            message.type = 105;
+            break;
+        case "VIDEO_RENDER_WIDTH":
+        case 106:
+            message.type = 106;
+            break;
+        case "VIDEO_INPUT_WIDTH":
+        case 107:
+            message.type = 107;
+            break;
+        case "VIDEO_SENT_JITTER_MS":
+        case 108:
+            message.type = 108;
             break;
         }
         if (object.value != null)
@@ -8180,6 +8205,7 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DISCARDED_PPS=47 VIDEO_DISCARDED_PPS value
      * @property {number} VIDEO_PLIS_SENT=48 VIDEO_PLIS_SENT value
      * @property {number} VIDEO_RECEIVED_JITTER_MS=49 VIDEO_RECEIVED_JITTER_MS value
+     * @property {number} VIDEO_INPUT_HEIGHT=60 VIDEO_INPUT_HEIGHT value
      * @property {number} VIDEO_ENCODE_HEIGHT=64 VIDEO_ENCODE_HEIGHT value
      * @property {number} VIDEO_SENT_QP_SUM=66 VIDEO_SENT_QP_SUM value
      * @property {number} VIDEO_DECODE_HEIGHT=69 VIDEO_DECODE_HEIGHT value
@@ -8203,6 +8229,10 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_QUALITY_LIMITATION_DURATION_CPU=102 VIDEO_QUALITY_LIMITATION_DURATION_CPU value
      * @property {number} VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU=103 VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU value
      * @property {number} VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE=104 VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE value
+     * @property {number} VIDEO_RENDER_HEIGHT=105 VIDEO_RENDER_HEIGHT value
+     * @property {number} VIDEO_RENDER_WIDTH=106 VIDEO_RENDER_WIDTH value
+     * @property {number} VIDEO_INPUT_WIDTH=107 VIDEO_INPUT_WIDTH value
+     * @property {number} VIDEO_SENT_JITTER_MS=108 VIDEO_SENT_JITTER_MS value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -8255,6 +8285,7 @@ $root.SdkMetric = (function() {
         values[valuesById[47] = "VIDEO_DISCARDED_PPS"] = 47;
         values[valuesById[48] = "VIDEO_PLIS_SENT"] = 48;
         values[valuesById[49] = "VIDEO_RECEIVED_JITTER_MS"] = 49;
+        values[valuesById[60] = "VIDEO_INPUT_HEIGHT"] = 60;
         values[valuesById[64] = "VIDEO_ENCODE_HEIGHT"] = 64;
         values[valuesById[66] = "VIDEO_SENT_QP_SUM"] = 66;
         values[valuesById[69] = "VIDEO_DECODE_HEIGHT"] = 69;
@@ -8278,6 +8309,10 @@ $root.SdkMetric = (function() {
         values[valuesById[102] = "VIDEO_QUALITY_LIMITATION_DURATION_CPU"] = 102;
         values[valuesById[103] = "VIDEO_CODEC_DEGRADATION_HIGH_ENCODE_CPU"] = 103;
         values[valuesById[104] = "VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE"] = 104;
+        values[valuesById[105] = "VIDEO_RENDER_HEIGHT"] = 105;
+        values[valuesById[106] = "VIDEO_RENDER_WIDTH"] = 106;
+        values[valuesById[107] = "VIDEO_INPUT_WIDTH"] = 107;
+        values[valuesById[108] = "VIDEO_SENT_JITTER_MS"] = 108;
         return values;
     })();
 
@@ -8294,6 +8329,7 @@ $root.SdkStreamMetricFrame = (function() {
      * @property {number|null} [groupId] SdkStreamMetricFrame groupId
      * @property {Array.<ISdkMetric>|null} [metrics] SdkStreamMetricFrame metrics
      * @property {Array.<ISdkStreamDimension>|null} [dimensions] SdkStreamMetricFrame dimensions
+     * @property {SdkStreamMediaType|null} [mediaType] SdkStreamMetricFrame mediaType
      */
 
     /**
@@ -8346,6 +8382,14 @@ $root.SdkStreamMetricFrame = (function() {
     SdkStreamMetricFrame.prototype.dimensions = $util.emptyArray;
 
     /**
+     * SdkStreamMetricFrame mediaType.
+     * @member {SdkStreamMediaType} mediaType
+     * @memberof SdkStreamMetricFrame
+     * @instance
+     */
+    SdkStreamMetricFrame.prototype.mediaType = 1;
+
+    /**
      * Creates a new SdkStreamMetricFrame instance using the specified properties.
      * @function create
      * @memberof SdkStreamMetricFrame
@@ -8379,6 +8423,8 @@ $root.SdkStreamMetricFrame = (function() {
         if (message.dimensions != null && message.dimensions.length)
             for (var i = 0; i < message.dimensions.length; ++i)
                 $root.SdkStreamDimension.encode(message.dimensions[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+        if (message.mediaType != null && Object.hasOwnProperty.call(message, "mediaType"))
+            writer.uint32(/* id 7, wireType 0 =*/56).int32(message.mediaType);
         return writer;
     };
 
@@ -8431,6 +8477,10 @@ $root.SdkStreamMetricFrame = (function() {
                     if (!(message.dimensions && message.dimensions.length))
                         message.dimensions = [];
                     message.dimensions.push($root.SdkStreamDimension.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 7: {
+                    message.mediaType = reader.int32();
                     break;
                 }
             default:
@@ -8492,6 +8542,14 @@ $root.SdkStreamMetricFrame = (function() {
                     return "dimensions." + error;
             }
         }
+        if (message.mediaType != null && message.hasOwnProperty("mediaType"))
+            switch (message.mediaType) {
+            default:
+                return "mediaType: enum value expected";
+            case 1:
+            case 2:
+                break;
+            }
         return null;
     };
 
@@ -8531,6 +8589,22 @@ $root.SdkStreamMetricFrame = (function() {
                 message.dimensions[i] = $root.SdkStreamDimension.fromObject(object.dimensions[i]);
             }
         }
+        switch (object.mediaType) {
+        default:
+            if (typeof object.mediaType === "number") {
+                message.mediaType = object.mediaType;
+                break;
+            }
+            break;
+        case "AUDIO":
+        case 1:
+            message.mediaType = 1;
+            break;
+        case "VIDEO":
+        case 2:
+            message.mediaType = 2;
+            break;
+        }
         return message;
     };
 
@@ -8554,6 +8628,7 @@ $root.SdkStreamMetricFrame = (function() {
         if (options.defaults) {
             object.streamId = 0;
             object.groupId = 0;
+            object.mediaType = options.enums === String ? "AUDIO" : 1;
         }
         if (message.streamId != null && message.hasOwnProperty("streamId"))
             object.streamId = message.streamId;
@@ -8569,6 +8644,8 @@ $root.SdkStreamMetricFrame = (function() {
             for (var j = 0; j < message.dimensions.length; ++j)
                 object.dimensions[j] = $root.SdkStreamDimension.toObject(message.dimensions[j], options);
         }
+        if (message.mediaType != null && message.hasOwnProperty("mediaType"))
+            object.mediaType = options.enums === String ? $root.SdkStreamMediaType[message.mediaType] === undefined ? message.mediaType : $root.SdkStreamMediaType[message.mediaType] : message.mediaType;
         return object;
     };
 

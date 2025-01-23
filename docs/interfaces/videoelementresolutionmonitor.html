@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VideoTileFactory | amazon-chime-sdk-js</title>
+	<title>VideoElementResolutionMonitor | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">amazon-chime-sdk-js</a>
 				</li>
 				<li>
-					<a href="videotilefactory.html">VideoTileFactory</a>
+					<a href="videoelementresolutionmonitor.html">VideoElementResolutionMonitor</a>
 				</li>
 			</ul>
-			<h1>Interface VideoTileFactory</h1>
+			<h1>Interface VideoElementResolutionMonitor</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p><a href="videotilefactory.html">VideoTileFactory</a> provides an interface for creating a video tile.</p>
+						<p><a href="videoelementresolutionmonitor.html">VideoElementResolutionMonitor</a> monitors changes in the resolution of a video element
+						and relays that information to observers.</p>
 					</div>
 				</div>
 			</section>
@@ -76,14 +77,14 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">VideoTileFactory</span>
+						<span class="target">VideoElementResolutionMonitor</span>
 					</li>
 				</ul>
 			</section>
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/defaultvideotilefactory.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultVideoTileFactory</a></li>
+					<li><a href="../classes/defaultvideoelementresolutionmonitor.html" class="tsd-signature-type" data-tsd-kind="Class">DefaultVideoElementResolutionMonitor</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -93,7 +94,9 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotilefactory.html#maketile" class="tsd-kind-icon">make<wbr>Tile</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoelementresolutionmonitor.html#bindvideoelement" class="tsd-kind-icon">bind<wbr>Video<wbr>Element</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoelementresolutionmonitor.html#registerobserver" class="tsd-kind-icon">register<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoelementresolutionmonitor.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
 							</ul>
 						</section>
 					</div>
@@ -102,42 +105,97 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="maketile" class="tsd-anchor"></a>
-					<h3>make<wbr>Tile</h3>
+					<a name="bindvideoelement" class="tsd-anchor"></a>
+					<h3>bind<wbr>Video<wbr>Element</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">make<wbr>Tile<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, localTile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, tileController<span class="tsd-signature-symbol">: </span><a href="videotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTileController</a>, devicePixelRatioMonitor<span class="tsd-signature-symbol">: </span><a href="devicepixelratiomonitor.html" class="tsd-signature-type" data-tsd-kind="Interface">DevicePixelRatioMonitor</a>, resolutionMonitor<span class="tsd-signature-symbol">?: </span><a href="videoelementresolutionmonitor.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoElementResolutionMonitor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></li>
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>Video<wbr>Element<span class="tsd-signature-symbol">(</span>newElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotilefactory/VideoTileFactory.ts#L16">src/videotilefactory/VideoTileFactory.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/VideoElementResolutionMonitor.ts#L35">src/videotile/VideoElementResolutionMonitor.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Creates a video tile.</p>
+									<p>Binds a new HTMLVideoElement for monitoring. If a video element is already bound, it is unbound
+									and the new element is bound in its place. A null value just unbinds.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>localTile: <span class="tsd-signature-type">boolean</span></h5>
-								</li>
-								<li>
-									<h5>tileController: <a href="videotilecontroller.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTileController</a></h5>
-								</li>
-								<li>
-									<h5>devicePixelRatioMonitor: <a href="devicepixelratiomonitor.html" class="tsd-signature-type" data-tsd-kind="Interface">DevicePixelRatioMonitor</a></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> resolutionMonitor: <a href="videoelementresolutionmonitor.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoElementResolutionMonitor</a></h5>
+									<h5>newElement: <span class="tsd-signature-type">HTMLVideoElement</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The new HTMLVideoElement to be monitored, or null to unbind.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type" data-tsd-kind="Interface">VideoTile</a></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="registerobserver" class="tsd-anchor"></a>
+					<h3>register<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">register<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">VideoElementResolutionObserver</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/VideoElementResolutionMonitor.ts#L23">src/videotile/VideoElementResolutionMonitor.ts:23</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Registers an observer that will be notified when the resolution of the video element changes,
+									or when the video element is unbound.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <span class="tsd-signature-type">VideoElementResolutionObserver</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An instance of VideoElementResolutionObserver that will receive update notifications.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="removeobserver" class="tsd-anchor"></a>
+					<h3>remove<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">VideoElementResolutionObserver</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videotile/VideoElementResolutionMonitor.ts#L29">src/videotile/VideoElementResolutionMonitor.ts:29</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Removes a previously registered observer, stopping it from receiving any further notifications.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <span class="tsd-signature-type">VideoElementResolutionObserver</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The observer to be removed from the notification queue.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -156,10 +214,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="videotilefactory.html" class="tsd-kind-icon">Video<wbr>Tile<wbr>Factory</a>
+						<a href="videoelementresolutionmonitor.html" class="tsd-kind-icon">Video<wbr>Element<wbr>Resolution<wbr>Monitor</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="videotilefactory.html#maketile" class="tsd-kind-icon">make<wbr>Tile</a>
+								<a href="videoelementresolutionmonitor.html#bindvideoelement" class="tsd-kind-icon">bind<wbr>Video<wbr>Element</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videoelementresolutionmonitor.html#registerobserver" class="tsd-kind-icon">register<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videoelementresolutionmonitor.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a>
 							</li>
 						</ul>
 					</li>

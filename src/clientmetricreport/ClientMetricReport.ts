@@ -355,6 +355,7 @@ export default class ClientMetricReport {
     frameWidth: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_ENCODE_WIDTH },
     jitter: {
       transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.VIDEO_SENT_JITTER_MS,
     },
     totalEncodeTime: {
       transform: this.averageTimeSpentPerSecondInMilliseconds,
@@ -375,6 +376,14 @@ export default class ClientMetricReport {
     videoCodecDegradationEncodeFailure: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_CODEC_DEGRADATION_ENCODE_FAILURE,
+    },
+    videoInputWidth: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_INPUT_WIDTH,
+    },
+    videoInputHeight: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_INPUT_HEIGHT,
     },
   };
 
@@ -447,6 +456,14 @@ export default class ClientMetricReport {
     framesDropped: {
       transform: this.countPerSecond,
       type: SdkMetric.Type.VIDEO_DROPPED_FPS,
+    },
+    videoRenderWidth: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_RENDER_WIDTH,
+    },
+    videoRenderHeight: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_RENDER_HEIGHT,
     },
   };
 
@@ -742,19 +759,20 @@ export default class ClientMetricReport {
   }
 
   /**
-   * Get ssrc of upstream video stream
-   * @returns ssrc of video upstream stream if it exists, otherwise null
+   * Get ssrcs of upstream video streams
+   * @returns ssrcs of video upstream streams
    */
-  getVideoUpstreamSsrc(): number | null {
+  getVideoUpstreamSsrcs(): number[] {
+    const ssrcs: number[] = [];
     for (const ssrc in this.streamMetricReports) {
       if (
         this.streamMetricReports[ssrc].mediaType === MediaType.VIDEO &&
         this.streamMetricReports[ssrc].direction === Direction.UPSTREAM
       ) {
-        return Number(ssrc);
+        ssrcs.push(Number(ssrc));
       }
     }
-    return null;
+    return ssrcs;
   }
 
   /**
