@@ -14,11 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
 - Match framerate in `DefaultVideoFrameProcessorPipeline` with input stream
+- Fix logging of `options`in `BackgroundBlurProcessorProvided` and `BackgroundReplacementFilter`
 
 ## [3.26.0] - 2024-10-07
 
 ### Added
+
 - Add interface for custom CDN paths for VideoFxProcessor
 
 - Allow setting framerate on `DefaultVideoTransformDevice`

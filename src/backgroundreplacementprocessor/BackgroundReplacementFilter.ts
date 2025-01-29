@@ -43,7 +43,9 @@ export default class BackgroundReplacementFilter
 
     this.logger.info('BackgroundReplacement processor successfully created');
     this.logger.info(`BackgroundReplacement spec: ${this.stringify(this.spec)}`);
-    this.logger.info(`BackgroundReplacement options: ${this.stringify(options)}`);
+    this.logger.info(
+      `BackgroundReplacement options: { filterCPUUtilization: ${options.filterCPUUtilization}, reportingPeriodMillis: ${options.reportingPeriodMillis}}`
+    );
   }
 
   async setImageBlob(blob: Blob): Promise<void> {
