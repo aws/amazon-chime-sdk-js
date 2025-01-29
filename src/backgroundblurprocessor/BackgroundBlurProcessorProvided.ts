@@ -48,7 +48,9 @@ export default class BackgroundBlurProcessorProvided
 
     this.logger.info('BackgroundBlur processor successfully created');
     this.logger.info(`BackgroundBlur spec: ${this.stringify(this.spec)}`);
-    this.logger.info(`BackgroundBlur options: ${this.stringify(options)}`);
+    this.logger.info(
+      `BackgroundBlur options: { blurStrength: ${options.blurStrength}, filterCPUUtilization: ${options.filterCPUUtilization}, reportingPeriodMillis: ${options.reportingPeriodMillis}}`
+    );
   }
 
   initOnFirstExecution(): void {
