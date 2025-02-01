@@ -122,6 +122,16 @@ export enum MeetingSessionStatusCode {
   SignalingRequestFailed,
 
   /**
+   * The websocket signalling channel was closed unexpectedly mid-meeting. This may be due to:
+   * * A client side network change, e.g. switching WiFi networks (most typical).
+   * * A backend detecting client side issues (e.g. decryption issues), and snapping
+   *   the connection to force a reconnection.
+   * * Unexpected backend issues, e.g. AWS networking issues.
+   * The latter two are less common.
+   */
+  SignalingChannelClosedUnexpectedly,
+
+  /**
    * Timed out gathering ICE candidates. If in Chrome, this could be an
    * indication that the browser is in a bad state due to a VPN reconnect and
    * the user should try quitting and relaunching the app. See:

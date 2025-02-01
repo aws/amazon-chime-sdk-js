@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Improve reconnection behavior on signaling disconnection mid-meeting
+
 ### Fixed
 
 - Match framerate in `DefaultVideoFrameProcessorPipeline` with input stream
