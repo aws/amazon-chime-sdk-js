@@ -1141,32 +1141,30 @@ describe('MonitorTask', () => {
     });
 
     it('publishes signalingDropped event and meeting session status for internal service failure', () => {
-        // @ts-ignore
-        let receivedStatus = false;
-        context.isSessionConnected = true;
-        context.audioVideoController.handleMeetingSessionStatus = (
-          status: MeetingSessionStatus,
-          _error: Error
-        ): boolean => {
-          expect(status.statusCode()).to.equal(
-            MeetingSessionStatusCode.SignalingInternalServerError
-          );
-          receivedStatus = true;
-          return true;
-        };
-        const spy = sinon.spy(context.eventController, 'publishEvent');
-        const webSocketAdapter = new DefaultWebSocketAdapter(logger);
-        task.handleSignalingClientEvent(
-          new SignalingClientEvent(
-            new DefaultSignalingClient(webSocketAdapter, logger),
-            SignalingClientEventType.WebSocketClosed,
-            null,
-            4500
-          )
-        );
-        expect(spy.calledWith('signalingDropped')).to.be.true;
-        expect(receivedStatus).to.be.true;
-      });
+      // @ts-ignore
+      let receivedStatus = false;
+      context.isSessionConnected = true;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.SignalingInternalServerError);
+        receivedStatus = true;
+        return true;
+      };
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketClosed,
+          null,
+          4500
+        )
+      );
+      expect(spy.calledWith('signalingDropped')).to.be.true;
+      expect(receivedStatus).to.be.true;
+    });
 
     it('publishes signalingDropped event and meeting session status for websocket error once', () => {
       // @ts-ignore
