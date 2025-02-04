@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
-import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import DefaultModality from '../modality/DefaultModality';
 import { SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import BaseTask from './BaseTask';
@@ -24,40 +23,39 @@ export default class ReceiveVideoInputTask extends BaseTask {
     height: number,
     frameRate: number
   ): Promise<void> {
-    const trackSettings = mediaStreamTrack.getSettings();
-    let videoQualitySettings: VideoQualitySettings;
+    const videoQualitySettings = isContentAttendee
+      ? this.context.meetingSessionConfiguration.meetingFeatures.contentMaxResolution
+      : this.context.meetingSessionConfiguration.meetingFeatures.videoMaxResolution;
 
-    if (isContentAttendee) {
-      videoQualitySettings = this.context.meetingSessionConfiguration.meetingFeatures
-        .contentMaxResolution;
-    } else {
-      videoQualitySettings = this.context.meetingSessionConfiguration.meetingFeatures
-        .videoMaxResolution;
-    }
     if (
-      width > videoQualitySettings.videoWidth ||
-      height > videoQualitySettings.videoHeight ||
-      frameRate > videoQualitySettings.videoFrameRate
+      !isContentAttendee &&
+      width <= videoQualitySettings.videoWidth &&
+      height <= videoQualitySettings.videoHeight &&
+      frameRate <= videoQualitySettings.videoFrameRate
     ) {
-      const constraint: MediaTrackConstraints = {
-        width: { ideal: videoQualitySettings.videoWidth },
-        height: { ideal: videoQualitySettings.videoHeight },
-        frameRate: { ideal: videoQualitySettings.videoFrameRate },
-      };
-      this.context.logger.warn(
-        `Video track (content = ${isContentAttendee}) will be constrained to: ${JSON.stringify(
-          constraint
-        )} to remain below configured video quality settings, trackSettings: ${JSON.stringify(
-          trackSettings
-        )}`
+      // Skip applying constraints if the current video track settings are already
+      // lower than the limit except for content share. Always apply constraint for
+      // content attendees because content share resolution may change.
+      return;
+    }
+
+    const constraint: MediaTrackConstraints = {
+      // Chrome may scale content share to the maximum possible resolution within
+      // max width and height even if input resolution is already under the limits.
+      // Adding ideal resizeMode as none to use the original resoluion when possible
+      // and avoid unexpected scaling.
+      resizeMode: { ideal: 'none' },
+      width: { max: videoQualitySettings.videoWidth },
+      height: { max: videoQualitySettings.videoHeight },
+      frameRate: { ideal: frameRate, max: videoQualitySettings.videoFrameRate },
+    };
+
+    try {
+      await mediaStreamTrack.applyConstraints(constraint);
+    } catch (error) {
+      this.context.logger.info(
+        `Could not apply constraint for video track (content = ${isContentAttendee})`
       );
-      try {
-        await mediaStreamTrack.applyConstraints(constraint);
-      } catch (error) {
-        this.context.logger.info(
-          `Could not apply constraint for video track (content = ${isContentAttendee})`
-        );
-      }
     }
   }
 

@@ -195,14 +195,15 @@ describe('ReceiveVideoInputTask', () => {
       expect(context.activeVideoInput.getVideoTracks()).to.be.empty;
     });
 
-    it('will not apply constraint if content does not exceed limit', async () => {
+    it('will not apply constraint if video does not exceed limit', async () => {
       domMockBehavior.mediaStreamTrackSettings = {
-        width: 2560,
-        height: 1440,
+        width: 1280,
+        height: 720,
+        frameRate: 15,
         deviceId: '',
       };
       context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
-      context.meetingSessionConfiguration.credentials.attendeeId = 'attendee#content';
+      context.meetingSessionConfiguration.credentials.attendeeId = 'attendee';
       context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
         'attendee',
         new NoOpLogger()
@@ -212,8 +213,8 @@ describe('ReceiveVideoInputTask', () => {
         acquireVideoInputDeviceSucceeds: true,
         useMockedVideoStream: true,
       });
-      context.meetingSessionConfiguration.meetingFeatures.contentMaxResolution =
-        VideoQualitySettings.VideoResolutionUHD;
+      context.meetingSessionConfiguration.meetingFeatures.videoMaxResolution =
+        VideoQualitySettings.VideoResolutionHD;
       const task = new ReceiveVideoInputTask(context);
       await task.run();
       assert.exists(context.activeVideoInput);

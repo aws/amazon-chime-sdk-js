@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Ensure content share resolution is always within limits
 
 - Match framerate in `DefaultVideoFrameProcessorPipeline` with input stream
 - Fix logging of `options`in `BackgroundBlurProcessorProvided` and `BackgroundReplacementFilter`

@@ -53,12 +53,14 @@ export default class DOMMockBehavior {
     deviceId?: string;
     facingMode?: string;
     groupId?: string;
+    frameRate?: number;
   } = {
     width: 0,
     height: 0,
     deviceId: 'test',
     facingMode: 'user',
     groupId: '',
+    frameRate: 0,
   };
   deviceCounter: number = 0;
   enumerateDevicesSucceeds: boolean = true;
