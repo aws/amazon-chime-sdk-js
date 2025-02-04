@@ -740,6 +740,7 @@ export default class DefaultAudioVideoController
         );
       }
     }
+    this.meetingSessionContext.isSessionConnected = true;
     this.forEachObserver(observer => {
       Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
     });
