@@ -40,6 +40,10 @@ export default class ReceiveVideoInputTask extends BaseTask {
     }
 
     const constraint: MediaTrackConstraints = {
+      // Chrome may scale content share to the maximum possible resolution within
+      // max width and height even if input resolution is already under the limits.
+      // Adding ideal resizeMode as none to use the original resoluion when possible
+      // and avoid unexpected scaling.
       resizeMode: { ideal: 'none' },
       width: { max: videoQualitySettings.videoWidth },
       height: { max: videoQualitySettings.videoHeight },
