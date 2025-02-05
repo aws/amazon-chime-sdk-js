@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Improve reconnection behavior on signaling disconnection mid-meeting. When the websocket is irreversibly losts, the SDK will now reconnect immediately instead of waiting on ping-pongs.
+
 ### Fixed
 - Ensure content share resolution is always within limits
 

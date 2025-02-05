@@ -52,7 +52,6 @@ export default class MonitorTask
   // for explanation.
   private isResubscribeCheckPaused: boolean = false;
   private pendingMetricsReport: ClientMetricReport | undefined = undefined;
-  private isMeetingConnected: boolean = false;
   private videoEncodingHealthPolicies: ConnectionHealthPolicy[] = [];
 
   constructor(
@@ -274,7 +273,7 @@ export default class MonitorTask
       });
     }
 
-    if (this.isMeetingConnected) {
+    if (this.context.isSessionConnected) {
       this.applyHealthPolicy(
         this.sendingAudioFailureHealthPolicy,
         connectionHealthData,
@@ -288,21 +287,6 @@ export default class MonitorTask
         }
       );
     }
-  }
-
-  audioVideoDidStart(): void {
-    this.isMeetingConnected = true;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  audioVideoDidStartConnecting(reconnecting: boolean): void {
-    // The expectation here is that the flag will be set to true again when audioVideoDidStart() is eventually called.
-    this.isMeetingConnected = false;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
-    this.isMeetingConnected = false;
   }
 
   private applyHealthPolicy(
@@ -345,14 +329,29 @@ export default class MonitorTask
     // Don't add two or more consecutive "signalingDropped" states.
     if (
       (event.type === SignalingClientEventType.WebSocketClosed &&
-        (event.closeCode === 4410 || (event.closeCode >= 4500 && event.closeCode < 4600))) ||
+        this.isUnexpectedWebsocketCloseCode(event.closeCode)) ||
       event.type === SignalingClientEventType.WebSocketError ||
       event.type === SignalingClientEventType.WebSocketFailed
     ) {
+      if (event.type === SignalingClientEventType.WebSocketClosed) {
+        this.context.logger.info(
+          `The signaling connection was closed with code ${event.closeCode} and reason: ${event.closeReason}`
+        );
+      }
       if (!this.hasSignalingError) {
         const attributes = this.generateAudioVideoEventAttributesForReceivingAudioDropped();
         this.context.eventController?.publishEvent('signalingDropped', attributes);
         this.hasSignalingError = true;
+      }
+      if (this.context.isSessionConnected) {
+        this.context.audioVideoController.handleMeetingSessionStatus(
+          new MeetingSessionStatus(
+            this.isInternalServerFailureCloseCode(event.closeCode)
+              ? MeetingSessionStatusCode.SignalingInternalServerError
+              : MeetingSessionStatusCode.SignalingChannelClosedUnexpectedly
+          ),
+          null
+        );
       }
     } else if (event.type === SignalingClientEventType.WebSocketOpen) {
       this.hasSignalingError = false;
@@ -395,6 +394,20 @@ export default class MonitorTask
         this.context.audioVideoController.handleMeetingSessionStatus(status, null);
       }
     }
+  }
+
+  private isUnexpectedWebsocketCloseCode(closeCode: number): boolean {
+    return (
+      // Abnormal Closure. This might be expected for unplanned disconnections.
+      closeCode === 1006 || this.isInternalServerFailureCloseCode(closeCode)
+    );
+  }
+
+  private isInternalServerFailureCloseCode(closeCode: number): boolean {
+    return (
+      // Custom close codes that may be sent by the backend
+      closeCode >= 4500 && closeCode < 4600
+    );
   }
 
   private checkAndSendWeakSignalEvent = (signalStrength: number): void => {
