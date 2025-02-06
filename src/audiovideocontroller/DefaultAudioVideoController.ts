@@ -1299,8 +1299,18 @@ export default class DefaultAudioVideoController
 
       /* istanbul ignore next: toString is optional */
       const meetingErrorMessage = (error && error.message) || status.toString?.() || '';
-      attributes.meetingErrorMessage = meetingErrorMessage;
-      this.eventController.publishEvent('meetingFailed', attributes);
+      if (this.meetingSessionContext.startTimeMs === null) {
+        attributes.meetingErrorMessage = meetingErrorMessage;
+        delete attributes.meetingDurationMs;
+        delete attributes.attendeePresenceDurationMs;
+        delete attributes.meetingStartDurationMs;
+        this.eventController.publishEvent('meetingStartFailed', attributes);
+      } else if (status.isFailure() || status.isAudioConnectionFailure()) {
+        attributes.meetingErrorMessage = meetingErrorMessage;
+        this.eventController.publishEvent('meetingFailed', attributes);
+      } else {
+        this.eventController.publishEvent('meetingEnded', attributes);
+      }
     }
   }
 
