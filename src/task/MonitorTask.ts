@@ -14,7 +14,8 @@ import ReconnectionHealthPolicy from '../connectionhealthpolicy/ReconnectionHeal
 import SendingAudioFailureConnectionHealthPolicy from '../connectionhealthpolicy/SendingAudioFailureConnectionHealthPolicy';
 import UnusableAudioWarningConnectionHealthPolicy from '../connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import VideoEncodingConnectionHealthPolicyName from '../connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
-import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
+import { audioVideoEventAttributesFromState } from '../eventcontroller/AudioVideoEventAttributes';
+import EventName from '../eventcontroller/EventName';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import RemovableObserver from '../removableobserver/RemovableObserver';
@@ -240,8 +241,10 @@ export default class MonitorTask
       connectionHealthData,
       () => {
         this.context.poorConnectionCount += 1;
-        const attributes = this.generateAudioVideoEventAttributesForReceivingAudioDropped();
-        this.context.eventController?.publishEvent('receivingAudioDropped', attributes);
+        this.context.eventController?.publishEvent(
+          'receivingAudioDropped',
+          audioVideoEventAttributesFromState(this.context)
+        );
         if (this.context.videoTileController.haveVideoTilesWithStreams()) {
           this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
             Maybe.of(observer.connectionDidSuggestStopVideo).map(f => f.bind(observer)());
@@ -274,17 +277,19 @@ export default class MonitorTask
     }
 
     if (this.context.isSessionConnected) {
+      const publishFilteredEvent = (event: EventName): void => {
+        const attributes = audioVideoEventAttributesFromState(this.context);
+        // Not relevant to sending audio failure
+        delete attributes.poorConnectionCount;
+        delete attributes.maxVideoTileCount;
+        this.context.eventController?.publishEvent(event, attributes);
+      };
+
       this.applyHealthPolicy(
         this.sendingAudioFailureHealthPolicy,
         connectionHealthData,
-        () => {
-          const attributes = this.generateBaseAudioVideoEventAttributes();
-          this.context.eventController?.publishEvent('sendingAudioFailed', attributes);
-        },
-        () => {
-          const attributes = this.generateBaseAudioVideoEventAttributes();
-          this.context.eventController?.publishEvent('sendingAudioRecovered', attributes);
-        }
+        () => publishFilteredEvent('sendingAudioFailed'),
+        () => publishFilteredEvent('sendingAudioRecovered')
       );
     }
   }
@@ -339,8 +344,10 @@ export default class MonitorTask
         );
       }
       if (!this.hasSignalingError) {
-        const attributes = this.generateAudioVideoEventAttributesForReceivingAudioDropped();
-        this.context.eventController?.publishEvent('signalingDropped', attributes);
+        this.context.eventController?.publishEvent(
+          'signalingDropped',
+          audioVideoEventAttributesFromState(this.context)
+        );
         this.hasSignalingError = true;
       }
       if (this.context.isSessionConnected) {
@@ -384,6 +391,10 @@ export default class MonitorTask
         this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);
         this.context.videoDownlinkBandwidthPolicy.updateIndex(this.context.videoStreamIndex);
         this.handleBitrateFrame(event.message.bitrates);
+        this.context.eventController?.publishEvent(
+          'signalingDropped',
+          audioVideoEventAttributesFromState(this.context)
+        );
       }
       const status = MeetingSessionStatus.fromSignalFrame(event.message);
       // Primary meeting join ack status will be handled by `PromoteToPrimaryMeetingTask`
@@ -449,32 +460,6 @@ export default class MonitorTask
         attendeePresenceDurationMs: this.context.attendeePresenceDurationMs,
       });
     }
-  };
-
-  private generateBaseAudioVideoEventAttributes = (): AudioVideoEventAttributes => {
-    const {
-      signalingOpenDurationMs,
-      startTimeMs,
-      iceGatheringDurationMs,
-      attendeePresenceDurationMs,
-      meetingStartDurationMs,
-    } = this.context;
-    return {
-      meetingDurationMs: startTimeMs === null ? 0 : Math.round(Date.now() - startTimeMs),
-      signalingOpenDurationMs,
-      iceGatheringDurationMs,
-      attendeePresenceDurationMs,
-      meetingStartDurationMs,
-    };
-  };
-
-  private generateAudioVideoEventAttributesForReceivingAudioDropped = (): AudioVideoEventAttributes => {
-    const baseAttributes = this.generateBaseAudioVideoEventAttributes();
-    return {
-      ...baseAttributes,
-      maxVideoTileCount: this.context.maxVideoTileCount,
-      poorConnectionCount: this.context.poorConnectionCount,
-    };
   };
 
   /**

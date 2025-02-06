@@ -205,6 +205,12 @@ describe('MonitorTask', () => {
       CreateMeetingResponseMock.MeetingResponseMock,
       CreateMeetingResponseMock.AttendeeResponseMock
     );
+    context.attendeePresenceDurationMs = 1;
+    context.iceGatheringDurationMs = 2;
+    context.meetingStartDurationMs = 3;
+    context.startTimeMs = 4;
+    context.signalingOpenDurationMs = 5;
+    context.maxVideoTileCount = 6;
   });
 
   afterEach(() => {
