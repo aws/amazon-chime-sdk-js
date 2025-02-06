@@ -16,6 +16,9 @@ const setupTestEnvironment = require('./TestSetup');
 describe('VideoTest', async function () {
   // Get the test setup functions
   const testSetup = setupTestEnvironment('VideoTest', MeetingPage);
+  // The test browser audio devices occasionally trigger the failure detection. Until we figure out
+  // why that occurs, we will just ignore them  
+  const ignoredEvents = ['sendingAudioFailed', 'sendingAudioRecovered'];
 
   let test_window;
   let monitor_window;
@@ -73,6 +76,25 @@ describe('VideoTest', async function () {
     }
   });
 
+  step('should validate meeting start events', async function () {
+    const expected = [
+      'videoInputUnselected',
+      'audioInputSelected',
+      'meetingStartRequested',
+      'attendeePresenceReceived',
+      'meetingStartSucceeded',
+    ];
+
+    await test_window.runCommands(async () =>
+      this.pageOne.validateEvents(expected, ignoredEvents, {})
+    );
+
+    const monitorPage = this.numberOfSessions === 1 ? this.pageOne : this.pageTwo;
+    await monitor_window.runCommands(async () =>
+      monitorPage.validateEvents(expected, ignoredEvents, {})
+    );
+  });
+
   step('should have two participants in the roster', async function () {
     await test_window.runCommands(async () => await this.pageOne.rosterCheck(2));
 
@@ -85,6 +107,12 @@ describe('VideoTest', async function () {
 
   step('test attendee should turn on video', async function () {
     await test_window.runCommands(async () => await this.pageOne.turnVideoOn());
+  });
+
+  step('should validate videoInputSelected event', async function () {
+    await test_window.runCommands(async () => {
+      await this.pageOne.validateEvents(['videoInputSelected'], ignoredEvents, {});
+    });
   });
 
   step('test attendee should verify local video is on', async function () {
@@ -101,6 +129,12 @@ describe('VideoTest', async function () {
 
   step('test attendee should turn off video', async function () {
     await test_window.runCommands(async () => await this.pageOne.turnVideoOff());
+  });
+
+  step('should validate videoInputUnselected event', async function () {
+    await test_window.runCommands(async () => {
+      await this.pageOne.validateEvents(['videoInputUnselected'], ignoredEvents, {});
+    });
   });
 
   step('test attendee should verify local video is off', async function () {

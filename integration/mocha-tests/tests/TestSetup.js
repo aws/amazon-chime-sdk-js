@@ -7,34 +7,41 @@ const { determineSessionCount } = require('../utils/ClientHelper');
 /**
  * Sets up the test environment with WebDriver and handles test cleanup
  * @param {string} testName - Name of the test
+ * @param {Object} Page - Page object class
+ * @param {Object} [options] - Additional options
+ * @param {boolean} [options.requireTwoSessions=false] - Whether to require two sessions
  * @returns {Object} - Setup functions for the test
  */
-function setupTestEnvironment(testName, Page) {
+function setupTestEnvironment(testName, Page, { requireTwoSessions = false } = {}) {
   return {
     /**
      * Sets up the base test environment with appropriate WebDriver instances
      */
-    setupBaseTest: function() {
+    setupBaseTest: function () {
       let driverFactoryOne;
       let driverFactoryTwo;
       let baseTestConfigOne;
       let baseTestConfigTwo;
-      let pageOne;
-      let pageTwo;
       let failureCount = 0;
 
-      before(async function() {
-        failureCount = 0;
+      before(async function () {
         this.logger = new Logger(testName);
         this.logger.log('Retrieving the base test config');
         baseTestConfigOne = new SdkBaseTest();
-        
-        // Determine session count based on client info
+
+        // Determine session count based on client info or explicit override
         const client = JSON.parse(process.env.CLIENT || '{}');
-        this.numberOfSessions = determineSessionCount(client, this.logger);
-        
+        let sessionCount = determineSessionCount(client, this.logger);
+
+        if (requireTwoSessions && sessionCount < 2) {
+          this.logger.log(
+            `requireTwoSessions=true → forcing two sessions (was ${sessionCount})`
+          );
+          sessionCount = 2;
+        }
+        this.numberOfSessions = sessionCount;
         this.logger.log(`Setting up test with ${this.numberOfSessions} session(s)`);
-        
+
         // Setup first driver
         this.logger.log('Configuring the first webdriver');
         driverFactoryOne = new WebDriverFactory(
@@ -47,11 +54,11 @@ function setupTestEnvironment(testName, Page) {
         await driverFactoryOne.build();
         this.driverFactoryOne = driverFactoryOne;
         this.baseTestConfigOne = baseTestConfigOne;
-        
+
         // Create page object for first driver
         this.logger.log('Instantiating selenium helper class');
         this.pageOne = new Page(driverFactoryOne.driver, this.logger);
-        
+
         // Setup second driver if needed
         if (this.numberOfSessions === 2) {
           this.logger.log('Configuring the second webdriver');
@@ -66,23 +73,23 @@ function setupTestEnvironment(testName, Page) {
           await driverFactoryTwo.build();
           this.driverFactoryTwo = driverFactoryTwo;
           this.baseTestConfigTwo = baseTestConfigTwo;
-          
+
           // Create page object for second driver
           this.pageTwo = new Page(driverFactoryTwo.driver, this.logger);
         }
       });
 
-      afterEach(async function() {
+      afterEach(async function () {
         if (this.currentTest.state === 'failed') failureCount += 1;
         this.logger.printLogs();
       });
 
-      after(async function() {
+      after(async function () {
         this.logger.log('Closing the webdriver(s)');
         const passed = failureCount === 0;
 
         await driverFactoryOne.quit(passed);
-        
+
         if (this.numberOfSessions === 2 && driverFactoryTwo) {
           await driverFactoryTwo.quit(passed);
         }
