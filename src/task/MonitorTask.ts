@@ -391,10 +391,6 @@ export default class MonitorTask
         this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);
         this.context.videoDownlinkBandwidthPolicy.updateIndex(this.context.videoStreamIndex);
         this.handleBitrateFrame(event.message.bitrates);
-        this.context.eventController?.publishEvent(
-          'signalingDropped',
-          audioVideoEventAttributesFromState(this.context)
-        );
       }
       const status = MeetingSessionStatus.fromSignalFrame(event.message);
       // Primary meeting join ack status will be handled by `PromoteToPrimaryMeetingTask`
