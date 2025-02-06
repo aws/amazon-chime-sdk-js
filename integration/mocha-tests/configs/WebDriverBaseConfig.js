@@ -20,18 +20,24 @@ const config = {
   chromeOptions: {
     browserName: 'chrome',
     'goog:chromeOptions': {
-      args: process.env.HEADLESS_MODE === 'true' ? 
-        [
-          '--use-fake-device-for-media-stream', 
-          '--use-fake-ui-for-media-stream',
-          '--headless=new',
-          '--window-size=1920,1080',
-          '--disable-gpu',
-          '--no-sandbox',
-          '--disable-dev-shm-usage'
-        ] : 
-        ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream', '--window-size=1920,1080'],
+      args:
+        process.env.HEADLESS_MODE === 'true'
+          ? [
+              '--use-fake-device-for-media-stream',
+              '--use-fake-ui-for-media-stream',
+              '--headless=new',
+              '--window-size=1920,1080',
+              '--disable-gpu',
+              '--no-sandbox',
+              '--disable-dev-shm-usage',
+            ]
+          : [
+              '--use-fake-device-for-media-stream',
+              '--use-fake-ui-for-media-stream',
+              '--window-size=1920,1080',
+            ],
     },
+    ...(process.env.HEADLESS_MODE === 'true' && { 'goog:loggingPrefs': { browser: 'ALL' } }),
   },
   safariOptions: {
     browserName: 'safari',

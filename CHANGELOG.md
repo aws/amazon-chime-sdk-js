@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added documentation for Voice Focus and Web Audio best practice.
+- Added new attributes signalingCloseCode, signalingCloseReason, and signalingCloseWasClean to signalingDropped events. These are not always guaranteed to be set.
 
 ### Removed
 
@@ -53,11 +54,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improve reconnection behavior on signaling disconnection mid-meeting. When the websocket is irreversibly losts, the SDK will now reconnect immediately instead of waiting on ping-pongs.
+- Improve reconnection behavior on signaling disconnection mid-meeting. When the WebSocket is irreversibly lost, the SDK will now reconnect immediately instead of waiting on ping-pongs.
 
 ### Fixed
-- Ensure content share resolution is always within limits
 
+- Ensure content share resolution is always within limits
 - Match framerate in `DefaultVideoFrameProcessorPipeline` with input stream
 - Fix logging of `options`in `BackgroundBlurProcessorProvided` and `BackgroundReplacementFilter`
 
@@ -66,7 +67,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add interface for custom CDN paths for VideoFxProcessor
-
 - Allow setting framerate on `DefaultVideoTransformDevice`
 
 ### Removed

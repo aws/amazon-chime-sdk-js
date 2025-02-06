@@ -1,6 +1,7 @@
 const { By, until } = require('selenium-webdriver');
 const { LogLevel, Log } = require('../utils/Logger');
 const { sleep } = require('../utils/HelperFunctions');
+const { MeetingEventManager } = require('../utils/events/MeetingEventManager');
 
 const DEFAULT_TIMEOUT_MS = 5000;
 
@@ -28,6 +29,8 @@ function findAllElements() {
     videoButton: By.id('button-camera'),
     videoTile: By.tagName('video-tile'),
     videoTileNameplate: By.className('video-tile-nameplate'),
+    
+    leaveButton: By.id('button-meeting-leave'),
   };
 }
 
@@ -42,6 +45,7 @@ class MeetingPage {
   constructor(driver, logger) {
     this.driver = driver;
     this.logger = logger;
+    this.meetingEventManager = new MeetingEventManager(driver, logger);
     findAllElements();
   }
 
@@ -82,6 +86,8 @@ class MeetingPage {
     let authenticateButton = await this.driver.findElement(elements.authenticateButton);
     await authenticateButton.click();
     await this.waitForUserAuthentication();
+    // Always set up event capture so the test doesn't need to do it
+    await this.meetingEventManager.setupEventCapture();
   }
 
   async waitForUserAuthentication() {
@@ -331,6 +337,12 @@ class MeetingPage {
     }
   }
 
+  async leaveMeeting() {
+    let leaveButton = await this.driver.findElement(elements.leaveButton);
+    await this.driver.wait(until.elementIsVisible(leaveButton), DEFAULT_TIMEOUT_MS);
+    await leaveButton.click();
+    this.logger.pushLogs('Clicked leave meeting button');
+  }
 
   async runAudioCheck(expectedState, checkStereoTones = false) {
     let res = undefined;
@@ -537,6 +549,24 @@ class MeetingPage {
       }
     }
     this.logger.pushLogs('Audio check passed!!', LogLevel.SUCCESS);
+  }
+
+  /**
+   * Validates that the expected events have been captured.
+   * @param expectedEventNames - The names of the expected events. The validation will check that *only* these events occur.
+   * @param ignoredEvents - The names of the events to ignore. This can be used for events that may or may not occur.
+   * @param expectedAttributes - The expected attributes of the events to check in addition to default checks.
+   * @param timeoutMs - The timeout in milliseconds to wait on these events.
+   * @returns {Promise<void>} - A promise that resolves when the events have been validated.
+   */
+  async validateEvents(
+    expectedEventNames = [],
+    ignoredEvents = [],
+    expectedAttributes= {},
+    timeoutMs = 10000,
+  ) {
+    return this.meetingEventManager.validateEvents(
+      expectedEventNames, ignoredEvents, expectedAttributes, timeoutMs);
   }
 }
 

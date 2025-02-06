@@ -2,6 +2,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 const chalk = require('chalk');
+const { logging } = require('selenium-webdriver');
 
 const error = chalk.red;
 const info = chalk.blue;
@@ -74,6 +75,29 @@ class Logger {
       case LogLevel.SUCCESS:
         console.log(success(logMessage));
         break;
+    }
+  }
+
+  /**
+   * Pull and print browser console logs from a Selenium WebDriver instance.
+   * 
+   * This requires WebDriverFactory to have been initialized enableBrowserLogs = true
+   *
+   * @param {import('selenium-webdriver').WebDriver} driver
+   */
+  async pushBrowserLogs(driver) {
+    try {
+      const entries = await driver.manage().logs().get(logging.Type.BROWSER);
+      if (!entries.length) {
+        this.log(`No browser console logs found`, LogLevel.INFO);
+        return;
+      }
+
+      for (const entry of entries) {
+        this.log(`[BROWSER ${entry.level.name}] ${entry.message}`, LogLevel.INFO);
+      }
+    } catch (err) {
+      this.log(`Failed to get browser logs: ${err.message}`, LogLevel.ERROR);
     }
   }
 }
