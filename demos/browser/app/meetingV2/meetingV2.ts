@@ -421,11 +421,12 @@ export class DemoMeetingApp
 
   meetingLogger: Logger | undefined = undefined;
 
-  // Holding Shift while hitting the Leave button is handled by setting
-  // this to `halt`, which allows us to stop and measure memory leaks.
-  // The `nothing` option can be used to stop cleanup from happening allowing
+  // `halt` allows us to stop and measure memory leaks and
+  // `nothing` option can be used to stop cleanup from happening allowing
   // `audioVideo` to be reused without stopping the meeting.
-  behaviorAfterLeave: 'reload' | 'halt' | 'nothing' = 'reload';
+  behaviorAfterLeave =
+    (search.get('behaviorAfterLeave') as 'refresh' | 'reload' | 'halt' | 'nothing') ?? 'refresh';
+
 
   videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
 
@@ -1410,9 +1411,6 @@ export class DemoMeetingApp
 
     const buttonMeetingLeave = document.getElementById('button-meeting-leave');
     buttonMeetingLeave.addEventListener('click', e => {
-      if (e.shiftKey) {
-        this.behaviorAfterLeave = 'halt';
-      };
       AsyncScheduler.nextTick(async () => {
         (buttonMeetingLeave as HTMLButtonElement).disabled = true;
         await this.leave();
