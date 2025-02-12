@@ -666,7 +666,7 @@ describe('StatsCollector', () => {
 
       domMockBehavior.rtcPeerConnectionGetStatsReports = [
         {
-          id: 'RTCInboundRTPVideoStream',
+          id: 'RTCOutboundRTPVideoStream',
           type: 'outbound-rtp',
           kind: 'video',
           ssrc: 1,
@@ -686,6 +686,50 @@ describe('StatsCollector', () => {
       streamMetricReport.streamId = 1;
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.UPSTREAM;
+      streamMetricReport.currentMetrics['packetsLost'] = 10;
+      streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
+
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+      statsCollector.start(signalingClient, new TestVideoStreamIndex(logger));
+
+      // @ts-ignore
+      statsCollector.clientMetricReport.streamMetricReports[1] = streamMetricReport;
+
+      new TimeoutScheduler(interval + 5).start(() => {
+        statsCollector.stop();
+        done();
+      });
+    });
+
+    it('emit error when video source exists without uplink video stream', done => {
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        allStreams(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet([]);
+        }
+      }
+
+      domMockBehavior.rtcPeerConnectionGetStatsReports = [
+        {
+          id: 'RTCInboundRTPVideoStream',
+          type: 'inbound-rtp',
+          kind: 'video',
+          ssrc: 1,
+          packetsLost: 10,
+          jitterBufferDelay: 100,
+        },
+        {
+          id: 'MediaSource',
+          type: 'media-source',
+          kind: 'video',
+          width: 1280,
+          jitterBufferDelay: 720,
+        },
+      ];
+
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
       streamMetricReport.currentMetrics['packetsLost'] = 10;
       streamMetricReport.currentMetrics['jitterBufferDelay'] = 100;
 

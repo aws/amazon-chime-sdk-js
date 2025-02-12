@@ -738,6 +738,10 @@ export default class StatsCollector
   ): void {
     const streamId = this.videoStreamIndex.streamIdForSSRC(Number(ssrc));
     const attendeeId = this.videoStreamIndex.attendeeIdForStreamId(streamId);
+    if (streamId === undefined || attendeeId === '') {
+      this.logger.warn(`No attendee found for ssrc ${ssrc}`);
+      return;
+    }
     if (this.resolutionMap.has(attendeeId)) {
       metricReport.currentMetrics['videoRenderWidth'] = this.resolutionMap.get(attendeeId).width;
       metricReport.currentMetrics['videoRenderHeight'] = this.resolutionMap.get(attendeeId).height;
@@ -748,6 +752,10 @@ export default class StatsCollector
     for (const rawMetricReport of rawMetricReports) {
       if (this.isVideoSourceMetricReport(rawMetricReport)) {
         const videoUpstreamSsrcs = this.clientMetricReport.getVideoUpstreamSsrcs();
+        if (videoUpstreamSsrcs.length === 0) {
+          this.logger.warn('No video upstream ssrcs found');
+          return;
+        }
         for (const ssrc of videoUpstreamSsrcs) {
           this.clientMetricReport.streamMetricReports[ssrc].currentMetrics['videoInputWidth'] =
             rawMetricReport['width'];

@@ -192,6 +192,11 @@ export default class SignalingAndMetricsConnectionMonitor
     let videoInputFps = 0;
     let videoEncodeFps = 0;
     for (const ssrc of ssrcs) {
+      // There may be multiple video ssrcs for one video when simulcast is enabled.
+      // We aggregate the metrics for all these ssrcs to determine encoding health.
+      // If any of the ssrcs is using hardware encoder, we consider the encoding is
+      // done by hardware (browsers may use software encoder for low resolution
+      // streams even if hardware encoding is available).
       isHardwareEncoder ||= Boolean(
         clientMetricReport.getObservableVideoMetricValue('videoUpstreamEncoderImplementation', ssrc)
       );

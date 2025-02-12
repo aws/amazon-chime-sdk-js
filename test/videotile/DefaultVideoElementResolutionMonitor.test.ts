@@ -13,7 +13,6 @@ describe('DefaultVideoElementResolutionMonitor', () => {
   let behavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
   let monitor: DefaultVideoElementResolutionMonitor;
-  let mockVideoElement: HTMLVideoElement;
   let resizeCallback: (entries: ResizeObserverEntry[]) => void;
 
   beforeEach(() => {
@@ -28,9 +27,6 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       unobserve(_target: Element): void {}
       disconnect(): void {}
     } as typeof ResizeObserver;
-
-    // Mock HTMLVideoElement
-    mockVideoElement = document.createElement('video') as HTMLVideoElement;
   });
 
   afterEach(() => {
@@ -40,11 +36,6 @@ describe('DefaultVideoElementResolutionMonitor', () => {
   describe('constructor', () => {
     it('should initialize without video element', () => {
       monitor = new DefaultVideoElementResolutionMonitor();
-      expect(monitor).to.not.equal(null);
-    });
-
-    it('should initialize with video element', () => {
-      monitor = new DefaultVideoElementResolutionMonitor(mockVideoElement);
       expect(monitor).to.not.equal(null);
     });
   });

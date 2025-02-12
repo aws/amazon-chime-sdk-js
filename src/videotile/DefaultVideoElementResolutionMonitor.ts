@@ -9,16 +9,13 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
   private resizeObserver: ResizeObserver;
   private element?: HTMLVideoElement;
 
-  constructor(element?: HTMLVideoElement) {
+  constructor() {
     this.resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         this.notifyObservers(width, height);
       }
     });
-    if (element) {
-      this.bindVideoElement(element);
-    }
   }
 
   private notifyObservers(newWidth: number, newHeight: number): void {
