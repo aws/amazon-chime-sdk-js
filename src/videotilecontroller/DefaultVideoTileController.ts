@@ -8,11 +8,15 @@ import DefaultDevicePixelRatioMonitor from '../devicepixelratiomonitor/DefaultDe
 import DevicePixelRatioWindowSource from '../devicepixelratiosource/DevicePixelRatioWindowSource';
 import Logger from '../logger/Logger';
 import { Maybe } from '../utils/Types';
+import DefaultVideoElementResolutionMonitor from '../videotile/DefaultVideoElementResolutionMonitor';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
+import VideoElementResolutionMonitor, {
+  VideoElementResolutionObserver,
+} from '../videotile/VideoElementResolutionMonitor';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
 import VideoTileFactory from '../videotilefactory/VideoTileFactory';
-import VideoTileController from './VideoTileController';
+import VideoTileController, { VideoTileResolutionObserver } from './VideoTileController';
 
 export default class DefaultVideoTileController implements VideoTileController {
   private tileMap = new Map<number, VideoTile>();
@@ -20,6 +24,7 @@ export default class DefaultVideoTileController implements VideoTileController {
   private currentLocalTile: VideoTile | null = null;
   private devicePixelRatioMonitor: undefined | DefaultDevicePixelRatioMonitor;
   private currentPausedTilesByIds: Set<number> = new Set<number>();
+  private resolutionObservers = new Set<VideoTileResolutionObserver>();
   keepLastFrameWhenPaused: boolean | undefined = false;
 
   constructor(
@@ -65,6 +70,7 @@ export default class DefaultVideoTileController implements VideoTileController {
       return;
     }
     this.logger.info('Unbinding the video element');
+    this.notifyRemoteObserversOfUnbound(tile.state().boundAttendeeId);
     const videoElement = tile.stateRef().boundVideoElement;
     tile.bindVideoElement(null);
     if (cleanUpVideoElement) {
@@ -174,7 +180,13 @@ export default class DefaultVideoTileController implements VideoTileController {
     const tileId = this.nextTileId;
     this.nextTileId += 1;
     this.createDevicePixelRatioMonitorIfNeeded();
-    const tile = this.tileFactory.makeTile(tileId, localTile, this, this.devicePixelRatioMonitor);
+    const tile = this.tileFactory.makeTile(
+      tileId,
+      localTile,
+      this,
+      this.devicePixelRatioMonitor,
+      this.createResolutionMonitor(tileId)
+    );
     this.tileMap.set(tileId, tile);
     return tile;
   }
@@ -249,6 +261,48 @@ export default class DefaultVideoTileController implements VideoTileController {
       return null;
     }
     return tile.capture();
+  }
+
+  registerVideoTileResolutionObserver(observer: VideoTileResolutionObserver): void {
+    this.resolutionObservers.add(observer);
+  }
+
+  removeVideoTileResolutionObserver(observer: VideoTileResolutionObserver): void {
+    this.resolutionObservers.delete(observer);
+  }
+
+  private notifyResolutionObserversOfChange(
+    attendeeId: string,
+    newWidth: number,
+    newHeight: number
+  ): void {
+    for (const observer of this.resolutionObservers) {
+      observer.videoTileResolutionDidChange(attendeeId, newWidth, newHeight);
+    }
+  }
+
+  private notifyRemoteObserversOfUnbound(attendeeId: string): void {
+    for (const observer of this.resolutionObservers) {
+      observer.videoTileUnbound(attendeeId);
+    }
+  }
+
+  private createResolutionMonitor(tileId: number): VideoElementResolutionMonitor {
+    const observer = new (class implements VideoElementResolutionObserver {
+      constructor(private controller: DefaultVideoTileController, private tileId: number) {}
+
+      videoElementResolutionChanged(newWidth: number, newHeight: number): void {
+        const tile = this.controller.getVideoTile(this.tileId);
+        if (tile) {
+          const attendeeId = tile.state().boundAttendeeId;
+          this.controller.notifyResolutionObserversOfChange(attendeeId, newWidth, newHeight);
+        }
+      }
+    })(this, tileId);
+
+    const resolutionMonitor = new DefaultVideoElementResolutionMonitor();
+    resolutionMonitor.registerObserver(observer);
+    return resolutionMonitor;
   }
 
   private findOrCreateLocalVideoTile(): VideoTile | null {

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.27.0] - 2024-12-11
 
 ### Added
+- Track video render resolution and report additional video metrics
 
 ### Removed
 

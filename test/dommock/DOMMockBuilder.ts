@@ -1800,6 +1800,13 @@ export default class DOMMockBuilder {
       constructor(public width: number, public height: number) {}
     };
     GlobalAny.performance = Date;
+
+    GlobalAny.ResizeObserver = class MockResizeObserver {
+      constructor(public callback: ResizeObserverCallback) {}
+      observe(_target: Element): void {}
+      unobserve(_target: Element): void {}
+      disconnect(): void {}
+    };
   }
 
   cleanup(): void {

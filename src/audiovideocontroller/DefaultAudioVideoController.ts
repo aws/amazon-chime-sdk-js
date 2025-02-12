@@ -635,6 +635,9 @@ export default class DefaultAudioVideoController
     );
     this.meetingSessionContext.reconnectController = this._reconnectController;
     this.meetingSessionContext.videoDeviceInformation = {};
+    this._videoTileController.registerVideoTileResolutionObserver(
+      this.meetingSessionContext.statsCollector
+    );
 
     if (!reconnecting) {
       this.totalRetryCount = 0;
@@ -826,6 +829,10 @@ export default class DefaultAudioVideoController
         this.notifyStop(status, error);
       }
     });
+
+    this._videoTileController.removeVideoTileResolutionObserver(
+      this.meetingSessionContext.statsCollector
+    );
   }
 
   update(options: { needsRenegotiation: boolean } = { needsRenegotiation: true }): boolean {

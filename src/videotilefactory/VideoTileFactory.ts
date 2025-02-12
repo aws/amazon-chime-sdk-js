@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
+import VideoElementResolutionMonitor from '../videotile/VideoElementResolutionMonitor';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 
@@ -16,6 +17,7 @@ export default interface VideoTileFactory {
     tileId: number,
     localTile: boolean,
     tileController: VideoTileController,
-    devicePixelRatioMonitor: DevicePixelRatioMonitor
+    devicePixelRatioMonitor: DevicePixelRatioMonitor,
+    resolutionMonitor?: VideoElementResolutionMonitor
   ): VideoTile;
 }

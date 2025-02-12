@@ -20,10 +20,12 @@ import {
   SdkDimensionValue,
   SdkMetric,
   SdkStreamDimension,
+  SdkStreamMediaType,
   SdkStreamMetricFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
 import { Maybe } from '../utils/Types';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import { VideoTileResolutionObserver } from '../videotilecontroller/VideoTileController';
 import AudioLogEvent from './AudioLogEvent';
 import VideoLogEvent from './VideoLogEvent';
 
@@ -36,7 +38,8 @@ type StatsReportItem = any;
 /**
  * [[StatsCollector]] gathers statistics and sends metrics.
  */
-export default class StatsCollector implements RedundantAudioRecoveryMetricsObserver {
+export default class StatsCollector
+  implements RedundantAudioRecoveryMetricsObserver, VideoTileResolutionObserver {
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
 
@@ -48,6 +51,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   private lastRedRecoveryMetricReportConsumedTimestampMs: number = 0;
   private videoCodecDegradationHighEncodeCpuCount: number = 0;
   private videoCodecDegradationEncodeFailureCount: number = 0;
+  private resolutionMap = new Map<string, { width: number; height: number }>();
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -236,6 +240,14 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     this.intervalScheduler = null;
   }
 
+  videoTileResolutionDidChange(attendeeId: string, newWidth: number, newHeight: number): void {
+    this.resolutionMap.set(attendeeId, { width: newWidth, height: newHeight });
+  }
+
+  videoTileUnbound(attendeeId: string): void {
+    this.resolutionMap.delete(attendeeId);
+  }
+
   /**
    * Convert raw metrics to client metric report.
    */
@@ -252,10 +264,15 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
       };
     };
     if (isStream) {
-      metricMap = this.clientMetricReport.getMetricMap(
-        (metricReport as StreamMetricReport).mediaType,
-        (metricReport as StreamMetricReport).direction
-      );
+      const mediaType = (metricReport as StreamMetricReport).mediaType;
+      const direction = (metricReport as StreamMetricReport).direction;
+      metricMap = this.clientMetricReport.getMetricMap(mediaType, direction);
+      if (mediaType === MediaType.VIDEO && direction === Direction.DOWNSTREAM) {
+        this.addRenderResolutionToVideoDownstreamMetrics(
+          metricReport as StreamMetricReport,
+          rawMetricReport.ssrc
+        );
+      }
     } else {
       metricMap = this.clientMetricReport.getMetricMap();
     }
@@ -289,7 +306,12 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     this.clientMetricReport.currentSsrcs = {};
     const timeStamp = Date.now();
     for (const rawMetricReport of rawMetricReports) {
-      const isStream = this.isStreamRawMetricReport(rawMetricReport.type);
+      if (this.isVideoSourceMetricReport(rawMetricReport)) {
+        // Video source metrics will be added to all uplink video streams,
+        // so this will be handled after all uplink metrics are processed.
+        continue;
+      }
+      const isStream = this.isStreamRawMetricReport(rawMetricReport);
       if (isStream) {
         const existingStreamMetricReport = this.clientMetricReport.streamMetricReports[
           Number(rawMetricReport.ssrc)
@@ -414,6 +436,10 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
       const streamMetricReport = this.clientMetricReport.streamMetricReports[ssrc];
       const streamMetricFrame = SdkStreamMetricFrame.create();
       streamMetricFrame.streamId = streamMetricReport.streamId;
+      streamMetricFrame.mediaType =
+        streamMetricReport.mediaType === MediaType.AUDIO
+          ? SdkStreamMediaType.AUDIO
+          : SdkStreamMediaType.VIDEO;
       streamMetricFrame.metrics = [];
       this.addStreamMetricDimensionFrames(streamMetricFrame, streamMetricReport);
       clientMetricFrame.streamMetricFrames.push(streamMetricFrame);
@@ -478,14 +504,16 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   /**
    * Checks if the type of RawMetricReport is stream related.
    */
-  private isStreamRawMetricReport(type: string): boolean {
-    return [
-      'inbound-rtp',
-      'inbound-rtp-red',
-      'outbound-rtp',
-      'remote-inbound-rtp',
-      'remote-outbound-rtp',
-    ].includes(type);
+  private isStreamRawMetricReport(rawMetricReport: RawMetricReport): boolean {
+    return (
+      [
+        'inbound-rtp',
+        'inbound-rtp-red',
+        'outbound-rtp',
+        'remote-inbound-rtp',
+        'remote-outbound-rtp',
+      ].includes(rawMetricReport.type) || this.isVideoSourceMetricReport(rawMetricReport)
+    );
   }
 
   /**
@@ -516,7 +544,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
       rawMetricReport.type === 'remote-inbound-rtp' ||
       rawMetricReport.type === 'remote-outbound-rtp' ||
       (rawMetricReport.type === 'candidate-pair' && rawMetricReport.state === 'succeeded') ||
-      (rawMetricReport.type === 'media-source' && rawMetricReport.kind === 'audio')
+      rawMetricReport.type === 'media-source'
     );
   }
 
@@ -526,7 +554,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   isValidSsrc(rawMetricReport: RawMetricReport): boolean {
     let validSsrc = true;
     if (
-      this.isStreamRawMetricReport(rawMetricReport.type) &&
+      this.isStreamRawMetricReport(rawMetricReport) &&
       this.getDirectionType(rawMetricReport) === Direction.DOWNSTREAM &&
       this.getMediaType(rawMetricReport) === MediaType.VIDEO
     ) {
@@ -582,6 +610,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
     filteredRawMetricReports.push(...customStatsReports);
 
     this.processRawMetricReports(filteredRawMetricReports);
+    this.updateVideoSourceMetrics(filteredRawMetricReports);
 
     const clientMetricFrame = this.makeClientMetricProtobuf();
     this.sendClientMetricProtobuf(clientMetricFrame);
@@ -689,7 +718,7 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
   ): number | null {
     for (const rawMetricReport of rawMetricReports) {
       if (
-        this.isStreamRawMetricReport(rawMetricReport.type) &&
+        this.isStreamRawMetricReport(rawMetricReport) &&
         this.getMediaType(rawMetricReport) === MediaType.VIDEO &&
         this.getDirectionType(rawMetricReport) === Direction.UPSTREAM
       ) {
@@ -697,5 +726,43 @@ export default class StatsCollector implements RedundantAudioRecoveryMetricsObse
       }
     }
     return null;
+  }
+
+  private isVideoSourceMetricReport(rawMetricReport: RawMetricReport): boolean {
+    return rawMetricReport.type === 'media-source' && rawMetricReport.kind === 'video';
+  }
+
+  private addRenderResolutionToVideoDownstreamMetrics(
+    metricReport: StreamMetricReport,
+    ssrc: number
+  ): void {
+    const streamId = this.videoStreamIndex.streamIdForSSRC(Number(ssrc));
+    const attendeeId = this.videoStreamIndex.attendeeIdForStreamId(streamId);
+    if (streamId === undefined || attendeeId === '') {
+      this.logger.warn(`No attendee found for ssrc ${ssrc}`);
+      return;
+    }
+    if (this.resolutionMap.has(attendeeId)) {
+      metricReport.currentMetrics['videoRenderWidth'] = this.resolutionMap.get(attendeeId).width;
+      metricReport.currentMetrics['videoRenderHeight'] = this.resolutionMap.get(attendeeId).height;
+    }
+  }
+
+  private updateVideoSourceMetrics(rawMetricReports: RawMetricReport[]): void {
+    for (const rawMetricReport of rawMetricReports) {
+      if (this.isVideoSourceMetricReport(rawMetricReport)) {
+        const videoUpstreamSsrcs = this.clientMetricReport.getVideoUpstreamSsrcs();
+        if (videoUpstreamSsrcs.length === 0) {
+          this.logger.warn('No video upstream ssrcs found');
+          return;
+        }
+        for (const ssrc of videoUpstreamSsrcs) {
+          this.clientMetricReport.streamMetricReports[ssrc].currentMetrics['videoInputWidth'] =
+            rawMetricReport['width'];
+          this.clientMetricReport.streamMetricReports[ssrc].currentMetrics['videoInputHeight'] =
+            rawMetricReport['height'];
+        }
+      }
+    }
   }
 }

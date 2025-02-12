@@ -176,8 +176,8 @@ export default class SignalingAndMetricsConnectionMonitor
 
   private updateVideoEncodingHealth(clientMetricReport: ClientMetricReport): void {
     const isLocalVideoTileStarted = this.audioVideoController.videoTileController.hasStartedLocalVideoTile();
-    const ssrc = clientMetricReport.getVideoUpstreamSsrc();
-    if (!isLocalVideoTileStarted || ssrc === null) {
+    const ssrcs = clientMetricReport.getVideoUpstreamSsrcs();
+    if (!isLocalVideoTileStarted || ssrcs.length === 0) {
       this.connectionHealthData.setIsVideoEncoderHardware(false);
       this.connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
       this.connectionHealthData.setCpuLimitationDuration(0);
@@ -186,26 +186,37 @@ export default class SignalingAndMetricsConnectionMonitor
       return;
     }
 
-    const isHardwareEncoder = clientMetricReport.getObservableVideoMetricValue(
-      'videoUpstreamEncoderImplementation',
-      ssrc
-    );
-    const videoEncodingTimeInMs = clientMetricReport.getObservableVideoMetricValue(
-      'videoUpstreamTotalEncodeTimePerSecond',
-      ssrc
-    );
-    const cpuLimitationDuration = clientMetricReport.getObservableVideoMetricValue(
-      'videoUpstreamCpuQualityLimitationDurationPerSecond',
-      ssrc
-    );
-    const videoInputFps = clientMetricReport.getObservableVideoMetricValue(
-      'videoUpstreamFramesInputPerSecond',
-      ssrc
-    );
-    const videoEncodeFps = clientMetricReport.getObservableVideoMetricValue(
-      'videoUpstreamFramesEncodedPerSecond',
-      ssrc
-    );
+    let isHardwareEncoder = false;
+    let videoEncodingTimeInMs = 0;
+    let cpuLimitationDuration = 0;
+    let videoInputFps = 0;
+    let videoEncodeFps = 0;
+    for (const ssrc of ssrcs) {
+      // There may be multiple video ssrcs for one video when simulcast is enabled.
+      // We aggregate the metrics for all these ssrcs to determine encoding health.
+      // If any of the ssrcs is using hardware encoder, we consider the encoding is
+      // done by hardware (browsers may use software encoder for low resolution
+      // streams even if hardware encoding is available).
+      isHardwareEncoder ||= Boolean(
+        clientMetricReport.getObservableVideoMetricValue('videoUpstreamEncoderImplementation', ssrc)
+      );
+      videoEncodingTimeInMs += clientMetricReport.getObservableVideoMetricValue(
+        'videoUpstreamTotalEncodeTimePerSecond',
+        ssrc
+      );
+      cpuLimitationDuration += clientMetricReport.getObservableVideoMetricValue(
+        'videoUpstreamCpuQualityLimitationDurationPerSecond',
+        ssrc
+      );
+      videoInputFps += clientMetricReport.getObservableVideoMetricValue(
+        'videoUpstreamFramesInputPerSecond',
+        ssrc
+      );
+      videoEncodeFps += clientMetricReport.getObservableVideoMetricValue(
+        'videoUpstreamFramesEncodedPerSecond',
+        ssrc
+      );
+    }
     const videoEncodingTimePerFrameInMs =
       videoEncodeFps > 0 ? videoEncodingTimeInMs / videoEncodeFps : 0;
 

@@ -11,7 +11,9 @@ import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySetting
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import VideoTileState from '../../src/videotile/VideoTileState';
-import VideoTileController from '../../src/videotilecontroller/VideoTileController';
+import VideoTileController, {
+  VideoTileResolutionObserver,
+} from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultVideoTileController', () => {
@@ -22,17 +24,37 @@ describe('DefaultVideoTileController', () => {
   let tileController: VideoTileController;
   let domMockBuilder: DOMMockBuilder;
   let mockMediaStream: MediaStream;
+  let resizeCallback: (entries: ResizeObserverEntry[]) => void;
+  const observer = new (class implements VideoTileResolutionObserver {
+    videoTileResolutionDidChange(
+      _attendeeId: string,
+      _newWidth: number,
+      _newHeight: number
+    ): void {}
+    videoTileUnbound(_attendeeId: string): void {}
+  })();
 
   beforeEach(() => {
     domMockBuilder = new DOMMockBuilder();
+    global.ResizeObserver = class MockResizeObserver {
+      constructor(callback: (entries: ResizeObserverEntry[]) => void) {
+        resizeCallback = callback;
+      }
+      observe(_target: Element): void {}
+      unobserve(_target: Element): void {}
+      disconnect(): void {}
+    } as typeof ResizeObserver;
+
     audioVideoController = new NoOpAudioVideoTileController();
     tileController = audioVideoController.videoTileController;
     mockMediaStream = new MediaStream();
     // @ts-ignore
     mockMediaStream.addTrack(new MediaStreamTrack('mock-track', 'video'));
+    tileController.registerVideoTileResolutionObserver(observer);
   });
 
   afterEach(async () => {
+    tileController.removeVideoTileResolutionObserver(observer);
     await (audioVideoController as NoOpAudioVideoTileController).destroy();
     domMockBuilder.cleanup();
   });
@@ -56,6 +78,12 @@ describe('DefaultVideoTileController', () => {
 
       const tileId = tileController.addVideoTile().id();
       tileController.bindVideoElement(tileId, videoElement);
+
+      resizeCallback([
+        {
+          contentRect: { width: 1280, height: 720 },
+        } as ResizeObserverEntry,
+      ]);
     });
 
     it('binds a null video element', done => {
@@ -77,6 +105,12 @@ describe('DefaultVideoTileController', () => {
       const tileId = tileController.addVideoTile().id();
       tileController.bindVideoElement(tileId, videoElement);
       tileController.bindVideoElement(tileId, null);
+
+      resizeCallback([
+        {
+          contentRect: { width: 1280, height: 720 },
+        } as ResizeObserverEntry,
+      ]);
     });
 
     it('ignores binding to a non-existent tile', done => {
