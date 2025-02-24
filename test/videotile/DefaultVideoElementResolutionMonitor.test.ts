@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoElementResolutionMonitor from '../../src/videotile/DefaultVideoElementResolutionMonitor';
 import { VideoElementResolutionObserver } from '../../src/videotile/VideoElementResolutionMonitor';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -69,6 +70,17 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       expect(height).to.equal(720);
 
       monitor.removeObserver(mockObserver);
+    });
+
+    it('should bind and unbind video elements', () => {
+      const videoElementFactory = new NoOpVideoElementFactory();
+      const videoElement = videoElementFactory.create();
+      monitor.bindVideoElement(videoElement);
+      monitor.bindVideoElement(null);
+    });
+
+    it('should skip unobserve if no element is being beserved', () => {
+      monitor.bindVideoElement(null);
     });
   });
 });
