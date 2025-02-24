@@ -33,14 +33,15 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
   }
 
   bindVideoElement(newElement: HTMLVideoElement | null): void {
-    if (!newElement) {
-      if (this.element) {
-        this.resizeObserver.unobserve(this.element);
-      }
-      this.element = newElement;
+    if (this.element === newElement) {
       return;
     }
+    if (this.element) {
+      this.resizeObserver.unobserve(this.element);
+    }
     this.element = newElement;
-    this.resizeObserver.observe(this.element);
+    if (this.element) {
+      this.resizeObserver.observe(this.element);
+    }
   }
 }

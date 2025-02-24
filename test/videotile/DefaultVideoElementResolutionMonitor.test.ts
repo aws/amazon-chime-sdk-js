@@ -85,7 +85,22 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       const videoElement = videoElementFactory.create();
       expect(() => monitor.bindVideoElement(videoElement)).to.not.throw();
       expect(observeCalled).to.be.true;
+      expect(unobserveCalled).to.be.false;
+      observeCalled = false;
+      unobserveCalled = false;
+      expect(() => monitor.bindVideoElement(videoElement)).to.not.throw();
+      expect(observeCalled).to.be.false;
+      expect(unobserveCalled).to.be.false;
+      observeCalled = false;
+      unobserveCalled = false;
+      const newVideoElement = videoElementFactory.create();
+      expect(() => monitor.bindVideoElement(newVideoElement)).to.not.throw();
+      expect(observeCalled).to.be.true;
+      expect(unobserveCalled).to.be.true;
+      observeCalled = false;
+      unobserveCalled = false;
       expect(() => monitor.bindVideoElement(null)).to.not.throw();
+      expect(observeCalled).to.be.false;
       expect(unobserveCalled).to.be.true;
     });
 
