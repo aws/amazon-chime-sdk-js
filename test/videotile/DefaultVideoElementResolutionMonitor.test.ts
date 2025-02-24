@@ -79,7 +79,7 @@ describe('DefaultVideoElementResolutionMonitor', () => {
       monitor.bindVideoElement(null);
     });
 
-    it('should skip unobserve if no element is being beserved', () => {
+    it('should skip unobserve if no element is being observed', () => {
       monitor.bindVideoElement(null);
     });
   });
