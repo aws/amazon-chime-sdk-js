@@ -75,12 +75,12 @@ describe('DefaultVideoElementResolutionMonitor', () => {
     it('should bind and unbind video elements', () => {
       const videoElementFactory = new NoOpVideoElementFactory();
       const videoElement = videoElementFactory.create();
-      monitor.bindVideoElement(videoElement);
-      monitor.bindVideoElement(null);
+      expect(() => monitor.bindVideoElement(videoElement)).to.not.throw();
+      expect(() => monitor.bindVideoElement(null)).to.not.throw();
     });
 
     it('should skip unobserve if no element is being observed', () => {
-      monitor.bindVideoElement(null);
+      expect(() => monitor.bindVideoElement(null)).to.not.throw();
     });
   });
 });
