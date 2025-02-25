@@ -7,7 +7,7 @@ import VideoElementResolutionMonitor, {
 export default class DefaultVideoElementResolutionMonitor implements VideoElementResolutionMonitor {
   private observerQueue = new Set<VideoElementResolutionObserver>();
   private resizeObserver: ResizeObserver;
-  private element?: HTMLVideoElement;
+  private element: HTMLVideoElement | null = null;
 
   constructor() {
     this.resizeObserver = new ResizeObserver(entries => {
@@ -32,12 +32,16 @@ export default class DefaultVideoElementResolutionMonitor implements VideoElemen
     this.observerQueue.delete(observer);
   }
 
-  bindVideoElement(newElement: HTMLVideoElement): void {
-    this.element = newElement;
-    if (!this.element) {
-      this.resizeObserver.unobserve(this.element);
+  bindVideoElement(newElement: HTMLVideoElement | null): void {
+    if (this.element === newElement) {
       return;
     }
-    this.resizeObserver.observe(this.element);
+    if (this.element) {
+      this.resizeObserver.unobserve(this.element);
+    }
+    this.element = newElement;
+    if (this.element) {
+      this.resizeObserver.observe(this.element);
+    }
   }
 }
