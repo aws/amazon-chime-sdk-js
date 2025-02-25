@@ -92,6 +92,7 @@ export default class Roster {
         
         attendeeElement.className = 'list-group-item d-flex align-items-center gap-2';
         attendeeElement.id = Roster.ATTENDEE_ELEMENT_PREFIX + attendeeId;
+        attendeeElement.setAttribute("data-sort-key", attendeeName);
         if (allowAttendeeCapabilities) {
             attendeeElement.classList.add('ps-2');
             attendeeElement.appendChild(attendeeCheckbox);
@@ -101,6 +102,14 @@ export default class Roster {
 
         const containerElement: HTMLUListElement = this.getContainerElement();
         containerElement.appendChild(attendeeElement);
+        this.sortRoster();
+    }
+
+    private sortRoster() {
+        const containerElement: HTMLUListElement = this.getContainerElement();
+        const sortedChildren = Array.from(containerElement.children)
+            .sort((a, b) => a.getAttribute("data-sort-key")!.localeCompare(b.getAttribute("data-sort-key")!));
+        sortedChildren.forEach(child => containerElement.appendChild(child));
     }
     
     /**
