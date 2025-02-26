@@ -318,6 +318,11 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       pipe.framerate = -5;
       expect(pipe.framerate).to.equal(15);
     });
+
+    it('setter ignores undefined frame rate', () => {
+      pipe.framerate = undefined;
+      expect(pipe.framerate).to.equal(15);
+    });
   });
 
   describe('addObserver', () => {

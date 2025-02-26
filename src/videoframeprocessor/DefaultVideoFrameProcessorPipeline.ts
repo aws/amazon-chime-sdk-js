@@ -73,7 +73,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
   // A negative framerate will cause `captureStream` to throw `NotSupportedError`.
   // The setter prevents this by switching to the default framerate if less than 0.
   set framerate(value: number) {
-    this.fr = value < 0 ? DEFAULT_FRAMERATE : value;
+    this.fr = value < 0 || value === undefined ? DEFAULT_FRAMERATE : value;
   }
 
   stop(): void {
