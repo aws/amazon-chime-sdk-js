@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use default framerate when video track framerate is undefined in `DefaultVideoFrameProcessorPipeline`
 
 ### Fixed
+
+## [3.27.1] - 2025-02-25
+
+### Added
+
+### Removed
+
+### Changed
+
+### Fixed
 - Fix TypeError when calling unbindVideoElement
 
 ## [3.27.0] - 2024-12-11
