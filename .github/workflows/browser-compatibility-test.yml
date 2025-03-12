@@ -15,6 +15,8 @@ env:
   MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
   SLACK_JS_SDK_DEV_CORE_WEBHOOK: ${{secrets.SLACK_JS_SDK_DEV_CORE_WEBHOOK}}
   PRE_RUN_SCRIPT_URL: ${{secrets.PRE_RUN_SCRIPT_URL}}
+  METRIC_NAME: ${{ secrets.METRIC_NAME }}
+  METRIC_NAMESPACE: ${{ secrets.METRIC_NAMESPACE }}
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -282,3 +284,28 @@ jobs:
         run: npm install axios
       - name: Send Slack Message
         run: node .github/script/send-test-report.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }}
+      - name: Send Metric to CloudWatch
+        if: always()
+        run: |
+          node -e "
+          const { CloudWatchClient, PutMetricDataCommand } = require('@aws-sdk/client-cloudwatch');
+          const client = new CloudWatchClient({ region: process.env.REGION });
+
+          const value = '${{ env.WORKFLOW_JOBS_STATUS }}' === 'failure' ? 0 : 1;
+
+          const command = new PutMetricDataCommand({
+            Namespace: process.env.METRIC_NAMESPACE,
+            MetricData: [{
+              MetricName: process.env.METRIC_NAME,
+              Dimensions: [
+                { Name: 'Platform', Value: 'JS SDK Daily Compatibility' }
+              ],
+              Value: value,
+            }]
+          });
+
+          client.send(command).then(() => console.log('Daily test result sent to CloudWatch')).catch(err => {
+            console.error('Failed to send metric. Error: ', err);
+            process.exit(1);
+          });
+          ";
