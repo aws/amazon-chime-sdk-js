@@ -50,7 +50,7 @@ runs:
         role-session-name: ${{ inputs.aws-role-session-name }}
         aws-region: us-east-1
     - name: Setup Sauce Connect
-      uses: saucelabs/sauce-connect-action@v1
+      uses: saucelabs/sauce-connect-action@v2
       with:
         username: ${{ inputs.sauce-username }}
         accessKey: ${{ inputs.sauce-access-key }}
