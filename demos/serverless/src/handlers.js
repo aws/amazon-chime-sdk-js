@@ -256,7 +256,11 @@ exports.get_attendee = async (event) => {
       MeetingId: meeting.Meeting.MeetingId,
       AttendeeId: query.id,
     });
-  return response(200, 'application/json', JSON.stringify(attendeeResponse, null, 2));
+  const combined = {
+    Meeting: { ...meeting.Meeting },
+    Attendee: { ...attendeeResponse.Attendee }
+  };
+  return response(200, 'application/json', JSON.stringify(combined, null, 2));
 };
 
 exports.update_attendee_capabilities = async (event) => {
