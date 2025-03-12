@@ -50,17 +50,17 @@ runs:
         role-session-name: ${{ inputs.aws-role-session-name }}
         aws-region: us-east-1
     - name: Setup Sauce Connect
-      uses: saucelabs/sauce-connect-action@v1
+      uses: saucelabs/sauce-connect-action@v2
       with:
         username: ${{ inputs.sauce-username }}
         accessKey: ${{ inputs.sauce-access-key }}
         noSSLBumpDomains: all
         tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
         restUrl: ${{ inputs.sauce-rest-url }}
-    - name: Setup Node.js - 16.x
+    - name: Setup Node.js - 20.x
       uses: actions/setup-node@v1
       with:
-        node-version: 16.x
+        node-version: 20.x
     - name: Install Kite
       run: integration/js/script/install-kite
       shell: bash
