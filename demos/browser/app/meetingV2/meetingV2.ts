@@ -1858,6 +1858,7 @@ export class DemoMeetingApp
       this.meetingEventPOSTLogger = getPOSTLogger(configuration, 'SDKEvent', `${DemoMeetingApp.BASE_URL}log_meeting_event`, this.logLevel);
     }
     this.eventReporter = await this.setupEventReporter(configuration);
+
     this.deviceController = new DefaultDeviceController(this.meetingLogger, {
       enableWebAudio: this.enableWebAudio,
     });
@@ -2043,11 +2044,12 @@ export class DemoMeetingApp
           new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId
           || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!isSelfAttendee) {
-        const { attendee } = await this.getAttendee(attendeeId);
-        const prettyAttendee = JSON.stringify(attendee, null, 2);
-        (document.getElementById(
+        this.getAttendee(attendeeId).then((attendee: any) => {
+          const prettyAttendee = JSON.stringify(attendee, null, 2);
+          (document.getElementById(
               'remote-attendee-info'
           ) as HTMLSpanElement).innerText = prettyAttendee;
+        });
       }
       if (!present) {
         this.roster.removeAttendee(attendeeId);
