@@ -311,10 +311,15 @@ jobs:
         run: npm install axios
       - name: Send Slack Message
         run: node .github/script/send-test-report.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_PREV_VER_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
+          aws-region: us-east-1
       - name: Send Metric to CloudWatch
-        if: always()
         run: |
           node -e "
+          npm install @aws-sdk/client-cloudwatch
           const { CloudWatchClient, PutMetricDataCommand } = require('@aws-sdk/client-cloudwatch');
           const client = new CloudWatchClient({ region: process.env.REGION });
 
