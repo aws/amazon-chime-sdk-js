@@ -291,8 +291,8 @@ jobs:
           aws-region: us-east-1
       - name: Send Metric to CloudWatch
         run: |
+          npm install @aws-sdk/client-cloudwatch  
           node -e "
-          npm install @aws-sdk/client-cloudwatch
           const { CloudWatchClient, PutMetricDataCommand } = require('@aws-sdk/client-cloudwatch');
           const client = new CloudWatchClient({ region: process.env.REGION });
 
