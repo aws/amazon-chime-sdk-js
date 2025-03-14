@@ -1,10 +1,13 @@
 name: Previous Major Version Browser Compatibility Test
 
 on:
-  schedule:
-    # More information on cron https://crontab.guru/
-    # GitHub actions is using UTC time. Scheduling action at 12 am PST
-    - cron: '0 8 * * *'
+  # schedule:
+  #   # More information on cron https://crontab.guru/
+  #   # GitHub actions is using UTC time. Scheduling action at 12 am PST
+  #   - cron: '0 8 * * *'
+  pull_request:
+    branches:
+      - main
 
 env:
   SELENIUM_GRID_PROVIDER: saucelabs
