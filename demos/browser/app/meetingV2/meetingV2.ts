@@ -3796,6 +3796,13 @@ export class DemoMeetingApp
       onLeftMeeting();
       return;
     }
+
+    if (sessionStatus.statusCode() === MeetingSessionStatusCode.AudioJoinedFromAnotherDevice) {
+      this.log('left meeting');
+      onLeftMeeting();
+      return;
+    }
+
   }
 
   audioVideoWasDemotedFromPrimaryMeeting(status: any): void {
