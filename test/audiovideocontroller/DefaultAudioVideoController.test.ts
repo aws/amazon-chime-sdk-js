@@ -36,6 +36,7 @@ import DefaultEventController from '../../src/eventcontroller/DefaultEventContro
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventController from '../../src/eventcontroller/EventController';
 import EventName from '../../src/eventcontroller/EventName';
+import EventObserver from '../../src/eventobserver/EventObserver';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import MediaStreamBrokerObserver from '../../src/mediastreambrokerobserver/MediaStreamBrokerObserver';
@@ -107,6 +108,8 @@ describe('DefaultAudioVideoController', () => {
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   let eventController: EventController;
+  let globalObserver: AudioVideoObserver;
+  let globalEventObserver: EventObserver;
 
   const defaultAttendeeId = 'foo-attendee';
 
@@ -339,6 +342,56 @@ describe('DefaultAudioVideoController', () => {
     await sendICEEventAndSubscribeAckFrame();
   }
 
+  const meetingStatusCheckExpectedEventNames = [
+    'meetingStartRequested',
+    'attendeePresenceReceived',
+    'meetingStartSucceeded',
+  ];
+
+  async function setupMeetingStatusCheck(
+    events: { name: EventName; attributes: EventAttributes }[]
+  ): Promise<boolean> {
+    audioVideoController = new DefaultAudioVideoController(
+      configuration,
+      new NoOpDebugLogger(),
+      webSocketAdapter,
+      new NoOpMediaStreamBroker(),
+      reconnectController,
+      eventController
+    );
+    let stopCalled = false;
+    class TestObserver implements AudioVideoObserver {
+      audioVideoDidStop(): void {
+        stopCalled = true;
+      }
+    }
+    globalObserver = new TestObserver();
+    audioVideoController.addObserver(globalObserver);
+    globalEventObserver = {
+      eventDidReceive(name: EventName, attributes: EventAttributes): void {
+        events.push({
+          name,
+          attributes,
+        });
+      },
+    };
+    eventController.addObserver(globalEventObserver);
+    await start();
+    reconnectController.disableReconnect();
+    configuration.connectionTimeoutMs = 15000;
+    await delay(new DOMMockBehavior().asyncWaitMs * 20);
+    webSocketAdapter.send(makeLeaveAckFrame());
+    await delay(defaultDelay);
+    return stopCalled;
+  }
+
+  // Helper for testing combinations various meeting status code handling
+  async function cleanupMeetingStatusHandlingTests(): Promise<void> {
+    await stop();
+    audioVideoController.removeObserver(globalObserver);
+    eventController.removeObserver(globalEventObserver);
+  }
+
   beforeEach(async () => {
     domMockBehavior = new DOMMockBehavior();
     // This will let FinishGatheringICECandidatesTask wait until receiving the ICE event.
@@ -348,6 +401,8 @@ describe('DefaultAudioVideoController', () => {
     configuration = makeSessionConfiguration();
     reconnectController = new DefaultReconnectController(120 * 1000, new TestBackoff());
     eventController = new DefaultEventController(configuration, new NoOpLogger());
+    globalObserver = null;
+    globalEventObserver = null;
   });
 
   afterEach(() => {
@@ -4307,6 +4362,524 @@ describe('DefaultAudioVideoController', () => {
       expect(called).to.be.true;
       await stop();
       audioVideoController.removeObserver(observer);
+    });
+
+    // Tests event publishing caused by handling of meeting status codes
+
+    it('emits correct event for status OK', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.OK),
+        null
+      );
+
+      expect(stopCalled).to.be.false;
+      expect(spyReconnect.called).to.be.false;
+      expect(eventNames).to.eql(meetingStatusCheckExpectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status Left', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.Left),
+        null
+      );
+
+      await cleanupMeetingStatusHandlingTests();
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingEnded'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioJoinedFromAnotherDevice', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioJoinedFromAnotherDevice),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingEnded'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioAuthenticationRejected', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioAuthenticationRejected),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioCallAtCapacity', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioCallAtCapacity),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status MeetingEnded', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.MeetingEnded),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingEnded'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioInternalServerError', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioInternalServerError),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioServiceUnavailable', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioServiceUnavailable),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioDisconnected', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioDisconnected),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status VideoCallSwitchToViewOnly', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.VideoCallSwitchToViewOnly),
+        null
+      );
+
+      expect(stopCalled).to.be.false;
+      expect(spyReconnect.called).to.be.false;
+      expect(eventNames).to.eql(meetingStatusCheckExpectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status VideoCallAtSourceCapacity', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.VideoCallAtSourceCapacity),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status SignalingBadRequest', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.SignalingBadRequest),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status SignalingInternalServerError', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.SignalingInternalServerError),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status SignalingRequestFailed', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.SignalingRequestFailed),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status SignalingChannelClosedUnexpectedly', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.SignalingChannelClosedUnexpectedly),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status ICEGatheringTimeoutWorkaround', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status ConnectionHealthReconnect', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.ConnectionHealthReconnect),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status RealtimeApiFailed', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.RealtimeApiFailed),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status TaskFailed', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.TaskFailed),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status IncompatibleSDP', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.IncompatibleSDP),
+        null
+      );
+
+      expect(stopCalled).to.be.false;
+      expect(spyReconnect.called).to.be.false;
+      expect(eventNames).to.eql(meetingStatusCheckExpectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status TURNCredentialsForbidden', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.TURNCredentialsForbidden),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingEnded'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status NoAttendeePresent', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.NoAttendeePresent),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingFailed'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioAttendeeRemoved', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioAttendeeRemoved),
+        null
+      );
+
+      expect(stopCalled).to.be.true;
+      expect(spyReconnect.called).to.be.true;
+      const expectedEventNames = [...meetingStatusCheckExpectedEventNames, 'meetingEnded'];
+      expect(eventNames).to.eql(expectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioVideoWasRemovedFromPrimaryMeeting', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting),
+        null
+      );
+
+      expect(stopCalled).to.be.false;
+      expect(spyReconnect.called).to.be.false;
+      expect(eventNames).to.eql(meetingStatusCheckExpectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioVideoDisconnectedWhilePromoted', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted),
+        null
+      );
+
+      expect(stopCalled).to.be.false;
+      expect(spyReconnect.called).to.be.false;
+      expect(eventNames).to.eql(meetingStatusCheckExpectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
+    });
+
+    it('emits correct event for status AudioDisconnectAudio', async () => {
+      const spyReconnect = sinon.spy(audioVideoController, 'reconnect');
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      const stopCalled = await setupMeetingStatusCheck(events);
+      await delay(new DOMMockBehavior().asyncWaitMs * 50);
+      const eventNames = events.map(({ name }) => name);
+
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioDisconnectAudio),
+        null
+      );
+
+      expect(stopCalled).to.be.false;
+      expect(spyReconnect.called).to.be.false;
+      expect(eventNames).to.eql(meetingStatusCheckExpectedEventNames);
+
+      await cleanupMeetingStatusHandlingTests();
     });
 
     it('handles IncompatibleSDP', async () => {
