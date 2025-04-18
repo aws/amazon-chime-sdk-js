@@ -366,6 +366,7 @@ export class DemoMeetingApp
 
   enableLiveTranscription = false;
   noWordSeparatorForTranscription = false;
+  enableMaxContentShare = false;
 
   markdown = require('markdown-it')({ linkify: true });
   lastMessageSender: string | null = null;
@@ -527,6 +528,11 @@ export class DemoMeetingApp
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
     }
 
+    if (new URL(window.location.href).searchParams.get('max-content-share') === 'true') {
+      this.enableMaxContentShare = true;
+    }
+    (document.getElementById('max-content-share') as HTMLInputElement).checked = this.enableMaxContentShare;
+
     if (new URL(window.location.href).searchParams.has('join-info-override')) {
       const joinInfoOverride = JSON.parse(new URL(window.location.href).searchParams.get('join-info-override'));
       (document.getElementById('create-attendee-override-input') as HTMLTextAreaElement).value = JSON.stringify(joinInfoOverride.JoinInfo.Attendee, null, 4);
@@ -675,6 +681,10 @@ export class DemoMeetingApp
 
     document.getElementById('join-view-only').addEventListener('change', () => {
       this.isViewOnly = (document.getElementById('join-view-only') as HTMLInputElement).checked;
+    });
+
+    document.getElementById('max-content-share').addEventListener('change', e => {
+      this.enableMaxContentShare = (document.getElementById('max-content-share') as HTMLInputElement).checked;
     });
 
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
@@ -4120,11 +4130,7 @@ export class DemoMeetingApp
   }
 
   allowMaxContentShare(): boolean {
-    const allowed = new URL(window.location.href).searchParams.get('max-content-share') === 'true';
-    if (allowed) {
-      return true;
-    }
-    return false;
+    return this.enableMaxContentShare;
   }
 
   connectionDidBecomePoor(): void {
