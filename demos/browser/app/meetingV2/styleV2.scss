@@ -1067,9 +1067,18 @@ a.markdown:active {
 }
 
 #toast-container {
-    bottom: 20px;
-    right: 20px;
-    position: absolute;
+  bottom: 20px;
+  right: 20px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast-message {
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 input[type="file"] { 

@@ -49,7 +49,6 @@ import {
   MeetingSessionConfiguration,
   MeetingSessionCredentials,
   MeetingSessionStatus,
-  MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
   ModelSpecBuilder,
   MultiLogger,
@@ -421,13 +420,11 @@ export class DemoMeetingApp
 
   meetingLogger: Logger | undefined = undefined;
 
-  // If you want to make this a repeatable SPA, change this to 'spa'
-  // and fix some state (e.g., video buttons).
   // Holding Shift while hitting the Leave button is handled by setting
   // this to `halt`, which allows us to stop and measure memory leaks.
   // The `nothing` option can be used to stop cleanup from happening allowing
   // `audioVideo` to be reused without stopping the meeting.
-  behaviorAfterLeave: 'spa' | 'reload' | 'halt' | 'nothing' = 'reload';
+  behaviorAfterLeave: 'reload' | 'halt' | 'nothing' = 'reload';
 
   videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
 
@@ -981,12 +978,9 @@ export class DemoMeetingApp
         AsyncScheduler.nextTick(async () => {
           buttonLiveConnector.disabled = true;
           const response = await this.startLiveConnector();
-          const toastContainer = document.getElementById('toast-container');
-          const toast = document.createElement('meeting-toast') as MeetingToast
-          toastContainer.appendChild(toast);
-          toast.message = "Playback URL: " + response.playBackUrl;
-          toast.delay = "50000"
-          toast.show();
+          this.showToast({
+            message: "Playback URL: " + response.playBackUrl,
+          });
           buttonLiveConnector.disabled = false;
         });
       } else {
@@ -1535,17 +1529,17 @@ export class DemoMeetingApp
     }
     await this.audioVideo.promoteToPrimaryMeeting(this.primaryMeetingSessionCredentials)
         .then((status) => {
-          const toastContainer = document.getElementById('toast-container');
-          const toast = document.createElement('meeting-toast') as MeetingToast
-          toastContainer.appendChild(toast);
-          if (status.isFailure()) {
-            toast.message = ` Failed to promote to primary meeting due to error: ${status.toString()}`;
-            toast.addButton('Retry', () => { this.promoteToPrimaryMeeting() });
-          } else {
-            toast.message = `Successfully promoted to primary meeting`;
-            this.updateUXForReplicaMeetingPromotionState('promoted');
-          }
-          toast.show();
+            if (status.isFailure()) {
+                this.showToast({
+                  message: `Failed to promote to primary meeting due to error: ${status.toString()}`,
+                  buttons: [{ text: 'Retry', onClick: () => this.promoteToPrimaryMeeting() }],
+                });
+              } else {
+                this.showToast({
+                  message: `Successfully promoted to primary meeting`,
+                });
+                this.updateUXForReplicaMeetingPromotionState('promoted');
+              }
         })
   }
 
@@ -3635,17 +3629,9 @@ export class DemoMeetingApp
             }
           } catch (error) {
             console.error(error);
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('meeting-toast') as MeetingToast;
-            toastContainer.appendChild(toast);
-            toast.message = `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`;
-            toast.delay = '15000';
-            toast.show();
-            const onHidden = () => {
-              toast.removeEventListener('hidden.bs.toast', onHidden);
-              toastContainer.removeChild(toast);
-            };
-            toast.addEventListener('hidden.bs.toast', onHidden);
+            this.showToast({
+              message: `Failed to update attendee capabilities. Please be aware that you can't set content capabilities to "SendReceive" or "Receive" unless you set video capabilities to "SendReceive" or "Receive". Refer to the Amazon Chime SDK guide and the console for additional information.`,
+            });
           }
         };
         saveButton.addEventListener('click', onClickSaveButton);
@@ -3686,9 +3672,6 @@ export class DemoMeetingApp
 
     const returnToStart = () => {
       switch (this.behaviorAfterLeave) {
-        case 'spa':
-          this.switchToFlow('flow-authenticate');
-          break;
         case 'reload':
           window.location.href = window.location.pathname;
           break;
@@ -3781,41 +3764,22 @@ export class DemoMeetingApp
       this.videoFxProcessor = undefined;
     };
 
-    const onLeftMeeting = async () => {
+    // sessionStatus has a trailing period
+    this.showToast({ message: `${sessionStatus} \n Refreshing in 2 seconds.` });
+    setTimeout(async () =>  {
       await cleanUpResources();
       returnToStart();
-    };
-
-    if (sessionStatus.statusCode() === MeetingSessionStatusCode.MeetingEnded) {
-      this.log(`meeting ended`);
-      onLeftMeeting();
-      return;
-    }
-
-    if (sessionStatus.statusCode() === MeetingSessionStatusCode.Left) {
-      this.log('left meeting');
-      onLeftMeeting();
-      return;
-    }
-
-    if (sessionStatus.statusCode() === MeetingSessionStatusCode.AudioJoinedFromAnotherDevice) {
-      this.log('joined from another endpoint');
-      onLeftMeeting();
-      return;
-    }
-
+    }, 2000);
   }
 
   audioVideoWasDemotedFromPrimaryMeeting(status: any): void {
     const message = `Was demoted from primary meeting with status ${status.toString()}`
     this.log(message);
     this.updateUXForReplicaMeetingPromotionState('demoted');
-    const toastContainer = document.getElementById('toast-container');
-    const toast = document.createElement('meeting-toast') as MeetingToast
-    toastContainer.appendChild(toast);
-    toast.message = message;
-    toast.addButton('Retry Promotion', () => { this.promoteToPrimaryMeeting() });
-    toast.show();
+    this.showToast({
+      message: message,
+      buttons: [{ text: 'Retry Promotion', onClick: () => this.promoteToPrimaryMeeting() }],
+    });
   }
 
   videoAvailabilityDidChange(availability: MeetingSessionVideoAvailability): void {
@@ -3836,11 +3800,7 @@ export class DemoMeetingApp
     this.toggleButton('button-camera', enabled ? 'off' : 'disabled');
 
     if (warningMessage) {
-      const toastContainer = document.getElementById('toast-container');
-      const toast = document.createElement('meeting-toast') as MeetingToast
-      toastContainer.appendChild(toast);
-      toast.message = warningMessage;
-      toast.show();
+        this.showToast({message: warningMessage});
     }
   }
 
@@ -4128,6 +4088,31 @@ export class DemoMeetingApp
     this.switchToFlow('flow-meeting');
     this.hideProgress('progress-authenticate');
   }
+
+  private showToast(options: {
+    message: string;
+    buttons?: { text: string; onClick: () => void }[];
+  }): void {
+    const toastContainer = document.getElementById('toast-container');  
+    const toast = document.createElement('meeting-toast') as MeetingToast;
+    toastContainer.appendChild(toast);
+
+    toast.message = options.message;
+    if (options.buttons) {
+      for (const button of options.buttons) {
+        toast.addButton(button.text, button.onClick);
+      }
+    }
+  
+    const handler = () => {
+      toast.removeEventListener('hidden.bs.toast', handler);
+      toastContainer.removeChild(toast);
+    };
+    toast.addEventListener('hidden.bs.toast', handler);
+  
+    toast.show();
+  }
+  
 
   allowMaxContentShare(): boolean {
     return this.enableMaxContentShare;
