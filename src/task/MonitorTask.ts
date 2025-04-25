@@ -269,6 +269,9 @@ export default class MonitorTask
           case VideoEncodingConnectionHealthPolicyName.VideoEncodingFramerateHealth:
             this.context.statsCollector.videoCodecDegradationEncodeFailureDidReceive();
             break;
+          case VideoEncodingConnectionHealthPolicyName.VideoConcurrentSendersHealth:
+            this.context.statsCollector.videoCodecDegradationConcurrentSendersDidReceive();
+            break;
         }
       });
     }

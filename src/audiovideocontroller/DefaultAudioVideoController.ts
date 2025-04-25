@@ -673,6 +673,10 @@ export default class DefaultAudioVideoController
       await connect.run();
 
       this.connectionHealthData.setConnectionStartTime();
+      const isContentShare = new DefaultModality(
+        this.configuration.credentials.attendeeId
+      ).hasModality(DefaultModality.MODALITY_CONTENT);
+      this.connectionHealthData.setIsContentShare(isContentShare);
       this._mediaStreamBroker.addMediaStreamBrokerObserver(this);
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
@@ -853,6 +857,8 @@ export default class DefaultAudioVideoController
     }
     this.logger.info('Update request requires resubscribe');
 
+    this.updateNumberOfPublishedVideoSources();
+
     const result = this.sessionStateController.perform(SessionStateControllerAction.Update, () => {
       this.actionUpdateWithRenegotiation(true);
     });
@@ -860,6 +866,18 @@ export default class DefaultAudioVideoController
       result === SessionStateControllerTransitionResult.Transitioned ||
       result === SessionStateControllerTransitionResult.DeferredTransition
     );
+  }
+
+  private updateNumberOfPublishedVideoSources(): void {
+    const selfAttendeeId = this.configuration.credentials.attendeeId;
+    const hasLocalVideo = this._videoTileController.hasStartedLocalVideoTile();
+    if (this.meetingSessionContext.videoStreamIndex !== null) {
+      const videoCount =
+        this.meetingSessionContext.videoStreamIndex.numberOfVideoPublishingParticipantsExcludingSelf(
+          selfAttendeeId
+        ) + (hasLocalVideo ? 1 : 0);
+      this.connectionHealthData.setNumberOfPublishedVideoSources(videoCount);
+    }
   }
 
   // Depending on if using server-side bandwidth probing and if using server-side quality adaption,
