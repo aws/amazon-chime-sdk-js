@@ -19,6 +19,8 @@ export default class ConnectionHealthData {
   cpuLimitationDuration = 0;
   videoInputFps = 0;
   videoEncodeFps = 0;
+  isContentShare = false;
+  numberOfPublishedVideoSources = 0;
 
   constructor() {
     this.connectionStartTimestampMs = Date.now();
@@ -53,6 +55,8 @@ export default class ConnectionHealthData {
     this.cpuLimitationDuration = 0;
     this.videoInputFps = 0;
     this.videoEncodeFps = 0;
+    this.isContentShare = false;
+    this.numberOfPublishedVideoSources = 0;
   }
 
   isConnectionStartRecent(recentDurationMs: number): boolean {
@@ -97,6 +101,8 @@ export default class ConnectionHealthData {
     cloned.cpuLimitationDuration = this.cpuLimitationDuration;
     cloned.videoInputFps = this.videoInputFps;
     cloned.videoEncodeFps = this.videoEncodeFps;
+    cloned.isContentShare = this.isContentShare;
+    cloned.numberOfPublishedVideoSources = this.numberOfPublishedVideoSources;
     return cloned;
   }
   setConsecutiveMissedPongs(pongs: number): void {
@@ -140,5 +146,11 @@ export default class ConnectionHealthData {
   }
   setVideoEncodeFps(stats: number): void {
     this.videoEncodeFps = stats;
+  }
+  setIsContentShare(isContentShare: boolean): void {
+    this.isContentShare = isContentShare;
+  }
+  setNumberOfPublishedVideoSources(stats: number): void {
+    this.numberOfPublishedVideoSources = stats;
   }
 }

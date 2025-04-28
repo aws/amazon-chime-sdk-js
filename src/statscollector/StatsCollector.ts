@@ -51,6 +51,7 @@ export default class StatsCollector
   private lastRedRecoveryMetricReportConsumedTimestampMs: number = 0;
   private videoCodecDegradationHighEncodeCpuCount: number = 0;
   private videoCodecDegradationEncodeFailureCount: number = 0;
+  private videoCodecDegradationConcurrentSendersCount: number = 0;
   private resolutionMap = new Map<string, { width: number; height: number }>();
 
   constructor(
@@ -697,6 +698,14 @@ export default class StatsCollector
     this.videoCodecDegradationEncodeFailureCount += 1;
   }
 
+  /**
+   * Receive video codec degradation event due to concurrent senders
+   * from MonitorTask and increment counter
+   */
+  videoCodecDegradationConcurrentSendersDidReceive(): void {
+    this.videoCodecDegradationConcurrentSendersCount += 1;
+  }
+
   private addVideoCodecDegradationMetrics(
     customStatsReports: CustomStatsReport[],
     videoUpstreamSsrc: number
@@ -708,9 +717,11 @@ export default class StatsCollector
       timestamp: Date.now(),
       videoCodecDegradationHighEncodeCpu: this.videoCodecDegradationHighEncodeCpuCount,
       videoCodecDegradationEncodeFailure: this.videoCodecDegradationEncodeFailureCount,
+      videoCodecDegradationConcurrentSenders: this.videoCodecDegradationConcurrentSendersCount,
     });
     this.videoCodecDegradationHighEncodeCpuCount = 0;
     this.videoCodecDegradationEncodeFailureCount = 0;
+    this.videoCodecDegradationConcurrentSendersCount = 0;
   }
 
   private getVideoUpstreamSsrcFromRawMetricReports(

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.28.0] - 2025-02-13
 
 ### Added
+- Degrade video codec from VP9/AV1 when there are more than 15 video senders
 
 ### Removed
 

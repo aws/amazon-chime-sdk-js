@@ -291,6 +291,7 @@ import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDo
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoElementResolutionMonitor from './videotile/VideoElementResolutionMonitor';
+import VideoEncodingConcurrentSendersHealthPolicy from './connectionhealthpolicy/VideoEncodingConcurrentSendersHealthPolicy';
 import VideoEncodingConnectionHealthPolicyName from './connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
 import VideoEncodingCpuConnectionHealthPolicy from './connectionhealthpolicy/VideoEncodingCpuConnectionHealthPolicy';
 import VideoEncodingFramerateConnectionHealthPolicy from './connectionhealthpolicy/VideoEncodingFramerateConnectionHealthPolicy';
@@ -648,6 +649,7 @@ export {
   VideoDownlinkObserver,
   VideoElementFactory,
   VideoElementResolutionMonitor,
+  VideoEncodingConcurrentSendersHealthPolicy,
   VideoEncodingConnectionHealthPolicyName,
   VideoEncodingCpuConnectionHealthPolicy,
   VideoEncodingFramerateConnectionHealthPolicy,

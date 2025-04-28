@@ -959,6 +959,8 @@ describe('MonitorTask', () => {
         connectionHealthData.setCpuLimitationDuration(0);
         connectionHealthData.setVideoInputFps(15);
         connectionHealthData.setVideoEncodeFps(15);
+        connectionHealthData.setNumberOfPublishedVideoSources(2);
+        connectionHealthData.setIsContentShare(false);
         for (let i = 0; i < 15; i++) {
           task.connectionHealthDidChange(connectionHealthData);
         }
@@ -966,6 +968,8 @@ describe('MonitorTask', () => {
         expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(0);
         // @ts-ignore
         expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationConcurrentSendersCount).to.equal(0);
       });
 
       it('does not degrade video codec when metrics are normal with hardware encoder', () => {
@@ -975,6 +979,8 @@ describe('MonitorTask', () => {
         connectionHealthData.setCpuLimitationDuration(0);
         connectionHealthData.setVideoInputFps(15);
         connectionHealthData.setVideoEncodeFps(15);
+        connectionHealthData.setNumberOfPublishedVideoSources(2);
+        connectionHealthData.setIsContentShare(false);
         for (let i = 0; i < 15; i++) {
           task.connectionHealthDidChange(connectionHealthData);
         }
@@ -982,6 +988,8 @@ describe('MonitorTask', () => {
         expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(0);
         // @ts-ignore
         expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationConcurrentSendersCount).to.equal(0);
       });
 
       it('does degrade video codec when software encoding CPU is constantly high', () => {
@@ -991,6 +999,8 @@ describe('MonitorTask', () => {
         connectionHealthData.setCpuLimitationDuration(0);
         connectionHealthData.setVideoInputFps(15);
         connectionHealthData.setVideoEncodeFps(15);
+        connectionHealthData.setNumberOfPublishedVideoSources(2);
+        connectionHealthData.setIsContentShare(false);
         for (let i = 0; i < 15; i++) {
           task.connectionHealthDidChange(connectionHealthData);
         }
@@ -998,6 +1008,8 @@ describe('MonitorTask', () => {
         expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(1);
         // @ts-ignore
         expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationConcurrentSendersCount).to.equal(0);
       });
 
       it('does degrade video codec when video quality is limited due to CPU', () => {
@@ -1005,6 +1017,8 @@ describe('MonitorTask', () => {
         connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
         connectionHealthData.setVideoEncodingTimeInMs(0);
         connectionHealthData.setCpuLimitationDuration(1);
+        connectionHealthData.setNumberOfPublishedVideoSources(2);
+        connectionHealthData.setIsContentShare(false);
         for (let i = 0; i < 15; i++) {
           task.connectionHealthDidChange(connectionHealthData);
         }
@@ -1012,6 +1026,8 @@ describe('MonitorTask', () => {
         expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(1);
         // @ts-ignore
         expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationConcurrentSendersCount).to.equal(0);
       });
 
       it('does degrade video codec when video encoding fails', () => {
@@ -1021,6 +1037,8 @@ describe('MonitorTask', () => {
         connectionHealthData.setCpuLimitationDuration(1);
         connectionHealthData.setVideoInputFps(15);
         connectionHealthData.setVideoEncodeFps(0);
+        connectionHealthData.setNumberOfPublishedVideoSources(2);
+        connectionHealthData.setIsContentShare(false);
         for (let i = 0; i < 9; i++) {
           task.connectionHealthDidChange(connectionHealthData);
         }
@@ -1028,6 +1046,46 @@ describe('MonitorTask', () => {
         expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(0);
         // @ts-ignore
         expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(1);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationConcurrentSendersCount).to.equal(0);
+      });
+
+      it('does degrade codec for video sender with more than 15 concurrent senders', () => {
+        connectionHealthData.setIsVideoEncoderHardware(true);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
+        connectionHealthData.setVideoEncodingTimeInMs(0);
+        connectionHealthData.setCpuLimitationDuration(1);
+        connectionHealthData.setVideoInputFps(15);
+        connectionHealthData.setVideoEncodeFps(0);
+        connectionHealthData.setNumberOfPublishedVideoSources(16);
+        connectionHealthData.setIsContentShare(false);
+
+        task.connectionHealthDidChange(connectionHealthData);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationConcurrentSendersCount).to.equal(1);
+      });
+
+      it('does not degrade codec for content sender with more than 15 concurrent senders', () => {
+        connectionHealthData.setIsVideoEncoderHardware(true);
+        connectionHealthData.setVideoEncodingTimePerFrameInMs(0);
+        connectionHealthData.setVideoEncodingTimeInMs(0);
+        connectionHealthData.setCpuLimitationDuration(1);
+        connectionHealthData.setVideoInputFps(15);
+        connectionHealthData.setVideoEncodeFps(0);
+        connectionHealthData.setNumberOfPublishedVideoSources(16);
+        connectionHealthData.setIsContentShare(true);
+
+        task.connectionHealthDidChange(connectionHealthData);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationHighEncodeCpuCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationEncodeFailureCount).to.equal(0);
+        // @ts-ignore
+        expect(context.statsCollector.videoCodecDegradationConcurrentSendersCount).to.equal(0);
       });
     });
   });
