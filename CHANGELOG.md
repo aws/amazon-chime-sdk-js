@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Use default framerate when video track framerate is undefined in `DefaultVideoFrameProcessorPipeline`
+- Use VP9 as default video codec for video and AV1 for content share
 
 ### Fixed
 
