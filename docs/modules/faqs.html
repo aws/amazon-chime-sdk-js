@@ -722,9 +722,14 @@
 								<td>Your application not be receiving this code directly, <code>AudioVideoObserver.connectionDidBecomePoor()</code> will be triggered instead. You can subscribe to this callback and notify your application user about the network issue, however, you should not retry connect the meeting session, Chime SDK will handle it. When retries are exhausted, the meeting session will stop completely, <code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code> will be triggered then.</td>
 							</tr>
 							<tr>
-								<td>audioServerHungup(iOS)  audioServiceUnavailable(iOS)  AudioServiceUnavailable(Android)</td>
+								<td>audioServiceUnavailable(iOS)  AudioServiceUnavailable(Android)</td>
 								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
 								<td>There is an issue with Amazon Chime SDK service itself, the meeting session on the device has been terminated at this point, you will not be able to rejoin, your application should notify user about the session termination. Depends on your application design/user-flow, you could re-try/re-join the session, however, this may not work if the issue is not transient.</td>
+							</tr>
+							<tr>
+								<td>audioServerHungup(iOS) AudioServerHungup(Android)</td>
+								<td><code>audioSessionDidStopWithStatus(MeetingSessionStatus)</code></td>
+								<td>The Chime SDK meeting ended. This is often due to DeleteMeeting API being called on the meeting.</td>
 							</tr>
 							<tr>
 								<td>audioJoinedFromAnotherDevice(iOS)  AudioJoinedFromAnotherDevice(Android)</td>
@@ -818,8 +823,15 @@
 								<td>During a valid call session, disconnect the network on your iOS/Android device.</td>
 							</tr>
 							<tr>
-								<td>audioServerHungup(iOS) audioServiceUnavailable(iOS) AudioServiceUnavailable(Android)</td>
+								<td>audioServiceUnavailable(iOS) AudioServiceUnavailable(Android)</td>
 								<td>Chime SDK service issue, cannot be reproduced on your mobile device.</td>
+								<td>N/A</td>
+								<td>N/A</td>
+								<td>N/A</td>
+							</tr>
+							<tr>
+								<td>audioServerHungup(iOS) AudioServerHungup(Android)</td>
+								<td>The Chime SDK meeting ended. This is often due to DeleteMeeting API being called on the meeting.</td>
 								<td>N/A</td>
 								<td>N/A</td>
 								<td>N/A</td>
