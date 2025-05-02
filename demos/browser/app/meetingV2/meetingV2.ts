@@ -2452,6 +2452,23 @@ export class DemoMeetingApp
     return json;
   }
 
+  async registerMeeting(): Promise<void> {
+    try {
+      const response = await fetch(`${DemoMeetingApp.BASE_URL}register_meeting`, {
+        method: 'POST',
+        body: JSON.stringify(this.joinInfo.Meeting),
+      });
+      const json = await response.json();
+      if (json.error) {
+        this.log(`Failed to register meeting: ${json.error}`);
+      } else {
+        this.log(`Successfully registered meeting: ${json.message}`);
+      }
+    } catch (error) {
+      this.log(`Error registering meeting: ${error.message}`);
+    }
+  }
+  
   async deleteAttendee(meeting: string, attendeeId: string): Promise<void> {
     let uri = `${DemoMeetingApp.BASE_URL}deleteAttendee?title=${encodeURIComponent(meeting)}&attendeeId=${encodeURIComponent(attendeeId)}`
     const response = await fetch(uri,
@@ -3498,15 +3515,23 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = this.joinInfoOverride ? this.joinInfoOverride.JoinInfo : (await this.sendJoinRequest(
-      this.meeting,
-      this.name,
-      this.region,
-      this.primaryExternalMeetingId,
-      this.audioCapability,
-      this.videoCapability,
-      this.contentCapability,
-    )).JoinInfo;
+    if (this.joinInfoOverride) {
+      this.joinInfo = this.joinInfoOverride.JoinInfo;
+      this.meeting = this.joinInfo.Meeting.Meeting.ExternalMeetingId;
+      
+      await this.registerMeeting();
+    } else {
+      // Get join info from server
+      this.joinInfo = (await this.sendJoinRequest(
+        this.meeting,
+        this.name,
+        this.region,
+        this.primaryExternalMeetingId,
+        this.audioCapability,
+        this.videoCapability,
+        this.contentCapability,
+      )).JoinInfo;
+    }
     this.region = this.joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);

@@ -106,7 +106,8 @@ Resources:
         - Ref: ChimeSdkEndLiveConnectorLambdaRole
         - Ref: ChimeSdkUpdateAttendeeCapabilitiesLambdaRole
         - Ref: ChimeSdkBatchUpdateAttendeeCapabilitiesExceptLambdaRole
-        - Ref: ChimeSdkGetAttendeeLambdaRole        
+        - Ref: ChimeSdkGetAttendeeLambdaRole
+        - Ref: ChimeSdkRegisterMeetingLambdaRole
   ChimeMessagingAccessPolicy:
     Type: AWS::IAM::Policy
     Condition: ShouldDeployFetchCredentialLambda
@@ -719,6 +720,20 @@ Resources:
           Properties:
             Path: /get_attendee
             Method: GET
+  ChimeSdkRegisterMeetingLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.register_meeting
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /register_meeting
+            Method: POST
 Outputs:
   ApiURL:
     Description: "API endpoint URL for Prod environment"

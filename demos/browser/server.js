@@ -437,6 +437,33 @@ function serve(host = '127.0.0.1:8080') {
             AttendeeId: requestUrl.query.id,
           });
         respond(response, 200, 'application/json', JSON.stringify(getAttendeeResponse));      
+      } else if (request.method === 'POST' && requestUrl.pathname === '/register_meeting') {
+        // Parse the request body to get the meeting information
+        let body = '';
+        request.on('data', chunk => {
+          body += chunk.toString();
+        });
+        request.on('end', async () => {
+          try {
+            const meetingInfo = JSON.parse(body);
+            
+            // Extract the meeting and external meeting ID
+            const meeting = meetingInfo.Meeting;
+            const externalMeetingId = meeting.ExternalMeetingId;
+            
+            // Store the meeting in the table using the external meeting ID as the key
+            meetingTable[externalMeetingId] = meeting;
+            
+            respond(response, 200, 'application/json', JSON.stringify({ 
+              success: true, 
+              message: `Meeting registered with title: ${externalMeetingId}` 
+            }));
+          } catch (error) {
+            respond(response, 400, 'application/json', JSON.stringify({ 
+              error: `Failed to register meeting: ${error.message}` 
+            }));
+          }
+        });
       } else {
         respond(response, 404, 'text/html', '404 Not Found');
       }

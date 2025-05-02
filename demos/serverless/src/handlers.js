@@ -546,6 +546,25 @@ exports.fetch_credentials = async (event, context) => {
   return response(200, 'application/json', JSON.stringify(awsCredentials));
 };
 
+exports.register_meeting = async (event, context) => {
+  try {
+    const body = JSON.parse(event.body);
+    const meeting = body.Meeting;
+    const externalMeetingId = meeting.ExternalMeetingId;
+    await putMeeting(externalMeetingId, { Meeting: meeting });
+    
+    return response(200, 'application/json', JSON.stringify({ 
+      success: true, 
+      message: `Meeting registered with title: ${externalMeetingId}` 
+    }));
+  } catch (error) {
+    console.error('Failed to register meeting:', error);
+    return response(400, 'application/json', JSON.stringify({ 
+      error: `Failed to register meeting: ${error.message}` 
+    }));
+  }
+};
+
 exports.logs = async (event, context) => {
   return putLogEvents(event, BROWSER_LOG_GROUP_NAME, (logs, meetingId, attendeeId) => {
     const logEvents = [];
