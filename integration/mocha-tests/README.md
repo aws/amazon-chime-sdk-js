@@ -33,10 +33,37 @@ You will have to make sure that you have the required drivers installed on your 
 
 If you have an older version of driver installed, then you will need to have an older version of browser on your machine as well. Generally, it is recommended to do local testing on the latest version. If you need to test on an older version, you can run a browser compatibility test with Sauce Labs.
 
+#### Installing ChromeDriver
+To install ChromeDriver that matches your Chrome version, you can use the provided script:
+
+```bash
+# Automatically detect Chrome version and install matching ChromeDriver
+./script/install_mac.sh
+
+# Or specify a Chrome version
+./script/install_mac.sh 114.0.5735.198
+```
+
 Sample command to run an integration test locally:
 
 ```bash
 npm run test -- --test-name AudioTest --host local --test-type integration-test
+```
+
+To limit the number of retries for failed tests, use the `--retry` parameter:
+
+```bash
+npm run test -- --test-name AudioTest --host local --test-type integration-test --retry 0
+```
+
+To specify the number of browser sessions to use, use the `--sessions` parameter:
+
+```bash
+# Use a single browser session with multiple tabs (default)
+npm run test -- --test-name AudioTest --host local --test-type integration-test --sessions 1
+
+# Use two separate browser sessions
+npm run test -- --test-name AudioTest --host local --test-type integration-test --sessions 2
 ```
 
 Browser compatiblity tests will run across a variety of browser and OS combinations so it is recommended to use Sauce Labs for them.
@@ -50,7 +77,7 @@ export SAUCE_USERNAME=<Sauce Labs account username>
 export SAUCE_ACCESS_KEY=<Sauce Labs access key>
 ```
 
-Sauce Labs will open a browser and load a test url. The following command requires the [Chime SDK serverless demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) deployed in your AWS account. If you haven’t already, follow the [Chime SDK serverless demo instruction](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) to deploy the demo. You can set the demo url as an environment variable with the following command:
+Sauce Labs will open a browser and load a test url. The following command requires the [Chime SDK serverless demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) deployed in your AWS account. If you haven't already, follow the [Chime SDK serverless demo instruction](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) to deploy the demo. You can set the demo url as an environment variable with the following command:
 ```bash
 export TEST_URL=<Chime SDK for JavaScript serverelss demo URL>
 ```
@@ -89,6 +116,52 @@ npm run test -- --test-name AudioTest --host devicefarm --test-type browser-comp
 Like Sauce Labs, Device Farm can run browser compatibility tests with a custom config:
 ```bash
 npm run test -- --test-name AudioTest --host devicefarm --test-type browser-compatibility --config browserCompatibilityTest/desktop/sample_test.config.json
+```
+
+## Test Structure
+
+### Using the TestSetup Helper
+The `steps/TestSetup.js` module provides reusable test setup and teardown functionality. This helps maintain consistency across tests and reduces code duplication.
+
+Example usage:
+```javascript
+const setupTestEnvironment = require('../steps/TestSetup');
+
+describe('MyTest', async function () {
+  // Get the test setup functions
+  const testSetup = setupTestEnvironment('MyTest');
+  
+  describe('run test', async function () {
+    // Setup the base test environment
+    testSetup.setupBaseTest();
+    
+    // Your test code here
+  });
+});
+```
+
+### Session Management
+Tests can run in one of two session modes:
+
+1. **Single Session Mode (default)**: Uses one browser instance with multiple tabs
+2. **Multi-Session Mode**: Uses two separate browser instances
+
+The session mode is determined by:
+1. Command line parameter `--sessions` (1 or 2)
+2. Automatic detection based on browser/platform (Safari and mobile platforms use 2 sessions by default)
+
+To handle both session modes in your test, use code like this:
+
+```javascript
+if (this.numberOfSessions === 1) {
+  // Single session: use two tabs
+  test_window = await Window.existing(this.driverFactoryOne.driver, this.logger, 'TEST');
+  monitor_window = await Window.openNew(this.driverFactoryOne.driver, this.logger, 'MONITOR');
+} else {
+  // Multiple sessions: use separate browsers
+  test_window = await Window.existing(this.driverFactoryOne.driver, this.logger, 'TEST');
+  monitor_window = await Window.existing(this.driverFactoryTwo.driver, this.logger, 'MONITOR');
+}
 ```
 
 ## Logging

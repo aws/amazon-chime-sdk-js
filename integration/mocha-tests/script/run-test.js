@@ -16,7 +16,8 @@ let testName = '';
 let testImplementation = '';
 let testType = 'integration-test';
 let testConfig = '';
-let retry =  undefined;
+let retry = undefined;
+let sessions = undefined;
 let logger;
 
 const setupLogger = () => {
@@ -30,6 +31,7 @@ const usage = () => {
   console.log(`  --host                    WebDriver server [Required] [default: local]`);
   console.log(`  --test-type               Test type [Required] [default: integration-test]`);
   console.log(`  --retry                   Number of retry [Optional] [default: 5]`);
+  console.log(`  --sessions                Number of browser sessions to use [Optional] [default: auto]`);
   console.log(`  --test-implementation     Name of mocha test file stored in the tests folder [Optional]`);
   console.log(`  --config                  Name of custom config stored in configs folder [Optional]`);
   console.log(`Values:`);
@@ -42,6 +44,9 @@ const usage = () => {
   console.log(`  --test-type`);
   console.log(`    integration-test: Run integration test`);
   console.log(`    browser-compatibility: Run browser compatibility test\n`);
+  console.log(`  --sessions`);
+  console.log(`    1: Use a single browser session with multiple tabs`);
+  console.log(`    2: Use two separate browser sessions\n`);
   console.log(`  --test-implementation`);
   console.log(`    By default, the test name will be used for test implementation file`);
   console.log(`    JS extension will be automatically appended to the test name`);
@@ -75,6 +80,17 @@ const parseArgs = () => {
 
       case 'retry':
         retry = parseInt(value, 10);
+        break;
+
+      case 'sessions':
+        sessions = parseInt(value, 10);
+        if (sessions !== 1 && sessions !== 2) {
+          logger.log(`Invalid sessions value: ${sessions}. Must be 1 or 2. Using default.`, LogLevel.WARN);
+          sessions = undefined;
+        } else {
+          process.env.NUMBER_OF_SESSIONS = sessions;
+          logger.log(`Setting number of sessions to ${sessions}`, LogLevel.INFO);
+        }
         break;
 
       case 'test-implementation':
@@ -255,21 +271,19 @@ const startTesting = async (testSuite, testType) => {
           "platform": "MAC"
         }
       ];
-    }
-    else  {
+    } else  {
       logger.log('Using custom browser compatibility config');
       let testConfigRaw = fs.readFileSync(path.resolve(pathToConfigsFolder, testConfig));
       let testConfigJSON = JSON.parse(testConfigRaw);
       clients = testConfigJSON.clients;
     }
-  }
-  else  {
+  } else  {
     logger.log('Setting clients for integration tests');
     clients = [
       {
         browserName: "chrome",
         browserVersion: "latest",
-        platform: "MAC"
+        platform: "macOS 13"
       }
     ];
   }

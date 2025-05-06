@@ -17,12 +17,10 @@ class WebDriverFactory {
     } else {
       this.logger = new Logger('WebDriverFactory');
     }
-    this.numberOfSessions = 1;
-    if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
+    if (this.host === 'saucelabs' && (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY)) {
       throw new Error('SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables must be set for SauceLabs tests');
     }
     this.sauceLabsUrl = `https://${process.env.SAUCE_USERNAME}:${process.env.SAUCE_ACCESS_KEY}@ondemand.us-west-1.saucelabs.com:443/wd/hub`;
-    this.logger.log(this.sauceLabsUrl);
   }
 
   async configure() {
@@ -93,7 +91,6 @@ class WebDriverFactory {
           builder.forBrowser('firefox');
           Object.assign(capabilities, config.firefoxOptions);
         } else if (client.browserName === 'safari') {
-          this.numberOfSessions = 2;
           builder.forBrowser('safari');
           Object.assign(capabilities, config.safariOptions);
         } else {
@@ -104,9 +101,6 @@ class WebDriverFactory {
           throw new Error(`browserName defined in the test config is not valid`);
         }
 
-        if (client.platform === 'android') {
-          this.numberOfSessions = 2;
-        }
         process.env.PLATFORM_NAME = client.platform;
         process.env.BROWSER_VERSION = client.browserVersion;
 
