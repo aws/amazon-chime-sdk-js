@@ -34,6 +34,7 @@ const usage = () => {
   console.log(`  --sessions                Number of browser sessions to use [Optional] [default: auto]`);
   console.log(`  --test-implementation     Name of mocha test file stored in the tests folder [Optional]`);
   console.log(`  --config                  Name of custom config stored in configs folder [Optional]`);
+  console.log(`  --headless                Run tests in headless mode [Optional] [default: false]`);
   console.log(`Values:`);
   console.log(`  --test-name`);
   console.log(`    AudioTest: Test name\n`);
@@ -55,6 +56,9 @@ const usage = () => {
   console.log(`  --config`);
   console.log(`  Custom config is passed when a test is incompatible with one of the browser / OS combination provided by default`)
   console.log(`    sample_test.config.json: Name of custom config stored in configs folder`);
+  console.log(`  --headless`);
+  console.log(`    true: Run browser in headless mode (useful for CI environments)`);
+  console.log(`    false: Run browser in normal mode with visible UI (default)`);
 };
 
 const parseArgs = () => {
@@ -99,6 +103,12 @@ const parseArgs = () => {
 
       case 'config':
         testConfig = value;
+        break;
+        
+      case 'headless':
+        const headless = value === 'true' || value === true;
+        process.env.HEADLESS_MODE = headless;
+        logger.log(`Setting headless mode to ${headless}`, LogLevel.INFO);
         break;
 
       default:

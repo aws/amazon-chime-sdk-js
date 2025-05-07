@@ -1,12 +1,12 @@
 name: Setup Integration Test Action
-description: "A composite GitHub action used to download the Chime JS SDK repo, install dependencies and setup SauceLabs Connect."
+description: "A composite GitHub action used to download the Chime JS SDK repo, install dependencies and setup testing environment."
 inputs:
   sauce-username:
-    required: true
+    required: false
     description: "The username of the SauceLabs account"
     default: ""
   sauce-access-key:
-    required: true
+    required: false
     description: "The access key of the SauceLabs account"
     default: ""
   sauce-rest-url:
@@ -34,22 +34,39 @@ runs:
         npm uninstall amazon-chime-sdk-js
         npm install ../../amazon-chime-sdk-js-$current_version.tgz
       shell: bash
-    - name: Create a Job ID
-      id: create-job-id
-      uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
-    - name: Set JOB_ID Env Variable
-      run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
-      shell: bash
-    - name: Echo Job ID
-      run: echo "${{ steps.create-job-id.outputs.uuid }}"
-      shell: bash
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ inputs.aws-role-to-assume }}
         role-session-name: ${{ inputs.aws-role-session-name }}
         aws-region: us-east-1
+    - name: Setup Node.js - 20.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 20.x
+    - name: Check if SauceLabs credentials are provided
+      id: check-sauce
+      run: |
+        if [ -n "${{ inputs.sauce-username }}" ] && [ -n "${{ inputs.sauce-access-key }}" ]; then
+          echo "use_sauce=true" >> $GITHUB_OUTPUT
+        else
+          echo "use_sauce=false" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+    - name: Create a Job ID for SauceLabs
+      if: steps.check-sauce.outputs.use_sauce == 'true'
+      id: create-job-id
+      uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+    - name: Set JOB_ID Env Variable for SauceLabs
+      if: steps.check-sauce.outputs.use_sauce == 'true'
+      run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      shell: bash
+    - name: Echo Job ID for SauceLabs
+      if: steps.check-sauce.outputs.use_sauce == 'true'
+      run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      shell: bash
     - name: Setup Sauce Connect
+      if: steps.check-sauce.outputs.use_sauce == 'true'
       uses: saucelabs/sauce-connect-action@v2
       with:
         username: ${{ inputs.sauce-username }}
@@ -57,13 +74,11 @@ runs:
         noSSLBumpDomains: all
         tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
         restUrl: ${{ inputs.sauce-rest-url }}
-    - name: Setup Node.js - 20.x
-      uses: actions/setup-node@v1
+    - name: Setup Chrome for local testing
+      if: steps.check-sauce.outputs.use_sauce == 'false'
+      uses: browser-actions/setup-chrome@latest
       with:
-        node-version: 20.x
-    - name: Install Kite
-      run: integration/js/script/install-kite
-      shell: bash
+        chrome-version: stable
     - name: Clean Install
       run: npm ci
       shell: bash
