@@ -33,16 +33,14 @@ You will have to make sure that you have the required drivers installed on your 
 
 If you have an older version of driver installed, then you will need to have an older version of browser on your machine as well. Generally, it is recommended to do local testing on the latest version. If you need to test on an older version, you can run a browser compatibility test with Sauce Labs.
 
-#### Installing ChromeDriver
-To install ChromeDriver that matches your Chrome version, you can use the provided script:
+#### Installing necessary drivers
+To install drivers for Chrome, Firefox, and Safari that matches your Chrome version, you can use the provided script:
 
 ```bash
 # Automatically detect Chrome version and install matching ChromeDriver
 ./script/install_mac.sh
-
-# Or specify a Chrome version
-./script/install_mac.sh 114.0.5735.198
 ```
+Note that if your tests need two instances then Safari does not support it and you may need to use remote providers like SauceLabs
 
 Sample command to run an integration test locally:
 
