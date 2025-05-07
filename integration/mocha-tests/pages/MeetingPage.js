@@ -29,6 +29,13 @@ function findAllElements() {
   };
 }
 
+const VideoState = Object.freeze({
+  PLAY: 'PLAY',
+  PAUSE: 'PAUSE',
+  BLANK: 'BLANK',
+  OFF: 'OFF'
+});
+
 class MeetingPage {
   constructor(driver, logger) {
     this.driver = driver;
@@ -204,41 +211,109 @@ class MeetingPage {
     }
   }
 
+  getPixelSum(videoId) {
+    function getSum(total, num) { return total + num; }
+
+    let video = document.getElementById(videoId);
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
+
+    ctx.drawImage(video,0,0,video.videoHeight-1,video.videoWidth-1);
+
+    let imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight).data;
+    let sum = imageData.reduce(getSum);
+    if (sum===255*(Math.pow(video.videoHeight-1,(video.videoWidth-1)*(video.videoWidth-1)))) {
+      return 0;
+    }
+    return sum;
+  }
+
+  async checkVideoContent(videoTile) {
+    if (!videoTile) {
+      return VideoState.OFF
+    }
+    const videoElement = await videoTile.findElement(By.tagName('video'));
+    const videoId = await videoElement.getAttribute('id');
+    const getPixelSumScript = `
+      function getSum(total, num) { return total + num; }
+      
+      let video = document.getElementById("${videoId}");
+      if (!video || video.videoWidth <= 0 || video.videoHeight <= 0) {
+        return 0;
+      }
+      
+      let canvas = document.createElement('canvas');
+      let ctx = canvas.getContext('2d');
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      
+      let imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight).data;
+      let sum = imageData.reduce(getSum);
+      if (sum === 255 * (video.videoWidth * video.videoHeight * 4)) {
+        return 0;
+      }
+      return sum;
+  `;
+    // Take two snapshots of the video content with a 1-second interval
+    const sumArray = [];
+
+    const sum1 = await this.driver.executeScript(getPixelSumScript);
+    sumArray.push(sum1);
+    await sleep(1000);
+    const sum2 = await this.driver.executeScript(getPixelSumScript);
+    sumArray.push(sum2);
+
+    if (sumArray.length === 0 || sumArray.includes(0)) {
+      this.logger.pushLogs(`The video (id: ${videoId}) was blank at the moment of checking`, LogLevel.WARN);
+      return VideoState.BLANK
+    } else if (Math.abs(sumArray[0] - sumArray[1]) === 0) {
+      this.logger.pushLogs(`The video (id: ${videoId}) was still at the moment of checking`, LogLevel.WARN);
+      return VideoState.PAUSE;
+    } else {
+      this.logger.pushLogs(`Verified video content successfully for video (id: ${videoId}) with pixel sums ${sumArray[0]} and ${sumArray[1]}`, LogLevel.SUCCESS);
+      return VideoState.PLAY;
+    }
+  }
+
   async checkVideoState(expectedState, attendeeId) {
-    this.logger.pushLogs(`Checking if video is ${expectedState === 'VIDEO_ON' ? 'on' : 'off'} for attendee: ${attendeeId}`);
+    this.logger.pushLogs(`Checking if video is ${expectedState} for attendee: ${attendeeId}`);
 
     const retry = 5;
     let i = 0;
-    let result = expectedState === 'VIDEO_ON' ? 'VIDEO_OFF' : 'VIDEO_ON';
+    let result = undefined;
 
     while (result !== expectedState && i < retry) {
       const videoTiles = await this.driver.findElements(elements.videoTile);
-      let found = false;
+      let videoTile ;
 
       for (const tile of videoTiles) {
         const nameplate = await tile.findElement(elements.videoTileNameplate);
         const nameplateText = await nameplate.getText();
 
         if (nameplateText === attendeeId) {
-          found = true;
+          videoTile = tile;
           break;
         }
       }
-      result = found ? 'VIDEO_ON' : 'VIDEO_OFF';
+      result = await this.checkVideoContent(videoTile);
 
       if (result !== expectedState) {
-        this.logger.pushLogs(`Current video state: ${result}, expected: ${expectedState}, retrying... (${i + 1}/${timeout})`);
+        this.logger.pushLogs(`Current video state: ${result}, expected: ${expectedState}, retrying... (${i + 1}/${retry})`);
         i++;
         await sleep(1000);
-      }
-
-      if (result === expectedState) {
-        this.logger.pushLogs(`Video check passed: ${expectedState} for attendee ${attendeeId}`, LogLevel.SUCCESS);
       } else {
-        const error = `Video check failed: expected ${expectedState} but got ${result} for attendee ${attendeeId}`;
-        this.logger.pushLogs(error, LogLevel.ERROR);
-        throw new Error(error);
+        break;
       }
+    }
+
+    if (result === expectedState) {
+      this.logger.pushLogs(`Video check passed: ${expectedState} for attendee ${attendeeId}`, LogLevel.SUCCESS);
+    } else {
+      const error = `Video check failed: expected ${expectedState} but got ${result} for attendee ${attendeeId}`;
+      this.logger.pushLogs(error, LogLevel.ERROR);
+      throw new Error(error);
     }
   }
 
@@ -447,4 +522,7 @@ class MeetingPage {
   }
 }
 
-module.exports = MeetingPage;
+module.exports = {
+  MeetingPage,
+  VideoState
+};

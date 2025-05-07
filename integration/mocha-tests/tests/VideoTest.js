@@ -1,7 +1,7 @@
 const { describe, it } = require('mocha');
 const { v4: uuidv4 } = require('uuid');
 const { Window } = require('../utils/Window');
-const MeetingPage = require('../pages/MeetingPage');
+const { MeetingPage, VideoState} = require('../pages/MeetingPage');
 const setupTestEnvironment = require('./TestSetup');
 
 /*
@@ -94,16 +94,16 @@ describe('VideoTest', async function () {
     });
 
     it('should verify local video is on', async function () {
-      await test_window.runCommands(async () => await this.pageOne.checkVideoState('VIDEO_ON', test_attendee_id));
+      await test_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.PLAY, test_attendee_id));
     });
   });
 
   describe('monitor attendee', async function () {
     it('should verify remote video is on', async function () {
       if (this.numberOfSessions === 1) {
-        await monitor_window.runCommands(async () => await this.pageOne.checkVideoState('VIDEO_ON', test_attendee_id));
+        await monitor_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.PLAY, test_attendee_id));
       } else {
-        await monitor_window.runCommands(async () => await this.pageTwo.checkVideoState('VIDEO_ON', test_attendee_id));
+        await monitor_window.runCommands(async () => await this.pageTwo.checkVideoState(VideoState.PLAY, test_attendee_id));
       }
     });
   });
@@ -114,16 +114,16 @@ describe('VideoTest', async function () {
     });
 
     it('should verify local video is off', async function () {
-      await test_window.runCommands(async () => await this.pageOne.checkVideoState('VIDEO_OFF', test_attendee_id));
+      await test_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.OFF, test_attendee_id));
     });
   });
 
   describe('monitor attendee', async function () {
     it('should verify remote video is off', async function () {
       if (this.numberOfSessions === 1) {
-        await monitor_window.runCommands(async () => await this.pageOne.checkVideoState('VIDEO_OFF', test_attendee_id));
+        await monitor_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.OFF, test_attendee_id));
       } else {
-        await monitor_window.runCommands(async () => await this.pageTwo.checkVideoState('VIDEO_OFF', test_attendee_id));
+        await monitor_window.runCommands(async () => await this.pageTwo.checkVideoState(VideoState.OFF, test_attendee_id));
       }
     });
   });
