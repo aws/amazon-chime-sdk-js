@@ -1,5 +1,6 @@
 const { By, until } = require('selenium-webdriver');
 const { LogLevel, Log } = require('../utils/Logger');
+const { sleep } = require('../utils/HelperFunctions');
 
 let elements;
 
@@ -21,6 +22,10 @@ function findAllElements() {
     microphoneButton: By.id('button-microphone'),
     microphoneDropDown: By.id('dropdown-menu-microphone'),
     microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
+    
+    videoButton: By.id('button-camera'),
+    videoTile: By.tagName('video-tile'),
+    videoTileNameplate: By.className('video-tile-nameplate'),
   };
 }
 
@@ -159,6 +164,85 @@ class MeetingPage {
     await this.muteMicrophone();
   }
 
+  async clickVideoButton() {
+    let videoButton = await this.driver.findElement(elements.videoButton);
+    await this.driver.wait(until.elementIsVisible(videoButton));
+    await videoButton.click();
+  }
+
+  async getVideoStatus() {
+    let videoButton = await this.driver.findElement(elements.videoButton);
+    await this.driver.wait(until.elementIsVisible(videoButton));
+    let classNamesString = await videoButton.getAttribute('class');
+    let classNames = classNamesString.split(' ');
+    return classNames;
+  }
+
+  async turnVideoOn() {
+    let classNames = await this.getVideoStatus();
+
+    if (classNames[1] === 'btn-success') {
+      this.logger.pushLogs('Video is already turned on; no action taken');
+    } else if (classNames[1] === 'btn-outline-secondary') {
+      this.logger.pushLogs('Video is currently off; turning video on');
+      await this.clickVideoButton();
+    } else {
+      this.logger.pushLogs('Unknown video button state encountered!!', LogLevel.ERROR);
+    }
+  }
+
+  async turnVideoOff() {
+    let classNames = await this.getVideoStatus();
+
+    if (classNames[1] === 'btn-success') {
+      this.logger.pushLogs('Video is currently on; turning video off');
+      await this.clickVideoButton();
+    } else if (classNames[1] === 'btn-outline-secondary') {
+      this.logger.pushLogs('Video is already turned off; no action taken');
+    } else {
+      this.logger.pushLogs('Unknown video button state encountered!!', LogLevel.ERROR);
+    }
+  }
+
+  async checkVideoState(expectedState, attendeeId) {
+    this.logger.pushLogs(`Checking if video is ${expectedState === 'VIDEO_ON' ? 'on' : 'off'} for attendee: ${attendeeId}`);
+
+    const retry = 5;
+    let i = 0;
+    let result = expectedState === 'VIDEO_ON' ? 'VIDEO_OFF' : 'VIDEO_ON';
+
+    while (result !== expectedState && i < retry) {
+      const videoTiles = await this.driver.findElements(elements.videoTile);
+      let found = false;
+
+      for (const tile of videoTiles) {
+        const nameplate = await tile.findElement(elements.videoTileNameplate);
+        const nameplateText = await nameplate.getText();
+
+        if (nameplateText === attendeeId) {
+          found = true;
+          break;
+        }
+      }
+      result = found ? 'VIDEO_ON' : 'VIDEO_OFF';
+
+      if (result !== expectedState) {
+        this.logger.pushLogs(`Current video state: ${result}, expected: ${expectedState}, retrying... (${i + 1}/${timeout})`);
+        i++;
+        await sleep(1000);
+      }
+
+      if (result === expectedState) {
+        this.logger.pushLogs(`Video check passed: ${expectedState} for attendee ${attendeeId}`, LogLevel.SUCCESS);
+      } else {
+        const error = `Video check failed: expected ${expectedState} but got ${result} for attendee ${attendeeId}`;
+        this.logger.pushLogs(error, LogLevel.ERROR);
+        throw new Error(error);
+      }
+    }
+  }
+
+
   async runAudioCheck(expectedState, checkStereoTones = false) {
     let res = undefined;
     try {
@@ -176,10 +260,6 @@ class MeetingPage {
           const percentages = Array(channelCount).fill(0);
           const volumeTryCount = 5;
           const frequencyTryCount = 5;
-
-          const sleep = milliseconds => {
-            return new Promise(resolve => setTimeout(resolve, milliseconds));
-          };
 
           try {
             const stream = document.getElementById('meeting-audio').srcObject;
