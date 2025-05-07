@@ -148,12 +148,14 @@ const checkIfPortIsInUse = async port => {
 };
 
 function startTestDemo() {
-  if(process.env.HOST !== 'local')  {
-    logger.log('Local demo will be started only for local tests');
-    logger.log('For SauceLabs or DeviceFarm test, please pass TEST_URL env variable');
+  // If TEST_URL is defined, use it and don't start the demo
+  if (process.env.TEST_URL) {
+    logger.log(`Using provided TEST_URL: ${process.env.TEST_URL}`, LogLevel.INFO);
     return;
   }
 
+  // Otherwise, start the test demo
+  logger.log('TEST_URL not defined, starting local test demo');
   logger.log('Installing dependencies in test demo');
   runSync('npm', ['install'], { cwd: pathToTestDemoFolder });
 
@@ -164,7 +166,8 @@ function startTestDemo() {
 }
 
 const waitUntilTestDemoStarts = async () => {
-  if(process.env.HOST !== 'local')  {
+  // Skip if TEST_URL is defined
+  if (process.env.TEST_URL) {
     return;
   }
 
@@ -281,7 +284,7 @@ const startTesting = async (testSuite, testType) => {
     logger.log('Setting clients for integration tests');
     clients = [
       {
-        browserName: "safari",
+        browserName: "chrome",
         browserVersion: "latest",
         platform: "macOS 13"
       }
@@ -352,9 +355,11 @@ const runTest = async (test, clients) => {
 }
 
 const terminateTestDemo = async () => {
-  if(process.env.HOST !== 'local') {
+  // Skip if TEST_URL is defined
+  if (process.env.TEST_URL) {
     return;
   }
+  
   logger.log('Terminating the test demo');
 
   try {

@@ -14,10 +14,11 @@ class SdkBaseTest {
     this.host = host;
     this.testType = testType;
 
-    if (host === 'local') {
-      this.url = 'http://127.0.0.1:8080/';
-    } else if (host === 'saucelabs' || host === 'devicefarm') {
+    // Use TEST_URL if defined, otherwise use local URL
+    if (process.env.TEST_URL) {
       this.url = process.env.TEST_URL;
+    } else {
+      this.url = 'http://127.0.0.1:8080/';
     }
 
     client.platform = getPlatformName(client.platform);
