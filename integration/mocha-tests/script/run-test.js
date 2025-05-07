@@ -281,7 +281,7 @@ const startTesting = async (testSuite, testType) => {
     logger.log('Setting clients for integration tests');
     clients = [
       {
-        browserName: "chrome",
+        browserName: "safari",
         browserVersion: "latest",
         platform: "macOS 13"
       }

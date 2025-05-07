@@ -20,8 +20,8 @@ function determineSessionCount(client, logger) {
   // Auto-determine based on platform/browser
   if (client) {
     // Safari and mobile platforms typically need 2 sessions
-    if (client.browserName === 'safari' || 
-        client.platform === 'android' || 
+    if (client.browserName === 'safari' ||
+        client.platform === 'android' ||
         client.platform === 'ios' ||
         client.platform === 'IOS' ||
         client.platform === 'ANDROID') {
@@ -35,6 +35,29 @@ function determineSessionCount(client, logger) {
   return 1;
 }
 
+/**
+ * Convert browserName to platform
+ * @param platform
+ * @returns W3C platform name
+ */
+const getPlatformName = (platform) => {
+  switch (platform) {
+    case 'MAC':
+      return 'macOS 13';
+    case 'WINDOWS':
+      return 'Windows 10';
+    case 'LINUX':
+      return 'Linux Beta';
+    case 'IOS':
+      return 'iOS';
+    case 'ANDROID':
+      return 'Android';
+    default:
+      return '';
+  }
+};
+
 module.exports = {
-  determineSessionCount
+  determineSessionCount,
+  getPlatformName
 };

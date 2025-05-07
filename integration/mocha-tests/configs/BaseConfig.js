@@ -25,7 +25,7 @@ const config = {
     browserName: 'safari',
   },
   sauceOptions: {
-    platformName: process.env.PLATFORM_NAME || 'macOS 10.14',
+    platformName: process.env.PLATFORM_NAME || 'macOS 13',
     browserVersion: process.env.BROWSER_VERSION || 'latest',
     'sauce:options': {
       username: process.env.SAUCE_USERNAME,

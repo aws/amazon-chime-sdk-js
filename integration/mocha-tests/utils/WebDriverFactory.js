@@ -73,45 +73,30 @@ class WebDriverFactory {
         break;
     }
 
-    switch (this.testType) {
-      case 'integration-test':
-        this.logger.log('Using integration test default settings');
+    client = JSON.parse(process.env.CLIENT);
+
+    if (client) {
+      if (client.browserName === 'chrome') {
         builder.forBrowser('chrome');
         Object.assign(capabilities, config.chromeOptions);
-        break;
-
-      case `browser-compatibility`:
-        this.logger.log('Using the provided browser compatibility config');
-        client = JSON.parse(process.env.CLIENT);
-
-        if (client.browserName === 'chrome') {
-          builder.forBrowser('chrome');
-          Object.assign(capabilities, config.chromeOptions);
-        } else if (client.browserName === 'firefox') {
-          builder.forBrowser('firefox');
-          Object.assign(capabilities, config.firefoxOptions);
-        } else if (client.browserName === 'safari') {
-          builder.forBrowser('safari');
-          Object.assign(capabilities, config.safariOptions);
-        } else {
-          this.logger.log(
-            `browserName: ${client.browserName} defined in the test config is not valid`,
-            LogLevel.ERROR
-          );
-          throw new Error(`browserName defined in the test config is not valid`);
-        }
-
-        process.env.PLATFORM_NAME = client.platform;
-        process.env.BROWSER_VERSION = client.browserVersion;
-
-        break;
-
-      default:
-        this.logger.log('Using default settings');
-        this.logger.log('Running chrome latest on MAC');
-        builder.forBrowser('chrome');
-        Object.assign(capabilities, config.chromeOptions);
-        break;
+      } else if (client.browserName === 'firefox') {
+        builder.forBrowser('firefox');
+        Object.assign(capabilities, config.firefoxOptions);
+      } else if (client.browserName === 'safari') {
+        builder.forBrowser('safari');
+        Object.assign(capabilities, config.safariOptions);
+      } else {
+        this.logger.log(
+          `browserName: ${client.browserName} defined in the test config is not valid`,
+          LogLevel.ERROR
+        );
+        throw new Error(`browserName defined in the test config is not valid`);
+      }
+    } else {
+      this.logger.log('Using default settings');
+      this.logger.log('Running chrome latest on MAC');
+      builder.forBrowser('chrome');
+      Object.assign(capabilities, config.chromeOptions);
     }
 
     builder.withCapabilities({

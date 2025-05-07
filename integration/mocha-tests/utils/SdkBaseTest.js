@@ -1,3 +1,5 @@
+const { getPlatformName } = require('./ClientHelper');
+
 class SdkBaseTest {
   constructor() {
     const test = JSON.parse(process.env.TEST);
@@ -18,17 +20,10 @@ class SdkBaseTest {
       this.url = process.env.TEST_URL;
     }
 
-    if (client.browserName === 'safari') {
-      if (client.platform === 'MAC') {
-        client.platform = 'macOS 12';
-      } else {
-        client.platform = 'macOS 10.13';
-      }
-      process.env.PLATFORM_NAME = client.platform;
+    client.platform = getPlatformName(client.platform);
+    process.env.PLATFORM_NAME = client.platform;
 
-      client.browserVersion = '15';
-      process.env.BROWSER_VERSION = client.browserVersion;
-    }
+    process.env.BROWSER_VERSION = client.browserVersion;
 
     let urlParams = [];
     if (client.browserName === 'safari') {
