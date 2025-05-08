@@ -2,6 +2,8 @@ const { By, until } = require('selenium-webdriver');
 const { LogLevel, Log } = require('../utils/Logger');
 const { sleep } = require('../utils/HelperFunctions');
 
+const DEFAULT_TIMEOUT_MS = 5000;
+
 let elements;
 
 function findAllElements() {
@@ -51,7 +53,7 @@ class MeetingPage {
 
   async waitForBrowserDemoToLoad() {
     await this.driver.wait(
-      until.elementIsVisible(this.driver.findElement(elements.authenticationFlow))
+      until.elementIsVisible(this.driver.findElement(elements.authenticationFlow), DEFAULT_TIMEOUT_MS)
     );
   }
 
@@ -82,7 +84,7 @@ class MeetingPage {
   }
 
   async waitForUserAuthentication() {
-    await this.driver.wait(until.elementIsVisible(this.driver.findElement(elements.joinButton)));
+    await this.driver.wait(until.elementIsVisible(this.driver.findElement(elements.joinButton)), DEFAULT_TIMEOUT_MS);
   }
 
   async joinMeeting() {
@@ -92,18 +94,18 @@ class MeetingPage {
   }
 
   async waitForUserJoin() {
-    await this.driver.wait(until.elementIsVisible(this.driver.findElement(elements.meetingFlow)));
+    await this.driver.wait(until.elementIsVisible(this.driver.findElement(elements.meetingFlow)), DEFAULT_TIMEOUT_MS);
   }
 
   async clickMicrophoneButton() {
     let microphoneButton = await this.driver.findElement(elements.microphoneButton);
-    await this.driver.wait(until.elementIsVisible(microphoneButton));
+    await this.driver.wait(until.elementIsVisible(microphoneButton), DEFAULT_TIMEOUT_MS);
     await microphoneButton.click();
   }
 
   async getMicrophoneStatus() {
     let microphoneButton = await this.driver.findElement(elements.microphoneButton);
-    await this.driver.wait(until.elementIsVisible(microphoneButton));
+    await this.driver.wait(until.elementIsVisible(microphoneButton), DEFAULT_TIMEOUT_MS);
     let classNamesString = await microphoneButton.getAttribute('class');
     let classNames = classNamesString.split(' ');
     return classNames;
@@ -145,15 +147,16 @@ class MeetingPage {
   async rosterCheck(numberOfParticipant = 1) {
     await this.driver.wait(async () => {
       return (await this.getNumberOfParticipants()) === numberOfParticipant;
-    }, 5000);
+    }, DEFAULT_TIMEOUT_MS);
   }
 
   async clickOnMicrophoneDropdownButton() {
     let microphoneDropDownButton = await this.driver.findElement(elements.microphoneDropDownButton);
-    await this.driver.wait(until.elementIsVisible(microphoneDropDownButton));
+    await this.driver.wait(until.elementIsVisible(microphoneDropDownButton), DEFAULT_TIMEOUT_MS);
     await microphoneDropDownButton.click();
     await this.driver.wait(
-      until.elementIsVisible(this.driver.findElement(elements.microphoneDropDown))
+      until.elementIsVisible(this.driver.findElement(elements.microphoneDropDown)),
+      DEFAULT_TIMEOUT_MS
     );
   }
 
@@ -163,7 +166,7 @@ class MeetingPage {
     let microphoneDropDown440HzButton = await this.driver.findElement(
       elements.microphoneDropDown440HzButton
     );
-    await this.driver.wait(until.elementIsVisible(microphoneDropDown440HzButton));
+    await this.driver.wait(until.elementIsVisible(microphoneDropDown440HzButton), DEFAULT_TIMEOUT_MS);
     await microphoneDropDown440HzButton.click();
   }
 
@@ -173,13 +176,13 @@ class MeetingPage {
 
   async clickVideoButton() {
     let videoButton = await this.driver.findElement(elements.videoButton);
-    await this.driver.wait(until.elementIsVisible(videoButton));
+    await this.driver.wait(until.elementIsVisible(videoButton), DEFAULT_TIMEOUT_MS);
     await videoButton.click();
   }
 
   async getVideoStatus() {
     let videoButton = await this.driver.findElement(elements.videoButton);
-    await this.driver.wait(until.elementIsVisible(videoButton));
+    await this.driver.wait(until.elementIsVisible(videoButton), DEFAULT_TIMEOUT_MS);
     let classNamesString = await videoButton.getAttribute('class');
     let classNames = classNamesString.split(' ');
     return classNames;
