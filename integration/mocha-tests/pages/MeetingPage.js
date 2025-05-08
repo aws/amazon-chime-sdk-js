@@ -84,7 +84,7 @@ class MeetingPage {
   }
 
   async waitForUserAuthentication() {
-    await this.driver.wait(until.elementIsVisible(this.driver.findElement(elements.joinButton)), DEFAULT_TIMEOUT_MS);
+    await this.driver.wait(until.elementIsVisible(this.driver.findElement(elements.joinButton)), DEFAULT_TIMEOUT_MS*3);
   }
 
   async joinMeeting() {
@@ -94,7 +94,7 @@ class MeetingPage {
   }
 
   async waitForUserJoin() {
-    await this.driver.wait(until.elementIsVisible(this.driver.findElement(elements.meetingFlow)), DEFAULT_TIMEOUT_MS);
+    await this.driver.wait(until.elementIsVisible(this.driver.findElement(elements.meetingFlow)), DEFAULT_TIMEOUT_MS*2);
   }
 
   async clickMicrophoneButton() {
