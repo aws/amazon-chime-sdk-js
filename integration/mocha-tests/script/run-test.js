@@ -172,7 +172,13 @@ function startTestDemo() {
   logger.log('Starting the test demo');
   // The test demo will keep running until the process is terminated,
   // so we should execute this command asynchronously without blocking other commands.
-  runAsync('npm', ['run', 'start'], { cwd: pathToTestDemoFolder });
+  runAsync('npm', ['run', 'start'], { cwd: pathToTestDemoFolder })
+    .catch(error => {
+      // Check if this is a termination signal (code 143 = 128 + SIGTERM(15))
+      if (error.message && error.message.includes('exit code 143')) {
+        logger.log('Test demo was terminated as part of cleanup - this is expected', LogLevel.INFO);
+      }
+    });
 }
 
 const waitUntilTestDemoStarts = async () => {

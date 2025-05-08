@@ -17,5 +17,8 @@
   },
   "mocha": {
     "timeout": 300000
+  },
+  "devDependencies": {
+    "mocha-steps": "^1.3.0"
   }
 }

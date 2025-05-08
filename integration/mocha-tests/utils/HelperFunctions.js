@@ -63,7 +63,7 @@ function runSync(command, args, options, printOutput = true) {
 
   if (child.error) {
     process.stdout.write(`Command ${command} failed with ${child.error.code}`);
-  } else {
+  } else if (child.status !== 0) {
     process.stdout.write(`Command ${command} failed with exit code ${child.status} and signal ${child.signal}`);
     process.stdout.write(child.stderr.toString());
   }

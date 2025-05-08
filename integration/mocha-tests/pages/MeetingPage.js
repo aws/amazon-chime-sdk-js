@@ -336,6 +336,10 @@ class MeetingPage {
           const volumeTryCount = 5;
           const frequencyTryCount = 5;
 
+          const sleep = milliseconds => {
+            return new Promise(resolve => setTimeout(resolve, milliseconds));
+          };
+
           try {
             const stream = document.getElementById('meeting-audio').srcObject;
             const source = audioContext.createMediaStreamSource(stream);
