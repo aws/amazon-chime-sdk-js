@@ -38,22 +38,16 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Check if needed to run
-        id: test_needed
-        run: |
-          source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
-          check_if_integ_tests_required
-          echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
       - name: Setup GitHub Actions Host
-        if: steps.test_needed.outputs.integ_test_required == 'true'
+        id: setup
         uses: ./.github/actions/setup-integration-test
         with:
           aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
           aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Audio Test
-        if: steps.test_needed.outputs.integ_test_required == 'true'
+        if: steps.setup.outputs.integ_test_required == 'true'
         working-directory: ./integration/mocha-tests
-        run: npm run test -- --test-name AudioTest --host local --test-type integration-test --retry 0 --headless true
+        run: npm run test -- --test-name AudioTest --host local --test-type integration-test --headless true
 
   video-test:
     name: Video Test
@@ -63,19 +57,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Check if needed to run
-        id: test_needed
-        run: |
-          source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
-          check_if_integ_tests_required
-          echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
       - name: Setup GitHub Actions Host
-        if: steps.test_needed.outputs.integ_test_required == 'true'
+        id: setup
         uses: ./.github/actions/setup-integration-test
         with:
           aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
           aws-role-session-name: ${{ env.TEST_TYPE }}
       - name: Run Video Test
-        if: steps.test_needed.outputs.integ_test_required == 'true'
+        if: steps.setup.outputs.integ_test_required == 'true'
         working-directory: ./integration/mocha-tests
-        run: npm run test -- --test-name VideoTest --host local --test-type integration-test --retry 0 --headless true
+        run: npm run test -- --test-name VideoTest --host local --test-type integration-test --headless true
