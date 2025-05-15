@@ -179,6 +179,27 @@ export default class DefaultAudioVideoController
     this._mediaStreamBroker.addMediaStreamBrokerObserver(this._audioMixController);
     this.meetingSessionContext.logger = this._logger;
     this._eventController = eventController;
+
+    if (!this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers) {
+      // We do not set default video codec for simulcast until simulcast support for VP9/AV1 is added
+      const isContentShare = new DefaultModality(
+        this.configuration.credentials.attendeeId
+      ).hasModality(DefaultModality.MODALITY_CONTENT);
+      if (isContentShare && new DefaultBrowserBehavior().hasChromiumWebRTC()) {
+        this.videoSendCodecPreferences = [
+          VideoCodecCapability.av1Main(),
+          VideoCodecCapability.vp9Profile0(),
+          VideoCodecCapability.h264ConstrainedBaselineProfile(),
+          VideoCodecCapability.vp8(),
+        ];
+      } else {
+        this.videoSendCodecPreferences = [
+          VideoCodecCapability.vp9Profile0(),
+          VideoCodecCapability.h264ConstrainedBaselineProfile(),
+          VideoCodecCapability.vp8(),
+        ];
+      }
+    }
   }
 
   async destroy(): Promise<void> {
