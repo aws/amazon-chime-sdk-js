@@ -69,3 +69,5 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+        GitHub issues are not a substitute for customer support. Please open a support case if the issue is important to you.
+        https://docs.aws.amazon.com/awssupport/latest/user/case-management.html

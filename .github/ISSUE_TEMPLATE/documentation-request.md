@@ -18,3 +18,6 @@ assignees: ''
 ### What documentation have you looked at so far?
 
 *For example: README.md, Amazon Chime SDK Developer Guide, etc.
+
+*Note: GitHub issues are not a substitute for customer support. Please open a support case if the issue is important to you.*
+https://docs.aws.amazon.com/awssupport/latest/user/case-management.html
