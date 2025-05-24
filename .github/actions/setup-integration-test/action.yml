@@ -56,7 +56,7 @@ runs:
         aws-region: us-east-1
     - name: Setup Node.js - 20.x
       if: steps.test_needed.outputs.integ_test_required == 'true'
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: 20.x
     - name: Check if SauceLabs credentials are provided
@@ -83,13 +83,13 @@ runs:
       shell: bash
     - name: Setup Sauce Connect
       if: steps.test_needed.outputs.integ_test_required == 'true' && steps.check-sauce.outputs.use_sauce == 'true'
-      uses: saucelabs/sauce-connect-action@v2
+      uses: saucelabs/sauce-connect-action@v3.0.0
       with:
         username: ${{ inputs.sauce-username }}
         accessKey: ${{ inputs.sauce-access-key }}
-        noSSLBumpDomains: all
-        tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-        restUrl: ${{ inputs.sauce-rest-url }}
+        tunnelName: ${{ steps.create-job-id.outputs.uuid }}
+        region: us
+        proxyLocalhost: direct
     - name: Setup Chrome for local testing
       if: steps.test_needed.outputs.integ_test_required == 'true' && steps.check-sauce.outputs.use_sauce == 'false'
       uses: browser-actions/setup-chrome@latest

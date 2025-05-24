@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.1152.0",
+    "@aws-sdk/client-cloudwatch": "^3.485.0",
+    "@aws-sdk/client-chime-sdk-meetings": "^3.485.0",
     "axios": "^0.28.1",
     "express": "^4.17.1",
     "js-base64": "^2.5.1",
