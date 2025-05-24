@@ -37,14 +37,16 @@ const config = {
     // Safari doesn't support headless mode
   },
   sauceOptions: {
+    browserName: process.env.BROWSER_NAME || 'chrome',
     platformName: process.env.PLATFORM_NAME || 'macOS 13',
     browserVersion: process.env.BROWSER_VERSION || 'latest',
     'sauce:options': {
+      tunnelName: process.env.JOB_ID,
       username: process.env.SAUCE_USERNAME,
       accessKey: process.env.SAUCE_ACCESS_KEY,
       noSSLBumpDomains: 'all',
       extendedDebugging: true,
-      screenResolution: '1920x1440',
+      screenResolution: '1920x1200',
     },
   },
 };

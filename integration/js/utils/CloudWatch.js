@@ -1,7 +1,6 @@
-const AWS = require('../node_modules/aws-sdk');
-AWS.config.update({ region: 'us-east-1' });
-var cloudWatch = new AWS.CloudWatch({
-  apiVersion: '2010-08-01'
+const { CloudWatchClient, PutMetricDataCommand } = require('@aws-sdk/client-cloudwatch');
+const cloudWatch = new CloudWatchClient({ 
+  region: 'us-east-1'
 });
 
 // emitMetric function is used to send metrics to CloudWatch. The metrics are sent to their respective namespaces and the namespaces are derived from the params.
@@ -97,7 +96,8 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value, 
 
 const publishMetricToCloudWatch = async (params) => {
   try {
-    await cloudWatch.putMetricData(params).promise();
+    const command = new PutMetricDataCommand(params);
+    await cloudWatch.send(command);
   } catch (error) {
     console.log(`Unable to emit metric: ${error}`);
   }

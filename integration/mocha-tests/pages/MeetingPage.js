@@ -65,6 +65,7 @@ class MeetingPage {
     let meetingIdInputBox = await this.driver.findElement(elements.meetingIdInput);
     await meetingIdInputBox.clear();
     await meetingIdInputBox.sendKeys(meetingId);
+    this.logger.pushLogs(`Typing in Meeting id : ${meetingId}`);
   }
 
   async enterAttendeeName(attendeeName) {
@@ -289,18 +290,28 @@ class MeetingPage {
 
     while (result !== expectedState && i < retry) {
       const videoTiles = await this.driver.findElements(elements.videoTile);
-      let videoTile ;
-
+      let videoTile = undefined;
+      
       for (const tile of videoTiles) {
+        const isVisible = await tile.isDisplayed();
+        
         const nameplate = await tile.findElement(elements.videoTileNameplate);
         const nameplateText = await nameplate.getText();
 
-        if (nameplateText === attendeeId) {
+        if (nameplateText === attendeeId && isVisible) {
+          this.logger.pushLogs(`Found visible video tile for attendee: ${attendeeId}`, LogLevel.SUCCESS);
           videoTile = tile;
           break;
         }
       }
-      result = await this.checkVideoContent(videoTile);
+      
+      if (!videoTile && expectedState === VideoState.OFF) {
+        // If we're expecting the video to be off and we don't find a tile, that's actually correct
+        this.logger.pushLogs(`No video tile found for attendee ${attendeeId}, which is expected for OFF state`, LogLevel.SUCCESS);
+        result = VideoState.OFF;
+      } else {
+        result = await this.checkVideoContent(videoTile);
+      }
 
       if (result !== expectedState) {
         this.logger.pushLogs(`Current video state: ${result}, expected: ${expectedState}, retrying... (${i + 1}/${retry})`);
