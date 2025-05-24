@@ -7,7 +7,6 @@ on:
     - cron: '0 13 * * *'
 
 env:
-  SELENIUM_GRID_PROVIDER: saucelabs
   CLOUD_WATCH_METRIC: false
   TEST_TYPE: Browser-Compatibility-Test
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
@@ -17,17 +16,15 @@ env:
   PRE_RUN_SCRIPT_URL: ${{secrets.PRE_RUN_SCRIPT_URL}}
   METRIC_NAME: ${{ secrets.METRIC_NAME }}
   METRIC_NAMESPACE: ${{ secrets.METRIC_NAMESPACE }}
+  GITHUB_TOKEN: ${{ github.token }}
 
 permissions:
   id-token: write   # This is required for requesting the JWT
   
 jobs:
-  browser-compatibility-audio:
-    name: Audio Compatibility Test
+  browser-compatibility-tests:
+    name: Browser Compatibility Test
     runs-on: ubuntu-latest
-    outputs:
-      job-status: ${{ job.status }}
-
     steps:
       - name: Checkout Package
         uses: actions/checkout@v2
@@ -36,281 +33,13 @@ jobs:
       - name: Setup GitHub Actions Host
         uses: ./.github/actions/setup-integration-test
         with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
           aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
           aws-role-session-name: ${{ env.TEST_TYPE }}
-      - name: Run Audio Compatibility Test
-        run: npm run test:browser-compatibility-audio
-  browser-compatibility-video:
-    name: Video Compatibility Test
-    runs-on: ubuntu-latest
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup GitHub Actions Host
-        uses: ./.github/actions/setup-integration-test
-        with:
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-          aws-role-session-name: ${{ env.TEST_TYPE }}
-      - name: Run Video Compatibility Test
-        run: npm run test:browser-compatibility-video
-  browser-compatibility-content-share:
-    name: Content Share Compatibility Test
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-video ]
-    if: always()
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup GitHub Actions Host
-        uses: ./.github/actions/setup-integration-test
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-          aws-role-session-name: ${{ env.TEST_TYPE }}
-      - name: Run Content Share Compatibility Test
-        run: npm run test:browser-compatibility-content-share
-  browser-compatibility-data-message:
-    name: Data Message Compatibility Test
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-content-share ]
-    if: always()
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup GitHub Actions Host
-        uses: ./.github/actions/setup-integration-test
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-          aws-role-session-name: ${{ env.TEST_TYPE }}
-      - name: Run Data Message Compatibility Test
-        run: npm run test:browser-compatibility-data-message
-  browser-compatibility-meeting-readiness-checker:
-    name: Meeting Readiness Checker Compatibility Test
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-data-message ]
-    if: always()
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup GitHub Actions Host
-        uses: ./.github/actions/setup-integration-test
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-          aws-role-session-name: ${{ env.TEST_TYPE }}
-      - name: Run Meeting Readiness Checker Compatibility Test
-        run: npm run test:browser-compatibility-meeting-readiness-checker
-  browser-compatibility-background-blur:
-    name: Background Blur Compatibility Test
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-meeting-readiness-checker ]
-    if: always()
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup GitHub Actions Host
-        uses: ./.github/actions/setup-integration-test
-        with:
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-          aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-          aws-role-session-name: ${{ env.TEST_TYPE }}
-      - name: Run Background Blur Compatibility Test
-        run: npm run test:browser-compatibility-background-blur
-  browser-compatibility-linux-audio:
-    name: Linux Audio Compatibility Test
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-audio ]
-    if: always()
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-        - name: Checkout Package
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
-        - name: Setup GitHub Actions Host
-          uses: ./.github/actions/setup-integration-test
-          with:
-            sauce-username: ${{ secrets.SAUCE_USERNAME }}
-            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
-            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-            aws-role-session-name: ${{ env.TEST_TYPE }}
-        - name: Run Linux Audio Compatibility Test
-          run: npm run test:linux-browser-compatibility-audio
-  browser-compatibility-linux-video:
-    name: Linux Video Compatibility Test
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-linux-audio ]
-    if: always()
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-        - name: Checkout Package
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
-        - name: Setup GitHub Actions Host
-          uses: ./.github/actions/setup-integration-test
-          with:
-            sauce-username: ${{ secrets.SAUCE_USERNAME }}
-            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
-            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-            aws-role-session-name: ${{ env.TEST_TYPE }}
-        - name: Run Linux Video Compatibility Test
-          run: npm run test:linux-browser-compatibility-video
-  browser-compatibility-linux-content-share:
-    name: Linux Content Share Compatibility Test
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-linux-video ]
-    if: always()
-    outputs:
-      job-status: ${{ job.status }}
-
-    steps:
-        - name: Checkout Package
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
-        - name: Setup GitHub Actions Host
-          uses: ./.github/actions/setup-integration-test
-          with:
-            sauce-username: ${{ secrets.SAUCE_USERNAME }}
-            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
-            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-            aws-role-session-name: ${{ env.TEST_TYPE }}
-        - name: Run Linux Content Share Compatibility Test
-          run: npm run test:linux-browser-compatibility-content-share
-  browser-compatibility-linux-other:
-    name: Linux Other Compatibility Test
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-linux-content-share ]
-    if: always()
-    outputs:
-      job-status: ${{ job.status }}
-      
-    steps:
-        - name: Checkout Package
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
-        - name: Setup GitHub Actions Host
-          uses: ./.github/actions/setup-integration-test
-          with:
-            sauce-username: ${{ secrets.SAUCE_USERNAME }}
-            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
-            sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
-            aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-            aws-role-session-name: ${{ env.TEST_TYPE }}
-        - name: Run Linux Other Compatibility Test
-          run: npm run test:linux-browser-compatibility-other
-  browser-compatibility-results-report:
-    name: Browser Compatibility Results Report
-    runs-on: ubuntu-latest
-    needs: [ browser-compatibility-audio, browser-compatibility-video, browser-compatibility-content-share, browser-compatibility-data-message, 
-    browser-compatibility-meeting-readiness-checker, browser-compatibility-background-blur, browser-compatibility-linux-audio, browser-compatibility-linux-video, 
-    browser-compatibility-linux-content-share, browser-compatibility-linux-other ]
-    if: always()
-    env:
-      WORKFLOW_JOBS_STATUS: success
-      WORKFLOW_URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
-
-    steps:
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup Node.js - 20.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 20.x
-      - name: Gather Job Status Data
-        run: >
-          if [[ 
-            "${{ needs.browser-compatibility-audio.outputs.job-status }}" != "success" || 
-            "${{ needs.browser-compatibility-video.outputs.job-status }}" != "success" || 
-            "${{ needs.browser-compatibility-content-share.outputs.job-status }}" != "success" || 
-            "${{ needs.browser-compatibility-data-message.outputs.job-status }}" != "success" || 
-            "${{ needs.browser-compatibility-meeting-readiness-checker.outputs.job-status }}" != "success" || 
-            "${{ needs.browser-compatibility-linux-audio.outputs.job-status }}" != "success" ||
-            "${{ needs.browser-compatibility-linux-video.outputs.job-status }}" != "success" ||
-            "${{ needs.browser-compatibility-linux-content-share.outputs.job-status }}" != "success" ||
-            "${{ needs.browser-compatibility-linux-other.outputs.job-status }}" != "success"
-           ]]; then
-            echo "Workflow Job Status is failure";
-            echo "WORKFLOW_JOBS_STATUS=failure" >> $GITHUB_ENV;
-          else
-            echo "Workflow Job Status is success";
-          fi
-      - name: Install Axios
-        run: npm install axios
-      - name: Send Slack Message
-        run: node .github/script/send-test-report.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }}
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
-          aws-region: us-east-1
-      - name: Send Metric to CloudWatch
-        run: |
-          npm install @aws-sdk/client-cloudwatch  
-          node -e "
-          const { CloudWatchClient, PutMetricDataCommand } = require('@aws-sdk/client-cloudwatch');
-          const client = new CloudWatchClient({ region: process.env.REGION });
-
-          const value = '${{ env.WORKFLOW_JOBS_STATUS }}' === 'failure' ? 0 : 1;
-
-          const command = new PutMetricDataCommand({
-            Namespace: process.env.METRIC_NAMESPACE,
-            MetricData: [{
-              MetricName: process.env.METRIC_NAME,
-              Dimensions: [
-                { Name: 'Platform', Value: 'JS SDK Daily Compatibility' }
-              ],
-              Value: value,
-            }]
-          });
-
-          client.send(command).then(() => console.log('Daily test result sent to CloudWatch')).catch(err => {
-            console.error('Failed to send metric. Error: ', err);
-            process.exit(1);
-          });
-          ";
+      - name: Run Audio Test
+        working-directory: ./integration/mocha-tests
+        run: npm run test -- --test-name AudioTest --host saucelabs --test-type browser-compatibility
+      - name: Run Video Test
+        working-directory: ./integration/mocha-tests
+        run: npm run test -- --test-name VideoTest --host saucelabs --test-type browser-compatibility

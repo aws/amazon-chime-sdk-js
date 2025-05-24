@@ -1,24 +1,40 @@
 #!/usr/bin/env node
 
+/**
+ * Test Runner Script for Amazon Chime SDK JS Integration Tests
+ * 
+ * This script is responsible for running integration and browser compatibility tests
+ * for the Amazon Chime SDK JS library. It handles:
+ * - Parsing command line arguments
+ * - Setting up the test environment
+ * - Starting the test demo server
+ * - Running tests against different browser/OS combinations
+ * - Handling test retries
+ * - Cleaning up resources after tests complete
+ */
+
 const { argv, kill, exit } = require('process');
 const { runSync, runAsync } = require('../utils/HelperFunctions');
 const args = require('minimist')(argv.slice(2));
 const path = require('path');
 const fs = require('fs');
 const { Logger, LogLevel, Log } = require('../utils/Logger');
-const crypto = require('crypto');
+const browserCompatibilityConfig = require('../configs/BrowserCompatibilityBrowserConfig');
+const integrationTestBrowserConfig = require('../configs/IntegrationTestBrowserConfig');
 
 const pathToIntegrationFolder = path.resolve(__dirname, '../tests');
 const pathToTestDemoFolder = path.resolve(__dirname, '../../../demos/browser');
 const pathToConfigsFolder = path.resolve(__dirname, '../configs');
 
-let testName = '';
-let testImplementation = '';
-let testType = 'integration-test';
-let testConfig = '';
-let retry = undefined;
-let sessions = undefined;
-let logger;
+// Global variables to store test configuration
+let testName = '';            // Name of the test to run
+let testImplementation = '';  // Name of the test implementation file
+let testType = 'integration-test'; // Type of test to run (integration-test or browser-compatibility)
+let testConfig = '';          // Custom test configuration file
+let retry = undefined;        // Number of retries for failed tests
+let sessions = undefined;     // Number of browser sessions to use
+let logger;                   // Logger instance
+
 
 const setupLogger = () => {
   logger = new Logger('Test Runner (run-test)');
@@ -55,12 +71,16 @@ const usage = () => {
   console.log(`      DifferentAudioTest.js: Name of test file\n`);
   console.log(`  --config`);
   console.log(`  Custom config is passed when a test is incompatible with one of the browser / OS combination provided by default`)
-  console.log(`    sample_test.config.json: Name of custom config stored in configs folder`);
   console.log(`  --headless`);
   console.log(`    true: Run browser in headless mode (useful for CI environments)`);
   console.log(`    false: Run browser in normal mode with visible UI (default)`);
 };
 
+/**
+ * Parses command line arguments and sets up the test environment accordingly
+ * Validates arguments and sets environment variables based on the provided options
+ * @returns {Object} Object containing test suite and test type information
+ */
 const parseArgs = () => {
   for (const [key, value] of Object.entries(args)) {
     if (key === '_') continue;
@@ -129,6 +149,12 @@ const parseArgs = () => {
   };
 };
 
+/**
+ * Checks if a specific port is in use
+ * Used to determine if the test demo server is running
+ * @param {number} port - The port number to check
+ * @returns {Promise<boolean>} True if the port is in use, false otherwise
+ */
 const checkIfPortIsInUse = async port => {
   try {
     // Try to make a request to the server to check if it's responding
@@ -157,6 +183,11 @@ const checkIfPortIsInUse = async port => {
   }
 };
 
+/**
+ * Starts the test demo server
+ * If TEST_URL is defined, skips starting the local server and uses the provided URL
+ * Otherwise, installs dependencies and starts the demo server locally
+ */
 function startTestDemo() {
   // If TEST_URL is defined, use it and don't start the demo
   if (process.env.TEST_URL) {
@@ -181,6 +212,11 @@ function startTestDemo() {
     });
 }
 
+/**
+ * Waits until the test demo server is fully started and ready to accept connections
+ * Polls the server port until it responds or times out
+ * @returns {Promise<void>}
+ */
 const waitUntilTestDemoStarts = async () => {
   // Skip if TEST_URL is defined
   if (process.env.TEST_URL) {
@@ -209,6 +245,13 @@ const waitUntilTestDemoStarts = async () => {
   exit(1);
 };
 
+/**
+ * Starts the testing process
+ * Sets up test configuration and client configurations based on test type
+ * @param {string} testSuite - The test suite to run
+ * @param {string} testType - The type of test to run (integration-test or browser-compatibility)
+ * @returns {Promise<void>}
+ */
 const startTesting = async (testSuite, testType) => {
   logger.log('Running test');
   const test = {
@@ -223,73 +266,7 @@ const startTesting = async (testSuite, testType) => {
 
     if(testConfig.length === 0)  {
       logger.log('Using default browser compatibility config');
-      clients = [
-        {
-          "browserName": "chrome",
-          "browserVersion": "latest-2",
-          "platform": "MAC"
-        },
-        {
-          "browserName": "chrome",
-          "browserVersion": "latest-1",
-          "platform": "MAC"
-        },
-        {
-          "browserName": "chrome",
-          "browserVersion": "latest",
-          "platform": "MAC"
-        },
-        {
-          "browserName": "chrome",
-          "browserVersion": "latest-2",
-          "platform": "WINDOWS"
-        },
-        {
-          "browserName": "chrome",
-          "browserVersion": "latest-1",
-          "platform": "WINDOWS"
-        },
-        {
-          "browserName": "chrome",
-          "browserVersion": "latest",
-          "platform": "WINDOWS"
-        },
-        {
-          "browserName": "firefox",
-          "browserVersion": "latest-2",
-          "platform": "MAC"
-        },
-        {
-          "browserName": "firefox",
-          "browserVersion": "latest-1",
-          "platform": "MAC"
-        },
-        {
-          "browserName": "firefox",
-          "browserVersion": "latest",
-          "platform": "MAC"
-        },
-        {
-          "browserName": "firefox",
-          "browserVersion": "latest-2",
-          "platform": "WINDOWS"
-        },
-        {
-          "browserName": "firefox",
-          "browserVersion": "latest-1",
-          "platform": "WINDOWS"
-        },
-        {
-          "browserName": "firefox",
-          "browserVersion": "latest",
-          "platform": "WINDOWS"
-        },
-        {
-          "browserName": "safari",
-          "browserVersion": "latest",
-          "platform": "MAC"
-        }
-      ];
+      clients = browserCompatibilityConfig;
     } else  {
       logger.log('Using custom browser compatibility config');
       let testConfigRaw = fs.readFileSync(path.resolve(pathToConfigsFolder, testConfig));
@@ -298,21 +275,21 @@ const startTesting = async (testSuite, testType) => {
     }
   } else  {
     logger.log('Setting clients for integration tests');
-    clients = [
-      {
-        browserName: "chrome",
-        browserVersion: "latest",
-        platform: "macOS 13"
-      }
-    ];
+    clients = integrationTestBrowserConfig;
   }
 
   await runTest(test, clients);
 };
 
+/**
+ * Runs tests against specified clients (browser/OS combinations)
+ * Handles test retries if tests fail
+ * @param {Object} test - Test configuration object
+ * @param {Array<Object>} clients - Array of client configurations to test against
+ * @returns {Promise<number>} Test result code (0 for success, 1 for failure)
+ */
 const runTest = async (test, clients) => {
   process.env.FORCE_COLOR = '1';
-  process.env.JOB_ID = crypto.randomUUID();
   process.env.TEST = JSON.stringify(test);
 
   const maxRetries = test.retry === undefined ? 5 : test.retry;
@@ -327,7 +304,8 @@ const runTest = async (test, clients) => {
 
     let client = clients[idx];
     process.env.CLIENT = JSON.stringify(client);
-    logger.log(`Running ${test.name} on \n    browser name = ${client.browserName}, \n    version = ${client.browserVersion}, and \n    platform = ${client.platform}`);
+    process.env.BROWSER_NAME = client.browserName;
+    logger.log(`Starting ${test.name} on browser name = ${client.browserName}, version = ${client.browserVersion}, and platform = ${client.platform}`);
 
     try {
       testResult = await runAsync('mocha', [test.testImpl], { cwd: pathToIntegrationFolder, timeout: 300000, color: true, bail: true });
@@ -370,6 +348,12 @@ const runTest = async (test, clients) => {
   return testSuiteResult;
 }
 
+/**
+ * Terminates the test demo server
+ * Finds the process running on port 8080 and sends termination signals
+ * Attempts graceful termination first (SIGTERM) before using SIGKILL if necessary
+ * @returns {Promise<void>}
+ */
 const terminateTestDemo = async () => {
   // Skip if TEST_URL is defined
   if (process.env.TEST_URL) {
@@ -407,6 +391,16 @@ const terminateTestDemo = async () => {
   }
 };
 
+/**
+ * Main execution function
+ * Orchestrates the entire test process:
+ * 1. Sets up the logger
+ * 2. Parses command line arguments
+ * 3. Starts the test demo server
+ * 4. Waits for the server to start
+ * 5. Runs the tests
+ * 6. Cleans up resources
+ */
 (async () => {
   try {
     setupLogger();
@@ -416,7 +410,6 @@ const terminateTestDemo = async () => {
 
     try {
       await waitUntilTestDemoStarts();
-
       await startTesting(testSuite, testType);
     } finally {
       try {
