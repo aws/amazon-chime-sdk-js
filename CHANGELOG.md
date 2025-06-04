@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2025-06-04
+
+### Added
+- Added support for voice enhancements feature of Amazon Connect, by adding the support for TVE (target-voice-isolation) model. `VoiceFocusSpec` now expects an optional mode parameter for TVE (target-voice-isolation) and NS (noise suppression). 
+- Created new public methods in voicefocus.ts to export model metrics (`getModelMetrics`). These model metrics include SNR, DRR and latencies aggregated for single session.
+- Updated destroy method to cleanup the worklet nodes in addition to terminating the worker.
+
+### Removed
+
+### Changed
+
+### Fixed
+
 ## [3.28.0] - 2025-02-13
 
 ### Added
