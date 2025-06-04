@@ -181,7 +181,7 @@ describe('VoiceFocusDeviceTransformer', () => {
             category: 'voicefocus',
             name: 'default',
             variant: 'c20',
-            simd: false,
+            simd: false
           },
           processor: 'voicefocus-inline-processor',
           executionQuanta: 3,
@@ -202,7 +202,7 @@ describe('VoiceFocusDeviceTransformer', () => {
             category: 'voicefocus',
             name: 'ns_es',
             variant: 'c20',
-            simd: false,
+            simd: false
           },
           processor: 'voicefocus-inline-processor',
           executionQuanta: 3,
@@ -707,7 +707,7 @@ describe('VoiceFocusDeviceTransformer', () => {
         processor: undefined,
         audioBufferURL: '',
         resamplerURL: '',
-        modelURL: '',
+        modelURL: ''
       };
 
       init.callsFake(async () => vfEs);
