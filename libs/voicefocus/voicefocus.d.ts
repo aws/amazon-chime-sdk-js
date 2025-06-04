@@ -1,10 +1,10 @@
-import { AGCOptions, ExecutionPreference, ExecutionQuanta, Logger, ModelCategory, ModelConfig, ModelName, ModelVariant, PerformanceThresholds, SIMDPreference, UsagePreference, VoiceFocusAudioWorkletNode, VoiceFocusConfigureOptions, VoiceFocusDelegate, VoiceFocusFetchBehavior, VoiceFocusFetchConfig, VoiceFocusPaths } from './types.js';
+import { AGCOptions, ExecutionPreference, ExecutionQuanta, Logger, ModelCategory, ModelConfig, ModelName, ModelVariant, PerformanceThresholds, SIMDPreference, UsagePreference, VoiceFocusAudioWorkletNode, VoiceFocusConfigureOptions, VoiceFocusDelegate, VoiceFocusFetchBehavior, VoiceFocusFetchConfig, VoiceFocusMode, VoiceFocusPaths } from './types.js';
 import { Unsupported } from './decider.js';
 export interface AssetSpec {
     assetGroup?: string;
     revisionID?: string;
 }
-export declare type AssetConfig = {
+export type AssetConfig = {
     assetGroup: string;
 } | {
     revisionID: string;
@@ -14,6 +14,7 @@ export interface VoiceFocusSpec extends AssetSpec {
     name?: ModelName;
     variant?: ModelVariant | 'auto';
     simd?: SIMDPreference;
+    mode?: VoiceFocusMode;
     executionPreference?: ExecutionPreference;
     executionQuantaPreference?: ExecutionQuanta;
     usagePreference?: UsagePreference;
@@ -28,7 +29,7 @@ interface SupportedVoiceFocusConfig {
     executionQuanta?: ExecutionQuanta;
     fetchConfig: VoiceFocusFetchConfig;
 }
-export declare type VoiceFocusConfig = SupportedVoiceFocusConfig | Unsupported;
+export type VoiceFocusConfig = SupportedVoiceFocusConfig | Unsupported;
 export interface NodeArguments {
     voiceFocusSampleRate?: number;
     enabled?: boolean;
@@ -47,8 +48,14 @@ export declare class VoiceFocus {
     private nodeConstructor;
     private nodeOptions;
     private executionQuanta;
+    private logger?;
     private internal;
     private constructor();
+    getModelMetrics(): import("./types.js").ModelMetrics | undefined;
+    enable(): void;
+    disable(): void;
+    setMode(mode: VoiceFocusMode): void;
+    destroy(): Promise<void>;
     static isSupported(spec?: AssetSpec & {
         paths?: VoiceFocusPaths;
     }, options?: VoiceFocusConfigureOptions): Promise<boolean>;
@@ -67,7 +74,6 @@ export declare class VoiceFocus {
         stream: MediaStream;
     }>;
     applyToSourceNode(source: MediaStreamAudioSourceNode, context: AudioContext, options?: NodeArguments): Promise<VoiceFocusAudioWorkletNode>;
-    destroy(): void;
 }
 export declare const createAudioContext: (contextHint?: {
     latencyHint: number;

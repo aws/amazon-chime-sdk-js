@@ -4,19 +4,21 @@ export interface Logger {
     warn: (...args: any[]) => void;
     error: (...args: any[]) => void;
 }
-export declare type ModelCategory = 'voicefocus';
-export declare type ModelName = 'default' | 'ns_es';
-export declare type ModelVariant = 'c100' | 'c50' | 'c20' | 'c10';
-export declare type SIMDPreference = 'force' | 'disable' | 'detect';
-export declare type ExecutionApproach = 'inline' | 'worker-sab' | 'worker-postMessage';
-export declare type ExecutionPreference = ExecutionApproach | 'worker' | 'auto';
-export declare type UsagePreference = 'quality' | 'interactivity';
-export declare type VariantPreference = ModelVariant | 'auto';
-export declare type ExecutionQuanta = 1 | 2 | 3;
+export type ModelCategory = 'voicefocus';
+export type ModelName = 'default' | 'ns_es';
+export type ModelVariant = 'c100' | 'c50' | 'c20' | 'c10';
+export type SIMDPreference = 'force' | 'disable' | 'detect';
+export type ExecutionApproach = 'inline' | 'worker-sab' | 'worker-postMessage';
+export type ExecutionPreference = ExecutionApproach | 'worker' | 'auto';
+export type UsagePreference = 'quality' | 'interactivity';
+export type VariantPreference = ModelVariant | 'auto';
+export type VoiceFocusMode = 'tve' | 'ns';
+export type ExecutionQuanta = 1 | 2 | 3;
 export interface ModelConfig {
     category: ModelCategory;
     name: ModelName;
     variant: ModelVariant;
+    mode: VoiceFocusMode;
     simd: boolean;
     url?: string;
 }
@@ -55,7 +57,7 @@ export interface VoiceFocusConfigureOptions {
 export interface VoiceFocusDelegate {
     onCPUWarning(): void;
 }
-export declare type VoiceFocusProcessor = 'voicefocus-worker-sab-processor' | 'voicefocus-worker-postMessage-processor' | 'voicefocus-inline-processor';
+export type VoiceFocusProcessor = 'voicefocus-worker-sab-processor' | 'voicefocus-worker-postMessage-processor' | 'voicefocus-inline-processor';
 export interface VoiceFocusNodeOptions extends AudioWorkletNodeOptions {
     worker: Worker;
     processor: VoiceFocusProcessor;
@@ -65,6 +67,7 @@ export interface VoiceFocusNodeOptions extends AudioWorkletNodeOptions {
     fetchBehavior?: VoiceFocusFetchBehavior;
     delegate?: VoiceFocusDelegate;
     logger?: Logger;
+    mode: VoiceFocusMode;
 }
 declare const VoiceFocusAudioWorkletNode_base: {
     new (context: BaseAudioContext, name: string, options?: AudioWorkletNodeOptions | undefined): AudioWorkletNode;
@@ -73,7 +76,9 @@ declare const VoiceFocusAudioWorkletNode_base: {
 export declare abstract class VoiceFocusAudioWorkletNode extends VoiceFocusAudioWorkletNode_base {
     abstract enable(): Promise<void>;
     abstract disable(): Promise<void>;
+    abstract setMode(mode: VoiceFocusMode): Promise<void>;
     abstract stop(): Promise<void>;
+    abstract getModelMetrics(): ModelMetrics | undefined;
 }
 export interface EnabledAGCOptions {
     useVoiceFocusAGC: true;
@@ -84,7 +89,7 @@ export interface DisabledAGCOptions {
     useVoiceFocusAGC: false;
     useBuiltInAGC?: boolean;
 }
-export declare type AGCOptions = EnabledAGCOptions | DisabledAGCOptions;
+export type AGCOptions = EnabledAGCOptions | DisabledAGCOptions;
 export interface ProcessorOptions {
     voiceFocusSampleRate: number;
     enabled: boolean;
@@ -93,10 +98,36 @@ export interface ProcessorOptions {
     agc: AGCOptions;
     executionQuanta?: ExecutionQuanta;
     supportFarendStream?: boolean;
+    mode: VoiceFocusMode;
 }
 export interface ProcessorMessageData {
-    message: 'data' | 'cpu' | 'prepare-for-frames';
+    message: 'data' | 'cpu' | 'prepare-for-frames' | 'metrics';
     buffer?: ArrayBuffer;
+    metrics?: ModelMetrics;
+    reason?: 'lateInvoke' | 'longInvoke';
+    count?: number;
+}
+export interface ModelMetrics {
+    latencyMillisAverage: number;
+    snr: {
+        average: number;
+        variance: number;
+        averageActive: number;
+        varianceActive: number;
+    };
+    drr: {
+        average: number;
+        variance: number;
+        averageActive: number;
+        varianceActive: number;
+    };
+    vad: {
+        average: number;
+    };
+    cpu: {
+        lateInvoke: number;
+        longInvoke: number;
+    };
 }
 export interface ProcessorMessage {
     data: ProcessorMessageData;

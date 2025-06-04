@@ -182,6 +182,7 @@ describe('VoiceFocusDeviceTransformer', () => {
             name: 'default',
             variant: 'c20',
             simd: false,
+            mode: 'ns'
           },
           processor: 'voicefocus-inline-processor',
           executionQuanta: 3,
@@ -203,6 +204,7 @@ describe('VoiceFocusDeviceTransformer', () => {
             name: 'ns_es',
             variant: 'c20',
             simd: false,
+            mode: 'ns'
           },
           processor: 'voicefocus-inline-processor',
           executionQuanta: 3,
@@ -224,6 +226,7 @@ describe('VoiceFocusDeviceTransformer', () => {
             name: 'default',
             variant: 'c100',
             simd: true,
+            mode: 'ns',
             url:
               'https://static.sdkassets.chime.aws/static/voicefocus-default-c100-v1_simd-e7bad7b961a128cf.wasm',
           },
@@ -592,6 +595,7 @@ describe('VoiceFocusDeviceTransformer', () => {
         category: 'voicefocus',
         name: 'default',
         variant: 'c50',
+        mode: 'ns',
         simd: true,
       },
       processor: 'n/a',
@@ -708,6 +712,7 @@ describe('VoiceFocusDeviceTransformer', () => {
         audioBufferURL: '',
         resamplerURL: '',
         modelURL: '',
+        mode: 'ns'
       };
 
       init.callsFake(async () => vfEs);
