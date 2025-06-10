@@ -22,10 +22,10 @@ const loadWorker = (workerURL, name, fetchBehavior, logger) => {
         logger === null || logger === void 0 ? void 0 : logger.error('Could not compare origins.', e);
     }
     if (workerURLIsSameOrigin) {
-        const workerURLWithQuery = fetch_js_1.withQueryString(workerURL, fetchBehavior);
+        const workerURLWithQuery = (0, fetch_js_1.withQueryString)(workerURL, fetchBehavior);
         return Promise.resolve(new Worker(workerURLWithQuery, { name }));
     }
-    return fetch_js_1.fetchWithBehavior(workerURL, WORKER_FETCH_OPTIONS, fetchBehavior).then((res) => {
+    return (0, fetch_js_1.fetchWithBehavior)(workerURL, WORKER_FETCH_OPTIONS, fetchBehavior).then((res) => {
         if (res.ok) {
             return res.blob()
                 .then((blob) => new Worker(window.URL.createObjectURL(blob)));

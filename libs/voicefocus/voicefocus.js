@@ -62,10 +62,10 @@ const PROCESSORS = {
     },
 };
 const validateAssetSpec = (assetGroup, revisionID) => {
-    if (assetGroup !== undefined && !fetch_js_1.isValidAssetGroup(assetGroup)) {
+    if (assetGroup !== undefined && !(0, fetch_js_1.isValidAssetGroup)(assetGroup)) {
         throw new Error(`Invalid asset group ${assetGroup}`);
     }
-    if (revisionID !== undefined && !fetch_js_1.isValidRevisionID(revisionID)) {
+    if (revisionID !== undefined && !(0, fetch_js_1.isValidRevisionID)(revisionID)) {
         throw new Error(`Invalid revision ID ${revisionID}`);
     }
 };
@@ -89,19 +89,66 @@ const mungeConstraints = (constraints, agc) => {
     return Object.assign(Object.assign({}, constraints), { audio: constraints.audio === true ? defaultConstraints : Object.assign(Object.assign({}, constraints.audio), defaultConstraints) });
 };
 const urlForModel = (model, paths) => {
-    return `${paths.models}${decider_js_1.decideModel(model)}.wasm`;
+    return `${paths.models}${(0, decider_js_1.decideModel)(model)}.wasm`;
 };
 class VoiceFocus {
-    constructor(worker, processorURL, nodeConstructor, nodeOptions, executionQuanta) {
+    constructor(worker, processorURL, nodeConstructor, nodeOptions, executionQuanta, logger) {
         this.processorURL = processorURL;
         this.nodeConstructor = nodeConstructor;
         this.nodeOptions = nodeOptions;
         this.executionQuanta = executionQuanta;
+        this.logger = logger;
         this.internal = {
             worker,
-            nodeOptions,
             isDestroyed: false,
         };
+    }
+    getModelMetrics() {
+        var _a;
+        return (_a = this.internal.voiceFocusNode) === null || _a === void 0 ? void 0 : _a.getModelMetrics();
+    }
+    enable() {
+        var _a;
+        (_a = this.internal.voiceFocusNode) === null || _a === void 0 ? void 0 : _a.enable();
+    }
+    disable() {
+        var _a;
+        (_a = this.internal.voiceFocusNode) === null || _a === void 0 ? void 0 : _a.disable();
+    }
+    setMode(mode) {
+        var _a;
+        (_a = this.internal.voiceFocusNode) === null || _a === void 0 ? void 0 : _a.setMode(mode);
+    }
+    destroy() {
+        var _a, _b, _c, _d, _e;
+        return __awaiter(this, void 0, void 0, function* () {
+            const { worker, isDestroyed, voiceFocusNode, destinationNode, sourceNode, audioContext } = this.internal;
+            if (isDestroyed) {
+                (_a = this.logger) === null || _a === void 0 ? void 0 : _a.debug("Voice Focus is already destroyed");
+                return;
+            }
+            try {
+                worker === null || worker === void 0 ? void 0 : worker.terminate();
+                sourceNode === null || sourceNode === void 0 ? void 0 : sourceNode.disconnect();
+                destinationNode === null || destinationNode === void 0 ? void 0 : destinationNode.disconnect();
+                yield Promise.all([
+                    (_b = audioContext === null || audioContext === void 0 ? void 0 : audioContext.close().catch((error) => error)) !== null && _b !== void 0 ? _b : yield Promise.resolve(),
+                    (_c = voiceFocusNode === null || voiceFocusNode === void 0 ? void 0 : voiceFocusNode.stop().catch((error) => error)) !== null && _c !== void 0 ? _c : yield Promise.resolve(),
+                ]);
+                this.internal.audioContext = undefined;
+                this.internal.voiceFocusNode = undefined;
+                this.internal.sourceNode = undefined;
+                this.internal.destinationNode = undefined;
+                (_d = this.logger) === null || _d === void 0 ? void 0 : _d.debug("Voice Focus destroyed successfully");
+            }
+            catch (e) {
+                (_e = this.logger) === null || _e === void 0 ? void 0 : _e.error("Error while destroying the Voice Focus instance: ", e);
+                throw e;
+            }
+            finally {
+                this.internal.isDestroyed = true;
+            }
+        });
     }
     static isSupported(spec, options) {
         const { fetchBehavior, logger } = options || {};
@@ -109,27 +156,27 @@ class VoiceFocus {
             logger === null || logger === void 0 ? void 0 : logger.debug('Browser does not have globalThis.');
             return Promise.resolve(false);
         }
-        if (!support_js_1.supportsAudioWorklet(globalThis, logger)) {
+        if (!(0, support_js_1.supportsAudioWorklet)(globalThis, logger)) {
             logger === null || logger === void 0 ? void 0 : logger.debug('Browser does not support Audio Worklet.');
             return Promise.resolve(false);
         }
-        if (!support_js_1.supportsWASM(globalThis, logger)) {
+        if (!(0, support_js_1.supportsWASM)(globalThis, logger)) {
             logger === null || logger === void 0 ? void 0 : logger.debug('Browser does not support WASM.');
             return Promise.resolve(false);
         }
-        if (!support_js_1.supportsWASMStreaming(globalThis, logger)) {
+        if (!(0, support_js_1.supportsWASMStreaming)(globalThis, logger)) {
             logger === null || logger === void 0 ? void 0 : logger.debug('Browser does not support streaming WASM compilation.');
         }
         const { assetGroup = DEFAULT_ASSET_GROUP, revisionID, paths = DEFAULT_PATHS, } = spec || {};
         validateAssetSpec(assetGroup, revisionID);
         const assetConfig = revisionID ? { revisionID } : { assetGroup };
-        const updatedFetchBehavior = fetch_js_1.addQueryParams(fetchBehavior, assetConfig);
+        const updatedFetchBehavior = (0, fetch_js_1.addQueryParams)(fetchBehavior, assetConfig);
         const fetchConfig = Object.assign(Object.assign({}, updatedFetchBehavior), { paths });
-        return support_js_1.supportsVoiceFocusWorker(globalThis, fetchConfig, logger);
+        return (0, support_js_1.supportsVoiceFocusWorker)(globalThis, fetchConfig, logger);
     }
     static mungeExecutionPreference(preference, logger) {
         const isAuto = (preference === undefined || preference === 'auto');
-        if (support_js_1.isSafari(globalThis)) {
+        if ((0, support_js_1.isSafari)(globalThis)) {
             if (isAuto || preference === 'inline') {
                 return 'inline';
             }
@@ -137,7 +184,7 @@ class VoiceFocus {
                 throw new Error(`Unsupported execution preference ${preference}`);
             }
         }
-        if (preference === 'worker-sab' && !support_js_1.supportsSharedArrayBuffer(globalThis, globalThis, logger)) {
+        if (preference === 'worker-sab' && !(0, support_js_1.supportsSharedArrayBuffer)(globalThis, globalThis, logger)) {
             throw new Error(`Unsupported execution preference ${preference}`);
         }
         return preference || 'auto';
@@ -145,7 +192,7 @@ class VoiceFocus {
     static configure(spec, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const { fetchBehavior, preResolve, logger, } = options || {};
-            const { category = 'voicefocus', name = 'default', variant: variantPreference = 'auto', assetGroup = DEFAULT_ASSET_GROUP, revisionID, simd = 'detect', executionPreference = 'auto', executionQuantaPreference, usagePreference = 'interactivity', estimatorBudget = 100, paths = DEFAULT_PATHS, thresholds, } = spec || {};
+            const { category = 'voicefocus', name = 'default', variant: variantPreference = 'auto', assetGroup = DEFAULT_ASSET_GROUP, revisionID, simd = 'detect', mode = 'ns', executionPreference = 'auto', executionQuantaPreference, usagePreference = 'interactivity', estimatorBudget = 100, paths = DEFAULT_PATHS, thresholds, } = spec || {};
             logger === null || logger === void 0 ? void 0 : logger.debug('Configuring Voice Focus with spec', spec);
             if (category !== undefined && category !== 'voicefocus') {
                 throw new Error(`Unrecognized category ${category}`);
@@ -179,9 +226,9 @@ class VoiceFocus {
                 estimatorBudget,
             };
             const assetConfig = revisionID ? { revisionID } : { assetGroup };
-            const updatedFetchBehavior = fetch_js_1.addQueryParams(fetchBehavior, assetConfig);
+            const updatedFetchBehavior = (0, fetch_js_1.addQueryParams)(fetchBehavior, assetConfig);
             const fetchConfig = Object.assign({ paths }, updatedFetchBehavior);
-            const executionDefinition = yield decider_js_1.measureAndDecideExecutionApproach(executionSpec, fetchConfig, logger, thresholds);
+            const executionDefinition = yield (0, decider_js_1.measureAndDecideExecutionApproach)(executionSpec, fetchConfig, logger, thresholds);
             if (executionDefinition.supported === false) {
                 return { supported: false, reason: executionDefinition.reason };
             }
@@ -190,12 +237,13 @@ class VoiceFocus {
             const model = {
                 category: category || 'voicefocus',
                 name: name || 'default',
+                mode,
                 variant,
                 simd: useSIMD,
             };
             if (preResolve) {
                 const startingURL = urlForModel(model, paths);
-                model.url = yield fetch_js_1.resolveURL(startingURL, updatedFetchBehavior);
+                model.url = yield (0, fetch_js_1.resolveURL)(startingURL, updatedFetchBehavior);
             }
             return {
                 fetchConfig,
@@ -212,7 +260,7 @@ class VoiceFocus {
                 throw new Error('Voice Focus not supported. Reason: ' + configuration.reason);
             }
             const { model, processor, fetchConfig, executionQuanta, } = configuration;
-            const { simd, name } = model;
+            const { simd, name, mode } = model;
             const { paths } = fetchConfig;
             if (processor !== 'voicefocus-inline-processor' &&
                 processor !== 'voicefocus-worker-postMessage-processor' &&
@@ -226,10 +274,10 @@ class VoiceFocus {
             const workerURL = `${paths.workers}worker-v1.js`;
             const { file, node } = PROCESSORS[processor];
             const processorURL = `${paths.processors}${file}`;
-            const worker = yield loader_js_1.loadWorker(workerURL, 'VoiceFocusWorker', fetchConfig, logger);
+            const worker = yield (0, loader_js_1.loadWorker)(workerURL, 'VoiceFocusWorker', fetchConfig, logger);
             if (preload) {
                 logger === null || logger === void 0 ? void 0 : logger.debug('Preloading', modelURL);
-                let message = support_js_1.supportsWASMPostMessage(globalThis) ? 'get-module' : 'get-module-buffer';
+                let message = (0, support_js_1.supportsWASMPostMessage)(globalThis) ? 'get-module' : 'get-module-buffer';
                 worker.postMessage({
                     message,
                     preload: true,
@@ -249,15 +297,16 @@ class VoiceFocus {
                 delegate,
                 logger,
                 numberOfInputs,
+                mode,
             };
-            const factory = new VoiceFocus(worker, processorURL, node, nodeOptions, executionQuanta);
+            const factory = new VoiceFocus(worker, processorURL, node, nodeOptions, executionQuanta, logger);
             return Promise.resolve(factory);
         });
     }
     createNode(context, options) {
         var _a;
         if (this.internal.isDestroyed) {
-            throw new Error('Unable to create node because VoiceFocus worker has been destroyed.');
+            throw new Error("Unable to create node because VoiceFocus worker has been destroyed.");
         }
         const { voiceFocusSampleRate = (context.sampleRate === 16000 ? 16000 : 48000), enabled = true, agc = DEFAULT_AGC_SETTING, } = options || {};
         const supportFarendStream = options === null || options === void 0 ? void 0 : options.es;
@@ -269,8 +318,9 @@ class VoiceFocus {
             agc,
             executionQuanta: this.executionQuanta,
             supportFarendStream,
+            mode: this.nodeOptions.mode,
         };
-        const url = fetch_js_1.withQueryString(this.processorURL, (_a = this.nodeOptions) === null || _a === void 0 ? void 0 : _a.fetchBehavior);
+        const url = (0, fetch_js_1.withQueryString)(this.processorURL, (_a = this.nodeOptions) === null || _a === void 0 ? void 0 : _a.fetchBehavior);
         return context.audioWorklet
             .addModule(url)
             .then(() => new (this.nodeConstructor)(context, Object.assign(Object.assign({}, this.nodeOptions), { processorOptions })));
@@ -284,6 +334,7 @@ class VoiceFocus {
             const node = yield this.applyToSourceNode(source, context, options);
             const destination = context.createMediaStreamDestination();
             node.connect(destination);
+            this.internal = Object.assign(Object.assign({}, this.internal), { voiceFocusNode: node, sourceNode: source, destinationNode: destination, audioContext: context });
             return {
                 node,
                 source,
@@ -298,12 +349,6 @@ class VoiceFocus {
             source.connect(node);
             return node;
         });
-    }
-    destroy() {
-        if (this.internal.worker) {
-            this.internal.worker.terminate();
-        }
-        this.internal.isDestroyed = true;
     }
 }
 exports.VoiceFocus = VoiceFocus;

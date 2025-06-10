@@ -60,7 +60,7 @@ class Estimator {
         this.logger = logger;
         const workerURL = `${fetchConfig.paths.workers}estimator-v1.js`;
         this.fetchBehavior = { headers: fetchConfig.headers, escapedQueryString: fetchConfig.escapedQueryString };
-        this.worker = loader_js_1.loadWorker(workerURL, 'VoiceFocusEstimator', this.fetchBehavior, logger);
+        this.worker = (0, loader_js_1.loadWorker)(workerURL, 'VoiceFocusEstimator', this.fetchBehavior, logger);
     }
     roundtrip(toSend, receive, expectedKey) {
         return new Promise((resolve, reject) => {
@@ -209,7 +209,7 @@ const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executio
                 return workerOption;
             }
             case 'worker': {
-                if (support_js_1.supportsSharedArrayBuffer(globalThis, window, logger)) {
+                if ((0, support_js_1.supportsSharedArrayBuffer)(globalThis, window, logger)) {
                     return reducePreference('worker-sab');
                 }
                 return reducePreference('worker-postMessage');
@@ -256,7 +256,7 @@ const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executio
 const featureCheck = (forceSIMD, fetchConfig, logger, estimator) => __awaiter(void 0, void 0, void 0, function* () {
     const supports = {
         supportsSIMD: forceSIMD,
-        supportsSAB: support_js_1.supportsSharedArrayBuffer(globalThis, window, logger),
+        supportsSAB: (0, support_js_1.supportsSharedArrayBuffer)(globalThis, window, logger),
         duration: -1,
     };
     if (forceSIMD) {
@@ -266,7 +266,7 @@ const featureCheck = (forceSIMD, fetchConfig, logger, estimator) => __awaiter(vo
     const cleanup = !estimator;
     const e = estimator || new Estimator(fetchConfig, logger);
     try {
-        const useSIMD = !support_js_1.isOldChrome(window, logger) && (yield e.supportsSIMD());
+        const useSIMD = !(0, support_js_1.isOldChrome)(window, logger) && (yield e.supportsSIMD());
         logger === null || logger === void 0 ? void 0 : logger.info(`Supports SIMD: ${useSIMD} (force: ${forceSIMD})`);
         supports.supportsSIMD = useSIMD;
         return supports;

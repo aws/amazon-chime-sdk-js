@@ -15,10 +15,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const support_js_1 = require("./support.js");
 const types_js_1 = require("./types.js");
 const CPU_WARNING_MAX_INTERVAL_MS = 5 * 1000;
+const METRICS_MAX_INTERVAL_MS = 5 * 1000;
 class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
     constructor(context, options) {
         super(context, options.processor, options);
         this.cpuWarningCount = 0;
+        this.metrics = {
+            latencyMillisAverage: 0,
+            snr: {
+                average: 0,
+                averageActive: 0,
+                variance: 0,
+                varianceActive: 0,
+            },
+            drr: {
+                average: 0,
+                variance: 0,
+                averageActive: 0,
+                varianceActive: 0,
+            },
+            vad: {
+                average: 0,
+            },
+            cpu: {
+                lateInvoke: 0,
+                longInvoke: 0,
+            },
+        };
         this.channelCountMode = 'explicit';
         this.channelCount = 1;
         const { modelURL, worker, fetchBehavior, logger, delegate, } = options;
@@ -29,7 +52,7 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
             logger.debug('VoiceFocusInlineNode:', modelURL);
         this.worker = worker;
         this.worker.onmessage = this.onWorkerMessage.bind(this);
-        const message = support_js_1.supportsWASMPostMessage(globalThis) ? 'get-module' : 'get-module-buffer';
+        const message = (0, support_js_1.supportsWASMPostMessage)(globalThis) ? 'get-module' : 'get-module-buffer';
         this.worker.postMessage({
             message,
             key: 'model',
@@ -53,6 +76,11 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
             this.port.postMessage({ message: 'disable' });
         });
     }
+    setMode(mode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.port.postMessage({ message: 'set-mode', mode });
+        });
+    }
     stop() {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -67,24 +95,48 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
         });
     }
     onProcessorMessage(event) {
-        var _a, _b, _c;
-        const data = event.data;
-        switch (data.message) {
+        var _a, _b, _c, _d, _e, _f;
+        const { data } = event;
+        const { message } = data;
+        switch (message) {
             case 'cpu':
+                const { reason, count } = data;
+                if (reason && count) {
+                    this.metrics.cpu = Object.assign(Object.assign({}, this.metrics.cpu), { [reason]: count + this.metrics.cpu[reason] });
+                }
                 this.cpuWarningCount++;
                 const now = Date.now();
                 const before = this.cpuWarningLastTriggered || now;
                 const diff = Math.abs(now - before);
                 if (!this.cpuWarningLastTriggered || diff > CPU_WARNING_MAX_INTERVAL_MS) {
-                    (_a = this.logger) === null || _a === void 0 ? void 0 : _a.warn(`CPU warning (count: ${this.cpuWarningCount}):`, data.message);
+                    (_a = this.logger) === null || _a === void 0 ? void 0 : _a.warn(`CPU warning (count: ${this.cpuWarningCount}):`, message);
                     this.cpuWarningCount = 0;
                     this.cpuWarningLastTriggered = now;
                 }
                 (_b = this.delegate) === null || _b === void 0 ? void 0 : _b.onCPUWarning();
                 break;
+            case 'metrics':
+                const { metrics } = data;
+                if (!metrics) {
+                    (_c = this.logger) === null || _c === void 0 ? void 0 : _c.warn("Got metrics message but no metrics payload");
+                    break;
+                }
+                this.metrics = Object.assign(Object.assign({}, this.metrics), metrics);
+                if (this.logger) {
+                    const now = Date.now();
+                    const diff = now - ((_d = this.metricsLastRecorded) !== null && _d !== void 0 ? _d : 0);
+                    if (diff > METRICS_MAX_INTERVAL_MS) {
+                        (_e = this.logger) === null || _e === void 0 ? void 0 : _e.debug("Contact metrics:", this.metrics);
+                        this.metricsLastRecorded = now;
+                    }
+                }
+                break;
             default:
-                (_c = this.logger) === null || _c === void 0 ? void 0 : _c.debug('Ignoring processor message.');
+                (_f = this.logger) === null || _f === void 0 ? void 0 : _f.debug('Ignoring processor message.');
         }
+    }
+    getModelMetrics() {
+        return this.metrics;
     }
     onWorkerMessage(event) {
         const data = event.data;

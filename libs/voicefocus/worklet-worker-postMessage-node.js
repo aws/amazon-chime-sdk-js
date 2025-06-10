@@ -35,7 +35,7 @@ class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletN
             model: modelURL,
             supportFarendStream,
         });
-        const message = support_js_1.supportsWASMPostMessage(globalThis) ? 'get-module' : 'get-module-buffer';
+        const message = (0, support_js_1.supportsWASMPostMessage)(globalThis) ? 'get-module' : 'get-module-buffer';
         this.worker.postMessage({
             message,
             key: 'buffer',
@@ -53,6 +53,11 @@ class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletN
             this.worker.postMessage({ message: 'disable' });
         });
     }
+    setMode(mode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.port.postMessage({ message: 'set-mode', mode });
+        });
+    }
     stop() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -62,6 +67,9 @@ class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletN
             }
             this.disconnect();
         });
+    }
+    getModelMetrics() {
+        return undefined;
     }
     onWorkerMessage(event) {
         var _a;

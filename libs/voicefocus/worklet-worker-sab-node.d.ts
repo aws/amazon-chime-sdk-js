@@ -1,4 +1,4 @@
-import { ProcessorMessage, VoiceFocusAudioWorkletNode, VoiceFocusNodeOptions, WorkerMessage } from './types.js';
+import { ModelMetrics, ProcessorMessage, VoiceFocusAudioWorkletNode, VoiceFocusMode, VoiceFocusNodeOptions, WorkerMessage } from './types.js';
 declare class VoiceFocusWorkerBufferNode extends VoiceFocusAudioWorkletNode {
     private worker;
     private delegate?;
@@ -6,7 +6,9 @@ declare class VoiceFocusWorkerBufferNode extends VoiceFocusAudioWorkletNode {
     constructor(context: AudioContext, options: VoiceFocusNodeOptions);
     enable(): Promise<void>;
     disable(): Promise<void>;
+    setMode(mode: VoiceFocusMode): Promise<void>;
     stop(): Promise<void>;
+    getModelMetrics(): ModelMetrics | undefined;
     onWorkerMessage(event: WorkerMessage): void;
     onProcessorMessage(event: ProcessorMessage): void;
 }

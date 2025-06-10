@@ -26,7 +26,7 @@ const isSafari = (global = globalThis) => {
 };
 exports.isSafari = isSafari;
 const supportsWASMPostMessage = (global = globalThis) => {
-    if (exports.isSafari(global)) {
+    if ((0, exports.isSafari)(global)) {
         return false;
     }
     if (isChrome(global)) {
@@ -37,12 +37,12 @@ const supportsWASMPostMessage = (global = globalThis) => {
 };
 exports.supportsWASMPostMessage = supportsWASMPostMessage;
 const supportsVoiceFocusWorker = (scope = globalThis, fetchConfig, logger) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!exports.supportsWorker(scope, logger)) {
+    if (!(0, exports.supportsWorker)(scope, logger)) {
         return false;
     }
     const workerURL = `${fetchConfig.paths.workers}worker-v1.js`;
     try {
-        const worker = yield loader_js_1.loadWorker(workerURL, 'VoiceFocusTestWorker', fetchConfig, logger);
+        const worker = yield (0, loader_js_1.loadWorker)(workerURL, 'VoiceFocusTestWorker', fetchConfig, logger);
         try {
             worker.terminate();
         }
