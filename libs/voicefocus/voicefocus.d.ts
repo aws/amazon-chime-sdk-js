@@ -14,12 +14,12 @@ export interface VoiceFocusSpec extends AssetSpec {
     name?: ModelName;
     variant?: ModelVariant | 'auto';
     simd?: SIMDPreference;
-    mode?: VoiceFocusMode;
     executionPreference?: ExecutionPreference;
     executionQuantaPreference?: ExecutionQuanta;
     usagePreference?: UsagePreference;
     estimatorBudget?: number;
     paths?: VoiceFocusPaths;
+    mode?: VoiceFocusMode;
     thresholds?: PerformanceThresholds;
 }
 interface SupportedVoiceFocusConfig {

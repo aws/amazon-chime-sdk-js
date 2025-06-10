@@ -18,8 +18,8 @@ export interface ModelConfig {
     category: ModelCategory;
     name: ModelName;
     variant: ModelVariant;
-    mode: VoiceFocusMode;
     simd: boolean;
+    mode: VoiceFocusMode;
     url?: string;
 }
 export interface VoiceFocusExecutionSpec {
