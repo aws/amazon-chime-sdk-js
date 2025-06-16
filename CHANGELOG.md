@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Degrade video codec from VP9/AV1 when there are more than 15 video senders
 - Created new public methods in voicefocus.ts to export model metrics (`getModelMetrics`). These model metrics include SNR, DRR and latencies aggregated for single session.
-- An internal propertly (`VoiceFocusMode`) added to switch between mode of operation for custom model.
+- An internal property (`ModelOperatingMode`) added to switch between mode of operation for custom model.
 
 ### Removed
 
