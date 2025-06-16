@@ -681,3 +681,5 @@ Below is the list of `MeetingSessionStatusCode` that you can reproduce for each 
 | audioOutputDeviceNotResponding(iOS) AudioInputDeviceNotResponding(Android) | This is due to audio input stream not starting properly, unable to reproduce this code, maybe try to physically disable your mic... | N/A | N/A | N/A |
 | unknown(iOS) | This will be returned when there is an code that mobile SDK is not able to handle, currently if you disable the network connection on your device, wait for the reconnect exhausts | N/A | N/A | N/A |
 
+### Known issues
+The `NoVideoCodecs` version of the SDK may not support video connections reliably on certain mobile devices. For full video functionality, we recommend using the complete SDK version.
