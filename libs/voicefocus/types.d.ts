@@ -12,7 +12,7 @@ export type ExecutionApproach = 'inline' | 'worker-sab' | 'worker-postMessage';
 export type ExecutionPreference = ExecutionApproach | 'worker' | 'auto';
 export type UsagePreference = 'quality' | 'interactivity';
 export type VariantPreference = ModelVariant | 'auto';
-export type ModelOperatingMode = 'tve' | 'ns';
+export type ModelOperatingMode = string;
 export type ExecutionQuanta = 1 | 2 | 3;
 export interface ModelConfig {
     category: ModelCategory;
