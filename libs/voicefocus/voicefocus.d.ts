@@ -1,4 +1,4 @@
-import { AGCOptions, ExecutionPreference, ExecutionQuanta, Logger, ModelCategory, ModelConfig, ModelName, ModelVariant, PerformanceThresholds, SIMDPreference, UsagePreference, VoiceFocusAudioWorkletNode, VoiceFocusConfigureOptions, VoiceFocusDelegate, VoiceFocusFetchBehavior, VoiceFocusFetchConfig, ModelOperatingMode, VoiceFocusPaths } from './types.js';
+import { AGCOptions, ExecutionPreference, ExecutionQuanta, Logger, ModelCategory, ModelConfig, ModelName, ModelVariant, PerformanceThresholds, SIMDPreference, UsagePreference, VoiceFocusAudioWorkletNode, VoiceFocusConfigureOptions, VoiceFocusDelegate, VoiceFocusFetchBehavior, VoiceFocusFetchConfig, VoiceFocusPaths } from './types.js';
 import { Unsupported } from './decider.js';
 export interface AssetSpec {
     assetGroup?: string;
@@ -19,7 +19,7 @@ export interface VoiceFocusSpec extends AssetSpec {
     usagePreference?: UsagePreference;
     estimatorBudget?: number;
     paths?: VoiceFocusPaths;
-    mode?: ModelOperatingMode;
+    mode?: string;
     thresholds?: PerformanceThresholds;
 }
 interface SupportedVoiceFocusConfig {
@@ -54,7 +54,7 @@ export declare class VoiceFocus {
     getModelMetrics(): import("./types.js").ModelMetrics | undefined;
     enable(): void;
     disable(): void;
-    setMode(mode: ModelOperatingMode): void;
+    setMode(mode: string): void;
     destroy(): Promise<void>;
     static isSupported(spec?: AssetSpec & {
         paths?: VoiceFocusPaths;

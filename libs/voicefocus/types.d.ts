@@ -12,14 +12,13 @@ export type ExecutionApproach = 'inline' | 'worker-sab' | 'worker-postMessage';
 export type ExecutionPreference = ExecutionApproach | 'worker' | 'auto';
 export type UsagePreference = 'quality' | 'interactivity';
 export type VariantPreference = ModelVariant | 'auto';
-export type ModelOperatingMode = string;
 export type ExecutionQuanta = 1 | 2 | 3;
 export interface ModelConfig {
     category: ModelCategory;
     name: ModelName;
     variant: ModelVariant;
     simd: boolean;
-    mode?: ModelOperatingMode;
+    mode?: string;
     url?: string;
 }
 export interface VoiceFocusExecutionSpec {
@@ -67,7 +66,7 @@ export interface VoiceFocusNodeOptions extends AudioWorkletNodeOptions {
     fetchBehavior?: VoiceFocusFetchBehavior;
     delegate?: VoiceFocusDelegate;
     logger?: Logger;
-    mode?: ModelOperatingMode;
+    mode?: string;
 }
 declare const VoiceFocusAudioWorkletNode_base: {
     new (context: BaseAudioContext, name: string, options?: AudioWorkletNodeOptions | undefined): AudioWorkletNode;
@@ -76,7 +75,7 @@ declare const VoiceFocusAudioWorkletNode_base: {
 export declare abstract class VoiceFocusAudioWorkletNode extends VoiceFocusAudioWorkletNode_base {
     abstract enable(): Promise<void>;
     abstract disable(): Promise<void>;
-    abstract setMode(mode: ModelOperatingMode): Promise<void>;
+    abstract setMode(mode: string): Promise<void>;
     abstract stop(): Promise<void>;
     abstract getModelMetrics(): ModelMetrics | undefined;
 }
@@ -98,7 +97,7 @@ export interface ProcessorOptions {
     agc: AGCOptions;
     executionQuanta?: ExecutionQuanta;
     supportFarendStream?: boolean;
-    mode?: ModelOperatingMode;
+    mode?: string;
 }
 export interface ProcessorMessageData {
     message: 'data' | 'cpu' | 'prepare-for-frames' | 'metrics';

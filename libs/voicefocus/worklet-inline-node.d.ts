@@ -1,4 +1,4 @@
-import { ModelMetrics, ProcessorMessage, VoiceFocusAudioWorkletNode, ModelOperatingMode, VoiceFocusNodeOptions, WorkerMessage } from './types.js';
+import { ModelMetrics, ProcessorMessage, VoiceFocusAudioWorkletNode, VoiceFocusNodeOptions, WorkerMessage } from './types.js';
 declare class VoiceFocusInlineNode extends VoiceFocusAudioWorkletNode {
     private delegate?;
     private worker;
@@ -12,7 +12,7 @@ declare class VoiceFocusInlineNode extends VoiceFocusAudioWorkletNode {
     onModuleLoaded(module: WebAssembly.Module, key: string): void;
     enable(): Promise<void>;
     disable(): Promise<void>;
-    setMode(mode: ModelOperatingMode): Promise<void>;
+    setMode(mode: string): Promise<void>;
     stop(): Promise<void>;
     onProcessorMessage(event: ProcessorMessage): void;
     getModelMetrics(): ModelMetrics | undefined;
