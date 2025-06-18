@@ -37,6 +37,7 @@ jobs:
           aws-role-session-name: ${{ env.TEST_TYPE }}
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
           sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          browser-compatibility-test: true
       - name: Run Audio Test
         working-directory: ./integration/mocha-tests
         run: npm run test -- --test-name AudioTest --host saucelabs --test-type browser-compatibility

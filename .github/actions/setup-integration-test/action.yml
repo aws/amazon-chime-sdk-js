@@ -21,6 +21,10 @@ inputs:
     required: false
     description: "The AWS Role Session Name"
     default: ""
+  browser-compatibility-test:
+    required: false
+    description: "Determines if this job is running as a browser compatibility test"
+    default: false
 outputs:
   integ_test_required:
     description: "Whether integration tests are required based on changes"
@@ -48,19 +52,25 @@ runs:
         npm install ../../amazon-chime-sdk-js-$current_version.tgz
       shell: bash
     - name: Configure AWS Credentials
-      if: steps.test_needed.outputs.integ_test_required == 'true'
+      if: |
+        steps.test_needed.outputs.integ_test_required == 'true' || 
+        inputs.browser-compatibility-test == 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ inputs.aws-role-to-assume }}
         role-session-name: ${{ inputs.aws-role-session-name }}
         aws-region: us-east-1
     - name: Setup Node.js - 20.x
-      if: steps.test_needed.outputs.integ_test_required == 'true'
+      if: |
+        steps.test_needed.outputs.integ_test_required == 'true' || 
+        inputs.browser-compatibility-test == 'true'
       uses: actions/setup-node@v3
       with:
         node-version: 20.x
     - name: Check if SauceLabs credentials are provided
-      if: steps.test_needed.outputs.integ_test_required == 'true'
+      if: |
+        steps.test_needed.outputs.integ_test_required == 'true' || 
+        inputs.browser-compatibility-test == 'true'
       id: check-sauce
       run: |
         if [ -n "${{ inputs.sauce-username }}" ] && [ -n "${{ inputs.sauce-access-key }}" ]; then
@@ -70,19 +80,27 @@ runs:
         fi
       shell: bash
     - name: Create a Job ID for SauceLabs
-      if: steps.test_needed.outputs.integ_test_required == 'true' && steps.check-sauce.outputs.use_sauce == 'true'
+      if: |
+        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') 
+        && steps.check-sauce.outputs.use_sauce == 'true'
       id: create-job-id
       uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
     - name: Set JOB_ID Env Variable for SauceLabs
-      if: steps.test_needed.outputs.integ_test_required == 'true' && steps.check-sauce.outputs.use_sauce == 'true'
+      if: |
+        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') 
+        && steps.check-sauce.outputs.use_sauce == 'true'
       run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       shell: bash
     - name: Echo Job ID for SauceLabs
-      if: steps.test_needed.outputs.integ_test_required == 'true' && steps.check-sauce.outputs.use_sauce == 'true'
+      if: |
+        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') 
+        && steps.check-sauce.outputs.use_sauce == 'true'
       run: echo "${{ steps.create-job-id.outputs.uuid }}"
       shell: bash
     - name: Setup Sauce Connect
-      if: steps.test_needed.outputs.integ_test_required == 'true' && steps.check-sauce.outputs.use_sauce == 'true'
+      if: |
+        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') 
+        && steps.check-sauce.outputs.use_sauce == 'true'
       uses: saucelabs/sauce-connect-action@v3.0.0
       with:
         username: ${{ inputs.sauce-username }}
@@ -91,16 +109,22 @@ runs:
         region: us
         proxyLocalhost: direct
     - name: Setup Chrome for local testing
-      if: steps.test_needed.outputs.integ_test_required == 'true' && steps.check-sauce.outputs.use_sauce == 'false'
+      if: |
+        steps.test_needed.outputs.integ_test_required == 'true' && 
+        steps.check-sauce.outputs.use_sauce == 'false'
       uses: browser-actions/setup-chrome@latest
       with:
         chrome-version: stable
     - name: Clean Install
-      if: steps.test_needed.outputs.integ_test_required == 'true'
+      if: |
+        steps.test_needed.outputs.integ_test_required == 'true' || 
+        inputs.browser-compatibility-test == 'true'
       run: npm ci
       shell: bash
     - name: Add testsite host to /etc/hosts for Linux only (fixes 500 internal error when loading the test page)
       shell: bash
-      if: steps.test_needed.outputs.integ_test_required == 'true' && runner.os == 'Linux'
+      if: |
+        (steps.test_needed.outputs.integ_test_required == 'true' || inputs.browser-compatibility-test == 'true') && 
+        runner.os == 'Linux'
       run: |
           sudo echo "127.0.0.1 testsite" | sudo tee -a /etc/hosts
