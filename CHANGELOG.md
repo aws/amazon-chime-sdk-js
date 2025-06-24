@@ -8,11 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.28.0] - 2025-02-13
 
 ### Added
+- Degrade video codec from VP9/AV1 when there are more than 15 video senders
+- Created new public methods in voicefocus.ts to export model metrics (`getModelMetrics`). These model metrics include SNR, DRR and latencies aggregated for single session.
+- Using `setMode` to switch between mode of operation for custom model.
 
 ### Removed
 
 ### Changed
 - Use default framerate when video track framerate is undefined in `DefaultVideoFrameProcessorPipeline`
+- Use VP9 as default video codec for video and AV1 for content share. This change will provide better video compression efficiency than H.264 (the current default) and improve video quality. While the two codec may be more costly in computation, we already added monitoring for encoding and fallback when there are failures or high CPU usage.
+- Updated destroy method to disconnect the worklet nodes in addition to terminating the worker.
 
 ### Fixed
 

@@ -1,0 +1,152 @@
+const { Builder } = require('selenium-webdriver');
+const { Logger, LogLevel, Log } = require('./Logger');
+const config = require('../configs/WebDriverBaseConfig');
+const { DeviceFarmClient, CreateTestGridUrlCommand } = require('@aws-sdk/client-device-farm');
+
+class WebDriverFactory {
+  constructor(testName, host, testType, url, logger) {
+    this.testName = testName;
+    this.host = host;
+    if (this.host === 'devicefarm') {
+      this.devicefarm = new DeviceFarmClient({ region: 'us-west-2' });
+    }
+    this.testType = testType;
+    this.url = url;
+    if (!!logger) {
+      this.logger = logger;
+    } else {
+      this.logger = new Logger('WebDriverFactory');
+    }
+    if (this.host === 'saucelabs' && (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY)) {
+      throw new Error('SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables must be set for SauceLabs tests');
+    }
+    this.sauceLabsUrl = `https://${process.env.SAUCE_USERNAME}:${process.env.SAUCE_ACCESS_KEY}@ondemand.us-west-1.saucelabs.com:443/wd/hub`;
+  }
+
+  async configure() {
+    let builder = new Builder();
+    let client;
+    let capabilities = {};
+
+    switch (this.host) {
+      case 'local':
+        this.logger.log('No host configuration is required for local tests');
+        this.logger.log(
+          'Make sure the required selenium webdrivers are installed on the host machine',
+          LogLevel.WARN
+        );
+        break;
+
+      case 'saucelabs':
+        this.logger.log('Configuring the webdriver for SauceLabs');
+        builder.usingServer(this.sauceLabsUrl);
+
+        if (process.env.BROWSER_VERSION) {
+          this.logger.log(`Using browser version ${process.env.BROWSER_VERSION} stored as an environment variable`);
+          config.sauceOptions.browserVersion = process.env.BROWSER_VERSION;
+        }
+        if (process.env.PLATFORM_NAME) {
+          this.logger.log(`Using platform name ${process.env.PLATFORM_NAME} stored as an environment variable`);
+          config.sauceOptions.platformName = process.env.PLATFORM_NAME;
+          config.sauceOptions['sauce:options'].screenResolution = process.env.PLATFORM_NAME.includes('macOS') ? '1920x1440' : '1920x1200'; // different browsers have different supported resolutions
+        }
+
+        Object.assign(capabilities, config.sauceOptions);
+        break;
+
+      case 'devicefarm':
+        this.logger.log('Configuring the webdriver for DeviceFarm');
+
+        let testGridUrlResult = '';
+        // Get the endpoint to create a new session
+        const command = new CreateTestGridUrlCommand({
+          projectArn: process.env.PROJECT_ARN,
+          expiresInSeconds: 600,
+        });
+        testGridUrlResult = await this.devicefarm.send(command);
+
+        builder.usingServer(testGridUrlResult.url);
+        break;
+
+      default:
+        this.logger.log('Invalid host argument, using local host instead', LogLevel.WARN);
+        break;
+    }
+
+    client = JSON.parse(process.env.CLIENT);
+
+    if (client) {
+      if (client.browserName === 'chrome') {
+        builder.forBrowser('chrome');
+        Object.assign(capabilities, config.chromeOptions);
+      } else if (client.browserName === 'firefox') {
+        builder.forBrowser('firefox');
+        Object.assign(capabilities, config.firefoxOptions);
+      } else if (client.browserName === 'safari') {
+        builder.forBrowser('safari');
+        Object.assign(capabilities, config.safariOptions);
+      } else {
+        this.logger.log(
+          `browserName: ${client.browserName} defined in the test config is not valid`,
+          LogLevel.ERROR
+        );
+        throw new Error(`browserName defined in the test config is not valid`);
+      }
+    } else {
+      this.logger.log('Using default settings');
+      this.logger.log('Running chrome latest on MAC');
+      builder.forBrowser('chrome');
+      Object.assign(capabilities, config.chromeOptions);
+    }
+
+    builder.withCapabilities({
+      ...capabilities,
+    });
+
+    return builder;
+  }
+
+  async build() {
+    try {
+      let builder = await this.configure();
+      this.driver = builder.build();
+    } catch (error) {
+      this.logger.log(
+        `Error occured while building a selenium webdriver, error: ${error}`,
+        LogLevel.ERROR
+      );
+    }
+
+    if (this.host === 'saucelabs') {
+      const { id_ } = await this.driver.getSession();
+      this.sessionId = id_;
+      this.logger.log(
+        `Successfully created a SauceLabs session at https://saucelabs.com/tests/${this.sessionId}`,
+        LogLevel.SUCCESS
+      );
+      this.driver.executeScript('sauce:job-name=' + this.testName);
+    }
+
+    if (this.host === 'devicefarm') {
+      const { id_ } = await this.driver.getSession();
+      this.sessionId = id_;
+      this.logger.log(
+        `Successfully created a DeviceFarm session with id: ${this.sessionId}`,
+        LogLevel.SUCCESS
+      );
+    }
+  }
+
+  async quit(testResult) {
+    if (this.host === 'saucelabs') {
+      this.driver.executeScript('sauce:job-result=' + testResult);
+      this.logger.log(
+        `See a video of the test run at https://saucelabs.com/tests/${this.sessionId}`,
+        LogLevel.SUCCESS
+      );
+    }
+    await this.driver.quit();
+  }
+}
+
+module.exports = WebDriverFactory;

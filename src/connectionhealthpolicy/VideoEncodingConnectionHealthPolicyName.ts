@@ -8,6 +8,7 @@
 export enum VideoEncodingConnectionHealthPolicyName {
   VideoEncodingCpuHealth = 'Video Encoding CPU Health',
   VideoEncodingFramerateHealth = 'Video Encoding framerate Health',
+  VideoConcurrentSendersHealth = 'Video Concurrent Senders Health',
 }
 
 export default VideoEncodingConnectionHealthPolicyName;

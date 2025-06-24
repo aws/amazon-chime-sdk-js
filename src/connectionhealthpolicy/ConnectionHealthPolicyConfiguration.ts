@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import VideoEncodingCpuConnectionHealthPolicy from '../connectionhealthpolicy/VideoEncodingCpuConnectionHealthPolicy';
-import VideoEncodingFramerateConnectionHealthPolicy from '../connectionhealthpolicy/VideoEncodingFramerateConnectionHealthPolicy';
+import VideoEncodingConcurrentSendersHealthPolicy from './VideoEncodingConcurrentSendersHealthPolicy';
+import VideoEncodingCpuConnectionHealthPolicy from './VideoEncodingCpuConnectionHealthPolicy';
+import VideoEncodingFramerateConnectionHealthPolicy from './VideoEncodingFramerateConnectionHealthPolicy';
 
 export default class ConnectionHealthPolicyConfiguration {
   minHealth: number = 0;
@@ -47,6 +48,7 @@ export default class ConnectionHealthPolicyConfiguration {
    * Policies and parameters related to video encoding health montoring
    */
   videoEncodingHealthPolicies = [
+    VideoEncodingConcurrentSendersHealthPolicy,
     VideoEncodingCpuConnectionHealthPolicy,
     VideoEncodingFramerateConnectionHealthPolicy,
   ];
@@ -77,4 +79,9 @@ export default class ConnectionHealthPolicyConfiguration {
    * Increasing the value results in less sensitive video codec degradaion and vice versa.
    */
   consecutiveVideoEncodingFailureThreshold = 5;
+
+  /**
+   * Number of concurrent video senders to trigger video codec degradation from VP9/AV1 in video encoding health monitoring.
+   */
+  concurrentVideoSendersThreshold = 15;
 }

@@ -27,3 +27,6 @@ Are there any workarounds or mitigations you have used? Why is it not working fo
 
 ## Additional context
 Anything else we should know?
+
+*Note: GitHub issues are not a substitute for customer support. Please open a support case if the issue is important to you.*
+https://docs.aws.amazon.com/awssupport/latest/user/case-management.html
