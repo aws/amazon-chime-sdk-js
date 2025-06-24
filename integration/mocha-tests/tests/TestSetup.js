@@ -90,10 +90,10 @@ function setupTestEnvironment(testName, Page) {
         }
 
         if (passed === true) {
-          this.logger.log(`${testName} passed!!!`, LogLevel.SUCCESS);
+          this.logger.log(`${testName} finished and the result: passed!`, LogLevel.SUCCESS);
           process.exit(0);
         } else {
-          this.logger.log(`${testName} failed!!!`, LogLevel.ERROR);
+          this.logger.log(`${testName} finished and the result: failed!`, LogLevel.ERROR);
           process.exit(1);
         }
       });

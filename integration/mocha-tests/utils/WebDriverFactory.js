@@ -1,14 +1,14 @@
 const { Builder } = require('selenium-webdriver');
 const { Logger, LogLevel, Log } = require('./Logger');
-const config = require('../configs/BaseConfig');
-var AWS = require('aws-sdk');
+const config = require('../configs/WebDriverBaseConfig');
+const { DeviceFarmClient, CreateTestGridUrlCommand } = require('@aws-sdk/client-device-farm');
 
 class WebDriverFactory {
   constructor(testName, host, testType, url, logger) {
     this.testName = testName;
     this.host = host;
     if (this.host === 'devicefarm') {
-      this.devicefarm = new AWS.DeviceFarm({ region: 'us-west-2' });
+      this.devicefarm = new DeviceFarmClient({ region: 'us-west-2' });
     }
     this.testType = testType;
     this.url = url;
@@ -42,12 +42,13 @@ class WebDriverFactory {
         builder.usingServer(this.sauceLabsUrl);
 
         if (process.env.BROWSER_VERSION) {
-          this.logger.log('Using browser version stored as an environment variable');
+          this.logger.log(`Using browser version ${process.env.BROWSER_VERSION} stored as an environment variable`);
           config.sauceOptions.browserVersion = process.env.BROWSER_VERSION;
         }
         if (process.env.PLATFORM_NAME) {
-          this.logger.log('Using platform name stored as an environment variable');
+          this.logger.log(`Using platform name ${process.env.PLATFORM_NAME} stored as an environment variable`);
           config.sauceOptions.platformName = process.env.PLATFORM_NAME;
+          config.sauceOptions['sauce:options'].screenResolution = process.env.PLATFORM_NAME.includes('macOS') ? '1920x1440' : '1920x1200'; // different browsers have different supported resolutions
         }
 
         Object.assign(capabilities, config.sauceOptions);
@@ -58,12 +59,11 @@ class WebDriverFactory {
 
         let testGridUrlResult = '';
         // Get the endpoint to create a new session
-        testGridUrlResult = await this.devicefarm
-          .createTestGridUrl({
-            projectArn: process.env.PROJECT_ARN,
-            expiresInSeconds: 600,
-          })
-          .promise();
+        const command = new CreateTestGridUrlCommand({
+          projectArn: process.env.PROJECT_ARN,
+          expiresInSeconds: 600,
+        });
+        testGridUrlResult = await this.devicefarm.send(command);
 
         builder.usingServer(testGridUrlResult.url);
         break;
