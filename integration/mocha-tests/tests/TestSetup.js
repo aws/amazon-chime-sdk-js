@@ -45,7 +45,6 @@ function setupTestEnvironment(testName, Page) {
           this.logger
         );
         await driverFactoryOne.build();
-        await driverFactoryOne.driver.manage().window().maximize();
         this.driverFactoryOne = driverFactoryOne;
         this.baseTestConfigOne = baseTestConfigOne;
         
@@ -65,7 +64,6 @@ function setupTestEnvironment(testName, Page) {
             this.logger
           );
           await driverFactoryTwo.build();
-          await driverFactoryTwo.driver.manage().window().maximize();
           this.driverFactoryTwo = driverFactoryTwo;
           this.baseTestConfigTwo = baseTestConfigTwo;
           

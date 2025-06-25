@@ -24,12 +24,13 @@ const config = {
         [
           '--use-fake-device-for-media-stream', 
           '--use-fake-ui-for-media-stream',
-          '--headless',
+          '--headless=new',
+          '--window-size=1920,1080',
           '--disable-gpu',
           '--no-sandbox',
           '--disable-dev-shm-usage'
         ] : 
-        ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'],
+        ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream', '--window-size=1920,1080'],
     },
   },
   safariOptions: {
@@ -46,7 +47,7 @@ const config = {
       accessKey: process.env.SAUCE_ACCESS_KEY,
       noSSLBumpDomains: 'all',
       extendedDebugging: true,
-      screenResolution: '1920x1200',
+      screenResolution: '1920x1440',
     },
   },
 };
