@@ -278,7 +278,7 @@ const startTesting = async (testSuite, testType) => {
     clients = integrationTestBrowserConfig;
   }
 
-  await runTest(test, clients);
+  return await runTest(test, clients);
 };
 
 /**
@@ -408,9 +408,10 @@ const terminateTestDemo = async () => {
 
     startTestDemo();
 
+    let testResult = 0;
     try {
       await waitUntilTestDemoStarts();
-      await startTesting(testSuite, testType);
+      testResult = await startTesting(testSuite, testType);
     } finally {
       try {
         await terminateTestDemo();
@@ -418,6 +419,9 @@ const terminateTestDemo = async () => {
         logger.log(`Error during cleanup: ${cleanupError.message || cleanupError}`, LogLevel.ERROR);
       }
     }
+    
+    // Exit with the test result code
+    process.exit(testResult);
   } catch (error) {
     logger.log(`Test execution failed: ${error.message || error}`, LogLevel.ERROR);
     process.exit(1);

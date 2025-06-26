@@ -46,7 +46,7 @@ const config = {
       accessKey: process.env.SAUCE_ACCESS_KEY,
       noSSLBumpDomains: 'all',
       extendedDebugging: true,
-      screenResolution: '1920x1200',
+      screenResolution: '1920x1440',
     },
   },
 };
