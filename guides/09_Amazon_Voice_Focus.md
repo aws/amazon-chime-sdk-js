@@ -62,7 +62,15 @@ Amazon Voice Focus runs in the end user’s web browser, leveraging modern web p
 
 Amazon Voice Focus is available as part of the Amazon Chime SDK for JavaScript from version 2.0 onward.
 
-Because Amazon Voice Focus on the web requires Web Audio, construct your `DeviceController` with Web Audio support, passing the `{ enableWebAudio: true }` argument to `new DefaultDeviceController`.
+Because Amazon Voice Focus on the web requires Web Audio, construct your `DeviceController` with Web Audio support. It's recommended to only enable Web Audio when Voice Focus is supported, as enabling Web Audio may cause browsers to disable their built-in noise cancellation. If Voice Focus is not supported but Web Audio is enabled, users will lose both browser-level and SDK-level noise suppression, resulting in degraded audio quality.
+
+```typescript
+const isVoiceFocusSupported = await VoiceFocusDeviceTransformer.isSupported();
+
+this.deviceController = new DefaultDeviceController({
+  enableWebAudio: isVoiceFocusSupported
+});
+```
 
 When testing Amazon Voice Focus in the `browser` demo application, remember to choose “Web Audio” in the feature picker on the first screen.
 
@@ -232,9 +240,11 @@ transformer = await VoiceFocusDeviceTransformer(spec, options);
 
 Check for both of these kinds of support prior to offering noise suppression and echo reduction to users. The ideal time to do so is during pre-meeting setup.
 
-Your device controller must support Web Audio to use Amazon Voice Focus and Echo Reduction. If you do not wish to enable Web Audio universally, you can use your support check as a condition:
+Your device controller must support Web Audio to use Amazon Voice Focus and Echo Reduction. It's recommended to only enable Web Audio when Voice Focus is supported, as enabling Web Audio may cause browsers to disable their built-in noise cancellation. If Voice Focus is not supported but Web Audio is enabled, users will lose both browser-level and SDK-level noise suppression, resulting in degraded audio quality.
 
 ```typescript
+const isVoiceFocusSupported = await VoiceFocusDeviceTransformer.isSupported();
+
 this.deviceController = new DefaultDeviceController({
   enableWebAudio: isVoiceFocusSupported
 });
