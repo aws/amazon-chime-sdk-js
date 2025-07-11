@@ -142,7 +142,13 @@
 					</a>
 					<p>Amazon Voice Focus runs in the end user’s web browser, leveraging modern web platform features including Web Audio, Audio Worklet, and WebAssembly. See the section “<a href="#can-i-use-amazon-voice-focus-in-my-application">Can I use Amazon Voice Focus in my application?</a>” for browser version requirements.</p>
 					<p>Amazon Voice Focus is available as part of the Amazon Chime SDK for JavaScript from version 2.0 onward.</p>
-					<p>Because Amazon Voice Focus on the web requires Web Audio, construct your <code>DeviceController</code> with Web Audio support, passing the <code>{ enableWebAudio: true }</code> argument to <code>new DefaultDeviceController</code>.</p>
+					<p>Because Amazon Voice Focus on the web requires Web Audio, construct your <code>DeviceController</code> with Web Audio support. It&#39;s recommended to only enable Web Audio when Voice Focus is supported, as enabling Web Audio may cause browsers to disable their built-in noise cancellation. If Voice Focus is not supported but Web Audio is enabled, users will lose both browser-level and SDK-level noise suppression, resulting in degraded audio quality.</p>
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">isVoiceFocusSupported</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">();</span>
+
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">enableWebAudio:</span><span style="color: #000000"> </span><span style="color: #001080">isVoiceFocusSupported</span>
+<span style="color: #000000">});</span>
+</code></pre>
 					<p>When testing Amazon Voice Focus in the <code>browser</code> demo application, remember to choose “Web Audio” in the feature picker on the first screen.</p>
 					<a href="#when-should-i-use-amazon-voice-focus" id="when-should-i-use-amazon-voice-focus" style="color: inherit; text-decoration: none;">
 						<h2>When should I use Amazon Voice Focus?</h2>
@@ -318,8 +324,10 @@
 <span style="color: #001080">transformer</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #795E26">VoiceFocusDeviceTransformer</span><span style="color: #000000">(</span><span style="color: #001080">spec</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">);</span>
 </code></pre>
 					<p>Check for both of these kinds of support prior to offering noise suppression and echo reduction to users. The ideal time to do so is during pre-meeting setup.</p>
-					<p>Your device controller must support Web Audio to use Amazon Voice Focus and Echo Reduction. If you do not wish to enable Web Audio universally, you can use your support check as a condition:</p>
-					<pre><code class="language-typescript"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">({</span>
+					<p>Your device controller must support Web Audio to use Amazon Voice Focus and Echo Reduction. It&#39;s recommended to only enable Web Audio when Voice Focus is supported, as enabling Web Audio may cause browsers to disable their built-in noise cancellation. If Voice Focus is not supported but Web Audio is enabled, users will lose both browser-level and SDK-level noise suppression, resulting in degraded audio quality.</p>
+					<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">isVoiceFocusSupported</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">VoiceFocusDeviceTransformer</span><span style="color: #000000">.</span><span style="color: #795E26">isSupported</span><span style="color: #000000">();</span>
+
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">deviceController</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultDeviceController</span><span style="color: #000000">({</span>
 <span style="color: #000000">  </span><span style="color: #001080">enableWebAudio:</span><span style="color: #000000"> </span><span style="color: #001080">isVoiceFocusSupported</span>
 <span style="color: #000000">});</span>
 </code></pre>
