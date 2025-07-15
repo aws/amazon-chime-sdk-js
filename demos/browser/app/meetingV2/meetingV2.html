@@ -141,8 +141,8 @@
             <label for="join-muted-setting" class="form-check-label">Join Muted</label>
           </div>
         <div class="form-check" style="text-align: left;">
-            <input type="checkbox" id="webaudio" class="form-check-input">
-            <label for="webaudio" class="form-check-label">Use WebAudio</label>
+            <input type="checkbox" id="allow-voice-focus" class="form-check-input">
+            <label for="allow-voice-focus" class="form-check-label">Allow Voice Focus</label>
           </div>
           <div class="form-check" id='echo-reduction-checkbox' style="text-align: left; display: none;">
             <input type="checkbox" id="echo-reduction-capability" class="form-check-input">
@@ -445,6 +445,9 @@
         <div id="voice-focus-setting" class="col-12 hidden">
           <input autocomplete="off" type="checkbox" id="add-voice-focus"></input>
           <label style="margin-left: 0.5em" for="voice-focus-setting block">Add Voice Focus</label>
+          <div id="add-voice-focus-info" class="text-muted small" style="margin-left: 1.5em; display: none;">
+            Voice Focus is not supported on this device
+          </div>
         </div>
       </div>
       <div class="row mt-3">

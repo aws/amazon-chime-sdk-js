@@ -104,10 +104,16 @@ module.exports = env => {
         {
           test: /\.tsx?$/,
           loader: 'ts-loader',
+          options: {
+            compilerOptions: {
+              sourceMap: true,
+            },
+          },
         },
       ],
     },
     mode: 'development',
+    devtool: 'eval-source-map',
     performance: {
       hints: false,
     },

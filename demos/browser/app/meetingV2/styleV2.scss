@@ -1090,3 +1090,20 @@ input[type="file"] {
 input[type="file"]:focus + label {
   outline: 2px solid;
 }
+
+
+.add-voice-focus-not-supported {
+  cursor: not-allowed !important;
+
+  label {
+    color: $gray-600
+  }
+  
+  input, label {
+    cursor: not-allowed !important;
+  }
+
+  #add-voice-focus-info {
+    display: block !important;
+  }
+}
