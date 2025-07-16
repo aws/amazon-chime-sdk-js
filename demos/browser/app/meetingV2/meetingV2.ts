@@ -338,6 +338,7 @@ export class DemoMeetingApp
   appliedVideoMaxResolution = VideoQualitySettings.VideoResolutionHD;
   appliedContentMaxResolution = VideoQualitySettings.VideoResolutionFHD;
   maxBitrateKbps: number = 1400; // Default to 540p
+  enableWebAudio = false;
   logLevel = LogLevel.INFO;
   videoCodecPreferences: VideoCodecCapability[] | undefined = undefined;
   contentCodecPreferences: VideoCodecCapability[] | undefined = undefined;
@@ -528,6 +529,11 @@ export class DemoMeetingApp
     if (new URL(window.location.href).searchParams.get('max-content-share') === 'true') {
       this.enableMaxContentShare = true;
     }
+
+    if (new URL(window.location.href).searchParams.get('web-audio') === 'true') {
+      this.enableWebAudio = true;
+    }
+
     (document.getElementById('max-content-share') as HTMLInputElement).checked = this.enableMaxContentShare;
 
     if (new URL(window.location.href).searchParams.has('join-info-override')) {
@@ -1861,8 +1867,9 @@ export class DemoMeetingApp
       this.meetingEventPOSTLogger = getPOSTLogger(configuration, 'SDKEvent', `${DemoMeetingApp.BASE_URL}log_meeting_event`, this.logLevel);
     }
     this.eventReporter = await this.setupEventReporter(configuration);
+
     this.deviceController = new DefaultDeviceController(this.meetingLogger, {
-      enableWebAudio: this.allowVoiceFocus && this.supportsVoiceFocus,
+      enableWebAudio: this.enableWebAudio || (this.allowVoiceFocus && this.supportsVoiceFocus),
     });
     const urlParameters = new URL(window.location.href).searchParams;
     const timeoutMs = Number(urlParameters.get('attendee-presence-timeout-ms'));
