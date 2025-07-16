@@ -351,6 +351,7 @@ export class DemoMeetingApp
   enableSVC = false;
   usePriorityBasedDownlinkPolicy = false;
   enablePin = false;
+  allowVoiceFocus = false;
   echoReductionCapability = false;
   usingStereoMusicAudioProfile = false;
 
@@ -528,6 +529,11 @@ export class DemoMeetingApp
     if (new URL(window.location.href).searchParams.get('max-content-share') === 'true') {
       this.enableMaxContentShare = true;
     }
+
+    if (new URL(window.location.href).searchParams.get('web-audio') === 'true') {
+      this.enableWebAudio = true;
+    }
+
     (document.getElementById('max-content-share') as HTMLInputElement).checked = this.enableMaxContentShare;
 
     if (new URL(window.location.href).searchParams.has('join-info-override')) {
@@ -544,8 +550,8 @@ export class DemoMeetingApp
 
   async initVoiceFocus(): Promise<void> {
     const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
-    if (!this.enableWebAudio) {
-      logger.info('[DEMO] Web Audio not enabled. Not checking for Amazon Voice Focus support.');
+    if (!this.allowVoiceFocus) {
+      logger.info('[DEMO] Voice Focus not allowed. Not checking for Amazon Voice Focus support.');
       return;
     }
 
@@ -559,19 +565,17 @@ export class DemoMeetingApp
         this.voiceFocusTransformer = await this.getVoiceFocusDeviceTransformer(MAX_VOICE_FOCUS_COMPLEXITY);
         this.supportsVoiceFocus =
             this.voiceFocusTransformer && this.voiceFocusTransformer.isSupported();
-        if (this.supportsVoiceFocus) {
-          logger.info('[DEMO] Amazon Voice Focus is supported.');
-          document.getElementById('voice-focus-setting').classList.remove('hidden');
-          return;
-        }
       }
     } catch (e) {
-      // Fall through.
-      logger.warn(`[DEMO] Does not support Amazon Voice Focus: ${e.message}`);
+      this.supportsVoiceFocus = false;
+    } finally {
+      if (this.supportsVoiceFocus) {
+        logger.info('[DEMO] Amazon Voice Focus is supported.');
+      } else {
+        logger.warn('[DEMO] Does not support Amazon Voice Focus.');
+      }
+      this.setupAddVoiceFocusUI();
     }
-    logger.warn('[DEMO] Does not support Amazon Voice Focus.');
-    this.supportsVoiceFocus = false;
-    document.getElementById('voice-focus-setting').classList.toggle('hidden', true);
   }
 
   async initBackgroundBlur(): Promise<void> {
@@ -689,9 +693,10 @@ export class DemoMeetingApp
     });
 
     const echoReductionCheckbox = (document.getElementById('echo-reduction-checkbox') as HTMLInputElement);
-    (document.getElementById('webaudio') as HTMLInputElement).addEventListener('change', e => {
-      this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
-      if (this.enableWebAudio) {
+    (document.getElementById('allow-voice-focus') as HTMLInputElement).addEventListener('change', e => {
+      this.allowVoiceFocus = (document.getElementById('allow-voice-focus') as HTMLInputElement).checked;
+      document.getElementById('voice-focus-setting').classList.toggle('hidden', !this.allowVoiceFocus);
+      if (this.allowVoiceFocus) {
         echoReductionCheckbox.style.display = 'block';
       } else {
         echoReductionCheckbox.style.display = 'none';
@@ -1862,8 +1867,9 @@ export class DemoMeetingApp
       this.meetingEventPOSTLogger = getPOSTLogger(configuration, 'SDKEvent', `${DemoMeetingApp.BASE_URL}log_meeting_event`, this.logLevel);
     }
     this.eventReporter = await this.setupEventReporter(configuration);
+
     this.deviceController = new DefaultDeviceController(this.meetingLogger, {
-      enableWebAudio: this.enableWebAudio,
+      enableWebAudio: this.enableWebAudio || (this.allowVoiceFocus && this.supportsVoiceFocus),
     });
     const urlParameters = new URL(window.location.href).searchParams;
     const timeoutMs = Number(urlParameters.get('attendee-presence-timeout-ms'));
@@ -2810,8 +2816,7 @@ export class DemoMeetingApp
       additionalDevices.push('No Audio');
     }
 
-    // This can't work unless Web Audio is enabled.
-    if (this.enableWebAudio && this.supportsVoiceFocus) {
+    if (this.allowVoiceFocus && this.supportsVoiceFocus) {
       additionalToggles.push({
         name: 'Amazon Voice Focus',
         oncreate: (elem: HTMLElement) => {
@@ -2904,6 +2909,19 @@ export class DemoMeetingApp
     this.log('Amazon Voice Focus toggle is now', elem.checked);
 
     await this.reselectAudioInputDevice();
+  }
+
+  private setupAddVoiceFocusUI(): void {
+    const voiceFocusSetting = document.getElementById('voice-focus-setting') as HTMLElement;
+    const checkbox = voiceFocusSetting.querySelector('input');
+
+    if (this.supportsVoiceFocus) {
+      voiceFocusSetting.classList.remove('add-voice-focus-not-supported');
+      checkbox.disabled = false;
+    } else {
+      voiceFocusSetting.classList.add('add-voice-focus-not-supported');
+      checkbox.disabled = true;
+    }
   }
 
   private updateLiveTranscriptionDisplayState() {
@@ -3503,6 +3521,7 @@ export class DemoMeetingApp
     )).JoinInfo;
     this.region = this.joinInfo.Meeting.Meeting.MediaRegion;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
+    await this.initVoiceFocus();
     await this.initializeMeetingSession(configuration);
     this.primaryExternalMeetingId = this.joinInfo.PrimaryExternalMeetingId
     const url = new URL(window.location.href);
@@ -3865,8 +3884,8 @@ export class DemoMeetingApp
     this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
     this.disablePeriodicKeyframeRequestOnContentSender = (document.getElementById('disable-content-keyframe') as HTMLInputElement).checked;
     this.allowAttendeeCapabilities = (document.getElementById('allow-attendee-capabilities') as HTMLInputElement).checked;
-    this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
     this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
+    this.allowVoiceFocus = (document.getElementById('allow-voice-focus') as HTMLInputElement).checked;
     this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
     this.primaryExternalMeetingId = (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value;
 
@@ -4007,7 +4026,6 @@ export class DemoMeetingApp
             await this.skipDeviceSelection(false);
             return;
           }
-          await this.initVoiceFocus();
           await this.initBackgroundBlur();
           await this.initBackgroundReplacement();
           await this.initAttendeeCapabilityFeature();
