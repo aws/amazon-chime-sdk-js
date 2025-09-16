@@ -201,6 +201,8 @@ export default class AudioVideoControllerState {
   // and subscribe-ack)
   isSessionConnected: boolean = false;
 
+  retryCount: number = 0;
+
   /*
    * Reset state corresponding to state that is dependent on a individual connection
    * and may not be valid for others, e.g. on a reconnection.

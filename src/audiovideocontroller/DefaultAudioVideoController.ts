@@ -121,7 +121,6 @@ export default class DefaultAudioVideoController
   private enableSimulcast: boolean = false;
   private enableSVC: boolean = false;
   private useUpdateTransceiverControllerForUplink: boolean = false;
-  private totalRetryCount = 0;
   private startAudioVideoTimestamp: number = 0;
   private signalingTask: Task;
   private preStartObserver: SignalingClientObserver | undefined;
@@ -661,7 +660,7 @@ export default class DefaultAudioVideoController
     );
 
     if (!reconnecting) {
-      this.totalRetryCount = 0;
+      this.meetingSessionContext.retryCount = 0;
       this._reconnectController.reset();
       this.startAudioVideoTimestamp = Date.now();
       this.forEachObserver(observer => {
@@ -707,7 +706,7 @@ export default class DefaultAudioVideoController
           this.eventController.publishEvent('meetingStartSucceeded', {
             maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
             poorConnectionCount: this.meetingSessionContext.poorConnectionCount,
-            retryCount: this.totalRetryCount,
+            retryCount: this.meetingSessionContext.retryCount,
             signalingOpenDurationMs: this.meetingSessionContext.signalingOpenDurationMs,
             iceGatheringDurationMs: this.meetingSessionContext.iceGatheringDurationMs,
             meetingStartDurationMs: this.meetingSessionContext.meetingStartDurationMs,
@@ -1348,6 +1347,7 @@ export default class DefaultAudioVideoController
         iceGatheringDurationMs,
         attendeePresenceDurationMs,
         meetingStartDurationMs,
+        retryCount,
       } = this.meetingSessionContext;
       const attributes: AudioVideoEventAttributes = {
         maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
@@ -1358,7 +1358,7 @@ export default class DefaultAudioVideoController
         attendeePresenceDurationMs,
         poorConnectionCount,
         meetingStartDurationMs,
-        retryCount: this.totalRetryCount,
+        retryCount,
       };
 
       /* istanbul ignore next: toString is optional */
@@ -1420,7 +1420,7 @@ export default class DefaultAudioVideoController
             this.actionReconnect(status);
           });
         }
-        this.totalRetryCount += 1;
+        this.meetingSessionContext.retryCount += 1;
       },
       () => {
         this.logger.info('canceled retry');
@@ -1489,6 +1489,7 @@ export default class DefaultAudioVideoController
             iceGatheringDurationMs,
             attendeePresenceDurationMs,
             meetingStartDurationMs,
+            retryCount,
           } = this.meetingSessionContext;
           const attributes: AudioVideoEventAttributes = {
             maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
@@ -1499,7 +1500,7 @@ export default class DefaultAudioVideoController
             attendeePresenceDurationMs,
             poorConnectionCount,
             meetingStartDurationMs,
-            retryCount: this.totalRetryCount,
+            retryCount,
           };
           this.eventController.publishEvent('meetingReconnected', attributes);
         }

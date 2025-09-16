@@ -450,6 +450,7 @@ export default class MonitorTask
       this.context.attendeePresenceDurationMs = Date.now() - this.context.startAudioVideoTimestamp;
       this.context.eventController?.publishEvent('attendeePresenceReceived', {
         attendeePresenceDurationMs: this.context.attendeePresenceDurationMs,
+        retryCount: this.context.retryCount,
       });
     }
   };
