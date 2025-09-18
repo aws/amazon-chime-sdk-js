@@ -11,8 +11,8 @@
     "NOTICE"
   ],
   "engines": {
-    "node": "^18 || ^19 || ^20 || ^22",
-    "npm": "^8 || ^9 || ^10 || ^11" 
+    "node": ">=18",
+    "npm": ">=8" 
   },
   "scripts": {
     "clean": "rimraf .nyc_output build node_modules",
