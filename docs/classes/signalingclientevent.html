@@ -92,6 +92,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientevent.html#message" class="tsd-kind-icon">message</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientevent.html#timestampms" class="tsd-kind-icon">timestamp<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientevent.html#type" class="tsd-kind-icon">type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientevent.html#wasclean" class="tsd-kind-icon">was<wbr>Clean</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -109,7 +110,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>Client<wbr>Event<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="../interfaces/signalingclient.html" class="tsd-signature-type" data-tsd-kind="Interface">SignalingClient</a>, type<span class="tsd-signature-symbol">: </span><a href="../enums/signalingclienteventtype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SignalingClientEventType</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SdkSignalFrame</span>, closeCode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, closeReason<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingclientevent.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientEvent</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>Client<wbr>Event<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="../interfaces/signalingclient.html" class="tsd-signature-type" data-tsd-kind="Interface">SignalingClient</a>, type<span class="tsd-signature-symbol">: </span><a href="../enums/signalingclienteventtype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SignalingClientEventType</a>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SdkSignalFrame</span>, closeCode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, closeReason<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, wasClean<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingclientevent.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientEvent</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -148,6 +149,9 @@
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> closeReason: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> wasClean: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="signalingclientevent.html" class="tsd-signature-type" data-tsd-kind="Class">SignalingClientEvent</a></h4>
@@ -202,6 +206,13 @@
 					<aside class="tsd-sources">
 					</aside>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="wasclean" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> was<wbr>Clean</h3>
+					<div class="tsd-signature tsd-kind-icon">was<wbr>Clean<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
@@ -215,7 +226,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientEvent.ts#L30">src/signalingclient/SignalingClientEvent.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/signalingclient/SignalingClientEvent.ts#L31">src/signalingclient/SignalingClientEvent.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -259,6 +270,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="signalingclientevent.html#type" class="tsd-kind-icon">type</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="signalingclientevent.html#wasclean" class="tsd-kind-icon">was<wbr>Clean</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="signalingclientevent.html#isconnectionterminated" class="tsd-kind-icon">is<wbr>Connection<wbr>Terminated</a>
