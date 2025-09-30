@@ -158,6 +158,9 @@ The following table describes attributes for a meeting.
 |`poorConnectionCount`|The number of times the significant packet loss occurred during the meeting. Per count, you receive `AudioVideoObserver.connectionDidBecomePoor` or `AudioVideoObserver.connectionDidSuggestStopVideo`.<br><br>Unit: Count|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
 |`retryCount`|The number of connection retries performed during the meeting.<br><br>Unit: Count|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`
 |`signalingOpenDurationMs`|The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`, `meetingReconnected`, `receivingAudioDropped`, `signalingDropped`, `sendingAudioFailed`, `sendingAudioRecovered`
+|`signalingCloseCode`|The WebSocket close code indicating the reason for disconnection.<br><br>Unit: Integer|`signalingDropped`
+|`signalingCloseReason`|The reason for the WebSocket connection closure, if provided.<br><br>Unit: String|`signalingDropped`
+|`signalingCloseWasClean`|Indicates whether the WebSocket connection was closed cleanly (`true`) or not (`false`).<br><br>Unit: Boolean|`signalingDropped`
 
 <br>
 

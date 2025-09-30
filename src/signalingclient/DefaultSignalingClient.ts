@@ -417,8 +417,8 @@ export default class DefaultSignalingClient implements SignalingClient {
         break;
       case SignalingClientEventType.WebSocketClosed:
         this.logger.info(
-          `notifying event: ${SignalingClientEventType[event.type]}, 
-              code: ${event.closeCode} reason: ${event.closeReason}`
+          `Notifying event: ${SignalingClientEventType[event.type]}, 
+              code: ${event.closeCode} reason: "${event.closeReason}" wasClean ${event.wasClean}`
         );
         break;
       default:
@@ -498,7 +498,8 @@ export default class DefaultSignalingClient implements SignalingClient {
         SignalingClientEventType.WebSocketClosed,
         null,
         event.code,
-        event.reason
+        event.reason,
+        event.wasClean
       )
     );
     this.serviceConnectionRequestQueue();

@@ -180,28 +180,21 @@ export default class AudioVideoControllerState {
   enableSVC: boolean = false;
 
   eventController: EventController | null = null;
-
+  // The following values are currently used solely as attributes on
+  // reported events.
   signalingOpenDurationMs: number | null = null;
-
   iceGatheringDurationMs: number | null = null;
-
   startAudioVideoTimestamp: number | null = null;
-
   attendeePresenceDurationMs: number | null = null;
-
   meetingStartDurationMs: number | null = null;
-
   poorConnectionCount: number = 0;
-
   maxVideoTileCount: number = 0;
-
   startTimeMs: number | null = null;
+  retryCount: number = 0;
 
   // Indicates whether the session has completed initial connection (i.e. signal channel open and first subscribe
   // and subscribe-ack)
   isSessionConnected: boolean = false;
-
-  retryCount: number = 0;
 
   /*
    * Reset state corresponding to state that is dependent on a individual connection
