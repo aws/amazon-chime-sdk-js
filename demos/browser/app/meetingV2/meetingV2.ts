@@ -351,6 +351,7 @@ export class DemoMeetingApp
   enableSVC = false;
   usePriorityBasedDownlinkPolicy = false;
   enablePin = false;
+  allowEchoCancellataion = false;
   allowVoiceFocus = false;
   echoReductionCapability = false;
   usingStereoMusicAudioProfile = false;
@@ -3290,7 +3291,9 @@ export class DemoMeetingApp
 
     try {
       const transformer = await this.getVoiceFocusDeviceTransformer(MAX_VOICE_FOCUS_COMPLEXITY);
-      const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner);
+      const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner, {
+        echoCancellationEnabled: this.allowEchoCancellataion
+      });
       if (vf) {
         await vf.observeMeetingAudio(this.audioVideo);
         return this.voiceFocusDevice = vf;
@@ -3885,6 +3888,7 @@ export class DemoMeetingApp
     this.disablePeriodicKeyframeRequestOnContentSender = (document.getElementById('disable-content-keyframe') as HTMLInputElement).checked;
     this.allowAttendeeCapabilities = (document.getElementById('allow-attendee-capabilities') as HTMLInputElement).checked;
     this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
+    this.allowEchoCancellataion = (document.getElementById('allow-echo-cancellation') as HTMLInputElement).checked;
     this.allowVoiceFocus = (document.getElementById('allow-voice-focus') as HTMLInputElement).checked;
     this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
     this.primaryExternalMeetingId = (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value;

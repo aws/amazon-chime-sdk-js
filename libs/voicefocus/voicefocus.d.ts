@@ -35,6 +35,7 @@ export interface NodeArguments {
     enabled?: boolean;
     agc?: AGCOptions;
     es?: boolean;
+    echoCancellationEnabled?: boolean
 }
 export interface AudioInputOptions {
     spec?: VoiceFocusSpec;

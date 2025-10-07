@@ -112,15 +112,22 @@ class VoiceFocusTransformDevice implements AudioTransformDevice, AudioMixObserve
     if (this.failed) {
       return this.device;
     }
-    const isUsingES = this.nodeOptions.es;
+
+    let isEchoCancellationEnabled = this.nodeOptions.echoCancellationEnabled;
+    
+    if(isEchoCancellationEnabled === undefined) {
+      // This is to fallback to the existing behaviour - disable echo cancellation when echo reduction is enabled
+      const isUsingES = this.nodeOptions.es;
+      isEchoCancellationEnabled = !isUsingES;
+    }
 
     // Turn the Device into constraints with appropriate AGC settings.
     const trackConstraints: MediaTrackConstraints = {
-      echoCancellation: !isUsingES,
+      echoCancellation: isEchoCancellationEnabled,
       // @ts-ignore
-      googEchoCancellation: !isUsingES,
+      googEchoCancellation: isEchoCancellationEnabled,
       // @ts-ignore
-      googEchoCancellation2: !isUsingES,
+      googEchoCancellation2: isEchoCancellationEnabled,
 
       noiseSuppression: false,
 
