@@ -27,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Add RetryCount attributes to AttendeePresenceReceived to know how many times it takes to connect so we can differentiate whether the duration is caused by reconnection.
 ### Fixed
 
 ## [3.28.0] - 2025-02-13
