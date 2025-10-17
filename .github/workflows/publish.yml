@@ -5,7 +5,8 @@ on:
     types: [published]
 
 permissions:
-  id-token: write   # This is required for requesting the JWT
+  id-token: write  # Required for OIDC
+  contents: read
 
 jobs:
   publish:
@@ -16,10 +17,13 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
       - name: Setup Node environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
-          registry-url: https://registry.npmjs.org/
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      # Ensure npm 11.5.1 or later is installed
+      - name: Update npm
+        run: npm install -g npm@latest
       - name: NPM Install
         run: npm install
       - name: NPM run build
@@ -32,8 +36,6 @@ jobs:
           echo "npm_tag=$npm_publish_tag" >> $GITHUB_OUTPUT
       - name: Publish to NPM with tag
         run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
   deploy_chime_prod_demo:
     needs: publish
     name: Deploy Meeting Demos with the latest NPM release
