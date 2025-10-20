@@ -704,10 +704,10 @@ export default class DefaultAudioVideoController
         this.meetingSessionContext.meetingStartDurationMs =
           Date.now() - this.startAudioVideoTimestamp;
         /* istanbul ignore else */
-        this.eventController?.publishEvent('meetingStartSucceeded', {
-          ...audioVideoEventAttributesFromState(this.meetingSessionContext),
-          retryCount: this.meetingSessionContext.retryCount,
-        });
+        this.eventController?.publishEvent(
+          'meetingStartSucceeded',
+          audioVideoEventAttributesFromState(this.meetingSessionContext)
+        );
         this.meetingSessionContext.startTimeMs = Date.now();
         this.actionFinishConnecting();
       });
@@ -1339,7 +1339,6 @@ export default class DefaultAudioVideoController
       const attributes: AudioVideoEventAttributes = {
         ...audioVideoEventAttributesFromState(this.meetingSessionContext),
         meetingStatus: MeetingSessionStatusCode[status.statusCode()],
-        retryCount: this.meetingSessionContext.retryCount,
       };
 
       /* istanbul ignore next: toString is optional */
@@ -1465,7 +1464,6 @@ export default class DefaultAudioVideoController
         this.eventController?.publishEvent('meetingReconnected', {
           ...audioVideoEventAttributesFromState(this.meetingSessionContext),
           meetingStatus: MeetingSessionStatusCode[status.statusCode()],
-          retryCount: this.meetingSessionContext.retryCount,
         });
         this.actionFinishConnecting();
       });

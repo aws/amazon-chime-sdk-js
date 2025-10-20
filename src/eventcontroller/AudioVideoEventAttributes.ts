@@ -48,6 +48,9 @@ export function audioVideoEventAttributesFromState(
   if (state.poorConnectionCount !== undefined) {
     attributes.poorConnectionCount = state.poorConnectionCount;
   }
+  if (state.retryCount !== undefined) {
+    attributes.retryCount = state.retryCount;
+  }
 
   return attributes;
 }
