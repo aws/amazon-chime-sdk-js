@@ -717,9 +717,7 @@ describe('MonitorTask', () => {
           const additionalArgs = <AudioVideoEventAttributes>args[1];
           assert.equal(args[0], 'receivingAudioDropped');
           assert.equal(additionalArgs.poorConnectionCount, 1);
-          expect(additionalArgs).to.have.all.keys(
-            baseAudioVideoEventAttributeKeys
-          );
+          expect(additionalArgs).to.have.all.keys(baseAudioVideoEventAttributeKeys);
           done();
         }
       }
