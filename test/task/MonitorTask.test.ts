@@ -105,10 +105,11 @@ describe('MonitorTask', () => {
     'iceGatheringDurationMs',
     'attendeePresenceDurationMs',
   ];
-  const receivingAudioDroppedAudioVideoEventAttributeKeys = [
+  const sendingOrReceivingAudioDroppedAudioVideoEventAttributeKeys = [
     ...baseAudioVideoEventAttributeKeys,
     'maxVideoTileCount',
     'poorConnectionCount',
+    'retryCount',
   ];
 
   class TestAudioVideoController extends NoOpAudioVideoController {
@@ -720,7 +721,7 @@ describe('MonitorTask', () => {
           assert.equal(args[0], 'receivingAudioDropped');
           assert.equal(additionalArgs.poorConnectionCount, 1);
           expect(additionalArgs).to.have.all.keys(
-            receivingAudioDroppedAudioVideoEventAttributeKeys
+            sendingOrReceivingAudioDroppedAudioVideoEventAttributeKeys
           );
           done();
         }
@@ -941,7 +942,7 @@ describe('MonitorTask', () => {
         const calls = spy.getCalls();
         for (const call of calls) {
           const eventAttributes = call.args[1];
-          expect(eventAttributes).to.have.all.keys(baseAudioVideoEventAttributeKeys);
+          expect(eventAttributes).to.have.all.keys(sendingOrReceivingAudioDroppedAudioVideoEventAttributeKeys);
         }
       });
 
