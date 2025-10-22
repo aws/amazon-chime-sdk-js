@@ -104,11 +104,9 @@ describe('MonitorTask', () => {
     'signalingOpenDurationMs',
     'iceGatheringDurationMs',
     'attendeePresenceDurationMs',
-  ];
-  const receivingAudioDroppedAudioVideoEventAttributeKeys = [
-    ...baseAudioVideoEventAttributeKeys,
     'maxVideoTileCount',
     'poorConnectionCount',
+    'retryCount',
   ];
 
   class TestAudioVideoController extends NoOpAudioVideoController {
@@ -205,6 +203,12 @@ describe('MonitorTask', () => {
       CreateMeetingResponseMock.MeetingResponseMock,
       CreateMeetingResponseMock.AttendeeResponseMock
     );
+    context.attendeePresenceDurationMs = 1;
+    context.iceGatheringDurationMs = 2;
+    context.meetingStartDurationMs = 3;
+    context.startTimeMs = 4;
+    context.signalingOpenDurationMs = 5;
+    context.maxVideoTileCount = 6;
   });
 
   afterEach(() => {
@@ -713,9 +717,7 @@ describe('MonitorTask', () => {
           const additionalArgs = <AudioVideoEventAttributes>args[1];
           assert.equal(args[0], 'receivingAudioDropped');
           assert.equal(additionalArgs.poorConnectionCount, 1);
-          expect(additionalArgs).to.have.all.keys(
-            receivingAudioDroppedAudioVideoEventAttributeKeys
-          );
+          expect(additionalArgs).to.have.all.keys(baseAudioVideoEventAttributeKeys);
           done();
         }
       }
@@ -1286,6 +1288,72 @@ describe('MonitorTask', () => {
       task.handleSignalingClientEvent(currentEvent);
       expect(spy.calledWith('signalingDropped')).to.be.true;
       expect(receivedStatus).to.be.true;
+    });
+
+    it('publishes signalingDropped event with signalingCloseCode, signalingCloseReason, and signalingCloseWasClean', () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.isSessionConnected = true;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(
+          MeetingSessionStatusCode.SignalingChannelClosedUnexpectedly
+        );
+        receivedStatus = true;
+        return true;
+      };
+
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const currentEvent = new SignalingClientEvent(
+        new DefaultSignalingClient(webSocketAdapter, logger),
+        SignalingClientEventType.WebSocketClosed,
+        null,
+        1006,
+        'Abnormal closure',
+        false
+      );
+      task.handleSignalingClientEvent(currentEvent);
+
+      sinon.assert.calledWith(spy, 'signalingDropped', sinon.match.has('signalingCloseCode', 1006));
+      sinon.assert.calledWith(
+        spy,
+        'signalingDropped',
+        sinon.match.has('signalingCloseReason', 'Abnormal closure')
+      );
+      sinon.assert.calledWith(
+        spy,
+        'signalingDropped',
+        sinon.match.has('signalingCloseWasClean', false)
+      );
+
+      expect(receivedStatus).to.be.true;
+    });
+
+    it('publishes signalingDropped event with all fields undefined when not set', () => {
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const currentEvent = new SignalingClientEvent(
+        new DefaultSignalingClient(webSocketAdapter, logger),
+        SignalingClientEventType.WebSocketError,
+        null
+      );
+
+      task.handleSignalingClientEvent(currentEvent);
+
+      sinon.assert.neverCalledWith(spy, 'signalingDropped', sinon.match.has('signalingCloseCode'));
+      sinon.assert.neverCalledWith(
+        spy,
+        'signalingDropped',
+        sinon.match.has('signalingCloseReason')
+      );
+      sinon.assert.neverCalledWith(
+        spy,
+        'signalingDropped',
+        sinon.match.has('signalingCloseWasClean')
+      );
     });
 
     it('does not handle the non-OK status code', () => {

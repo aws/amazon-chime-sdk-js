@@ -22,7 +22,8 @@ export default class SignalingClientEvent {
     public type: SignalingClientEventType,
     public message: SdkSignalFrame,
     public closeCode?: number,
-    public closeReason?: string
+    public closeReason?: string,
+    public wasClean?: boolean
   ) {
     this.timestampMs = Date.now();
   }

@@ -369,6 +369,21 @@
 								<td>The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds</td>
 								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code>, <code>sendingAudioFailed</code>, <code>sendingAudioRecovered</code></td>
 							</tr>
+							<tr>
+								<td><code>signalingCloseCode</code></td>
+								<td>The WebSocket close code indicating the reason for disconnection.<br><br>Unit: Integer</td>
+								<td><code>signalingDropped</code></td>
+							</tr>
+							<tr>
+								<td><code>signalingCloseReason</code></td>
+								<td>The reason for the WebSocket connection closure, if provided.<br><br>Unit: String</td>
+								<td><code>signalingDropped</code></td>
+							</tr>
+							<tr>
+								<td><code>signalingCloseWasClean</code></td>
+								<td>Indicates whether the WebSocket connection was closed cleanly (<code>true</code>) or not (<code>false</code>).<br><br>Unit: Boolean</td>
+								<td><code>signalingDropped</code></td>
+							</tr>
 					</tbody></table>
 					<br>
 					<a href="#device-attributes" id="device-attributes" style="color: inherit; text-decoration: none;">
