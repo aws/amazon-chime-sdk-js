@@ -282,8 +282,6 @@ export default class MonitorTask
     if (this.context.isSessionConnected) {
       const publishFilteredEvent = (event: EventName): void => {
         const attributes = audioVideoEventAttributesFromState(this.context);
-        // Not relevant to sending audio failure
-        delete attributes.maxVideoTileCount;
         this.context.eventController?.publishEvent(event, attributes);
       };
 
