@@ -32,6 +32,8 @@ class SdkBaseTest {
     }
     urlParams.push('attendee-presence-timeout-ms=5000');
     urlParams.push('fatal=1');
+    // Do not let demo refresh on stop
+    urlParams.push('behaviorAfterLeave=nothing');
     for (let i = 0; i < urlParams.length; i++) {
       if (i === 0) {
         this.url = this.url.concat(`?${urlParams[i]}`);

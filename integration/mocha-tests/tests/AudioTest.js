@@ -17,12 +17,16 @@ const setupTestEnvironment = require('./TestSetup');
 describe('AudioTest', async function () {
   // Get the test setup functions
   const testSetup = setupTestEnvironment('AudioTest', MeetingPage);
+  // The test browser audio devices occaisionally trigger the failure detection. Until we figure out
+  // why that occurs, we will just ignore them  
+  const ignoredEvents = ['sendingAudioFailed', 'sendingAudioRecovered'];
 
   let test_window;
   let monitor_window;
   let test_attendee_id;
   let monitor_attendee_id;
   let meetingId;
+
 
   testSetup.setupBaseTest();
 
@@ -74,6 +78,25 @@ describe('AudioTest', async function () {
     }
   });
 
+  step('should validate meeting start events', async function () {
+    const expected = [
+      'videoInputUnselected',
+      'audioInputSelected',
+      'meetingStartRequested',
+      'attendeePresenceReceived',
+      'meetingStartSucceeded',
+    ];
+
+    await test_window.runCommands(async () =>
+      this.pageOne.validateEvents(expected, ignoredEvents, {})
+    );
+
+    const monitorPage = this.numberOfSessions === 1 ? this.pageOne : this.pageTwo;
+    await monitor_window.runCommands(async () =>
+      monitorPage.validateEvents(expected, ignoredEvents, {})
+    );
+  });
+
   step('should have two participants in the roster', async function () {
     await test_window.runCommands(async () => await this.pageOne.rosterCheck(2));
 
@@ -98,6 +121,12 @@ describe('AudioTest', async function () {
     await test_window.runCommands(async () => await this.pageOne.playRandomTone());
   });
 
+    step('should validate test attendee audio input event', async function () {
+    await test_window.runCommands(async () => {
+      await this.pageOne.validateEvents(['audioInputSelected'], ignoredEvents, {});
+    });
+  });
+
   step('monitor attendee should check for random tone in the meeting', async function () {
     if (this.numberOfSessions === 1) {
       await monitor_window.runCommands(async () => await this.pageOne.runAudioCheck('AUDIO_ON'));
@@ -110,11 +139,37 @@ describe('AudioTest', async function () {
     await test_window.runCommands(async () => await this.pageOne.stopPlayingRandomTone());
   });
 
+
   step('monitor attendee should check for no random tone in the meeting', async function () {
     if (this.numberOfSessions === 1) {
       await monitor_window.runCommands(async () => await this.pageOne.runAudioCheck('AUDIO_OFF'));
     } else {
       await monitor_window.runCommands(async () => await this.pageTwo.runAudioCheck('AUDIO_OFF'));
     }
+  });
+
+  step('should leave all participants to trigger meetingEnded', async function () {
+    await test_window.runCommands(async () => {
+      await this.pageOne.leaveMeeting();
+    });
+
+    await monitor_window.runCommands(async () => {
+      const page = this.numberOfSessions === 1 ? this.pageOne : this.pageTwo;
+      await page.leaveMeeting();
+    });
+  });
+
+  step('should validate meetingEnded events after cleanup', async function () {
+    // Due to timing issues, the connection may be broken by backend before the client is gracefully closed. Until we
+    // fix emission of this event in this case, just ignore 'signalingDropped'
+  
+    await test_window.runCommands(async () => {
+      await this.pageOne.validateEvents(['meetingEnded'], ignoredEvents.concat(['signalingDropped']), {});
+    });
+
+    await monitor_window.runCommands(async () => {
+      const page = this.numberOfSessions === 1 ? this.pageOne : this.pageTwo;
+      await page.validateEvents(['meetingEnded'], ignoredEvents.concat(['signalingDropped']), {});
+    });
   });
 });
