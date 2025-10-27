@@ -425,7 +425,7 @@ export class DemoMeetingApp
   // `nothing` option can be used to stop cleanup from happening allowing
   // `audioVideo` to be reused without stopping the meeting.
   behaviorAfterLeave =
-    (search.get('behaviorAfterLeave') as 'refresh' | 'reload' | 'halt' | 'nothing') ?? 'refresh';
+    (search.get('behaviorAfterLeave') as 'reload' | 'halt' | 'nothing') ?? 'reload';
 
 
   videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
