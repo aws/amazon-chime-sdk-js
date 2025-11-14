@@ -151,6 +151,7 @@ import LeaveAndReceiveLeaveAckTask from './task/LeaveAndReceiveLeaveAckTask';
 import ListenForVolumeIndicatorsTask from './task/ListenForVolumeIndicatorsTask';
 import Log from './logger/Log';
 import LogLevel from './logger/LogLevel';
+import LogWorker from './worker/LogWorker';
 import Logger from './logger/Logger';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
@@ -228,6 +229,9 @@ import RedundantAudioRecoveryMetricsObserver from './redundantaudiorecoverymetri
 import RemovableAnalyserNode from './devicecontroller/RemovableAnalyserNode';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
+import S3LogWorker from './worker/S3LogWorker';
+import S3Logger from './logger/S3Logger';
+import S3LoggerOptions from './logger/S3LoggerOptions';
 import SDP from './sdp/SDP';
 import SDPCandidateType from './sdp/SDPCandidateType';
 import SDPMediaSection from './sdp/SDPMediaSection';
@@ -282,6 +286,7 @@ import TranscriptionStatus from './transcript/TranscriptionStatus';
 import TranscriptionStatusType from './transcript/TranscriptionStatusType';
 import TypeError from './devicecontroller/TypeError';
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
+import UploadLogOptions from './worker/UploadLogOptions';
 import UserAgentParser from './useragentparser/UserAgentParser';
 import Versioning from './versioning/Versioning';
 import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
@@ -503,6 +508,7 @@ export {
   ListenForVolumeIndicatorsTask,
   Log,
   LogLevel,
+  LogWorker,
   Logger,
   Maybe,
   MaybeProvider,
@@ -585,6 +591,9 @@ export {
   RemovableAnalyserNode,
   RemovableObserver,
   RunnableTask,
+  S3LogWorker,
+  S3Logger,
+  S3LoggerOptions,
   SDP,
   SDPCandidateType,
   SDPMediaSection,
@@ -640,6 +649,7 @@ export {
   TranscriptionStatusType,
   TypeError,
   UnusableAudioWarningConnectionHealthPolicy,
+  UploadLogOptions,
   UserAgentParser,
   Versioning,
   VideoAdaptiveProbePolicy,
