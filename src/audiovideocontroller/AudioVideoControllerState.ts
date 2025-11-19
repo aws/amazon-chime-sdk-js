@@ -24,6 +24,7 @@ import StatsCollector from '../statscollector/StatsCollector';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
+import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoTileController from '../videotilecontroller/VideoTileController';
@@ -201,16 +202,12 @@ export default class AudioVideoControllerState {
    * and may not be valid for others, e.g. on a reconnection.
    */
   resetConnectionSpecificState(): void {
-    // For auditing reasons, we will comment on the state that we do not touch here. Note that `DefaultAudioVideoController.actionConnect`
-    // also resets certain state, some to cached members:
-    // Reset to empty/null/new state: `browserBehavior`, `transceiverController`, `volumeIndicatorAdapter`, `enableSimulcast`
-    //                                `signalingOpenDurationMs`, `iceGatheringDurationMs`, `startAudioVideoTimestamp`, `attendeePresenceDurationMs`
-    //                                `meetingStartDurationMs`, `startTimeMs`, `lastKnownVideoAvailability`, `videoCaptureAndEncodeParameter`, `videosToReceive`
-    //                                `videosPaused`, `videoStreamIndex`, `statsCollector`, `connectionMonitor`
-    // Reset to existing/cached values: `logger`, `meetingSessionConfiguration`, `realtimeController`, `mediaStreamBroker`,
-    //                                  `audioMixController`, `reconnectController, `audioProfile`, `eventController`
+    // Note that `CleanStoppedSessionTask` will reset additional
+    // state in the case of a client that is stopped and possibly intended for reuse.
 
     // `signalingClient` can be reused from a failed/disconnected state.
+
+    // `videoStreamIndex` will be updated by the first index
 
     if (this.peer) {
       this.peer.close();
@@ -248,6 +245,8 @@ export default class AudioVideoControllerState {
     this.videoSubscriptionLimit = DEFAULT_VIDEO_SUBSCRIPTION_LIMIT;
     this.previousSdpAnswerAsString = '';
     this.serverSupportsCompression = false;
+    this.videosToReceive = new DefaultVideoStreamIdSet();
+    this.videosPaused = new DefaultVideoStreamIdSet();
 
     // `videoSendCodecPreferences` is set by builder and needs to stay consistent.
 

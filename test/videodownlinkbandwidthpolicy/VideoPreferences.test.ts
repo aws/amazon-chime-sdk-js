@@ -256,6 +256,36 @@ describe('VideoPreferences', () => {
         ).length
       ).to.equal(0);
     });
+
+    it('will skip configuration when groupId is undefined', () => {
+      const context = new AudioVideoControllerState();
+      context.transceiverController = new DefaultTransceiverController(undefined, undefined);
+      context.videoStreamIndex = new DefaultVideoStreamIndex(undefined);
+
+      // Mock getMidForGroupId to return a mid
+      context.transceiverController.getMidForGroupId = (groupId: number) => {
+        return groupId === 1 ? 'mid-1' : undefined;
+      };
+
+      // Mock attendeeIdForGroupId to return an attendeeId
+      context.videoStreamIndex.attendeeIdForGroupId = (groupId: number) => {
+        return groupId === 1 ? 'attendee-1' : undefined;
+      };
+
+      // Create preferences with an attendeeId that doesn't match the groupId mapping
+      const preferences = VideoPreferences.prepare();
+      preferences.add(new VideoPreference('attendee-2', 1)); // This attendeeId won't be in the map
+      const prefs = preferences.build();
+
+      const result = convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
+        context,
+        [1], // Only groupId 1 is in receiveGroupIds
+        prefs
+      );
+
+      // Should return empty array because attendee-2 is not mapped to any groupId
+      expect(result.length).to.equal(0);
+    });
   });
 
   describe('targetSizeToBitrateKbps', () => {
