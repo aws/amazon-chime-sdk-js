@@ -2,12 +2,15 @@ import { ModelMetrics, ProcessorMessage, VoiceFocusAudioWorkletNode, VoiceFocusN
 declare class VoiceFocusWorkerPostMessageNode extends VoiceFocusAudioWorkletNode {
     private worker;
     private delegate?;
+    private enabled;
     constructor(context: AudioContext, options: VoiceFocusNodeOptions);
     enable(): Promise<void>;
     disable(): Promise<void>;
     setMode(mode: string): Promise<void>;
     stop(): Promise<void>;
     getModelMetrics(): ModelMetrics | undefined;
+    reset(): void;
+    isEnabled(): boolean;
     onWorkerMessage(event: WorkerMessage): void;
     onProcessorMessage(event: ProcessorMessage): void;
 }

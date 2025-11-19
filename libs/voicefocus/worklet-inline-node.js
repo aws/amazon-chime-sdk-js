@@ -42,6 +42,7 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
                 longInvoke: 0,
             },
         };
+        this.enabled = false;
         this.channelCountMode = 'explicit';
         this.channelCount = 1;
         const { modelURL, worker, fetchBehavior, logger, delegate, } = options;
@@ -59,6 +60,7 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
             fetchBehavior,
             path: modelURL,
         });
+        this.enabled = true;
     }
     onModuleBufferLoaded(buffer, key) {
         this.port.postMessage({ message: 'module-buffer', buffer, key });
@@ -69,11 +71,13 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
     enable() {
         return __awaiter(this, void 0, void 0, function* () {
             this.port.postMessage({ message: 'enable' });
+            this.enabled = true;
         });
     }
     disable() {
         return __awaiter(this, void 0, void 0, function* () {
             this.port.postMessage({ message: 'disable' });
+            this.enabled = false;
         });
     }
     setMode(mode) {
@@ -92,7 +96,36 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
                 console.error("failed to terminate worker:", e);
             }
             this.disconnect();
+            this.enabled = false;
         });
+    }
+    reset() {
+        this.metrics = {
+            latencyMillisAverage: 0,
+            snr: {
+                average: 0,
+                averageActive: 0,
+                variance: 0,
+                varianceActive: 0,
+            },
+            drr: {
+                average: 0,
+                variance: 0,
+                averageActive: 0,
+                varianceActive: 0,
+            },
+            vad: {
+                average: 0,
+            },
+            cpu: {
+                lateInvoke: 0,
+                longInvoke: 0,
+            },
+        };
+        this.port.postMessage({ message: 'reset' });
+    }
+    isEnabled() {
+        return this.enabled;
     }
     onProcessorMessage(event) {
         var _a, _b, _c, _d, _e, _f;

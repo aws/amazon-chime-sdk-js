@@ -107,6 +107,12 @@ class VoiceFocus {
         var _a;
         return (_a = this.internal.voiceFocusNode) === null || _a === void 0 ? void 0 : _a.getModelMetrics();
     }
+    reset() {
+        var _a, _b, _c;
+        (_a = this.internal.voiceFocusNode) === null || _a === void 0 ? void 0 : _a.reset();
+        (_b = this.internal.sourceNode) === null || _b === void 0 ? void 0 : _b.disconnect();
+        (_c = this.internal.destinationNode) === null || _c === void 0 ? void 0 : _c.disconnect();
+    }
     enable() {
         var _a;
         (_a = this.internal.voiceFocusNode) === null || _a === void 0 ? void 0 : _a.enable();
@@ -325,18 +331,27 @@ class VoiceFocus {
             .addModule(url)
             .then(() => new (this.nodeConstructor)(context, Object.assign(Object.assign({}, this.nodeOptions), { processorOptions })));
     }
-    applyToStream(stream, context, options) {
+    applyToStream(stream, context, options, useExistingNode = false) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             if (this.internal.isDestroyed) {
                 throw new Error("Unable to apply stream because VoiceFocus worker has been destroyed");
             }
+            let voiceFocusNode;
+            if (useExistingNode && this.internal.voiceFocusNode && this.internal.voiceFocusNode.isEnabled()) {
+                (_a = this.logger) === null || _a === void 0 ? void 0 : _a.info("Re-using existing voice focus node");
+                voiceFocusNode = this.internal.voiceFocusNode;
+            }
+            else {
+                voiceFocusNode = yield this.createNode(context, options);
+            }
             const source = context.createMediaStreamSource(stream);
-            const node = yield this.applyToSourceNode(source, context, options);
+            source.connect(voiceFocusNode);
             const destination = context.createMediaStreamDestination();
-            node.connect(destination);
-            this.internal = Object.assign(Object.assign({}, this.internal), { voiceFocusNode: node, sourceNode: source, destinationNode: destination, audioContext: context });
+            voiceFocusNode.connect(destination);
+            this.internal = Object.assign(Object.assign({}, this.internal), { voiceFocusNode: voiceFocusNode, sourceNode: source, destinationNode: destination, audioContext: context });
             return {
-                node,
+                node: voiceFocusNode,
                 source,
                 destination,
                 stream: destination.stream,
