@@ -42,6 +42,7 @@ export function convertVideoPreferencesToSignalingClientVideoSubscriptionConfigu
     configuration.mid = mid;
     configuration.attendeeId = preference.attendeeId;
     configuration.groupId = attendeeIdToGroupId.get(preference.attendeeId);
+    /* istanbul ignore if */
     if (configuration.groupId === undefined) {
       continue;
     }
