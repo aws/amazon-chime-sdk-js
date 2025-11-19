@@ -17,6 +17,7 @@ const types_js_1 = require("./types.js");
 class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletNode {
     constructor(context, options) {
         super(context, options.processor, options);
+        this.enabled = false;
         this.channelCountMode = 'explicit';
         this.channelCount = 1;
         const { modelURL, audioBufferURL, worker, fetchBehavior, delegate, } = options;
@@ -42,15 +43,18 @@ class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletN
             fetchBehavior,
             path: audioBufferURL,
         });
+        this.enabled = true;
     }
     enable() {
         return __awaiter(this, void 0, void 0, function* () {
             this.worker.postMessage({ message: 'enable' });
+            this.enabled = true;
         });
     }
     disable() {
         return __awaiter(this, void 0, void 0, function* () {
             this.worker.postMessage({ message: 'disable' });
+            this.enabled = false;
         });
     }
     setMode(mode) {
@@ -66,10 +70,16 @@ class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletN
             catch (e) {
             }
             this.disconnect();
+            this.enabled = false;
         });
     }
     getModelMetrics() {
         return undefined;
+    }
+    reset() {
+    }
+    isEnabled() {
+        return this.enabled;
     }
     onWorkerMessage(event) {
         var _a;

@@ -52,6 +52,7 @@ export declare class VoiceFocus {
     private internal;
     private constructor();
     getModelMetrics(): import("./types.js").ModelMetrics | undefined;
+    reset(): void;
     enable(): void;
     disable(): void;
     setMode(mode: string): void;
@@ -67,7 +68,7 @@ export declare class VoiceFocus {
         logger?: Logger;
     }): Promise<VoiceFocus>;
     createNode(context: AudioContext, options?: NodeArguments): Promise<VoiceFocusAudioWorkletNode>;
-    applyToStream(stream: MediaStream, context: AudioContext, options?: NodeArguments): Promise<{
+    applyToStream(stream: MediaStream, context: AudioContext, options?: NodeArguments, useExistingNode?: boolean): Promise<{
         node: VoiceFocusAudioWorkletNode;
         source: MediaStreamAudioSourceNode;
         destination: MediaStreamAudioDestinationNode;
