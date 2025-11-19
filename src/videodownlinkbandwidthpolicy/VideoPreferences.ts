@@ -42,6 +42,10 @@ export function convertVideoPreferencesToSignalingClientVideoSubscriptionConfigu
     configuration.mid = mid;
     configuration.attendeeId = preference.attendeeId;
     configuration.groupId = attendeeIdToGroupId.get(preference.attendeeId);
+    /* istanbul ignore if */
+    if (configuration.groupId === undefined) {
+      continue;
+    }
     // The signaling protocol expects 'higher' values for 'higher' priorities
     configuration.priority = Number.MAX_SAFE_INTEGER - preference.priority;
     configuration.targetBitrateKbps = preference.targetSizeToBitrateKbps(preference.targetSize);
