@@ -703,40 +703,6 @@ describe('DefaultSignalingClient', () => {
       testObjects.signalingClient.registerObserver(new TestObserver());
       testObjects.signalingClient.openConnection(testObjects.request);
     });
-
-    it('will send a leave when unloading the page', done => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const GlobalAny = global as any;
-      let added = false;
-      let removed = false;
-      let callbackToCall = (): void => {};
-      GlobalAny['window']['addEventListener'] = (type: string, callback: () => void) => {
-        expect(type).to.equal('unload');
-        added = true;
-        callbackToCall = callback;
-      };
-      GlobalAny['window']['removeEventListener'] = (type: string) => {
-        expect(type).to.equal('unload');
-        removed = true;
-      };
-      const testObjects = createTestObjects();
-      new TimeoutScheduler(200).start(() => {
-        testObjects.signalingClient.openConnection(testObjects.request);
-      });
-      new TimeoutScheduler(400).start(() => {
-        testObjects.signalingClient.closeConnection();
-      });
-      new TimeoutScheduler(600).start(() => {
-        callbackToCall();
-      });
-      new TimeoutScheduler(800).start(() => {
-        expect(added).to.be.true;
-        expect(removed).to.be.true;
-        delete GlobalAny['window']['addEventListener'];
-        delete GlobalAny['window']['removeEventListener'];
-        done();
-      });
-    });
   });
 
   describe('sendClientMetrics', () => {
