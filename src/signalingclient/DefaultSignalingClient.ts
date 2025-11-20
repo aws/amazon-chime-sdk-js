@@ -55,7 +55,6 @@ export default class DefaultSignalingClient implements SignalingClient {
   private wasOpened: boolean;
   private isClosing: boolean;
   private connectionRequestQueue: SignalingClientConnectionRequest[];
-  private unloadHandler: () => void | null = null;
   private audioSessionId: number;
 
   constructor(private webSocket: WebSocketAdapter, private logger: Logger) {
@@ -282,7 +281,6 @@ export default class DefaultSignalingClient implements SignalingClient {
         );
       });
       this.webSocket.close();
-      this.deactivatePageUnloadHandler();
     } else {
       this.logger.info('no existing signaling client connection needs closing');
       this.serviceConnectionRequestQueue();
@@ -433,7 +431,6 @@ export default class DefaultSignalingClient implements SignalingClient {
 
   private setUpEventListeners(): void {
     this.webSocket.addEventListener('open', () => {
-      this.activatePageUnloadHandler();
       this.wasOpened = true;
       this.sendEvent(new SignalingClientEvent(this, SignalingClientEventType.WebSocketOpen, null));
     });
@@ -463,26 +460,6 @@ export default class DefaultSignalingClient implements SignalingClient {
     });
   }
 
-  private activatePageUnloadHandler(): void {
-    this.unloadHandler = () => {
-      this.leave();
-    };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const GlobalAny = global as any;
-    GlobalAny['window'] &&
-      GlobalAny['window']['addEventListener'] &&
-      window.addEventListener('unload', this.unloadHandler);
-  }
-
-  private deactivatePageUnloadHandler(): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const GlobalAny = global as any;
-    GlobalAny['window'] &&
-      GlobalAny['window']['removeEventListener'] &&
-      window.removeEventListener('unload', this.unloadHandler);
-    this.unloadHandler = null;
-  }
-
   private generateNewAudioSessionId(): number {
     const num = new Uint32Array(1);
     getRandomValues(num);
@@ -490,7 +467,6 @@ export default class DefaultSignalingClient implements SignalingClient {
   }
 
   private closeEventHandler = (event: CloseEvent): void => {
-    this.deactivatePageUnloadHandler();
     this.resetConnection();
     this.sendEvent(
       new SignalingClientEvent(
