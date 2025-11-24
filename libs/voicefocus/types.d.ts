@@ -78,6 +78,8 @@ export declare abstract class VoiceFocusAudioWorkletNode extends VoiceFocusAudio
     abstract setMode(mode: string): Promise<void>;
     abstract stop(): Promise<void>;
     abstract getModelMetrics(): ModelMetrics | undefined;
+    abstract reset(): void;
+    abstract isEnabled(): boolean;
 }
 export interface EnabledAGCOptions {
     useVoiceFocusAGC: true;
