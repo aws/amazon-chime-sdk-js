@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add RetryCount attributes to AttendeePresenceReceived to know how many times it takes to connect so we can differentiate whether the duration is caused by reconnection.
 - Added new attributes signalingCloseCode, signalingCloseReason, and signalingCloseWasClean to signalingDropped events. These are not always guaranteed to be set.
 - Reset additional internal state on reconnect to fix issues with receiving content share in replica meetings when using the priority policy.
+- Avoid trying to send leave message on refresh, and just let browser close with expected 1001 Websocket status code.
 
 ### Fixed
 
