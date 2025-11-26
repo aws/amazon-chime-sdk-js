@@ -629,16 +629,23 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L914">src/sdp/SDP.ts:914</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L923">src/sdp/SDP.ts:923</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Modifies the active camera section to include a specified starting bitrate
 										for video sending by adding a &#39;x-google-start-bitrate&#39; fmtp line paramter for
-									each payload type associated with video.</p>
+									each non-RTX/FEC payload type associated with video.</p>
 								</div>
-								<p>If no active camera section is found in the SDP, returns the original SDP object.</p>
+								<p>Note that this updates all video sections regardless of direction, as
+									<a href="https://www.rfc-editor.org/rfc/rfc8843#name-payload-type-pt-value-reuse">https://www.rfc-editor.org/rfc/rfc8843#name-payload-type-pt-value-reuse</a> states that
+									&quot;...all codecs associated with the payload type number MUST share an identical codec configuration.
+									This means that the codecs MUST share the same media type, encoding name,
+								clock rate, and any parameter that can affect the codec configuration and packetization.&quot;</p>
+								<p>WebRTC maintainers may eventual enforce this (<a href="https://issues.webrtc.org/issues/42224689">https://issues.webrtc.org/issues/42224689</a>),
+								though it just logs an error for now.</p>
+								<p>If no active video sections are found in the SDP, returns the original SDP object.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
