@@ -319,6 +319,13 @@ export default class DefaultSignalingClient implements SignalingClient {
   }
 
   private resetConnection(): void {
+    // Remove all event listeners before destroying in case the
+    // websocket was not closed properly
+    this.webSocket.removeEventListener('open', this.openEventHandler);
+    this.webSocket.removeEventListener('message', this.messageEventHandler);
+    this.webSocket.removeEventListener('error', this.errorEventHandler);
+    this.webSocket.removeEventListener('close', this.closeEventHandler);
+
     this.webSocket.destroy();
     this.wasOpened = false;
   }
@@ -430,34 +437,10 @@ export default class DefaultSignalingClient implements SignalingClient {
   }
 
   private setUpEventListeners(): void {
-    this.webSocket.addEventListener('open', () => {
-      this.wasOpened = true;
-      this.sendEvent(new SignalingClientEvent(this, SignalingClientEventType.WebSocketOpen, null));
-    });
-    this.webSocket.addEventListener('message', (event: MessageEvent) => {
-      this.sendEvent(
-        new SignalingClientEvent(this, SignalingClientEventType.WebSocketMessage, null)
-      );
-      this.receiveMessage(this.stripFrameTypeRTC(new Uint8Array(event.data)));
-    });
+    this.webSocket.addEventListener('open', this.openEventHandler);
+    this.webSocket.addEventListener('message', this.messageEventHandler);
     this.webSocket.addEventListener('close', this.closeEventHandler);
-    this.webSocket.addEventListener('error', () => {
-      if (this.isClosing && !this.wasOpened) {
-        this.logger.info('Signaling WebSocket ignoring error closing while connecting');
-        return;
-      }
-      if (this.wasOpened) {
-        this.logger.error('Signaling WebSocket received error while connected');
-        this.sendEvent(
-          new SignalingClientEvent(this, SignalingClientEventType.WebSocketError, null)
-        );
-      } else {
-        this.logger.error('Signaling WebSocket received error while connecting');
-        this.sendEvent(
-          new SignalingClientEvent(this, SignalingClientEventType.WebSocketFailed, null)
-        );
-      }
-    });
+    this.webSocket.addEventListener('error', this.errorEventHandler);
   }
 
   private generateNewAudioSessionId(): number {
@@ -465,6 +448,32 @@ export default class DefaultSignalingClient implements SignalingClient {
     getRandomValues(num);
     return num[0];
   }
+
+  private openEventHandler = (): void => {
+    this.wasOpened = true;
+    this.sendEvent(new SignalingClientEvent(this, SignalingClientEventType.WebSocketOpen, null));
+  };
+
+  private messageEventHandler = (event: MessageEvent): void => {
+    this.sendEvent(new SignalingClientEvent(this, SignalingClientEventType.WebSocketMessage, null));
+    this.receiveMessage(this.stripFrameTypeRTC(new Uint8Array(event.data)));
+  };
+
+  private errorEventHandler = (): void => {
+    if (this.isClosing && !this.wasOpened) {
+      this.logger.info('Signaling WebSocket ignoring error closing while connecting');
+      return;
+    }
+    if (this.wasOpened) {
+      this.logger.error('Signaling WebSocket received error while connected');
+      this.sendEvent(new SignalingClientEvent(this, SignalingClientEventType.WebSocketError, null));
+    } else {
+      this.logger.error('Signaling WebSocket received error while connecting');
+      this.sendEvent(
+        new SignalingClientEvent(this, SignalingClientEventType.WebSocketFailed, null)
+      );
+    }
+  };
 
   private closeEventHandler = (event: CloseEvent): void => {
     this.resetConnection();

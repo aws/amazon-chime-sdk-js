@@ -1127,4 +1127,113 @@ describe('DefaultSignalingClient', () => {
       done();
     });
   });
+
+  describe('event listener cleanup', () => {
+    it('will remove event listeners when connection is reset', done => {
+      const testObjects = createTestObjects();
+      let openEventCount = 0;
+
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            openEventCount++;
+          }
+        }
+      }
+
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+
+      // Wait for first connection to open
+      setTimeout(() => {
+        const firstOpenCount = openEventCount;
+        expect(firstOpenCount).to.equal(1);
+
+        // Close and reopen connection
+        testObjects.signalingClient.closeConnection();
+
+        setTimeout(() => {
+          testObjects.signalingClient.openConnection(testObjects.request);
+
+          setTimeout(() => {
+            // Should have exactly 2 open events (one per connection)
+            // If event listeners weren't cleaned up, we might see more
+            expect(openEventCount).to.equal(2);
+            done();
+          }, 100);
+        }, 100);
+      }, 100);
+    });
+
+    it('will not fire stale event handlers after reconnection', done => {
+      const testObjects = createTestObjects();
+      let messageCount = 0;
+
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            // Send a message on each connection
+            const ping = SdkPingPongFrame.create();
+            ping.pingId = 1 & 0xffffffff;
+            ping.type = SdkPingPongType.PING;
+            event.client.pingPong(ping);
+          } else if (event.type === SignalingClientEventType.WebSocketSentMessage) {
+            messageCount++;
+          }
+        }
+      }
+
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+
+      setTimeout(() => {
+        const firstMessageCount = messageCount;
+        expect(firstMessageCount).to.equal(1);
+
+        // Reconnect
+        testObjects.signalingClient.closeConnection();
+        setTimeout(() => {
+          testObjects.signalingClient.openConnection(testObjects.request);
+
+          setTimeout(() => {
+            // Should have exactly 2 messages (one per connection)
+            // If old handlers weren't removed, count could be higher
+            expect(messageCount).to.equal(2);
+            done();
+          }, 100);
+        }, 100);
+      }, 100);
+    });
+
+    it('will properly clean up on multiple rapid reconnections', done => {
+      const testObjects = createTestObjects();
+      let connectionCount = 0;
+      const maxConnections = 3;
+
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            connectionCount++;
+            if (connectionCount < maxConnections) {
+              // Immediately trigger another reconnection
+              event.client.closeConnection();
+              setTimeout(() => {
+                event.client.openConnection(testObjects.request);
+              }, 50);
+            } else if (connectionCount === maxConnections) {
+              // Verify we got exactly the expected number of connections
+              expect(connectionCount).to.equal(maxConnections);
+              done();
+            } else {
+              // If we get here, stale listeners are firing
+              done(new Error(`Too many open events: ${connectionCount}`));
+            }
+          }
+        }
+      }
+
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+  });
 });
