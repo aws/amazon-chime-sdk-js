@@ -325,6 +325,14 @@ export default class ClientMetricReport {
       transform: this.identityValue,
       type: SdkMetric.Type.RTC_SPK_TOTAL_RECOVERED_FEC,
     },
+    audioSentTransformPps: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.AUDIO_SENT_TRANSFORM_PPS,
+    },
+    audioReceivedTransformPps: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.AUDIO_RECEIVED_TRANSFORM_PPS,
+    },
   };
 
   readonly videoUpstreamMetricMap: {
@@ -384,6 +392,10 @@ export default class ClientMetricReport {
     videoInputHeight: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_INPUT_HEIGHT,
+    },
+    videoSentTransformPps: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_SENT_TRANSFORM_PPS,
     },
   };
 
@@ -464,6 +476,10 @@ export default class ClientMetricReport {
     videoRenderHeight: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_RENDER_HEIGHT,
+    },
+    videoReceivedTransformPps: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_RECEIVED_TRANSFORM_PPS,
     },
   };
 

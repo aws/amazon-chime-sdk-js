@@ -13,6 +13,8 @@ import DefaultContentShareController from '../contentsharecontroller/DefaultCont
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import DeviceController from '../devicecontroller/DeviceController';
+import DefaultencodedTransformWorkerManager from '../encodedtransformmanager/DefaultEncodedTransformWorkerManager';
+import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import DefaultEventController from '../eventcontroller/DefaultEventController';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
@@ -31,6 +33,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
   private contentShareController: ContentShareController;
   private _deviceController: DeviceController;
   private audioVideoFacade: AudioVideoFacade;
+  private encodedTransformWorkerManager: EncodedTransformWorkerManager;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -52,6 +55,9 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     if (!deviceController.eventController) {
       deviceController.eventController = this.eventController;
     }
+
+    this.encodedTransformWorkerManager = new DefaultencodedTransformWorkerManager(this._logger);
+
     this.audioVideoController = new DefaultAudioVideoController(
       this._configuration,
       this._logger,
@@ -65,7 +71,8 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
           this._configuration.reconnectLongBackOffMs
         )
       ),
-      this.eventController
+      this.eventController,
+      this.encodedTransformWorkerManager
     );
     this._deviceController = deviceController;
     this.logger.info(`MeetingFeatures: ${JSON.stringify(configuration.meetingFeatures)}`);
@@ -86,7 +93,9 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
             this._configuration.reconnectShortBackOffMs,
             this._configuration.reconnectLongBackOffMs
           )
-        )
+        ),
+        undefined, // eventController
+        this.encodedTransformWorkerManager
       ),
       this.audioVideoController
     );
@@ -139,6 +148,9 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     if (isDestroyable(this.eventController)) {
       await this.eventController.destroy();
     }
+    if (isDestroyable(this.encodedTransformWorkerManager)) {
+      await this.encodedTransformWorkerManager.destroy();
+    }
 
     CSPMonitor.removeLogger(this._logger);
 
@@ -149,6 +161,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     this.audioVideoController = undefined;
     this.contentShareController = undefined;
     this._eventController = undefined;
+    this.encodedTransformWorkerManager = undefined;
   }
 
   private checkBrowserSupportAndFeatureConfiguration(): void {

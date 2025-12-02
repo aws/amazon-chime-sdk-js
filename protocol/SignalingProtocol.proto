@@ -311,6 +311,10 @@ message SdkMetric {
         VIDEO_RENDER_WIDTH = 106;
         VIDEO_INPUT_WIDTH = 107;
         VIDEO_SENT_JITTER_MS = 108;
+        AUDIO_SENT_TRANSFORM_PPS = 109;
+        AUDIO_RECEIVED_TRANSFORM_PPS = 110;
+        VIDEO_SENT_TRANSFORM_PPS = 111;
+        VIDEO_RECEIVED_TRANSFORM_PPS = 112;
     }
     optional Type type = 1;
     optional double value = 2;

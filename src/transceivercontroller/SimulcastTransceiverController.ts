@@ -3,6 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
+import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import Logger from '../logger/Logger';
 import DefaultTransceiverController from './DefaultTransceiverController';
 
@@ -20,9 +21,10 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
   constructor(
     logger: Logger,
     browserBehavior: BrowserBehavior,
-    meetingSessionContext?: AudioVideoControllerState
+    meetingSessionContext?: AudioVideoControllerState,
+    encodedTransformWorkerManager?: EncodedTransformWorkerManager
   ) {
-    super(logger, browserBehavior, meetingSessionContext);
+    super(logger, browserBehavior, meetingSessionContext, encodedTransformWorkerManager);
     let scale = 4;
     for (let i = 0; i < SimulcastTransceiverController.NAME_ARR_ASCENDING.length; i++) {
       const ridName = SimulcastTransceiverController.NAME_ARR_ASCENDING[i];
@@ -99,19 +101,29 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
         streams: [this.defaultMediaStream],
       });
 
-      if (this.meetingSessionContext?.audioProfile?.hasRedundancyEnabled()) {
-        // This will perform additional necessary setup for the audio transceiver.
-        this.setupAudioRedWorker();
+      if (this.encodedTransformWorkerManager.isEnabled()) {
+        this.encodedTransformWorkerManager.setupAudioSenderTransform(
+          this._localAudioTransceiver.sender
+        );
+        this.encodedTransformWorkerManager.setupAudioReceiverTransform(
+          this._localAudioTransceiver.receiver
+        );
+      } else {
+        this.logger.warn('Media transforms not supported, skipping audio transform setup');
       }
     }
 
     if (!this._localCameraTransceiver) {
       const encodingParams = Array.from(this.videoQualityControlParameterMap.values());
-      this._localCameraTransceiver = this.addTransceiver('video', {
+      this._localCameraTransceiver = this.peer.addTransceiver('video', {
         direction: 'inactive',
         streams: [this.defaultMediaStream],
         sendEncodings: encodingParams,
       });
+
+      this.encodedTransformWorkerManager.setupVideoSenderTransform(
+        this._localCameraTransceiver.sender
+      );
     }
   }
 

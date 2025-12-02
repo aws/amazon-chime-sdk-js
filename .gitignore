@@ -25,3 +25,4 @@ integration/logs
 node_modules
 src/versioning/version.ts
 *.tsbuildinfo
+.kiro

@@ -68,4 +68,15 @@ export default class AudioProfile {
   hasRedundancyEnabled(): boolean {
     return this.enableAudioRedundancy;
   }
+
+  /**
+   * Disable audio redundancy in this configuration. Setting this
+   * value will not impact an ongoing session, and a reconnect must
+   * be triggered.
+   *
+   * Used when encoded transforms fail or are not supported.
+   */
+  disableRedundancy(): void {
+    this.enableAudioRedundancy = false;
+  }
 }

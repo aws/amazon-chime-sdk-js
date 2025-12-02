@@ -35,11 +35,20 @@ type RawMetricReport = any;
 // eslint-disable-next-line
 type StatsReportItem = any;
 
+import {
+  EncodedTransformMediaMetrics,
+  EncodedTransformMediaMetricsObserver,
+  EncodedTransformMediaStreamMetrics,
+} from '../encodedtransformmanager/MediaMetricsEncodedTransformManager';
+
 /**
  * [[StatsCollector]] gathers statistics and sends metrics.
  */
 export default class StatsCollector
-  implements RedundantAudioRecoveryMetricsObserver, VideoTileResolutionObserver
+  implements
+    RedundantAudioRecoveryMetricsObserver,
+    VideoTileResolutionObserver,
+    EncodedTransformMediaMetricsObserver
 {
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
@@ -55,6 +64,9 @@ export default class StatsCollector
   private videoCodecDegradationEncodeFailureCount: number = 0;
   private videoCodecDegradationConcurrentSendersCount: number = 0;
   private resolutionMap = new Map<string, { width: number; height: number }>();
+  private encodedTransformMediaMetrics: EncodedTransformMediaMetrics | null = null;
+  private encodedTransformMediaMetricsTimestamp: number = 0;
+  private lastEncodedTransformMediaMetricsTimestamp: number = 0;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -510,7 +522,9 @@ export default class StatsCollector
       [
         'inbound-rtp',
         'inbound-rtp-red',
+        'inbound-rtp-transform',
         'outbound-rtp',
+        'outbound-rtp-transform',
         'remote-inbound-rtp',
         'remote-outbound-rtp',
       ].includes(rawMetricReport.type) || this.isVideoSourceMetricReport(rawMetricReport)
@@ -529,7 +543,10 @@ export default class StatsCollector
    */
   private getDirectionType(rawMetricReport: RawMetricReport): Direction {
     const { type } = rawMetricReport;
-    return type === 'inbound-rtp' || type === 'remote-outbound-rtp' || type === 'inbound-rtp-red'
+    return type === 'inbound-rtp' ||
+      type === 'remote-outbound-rtp' ||
+      type === 'inbound-rtp-red' ||
+      type === 'inbound-rtp-transform'
       ? Direction.DOWNSTREAM
       : Direction.UPSTREAM;
   }
@@ -596,6 +613,7 @@ export default class StatsCollector
     // Add custom stats for reporting.
     const customStatsReports: CustomStatsReport[] = [];
     this.maybeAddRedRecoveryMetrics(customStatsReports);
+    this.maybeAddTransformMetrics(customStatsReports);
     // We cannot use 'this.clientMetricsReport.getVideoUpstreamSsrc()' because the value
     // is dependent on the call to 'this.processRawMetricReports()' below, i.e. it depends on
     // the previous handling of raw metrics reports. This would lead to the addition of custom metrics
@@ -655,6 +673,14 @@ export default class StatsCollector
   }
 
   /**
+   * Receives media metrics from MediaMetricsTransformManager.
+   */
+  encodedTransformMediaMetricsDidReceive(metrics: EncodedTransformMediaMetrics): void {
+    this.encodedTransformMediaMetrics = metrics;
+    this.encodedTransformMediaMetricsTimestamp = Date.now();
+  }
+
+  /**
    * Adds RED recovery metrics to the raw webrtc stats report.
    */
   private maybeAddRedRecoveryMetrics(customStatsReports: CustomStatsReport[]): void {
@@ -678,8 +704,68 @@ export default class StatsCollector
       totalAudioPacketsRecoveredFec: this.redRecoveryMetricReport.totalAudioPacketsRecoveredFec,
     });
 
-    this.lastRedRecoveryMetricReportConsumedTimestampMs =
-      this.redRecoveryMetricReport.currentTimestampMs;
+    this.lastRedRecoveryMetricReportConsumedTimestampMs = this.redRecoveryMetricReport.currentTimestampMs;
+  }
+
+  /**
+   * Adds transform metrics (PPS) to the raw webrtc stats report.
+   */
+  private maybeAddTransformMetrics(customStatsReports: CustomStatsReport[]): void {
+    if (
+      !this.encodedTransformMediaMetrics ||
+      this.encodedTransformMediaMetricsTimestamp === this.lastEncodedTransformMediaMetricsTimestamp
+    ) {
+      return;
+    }
+
+    const timestamp = this.encodedTransformMediaMetricsTimestamp;
+    const metrics = this.encodedTransformMediaMetrics;
+
+    const configs: Array<{
+      source: Record<number, EncodedTransformMediaStreamMetrics>;
+      kind: 'audio' | 'video';
+      type: string;
+      metricKey: string;
+    }> = [
+      {
+        source: metrics.audioSender,
+        kind: 'audio',
+        type: 'outbound-rtp-transform',
+        metricKey: 'audioSentTransformPps',
+      },
+      {
+        source: metrics.audioReceiver,
+        kind: 'audio',
+        type: 'inbound-rtp-transform',
+        metricKey: 'audioReceivedTransformPps',
+      },
+      {
+        source: metrics.videoSender,
+        kind: 'video',
+        type: 'outbound-rtp-transform',
+        metricKey: 'videoSentTransformPps',
+      },
+      {
+        source: metrics.videoReceiver,
+        kind: 'video',
+        type: 'inbound-rtp-transform',
+        metricKey: 'videoReceivedTransformPps',
+      },
+    ];
+
+    for (const { source, kind, type, metricKey } of configs) {
+      for (const streamMetrics of Object.values(source)) {
+        customStatsReports.push({
+          kind,
+          type,
+          ssrc: streamMetrics.ssrc,
+          timestamp,
+          [metricKey]: streamMetrics.packetCount,
+        });
+      }
+    }
+
+    this.lastEncodedTransformMediaMetricsTimestamp = timestamp;
   }
 
   /**
