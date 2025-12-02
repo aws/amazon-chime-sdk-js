@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added PPS metrics on the Encoded Transform when used.
+
 ### Removed
 
 ### Changed
+
+- Refactored Encoded Transform management into it's own component for better support of non-redundant audio transforms.
 
 ### Fixed
 
