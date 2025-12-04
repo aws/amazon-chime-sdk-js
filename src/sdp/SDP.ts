@@ -907,35 +907,79 @@ export default class SDP {
   /**
    * Modifies the active camera section to include a specified starting bitrate
    * for video sending by adding a 'x-google-start-bitrate' fmtp line paramter for
-   * each payload type associated with video.
+   * each non-RTX/FEC payload type associated with video.
    *
-   * If no active camera section is found in the SDP, returns the original SDP object.
+   * Note that this updates all video sections regardless of direction, as
+   * https://www.rfc-editor.org/rfc/rfc8843#name-payload-type-pt-value-reuse states that
+   * "...all codecs associated with the payload type number MUST share an identical codec configuration.
+   * This means that the codecs MUST share the same media type, encoding name,
+   * clock rate, and any parameter that can affect the codec configuration and packetization."
+   *
+   * WebRTC maintainers may eventual enforce this (https://issues.webrtc.org/issues/42224689),
+   * though it just logs an error for now.
+   *
+   * If no active video sections are found in the SDP, returns the original SDP object.
    */
   withStartingVideoSendBitrate(bitrateKbps: number): SDP {
     const sections = SDP.splitSections(this.sdp);
 
-    const cameraLineIndex: number = SDP.findActiveCameraSection(sections);
-    if (cameraLineIndex === -1) {
-      return this;
-    }
-
-    const srcLines: string[] = SDP.splitLines(sections[cameraLineIndex]);
-    const dstLines: string[] = [];
-
-    for (const line of srcLines) {
-      if (/^a=fmtp:\d*/.test(line)) {
-        // `x-google-start-bitrate` is an unofficial flag that has existed in libwebrtc since its release and is unlikely
-        // to be removed without notification.
-        //
-        // libwebrtc constant: https://webrtc.googlesource.com/src/+/b6ef1a736ee94d97cc28f3bd59b826c716a3278f/media/base/media_constants.cc#97
-        // libwebrtc parsing:  https://webrtc.googlesource.com/src/+/61c5e86dca59b0ac8240444e7df5c31da27ee40f/media/engine/webrtc_media_engine.cc#172
-        const newLine = line + `;x-google-start-bitrate=${bitrateKbps}`;
-        dstLines.push(newLine);
-      } else {
-        dstLines.push(line);
+    for (let i = 0; i < sections.length; i++) {
+      if (!/^m=video/.test(sections[i])) {
+        continue;
       }
+
+      const srcLines: string[] = SDP.splitLines(sections[i]);
+      const dstLines: string[] = [];
+
+      let hasFmtp = false;
+      let payloadType: string | undefined;
+
+      // First pass: check if fmtp exists and get payload type
+      for (const line of srcLines) {
+        if (/^a=fmtp:\d*/.test(line) && !/apt=/.test(line)) {
+          hasFmtp = true;
+        }
+        // Extract payload type from rtpmap line (e.g., "a=rtpmap:96 VP8/90000")
+        const rtpmapMatch = line.match(/^a=rtpmap:(\d+)/);
+        if (rtpmapMatch) {
+          payloadType = rtpmapMatch[1];
+        }
+      }
+
+      // Second pass: add bitrate parameter. We avoid adding this to retransmission payload types since it
+      // is not relevant to those.
+      for (const line of srcLines) {
+        if (
+          /^a=fmtp:\d*/.test(line) &&
+          !/apt=/.test(line) &&
+          !/x-google-start-bitrate=/.test(line)
+        ) {
+          // `x-google-start-bitrate` is an unofficial flag that has existed in libwebrtc since its release and is unlikely
+          // to be removed without notification.
+          //
+          // libwebrtc constant: https://webrtc.googlesource.com/src/+/b6ef1a736ee94d97cc28f3bd59b826c716a3278f/media/base/media_constants.cc#97
+          // libwebrtc parsing:  https://webrtc.googlesource.com/src/+/61c5e86dca59b0ac8240444e7df5c31da27ee40f/media/engine/webrtc_media_engine.cc#172
+          const newLine = line + `;x-google-start-bitrate=${bitrateKbps}`;
+          dstLines.push(newLine);
+        } else {
+          dstLines.push(line);
+        }
+      }
+
+      // If no fmtp line exists, add one after the rtpmap line
+      if (!hasFmtp && payloadType) {
+        const rtpmapIndex = dstLines.findIndex(line => line.match(/^a=rtpmap:\d+/));
+        if (rtpmapIndex !== -1) {
+          dstLines.splice(
+            rtpmapIndex + 1,
+            0,
+            `a=fmtp:${payloadType} x-google-start-bitrate=${bitrateKbps}`
+          );
+        }
+      }
+
+      sections[i] = dstLines.join(SDP.CRLF) + SDP.CRLF;
     }
-    sections[cameraLineIndex] = dstLines.join(SDP.CRLF) + SDP.CRLF;
 
     const newSdp = sections.join('');
     return new SDP(newSdp);

@@ -26,6 +26,7 @@ chai.should();
 
 describe('SetLocalDescriptionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
+  const CRLF = '\r\n';
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
@@ -59,7 +60,7 @@ describe('SetLocalDescriptionTask', () => {
     it('can be run and succeed', async () => {
       await task.run();
       const peerLocalSDP = context.peer.localDescription.sdp;
-      expect(peerLocalSDP).to.be.equal(sdpOffer.sdp);
+      expect(peerLocalSDP).to.be.equal(sdpOffer.sdp + CRLF);
     });
 
     it('can be run and succeed in iOS 15.1', async () => {
@@ -67,13 +68,13 @@ describe('SetLocalDescriptionTask', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       await task.run();
       const peerLocalSDP = context.peer.localDescription.sdp;
-      expect(peerLocalSDP).to.be.equal(sdpOffer.sdp);
+      expect(peerLocalSDP).to.be.equal(sdpOffer.sdp + CRLF);
     });
 
     it('can be run and received parameters are correct', async () => {
       class TestPeerConnectionMock extends RTCPeerConnection {
         setLocalDescription(description: RTCSessionDescriptionInit): Promise<void> {
-          expect(description.sdp).to.be.equal(sdpOffer.sdp);
+          expect(description.sdp).to.be.equal(sdpOffer.sdp + CRLF);
           return new Promise<void>((resolve, _reject) => {
             resolve();
           });
@@ -87,7 +88,7 @@ describe('SetLocalDescriptionTask', () => {
     it('can throw error during failure to set local description', async () => {
       class TestPeerConnectionMock extends RTCPeerConnection {
         setLocalDescription(description: RTCSessionDescriptionInit): Promise<void> {
-          expect(description.sdp).to.be.equal(sdpOffer.sdp);
+          expect(description.sdp).to.be.equal(sdpOffer.sdp + CRLF);
           return new Promise<void>((_resolve, reject) => {
             reject();
           });
@@ -107,7 +108,7 @@ describe('SetLocalDescriptionTask', () => {
       context.audioProfile = AudioProfile.fullbandMusicStereo();
       await task.run();
       const peerLocalSDP = context.peer.localDescription.sdp;
-      expect(peerLocalSDP).to.be.equal(sdpOffer.sdp);
+      expect(peerLocalSDP).to.be.equal(sdpOffer.sdp + CRLF);
     });
 
     it('will update sdp with send codec preferences', async () => {
@@ -152,7 +153,7 @@ describe('SetLocalDescriptionTask', () => {
     it('sets start bitrate for SVC content', async () => {
       class TestPeerConnectionMock extends RTCPeerConnection {
         setLocalDescription(description: RTCSessionDescriptionInit): Promise<void> {
-          expect(description.sdp).to.be.equal(sdpOffer.sdp);
+          expect(description.sdp).to.be.equal(sdpOffer.sdp + CRLF);
           return new Promise<void>((resolve, _reject) => {
             resolve();
           });
