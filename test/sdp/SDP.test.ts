@@ -643,16 +643,125 @@ describe('SDP', () => {
   });
 
   describe('withStartingVideoSendBitrate', () => {
-    it('Returns original if no video', () => {
-      const sdpObj = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
-      expect(sdpObj.withStartingVideoSendBitrate(1000)).to.equal(sdpObj);
+    it('Adds starting video send bitrate to non-apt lines', () => {
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const result = sdpObj.withStartingVideoSendBitrate(1000).sdp;
+      // Should add to VP8 (no apt)
+      expect(result).to.not.include('a=fmtp:97 apt=96;x-google-start-bitrate');
+      // Should add to VP9 profile-id lines
+      expect(result).to.include('a=fmtp:98 profile-id=0;x-google-start-bitrate=1000');
+      expect(result).to.include('a=fmtp:100 profile-id=2;x-google-start-bitrate=1000');
+      // Should add to H264 lines
+      expect(result).to.include(
+        'level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42001f;x-google-start-bitrate=1000'
+      );
     });
 
-    it('Adds starting video send bitrate', () => {
-      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
-      expect(sdpObj.withStartingVideoSendBitrate(1000).sdp).to.deep.equal(
-        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_STARTING_VIDEO_SEND_BITRATE
-      );
+    it('Applies to all video sections', () => {
+      const sdpWithMultipleVideo = `v=0\r
+o=- 123 0 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+m=video 9 UDP/TLS/RTP/SAVPF 96\r
+a=rtpmap:96 VP8/90000\r
+a=fmtp:96 max-fr=30\r
+m=video 9 UDP/TLS/RTP/SAVPF 97\r
+a=rtpmap:97 VP9/90000\r
+a=fmtp:97 profile-id=0\r
+`;
+      const sdpObj = new SDP(sdpWithMultipleVideo);
+      const result = sdpObj.withStartingVideoSendBitrate(1000).sdp;
+      expect(result).to.include('a=fmtp:96 max-fr=30;x-google-start-bitrate=1000');
+      expect(result).to.include('a=fmtp:97 profile-id=0;x-google-start-bitrate=1000');
+    });
+
+    it('Does not add to lines with apt=', () => {
+      const sdpWithApt = `v=0\r
+o=- 123 0 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+m=video 9 UDP/TLS/RTP/SAVPF 96 97\r
+a=rtpmap:96 VP8/90000\r
+a=fmtp:96 max-fr=30\r
+a=rtpmap:97 rtx/90000\r
+a=fmtp:97 apt=96\r
+`;
+      const sdpObj = new SDP(sdpWithApt);
+      const result = sdpObj.withStartingVideoSendBitrate(1000).sdp;
+      expect(result).to.include('a=fmtp:96 max-fr=30;x-google-start-bitrate=1000');
+      expect(result).to.include('a=fmtp:97 apt=96\r');
+      expect(result).to.not.include('apt=96;x-google-start-bitrate');
+    });
+
+    it('Does not add if already present', () => {
+      const sdpWithExisting = `v=0\r
+o=- 123 0 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+m=video 9 UDP/TLS/RTP/SAVPF 96\r
+a=rtpmap:96 VP8/90000\r
+a=fmtp:96 max-fr=30;x-google-start-bitrate=500\r
+`;
+      const sdpObj = new SDP(sdpWithExisting);
+      const result = sdpObj.withStartingVideoSendBitrate(1000).sdp;
+      expect(result).to.include('x-google-start-bitrate=500');
+      expect(result).to.not.include('x-google-start-bitrate=1000');
+      // Ensure it's only present once
+      const matches = result.match(/x-google-start-bitrate/g);
+      expect(matches).to.have.lengthOf(1);
+    });
+
+    it('Creates fmtp line when missing', () => {
+      const sdpWithoutFmtp = `v=0\r
+o=- 123 0 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+m=video 9 UDP/TLS/RTP/SAVPF 96\r
+a=rtpmap:96 VP8/90000\r
+`;
+      const sdpObj = new SDP(sdpWithoutFmtp);
+      const result = sdpObj.withStartingVideoSendBitrate(1000).sdp;
+      expect(result).to.include('a=fmtp:96 x-google-start-bitrate=1000');
+      // Verify fmtp line is added after rtpmap
+      const lines = result.split('\r\n');
+      const rtpmapIndex = lines.findIndex(line => line.includes('a=rtpmap:96'));
+      const fmtpIndex = lines.findIndex(line => line.includes('a=fmtp:96'));
+      expect(fmtpIndex).to.equal(rtpmapIndex + 1);
+    });
+
+    it('Creates fmtp line for multiple video sections without fmtp', () => {
+      const sdpWithoutFmtp = `v=0\r
+o=- 123 0 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+m=video 9 UDP/TLS/RTP/SAVPF 96\r
+a=rtpmap:96 VP8/90000\r
+m=video 9 UDP/TLS/RTP/SAVPF 97\r
+a=rtpmap:97 VP9/90000\r
+`;
+      const sdpObj = new SDP(sdpWithoutFmtp);
+      const result = sdpObj.withStartingVideoSendBitrate(1000).sdp;
+      expect(result).to.include('a=fmtp:96 x-google-start-bitrate=1000');
+      expect(result).to.include('a=fmtp:97 x-google-start-bitrate=1000');
+    });
+
+    it('Handles mixed sections with and without fmtp', () => {
+      const sdpMixed = `v=0\r
+o=- 123 0 IN IP4 127.0.0.1\r
+s=-\r
+t=0 0\r
+m=video 9 UDP/TLS/RTP/SAVPF 96\r
+a=rtpmap:96 VP8/90000\r
+m=video 9 UDP/TLS/RTP/SAVPF 97\r
+a=rtpmap:97 VP9/90000\r
+a=fmtp:97 profile-id=0\r
+`;
+      const sdpObj = new SDP(sdpMixed);
+      const result = sdpObj.withStartingVideoSendBitrate(1000).sdp;
+      // First section should get new fmtp line
+      expect(result).to.include('a=fmtp:96 x-google-start-bitrate=1000');
+      // Second section should append to existing fmtp
+      expect(result).to.include('a=fmtp:97 profile-id=0;x-google-start-bitrate=1000');
     });
   });
 });

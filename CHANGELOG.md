@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reset additional internal state on reconnect to fix issues with receiving content share in replica meetings when using the priority policy.
 - Avoid trying to send leave message on refresh, and just let browser close with expected 1001 Websocket status code.
 - Fixed voice focus webaudio media stream clean up logic.
+- Avoid Chrome ERROR log that starts with "A BUNDLE group contains a codec collision for payload_type=..." by ensuring all payload type have same parameters on SDP.
 
 ### Fixed
 
