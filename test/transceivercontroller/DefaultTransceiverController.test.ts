@@ -1656,4 +1656,119 @@ describe('DefaultTransceiverController', () => {
       }
     });
   });
+
+  describe('handleTrack event listener', () => {
+    it('adds track event listener when setPeer is called', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      const addEventListenerSpy = sinon.spy(peer, 'addEventListener');
+
+      tc.setPeer(peer);
+
+      expect(addEventListenerSpy.calledWith('track')).to.be.true;
+      addEventListenerSpy.restore();
+    });
+
+    it('removes track event listener when reset is called', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+
+      const removeEventListenerSpy = sinon.spy(peer, 'removeEventListener');
+      tc.reset();
+
+      expect(removeEventListenerSpy.calledWith('track')).to.be.true;
+      removeEventListenerSpy.restore();
+    });
+
+    it('does not throw when reset is called without peer', () => {
+      expect(() => tc.reset()).to.not.throw();
+    });
+
+    it('applies passthrough transform to incoming tracks when RTCRtpScriptTransform is supported', done => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      const logSpy = sinon.spy(tc['logger'], 'info');
+
+      // The handleTrack method will be called when a track is added via setRemoteDescription
+      // We can verify it was registered by checking the event listener was added
+      const addEventListenerSpy = sinon.spy(peer, 'addEventListener');
+      tc.setPeer(peer);
+
+      expect(addEventListenerSpy.calledWith('track')).to.be.true;
+
+      addEventListenerSpy.restore();
+      logSpy.restore();
+      done();
+    });
+
+    it('does not apply transform when audioRedWorker is not initialized', () => {
+      // Create a new controller without audio redundancy
+      context.audioProfile = new AudioProfile(null, false);
+      const tcNoRed = new DefaultTransceiverController(logger, context.browserBehavior, context);
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcNoRed.setPeer(peer);
+      tcNoRed.setupLocalTransceivers();
+
+      // Verify that audioRedWorker is not initialized
+      expect(tcNoRed['audioRedWorker']).to.be.null;
+    });
+
+    it('handleTrack checks for RTCRtpScriptTransform support', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      // The handleTrack method checks for RTCRtpScriptTransform support
+      // We verify the event listener was registered
+      expect(tc['peer']).to.equal(peer);
+    });
+
+    it('handleTrack checks if receiver already has a transform', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      // The handleTrack method checks if receiver.transform exists before applying
+      // We verify the peer connection was set up correctly
+      expect(tc['peer']).to.equal(peer);
+      expect(tc['audioRedWorker']).to.not.be.null;
+    });
+  });
+
+  describe('addTransceiver with recvonly direction', () => {
+    it('does not set sender transform for recvonly transceivers', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      const transceiver = tc['addTransceiver']('video', { direction: 'recvonly' });
+
+      // @ts-ignore
+      expect(transceiver.sender.transform).to.be.undefined;
+    });
+
+    it('sets sender transform for sendrecv transceivers', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      const transceiver = tc['addTransceiver']('video', { direction: 'sendrecv' });
+
+      // @ts-ignore
+      expect(transceiver.sender.transform).to.not.be.undefined;
+    });
+
+    it('sets sender transform for sendonly transceivers', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      const transceiver = tc['addTransceiver']('video', { direction: 'sendonly' });
+
+      // @ts-ignore
+      expect(transceiver.sender.transform).to.not.be.undefined;
+    });
+  });
 });

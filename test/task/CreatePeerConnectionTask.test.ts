@@ -854,4 +854,62 @@ describe('CreatePeerConnectionTask', () => {
       expect(peerRemoveEventListenerSpy.called).to.be.false;
     });
   });
+
+  describe('encodedInsertableStreams configuration', () => {
+    it('creates peer connection successfully when RTCRtpScriptTransform is not supported and audio redundancy is enabled', async () => {
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
+      context.audioProfile = new AudioProfile(null, true);
+      task = new CreatePeerConnectionTask(context);
+
+      await task.run();
+
+      // Verify peer connection was created successfully
+      // The new code path checks for RTCRtpScriptTransform support and sets encodedInsertableStreams accordingly
+      expect(context.peer).to.not.be.null;
+
+      // @ts-ignore
+      window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+    });
+
+    it('creates peer connection successfully when RTCRtpScriptTransform is supported with audio redundancy', async () => {
+      context.audioProfile = new AudioProfile(null, true);
+      task = new CreatePeerConnectionTask(context);
+
+      await task.run();
+
+      // Verify peer connection was created successfully
+      // The new code path skips setting encodedInsertableStreams when RTCRtpScriptTransform is supported
+      expect(context.peer).to.not.be.null;
+    });
+
+    it('creates peer connection when audio redundancy is disabled', async () => {
+      context.audioProfile = new AudioProfile(null, false);
+      task = new CreatePeerConnectionTask(context);
+
+      await task.run();
+
+      // Verify peer connection was created
+      expect(context.peer).to.not.be.null;
+    });
+
+    it('reuses existing peer connection without modifying configuration', async () => {
+      // Create initial peer connection
+      await task.run();
+      const firstPeer = context.peer;
+      const logSpy = sinon.spy(context.logger, 'info');
+
+      // Run task again with existing peer
+      task = new CreatePeerConnectionTask(context);
+      await task.run();
+
+      expect(context.peer).to.equal(firstPeer);
+      expect(logSpy.calledWith('reusing peer connection')).to.be.true;
+
+      logSpy.restore();
+    });
+  });
 });

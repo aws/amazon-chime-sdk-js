@@ -122,6 +122,7 @@ export default class DefaultTransceiverController
 
   setPeer(peer: RTCPeerConnection): void {
     this.peer = peer;
+    this.peer.addEventListener('track', this.handleTrack);
   }
 
   reset(): void {
@@ -130,8 +131,30 @@ export default class DefaultTransceiverController
     this._localAudioTransceiver = null;
     this.videoSubscriptions = [];
     this.defaultMediaStream = null;
+
+    if (this.peer) {
+      this.peer.removeEventListener('track', this.handleTrack);
+    }
     this.peer = null;
   }
+
+  private handleTrack = (event: RTCTrackEvent): void => {
+    // @ts-ignore
+    const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform;
+    if (!this.audioRedWorker || !supportsRTCScriptTransform) return;
+
+    // @ts-ignore
+    if (!event.receiver.transform) {
+      // See note in `addTransceiver`
+      this.logger.info(
+        `Applying passthrough transform to receiver track ${event.track.id} not set after addTranceiver`
+      );
+      // @ts-ignore
+      event.receiver.transform = new RTCRtpScriptTransform(this.audioRedWorker, {
+        type: 'PassthroughTransform',
+      });
+    }
+  };
 
   useTransceivers(): boolean {
     return !!this.peer && typeof this.peer.getTransceivers !== 'undefined';
@@ -583,28 +606,31 @@ export default class DefaultTransceiverController
   ): RTCRtpTransceiver {
     const transceiver = this.peer.addTransceiver(trackOrKind, init);
 
-    // @ts-ignore
     // Transforms need to be setup for every transceiver to allow media flow for the given transceiver if WebRTC Encoded
     // Transform (https://github.com/w3c/webrtc-encoded-transform/blob/main/explainer.md) is used.
-    if (!this.peer.getConfiguration()?.encodedInsertableStreams || !this.audioRedWorker)
-      return transceiver;
+    if (!this.audioRedWorker) return transceiver;
 
     // @ts-ignore
     const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform;
+    // Chromium implemented an early version of encoded transform that has an alternative API. They
+    // enabled the standard version of the API in M141.
     // @ts-ignore
     const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedStreams;
 
     if (supportsRTCScriptTransform) {
-      // @ts-ignore
-      transceiver.sender.transform = new RTCRtpScriptTransform(this.audioRedWorker, {
-        type: 'PassthroughTransform',
-      });
-      // @ts-ignore
-      transceiver.receiver.transform = new RTCRtpScriptTransform(this.audioRedWorker, {
-        type: 'PassthroughTransform',
-      });
+      // To work around an apparent bug/race condition in Chromium (https://issues.chromium.org/issues/467247265)
+      // where transforms are not always set on receive video streams, we will set transforms for those in `ontrack`.
+      if (init.direction !== 'recvonly') {
+        // @ts-ignore
+        transceiver.sender.transform = new RTCRtpScriptTransform(this.audioRedWorker, {
+          type: 'PassthroughTransform',
+        });
+      }
       // eslint-disable-next-line
     } else /* istanbul ignore else */ if (supportsInsertableStreams) {
+      // @ts-ignore
+      if (!this.peer.getConfiguration()?.encodedInsertableStreams) return transceiver;
+
       // @ts-ignore
       const sendStreams = transceiver.sender.createEncodedStreams();
       // @ts-ignore

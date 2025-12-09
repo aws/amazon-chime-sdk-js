@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fix occasional issue with setting encoded transform on video receive streams that would lead to missing video.
+
 ## [3.29.0] - 2025-06-24
 
 ### Added

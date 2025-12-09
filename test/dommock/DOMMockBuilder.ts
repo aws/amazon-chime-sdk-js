@@ -824,6 +824,10 @@ export default class DOMMockBuilder {
               mediaStreamTrack.kind =
                 /^m=video/gm.exec(description.sdp) !== null ? 'video' : 'audio';
               addTrackEvent.track = mediaStreamTrack;
+              // Add receiver property for RTCTrackEvent
+              addTrackEvent.receiver = {
+                track: mediaStreamTrack,
+              };
               if (mockBehavior.hasInactiveTransceiver) {
                 addTrackEvent.transceiver = { currentDirection: 'inactive' };
               }
