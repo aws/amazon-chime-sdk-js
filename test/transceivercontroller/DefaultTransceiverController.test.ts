@@ -1688,18 +1688,28 @@ describe('DefaultTransceiverController', () => {
       tc.setPeer(peer);
       tc.setupLocalTransceivers();
 
-      const logSpy = sinon.spy(tc['logger'], 'info');
+      // Track the receiver from the track event
+      let trackEventReceiver: RTCRtpReceiver | null = null;
+      peer.addEventListener('track', (event: RTCTrackEvent) => {
+        trackEventReceiver = event.receiver;
+      });
 
-      // The handleTrack method will be called when a track is added via setRemoteDescription
-      // We can verify it was registered by checking the event listener was added
-      const addEventListenerSpy = sinon.spy(peer, 'addEventListener');
-      tc.setPeer(peer);
+      // Trigger track event by setting remote description
+      const remoteDescription: RTCSessionDescription = {
+        type: 'answer',
+        sdp: 'm=audio 9 UDP/TLS/RTP/SAVPF 111\r\n',
+        toJSON: null,
+      };
 
-      expect(addEventListenerSpy.calledWith('track')).to.be.true;
-
-      addEventListenerSpy.restore();
-      logSpy.restore();
-      done();
+      peer.setRemoteDescription(remoteDescription).then(() => {
+        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
+          // Verify the receiver has a transform applied
+          expect(trackEventReceiver).to.not.be.null;
+          // @ts-ignore
+          expect(trackEventReceiver.transform).to.not.be.undefined;
+          done();
+        });
+      });
     });
 
     it('does not apply transform when audioRedWorker is not initialized', () => {
@@ -1715,25 +1725,40 @@ describe('DefaultTransceiverController', () => {
       expect(tcNoRed['audioRedWorker']).to.be.null;
     });
 
-    it('handleTrack checks for RTCRtpScriptTransform support', () => {
+    it('does not apply transform when RTCRtpScriptTransform is not supported', done => {
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
       tc.setupLocalTransceivers();
 
-      // The handleTrack method checks for RTCRtpScriptTransform support
-      // We verify the event listener was registered
-      expect(tc['peer']).to.equal(peer);
-    });
+      // Track the receiver from the track event
+      let trackEventReceiver: RTCRtpReceiver | null = null;
+      peer.addEventListener('track', (event: RTCTrackEvent) => {
+        trackEventReceiver = event.receiver;
+      });
 
-    it('handleTrack checks if receiver already has a transform', () => {
-      const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
-      tc.setupLocalTransceivers();
+      // Trigger track event by setting remote description
+      const remoteDescription: RTCSessionDescription = {
+        type: 'answer',
+        sdp: 'm=audio 9 UDP/TLS/RTP/SAVPF 111\r\n',
+        toJSON: null,
+      };
 
-      // The handleTrack method checks if receiver.transform exists before applying
-      // We verify the peer connection was set up correctly
-      expect(tc['peer']).to.equal(peer);
-      expect(tc['audioRedWorker']).to.not.be.null;
+      peer.setRemoteDescription(remoteDescription).then(() => {
+        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
+          // Verify the receiver does NOT have a transform when RTCRtpScriptTransform is not supported
+          expect(trackEventReceiver).to.not.be.null;
+          // @ts-ignore
+          expect(trackEventReceiver.transform).to.be.undefined;
+          // @ts-ignore
+          window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+          done();
+        });
+      });
     });
   });
 

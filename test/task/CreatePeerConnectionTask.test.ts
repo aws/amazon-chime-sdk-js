@@ -856,7 +856,13 @@ describe('CreatePeerConnectionTask', () => {
   });
 
   describe('encodedInsertableStreams configuration', () => {
-    it('creates peer connection successfully when RTCRtpScriptTransform is not supported and audio redundancy is enabled', async () => {
+    it('sets encodedInsertableStreams to true when RTCRtpScriptTransform is not supported and audio redundancy is enabled', async () => {
+      // Use Chrome browser to ensure supportsAudioRedundancy() returns true
+      domMockBuilder.cleanup();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.browserBehavior = new DefaultBrowserBehavior();
+
       // @ts-ignore
       const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
       // @ts-ignore
@@ -867,33 +873,54 @@ describe('CreatePeerConnectionTask', () => {
 
       await task.run();
 
-      // Verify peer connection was created successfully
-      // The new code path checks for RTCRtpScriptTransform support and sets encodedInsertableStreams accordingly
       expect(context.peer).to.not.be.null;
+      // @ts-ignore
+      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.true;
 
       // @ts-ignore
       window.RTCRtpScriptTransform = RTCRtpScriptTransform;
     });
 
-    it('creates peer connection successfully when RTCRtpScriptTransform is supported with audio redundancy', async () => {
+    it('does not set encodedInsertableStreams when RTCRtpScriptTransform is supported with audio redundancy', async () => {
+      // Use Chrome browser to ensure supportsAudioRedundancy() returns true
+      domMockBuilder.cleanup();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.browserBehavior = new DefaultBrowserBehavior();
+
       context.audioProfile = new AudioProfile(null, true);
       task = new CreatePeerConnectionTask(context);
 
       await task.run();
 
-      // Verify peer connection was created successfully
-      // The new code path skips setting encodedInsertableStreams when RTCRtpScriptTransform is supported
       expect(context.peer).to.not.be.null;
+      // @ts-ignore
+      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.undefined;
     });
 
-    it('creates peer connection when audio redundancy is disabled', async () => {
+    it('sets encodedInsertableStreams to false when audio redundancy is disabled', async () => {
+      // Use Chrome browser for consistency
+      domMockBuilder.cleanup();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.browserBehavior = new DefaultBrowserBehavior();
+
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
       context.audioProfile = new AudioProfile(null, false);
       task = new CreatePeerConnectionTask(context);
 
       await task.run();
 
-      // Verify peer connection was created
       expect(context.peer).to.not.be.null;
+      // @ts-ignore
+      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.false;
+
+      // @ts-ignore
+      window.RTCRtpScriptTransform = RTCRtpScriptTransform;
     });
 
     it('reuses existing peer connection without modifying configuration', async () => {
