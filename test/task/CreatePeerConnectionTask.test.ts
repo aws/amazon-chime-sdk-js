@@ -854,4 +854,89 @@ describe('CreatePeerConnectionTask', () => {
       expect(peerRemoveEventListenerSpy.called).to.be.false;
     });
   });
+
+  describe('encodedInsertableStreams configuration', () => {
+    it('sets encodedInsertableStreams to true when RTCRtpScriptTransform is not supported and audio redundancy is enabled', async () => {
+      // Use Chrome browser to ensure supportsAudioRedundancy() returns true
+      domMockBuilder.cleanup();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.browserBehavior = new DefaultBrowserBehavior();
+
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
+      context.audioProfile = new AudioProfile(null, true);
+      task = new CreatePeerConnectionTask(context);
+
+      await task.run();
+
+      expect(context.peer).to.not.be.null;
+      // @ts-ignore
+      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.true;
+
+      // @ts-ignore
+      window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+    });
+
+    it('does not set encodedInsertableStreams when RTCRtpScriptTransform is supported with audio redundancy', async () => {
+      // Use Chrome browser to ensure supportsAudioRedundancy() returns true
+      domMockBuilder.cleanup();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.browserBehavior = new DefaultBrowserBehavior();
+
+      context.audioProfile = new AudioProfile(null, true);
+      task = new CreatePeerConnectionTask(context);
+
+      await task.run();
+
+      expect(context.peer).to.not.be.null;
+      // @ts-ignore
+      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.undefined;
+    });
+
+    it('sets encodedInsertableStreams to false when audio redundancy is disabled', async () => {
+      // Use Chrome browser for consistency
+      domMockBuilder.cleanup();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.browserBehavior = new DefaultBrowserBehavior();
+
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
+      context.audioProfile = new AudioProfile(null, false);
+      task = new CreatePeerConnectionTask(context);
+
+      await task.run();
+
+      expect(context.peer).to.not.be.null;
+      // @ts-ignore
+      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.false;
+
+      // @ts-ignore
+      window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+    });
+
+    it('reuses existing peer connection without modifying configuration', async () => {
+      // Create initial peer connection
+      await task.run();
+      const firstPeer = context.peer;
+      const logSpy = sinon.spy(context.logger, 'info');
+
+      // Run task again with existing peer
+      task = new CreatePeerConnectionTask(context);
+      await task.run();
+
+      expect(context.peer).to.equal(firstPeer);
+      expect(logSpy.calledWith('reusing peer connection')).to.be.true;
+
+      logSpy.restore();
+    });
+  });
 });

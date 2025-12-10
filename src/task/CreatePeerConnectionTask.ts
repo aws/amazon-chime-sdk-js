@@ -83,8 +83,16 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     configuration.bundlePolicy = this.context.browserBehavior.requiresBundlePolicy();
     // @ts-ignore
     configuration.sdpSemantics = 'unified-plan';
+
     // @ts-ignore
-    configuration.encodedInsertableStreams = this.context.audioProfile.hasRedundancyEnabled();
+    const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform;
+    if (!supportsRTCScriptTransform) {
+      // @ts-ignore
+      // If the WebRTC Encoded Streams API is not supported, attempt to use the legacy pre-M141 release
+      // version of the API on chromium based browsers.
+      configuration.encodedInsertableStreams = this.context.audioProfile.hasRedundancyEnabled();
+    }
+
     if (this.context.peer) {
       this.context.logger.info('reusing peer connection');
     } else {

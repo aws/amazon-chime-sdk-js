@@ -1656,4 +1656,144 @@ describe('DefaultTransceiverController', () => {
       }
     });
   });
+
+  describe('handleTrack event listener', () => {
+    it('adds track event listener when setPeer is called', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      const addEventListenerSpy = sinon.spy(peer, 'addEventListener');
+
+      tc.setPeer(peer);
+
+      expect(addEventListenerSpy.calledWith('track')).to.be.true;
+      addEventListenerSpy.restore();
+    });
+
+    it('removes track event listener when reset is called', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+
+      const removeEventListenerSpy = sinon.spy(peer, 'removeEventListener');
+      tc.reset();
+
+      expect(removeEventListenerSpy.calledWith('track')).to.be.true;
+      removeEventListenerSpy.restore();
+    });
+
+    it('does not throw when reset is called without peer', () => {
+      expect(() => tc.reset()).to.not.throw();
+    });
+
+    it('applies passthrough transform to incoming tracks when RTCRtpScriptTransform is supported', done => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      // Track the receiver from the track event
+      let trackEventReceiver: RTCRtpReceiver | null = null;
+      peer.addEventListener('track', (event: RTCTrackEvent) => {
+        trackEventReceiver = event.receiver;
+      });
+
+      // Trigger track event by setting remote description
+      const remoteDescription: RTCSessionDescription = {
+        type: 'answer',
+        sdp: 'm=audio 9 UDP/TLS/RTP/SAVPF 111\r\n',
+        toJSON: null,
+      };
+
+      peer.setRemoteDescription(remoteDescription).then(() => {
+        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
+          // Verify the receiver has a transform applied
+          expect(trackEventReceiver).to.not.be.null;
+          // @ts-ignore
+          expect(trackEventReceiver.transform).to.not.be.undefined;
+          done();
+        });
+      });
+    });
+
+    it('does not apply transform when audioRedWorker is not initialized', () => {
+      // Create a new controller without audio redundancy
+      context.audioProfile = new AudioProfile(null, false);
+      const tcNoRed = new DefaultTransceiverController(logger, context.browserBehavior, context);
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcNoRed.setPeer(peer);
+      tcNoRed.setupLocalTransceivers();
+
+      // Verify that audioRedWorker is not initialized
+      expect(tcNoRed['audioRedWorker']).to.be.null;
+    });
+
+    it('does not apply transform when RTCRtpScriptTransform is not supported', done => {
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      // Track the receiver from the track event
+      let trackEventReceiver: RTCRtpReceiver | null = null;
+      peer.addEventListener('track', (event: RTCTrackEvent) => {
+        trackEventReceiver = event.receiver;
+      });
+
+      // Trigger track event by setting remote description
+      const remoteDescription: RTCSessionDescription = {
+        type: 'answer',
+        sdp: 'm=audio 9 UDP/TLS/RTP/SAVPF 111\r\n',
+        toJSON: null,
+      };
+
+      peer.setRemoteDescription(remoteDescription).then(() => {
+        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
+          // Verify the receiver does NOT have a transform when RTCRtpScriptTransform is not supported
+          expect(trackEventReceiver).to.not.be.null;
+          // @ts-ignore
+          expect(trackEventReceiver.transform).to.be.undefined;
+          // @ts-ignore
+          window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+          done();
+        });
+      });
+    });
+  });
+
+  describe('addTransceiver with recvonly direction', () => {
+    it('does not set sender transform for recvonly transceivers', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      const transceiver = tc['addTransceiver']('video', { direction: 'recvonly' });
+
+      // @ts-ignore
+      expect(transceiver.sender.transform).to.be.undefined;
+    });
+
+    it('sets sender transform for sendrecv transceivers', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      const transceiver = tc['addTransceiver']('video', { direction: 'sendrecv' });
+
+      // @ts-ignore
+      expect(transceiver.sender.transform).to.not.be.undefined;
+    });
+
+    it('sets sender transform for sendonly transceivers', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      const transceiver = tc['addTransceiver']('video', { direction: 'sendonly' });
+
+      // @ts-ignore
+      expect(transceiver.sender.transform).to.not.be.undefined;
+    });
+  });
 });
