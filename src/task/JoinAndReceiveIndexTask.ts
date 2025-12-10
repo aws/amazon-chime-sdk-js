@@ -5,6 +5,7 @@ import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControl
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from '../meetingsession/MeetingSessionTURNCredentials';
+import MeetingSessionURLs from '../meetingsession/MeetingSessionURLs';
 import ServerSideNetworkAdaption, {
   convertServerSideNetworkAdaptionEnumFromSignaled,
 } from '../signalingclient/ServerSideNetworkAdaption';
@@ -20,6 +21,19 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import TaskCanceler from '../taskcanceler/TaskCanceler';
 import BaseTask from './BaseTask';
+
+function rewriteTurnUris(uris: string[], urls: MeetingSessionURLs): string[] {
+  const { urlRewriterMulti, urlRewriter } = urls;
+  return uris
+    .flatMap((uri: string): string[] => {
+      if (urlRewriterMulti) {
+        return urlRewriterMulti(uri) || [];
+      }
+      const rewritten = urlRewriter(uri);
+      return rewritten ? [rewritten] : [];
+    })
+    .filter((uri: string) => !!uri);
+}
 
 /*
  * [[JoinAndReceiveIndexTask]] sends the JoinFrame and asynchronously waits for the server to send the [[SdkIndexFrame]].
@@ -109,13 +123,10 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
               context.turnCredentials.username = joinAckFrame.turnCredentials.username;
               context.turnCredentials.password = joinAckFrame.turnCredentials.password;
               context.turnCredentials.ttl = joinAckFrame.turnCredentials.ttl;
-              context.turnCredentials.uris = joinAckFrame.turnCredentials.uris
-                .map((uri: string): string => {
-                  return context.meetingSessionConfiguration.urls.urlRewriter(uri);
-                })
-                .filter((uri: string) => {
-                  return !!uri;
-                });
+              context.turnCredentials.uris = rewriteTurnUris(
+                joinAckFrame.turnCredentials.uris,
+                context.meetingSessionConfiguration.urls
+              );
             } else {
               context.logger.error('missing TURN credentials in JoinAckFrame');
             }
