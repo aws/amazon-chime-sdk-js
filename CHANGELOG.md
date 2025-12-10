@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added additional APIs to underlying VoiceFocus library
+- Add API to allow expanding a single TURN URL into multiple. This should not be used by most applications.
 
 ### Removed
 

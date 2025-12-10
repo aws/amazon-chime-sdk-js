@@ -95,6 +95,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionurls.html#urlrewriter" class="tsd-kind-icon">url<wbr>Rewriter</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionurls.html#urlrewritermulti" class="tsd-kind-icon">url<wbr>Rewriter<wbr>Multi</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -159,6 +160,45 @@
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="urlrewritermulti" class="tsd-anchor"></a>
+					<h3>url<wbr>Rewriter<wbr>Multi</h3>
+					<div class="tsd-signature tsd-kind-icon">url<wbr>Rewriter<wbr>Multi<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/MeetingSessionURLs.ts#L94">src/meetingsession/MeetingSessionURLs.ts:94</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Optional function to transform a single URL into multiple URLs. This is currently only used for TURN URI processing.</p>
+											</div>
+											<p>There is not any good reason for a typical application to implement this.</p>
+											<p>When set, this takes precedence over <a href="meetingsessionurls.html#urlrewriter">MeetingSessionURLs.urlRewriter</a> for TURN URI processing.
+											The default is null, meaning <a href="meetingsessionurls.html#urlrewriter">MeetingSessionURLs.urlRewriter</a> will be used instead.</p>
+										</div>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>url: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
 									</li>
 								</ul>
 							</li>
@@ -360,6 +400,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="meetingsessionurls.html#urlrewriter" class="tsd-kind-icon">url<wbr>Rewriter</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="meetingsessionurls.html#urlrewritermulti" class="tsd-kind-icon">url<wbr>Rewriter<wbr>Multi</a>
 							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="meetingsessionurls.html#audiohosturl" class="tsd-kind-icon">audio<wbr>HostURL</a>

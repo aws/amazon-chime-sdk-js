@@ -35,5 +35,37 @@ describe('MeetingSessionURLs', () => {
       expect(urls.turnControlURL).to.eq('turn-control-rewritten-url');
       expect(urls.eventIngestionURL).to.eq('event-ingestion-rewritten-url');
     });
+
+    it('has urlRewriterMulti as null by default', () => {
+      const urls = new MeetingSessionURLs();
+      expect(urls.urlRewriterMulti).to.be.null;
+    });
+
+    it('can use a custom urlRewriterMulti to expand URLs', () => {
+      const urls = new MeetingSessionURLs();
+      urls.urlRewriterMulti = (url: string | null) => {
+        if (url === null) {
+          return null;
+        }
+        return [`${url}-1`, `${url}-2`];
+      };
+      expect(urls.urlRewriterMulti(null)).to.be.null;
+      expect(urls.urlRewriterMulti('turn:server')).to.deep.equal([
+        'turn:server-1',
+        'turn:server-2',
+      ]);
+    });
+
+    it('can use urlRewriterMulti to filter out URLs by returning null', () => {
+      const urls = new MeetingSessionURLs();
+      urls.urlRewriterMulti = (url: string | null) => {
+        if (url === null || url.includes('blocked')) {
+          return null;
+        }
+        return [url];
+      };
+      expect(urls.urlRewriterMulti('turn:allowed')).to.deep.equal(['turn:allowed']);
+      expect(urls.urlRewriterMulti('turn:blocked')).to.be.null;
+    });
   });
 });

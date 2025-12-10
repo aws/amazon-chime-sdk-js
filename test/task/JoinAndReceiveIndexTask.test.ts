@@ -425,6 +425,86 @@ describe('JoinAndReceiveIndexTask', () => {
       await task.run();
       expect(context.indexFrame).to.not.equal(null);
     });
+
+    it('uses urlRewriterMulti to expand TURN URIs when set', async () => {
+      context.meetingSessionConfiguration.urls.urlRewriterMulti = (url: string | null) => {
+        if (!url) return null;
+        return [`${url}-expanded-1`, `${url}-expanded-2`];
+      };
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(context.turnCredentials.uris).to.deep.equal([
+        'fake-turn-expanded-1',
+        'fake-turn-expanded-2',
+        'fake-turns-expanded-1',
+        'fake-turns-expanded-2',
+      ]);
+    });
+
+    it('uses urlRewriterMulti to filter out TURN URIs by returning null', async () => {
+      context.meetingSessionConfiguration.urls.urlRewriterMulti = (url: string | null) => {
+        if (!url || url.includes('turns')) return null;
+        return [url];
+      };
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(context.turnCredentials.uris).to.deep.equal(['fake-turn']);
+    });
+
+    it('falls back to urlRewriter when urlRewriterMulti is not set', async () => {
+      context.meetingSessionConfiguration.urls.urlRewriter = (url: string | null) => {
+        if (!url) return null;
+        return `${url}-rewritten`;
+      };
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(context.turnCredentials.uris).to.deep.equal([
+        'fake-turn-rewritten',
+        'fake-turns-rewritten',
+      ]);
+    });
+
+    it('filters out TURN URIs when urlRewriter returns null', async () => {
+      context.meetingSessionConfiguration.urls.urlRewriter = (url: string | null) => {
+        if (!url || url.includes('turns')) return null;
+        return url;
+      };
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(context.turnCredentials.uris).to.deep.equal(['fake-turn']);
+    });
   });
 
   describe('cancel', () => {

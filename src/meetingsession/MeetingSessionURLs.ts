@@ -82,4 +82,14 @@ export default class MeetingSessionURLs {
   urlRewriter: (url: string | null) => string | null = (url: string | null) => {
     return url;
   };
+
+  /**
+   * Optional function to transform a single URL into multiple URLs. This is currently only used for TURN URI processing.
+   *
+   * There is not any good reason for a typical application to implement this.
+   *
+   * When set, this takes precedence over {@link MeetingSessionURLs.urlRewriter} for TURN URI processing.
+   * The default is null, meaning {@link MeetingSessionURLs.urlRewriter} will be used instead.
+   */
+  urlRewriterMulti: ((url: string | null) => string[] | null) | null = null;
 }
