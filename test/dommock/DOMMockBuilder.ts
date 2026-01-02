@@ -702,7 +702,15 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.Audio = class MockAudio {
+      srcObject: MediaStream | null = null;
+
       constructor(public src?: string) {}
+
+      pause(): void {}
+
+      play(): Promise<void> {
+        return Promise.resolve();
+      }
     };
 
     GlobalAny.Event = class MockEvent {
@@ -1385,6 +1393,12 @@ export default class DOMMockBuilder {
           disconnect(_destinationParam: AudioParam): void {},
           // @ts-ignore
           gain: {
+            value: 0,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            setValueAtTime(value: number, startTime: number): AudioParam {
+              // @ts-ignore
+              return {};
+            },
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             linearRampToValueAtTime(value: number, endTime: number): AudioParam {
               // @ts-ignore
@@ -1395,12 +1409,17 @@ export default class DOMMockBuilder {
       }
 
       createOscillator(): OscillatorNode {
+        const listeners: EventListener[] = [];
         // @ts-ignore
         return {
           context: (this as unknown) as BaseAudioContext,
           // @ts-ignore
           start(_when?: number): void {},
-          stop(): void {},
+          stop(_when?: number): void {
+            setTimeout(() => {
+              listeners.forEach(listener => listener(new Event('ended')));
+            }, 0);
+          },
           // @ts-ignore
           connect(destinationNode: AudioNode, _output?: number, _input?: number): AudioNode {
             return destinationNode;
@@ -1409,6 +1428,9 @@ export default class DOMMockBuilder {
           disconnect(_destinationNode: AudioNode): void {},
           // @ts-ignore
           frequency: {},
+          addEventListener(_type: string, listener: EventListener): void {
+            listeners.push(listener);
+          },
         };
       }
 
@@ -1473,10 +1495,16 @@ export default class DOMMockBuilder {
           disconnect(_destinationParam: AudioParam): void {},
           // @ts-ignore
           gain: {
+            value: 0,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            setValueAtTime(value: number, startTime: number): AudioParam {
+              // @ts-ignore
+              return this;
+            },
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             linearRampToValueAtTime(value: number, endTime: number): AudioParam {
               // @ts-ignore
-              return {};
+              return this;
             },
           },
         };

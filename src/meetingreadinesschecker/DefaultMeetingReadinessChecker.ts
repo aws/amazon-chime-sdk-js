@@ -35,6 +35,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   private gainNode: GainNode;
   private oscillatorNode: OscillatorNode;
   private destinationStream: MediaStreamAudioDestinationNode;
+  private audioElement: HTMLAudioElement;
   private originalURLRewriter: (url: string) => string;
 
   private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
@@ -82,7 +83,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       this.logger.error(`MeetingReadinessChecker: Audio output check failed with error: ${error}`);
       return CheckAudioOutputFeedback.Failed;
     } finally {
-      this.stopTone();
+      await this.stopTone();
     }
   }
 
@@ -95,9 +96,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     const maxGainValue = this.configuration.audioOutputGain;
 
     if (this.oscillatorNode) {
-      this.stopTone();
+      await this.stopTone();
     }
+
     this.audioContext = DefaultDeviceController.getAudioContext();
+
     this.gainNode = this.audioContext.createGain();
     this.gainNode.gain.value = 0;
     this.oscillatorNode = this.audioContext.createOscillator();
@@ -107,7 +110,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     this.gainNode.connect(this.destinationStream);
     const currentTime = this.audioContext.currentTime;
     const startTime = currentTime + 0.1;
-    this.gainNode.gain.linearRampToValueAtTime(0, startTime);
+    this.gainNode.gain.setValueAtTime(0, startTime);
     this.gainNode.gain.linearRampToValueAtTime(maxGainValue, startTime + rampSec);
     this.oscillatorNode.start();
 
@@ -116,6 +119,9 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     // Nevertheless, we `catch` here and disable code coverage.
 
     const audioMixController = new DefaultAudioMixController(this.logger);
+    const element = audioElement || new Audio();
+    const stream = this.destinationStream.stream;
+    this.audioElement = element;
 
     try {
       if (this.browserBehavior.supportsSetSinkId()) {
@@ -126,29 +132,61 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       this.logger.error(`Failed to bind audio device: ${e}`);
     }
     try {
-      await audioMixController.bindAudioElement(audioElement || new Audio());
+      await audioMixController.bindAudioElement(element);
     } catch (e) {
       this.logger.error(`Failed to bind audio element: ${e}`);
     }
-    await audioMixController.bindAudioStream(this.destinationStream.stream);
+    await audioMixController.bindAudioStream(stream);
   }
 
-  private stopTone(): void {
+  private async stopTone(): Promise<void> {
     if (!this.audioContext || !this.gainNode || !this.oscillatorNode || !this.destinationStream) {
       return;
     }
-    const durationSec = 1;
+
+    const cleanup = (): void => {
+      if (this.audioElement) {
+        this.audioElement.pause();
+        this.audioElement.srcObject = null;
+      }
+
+      if (this.oscillatorNode && this.gainNode) {
+        this.oscillatorNode.disconnect(this.gainNode);
+      }
+      if (this.gainNode && this.destinationStream) {
+        this.gainNode.disconnect(this.destinationStream);
+      }
+
+      this.oscillatorNode = null;
+      this.gainNode = null;
+      this.destinationStream = null;
+      this.audioElement = null;
+    };
+
+    // Set up event listener BEFORE scheduling stop to avoid race condition
+    const stopPromise = new Promise<void>(resolve => {
+      this.oscillatorNode.addEventListener(
+        'ended',
+        () => {
+          cleanup();
+          resolve();
+        },
+        { once: true }
+      );
+    });
+
+    // Schedule fade out
     const rampSec = 0.1;
     const maxGainValue = this.configuration.audioOutputGain;
     const currentTime = this.audioContext.currentTime;
-    this.gainNode.gain.linearRampToValueAtTime(maxGainValue, currentTime + rampSec + durationSec);
-    this.gainNode.gain.linearRampToValueAtTime(0, currentTime + rampSec * 2 + durationSec);
-    this.oscillatorNode.stop();
-    this.oscillatorNode.disconnect(this.gainNode);
-    this.gainNode.disconnect(this.destinationStream);
-    this.oscillatorNode = null;
-    this.gainNode = null;
-    this.destinationStream = null;
+    this.gainNode.gain.setValueAtTime(maxGainValue, currentTime);
+    this.gainNode.gain.linearRampToValueAtTime(0, currentTime + rampSec);
+
+    // Schedule oscillator stop slightly after fade completes to avoid clicks
+    this.oscillatorNode.stop(currentTime + rampSec + 0.1);
+
+    // Wait for oscillator to stop
+    await stopPromise;
   }
 
   async checkVideoInput(videoInputDevice: Device): Promise<CheckVideoInputFeedback> {
