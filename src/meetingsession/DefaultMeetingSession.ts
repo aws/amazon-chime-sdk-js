@@ -13,7 +13,7 @@ import DefaultContentShareController from '../contentsharecontroller/DefaultCont
 import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import DeviceController from '../devicecontroller/DeviceController';
-import DefaultencodedTransformWorkerManager from '../encodedtransformmanager/DefaultEncodedTransformWorkerManager';
+import DefaultEncodedTransformWorkerManager from '../encodedtransformmanager/DefaultEncodedTransformWorkerManager';
 import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import DefaultEventController from '../eventcontroller/DefaultEventController';
 import EventController from '../eventcontroller/EventController';
@@ -56,7 +56,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       deviceController.eventController = this.eventController;
     }
 
-    this.encodedTransformWorkerManager = new DefaultencodedTransformWorkerManager(this._logger);
+    this.encodedTransformWorkerManager = new DefaultEncodedTransformWorkerManager(this._logger);
 
     this.audioVideoController = new DefaultAudioVideoController(
       this._configuration,
