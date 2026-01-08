@@ -3,6 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
+import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import Logger from '../logger/Logger';
 import DefaultTransceiverController from './DefaultTransceiverController';
 
@@ -10,9 +11,10 @@ export default class VideoOnlyTransceiverController extends DefaultTransceiverCo
   constructor(
     logger: Logger,
     browserBehavior: BrowserBehavior,
-    meetingSessionContext?: AudioVideoControllerState
+    meetingSessionContext?: AudioVideoControllerState,
+    encodedTransformWorkerManager?: EncodedTransformWorkerManager
   ) {
-    super(logger, browserBehavior, meetingSessionContext);
+    super(logger, browserBehavior, meetingSessionContext, encodedTransformWorkerManager);
   }
 
   setupLocalTransceivers(): void {
