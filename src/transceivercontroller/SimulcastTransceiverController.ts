@@ -101,7 +101,7 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
         streams: [this.defaultMediaStream],
       });
 
-      if (this.encodedTransformWorkerManager.isEnabled()) {
+      if (this.encodedTransformWorkerManager?.isEnabled()) {
         this.encodedTransformWorkerManager.setupAudioSenderTransform(
           this._localAudioTransceiver.sender
         );

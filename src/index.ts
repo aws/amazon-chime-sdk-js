@@ -266,6 +266,7 @@ import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplin
 import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
 import SingleNodeAudioTransformDevice from './devicecontroller/SingleNodeAudioTransformDevice';
+import StartEncodedTransformWorkerTask from './task/StartEncodedTransformWorkerTask';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
 import SubscribeAndReceiveSubscribeAckTask from './task/SubscribeAndReceiveSubscribeAckTask';
 import TargetDisplaySize from './videodownlinkbandwidthpolicy/TargetDisplaySize';
@@ -630,6 +631,7 @@ export {
   SimulcastVideoStreamIndex,
   SingleNodeAudioTransformDevice,
   Some,
+  StartEncodedTransformWorkerTask,
   StreamMetricReport,
   SubscribeAndReceiveSubscribeAckTask,
   TargetDisplaySize,

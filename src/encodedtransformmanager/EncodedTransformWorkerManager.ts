@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { DisabledEncodedTransformsConfiguration } from '../encodedtransformworker/EncodedTransformWorker';
 import MediaMetricsTransformManager from './MediaMetricsEncodedTransformManager';
 import RedundantAudioEncodedTransformManager from './RedundantAudioEncodedTransformManager';
 
@@ -28,9 +29,13 @@ export default interface EncodedTransformWorkerManager {
   isEnabled(): boolean;
 
   /**
-   * Initialize the manager and create the Web Worker
+   * Start the manager and create the Web Worker
+   *
+   * @param disabledTransforms - Optional configuration to disable specific transforms.
+   *                             By default all transforms are enabled (false = enabled).
+   *                             - redundantAudio: When true, redundant audio encoding transform is disabled.
    */
-  initialize(): Promise<void>;
+  start(disabledTransforms?: DisabledEncodedTransformsConfiguration): Promise<void>;
 
   /**
    * Get the redundant audio encode transform manager for access to transform specific functionality
@@ -73,7 +78,7 @@ export default interface EncodedTransformWorkerManager {
   removeObserver(observer: EncodedTransformWorkerManagerObserver): void;
 
   /**
-   * Reset all transform managers to their initial state
+   * Stop all transform managers and reset to initial state
    */
-  reset(): void;
+  stop(): Promise<void>;
 }

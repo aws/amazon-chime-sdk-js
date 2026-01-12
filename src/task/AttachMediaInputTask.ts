@@ -65,7 +65,10 @@ export default class AttachMediaInputTask extends BaseTask {
   private setAudioCodecPreferences(): void {
     const supportsSetCodecPreferences =
       window.RTCRtpTransceiver && 'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
-    const enableAudioRedundancy = this.context.audioProfile.hasRedundancyEnabled();
+    const encodedTransformWorkerManagerEnabled = !!this.context.encodedTransformWorkerManager?.isEnabled();
+    const enableAudioRedundancy =
+      this.context.audioProfile.hasRedundancyEnabled() && encodedTransformWorkerManagerEnabled;
+
     /* istanbul ignore if */
     if (!supportsSetCodecPreferences) {
       this.context.logger.warn(`Setting codec preferences not supported`);
