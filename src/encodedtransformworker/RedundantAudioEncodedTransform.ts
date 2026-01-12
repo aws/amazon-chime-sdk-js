@@ -106,23 +106,27 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
    * Handles configuration messages from the main thread.
    */
   handleMessage(message: EncodedTransformMessage): void {
-    const msgType = message.type;
-    switch (msgType) {
-      case REDUNDANT_AUDIO_MESSAGE_TYPES.RED_PAYLOAD_TYPE:
-        this.setRedPayloadType(parseInt(message.message?.payloadType || '0', 10));
-        break;
-      case REDUNDANT_AUDIO_MESSAGE_TYPES.OPUS_PAYLOAD_TYPE:
-        this.setOpusPayloadType(parseInt(message.message?.payloadType || '0', 10));
-        break;
-      case REDUNDANT_AUDIO_MESSAGE_TYPES.UPDATE_NUM_REDUNDANT_ENCODINGS:
-        this.setNumRedundantEncodings(parseInt(message.message?.numRedundantEncodings || '0', 10));
-        break;
-      case REDUNDANT_AUDIO_MESSAGE_TYPES.ENABLE:
-        this.setRedundancyEnabled(true);
-        break;
-      case REDUNDANT_AUDIO_MESSAGE_TYPES.DISABLE:
-        this.setRedundancyEnabled(false);
-        break;
+    try {
+      const msgType = message.type;
+      switch (msgType) {
+        case REDUNDANT_AUDIO_MESSAGE_TYPES.RED_PAYLOAD_TYPE:
+          this.setRedPayloadType(parseInt(message.message?.payloadType || '0', 10));
+          break;
+        case REDUNDANT_AUDIO_MESSAGE_TYPES.OPUS_PAYLOAD_TYPE:
+          this.setOpusPayloadType(parseInt(message.message?.payloadType || '0', 10));
+          break;
+        case REDUNDANT_AUDIO_MESSAGE_TYPES.UPDATE_NUM_REDUNDANT_ENCODINGS:
+          this.setNumRedundantEncodings(parseInt(message.message?.numRedundantEncodings || '0', 10));
+          break;
+        case REDUNDANT_AUDIO_MESSAGE_TYPES.ENABLE:
+          this.setRedundancyEnabled(true);
+          break;
+        case REDUNDANT_AUDIO_MESSAGE_TYPES.DISABLE:
+          this.setRedundancyEnabled(false);
+          break;
+      }
+    } catch (e) {
+      this.log(`Failed to handle message: ${e}`);
     }
   }
 
@@ -134,26 +138,6 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
 
   protected transformName(): string {
     return TRANSFORM_NAMES.REDUNDANT_AUDIO;
-  }
-
-  /**
-   * Calculates recommended redundancy level based on packet loss percentage.
-   * @returns [numEncodings, shouldDisableRED] - encodings (0-2) and whether to disable RED entirely
-   */
-  static getNumRedundantEncodingsForPacketLoss(packetLoss: number): [number, boolean] {
-    let recommendedRedundantEncodings = 0;
-    let shouldTurnOffRed = false;
-    if (packetLoss <= 8) {
-      recommendedRedundantEncodings = 0;
-    } else if (packetLoss <= 18) {
-      recommendedRedundantEncodings = 1;
-    } else if (packetLoss <= 75) {
-      recommendedRedundantEncodings = 2;
-    } else {
-      recommendedRedundantEncodings = 0;
-      shouldTurnOffRed = true;
-    }
-    return [recommendedRedundantEncodings, shouldTurnOffRed];
   }
 
   /**

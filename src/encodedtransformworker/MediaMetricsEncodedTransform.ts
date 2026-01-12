@@ -11,6 +11,27 @@ export const MEDIA_METRICS_MESSAGE_TYPES = {
 } as const;
 
 /**
+ * Metrics for a single media stream identified by SSRC.
+ * Collected from encoded transform workers processing RTP packets.
+ */
+export interface EncodedTransformMediaStreamMetrics {
+  /**
+   * Synchronization source identifier for the stream.
+   */
+  ssrc: number;
+
+  /**
+   * Number of packets processed in the reporting interval.
+   */
+  packetCount: number;
+
+  /**
+   * Unix timestamp when metrics were collected.
+   */
+  timestamp: number;
+}
+
+/**
  * Abstract base class for packet-level metrics collection per SSRC.
  * Tracks packet counts and timestamps, periodically reporting to the main thread.
  */
@@ -57,10 +78,7 @@ abstract class BaseMetricsTransform extends EncodedTransform {
 
   /** Posts aggregated metrics to the main thread via postMessage. */
   protected reportMetrics(): void {
-    const metricsObject: Record<
-      number,
-      { ssrc: number; packetCount: number; timestamp: number }
-    > = {};
+    const metricsObject: Record<number, EncodedTransformMediaStreamMetrics> = {};
     for (const [ssrc, metrics] of this.metricsMap.entries()) {
       metricsObject[ssrc] = { ssrc, ...metrics };
     }

@@ -86,10 +86,12 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     // @ts-ignore
     const supportsRTCScriptTransform = !!window.RTCRtpScriptTransform;
     if (!supportsRTCScriptTransform) {
-      // @ts-ignore
       // If the WebRTC Encoded Streams API is not supported, attempt to use the legacy pre-M141 release
       // version of the API on chromium based browsers.
-      configuration.encodedInsertableStreams = this.context.audioProfile.hasRedundancyEnabled();
+      const encodedTransformWorkerManagerEnabled = !!this.context.encodedTransformWorkerManager?.isEnabled();
+      // @ts-ignore
+      configuration.encodedInsertableStreams =
+        this.context.audioProfile.hasRedundancyEnabled() && encodedTransformWorkerManagerEnabled;
     }
 
     if (this.context.peer) {

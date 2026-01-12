@@ -6,7 +6,7 @@ import Logger from '../logger/Logger';
 
 /**
  * Abstract base class for managing specific transform types.
- * 
+ *
  * Each TransformManager handles configuration and lifecycle for a particular transform.
  */
 export default abstract class EncodedTransformManager {
@@ -35,9 +35,14 @@ export default abstract class EncodedTransformManager {
   abstract handleWorkerMessage(message: EncodedTransformMessage): void;
 
   /**
-   * Reset transform state
+   * Start the transform manager
    */
-  abstract reset(): void;
+  abstract start(): Promise<void>;
+
+  /**
+   * Stop the transform manager and reset state
+   */
+  abstract stop(): Promise<void>;
 
   /**
    * Send a message to the Web Worker

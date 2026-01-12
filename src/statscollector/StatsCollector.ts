@@ -38,8 +38,8 @@ type StatsReportItem = any;
 import {
   EncodedTransformMediaMetrics,
   EncodedTransformMediaMetricsObserver,
-  EncodedTransformMediaStreamMetrics,
 } from '../encodedtransformmanager/MediaMetricsEncodedTransformManager';
+import { EncodedTransformMediaStreamMetrics } from '../encodedtransformworker/MediaMetricsEncodedTransform';
 
 /**
  * [[StatsCollector]] gathers statistics and sends metrics.

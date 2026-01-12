@@ -72,6 +72,7 @@ import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTa
 import SerialGroupTask from '../task/SerialGroupTask';
 import SetLocalDescriptionTask from '../task/SetLocalDescriptionTask';
 import SetRemoteDescriptionTask from '../task/SetRemoteDescriptionTask';
+import StartEncodedTransformWorkerTask from '../task/StartEncodedTransformWorkerTask';
 import SubscribeAndReceiveSubscribeAckTask from '../task/SubscribeAndReceiveSubscribeAckTask';
 import Task from '../task/Task';
 import TimeoutTask from '../task/TimeoutTask';
@@ -291,14 +292,6 @@ export default class DefaultAudioVideoController
 
   setAudioProfile(audioProfile: AudioProfile): void {
     this._audioProfile = audioProfile;
-
-    if (
-      this._audioProfile.hasRedundancyEnabled() &&
-      !this._encodedTransformWorkerManager?.isEnabled()
-    ) {
-      this.logger.info('Media transforms not enabled, disabling audio redundancy in profile');
-      this._audioProfile.disableRedundancy();
-    }
   }
 
   addObserver(observer: AudioVideoObserver): void {
@@ -426,6 +419,7 @@ export default class DefaultAudioVideoController
 
     // Second layer.
     const receiveAudioInput = new ReceiveAudioInputTask(context).once();
+    const startEncodedTransformWorker = new StartEncodedTransformWorkerTask(context).once();
     this.receiveIndexTask = new ReceiveVideoStreamIndexTask(context);
     // See declaration (unpaused in actionFinishConnecting)
     this.monitorTask.pauseResubscribeCheck();
@@ -440,7 +434,10 @@ export default class DefaultAudioVideoController
     ]).once();
 
     // Third layer.
-    const createPeerConnection = new CreatePeerConnectionTask(context).once(signaling);
+    const createPeerConnection = new CreatePeerConnectionTask(context).once(
+      signaling,
+      startEncodedTransformWorker
+    );
     const attachMediaInput = new AttachMediaInputTask(context).once(
       createPeerConnection,
       receiveAudioInput
@@ -483,22 +480,6 @@ export default class DefaultAudioVideoController
 
   private async actionConnect(reconnecting: boolean): Promise<void> {
     this.initSignalingClient();
-
-    if (this._encodedTransformWorkerManager?.isEnabled()) {
-      // If this fails the manager should disable itself, so that when a reconnect is triggered
-      // by the exception, it will disable redundancy
-      await this._encodedTransformWorkerManager.initialize();
-
-      if (this._audioProfile.hasRedundancyEnabled()) {
-        const redundantAudioEncodeTransformManager = this._encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
-        if (redundantAudioEncodeTransformManager) {
-          this.addObserver(redundantAudioEncodeTransformManager);
-        }
-      }
-    } else {
-      this.logger.warn('Encoded transform manager disabled, disabling audio redundancy');
-      this._audioProfile.disableRedundancy();
-    }
 
     // We no longer need to watch for the early connection dropping; we're back where
     // we otherwise would have been had we not pre-started.
@@ -897,6 +878,11 @@ export default class DefaultAudioVideoController
       /* istanbul ignore next */
       this.logger.info('fail to clean');
     }
+
+    if (this._encodedTransformWorkerManager?.isEnabled()) {
+      await this._encodedTransformWorkerManager.stop();
+    }
+
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
         this.notifyStop(status, error);

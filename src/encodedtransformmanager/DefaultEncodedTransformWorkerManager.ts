@@ -6,6 +6,7 @@ import {
   COMMON_MESSAGE_TYPES,
   EncodedTransformMessage,
 } from '../encodedtransformworker/EncodedTransform';
+import { DisabledEncodedTransformsConfiguration } from '../encodedtransformworker/EncodedTransformWorker';
 import EncodedTransformWorkerCode from '../encodedtransformworkercode/EncodedTransformWorkerCode';
 import Logger from '../logger/Logger';
 import EncodedTransformWorkerManager, {
@@ -25,6 +26,7 @@ export default class DefaultEncodedTransformWorkerManager
   private workerURL: string | null = null;
   private observers: Set<EncodedTransformWorkerManagerObserver> = new Set();
   private disabled: boolean = false;
+  private disabledTransforms: DisabledEncodedTransformsConfiguration = {};
 
   private redManager: RedundantAudioEncodedTransformManager | null = null;
   private metricsManager: MediaMetricsTransformManager | null = null;
@@ -55,12 +57,18 @@ export default class DefaultEncodedTransformWorkerManager
     return !this.disabled;
   }
 
-  async initialize(): Promise<void> {
+
+  async start(disabledTransforms?: DisabledEncodedTransformsConfiguration): Promise<void> {
+    this.disabledTransforms = disabledTransforms || {};
     await this.createWorker();
 
-    // Create transform managers
-    this.redManager = new RedundantAudioEncodedTransformManager(this.worker!, this.logger);
+    // Create transform managers based on disabled configuration
+    if (!disabledTransforms?.redundantAudio) {
+      this.redManager = new RedundantAudioEncodedTransformManager(this.worker!, this.logger);
+      await this.redManager.start();
+    }
     this.metricsManager = new MediaMetricsTransformManager(this.worker!, this.logger);
+    await this.metricsManager.start();
 
     this.logger.info('DefaultEncodedTransformManager initialized');
   }
@@ -97,16 +105,26 @@ export default class DefaultEncodedTransformWorkerManager
     operation: 'send' | 'receive',
     mediaType: 'audio' | 'video'
   ): void {
+    if (operation === 'send' && !(senderOrReceiver instanceof RTCRtpSender)) {
+      throw new Error('Operation "send" requires an RTCRtpSender');
+    }
+    if (operation === 'receive' && !(senderOrReceiver instanceof RTCRtpReceiver)) {
+      throw new Error('Operation "receive" requires an RTCRtpReceiver');
+    }
+
     if (!this.worker) {
       throw new Error('Worker not initialized');
     }
 
+    const options = {
+      operation,
+      mediaType,
+      disabledTransforms: this.disabledTransforms,
+    };
+
     if (this.supportsRTCScriptTransform) {
       // @ts-ignore
-      senderOrReceiver.transform = new RTCRtpScriptTransform(this.worker, {
-        operation,
-        mediaType,
-      });
+      senderOrReceiver.transform = new RTCRtpScriptTransform(this.worker, options);
     } else if (this.supportsInsertableStreams) {
       // @ts-ignore - Legacy API
       const streams = senderOrReceiver.createEncodedStreams();
@@ -114,6 +132,7 @@ export default class DefaultEncodedTransformWorkerManager
       this.worker.postMessage(
         {
           msgType: 'StartEncodedTransformWorker',
+          options,
           [mediaType]: { [operation]: streams },
         },
         [streams.readable, streams.writable]
@@ -150,11 +169,11 @@ export default class DefaultEncodedTransformWorkerManager
   }
 
   /**
-   * Reset all transform managers to their initial state
+   * Stop all transform managers and reset to initial state
    */
-  reset(): void {
-    this.redManager?.reset();
-    this.metricsManager?.reset();
+  async stop(): Promise<void> {
+    await this.redManager?.stop();
+    await this.metricsManager?.stop();
   }
 
   /**
@@ -240,5 +259,8 @@ export default class DefaultEncodedTransformWorkerManager
   private disable(): void {
     this.disabled = true;
     this.logger.info('Media transforms disabled');
+
+    // Just call stop async
+    this.stop();
   }
 }

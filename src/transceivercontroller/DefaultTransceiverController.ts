@@ -167,7 +167,7 @@ export default class DefaultTransceiverController implements TransceiverControll
         streams: [this.defaultMediaStream],
       });
 
-      if (this.encodedTransformWorkerManager.isEnabled()) {
+      if (this.encodedTransformWorkerManager?.isEnabled()) {
         this.encodedTransformWorkerManager.setupAudioSenderTransform(
           this._localAudioTransceiver.sender
         );
@@ -185,7 +185,7 @@ export default class DefaultTransceiverController implements TransceiverControll
         streams: [this.defaultMediaStream],
       });
 
-      this.encodedTransformWorkerManager.setupVideoSenderTransform(
+      this.encodedTransformWorkerManager?.setupVideoSenderTransform(
         this._localCameraTransceiver.sender
       );
     }

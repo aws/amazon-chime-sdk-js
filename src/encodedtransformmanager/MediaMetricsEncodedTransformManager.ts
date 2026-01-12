@@ -7,29 +7,13 @@ import {
   EncodedTransformMessage,
   TRANSFORM_NAMES,
 } from '../encodedtransformworker/EncodedTransform';
-import { MEDIA_METRICS_MESSAGE_TYPES } from '../encodedtransformworker/MediaMetricsEncodedTransform';
+import {
+  EncodedTransformMediaStreamMetrics,
+  MEDIA_METRICS_MESSAGE_TYPES,
+} from '../encodedtransformworker/MediaMetricsEncodedTransform';
 import Logger from '../logger/Logger';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import EncodedTransformManager from './EncodedTransformManager';
-
-/**
- * Metrics for a single media stream identified by SSRC.
- * Collected from encoded transform workers processing RTP packets.
- */
-export interface EncodedTransformMediaStreamMetrics {
-  /**
-   * Synchronization source identifier for the stream.
-   */
-  ssrc: number;
-  /**
-   * Number of packets processed in the reporting interval.
-   */
-  packetCount: number;
-  /**
-   * Unix timestamp (ms) when metrics were collected.
-   */
-  timestamp: number;
-}
 
 /**
  * Aggregated metrics from all encoded transform types, keyed by SSRC.
@@ -40,14 +24,17 @@ export interface EncodedTransformMediaMetrics {
    * Outbound audio stream metrics.
    */
   audioSender: Record<number, EncodedTransformMediaStreamMetrics>;
+
   /**
    * Inbound audio stream metrics.
    */
   audioReceiver: Record<number, EncodedTransformMediaStreamMetrics>;
+
   /**
    * Outbound video stream metrics.
    */
   videoSender: Record<number, EncodedTransformMediaStreamMetrics>;
+
   /**
    * Inbound video stream metrics.
    */
@@ -82,6 +69,12 @@ export default class MediaMetricsTransformManager
 
   constructor(worker: Worker, logger: Logger) {
     super(worker, logger);
+  }
+
+  /**
+   * Start the metrics transform manager
+   */
+  async start(): Promise<void> {
     this.startMetricsReporting();
   }
 
@@ -102,29 +95,35 @@ export default class MediaMetricsTransformManager
    * Routes messages to the appropriate metrics property
    */
   handleWorkerMessage(message: EncodedTransformMessage): void {
-    // Ignore NewSSRC messages for now
     if (message.type === MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC) {
       return;
     }
 
-    if (message.type !== COMMON_MESSAGE_TYPES.METRICS) return;
+    if (message.type !== COMMON_MESSAGE_TYPES.METRICS) {
+      return;
+    }
 
-    const metrics = message.message?.metrics ? JSON.parse(message.message.metrics) : null;
-    if (!metrics) return;
+    try {
+      const metrics: Record<number, EncodedTransformMediaStreamMetrics> = JSON.parse(
+        message.message.metrics
+      );
 
-    switch (message.transformName) {
-      case TRANSFORM_NAMES.AUDIO_SENDER:
-        this.audioSender = metrics as Record<number, EncodedTransformMediaStreamMetrics>;
-        break;
-      case TRANSFORM_NAMES.AUDIO_RECEIVER:
-        this.audioReceiver = metrics as Record<number, EncodedTransformMediaStreamMetrics>;
-        break;
-      case TRANSFORM_NAMES.VIDEO_SENDER:
-        this.videoSender = metrics as Record<number, EncodedTransformMediaStreamMetrics>;
-        break;
-      case TRANSFORM_NAMES.VIDEO_RECEIVER:
-        this.videoReceiver = metrics as Record<number, EncodedTransformMediaStreamMetrics>;
-        break;
+      switch (message.transformName) {
+        case TRANSFORM_NAMES.AUDIO_SENDER:
+          this.audioSender = metrics;
+          break;
+        case TRANSFORM_NAMES.AUDIO_RECEIVER:
+          this.audioReceiver = metrics;
+          break;
+        case TRANSFORM_NAMES.VIDEO_SENDER:
+          this.videoSender = metrics;
+          break;
+        case TRANSFORM_NAMES.VIDEO_RECEIVER:
+          this.videoReceiver = metrics;
+          break;
+      }
+    } catch (e) {
+      this.logger.warn(`Failed to handle metrics message: ${e}`);
     }
   }
 
@@ -173,9 +172,9 @@ export default class MediaMetricsTransformManager
   }
 
   /**
-   * Reset metrics transform state
+   * Stop metrics transform and reset state
    */
-  reset(): void {
+  async stop(): Promise<void> {
     this.observers.clear();
 
     // Reset all metrics to initial state
@@ -194,6 +193,6 @@ export default class MediaMetricsTransformManager
       this.metricsReportingScheduler = null;
     }
 
-    this.reset();
+    this.stop();
   }
 }

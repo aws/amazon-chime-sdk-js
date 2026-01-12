@@ -11,6 +11,13 @@ import {
 import RedundantAudioEncodedTransform from './RedundantAudioEncodedTransform';
 
 /**
+ * Configuration for disabled transforms passed from main thread.
+ */
+export interface DisabledEncodedTransformsConfiguration {
+  redundantAudio?: boolean;
+}
+
+/**
  * Web Worker entry point for WebRTC encoded media transforms.
  *
  * Manages transform pipelines for audio/video sender/receiver streams using either:
@@ -44,15 +51,17 @@ export default class EncodedTransformWorker {
       self.onrtctransform = (event: RTCTransformEvent) => {
         const transformer = event.transformer;
         const options = transformer.options;
+        const disabledTransforms: DisabledEncodedTransformsConfiguration =
+          options.disabledTransforms || {};
 
         EncodedTransformWorker.log(
-          `Setting up transform: operation=${options.operation}, mediaType=${options.mediaType}`
+          `Setting up transform: operation=${options.operation}, mediaType=${options.mediaType}, disabledTransforms=${JSON.stringify(disabledTransforms)}`
         );
 
         if (options.mediaType === 'audio' && options.operation === 'send') {
-          EncodedTransformWorker.setupAudioSenderPipeline(transformer);
+          EncodedTransformWorker.setupAudioSenderPipeline(transformer, disabledTransforms);
         } else if (options.mediaType === 'audio' && options.operation === 'receive') {
-          EncodedTransformWorker.setupAudioReceiverPipeline(transformer);
+          EncodedTransformWorker.setupAudioReceiverPipeline(transformer, disabledTransforms);
         } else if (options.mediaType === 'video' && options.operation === 'send') {
           EncodedTransformWorker.setupVideoSenderPipeline(transformer);
         } else if (options.mediaType === 'video' && options.operation === 'receive') {
@@ -69,18 +78,26 @@ export default class EncodedTransformWorker {
       // Handle legacy createEncodedStreams() API
       if (message.msgType === 'StartEncodedTransformWorker') {
         EncodedTransformWorker.log('Setting up legacy encoded streams');
+        const disabledTransforms: DisabledEncodedTransformsConfiguration =
+          message.options?.disabledTransforms || {};
 
         if (message.audio?.send) {
-          EncodedTransformWorker.setupAudioSenderPipeline({
-            readable: message.audio.send.readable,
-            writable: message.audio.send.writable,
-          });
+          EncodedTransformWorker.setupAudioSenderPipeline(
+            {
+              readable: message.audio.send.readable,
+              writable: message.audio.send.writable,
+            },
+            disabledTransforms
+          );
         }
         if (message.audio?.receive) {
-          EncodedTransformWorker.setupAudioReceiverPipeline({
-            readable: message.audio.receive.readable,
-            writable: message.audio.receive.writable,
-          });
+          EncodedTransformWorker.setupAudioReceiverPipeline(
+            {
+              readable: message.audio.receive.readable,
+              writable: message.audio.receive.writable,
+            },
+            disabledTransforms
+          );
         }
         if (message.video?.send) {
           EncodedTransformWorker.setupVideoSenderPipeline({
@@ -129,25 +146,36 @@ export default class EncodedTransformWorker {
 
   /**
    * Sets up audio sender pipeline: encoder → metrics → RED encode → network.
+   * If RED is disabled: encoder → metrics → network.
    * @param transformer The RTCRtpScriptTransformer or legacy streams object
+   * @param disabledTransforms Configuration for disabled transforms
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static setupAudioSenderPipeline(transformer: any): void {
+  private static setupAudioSenderPipeline(
+    transformer: any,
+    disabledTransforms: DisabledEncodedTransformsConfiguration
+  ): void {
     const metricsTransform = new TransformStream({
       transform: EncodedTransformWorker.audioSenderMetricsTransform!.transform.bind(
         EncodedTransformWorker.audioSenderMetricsTransform
       ),
     });
-    const redEncodeTransform = new TransformStream({
-      transform: EncodedTransformWorker.redundantAudioEncodedTransform!.senderTransform.bind(
-        EncodedTransformWorker.redundantAudioEncodedTransform
-      ),
-    });
 
-    transformer.readable
-      .pipeThrough(metricsTransform)
-      .pipeThrough(redEncodeTransform)
-      .pipeTo(transformer.writable);
+    if (disabledTransforms.redundantAudio) {
+      // Skip RED transform when disabled
+      transformer.readable.pipeThrough(metricsTransform).pipeTo(transformer.writable);
+    } else {
+      const redEncodeTransform = new TransformStream({
+        transform: EncodedTransformWorker.redundantAudioEncodedTransform!.senderTransform.bind(
+          EncodedTransformWorker.redundantAudioEncodedTransform
+        ),
+      });
+
+      transformer.readable
+        .pipeThrough(metricsTransform)
+        .pipeThrough(redEncodeTransform)
+        .pipeTo(transformer.writable);
+    }
   }
 
   /**
@@ -166,26 +194,36 @@ export default class EncodedTransformWorker {
 
   /**
    * Sets up audio receiver pipeline: network → RED decode → metrics → decoder.
+   * If RED is disabled: network → metrics → decoder.
    * @param transformer The RTCRtpScriptTransformer or legacy streams object
+   * @param disabledTransforms Configuration for disabled transforms
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static setupAudioReceiverPipeline(transformer: any): void {
-    const redDecodeTransform = new TransformStream({
-      transform: EncodedTransformWorker.redundantAudioEncodedTransform!.receivePacketLogTransform.bind(
-        EncodedTransformWorker.redundantAudioEncodedTransform
-      ),
-    });
-
+  private static setupAudioReceiverPipeline(
+    transformer: any,
+    disabledTransforms: DisabledEncodedTransformsConfiguration
+  ): void {
     const metricsTransform = new TransformStream({
       transform: EncodedTransformWorker.audioReceiverMetricsTransform!.transform.bind(
         EncodedTransformWorker.audioReceiverMetricsTransform
       ),
     });
 
-    transformer.readable
-      .pipeThrough(redDecodeTransform)
-      .pipeThrough(metricsTransform)
-      .pipeTo(transformer.writable);
+    if (disabledTransforms.redundantAudio) {
+      // Skip RED transform when disabled
+      transformer.readable.pipeThrough(metricsTransform).pipeTo(transformer.writable);
+    } else {
+      const redDecodeTransform = new TransformStream({
+        transform: EncodedTransformWorker.redundantAudioEncodedTransform!.receivePacketLogTransform.bind(
+          EncodedTransformWorker.redundantAudioEncodedTransform
+        ),
+      });
+
+      transformer.readable
+        .pipeThrough(redDecodeTransform)
+        .pipeThrough(metricsTransform)
+        .pipeTo(transformer.writable);
+    }
   }
 
   /**

@@ -68,14 +68,17 @@ export default class RedundantAudioEncodedTransformManager
    * Handle RED metrics messages from the Web Worker
    */
   handleWorkerMessage(message: EncodedTransformMessage): void {
-    if (message.type === COMMON_MESSAGE_TYPES.METRICS) {
-      const metrics = message.message?.metrics ? JSON.parse(message.message.metrics) : null;
-      const ssrc = message.message?.ssrc ? parseInt(message.message.ssrc, 10) : 0;
+    if (message.type !== COMMON_MESSAGE_TYPES.METRICS) {
+      return;
+    }
 
-      if (metrics) {
-        this.updateMetrics(metrics);
-        this.notifyObservers(ssrc);
-      }
+    try {
+      const metrics: RedundantAudioMetrics = JSON.parse(message.message.metrics);
+      const ssrc = parseInt(message.message.ssrc, 10);
+      this.updateMetrics(metrics);
+      this.notifyObservers(ssrc);
+    } catch (e) {
+      this.logger.warn(`Failed to handle RED metrics message: ${e}`);
     }
   }
 
@@ -293,7 +296,7 @@ export default class RedundantAudioEncodedTransformManager
   }
 
   /**
-   * Returns the number of encodings based on packetLoss value. This is used by `DefaultTransceiverController` to
+   * Returns the number of encodings based on packetLoss value. This is used to
    * determine when to alert the encoder to update the number of encodings. It also determines if we need to
    * turn off red in cases of very high packet loss to avoid congestion collapse.
    */
@@ -353,9 +356,16 @@ export default class RedundantAudioEncodedTransformManager
   }
 
   /**
-   * Reset transform state
+   * Start the redundant audio transform manager
    */
-  reset(): void {
+  async start(): Promise<void> {
+    // No-op for now, manager is ready after construction
+  }
+
+  /**
+   * Stop transform and reset state
+   */
+  async stop(): Promise<void> {
     this.observers.clear();
     this.audioMetricsHistory = [];
   }
