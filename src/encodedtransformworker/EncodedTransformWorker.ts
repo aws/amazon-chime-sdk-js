@@ -55,7 +55,9 @@ export default class EncodedTransformWorker {
           options.disabledTransforms || {};
 
         EncodedTransformWorker.log(
-          `Setting up transform: operation=${options.operation}, mediaType=${options.mediaType}, disabledTransforms=${JSON.stringify(disabledTransforms)}`
+          `Setting up transform: operation=${options.operation}, mediaType=${
+            options.mediaType
+          }, disabledTransforms=${JSON.stringify(disabledTransforms)}`
         );
 
         if (options.mediaType === 'audio' && options.operation === 'send') {
@@ -150,8 +152,8 @@ export default class EncodedTransformWorker {
    * @param transformer The RTCRtpScriptTransformer or legacy streams object
    * @param disabledTransforms Configuration for disabled transforms
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static setupAudioSenderPipeline(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformer: any,
     disabledTransforms: DisabledEncodedTransformsConfiguration
   ): void {
@@ -198,8 +200,8 @@ export default class EncodedTransformWorker {
    * @param transformer The RTCRtpScriptTransformer or legacy streams object
    * @param disabledTransforms Configuration for disabled transforms
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static setupAudioReceiverPipeline(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformer: any,
     disabledTransforms: DisabledEncodedTransformsConfiguration
   ): void {

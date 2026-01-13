@@ -116,7 +116,9 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
           this.setOpusPayloadType(parseInt(message.message?.payloadType || '0', 10));
           break;
         case REDUNDANT_AUDIO_MESSAGE_TYPES.UPDATE_NUM_REDUNDANT_ENCODINGS:
-          this.setNumRedundantEncodings(parseInt(message.message?.numRedundantEncodings || '0', 10));
+          this.setNumRedundantEncodings(
+            parseInt(message.message?.numRedundantEncodings || '0', 10)
+          );
           break;
         case REDUNDANT_AUDIO_MESSAGE_TYPES.ENABLE:
           this.setRedundancyEnabled(true);
