@@ -19,8 +19,14 @@ export default class DefaultUserAgentParser implements UserAgentParser {
   private browserVersion: string;
   private deviceName: string;
   private browserMajorVersion: string;
+  private osName: string;
+  private osVersion: string;
+  private engineName: string;
+  private engineMajorVersion: number;
+  private logger: Logger;
 
   constructor(logger: Logger) {
+    this.logger = logger;
     try {
       this.parserResult =
         navigator && navigator.userAgent
@@ -39,6 +45,10 @@ export default class DefaultUserAgentParser implements UserAgentParser {
       [this.parserResult?.device.vendor || '', this.parserResult?.device.model || '']
         .join(' ')
         .trim() || DefaultUserAgentParser.UNAVAILABLE;
+    this.osName = this.parserResult?.os.name || DefaultUserAgentParser.UNAVAILABLE;
+    this.osVersion = this.parserResult?.os.version || DefaultUserAgentParser.UNAVAILABLE;
+    this.engineName = this.parserResult?.engine?.name || '';
+    this.engineMajorVersion = parseInt(this.parserResult?.engine?.version?.split('.')[0] || '0');
   }
 
   getParserResult(): { [key: string]: string } {
@@ -47,10 +57,99 @@ export default class DefaultUserAgentParser implements UserAgentParser {
       browserName: this.browserName,
       browserVersion: this.browserVersion,
       deviceName: this.deviceName,
-      osName: this.parserResult?.os.name || DefaultUserAgentParser.UNAVAILABLE,
-      osVersion: this.parserResult?.os.version || DefaultUserAgentParser.UNAVAILABLE,
+      osName: this.osName,
+      osVersion: this.osVersion,
       sdkVersion: Versioning.sdkVersion,
       sdkName: Versioning.sdkName,
     };
+  }
+
+  /**
+   * Returns the browser engine name (e.g., "Blink", "Gecko", "WebKit").
+   */
+  getEngineName(): string {
+    return this.engineName;
+  }
+
+  /**
+   * Returns the browser engine major version.
+   */
+  getEngineMajorVersion(): number {
+    return this.engineMajorVersion;
+  }
+
+  /**
+   * Updates internal values using the User-Agent Client Hints API.
+   * If the API is not available, resolves without making changes.
+   * @param alwaysOverride - If true, overrides osName, deviceName, and browserName even if already set
+   * @returns Promise that resolves when update is complete
+   */
+  async updateWithHighEntropyValues(alwaysOverride: boolean = false): Promise<void> {
+    /* istanbul ignore next */
+    // @ts-ignore - navigator.userAgentData is not yet in TypeScript's lib.dom.d.ts
+    if (!navigator?.userAgentData?.getHighEntropyValues) {
+      this.logger?.debug('User-Agent Client Hints API not available');
+      return;
+    }
+
+    try {
+      // @ts-ignore - navigator.userAgentData is not yet in TypeScript's lib.dom.d.ts
+      const hints = await navigator.userAgentData.getHighEntropyValues([
+        'fullVersionList',
+        'model',
+        'platform',
+        'platformVersion',
+      ]);
+
+      const shouldUpdate = (field: string): boolean =>
+        alwaysOverride || field === DefaultUserAgentParser.UNAVAILABLE;
+
+      if (hints.platform && shouldUpdate(this.osName)) {
+        this.osName = hints.platform;
+      }
+
+      if (hints.platformVersion && shouldUpdate(this.osVersion)) {
+        this.osVersion = hints.platformVersion;
+      }
+
+      if (hints.model !== undefined && shouldUpdate(this.deviceName)) {
+        this.deviceName = hints.model || DefaultUserAgentParser.UNAVAILABLE;
+      }
+
+      if (hints.fullVersionList?.length) {
+        const browser = this.selectPrimaryBrowser(hints.fullVersionList);
+        if (browser) {
+          if (shouldUpdate(this.browserName)) {
+            this.browserName = browser.brand;
+          }
+          this.browserVersion = browser.version;
+          this.browserMajorVersion = browser.version.split('.')[0];
+        }
+      }
+    } catch (error) {
+      this.logger?.error(`Failed to get high entropy values: ${error}`);
+    }
+  }
+
+  /**
+   * Selects the primary browser from a list of brand/version pairs.
+   * Filters out placeholder brands (starting with "Not") and prefers
+   * specific browser brands over generic "Chromium".
+   */
+  private selectPrimaryBrowser(
+    brands: Array<{ brand: string; version: string }>
+  ): { brand: string; version: string } | null {
+    // Filter out placeholder brands (start with "Not")
+    const validBrands = brands.filter(b => !b.brand.startsWith('Not'));
+
+    // Prefer specific browsers over Chromium
+    const preferredBrands = ['Google Chrome', 'Microsoft Edge', 'Opera', 'Brave', 'Vivaldi'];
+    for (const preferred of preferredBrands) {
+      const found = validBrands.find(b => b.brand === preferred);
+      if (found) return found;
+    }
+
+    // Fall back to first non-Chromium brand, or Chromium if that's all we have
+    return validBrands.find(b => b.brand !== 'Chromium') || validBrands[0] || null;
   }
 }

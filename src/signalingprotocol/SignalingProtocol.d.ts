@@ -403,6 +403,12 @@ export interface ISdkClientDetails {
 
     /** SdkClientDetails clientUtcOffset */
     clientUtcOffset?: (string|null);
+
+    /** SdkClientDetails osName */
+    osName?: (string|null);
+
+    /** SdkClientDetails osVersion */
+    osVersion?: (string|null);
 }
 
 /** Represents a SdkClientDetails. */
@@ -440,6 +446,12 @@ export class SdkClientDetails implements ISdkClientDetails {
 
     /** SdkClientDetails clientUtcOffset. */
     public clientUtcOffset: string;
+
+    /** SdkClientDetails osName. */
+    public osName: string;
+
+    /** SdkClientDetails osVersion. */
+    public osVersion: string;
 
     /**
      * Creates a new SdkClientDetails instance using the specified properties.

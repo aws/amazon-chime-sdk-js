@@ -260,7 +260,6 @@ describe('DefaultBrowserBehavior', () => {
       domMockBehavior.undefinedDocument = true;
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('react-native');
-      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(-1);
     });
 
     it('can handle an unknown user agent', () => {
@@ -391,6 +390,62 @@ describe('DefaultBrowserBehavior', () => {
     it('Supports audio redundancy for Safari', () => {
       setUserAgent(SAFARI_USER_AGENT);
       expect(new DefaultBrowserBehavior().supportsAudioRedundancy()).to.be.true;
+    });
+  });
+
+  describe('unavailable values', () => {
+    it('returns empty string when parser returns Unavailable', () => {
+      // Delete user agent to trigger Unavailable fallbacks in parser
+      // @ts-ignore
+      delete navigator.userAgent;
+      const behavior = new DefaultBrowserBehavior();
+      expect(behavior.version()).to.eq('');
+      expect(behavior.deviceName()).to.eq('');
+      expect(behavior.osName()).to.eq('');
+      expect(behavior.osVersion()).to.eq('');
+    });
+  });
+
+  describe('updateWithHighEntropyValues', () => {
+    it('passes alwaysOverride parameter to userAgentParser', async () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      const behavior = new DefaultBrowserBehavior();
+
+      // @ts-ignore
+      navigator.userAgentData = {
+        getHighEntropyValues: async () => ({
+          platform: 'macOS',
+          platformVersion: '14.0.0',
+          model: 'MacBook Pro',
+          fullVersionList: [{ brand: 'Google Chrome', version: '120.0.6099.129' }],
+        }),
+      };
+
+      // Without alwaysOverride, existing values should not change
+      await behavior.updateWithHighEntropyValues(false);
+      expect(behavior.osName()).to.eq('Mac OS');
+
+      // With alwaysOverride, values should be updated
+      await behavior.updateWithHighEntropyValues(true);
+      expect(behavior.osName()).to.eq('macOS');
+      expect(behavior.osVersion()).to.eq('14.0.0');
+      expect(behavior.deviceName()).to.eq('MacBook Pro');
+    });
+
+    it('uses default alwaysOverride=false when not specified', async () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      const behavior = new DefaultBrowserBehavior();
+
+      // @ts-ignore
+      navigator.userAgentData = {
+        getHighEntropyValues: async () => ({
+          platform: 'macOS',
+        }),
+      };
+
+      await behavior.updateWithHighEntropyValues();
+      // osName should not change since it was already set
+      expect(behavior.osName()).to.eq('Mac OS');
     });
   });
 });

@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { UAParser } from 'ua-parser-js';
-
 import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import EventIngestionConfiguration from '../eventingestionconfiguration/EventIngestionConfiguration';
 import EventObserver from '../eventobserver/EventObserver';
@@ -13,6 +11,7 @@ import MeetingEventsClientConfiguration from '../eventsclientconfiguration/Meeti
 import Logger from '../logger/Logger';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import DefaultUserAgentParser from '../useragentparser/DefaultUserAgentParser';
 import Versioning from '../versioning/Versioning';
 import AudioVideoEventAttributes from './AudioVideoEventAttributes';
 import DeviceEventAttributes from './DeviceEventAttributes';
@@ -24,24 +23,15 @@ import MeetingHistoryState from './MeetingHistoryState';
 import VideoFXEventAttributes from './VideoFXEventAttributes';
 
 export default class DefaultEventController implements EventController, Destroyable {
-  private static readonly UNAVAILABLE = 'Unavailable';
-
-  // Use "ua-parser-js" over "detect-browser" to get more detailed information.
-  // We can consider replacing "detect-browser" in DefaultBrowserBehavior.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private parserResult: any;
-  private browserMajorVersion: string;
   private meetingHistoryStates: { name: MeetingHistoryState; timestampMs: number }[] = [];
   private observerSet: Set<EventObserver> = new Set<EventObserver>();
   private logger: Logger;
   private configuration: MeetingSessionConfiguration;
   private _eventReporter: EventReporter;
+  private userAgentParser: DefaultUserAgentParser;
+  private parserResult: { [key: string]: string };
+  private highEntropyUpdated = false;
   destroyed = false;
-
-  // Compute these once so we're not doing work on each event.
-  private browserName: string;
-  private browserVersion: string;
-  private deviceName: string;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -51,23 +41,18 @@ export default class DefaultEventController implements EventController, Destroya
     this.logger = logger;
     this.configuration = configuration;
     this.setupEventReporter(configuration, logger, eventReporter);
-    try {
-      this.parserResult =
-        navigator && navigator.userAgent ? new UAParser(navigator.userAgent).getResult() : null;
-    } catch (error) {
-      // This seems to never happen with ua-parser-js in reality, even with malformed strings.
-      /* istanbul ignore next */
-      this.logger.error(error.message);
-    }
 
-    this.browserMajorVersion =
-      this.parserResult?.browser?.version?.split('.')[0] || DefaultEventController.UNAVAILABLE;
-    this.browserName = this.parserResult?.browser.name || DefaultEventController.UNAVAILABLE;
-    this.browserVersion = this.parserResult?.browser.version || DefaultEventController.UNAVAILABLE;
-    this.deviceName =
-      [this.parserResult?.device.vendor || '', this.parserResult?.device.model || '']
-        .join(' ')
-        .trim() || DefaultEventController.UNAVAILABLE;
+    this.userAgentParser = new DefaultUserAgentParser(logger);
+    this.parserResult = this.userAgentParser.getParserResult();
+  }
+
+  private async updateAttributesWithHighEntropyValues(): Promise<void> {
+    if (this.highEntropyUpdated) {
+      return;
+    }
+    this.highEntropyUpdated = true;
+    await this.userAgentParser.updateWithHighEntropyValues();
+    this.parserResult = this.userAgentParser.getParserResult();
   }
 
   addObserver(observer: EventObserver): void {
@@ -93,6 +78,8 @@ export default class DefaultEventController implements EventController, Destroya
     name: EventName,
     attributes?: AudioVideoEventAttributes | DeviceEventAttributes | VideoFXEventAttributes
   ): Promise<void> {
+    await this.updateAttributesWithHighEntropyValues();
+
     const timestampMs = Date.now();
     this.meetingHistoryStates.push({
       name,
@@ -161,10 +148,10 @@ export default class DefaultEventController implements EventController, Destroya
   private getAttributes(timestampMs: number): EventAttributes {
     return {
       attendeeId: this.configuration.credentials.attendeeId,
-      browserMajorVersion: this.browserMajorVersion,
-      browserName: this.browserName,
-      browserVersion: this.browserVersion,
-      deviceName: this.deviceName,
+      browserMajorVersion: this.parserResult.browserMajorVersion,
+      browserName: this.parserResult.browserName,
+      browserVersion: this.parserResult.browserVersion,
+      deviceName: this.parserResult.deviceName,
       externalMeetingId:
         typeof this.configuration.externalMeetingId === 'string'
           ? this.configuration.externalMeetingId
@@ -172,8 +159,8 @@ export default class DefaultEventController implements EventController, Destroya
       externalUserId: this.configuration.credentials.externalUserId,
       meetingHistory: this.meetingHistoryStates,
       meetingId: this.configuration.meetingId,
-      osName: this.parserResult?.os.name || DefaultEventController.UNAVAILABLE,
-      osVersion: this.parserResult?.os.version || DefaultEventController.UNAVAILABLE,
+      osName: this.parserResult.osName,
+      osVersion: this.parserResult.osVersion,
       sdkVersion: Versioning.sdkVersion,
       sdkName: Versioning.sdkName,
       timestampMs,

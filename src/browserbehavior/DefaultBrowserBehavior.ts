@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { detect } from 'detect-browser';
-import { UAParser } from 'ua-parser-js';
 
+import NoOpLogger from '../logger/NoOpLogger';
+import DefaultUserAgentParser from '../useragentparser/DefaultUserAgentParser';
 import BrowserBehavior from './BrowserBehavior';
 import ExtendedBrowserBehavior from './ExtendedBrowserBehavior';
 
@@ -14,9 +15,13 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     version: 'unknown',
     os: 'unknown',
   };
+
   private readonly browser = detect() || this.FALLBACK_BROWSER;
-  private readonly uaParserResult =
-    navigator && navigator.userAgent ? new UAParser(navigator.userAgent).getResult() : null;
+  private readonly userAgentParser: DefaultUserAgentParser;
+
+  constructor() {
+    this.userAgentParser = new DefaultUserAgentParser(new NoOpLogger());
+  }
 
   private browserSupport: { [id: string]: number } = {
     chrome: 78,
@@ -59,25 +64,42 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview', 'edge-ios'];
   private static MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK = 16;
   private static MIN_IOS_NON_SAFARI_SUPPORT_CANVAS_STREAM_PLAYBACK = 106;
+  private static readonly UNAVAILABLE = 'Unavailable';
 
   version(): string {
-    return this.browser.version;
+    const ver = this.userAgentParser.getParserResult().browserVersion;
+    return ver === DefaultBrowserBehavior.UNAVAILABLE ? '' : ver;
   }
 
   majorVersion(): number {
-    return this.version() !== null ? parseInt(this.version().split('.')[0]) : -1;
+    return parseInt(this.userAgentParser.getParserResult().browserMajorVersion);
   }
 
   osMajorVersion(): number {
-    return parseInt(this.uaParserResult.os.version.split('.')[0]);
+    return parseInt(this.osVersion().split('.')[0]);
+  }
+
+  deviceName(): string {
+    const name = this.userAgentParser.getParserResult().deviceName;
+    return name === DefaultBrowserBehavior.UNAVAILABLE ? '' : name;
+  }
+
+  osName(): string {
+    const name = this.userAgentParser.getParserResult().osName;
+    return name === DefaultBrowserBehavior.UNAVAILABLE ? '' : name;
+  }
+
+  osVersion(): string {
+    const ver = this.userAgentParser.getParserResult().osVersion;
+    return ver === DefaultBrowserBehavior.UNAVAILABLE ? '' : ver;
   }
 
   private engine(): string {
-    return this.uaParserResult.engine.name;
+    return this.userAgentParser.getEngineName();
   }
 
   private engineMajorVersion(): number {
-    return parseInt(this.uaParserResult.engine.version.split('.')[0]);
+    return this.userAgentParser.getEngineMajorVersion();
   }
 
   name(): string {
@@ -263,7 +285,12 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   requiresDisablingH264Encoding(): boolean {
-    return this.isIOS() && (this.version() === '15.1.0' || /( OS 15_1)/i.test(navigator.userAgent));
+    return (
+      this.isIOS() &&
+      (this.version() === '15.1.0' ||
+        this.version() === '15.1' ||
+        /( OS 15_1)/i.test(navigator.userAgent))
+    );
   }
 
   // In Safari, a hidden video element can show a black screen.
@@ -288,6 +315,17 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   isVideoFxSupportedBrowser(): boolean {
     // Not supported on safari 15 and on environments without canvas capture playback
     return this.supportsBackgroundFilter();
+  }
+
+  /**
+   * Updates internal values using the User-Agent Client Hints API.
+   * If the API is not available, resolves without making changes.
+   *
+   * @param alwaysOverride - If true, overrides osName, deviceName, and browserName even if already set
+   * @returns Promise that resolves when update is complete
+   */
+  async updateWithHighEntropyValues(alwaysOverride: boolean = false): Promise<void> {
+    await this.userAgentParser.updateWithHighEntropyValues(alwaysOverride);
   }
 
   // These helpers should be kept private to encourage

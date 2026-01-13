@@ -95,7 +95,8 @@ export default class DefaultSignalingClient implements SignalingClient {
     const joinFrame = SdkJoinFrame.create();
     joinFrame.protocolVersion = 2;
     joinFrame.flags = SdkJoinFlags.HAS_STREAM_UPDATE;
-    const browserBehavior = new DefaultBrowserBehavior();
+
+    const browserBehavior = settings.browserBehavior || new DefaultBrowserBehavior();
     const sdkClientDetails: ISdkClientDetails = {
       platformName: browserBehavior.name(),
       platformVersion: browserBehavior.version(),
@@ -103,6 +104,14 @@ export default class DefaultSignalingClient implements SignalingClient {
       chimeSdkVersion: Versioning.sdkVersion,
       clientUtcOffset: getFormattedOffset(new Date().getTimezoneOffset()),
     };
+
+    const deviceModel = browserBehavior.deviceName?.();
+    const osName = browserBehavior.osName?.();
+    const osVersion = browserBehavior.osVersion?.();
+    if (deviceModel) sdkClientDetails.deviceModel = deviceModel;
+    if (osName) sdkClientDetails.osName = osName;
+    if (osVersion) sdkClientDetails.osVersion = osVersion;
+
     if (settings.applicationMetadata) {
       const { appName, appVersion } = settings.applicationMetadata;
       sdkClientDetails.appName = appName;

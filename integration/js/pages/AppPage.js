@@ -179,18 +179,6 @@ class AppPage {
     }
   }
 
-  async chooseEnableEventReporting() {
-    const eventReportingCheck = await this.driver.findElement(elements.eventReportingCheckBox);
-    const eventReportingCheckLabel = await this.driver.findElement(elements.eventReportingCheckBoxLabel);
-
-    // Click the label because it's on top.
-    if (await eventReportingCheck.isSelected()) {
-      this.logger('event reporting is enabled');
-    } else {
-      await clickElement(this.driver, eventReportingCheckLabel);
-    }
-  }
-
   async chooseStereoMusicAudioProfile() {
     const stereoMusicProfileCheck = await this.driver.findElement(elements.stereoMusicProfileCheckBox);
     const stereoMusicProfileCheckLabel = await this.driver.findElement(elements.stereoMusicProfileCheckBoxLabel);

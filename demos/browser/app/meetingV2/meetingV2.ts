@@ -52,7 +52,6 @@ import {
   MeetingSessionVideoAvailability,
   ModelSpecBuilder,
   MultiLogger,
-  NoOpEventReporter,
   NoOpVideoFrameProcessor,
   POSTLogger,
   RemovableAnalyserNode,
@@ -462,7 +461,6 @@ export class DemoMeetingApp
   }
 
   eventReporter: EventReporter | undefined = undefined;
-  enableEventReporting = false;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -550,7 +548,7 @@ export class DemoMeetingApp
   }
 
   async initVoiceFocus(): Promise<void> {
-    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    const logger = new ConsoleLogger('SDK', this.logLevel);
     if (!this.allowVoiceFocus) {
       logger.info('[DEMO] Voice Focus not allowed. Not checking for Amazon Voice Focus support.');
       return;
@@ -593,7 +591,7 @@ export class DemoMeetingApp
    * Determine if the videoFxProcessor is supported in current environment
    */
   async resolveSupportsVideoFX(): Promise<void> {
-    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    const logger = new ConsoleLogger('SDK', this.logLevel);
     try {
       this.supportsVideoFx = await VideoFxProcessor.isSupported(logger)
     } catch (e) {
@@ -1956,10 +1954,7 @@ export class DemoMeetingApp
     if (!ingestionURL) {
       return eventReporter;
     }
-    if (!this.enableEventReporting) {
-      return new NoOpEventReporter();
-    }
-    const eventReportingLogger = new ConsoleLogger('SDKEventIngestion', LogLevel.INFO);
+    const eventReportingLogger = new ConsoleLogger('SDKEventIngestion', this.logLevel);
     const meetingEventClientConfig = new MeetingEventsClientConfiguration(
         configuration.meetingId,
         configuration.credentials.attendeeId,
@@ -3258,7 +3253,7 @@ export class DemoMeetingApp
       return complexity > max;
     }
 
-    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    const logger = new ConsoleLogger('SDK', this.logLevel);
 
     // Find out what it will actually execute, and cap it if needed.
     const spec: VoiceFocusSpec = getVoiceFocusSpec(this.joinInfo);
@@ -3878,7 +3873,6 @@ export class DemoMeetingApp
       this.enableSVC = (document.getElementById('svc') as HTMLInputElement).checked;
     }
     this.maxAttendeeCount = parseInt((document.getElementById('max-attendee-cnt') as HTMLSelectElement).value);
-    this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
     this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
     this.disablePeriodicKeyframeRequestOnContentSender = (document.getElementById('disable-content-keyframe') as HTMLInputElement).checked;
     this.allowAttendeeCapabilities = (document.getElementById('allow-attendee-capabilities') as HTMLInputElement).checked;

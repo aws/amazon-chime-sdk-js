@@ -1297,6 +1297,8 @@ $root.SdkClientDetails = (function() {
      * @property {string|null} [clientSource] SdkClientDetails clientSource
      * @property {string|null} [chimeSdkVersion] SdkClientDetails chimeSdkVersion
      * @property {string|null} [clientUtcOffset] SdkClientDetails clientUtcOffset
+     * @property {string|null} [osName] SdkClientDetails osName
+     * @property {string|null} [osVersion] SdkClientDetails osVersion
      */
 
     /**
@@ -1387,6 +1389,22 @@ $root.SdkClientDetails = (function() {
     SdkClientDetails.prototype.clientUtcOffset = "";
 
     /**
+     * SdkClientDetails osName.
+     * @member {string} osName
+     * @memberof SdkClientDetails
+     * @instance
+     */
+    SdkClientDetails.prototype.osName = "";
+
+    /**
+     * SdkClientDetails osVersion.
+     * @member {string} osVersion
+     * @memberof SdkClientDetails
+     * @instance
+     */
+    SdkClientDetails.prototype.osVersion = "";
+
+    /**
      * Creates a new SdkClientDetails instance using the specified properties.
      * @function create
      * @memberof SdkClientDetails
@@ -1428,6 +1446,10 @@ $root.SdkClientDetails = (function() {
             writer.uint32(/* id 8, wireType 2 =*/66).string(message.chimeSdkVersion);
         if (message.clientUtcOffset != null && Object.hasOwnProperty.call(message, "clientUtcOffset"))
             writer.uint32(/* id 9, wireType 2 =*/74).string(message.clientUtcOffset);
+        if (message.osName != null && Object.hasOwnProperty.call(message, "osName"))
+            writer.uint32(/* id 10, wireType 2 =*/82).string(message.osName);
+        if (message.osVersion != null && Object.hasOwnProperty.call(message, "osVersion"))
+            writer.uint32(/* id 11, wireType 2 =*/90).string(message.osVersion);
         return writer;
     };
 
@@ -1498,6 +1520,14 @@ $root.SdkClientDetails = (function() {
                     message.clientUtcOffset = reader.string();
                     break;
                 }
+            case 10: {
+                    message.osName = reader.string();
+                    break;
+                }
+            case 11: {
+                    message.osVersion = reader.string();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -1560,6 +1590,12 @@ $root.SdkClientDetails = (function() {
         if (message.clientUtcOffset != null && message.hasOwnProperty("clientUtcOffset"))
             if (!$util.isString(message.clientUtcOffset))
                 return "clientUtcOffset: string expected";
+        if (message.osName != null && message.hasOwnProperty("osName"))
+            if (!$util.isString(message.osName))
+                return "osName: string expected";
+        if (message.osVersion != null && message.hasOwnProperty("osVersion"))
+            if (!$util.isString(message.osVersion))
+                return "osVersion: string expected";
         return null;
     };
 
@@ -1593,6 +1629,10 @@ $root.SdkClientDetails = (function() {
             message.chimeSdkVersion = String(object.chimeSdkVersion);
         if (object.clientUtcOffset != null)
             message.clientUtcOffset = String(object.clientUtcOffset);
+        if (object.osName != null)
+            message.osName = String(object.osName);
+        if (object.osVersion != null)
+            message.osVersion = String(object.osVersion);
         return message;
     };
 
@@ -1619,6 +1659,8 @@ $root.SdkClientDetails = (function() {
             object.clientSource = "";
             object.chimeSdkVersion = "";
             object.clientUtcOffset = "";
+            object.osName = "";
+            object.osVersion = "";
         }
         if (message.appName != null && message.hasOwnProperty("appName"))
             object.appName = message.appName;
@@ -1638,6 +1680,10 @@ $root.SdkClientDetails = (function() {
             object.chimeSdkVersion = message.chimeSdkVersion;
         if (message.clientUtcOffset != null && message.hasOwnProperty("clientUtcOffset"))
             object.clientUtcOffset = message.clientUtcOffset;
+        if (message.osName != null && message.hasOwnProperty("osName"))
+            object.osName = message.osName;
+        if (message.osVersion != null && message.hasOwnProperty("osVersion"))
+            object.osVersion = message.osVersion;
         return object;
     };
 
