@@ -90,13 +90,19 @@ export default class SetLocalDescriptionTask extends BaseTask {
       }
 
       const encodedTransformWorkerManagerEnabled = !!this.context.encodedTransformWorkerManager?.isEnabled();
-      if (this.context.audioProfile.hasRedundancyEnabled() && encodedTransformWorkerManagerEnabled) {
+      if (
+        this.context.audioProfile.hasRedundancyEnabled() &&
+        encodedTransformWorkerManagerEnabled
+      ) {
         const audioPayloadMap = new SDP(sdp).getAudioPayloadTypes();
         const redManager = this.context.encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
         if (redManager) {
           redManager.setAudioPayloadTypes(audioPayloadMap);
         }
-      } else if (this.context.audioProfile.hasRedundancyEnabled() && !encodedTransformWorkerManagerEnabled) {
+      } else if (
+        this.context.audioProfile.hasRedundancyEnabled() &&
+        !encodedTransformWorkerManagerEnabled
+      ) {
         this.logger.warn(
           'Audio redundancy requested but encoded transform worker manager not enabled'
         );

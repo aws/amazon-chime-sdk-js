@@ -540,6 +540,88 @@ describe('ClientMetricReport', () => {
     });
   });
 
+  describe('transform metric fields', () => {
+    it('audioDownstreamMetricMap contains audioSentTransformPps', () => {
+      expect(clientMetricReport.audioDownstreamMetricMap['audioSentTransformPps']).to.not.be
+        .undefined;
+      expect(
+        clientMetricReport.audioDownstreamMetricMap['audioSentTransformPps'].transform
+      ).to.equal(clientMetricReport.countPerSecond);
+    });
+
+    it('audioDownstreamMetricMap contains audioReceivedTransformPps', () => {
+      expect(clientMetricReport.audioDownstreamMetricMap['audioReceivedTransformPps']).to.not.be
+        .undefined;
+      expect(
+        clientMetricReport.audioDownstreamMetricMap['audioReceivedTransformPps'].transform
+      ).to.equal(clientMetricReport.countPerSecond);
+    });
+
+    it('videoUpstreamMetricMap contains videoSentTransformPps', () => {
+      expect(clientMetricReport.videoUpstreamMetricMap['videoSentTransformPps']).to.not.be
+        .undefined;
+      expect(clientMetricReport.videoUpstreamMetricMap['videoSentTransformPps'].transform).to.equal(
+        clientMetricReport.countPerSecond
+      );
+    });
+
+    it('videoDownstreamMetricMap contains videoReceivedTransformPps', () => {
+      expect(clientMetricReport.videoDownstreamMetricMap['videoReceivedTransformPps']).to.not.be
+        .undefined;
+      expect(
+        clientMetricReport.videoDownstreamMetricMap['videoReceivedTransformPps'].transform
+      ).to.equal(clientMetricReport.countPerSecond);
+    });
+
+    it('returns countPerSecond for audioSentTransformPps', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.mediaType = MediaType.AUDIO;
+      report.direction = Direction.DOWNSTREAM;
+      report.currentMetrics['audioSentTransformPps'] = 1000;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      expect(clientMetricReport.countPerSecond('audioSentTransformPps', ssrc)).to.equal(1000);
+    });
+
+    it('returns countPerSecond for audioReceivedTransformPps', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.mediaType = MediaType.AUDIO;
+      report.direction = Direction.DOWNSTREAM;
+      report.currentMetrics['audioReceivedTransformPps'] = 500;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      expect(clientMetricReport.countPerSecond('audioReceivedTransformPps', ssrc)).to.equal(500);
+    });
+
+    it('returns countPerSecond for videoSentTransformPps', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.mediaType = MediaType.VIDEO;
+      report.direction = Direction.UPSTREAM;
+      report.currentMetrics['videoSentTransformPps'] = 300;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      expect(clientMetricReport.countPerSecond('videoSentTransformPps', ssrc)).to.equal(300);
+    });
+
+    it('returns countPerSecond for videoReceivedTransformPps', () => {
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.mediaType = MediaType.VIDEO;
+      report.direction = Direction.DOWNSTREAM;
+      report.currentMetrics['videoReceivedTransformPps'] = 200;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      clientMetricReport.currentTimestampMs = 2000;
+      clientMetricReport.previousTimestampMs = 1000;
+      expect(clientMetricReport.countPerSecond('videoReceivedTransformPps', ssrc)).to.equal(200);
+    });
+  });
+
   describe('getObservableMetricValue', () => {
     it('returns 0 if no metric is available', () => {
       expect(clientMetricReport.getObservableMetricValue('videoUpstreamBitrate')).to.equal(0);
@@ -740,6 +822,12 @@ describe('ClientMetricReport', () => {
       expect(cloned.rtcStatsReport).to.equal(clientMetricReport.rtcStatsReport);
       expect(cloned.currentTimestampMs).to.equal(clientMetricReport.currentTimestampMs);
       expect(cloned.previousTimestampMs).to.equal(clientMetricReport.previousTimestampMs);
+    });
+
+    it('clones customStatsReports', () => {
+      clientMetricReport.customStatsReports = [{ type: 'test', value: 123 }];
+      const cloned = clientMetricReport.clone();
+      expect(cloned.customStatsReports).to.equal(clientMetricReport.customStatsReports);
     });
   });
 

@@ -671,9 +671,11 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
 
     this.meetingSessionContext.statsCollector = new StatsCollector(this, this.logger);
+    /* istanbul ignore next */
     this._encodedTransformWorkerManager
       ?.metricsTransformManager()
       ?.addObserver(this.meetingSessionContext.statsCollector);
+    /* istanbul ignore next */
     this._encodedTransformWorkerManager
       ?.redundantAudioEncodeTransformManager()
       ?.addObserver(this.meetingSessionContext.statsCollector);

@@ -57,7 +57,6 @@ export default class DefaultEncodedTransformWorkerManager
     return !this.disabled;
   }
 
-
   async start(disabledTransforms?: DisabledEncodedTransformsConfiguration): Promise<void> {
     this.disabledTransforms = disabledTransforms || {};
     await this.createWorker();
@@ -142,9 +141,6 @@ export default class DefaultEncodedTransformWorkerManager
 
   async destroy(): Promise<void> {
     if (this.redManager) {
-      if (isDestroyable(this.redManager)) {
-        await this.redManager.destroy();
-      }
       this.redManager = null;
     }
     if (this.metricsManager) {

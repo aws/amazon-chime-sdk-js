@@ -9,6 +9,7 @@ import { AudioProfile } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
+import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
 import StatsCollector from '../../src/statscollector/StatsCollector';
@@ -204,12 +205,52 @@ describe('AttachMediaInputTask', () => {
       domMockBehavior.supportsAudioRedCodec = true;
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.audioProfile = new AudioProfile();
+      // Set up mock encodedTransformWorkerManager
+      context.encodedTransformWorkerManager = ({
+        isEnabled: () => true,
+      } as unknown) as EncodedTransformWorkerManager;
       task.run().then(() => {
         const audioTransceiver: RTCRtpTransceiver =
           context.transceiverController.localAudioTransceiver();
         // @ts-ignore
         const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
         expect(audioTransceiverCodecs[0].mimeType).to.equal('audio/red');
+        done();
+      });
+    });
+
+    it('does not enable audio redundancy if encodedTransformWorkerManager is not enabled', done => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBehavior.supportsAudioRedCodec = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.audioProfile = new AudioProfile();
+      // encodedTransformWorkerManager is undefined
+      task.run().then(() => {
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        // @ts-ignore
+        const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
+        // RED should not be first since encodedTransformWorkerManager is not enabled
+        expect(audioTransceiverCodecs[0].mimeType).to.equal('audio/opus');
+        done();
+      });
+    });
+
+    it('does not enable audio redundancy if encodedTransformWorkerManager.isEnabled returns false', done => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBehavior.supportsAudioRedCodec = true;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.audioProfile = new AudioProfile();
+      context.encodedTransformWorkerManager = ({
+        isEnabled: () => false,
+      } as unknown) as EncodedTransformWorkerManager;
+      task.run().then(() => {
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        // @ts-ignore
+        const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
+        // RED should not be first since encodedTransformWorkerManager is disabled
+        expect(audioTransceiverCodecs[0].mimeType).to.equal('audio/opus');
         done();
       });
     });

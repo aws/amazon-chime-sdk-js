@@ -125,7 +125,7 @@ export default class DefaultTransceiverController implements TransceiverControll
         `Applying video receiver transform to track ${event.track.id} not set after addTransceiver`
       );
       // Set up video receiver transform for incoming tracks
-      if (event.track.kind === 'video') {
+      if (event.track.kind === 'video' && this.encodedTransformWorkerManager) {
         this.encodedTransformWorkerManager.setupVideoReceiverTransform(event.receiver);
       }
     }

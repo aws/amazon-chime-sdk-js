@@ -5,15 +5,11 @@ import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
-import {
-  DefaultBrowserBehavior,
-  DefaultTransceiverController,
-  SDP,
-  VideoCodecCapability,
-} from '../../src';
+import { DefaultBrowserBehavior, SDP, VideoCodecCapability } from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import SetLocalDescriptionTask from '../../src/task/SetLocalDescriptionTask';
 import Task from '../../src/task/Task';
@@ -135,19 +131,72 @@ describe('SetLocalDescriptionTask', () => {
       ).to.be.be.true;
     });
 
-    it('will call setAudioPayloadTypes of transceiverController', async () => {
+    it('sets audio payload types on redundant audio manager when audio redundancy is enabled', async () => {
       domMockBehavior = new DOMMockBehavior();
       domMockBehavior.browserName = 'chrome116';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      context.transceiverController = new DefaultTransceiverController(
-        context.logger,
-        context.browserBehavior,
-        context
-      );
-      const spy = sinon.spy(context.transceiverController, 'setAudioPayloadTypes');
-      context.audioProfile = new AudioProfile();
+      context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
+      context.audioProfile = new AudioProfile(null, true);
+      const setAudioPayloadTypesSpy = sinon.stub();
+      context.encodedTransformWorkerManager = ({
+        isEnabled: () => true,
+        redundantAudioEncodeTransformManager: () => ({
+          setAudioPayloadTypes: setAudioPayloadTypesSpy,
+        }),
+      } as unknown) as EncodedTransformWorkerManager;
       await task.run();
-      expect(spy.calledOnce).to.be.true;
+      expect(setAudioPayloadTypesSpy.calledOnce).to.be.true;
+    });
+
+    it('does not set audio payload types when encodedTransformWorkerManager is not enabled', async () => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
+      context.audioProfile = new AudioProfile(null, true);
+      // encodedTransformWorkerManager is undefined
+      const logSpy = sinon.spy(context.logger, 'warn');
+      await task.run();
+      expect(
+        logSpy.calledWith(
+          'Audio redundancy requested but encoded transform worker manager not enabled'
+        )
+      ).to.be.true;
+      logSpy.restore();
+    });
+
+    it('does not set audio payload types when encodedTransformWorkerManager.isEnabled returns false', async () => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
+      context.audioProfile = new AudioProfile(null, true);
+      context.encodedTransformWorkerManager = ({
+        isEnabled: () => false,
+      } as unknown) as EncodedTransformWorkerManager;
+      const logSpy = sinon.spy(context.logger, 'warn');
+      await task.run();
+      expect(
+        logSpy.calledWith(
+          'Audio redundancy requested but encoded transform worker manager not enabled'
+        )
+      ).to.be.true;
+      logSpy.restore();
+    });
+
+    it('handles when redundantAudioEncodeTransformManager returns null', async () => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
+      context.audioProfile = new AudioProfile(null, true);
+      context.encodedTransformWorkerManager = ({
+        isEnabled: () => true,
+        // @ts-ignore
+        redundantAudioEncodeTransformManager: () => null,
+      } as unknown) as EncodedTransformWorkerManager;
+      // Should not throw
+      await task.run();
     });
 
     it('sets start bitrate for SVC content', async () => {
