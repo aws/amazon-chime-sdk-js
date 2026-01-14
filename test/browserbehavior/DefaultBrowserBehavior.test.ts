@@ -448,4 +448,52 @@ describe('DefaultBrowserBehavior', () => {
       expect(behavior.osName()).to.eq('Mac OS');
     });
   });
+
+  describe('constructor with injected UserAgentParser', () => {
+    it('uses injected UserAgentParser when provided', () => {
+      const mockParser = {
+        getParserResult: () => ({
+          browserMajorVersion: '99',
+          browserName: 'MockBrowser',
+          browserVersion: '99.0.0',
+          deviceName: 'MockDevice',
+          osName: 'MockOS',
+          osVersion: '1.0.0',
+          engineName: 'MockEngine',
+          engineMajorVersion: '99',
+        }),
+      };
+
+      const behavior = new DefaultBrowserBehavior(mockParser);
+      expect(behavior.version()).to.eq('99.0.0');
+      expect(behavior.majorVersion()).to.eq(99);
+      expect(behavior.deviceName()).to.eq('MockDevice');
+      expect(behavior.osName()).to.eq('MockOS');
+      expect(behavior.osVersion()).to.eq('1.0.0');
+    });
+
+    it('handles UserAgentParser without optional engine fields', async () => {
+      setUserAgent(CHROME_116_MAC_USER_AGENT);
+      const mockParser = {
+        getParserResult: () => ({
+          browserMajorVersion: '116',
+          browserName: 'Chrome',
+          browserVersion: '116.0.0.0',
+          deviceName: 'Unavailable',
+          osName: 'Mac OS',
+          osVersion: '10.15.7',
+        }),
+      };
+
+      const behavior = new DefaultBrowserBehavior(mockParser);
+      // engine() should return empty string when engineName is not in result
+      // @ts-ignore - accessing private method for testing
+      expect(behavior.engine()).to.eq('');
+      // engineMajorVersion() should return 0 when engineMajorVersion is not in result
+      // @ts-ignore - accessing private method for testing
+      expect(behavior.engineMajorVersion()).to.eq(0);
+      // updateWithHighEntropyValues should not throw when method is not available
+      await behavior.updateWithHighEntropyValues(true);
+    });
+  });
 });

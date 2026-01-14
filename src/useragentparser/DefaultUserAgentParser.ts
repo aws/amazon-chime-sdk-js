@@ -6,14 +6,13 @@ import { UAParser } from 'ua-parser-js';
 
 import Logger from '../logger/Logger';
 import Versioning from '../versioning/Versioning';
-import UserAgentParser from './UserAgentParser';
+import UserAgentParser, { USER_AGENT_PARSER_UNAVAILABLE } from './UserAgentParser';
 
 /**
  * [[DefaultUserAgentParser]] uses UAParser to parse the browser's user agent.
  * It is responsible to hold and provide browser, OS and device specific information.
  */
 export default class DefaultUserAgentParser implements UserAgentParser {
-  private static readonly UNAVAILABLE = 'Unavailable';
   private parserResult: UAParser.IResult;
   private browserName: string;
   private browserVersion: string;
@@ -38,15 +37,15 @@ export default class DefaultUserAgentParser implements UserAgentParser {
     }
 
     this.browserMajorVersion =
-      this.parserResult?.browser?.version?.split('.')[0] || DefaultUserAgentParser.UNAVAILABLE;
-    this.browserName = this.parserResult?.browser.name || DefaultUserAgentParser.UNAVAILABLE;
-    this.browserVersion = this.parserResult?.browser.version || DefaultUserAgentParser.UNAVAILABLE;
+      this.parserResult?.browser?.version?.split('.')[0] || USER_AGENT_PARSER_UNAVAILABLE;
+    this.browserName = this.parserResult?.browser.name || USER_AGENT_PARSER_UNAVAILABLE;
+    this.browserVersion = this.parserResult?.browser.version || USER_AGENT_PARSER_UNAVAILABLE;
     this.deviceName =
       [this.parserResult?.device.vendor || '', this.parserResult?.device.model || '']
         .join(' ')
-        .trim() || DefaultUserAgentParser.UNAVAILABLE;
-    this.osName = this.parserResult?.os.name || DefaultUserAgentParser.UNAVAILABLE;
-    this.osVersion = this.parserResult?.os.version || DefaultUserAgentParser.UNAVAILABLE;
+        .trim() || USER_AGENT_PARSER_UNAVAILABLE;
+    this.osName = this.parserResult?.os.name || USER_AGENT_PARSER_UNAVAILABLE;
+    this.osVersion = this.parserResult?.os.version || USER_AGENT_PARSER_UNAVAILABLE;
     this.engineName = this.parserResult?.engine?.name || '';
     this.engineMajorVersion = parseInt(this.parserResult?.engine?.version?.split('.')[0] || '0');
   }
@@ -61,6 +60,8 @@ export default class DefaultUserAgentParser implements UserAgentParser {
       osVersion: this.osVersion,
       sdkVersion: Versioning.sdkVersion,
       sdkName: Versioning.sdkName,
+      engineName: this.engineName,
+      engineMajorVersion: String(this.engineMajorVersion),
     };
   }
 
@@ -102,7 +103,7 @@ export default class DefaultUserAgentParser implements UserAgentParser {
       ]);
 
       const shouldUpdate = (field: string): boolean =>
-        alwaysOverride || field === DefaultUserAgentParser.UNAVAILABLE;
+        alwaysOverride || field === USER_AGENT_PARSER_UNAVAILABLE;
 
       if (hints.platform && shouldUpdate(this.osName)) {
         this.osName = hints.platform;
@@ -113,7 +114,7 @@ export default class DefaultUserAgentParser implements UserAgentParser {
       }
 
       if (hints.model !== undefined && shouldUpdate(this.deviceName)) {
-        this.deviceName = hints.model || DefaultUserAgentParser.UNAVAILABLE;
+        this.deviceName = hints.model || USER_AGENT_PARSER_UNAVAILABLE;
       }
 
       if (hints.fullVersionList?.length) {

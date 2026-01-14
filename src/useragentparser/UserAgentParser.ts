@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
+ * Constant for unavailable values in parser results.
+ */
+export const USER_AGENT_PARSER_UNAVAILABLE = 'Unavailable';
+
+/**
  * [[UserAgentParser]] is responsible to parse the browser's user agent
  * and provide the parsed result.
  */

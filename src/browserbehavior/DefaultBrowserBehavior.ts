@@ -5,6 +5,7 @@ import { detect } from 'detect-browser';
 
 import NoOpLogger from '../logger/NoOpLogger';
 import DefaultUserAgentParser from '../useragentparser/DefaultUserAgentParser';
+import UserAgentParser, { USER_AGENT_PARSER_UNAVAILABLE } from '../useragentparser/UserAgentParser';
 import BrowserBehavior from './BrowserBehavior';
 import ExtendedBrowserBehavior from './ExtendedBrowserBehavior';
 
@@ -17,10 +18,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   };
 
   private readonly browser = detect() || this.FALLBACK_BROWSER;
-  private readonly userAgentParser: DefaultUserAgentParser;
+  private readonly userAgentParser: UserAgentParser;
 
-  constructor() {
-    this.userAgentParser = new DefaultUserAgentParser(new NoOpLogger());
+  constructor(userAgentParser?: UserAgentParser) {
+    this.userAgentParser = userAgentParser ?? new DefaultUserAgentParser(new NoOpLogger());
   }
 
   private browserSupport: { [id: string]: number } = {
@@ -64,11 +65,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview', 'edge-ios'];
   private static MIN_IOS_SUPPORT_CANVAS_STREAM_PLAYBACK = 16;
   private static MIN_IOS_NON_SAFARI_SUPPORT_CANVAS_STREAM_PLAYBACK = 106;
-  private static readonly UNAVAILABLE = 'Unavailable';
 
   version(): string {
     const ver = this.userAgentParser.getParserResult().browserVersion;
-    return ver === DefaultBrowserBehavior.UNAVAILABLE ? '' : ver;
+    return ver === USER_AGENT_PARSER_UNAVAILABLE ? '' : ver;
   }
 
   majorVersion(): number {
@@ -81,25 +81,25 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   deviceName(): string {
     const name = this.userAgentParser.getParserResult().deviceName;
-    return name === DefaultBrowserBehavior.UNAVAILABLE ? '' : name;
+    return name === USER_AGENT_PARSER_UNAVAILABLE ? '' : name;
   }
 
   osName(): string {
     const name = this.userAgentParser.getParserResult().osName;
-    return name === DefaultBrowserBehavior.UNAVAILABLE ? '' : name;
+    return name === USER_AGENT_PARSER_UNAVAILABLE ? '' : name;
   }
 
   osVersion(): string {
     const ver = this.userAgentParser.getParserResult().osVersion;
-    return ver === DefaultBrowserBehavior.UNAVAILABLE ? '' : ver;
+    return ver === USER_AGENT_PARSER_UNAVAILABLE ? '' : ver;
   }
 
   private engine(): string {
-    return this.userAgentParser.getEngineName();
+    return this.userAgentParser.getParserResult().engineName ?? '';
   }
 
   private engineMajorVersion(): number {
-    return this.userAgentParser.getEngineMajorVersion();
+    return parseInt(this.userAgentParser.getParserResult().engineMajorVersion ?? '0');
   }
 
   name(): string {
@@ -325,7 +325,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
    * @returns Promise that resolves when update is complete
    */
   async updateWithHighEntropyValues(alwaysOverride: boolean = false): Promise<void> {
-    await this.userAgentParser.updateWithHighEntropyValues(alwaysOverride);
+    await this.userAgentParser.updateWithHighEntropyValues?.(alwaysOverride);
   }
 
   // These helpers should be kept private to encourage

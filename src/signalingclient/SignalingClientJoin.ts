@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ApplicationMetadata from '../applicationmetadata/ApplicationMetadata';
-import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
+import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import ServerSideNetworkAdaption from './ServerSideNetworkAdaption';
 
 /**
@@ -18,7 +18,7 @@ export default class SignalingClientJoin {
    * Browser behavior instance for extracting client details.
    * If provided, values will be extracted from this instance.
    */
-  browserBehavior?: ExtendedBrowserBehavior;
+  browserBehavior?: BrowserBehavior;
 
   /**
    * Initializes a SignalingClientJoin with the given properties.

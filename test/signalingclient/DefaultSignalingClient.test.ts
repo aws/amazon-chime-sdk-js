@@ -8,7 +8,7 @@ import {
   SignalingClientVideoSubscriptionConfiguration,
 } from '../../src';
 import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
-import ExtendedBrowserBehavior from '../../src/browserbehavior/ExtendedBrowserBehavior';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
@@ -432,7 +432,7 @@ describe('DefaultSignalingClient', () => {
               name: () => 'test-browser',
               version: () => '1.0.0',
               // deviceName, osName, osVersion are intentionally omitted
-            } as unknown) as ExtendedBrowserBehavior;
+            } as unknown) as BrowserBehavior;
             event.client.join(signalingClientJoin);
           }
         }
