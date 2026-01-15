@@ -88,10 +88,16 @@ export default interface BrowserBehavior {
   supportsCanvasCapturedStreamPlayback(): boolean;
 
   /**
-   * Updates internal values using the User-Agent Client Hints API.
+   * Updates internal values using the
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/NavigatorUAData/getHighEntropyValues | User-Agent Client Hints API}.
    * If the API is not available, resolves without making changes.
    *
-   * @param alwaysOverride indicates if the values should be updated even if they were already set
+   * @param alwaysOverride indicates if the values should be updated even if they were already set.
+   *   Examples of value changes:
+   *   - osName: "Mac OS" → "macOS"
+   *   - osVersion: "10.15" → "15.7.1"
+   *   - browserName: "Chrome" → "Google Chrome"
+   *   - browserVersion: "120.0.0.0" → "120.0.6099.129"
    * @returns Promise that resolves when update is complete
    */
   updateWithHighEntropyValues?(alwaysOverride: true): Promise<void>;

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
-import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from '../meetingsession/MeetingSessionTURNCredentials';
@@ -154,10 +153,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       const join = new SignalingClientJoin(
         this.context.meetingSessionConfiguration.applicationMetadata
       );
-
-      const browserBehavior = new DefaultBrowserBehavior();
-      await browserBehavior.updateWithHighEntropyValues(true);
-      join.browserBehavior = browserBehavior;
+      join.browserBehavior = this.context.browserBehavior;
 
       if (
         this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption !== undefined &&

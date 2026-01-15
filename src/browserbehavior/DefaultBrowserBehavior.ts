@@ -317,13 +317,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return this.supportsBackgroundFilter();
   }
 
-  /**
-   * Updates internal values using the User-Agent Client Hints API.
-   * If the API is not available, resolves without making changes.
-   *
-   * @param alwaysOverride - If true, overrides osName, deviceName, and browserName even if already set
-   * @returns Promise that resolves when update is complete
-   */
   async updateWithHighEntropyValues(alwaysOverride: boolean = false): Promise<void> {
     await this.userAgentParser.updateWithHighEntropyValues?.(alwaysOverride);
   }

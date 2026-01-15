@@ -791,12 +791,13 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="browserbehavior.html">BrowserBehavior</a>.<a href="browserbehavior.html#updatewithhighentropyvalues">updateWithHighEntropyValues</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L97">src/browserbehavior/BrowserBehavior.ts:97</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/BrowserBehavior.ts#L103">src/browserbehavior/BrowserBehavior.ts:103</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Updates internal values using the User-Agent Client Hints API.
+									<p>Updates internal values using the
+										<a href="https://developer.mozilla.org/en-US/docs/Web/API/NavigatorUAData/getHighEntropyValues" class="external">User-Agent Client Hints API</a>.
 									If the API is not available, resolves without making changes.</p>
 								</div>
 							</div>
@@ -805,7 +806,14 @@
 								<li>
 									<h5>alwaysOverride: <span class="tsd-signature-type">true</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>indicates if the values should be updated even if they were already set</p>
+										<p>indicates if the values should be updated even if they were already set.
+										Examples of value changes:</p>
+										<ul>
+											<li>osName: &quot;Mac OS&quot; → &quot;macOS&quot;</li>
+											<li>osVersion: &quot;10.15&quot; → &quot;15.7.1&quot;</li>
+											<li>browserName: &quot;Chrome&quot; → &quot;Google Chrome&quot;</li>
+											<li>browserVersion: &quot;120.0.0.0&quot; → &quot;120.0.6099.129&quot;</li>
+										</ul>
 									</div>
 								</li>
 							</ul>

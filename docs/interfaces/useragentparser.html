@@ -140,12 +140,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/useragentparser/UserAgentParser.ts#L26">src/useragentparser/UserAgentParser.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/useragentparser/UserAgentParser.ts#L32">src/useragentparser/UserAgentParser.ts:32</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Updates internal values using the User-Agent Client Hints API.
+									<p>Updates internal values using the
+										<a href="https://developer.mozilla.org/en-US/docs/Web/API/NavigatorUAData/getHighEntropyValues" class="external">User-Agent Client Hints API</a>.
 									If the API is not available, resolves without making changes.</p>
 								</div>
 							</div>
@@ -154,7 +155,14 @@
 								<li>
 									<h5>alwaysOverride: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>If true, always override internal values</p>
+										<p>If true, always override internal values even if already set.
+										Examples of value changes:</p>
+										<ul>
+											<li>osName: &quot;Mac OS&quot; → &quot;macOS&quot;</li>
+											<li>osVersion: &quot;10.15&quot; → &quot;10.15.7&quot;</li>
+											<li>browserName: &quot;Chrome&quot; → &quot;Google Chrome&quot;</li>
+											<li>browserVersion: &quot;120&quot; → &quot;120.0.6099.129&quot;</li>
+										</ul>
 									</div>
 								</li>
 							</ul>

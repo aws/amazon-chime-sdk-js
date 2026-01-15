@@ -17,10 +17,16 @@ export default interface UserAgentParser {
   getParserResult(): { [key: string]: string };
 
   /**
-   * Updates internal values using the User-Agent Client Hints API.
+   * Updates internal values using the
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/NavigatorUAData/getHighEntropyValues | User-Agent Client Hints API}.
    * If the API is not available, resolves without making changes.
    *
-   * @param alwaysOverride If true, always override internal values
+   * @param alwaysOverride If true, always override internal values even if already set.
+   *   Examples of value changes:
+   *   - osName: "Mac OS" → "macOS"
+   *   - osVersion: "10.15" → "10.15.7"
+   *   - browserName: "Chrome" → "Google Chrome"
+   *   - browserVersion: "120" → "120.0.6099.129"
    * @returns Promise that resolves when update is complete
    */
   updateWithHighEntropyValues?(alwaysOverride: boolean): Promise<void>;

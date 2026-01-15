@@ -65,26 +65,14 @@ export default class DefaultUserAgentParser implements UserAgentParser {
     };
   }
 
-  /**
-   * Returns the browser engine name (e.g., "Blink", "Gecko", "WebKit").
-   */
   getEngineName(): string {
     return this.engineName;
   }
 
-  /**
-   * Returns the browser engine major version.
-   */
   getEngineMajorVersion(): number {
     return this.engineMajorVersion;
   }
 
-  /**
-   * Updates internal values using the User-Agent Client Hints API.
-   * If the API is not available, resolves without making changes.
-   * @param alwaysOverride - If true, overrides osName, deviceName, and browserName even if already set
-   * @returns Promise that resolves when update is complete
-   */
   async updateWithHighEntropyValues(alwaysOverride: boolean = false): Promise<void> {
     /* istanbul ignore next */
     // @ts-ignore - navigator.userAgentData is not yet in TypeScript's lib.dom.d.ts

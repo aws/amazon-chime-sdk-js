@@ -930,12 +930,13 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/extendedbrowserbehavior.html">ExtendedBrowserBehavior</a>.<a href="../interfaces/extendedbrowserbehavior.html#updatewithhighentropyvalues">updateWithHighEntropyValues</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/DefaultBrowserBehavior.ts#L327">src/browserbehavior/DefaultBrowserBehavior.ts:327</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/browserbehavior/DefaultBrowserBehavior.ts#L320">src/browserbehavior/DefaultBrowserBehavior.ts:320</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Updates internal values using the User-Agent Client Hints API.
+									<p>Updates internal values using the
+										<a href="https://developer.mozilla.org/en-US/docs/Web/API/NavigatorUAData/getHighEntropyValues" class="external">User-Agent Client Hints API</a>.
 									If the API is not available, resolves without making changes.</p>
 								</div>
 							</div>
@@ -943,9 +944,6 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>alwaysOverride: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>If true, overrides osName, deviceName, and browserName even if already set</p>
-									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
