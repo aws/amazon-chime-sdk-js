@@ -697,7 +697,7 @@ export default class StatsCollector
       oldSource: Record<number, EncodedTransformMediaStreamMetrics>
     ): boolean => {
       for (const ssrc of Object.keys(newSource)) {
-        const newCount = newSource[Number(ssrc)]?.packetCount || 0;
+        const newCount = newSource[Number(ssrc)].packetCount || 0;
         const oldCount = oldSource[Number(ssrc)]?.packetCount || 0;
         if (newCount !== oldCount) {
           return true;

@@ -184,7 +184,7 @@ export default class DefaultTransceiverController implements TransceiverControll
       });
 
       if (this.encodedTransformWorkerManager?.isEnabled()) {
-        this.encodedTransformWorkerManager?.setupVideoSenderTransform(
+        this.encodedTransformWorkerManager.setupVideoSenderTransform(
           this._localCameraTransceiver.sender
         );
       }

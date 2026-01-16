@@ -6329,6 +6329,31 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
+    it('does not trigger reconnect when encodedTransformWorkerManager fails and session is not connected', async () => {
+      const mockManager = new MockEncodedTransformWorkerManager();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController,
+        mockManager
+      );
+
+      let reconnectCalled = false;
+      const originalReconnect = audioVideoController.reconnect.bind(audioVideoController);
+      audioVideoController.reconnect = (status: MeetingSessionStatus, error: Error | null) => {
+        reconnectCalled = true;
+        return originalReconnect(status, error);
+      };
+
+      // Don't start the session - it should be in NotConnected state
+      mockManager.triggerFailure(new Error('Worker failed'));
+      await delay(defaultDelay);
+      expect(reconnectCalled).to.be.false;
+    });
+
     it('does not stop encodedTransformWorkerManager if not enabled', async () => {
       const mockManager = new MockEncodedTransformWorkerManager();
       mockManager.setEnabled(false);

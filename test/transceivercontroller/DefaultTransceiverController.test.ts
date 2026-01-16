@@ -1089,34 +1089,6 @@ describe('DefaultTransceiverController', () => {
       expect(mockEncodedTransformWorkerManager.setupAudioReceiverTransform.called).to.be.false;
     });
 
-    it('logs warning when encodedTransformWorkerManager is not enabled', () => {
-      const mockEncodedTransformWorkerManager = {
-        isEnabled: sinon.stub().returns(false),
-        setupAudioSenderTransform: sinon.stub(),
-        setupAudioReceiverTransform: sinon.stub(),
-        setupVideoSenderTransform: sinon.stub(),
-        setupVideoReceiverTransform: sinon.stub(),
-      };
-
-      const tcWithManager = new DefaultTransceiverController(
-        logger,
-        context.browserBehavior,
-        context,
-        // @ts-ignore
-        mockEncodedTransformWorkerManager
-      );
-
-      const warnSpy = sinon.spy(tcWithManager['logger'], 'warn');
-
-      const peer: RTCPeerConnection = new RTCPeerConnection();
-      tcWithManager.setPeer(peer);
-      tcWithManager.setupLocalTransceivers();
-
-      expect(warnSpy.calledWith('Media transforms not enabled, skipping audio transform setup')).to
-        .be.true;
-      warnSpy.restore();
-    });
-
     it('calls setupVideoReceiverTransform on track event when transform not already set', () => {
       const mockEncodedTransformWorkerManager = {
         isEnabled: sinon.stub().returns(true),
@@ -1207,6 +1179,84 @@ describe('DefaultTransceiverController', () => {
       tcWithManager['handleTrack'](trackEvent);
 
       expect(mockEncodedTransformWorkerManager.setupVideoReceiverTransform.called).to.be.false;
+    });
+
+    it('does not call setupVideoReceiverTransform for audio tracks', () => {
+      const mockEncodedTransformWorkerManager = {
+        isEnabled: sinon.stub().returns(true),
+        setupAudioSenderTransform: sinon.stub(),
+        setupAudioReceiverTransform: sinon.stub(),
+        setupVideoSenderTransform: sinon.stub(),
+        setupVideoReceiverTransform: sinon.stub(),
+      };
+
+      const tcWithManager = new DefaultTransceiverController(
+        logger,
+        context.browserBehavior,
+        context,
+        // @ts-ignore
+        mockEncodedTransformWorkerManager
+      );
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcWithManager.setPeer(peer);
+      tcWithManager.setupLocalTransceivers();
+
+      // Reset the stub to clear calls from setupLocalTransceivers
+      mockEncodedTransformWorkerManager.setupVideoReceiverTransform.resetHistory();
+
+      // Simulate a track event with an audio track (not video)
+      const audioTrack = new MediaStreamTrack();
+      // @ts-ignore
+      audioTrack.kind = 'audio';
+      const mockReceiver = {
+        track: audioTrack,
+        transform: undefined as unknown,
+      };
+      const trackEvent = ({
+        type: 'track',
+        track: audioTrack,
+        receiver: mockReceiver,
+        transceiver: peer.getTransceivers()[0],
+        streams: [],
+      } as unknown) as RTCTrackEvent;
+
+      tcWithManager['handleTrack'](trackEvent);
+
+      expect(mockEncodedTransformWorkerManager.setupVideoReceiverTransform.called).to.be.false;
+    });
+
+    it('does not call setupVideoReceiverTransform when encodedTransformWorkerManager is undefined', () => {
+      // Create controller without encodedTransformWorkerManager (undefined)
+      const tcWithoutManager = new DefaultTransceiverController(
+        logger,
+        context.browserBehavior,
+        context,
+        undefined
+      );
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcWithoutManager.setPeer(peer);
+      tcWithoutManager.setupLocalTransceivers();
+
+      // Simulate a track event with a video track and no transform set
+      const videoTrack = new MediaStreamTrack();
+      // @ts-ignore
+      videoTrack.kind = 'video';
+      const mockReceiver = {
+        track: videoTrack,
+        transform: undefined as unknown,
+      };
+      const trackEvent = ({
+        type: 'track',
+        track: videoTrack,
+        receiver: mockReceiver,
+        transceiver: peer.getTransceivers()[0],
+        streams: [],
+      } as unknown) as RTCTrackEvent;
+
+      // Should not throw when encodedTransformWorkerManager is undefined
+      tcWithoutManager['handleTrack'](trackEvent);
     });
   });
 

@@ -257,5 +257,47 @@ describe('StartEncodedTransformWorkerTask', () => {
 
       expect(mockMetricsManager.addObserver.called).to.be.false;
     });
+
+    it('adds redundantAudioEncodeTransformManager observer when statsCollector is available', async () => {
+      const mockRedundantManager = {
+        addObserver: sinon.stub(),
+      };
+      const mockStatsCollector = {};
+      const mockManager: Partial<EncodedTransformWorkerManager> = {
+        isEnabled: () => true,
+        start: sinon.stub().resolves(),
+        redundantAudioEncodeTransformManager: () =>
+          (mockRedundantManager as unknown) as RedundantAudioEncodedTransformManager,
+        metricsTransformManager: () => null,
+      };
+      context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
+      context.audioProfile = new AudioProfile(null, false);
+      context.statsCollector = (mockStatsCollector as unknown) as StatsCollector;
+
+      await task.run();
+
+      expect(mockRedundantManager.addObserver.calledOnce).to.be.true;
+      expect(mockRedundantManager.addObserver.calledWith(mockStatsCollector)).to.be.true;
+    });
+
+    it('does not add redundantAudioEncodeTransformManager observer when statsCollector is null', async () => {
+      const mockRedundantManager = {
+        addObserver: sinon.stub(),
+      };
+      const mockManager: Partial<EncodedTransformWorkerManager> = {
+        isEnabled: () => true,
+        start: sinon.stub().resolves(),
+        redundantAudioEncodeTransformManager: () =>
+          (mockRedundantManager as unknown) as RedundantAudioEncodedTransformManager,
+        metricsTransformManager: () => null,
+      };
+      context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
+      context.audioProfile = new AudioProfile(null, false);
+      context.statsCollector = null;
+
+      await task.run();
+
+      expect(mockRedundantManager.addObserver.called).to.be.false;
+    });
   });
 });
