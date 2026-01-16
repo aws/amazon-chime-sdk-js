@@ -238,6 +238,7 @@ export default class DefaultEncodedTransformWorkerManager
       this.logger.info('Web Worker created');
     } catch (error) {
       this.logger.error(`Failed to create Web Worker: ${error}`);
+      this.disable();
 
       if (this.workerURL) {
         URL.revokeObjectURL(this.workerURL);

@@ -75,7 +75,8 @@ describe('MediaMetricsEncodedTransform', () => {
       expect(newSsrcCall.args[0].message.ssrc).to.equal('1234567890');
     });
 
-    it('reports metrics after reportInterval packets', () => {
+    it('reports metrics after reportInterval time has passed', () => {
+      const clock = sinon.useFakeTimers();
       const frame = {
         data: new ArrayBuffer(10),
         timestamp: 12345,
@@ -83,16 +84,20 @@ describe('MediaMetricsEncodedTransform', () => {
       };
       const controller = { enqueue: sinon.stub() };
 
-      // Process 100 frames to trigger metrics report
-      for (let i = 0; i < 100; i++) {
-        transform.transform(frame, controller);
-      }
+      // Process first frame - no metrics report yet
+      transform.transform(frame, controller);
+
+      // Advance time by 500ms and process another frame to trigger report
+      clock.tick(500);
+      transform.transform(frame, controller);
 
       const metricsCall = postMessageStub
         .getCalls()
         .find(call => call.args[0].type === COMMON_MESSAGE_TYPES.METRICS);
       expect(metricsCall).to.not.be.undefined;
       expect(metricsCall.args[0].transformName).to.equal(TRANSFORM_NAMES.AUDIO_SENDER);
+
+      clock.restore();
     });
 
     it('handles frames without getMetadata', () => {

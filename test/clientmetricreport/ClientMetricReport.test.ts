@@ -541,12 +541,12 @@ describe('ClientMetricReport', () => {
   });
 
   describe('transform metric fields', () => {
-    it('audioDownstreamMetricMap contains audioSentTransformPps', () => {
-      expect(clientMetricReport.audioDownstreamMetricMap['audioSentTransformPps']).to.not.be
+    it('audioUpstreamMetricMap contains audioSentTransformPps', () => {
+      expect(clientMetricReport.audioUpstreamMetricMap['audioSentTransformPps']).to.not.be
         .undefined;
-      expect(
-        clientMetricReport.audioDownstreamMetricMap['audioSentTransformPps'].transform
-      ).to.equal(clientMetricReport.countPerSecond);
+      expect(clientMetricReport.audioUpstreamMetricMap['audioSentTransformPps'].transform).to.equal(
+        clientMetricReport.countPerSecond
+      );
     });
 
     it('audioDownstreamMetricMap contains audioReceivedTransformPps', () => {
@@ -577,7 +577,7 @@ describe('ClientMetricReport', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.mediaType = MediaType.AUDIO;
-      report.direction = Direction.DOWNSTREAM;
+      report.direction = Direction.UPSTREAM;
       report.currentMetrics['audioSentTransformPps'] = 1000;
       clientMetricReport.streamMetricReports[ssrc] = report;
       clientMetricReport.currentTimestampMs = 2000;

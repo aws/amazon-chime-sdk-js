@@ -16,11 +16,9 @@ export default class StartEncodedTransformWorkerTask extends BaseTask {
 
   async run(): Promise<void> {
     if (!this.context.encodedTransformWorkerManager?.isEnabled()) {
-      if (this.context.audioProfile?.hasRedundancyEnabled()) {
-        this.logger.warn(
-          'Audio redundancy requested but encoded transform worker manager not enabled'
-        );
-      }
+      this.context.logger.info(
+        `${this.name()} is skipped because the worker manager is not enabled`
+      );
       return;
     }
 
@@ -35,6 +33,17 @@ export default class StartEncodedTransformWorkerTask extends BaseTask {
       if (redundantAudioEncodeTransformManager) {
         this.context.audioVideoController?.addObserver(redundantAudioEncodeTransformManager);
       }
+    }
+
+    // Add observers after start() so the managers are initialized
+    const metricsTransformManager = this.context.encodedTransformWorkerManager.metricsTransformManager();
+    if (metricsTransformManager && this.context.statsCollector) {
+      metricsTransformManager.addObserver(this.context.statsCollector);
+    }
+
+    const redundantAudioEncodeTransformManager = this.context.encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
+    if (redundantAudioEncodeTransformManager && this.context.statsCollector) {
+      redundantAudioEncodeTransformManager.addObserver(this.context.statsCollector);
     }
   }
 }

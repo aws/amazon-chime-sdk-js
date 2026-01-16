@@ -164,7 +164,6 @@ export default class EncodedTransformWorker {
     });
 
     if (disabledTransforms.redundantAudio) {
-      // Skip RED transform when disabled
       transformer.readable.pipeThrough(metricsTransform).pipeTo(transformer.writable);
     } else {
       const redEncodeTransform = new TransformStream({
@@ -212,7 +211,6 @@ export default class EncodedTransformWorker {
     });
 
     if (disabledTransforms.redundantAudio) {
-      // Skip RED transform when disabled
       transformer.readable.pipeThrough(metricsTransform).pipeTo(transformer.writable);
     } else {
       const redDecodeTransform = new TransformStream({

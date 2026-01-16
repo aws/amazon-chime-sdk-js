@@ -271,6 +271,10 @@ export default class ClientMetricReport {
       type: SdkMetric.Type.RTC_MIC_FRACTION_PACKET_LOST_PERCENT,
       source: 'packetsSent',
     },
+    audioSentTransformPps: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.AUDIO_SENT_TRANSFORM_PPS,
+    },
   };
 
   readonly audioDownstreamMetricMap: {
@@ -324,10 +328,6 @@ export default class ClientMetricReport {
     totalAudioPacketsRecoveredFec: {
       transform: this.identityValue,
       type: SdkMetric.Type.RTC_SPK_TOTAL_RECOVERED_FEC,
-    },
-    audioSentTransformPps: {
-      transform: this.countPerSecond,
-      type: SdkMetric.Type.AUDIO_SENT_TRANSFORM_PPS,
     },
     audioReceivedTransformPps: {
       transform: this.countPerSecond,
