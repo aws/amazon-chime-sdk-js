@@ -6270,22 +6270,6 @@ describe('DefaultAudioVideoController', () => {
       expect(audioVideoController).to.not.be.null;
     });
 
-    it('adds itself as observer to encodedTransformWorkerManager', () => {
-      const mockManager = new MockEncodedTransformWorkerManager();
-      const addObserverSpy = sinon.spy(mockManager, 'addObserver');
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController,
-        eventController,
-        mockManager
-      );
-      expect(addObserverSpy.calledOnce).to.be.true;
-      addObserverSpy.restore();
-    });
-
     it('stops encodedTransformWorkerManager when session stops', async () => {
       const mockManager = new MockEncodedTransformWorkerManager();
       audioVideoController = new DefaultAudioVideoController(
@@ -6348,27 +6332,10 @@ describe('DefaultAudioVideoController', () => {
         return originalReconnect(status, error);
       };
 
-      // Don't start the session - it should be in NotConnected state
-      mockManager.triggerFailure(new Error('Worker failed'));
+      // Call the observer method directly since observer isn't registered until start
+      audioVideoController.onEncodedTransformWorkerManagerFailed(new Error('Worker failed'));
       await delay(defaultDelay);
       expect(reconnectCalled).to.be.false;
-    });
-
-    it('does not stop encodedTransformWorkerManager if not enabled', async () => {
-      const mockManager = new MockEncodedTransformWorkerManager();
-      mockManager.setEnabled(false);
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController,
-        eventController,
-        mockManager
-      );
-      await start();
-      await stop();
-      expect(mockManager.stopCalled).to.be.false;
     });
 
     it('sets encodedTransformWorkerManager in meeting session context', async () => {

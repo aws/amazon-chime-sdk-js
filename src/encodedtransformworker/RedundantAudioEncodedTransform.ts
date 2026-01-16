@@ -102,9 +102,6 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
   /**
    * Handle configuration messages from main thread
    */
-  /**
-   * Handles configuration messages from the main thread.
-   */
   handleMessage(message: EncodedTransformMessage): void {
     try {
       const msgType = message.type;

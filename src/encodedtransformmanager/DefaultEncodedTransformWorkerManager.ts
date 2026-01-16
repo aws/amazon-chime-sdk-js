@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import {
   COMMON_MESSAGE_TYPES,
   EncodedTransformMessage,
@@ -19,8 +18,7 @@ import RedundantAudioEncodedTransformManager from './RedundantAudioEncodedTransf
  * Default implementation of EncodedTransformWorkerManager.
  * Manages a dedicated Web Worker and coordinates individual transform managers.
  */
-export default class DefaultEncodedTransformWorkerManager
-  implements EncodedTransformWorkerManager, Destroyable {
+export default class DefaultEncodedTransformWorkerManager implements EncodedTransformWorkerManager {
   private worker: Worker | null = null;
   private logger: Logger;
   private workerURL: string | null = null;
@@ -46,7 +44,7 @@ export default class DefaultEncodedTransformWorkerManager
     );
 
     if (!this.supportsRTCScriptTransform && !this.supportsInsertableStreams) {
-      this.disable();
+      this.disabled = true;
     }
   }
 
@@ -139,14 +137,17 @@ export default class DefaultEncodedTransformWorkerManager
     }
   }
 
-  async destroy(): Promise<void> {
+  /**
+   * Stop all transform managers and release resources
+   */
+  async stop(): Promise<void> {
+    await this.redManager?.stop();
+    await this.metricsManager?.stop();
+
     if (this.redManager) {
       this.redManager = null;
     }
     if (this.metricsManager) {
-      if (isDestroyable(this.metricsManager)) {
-        await this.metricsManager.destroy();
-      }
       this.metricsManager = null;
     }
 
@@ -160,16 +161,7 @@ export default class DefaultEncodedTransformWorkerManager
       this.workerURL = null;
     }
 
-    this.observers.clear();
-    this.logger.info('DefaultEncodedTransformManager destroyed');
-  }
-
-  /**
-   * Stop all transform managers and reset to initial state
-   */
-  async stop(): Promise<void> {
-    await this.redManager?.stop();
-    await this.metricsManager?.stop();
+    this.logger.info('DefaultEncodedTransformManager stopped');
   }
 
   /**
@@ -253,11 +245,10 @@ export default class DefaultEncodedTransformWorkerManager
   /**
    * Disable media transforms
    */
-  private disable(): void {
+  private async disable(): Promise<void> {
     this.disabled = true;
     this.logger.info('Media transforms disabled');
-
-    // Just call stop async
-    this.stop();
+    // Cleanup anything that may have been initialized
+    await this.stop();
   }
 }

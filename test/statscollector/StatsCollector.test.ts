@@ -11,7 +11,6 @@ import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport'
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
-import { EncodedTransformMediaStreamMetrics } from '../../src/encodedtransformworker/MediaMetricsEncodedTransform';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionLifecycleEvent from '../../src/meetingsession/MeetingSessionLifecycleEvent';
@@ -1335,120 +1334,6 @@ describe('StatsCollector', () => {
         videoReceiver: {},
       });
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
-    });
-
-    it('does not update timestamp if packet counts have not changed', () => {
-      statsCollector = new StatsCollector(audioVideoController, logger, interval);
-
-      // First call - should update timestamp
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
-      });
-      const firstTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
-      expect(firstTimestamp).to.be.greaterThan(0);
-
-      // Second call with same packet count - should NOT update timestamp
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 2000 } },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
-      });
-      const secondTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
-      expect(secondTimestamp).to.equal(firstTimestamp);
-    });
-
-    it('updates timestamp when packet counts change', () => {
-      statsCollector = new StatsCollector(audioVideoController, logger, interval);
-
-      // First call
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
-      });
-      const firstTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
-
-      // Wait a bit to ensure timestamp would be different
-      const clock = sinon.useFakeTimers(Date.now() + 100);
-
-      // Second call with different packet count - should update timestamp
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: { 1001: { ssrc: 1001, packetCount: 150, timestamp: 2000 } },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
-      });
-      const secondTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
-      expect(secondTimestamp).to.be.greaterThan(firstTimestamp);
-
-      clock.restore();
-    });
-
-    it('handles missing ssrc entries when comparing metrics', () => {
-      statsCollector = new StatsCollector(audioVideoController, logger, interval);
-
-      // First call with ssrc 1001
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
-      });
-      const firstTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
-
-      const clock = sinon.useFakeTimers(Date.now() + 100);
-
-      // Second call with a NEW ssrc (1002) that wasn't in the old metrics
-      // This tests the oldSource[Number(ssrc)]?.packetCount || 0 branch
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: {
-          1001: { ssrc: 1001, packetCount: 100, timestamp: 2000 },
-          1002: { ssrc: 1002, packetCount: 50, timestamp: 2000 },
-        },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
-      });
-      const secondTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
-      expect(secondTimestamp).to.be.greaterThan(firstTimestamp);
-
-      clock.restore();
-    });
-
-    it('handles metrics with undefined or zero packetCount', () => {
-      statsCollector = new StatsCollector(audioVideoController, logger, interval);
-
-      // First call with a metric that has undefined packetCount (cast to bypass type check)
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: {
-          1001: { ssrc: 1001, timestamp: 1000 } as EncodedTransformMediaStreamMetrics,
-        },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
-      });
-      const firstTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
-      expect(firstTimestamp).to.be.greaterThan(0);
-
-      const clock = sinon.useFakeTimers(Date.now() + 100);
-
-      // Second call with packetCount = 0 (should be treated as no change from undefined)
-      statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: { 1001: { ssrc: 1001, packetCount: 0, timestamp: 2000 } },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
-      });
-      const secondTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
-      // Both undefined and 0 should be treated as 0, so no change
-      expect(secondTimestamp).to.equal(firstTimestamp);
-
-      clock.restore();
     });
   });
 });

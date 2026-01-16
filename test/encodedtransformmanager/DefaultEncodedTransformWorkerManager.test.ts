@@ -26,7 +26,7 @@ describe('DefaultEncodedTransformWorkerManager', () => {
   });
 
   afterEach(async () => {
-    await manager.destroy();
+    await manager.stop();
     if (domMockBuilder) {
       domMockBuilder.cleanup();
       domMockBuilder = null;
@@ -178,7 +178,7 @@ describe('DefaultEncodedTransformWorkerManager', () => {
       // @ts-ignore
       const sender = new RTCRtpSender(track);
       newManager.setupAudioSenderTransform(sender);
-      await newManager.destroy();
+      await newManager.stop();
     });
 
     it('throws when worker not initialized', () => {
@@ -253,26 +253,26 @@ describe('DefaultEncodedTransformWorkerManager', () => {
     });
   });
 
-  describe('destroy', () => {
+  describe('stop', () => {
     it('cleans up resources', async () => {
       await manager.start();
-      await manager.destroy();
+      await manager.stop();
       expect(manager.redundantAudioEncodeTransformManager()).to.be.undefined;
       expect(manager.metricsTransformManager()).to.be.undefined;
     });
 
     it('can be called multiple times safely', async () => {
       await manager.start();
-      await manager.destroy();
-      await manager.destroy();
+      await manager.stop();
+      await manager.stop();
     });
 
     it('can be called without start', async () => {
-      // manager.destroy() will be called in afterEach
+      // manager.stop() will be called in afterEach
     });
   });
 
-  describe('stop', () => {
+  describe('stop managers', () => {
     it('stops all managers', async () => {
       await manager.start();
       const redStopSpy = sinon.spy(manager.redundantAudioEncodeTransformManager()!, 'stop');
@@ -405,7 +405,7 @@ describe('DefaultEncodedTransformWorkerManager', () => {
         })
       );
 
-      await newManager.destroy();
+      await newManager.stop();
     });
   });
 

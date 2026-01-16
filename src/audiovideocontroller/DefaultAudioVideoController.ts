@@ -174,7 +174,6 @@ export default class DefaultAudioVideoController
     this._configuration = configuration;
 
     this._encodedTransformWorkerManager = encodedTransformWorkerManager;
-    this._encodedTransformWorkerManager?.addObserver(this);
 
     this._webSocketAdapter = webSocketAdapter;
     this._realtimeController = new DefaultRealtimeController(mediaStreamBroker);
@@ -327,6 +326,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videoSendCodecPreferences = this.videoSendCodecPreferences;
     this.meetingSessionContext.audioProfile = this._audioProfile;
     this.meetingSessionContext.encodedTransformWorkerManager = this._encodedTransformWorkerManager;
+    this._encodedTransformWorkerManager?.addObserver(this);
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
@@ -669,9 +669,7 @@ export default class DefaultAudioVideoController
       new DefaultVideoCaptureAndEncodeParameter(0, 0, 0, 0, false);
     this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
-
     this.meetingSessionContext.statsCollector = new StatsCollector(this, this.logger);
-
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
       this._realtimeController,
@@ -873,9 +871,7 @@ export default class DefaultAudioVideoController
       this.logger.info('fail to clean');
     }
 
-    if (this._encodedTransformWorkerManager?.isEnabled()) {
-      await this._encodedTransformWorkerManager.stop();
-    }
+    await this._encodedTransformWorkerManager?.stop();
 
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
