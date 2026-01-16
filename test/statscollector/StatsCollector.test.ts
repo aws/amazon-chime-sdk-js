@@ -1335,5 +1335,57 @@ describe('StatsCollector', () => {
       });
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
     });
+
+    it('does not update timestamp if packet counts have not changed', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+
+      // First call - should update timestamp
+      statsCollector.encodedTransformMediaMetricsDidReceive({
+        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
+        audioReceiver: {},
+        videoSender: {},
+        videoReceiver: {},
+      });
+      const firstTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
+      expect(firstTimestamp).to.be.greaterThan(0);
+
+      // Second call with same packet count - should NOT update timestamp
+      statsCollector.encodedTransformMediaMetricsDidReceive({
+        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 2000 } },
+        audioReceiver: {},
+        videoSender: {},
+        videoReceiver: {},
+      });
+      const secondTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
+      expect(secondTimestamp).to.equal(firstTimestamp);
+    });
+
+    it('updates timestamp when packet counts change', () => {
+      statsCollector = new StatsCollector(audioVideoController, logger, interval);
+
+      // First call
+      statsCollector.encodedTransformMediaMetricsDidReceive({
+        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
+        audioReceiver: {},
+        videoSender: {},
+        videoReceiver: {},
+      });
+      const firstTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
+
+      // Wait a bit to ensure timestamp would be different
+      const clock = sinon.useFakeTimers(Date.now() + 100);
+
+      // Second call with different packet count - should update timestamp
+      statsCollector.encodedTransformMediaMetricsDidReceive({
+        audioSender: { 1001: { ssrc: 1001, packetCount: 150, timestamp: 2000 } },
+        audioReceiver: {},
+        videoSender: {},
+        videoReceiver: {},
+      });
+      const secondTimestamp = statsCollector['encodedTransformMediaMetricsTimestamp'];
+      expect(secondTimestamp).to.be.greaterThan(firstTimestamp);
+
+      clock.restore();
+    });
   });
 });

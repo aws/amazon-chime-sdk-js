@@ -155,14 +155,7 @@ describe('SetLocalDescriptionTask', () => {
       context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
       context.audioProfile = new AudioProfile(null, true);
       // encodedTransformWorkerManager is undefined
-      const logSpy = sinon.spy(context.logger, 'warn');
       await task.run();
-      expect(
-        logSpy.calledWith(
-          'Audio redundancy requested but encoded transform worker manager not enabled'
-        )
-      ).to.be.true;
-      logSpy.restore();
     });
 
     it('does not set audio payload types when encodedTransformWorkerManager.isEnabled returns false', async () => {
@@ -174,14 +167,7 @@ describe('SetLocalDescriptionTask', () => {
       context.encodedTransformWorkerManager = ({
         isEnabled: () => false,
       } as unknown) as EncodedTransformWorkerManager;
-      const logSpy = sinon.spy(context.logger, 'warn');
       await task.run();
-      expect(
-        logSpy.calledWith(
-          'Audio redundancy requested but encoded transform worker manager not enabled'
-        )
-      ).to.be.true;
-      logSpy.restore();
     });
 
     it('handles when redundantAudioEncodeTransformManager returns null', async () => {

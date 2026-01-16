@@ -676,8 +676,42 @@ export default class StatsCollector
    * Receives media metrics from MediaMetricsTransformManager.
    */
   encodedTransformMediaMetricsDidReceive(metrics: EncodedTransformMediaMetrics): void {
-    this.encodedTransformMediaMetrics = metrics;
-    this.encodedTransformMediaMetricsTimestamp = Date.now();
+    // Only update timestamp if the metrics actually changed (packet counts differ)
+    const metricsChanged = this.hasMetricsChanged(metrics);
+    if (metricsChanged) {
+      this.encodedTransformMediaMetrics = metrics;
+      this.encodedTransformMediaMetricsTimestamp = Date.now();
+    }
+  }
+
+  /**
+   * Check if the new metrics have different packet counts than the current ones.
+   */
+  private hasMetricsChanged(newMetrics: EncodedTransformMediaMetrics): boolean {
+    if (!this.encodedTransformMediaMetrics) {
+      return true;
+    }
+
+    const checkSource = (
+      newSource: Record<number, EncodedTransformMediaStreamMetrics>,
+      oldSource: Record<number, EncodedTransformMediaStreamMetrics>
+    ): boolean => {
+      for (const ssrc of Object.keys(newSource)) {
+        const newCount = newSource[Number(ssrc)]?.packetCount || 0;
+        const oldCount = oldSource[Number(ssrc)]?.packetCount || 0;
+        if (newCount !== oldCount) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    return (
+      checkSource(newMetrics.audioSender, this.encodedTransformMediaMetrics.audioSender) ||
+      checkSource(newMetrics.audioReceiver, this.encodedTransformMediaMetrics.audioReceiver) ||
+      checkSource(newMetrics.videoSender, this.encodedTransformMediaMetrics.videoSender) ||
+      checkSource(newMetrics.videoReceiver, this.encodedTransformMediaMetrics.videoReceiver)
+    );
   }
 
   /**

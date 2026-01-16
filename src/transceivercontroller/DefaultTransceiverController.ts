@@ -120,12 +120,12 @@ export default class DefaultTransceiverController implements TransceiverControll
   private handleTrack = (event: RTCTrackEvent): void => {
     // @ts-ignore
     if (!event.receiver.transform) {
-      // See note in `addTransceiver`
+      // See note in `addTransceiver`, however the reason it seems to work is because no transform is applied at all.
+      // For now this is okay, since we will have video frame render metrics.
       this.logger.info(
         `Applying video receiver transform to track ${event.track.id} not set after addTransceiver`
       );
-      // Set up video receiver transform for incoming tracks
-      if (event.track.kind === 'video' && this.encodedTransformWorkerManager) {
+      if (event.track.kind === 'video' && this.encodedTransformWorkerManager?.isEnabled()) {
         this.encodedTransformWorkerManager.setupVideoReceiverTransform(event.receiver);
       }
     }
@@ -174,8 +174,6 @@ export default class DefaultTransceiverController implements TransceiverControll
         this.encodedTransformWorkerManager.setupAudioReceiverTransform(
           this._localAudioTransceiver.receiver
         );
-      } else {
-        this.logger.warn('Media transforms not enabled, skipping audio transform setup');
       }
     }
 
@@ -185,9 +183,11 @@ export default class DefaultTransceiverController implements TransceiverControll
         streams: [this.defaultMediaStream],
       });
 
-      this.encodedTransformWorkerManager?.setupVideoSenderTransform(
-        this._localCameraTransceiver.sender
-      );
+      if (this.encodedTransformWorkerManager?.isEnabled()) {
+        this.encodedTransformWorkerManager?.setupVideoSenderTransform(
+          this._localCameraTransceiver.sender
+        );
+      }
     }
   }
 

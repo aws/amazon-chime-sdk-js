@@ -99,13 +99,6 @@ export default class SetLocalDescriptionTask extends BaseTask {
         if (redManager) {
           redManager.setAudioPayloadTypes(audioPayloadMap);
         }
-      } else if (
-        this.context.audioProfile.hasRedundancyEnabled() &&
-        !encodedTransformWorkerManagerEnabled
-      ) {
-        this.logger.warn(
-          'Audio redundancy requested but encoded transform worker manager not enabled'
-        );
       }
     }
 

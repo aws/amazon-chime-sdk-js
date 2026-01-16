@@ -37,7 +37,9 @@ export interface EncodedTransformMediaStreamMetrics {
  */
 abstract class BaseMetricsTransform extends EncodedTransform {
   protected metricsMap: Map<number, { packetCount: number; timestamp: number }> = new Map();
-  protected readonly reportInterval: number = 100;
+
+  protected readonly reportIntervalMs: number = 500;
+  protected lastReportTime: number = 0;
 
   /** Returns the transform name for metrics identification. */
   protected abstract transformName(): string;
@@ -45,7 +47,6 @@ abstract class BaseMetricsTransform extends EncodedTransform {
   /** Processes frames, collects per-SSRC metrics, and forwards unchanged. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transform(frame: any, controller: any): void {
-    // Extract SSRC from frame
     const ssrc = frame.getMetadata?.().synchronizationSource || 0;
 
     // Get or create metrics for this SSRC
@@ -70,9 +71,10 @@ abstract class BaseMetricsTransform extends EncodedTransform {
     // Forward frame unchanged
     controller.enqueue(frame);
 
-    // Periodically report metrics to main thread
-    if (metrics.packetCount % this.reportInterval === 0) {
+    const now = Date.now();
+    if (now - this.lastReportTime >= this.reportIntervalMs) {
       this.reportMetrics();
+      this.lastReportTime = now;
     }
   }
 

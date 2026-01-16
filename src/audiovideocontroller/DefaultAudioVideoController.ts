@@ -671,14 +671,6 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
 
     this.meetingSessionContext.statsCollector = new StatsCollector(this, this.logger);
-    /* istanbul ignore next */
-    this._encodedTransformWorkerManager
-      ?.metricsTransformManager()
-      ?.addObserver(this.meetingSessionContext.statsCollector);
-    /* istanbul ignore next */
-    this._encodedTransformWorkerManager
-      ?.redundantAudioEncodeTransformManager()
-      ?.addObserver(this.meetingSessionContext.statsCollector);
 
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
@@ -1774,6 +1766,11 @@ export default class DefaultAudioVideoController
    */
   onEncodedTransformWorkerManagerFailed(error: Error): void {
     this.logger.error(`Encoded transform worker failed: ${error.message}`);
+
+    if (this.sessionStateController.state() !== SessionStateControllerState.Connected) {
+      this.logger.info('Skipping reconnect for worker failure - session not connected');
+      return;
+    }
 
     // Trigger reconnect to recreate peer connection without transforms
     const status = new MeetingSessionStatus(MeetingSessionStatusCode.TaskFailed);
