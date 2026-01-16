@@ -354,7 +354,7 @@ describe('DefaultMeetingSession', () => {
       mockBuilder.cleanup();
     });
 
-    it('destroys encodedTransformWorkerManager when session is destroyed', async () => {
+    it('stops encodedTransformWorkerManager when session is destroyed', async () => {
       const mockBuilder = new DOMMockBuilder();
       const session = new DefaultMeetingSession(
         new NoOpAudioVideoController().configuration,
@@ -368,11 +368,11 @@ describe('DefaultMeetingSession', () => {
       ] as DefaultEncodedTransformWorkerManager;
       expect(manager).to.exist;
 
-      const destroySpy = sinon.spy(manager, 'destroy');
+      const stopSpy = sinon.spy(manager, 'stop');
 
       await session.destroy();
 
-      expect(destroySpy.calledOnce).to.be.true;
+      expect(stopSpy.calledOnce).to.be.true;
       // @ts-ignore
       expect(session['encodedTransformWorkerManager']).to.be.undefined;
       mockBuilder.cleanup();

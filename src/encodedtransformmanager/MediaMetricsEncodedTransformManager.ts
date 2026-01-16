@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Destroyable from '../destroyable/Destroyable';
 import {
   COMMON_MESSAGE_TYPES,
   EncodedTransformMessage,
@@ -55,9 +54,7 @@ export interface EncodedTransformMediaMetricsObserver {
  * Manages metrics collection for all media types (audio/video, sender/receiver).
  * Consolidates packet-level metrics from the Web Worker.
  */
-export default class MediaMetricsTransformManager
-  extends EncodedTransformManager
-  implements Destroyable {
+export default class MediaMetricsTransformManager extends EncodedTransformManager {
   private audioSender: Record<number, EncodedTransformMediaStreamMetrics> = {};
   private audioReceiver: Record<number, EncodedTransformMediaStreamMetrics> = {};
   private videoSender: Record<number, EncodedTransformMediaStreamMetrics> = {};
@@ -172,9 +169,14 @@ export default class MediaMetricsTransformManager
   }
 
   /**
-   * Stop metrics transform and reset state
+   * Stop metrics transform and release resources
    */
   async stop(): Promise<void> {
+    if (this.metricsReportingScheduler) {
+      this.metricsReportingScheduler.stop();
+      this.metricsReportingScheduler = null;
+    }
+
     this.observers.clear();
 
     // Reset all metrics to initial state
@@ -182,17 +184,5 @@ export default class MediaMetricsTransformManager
     this.audioReceiver = {};
     this.videoSender = {};
     this.videoReceiver = {};
-  }
-
-  /**
-   * Destroy the manager and release resources
-   */
-  async destroy(): Promise<void> {
-    if (this.metricsReportingScheduler) {
-      this.metricsReportingScheduler.stop();
-      this.metricsReportingScheduler = null;
-    }
-
-    this.stop();
   }
 }

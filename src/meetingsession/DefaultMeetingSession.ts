@@ -148,9 +148,7 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     if (isDestroyable(this.eventController)) {
       await this.eventController.destroy();
     }
-    if (isDestroyable(this.encodedTransformWorkerManager)) {
-      await this.encodedTransformWorkerManager.destroy();
-    }
+    await this.encodedTransformWorkerManager?.stop();
 
     CSPMonitor.removeLogger(this._logger);
 

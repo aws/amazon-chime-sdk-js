@@ -31,7 +31,7 @@ describe('MediaMetricsTransformManager', () => {
   });
 
   afterEach(async () => {
-    await manager.destroy();
+    await manager.stop();
     if (domMockBuilder) {
       domMockBuilder.cleanup();
       domMockBuilder = null;
@@ -247,17 +247,15 @@ describe('MediaMetricsTransformManager', () => {
         expect(Object.keys(receivedMetrics.audioSender).length).to.equal(0);
       }
     });
-  });
 
-  describe('destroy', () => {
     it('stops scheduler and cleans up', async () => {
       await manager.start();
-      await manager.destroy();
-      await manager.destroy();
+      await manager.stop();
+      await manager.stop();
     });
 
     it('can be called without start', async () => {
-      // manager.destroy() will be called in afterEach
+      // manager.stop() will be called in afterEach
     });
   });
 });
