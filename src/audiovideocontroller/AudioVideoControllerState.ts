@@ -6,6 +6,7 @@ import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import ConnectionMonitor from '../connectionmonitor/ConnectionMonitor';
+import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
@@ -70,6 +71,8 @@ export default class AudioVideoControllerState {
   audioMixController: AudioMixController | null = null;
 
   transceiverController: TransceiverController | null = null;
+
+  encodedTransformWorkerManager: EncodedTransformWorkerManager | null = null;
 
   indexFrame: SdkIndexFrame | null = null;
 

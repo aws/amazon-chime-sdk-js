@@ -83,6 +83,7 @@ import DefaultBrowserBehavior from './browserbehavior/DefaultBrowserBehavior';
 import DefaultContentShareController from './contentsharecontroller/DefaultContentShareController';
 import DefaultDeviceController from './devicecontroller/DefaultDeviceController';
 import DefaultDevicePixelRatioMonitor from './devicepixelratiomonitor/DefaultDevicePixelRatioMonitor';
+import DefaultEncodedTransformWorkerManager from './encodedtransformmanager/DefaultEncodedTransformWorkerManager';
 import DefaultEventController from './eventcontroller/DefaultEventController';
 import DefaultMediaDeviceFactory from './mediadevicefactory/DefaultMediaDeviceFactory';
 import DefaultMeetingEventReporter from './eventreporter/DefaultMeetingEventReporter';
@@ -126,6 +127,9 @@ import DevicePixelRatioObserver from './devicepixelratioobserver/DevicePixelRati
 import DevicePixelRatioSource from './devicepixelratiosource/DevicePixelRatioSource';
 import DevicePixelRatioWindowSource from './devicepixelratiosource/DevicePixelRatioWindowSource';
 import DeviceSelection from './devicecontroller/DeviceSelection';
+import EncodedTransformManager from './encodedtransformmanager/EncodedTransformManager';
+import EncodedTransformWorkerCode from './encodedtransformworkercode/EncodedTransformWorkerCode';
+import EncodedTransformWorkerManager from './encodedtransformmanager/EncodedTransformWorkerManager';
 import EventAttributes from './eventcontroller/EventAttributes';
 import EventBuffer from './eventbuffer/EventBuffer';
 import EventBufferConfiguration from './eventbufferconfiguration/EventBufferConfiguration';
@@ -154,6 +158,7 @@ import LogLevel from './logger/LogLevel';
 import Logger from './logger/Logger';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
+import MediaMetricsEncodedTransformManager from './encodedtransformmanager/MediaMetricsEncodedTransformManager';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
 import MediaStreamBrokerObserver from './mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingEventsClientConfiguration from './eventsclientconfiguration/MeetingEventsClientConfiguration';
@@ -221,7 +226,8 @@ import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
 import ReconnectController from './reconnectcontroller/ReconnectController';
 import ReconnectionHealthPolicy from './connectionhealthpolicy/ReconnectionHealthPolicy';
-import RedundantAudioEncoder from './redundantaudioencoder/RedundantAudioEncoder';
+import RedundantAudioEncodedTransform from './encodedtransformworker/RedundantAudioEncodedTransform';
+import RedundantAudioEncodedTransformManager from './encodedtransformmanager/RedundantAudioEncodedTransformManager';
 import RedundantAudioEncoderWorkerCode from './redundantaudioencoderworkercode/RedundantAudioEncoderWorkerCode';
 import RedundantAudioRecoveryMetricReport from './clientmetricreport/RedundantAudioRecoveryMetricReport';
 import RedundantAudioRecoveryMetricsObserver from './redundantaudiorecoverymetricsobserver/RedundantAudioRecoveryMetricsObserver';
@@ -260,6 +266,7 @@ import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplin
 import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
 import SingleNodeAudioTransformDevice from './devicecontroller/SingleNodeAudioTransformDevice';
+import StartEncodedTransformWorkerTask from './task/StartEncodedTransformWorkerTask';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
 import SubscribeAndReceiveSubscribeAckTask from './task/SubscribeAndReceiveSubscribeAckTask';
 import TargetDisplaySize from './videodownlinkbandwidthpolicy/TargetDisplaySize';
@@ -434,6 +441,7 @@ export {
   DefaultContentShareController,
   DefaultDeviceController,
   DefaultDevicePixelRatioMonitor,
+  DefaultEncodedTransformWorkerManager,
   DefaultEventController,
   DefaultMediaDeviceFactory,
   DefaultMeetingEventReporter,
@@ -477,6 +485,9 @@ export {
   DevicePixelRatioSource,
   DevicePixelRatioWindowSource,
   DeviceSelection,
+  EncodedTransformManager,
+  EncodedTransformWorkerCode,
+  EncodedTransformWorkerManager,
   Eq,
   EventAttributes,
   EventBuffer,
@@ -508,6 +519,7 @@ export {
   MaybeProvider,
   MediaDeviceFactory,
   MediaDeviceProxyHandler,
+  MediaMetricsEncodedTransformManager,
   MediaStreamBroker,
   MediaStreamBrokerObserver,
   MeetingEventsClientConfiguration,
@@ -578,7 +590,8 @@ export {
   ReceiveVideoStreamIndexTask,
   ReconnectController,
   ReconnectionHealthPolicy,
-  RedundantAudioEncoder,
+  RedundantAudioEncodedTransform,
+  RedundantAudioEncodedTransformManager,
   RedundantAudioEncoderWorkerCode,
   RedundantAudioRecoveryMetricReport,
   RedundantAudioRecoveryMetricsObserver,
@@ -618,6 +631,7 @@ export {
   SimulcastVideoStreamIndex,
   SingleNodeAudioTransformDevice,
   Some,
+  StartEncodedTransformWorkerTask,
   StreamMetricReport,
   SubscribeAndReceiveSubscribeAckTask,
   TargetDisplaySize,

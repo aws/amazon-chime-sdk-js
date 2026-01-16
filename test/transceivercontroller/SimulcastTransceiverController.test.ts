@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
@@ -30,17 +31,43 @@ describe('SimulcastTransceiverController', () => {
   let tc: SimulcastTransceiverController;
   let domMockBuilder: DOMMockBuilder;
   const context: AudioVideoControllerState = new AudioVideoControllerState();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let mockEncodedTransformWorkerManager: any;
 
   beforeEach(() => {
     domMockBehavior.browserName = 'firefox';
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     context.browserBehavior = new DefaultBrowserBehavior();
     context.audioProfile = new AudioProfile();
-    tc = new SimulcastTransceiverController(logger, context.browserBehavior, context);
+    mockEncodedTransformWorkerManager = {
+      isEnabled: sinon.stub().returns(true),
+      setupAudioSenderTransform: sinon.stub(),
+      setupAudioReceiverTransform: sinon.stub(),
+      setupVideoSenderTransform: sinon.stub(),
+      setupVideoReceiverTransform: sinon.stub(),
+    };
+    tc = new SimulcastTransceiverController(
+      logger,
+      context.browserBehavior,
+      context,
+      mockEncodedTransformWorkerManager
+    );
   });
 
   afterEach(() => {
-    tc = new SimulcastTransceiverController(logger, context.browserBehavior, context);
+    mockEncodedTransformWorkerManager = {
+      isEnabled: sinon.stub().returns(true),
+      setupAudioSenderTransform: sinon.stub(),
+      setupAudioReceiverTransform: sinon.stub(),
+      setupVideoSenderTransform: sinon.stub(),
+      setupVideoReceiverTransform: sinon.stub(),
+    };
+    tc = new SimulcastTransceiverController(
+      logger,
+      context.browserBehavior,
+      context,
+      mockEncodedTransformWorkerManager
+    );
     domMockBuilder.cleanup();
   });
 
@@ -71,13 +98,25 @@ describe('SimulcastTransceiverController', () => {
     });
 
     it('can set up transceivers without the meeting session context', () => {
-      tc = new SimulcastTransceiverController(logger, context.browserBehavior);
+      // Create a minimal mock for encodedTransformWorkerManager since setupVideoSenderTransform is called unconditionally
+      const minimalMockManager = {
+        isEnabled: sinon.stub().returns(false),
+        setupAudioSenderTransform: sinon.stub(),
+        setupAudioReceiverTransform: sinon.stub(),
+        setupVideoSenderTransform: sinon.stub(),
+        setupVideoReceiverTransform: sinon.stub(),
+      };
+      tc = new SimulcastTransceiverController(
+        logger,
+        context.browserBehavior,
+        undefined,
+        // @ts-ignore
+        minimalMockManager
+      );
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
       tc.setupLocalTransceivers();
       expect(peer.getTransceivers().length).to.equal(2);
-      // Without the meeting session context, the RED worker should not be created.
-      expect(tc['audioRedWorker']).to.be.null;
 
       const transceivers = peer.getTransceivers();
       expect(transceivers.length).to.equal(2);
@@ -781,6 +820,110 @@ describe('SimulcastTransceiverController', () => {
       expect(success).to.be.true;
       const audioTransceiver = peer.getTransceivers()[0];
       expect(audioTransceiver.sender.track).to.equal(newAudioTrack2);
+    });
+  });
+
+  describe('encodedTransformWorkerManager integration', () => {
+    it('calls setupAudioSenderTransform and setupAudioReceiverTransform when encodedTransformWorkerManager is provided and enabled', () => {
+      const mockEncodedTransformWorkerManager = {
+        isEnabled: sinon.stub().returns(true),
+        setupAudioSenderTransform: sinon.stub(),
+        setupAudioReceiverTransform: sinon.stub(),
+        setupVideoSenderTransform: sinon.stub(),
+        setupVideoReceiverTransform: sinon.stub(),
+      };
+
+      const tcWithManager = new SimulcastTransceiverController(
+        logger,
+        context.browserBehavior,
+        context,
+        // @ts-ignore
+        mockEncodedTransformWorkerManager
+      );
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcWithManager.setPeer(peer);
+      tcWithManager.setupLocalTransceivers();
+
+      expect(mockEncodedTransformWorkerManager.setupAudioSenderTransform.calledOnce).to.be.true;
+      expect(mockEncodedTransformWorkerManager.setupAudioReceiverTransform.calledOnce).to.be.true;
+    });
+
+    it('calls setupVideoSenderTransform when encodedTransformWorkerManager is provided', () => {
+      const mockEncodedTransformWorkerManager = {
+        isEnabled: sinon.stub().returns(true),
+        setupAudioSenderTransform: sinon.stub(),
+        setupAudioReceiverTransform: sinon.stub(),
+        setupVideoSenderTransform: sinon.stub(),
+        setupVideoReceiverTransform: sinon.stub(),
+      };
+
+      const tcWithManager = new SimulcastTransceiverController(
+        logger,
+        context.browserBehavior,
+        context,
+        // @ts-ignore
+        mockEncodedTransformWorkerManager
+      );
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcWithManager.setPeer(peer);
+      tcWithManager.setupLocalTransceivers();
+
+      expect(mockEncodedTransformWorkerManager.setupVideoSenderTransform.calledOnce).to.be.true;
+    });
+
+    it('does not call audio transform setup when encodedTransformWorkerManager is not enabled', () => {
+      const mockEncodedTransformWorkerManager = {
+        isEnabled: sinon.stub().returns(false),
+        setupAudioSenderTransform: sinon.stub(),
+        setupAudioReceiverTransform: sinon.stub(),
+        setupVideoSenderTransform: sinon.stub(),
+        setupVideoReceiverTransform: sinon.stub(),
+      };
+
+      const tcWithManager = new SimulcastTransceiverController(
+        logger,
+        context.browserBehavior,
+        context,
+        // @ts-ignore
+        mockEncodedTransformWorkerManager
+      );
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcWithManager.setPeer(peer);
+      tcWithManager.setupLocalTransceivers();
+
+      expect(mockEncodedTransformWorkerManager.setupAudioSenderTransform.called).to.be.false;
+      expect(mockEncodedTransformWorkerManager.setupAudioReceiverTransform.called).to.be.false;
+    });
+
+    it('logs warning when encodedTransformWorkerManager is not enabled', () => {
+      const mockEncodedTransformWorkerManager = {
+        isEnabled: sinon.stub().returns(false),
+        setupAudioSenderTransform: sinon.stub(),
+        setupAudioReceiverTransform: sinon.stub(),
+        setupVideoSenderTransform: sinon.stub(),
+        setupVideoReceiverTransform: sinon.stub(),
+      };
+
+      const tcWithManager = new SimulcastTransceiverController(
+        logger,
+        context.browserBehavior,
+        context,
+        // @ts-ignore
+        mockEncodedTransformWorkerManager
+      );
+
+      const warnSpy = sinon.spy(tcWithManager['logger'], 'warn');
+
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tcWithManager.setPeer(peer);
+      tcWithManager.setupLocalTransceivers();
+
+      expect(warnSpy.calledWith('Media transforms not supported, skipping audio transform setup'))
+        .to.be.true;
+      warnSpy.restore();
     });
   });
 });
