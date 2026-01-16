@@ -8,6 +8,7 @@ import {
   SignalingClientVideoSubscriptionConfiguration,
 } from '../../src';
 import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
@@ -400,6 +401,38 @@ describe('DefaultSignalingClient', () => {
             const signalingClientJoin = new SignalingClientJoin();
             signalingClientJoin.serverSideNetworkAdaption =
               ServerSideNetworkAdaption.BandwidthProbing;
+            event.client.join(signalingClientJoin);
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a join with browserBehavior without optional methods', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
+              expect(frame.join.clientDetails.platformName).to.eq('test-browser');
+              expect(frame.join.clientDetails.platformVersion).to.eq('1.0.0');
+              expect(frame.join.clientDetails.deviceModel).to.eq('');
+              expect(frame.join.clientDetails.osName).to.eq('');
+              expect(frame.join.clientDetails.osVersion).to.eq('');
+              done();
+            });
+            const signalingClientJoin = new SignalingClientJoin();
+            // Provide a minimal browserBehavior without optional methods
+            signalingClientJoin.browserBehavior = ({
+              name: () => 'test-browser',
+              version: () => '1.0.0',
+              // deviceName, osName, osVersion are intentionally omitted
+            } as unknown) as BrowserBehavior;
             event.client.join(signalingClientJoin);
           }
         }

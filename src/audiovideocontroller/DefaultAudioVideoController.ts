@@ -466,6 +466,11 @@ export default class DefaultAudioVideoController
     // we otherwise would have been had we not pre-started.
     this.uninstallPreStartObserver();
 
+    // Update browser behavior with high entropy values for more accurate device/OS info
+    if (this.meetingSessionContext.browserBehavior) {
+      await this.meetingSessionContext.browserBehavior.updateWithHighEntropyValues(true);
+    }
+
     // Note that some of the assignments in this function exist to clean up previous connections.
     // All future 'clean up' assignments should go in `AudioVideoControllerState.resetConnectionSpecificState`
     // for consolidation purposes.

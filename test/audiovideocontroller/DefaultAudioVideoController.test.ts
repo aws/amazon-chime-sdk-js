@@ -1097,8 +1097,9 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.removeObserver(observer);
     });
 
-    it('can fail but does not reconnect', async () => {
-      configuration.connectionTimeoutMs = 100;
+    it('can fail but does not reconnect', async function () {
+      const connectionTimeoutMs = 100;
+      configuration.connectionTimeoutMs = connectionTimeoutMs;
       const logger = new NoOpDebugLogger();
       const spy = sinon.spy(logger, 'error');
       const events: { name: EventName; attributes: EventAttributes }[] = [];
@@ -1143,16 +1144,17 @@ describe('DefaultAudioVideoController', () => {
 
       // Start and wait for the Join frame in JoinAndReceiveIndexTask.
       audioVideoController.start();
+      await delay(defaultDelay);
       reconnectController.disableReconnect();
 
-      delay(configuration.connectionTimeoutMs + 50).then(() => {
+      delay(connectionTimeoutMs + 50).then(() => {
         // Finish LeaveAndReceiveLeaveAckTask executed by the failed "start."
         webSocketAdapter.send(makeLeaveAckFrame());
         // Let the next round of the start operation not fail with the timeout.
         configuration.connectionTimeoutMs = 15000;
       });
 
-      delay(configuration.connectionTimeoutMs + 100).then(async () => {
+      delay(connectionTimeoutMs + 100).then(async () => {
         // Finish the start operation and stop this test.
         await stop();
       });

@@ -95,6 +95,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="useragentparser.html#getparserresult" class="tsd-kind-icon">get<wbr>Parser<wbr>Result</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="useragentparser.html#updatewithhighentropyvalues" class="tsd-kind-icon">update<wbr>With<wbr>High<wbr>Entropy<wbr>Values</a></li>
 							</ul>
 						</section>
 					</div>
@@ -112,7 +113,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/useragentparser/UserAgentParser.ts#L12">src/useragentparser/UserAgentParser.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/useragentparser/UserAgentParser.ts#L17">src/useragentparser/UserAgentParser.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -126,6 +127,47 @@
 									<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="updatewithhighentropyvalues" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> update<wbr>With<wbr>High<wbr>Entropy<wbr>Values</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>With<wbr>High<wbr>Entropy<wbr>Values<span class="tsd-signature-symbol">(</span>alwaysOverride<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/useragentparser/UserAgentParser.ts#L32">src/useragentparser/UserAgentParser.ts:32</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Updates internal values using the
+										<a href="https://developer.mozilla.org/en-US/docs/Web/API/NavigatorUAData/getHighEntropyValues" class="external">User-Agent Client Hints API</a>.
+									If the API is not available, resolves without making changes.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>alwaysOverride: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If true, always override internal values even if already set.
+										Examples of value changes:</p>
+										<ul>
+											<li>osName: &quot;Mac OS&quot; → &quot;macOS&quot;</li>
+											<li>osVersion: &quot;10.15&quot; → &quot;10.15.7&quot;</li>
+											<li>browserName: &quot;Chrome&quot; → &quot;Google Chrome&quot;</li>
+											<li>browserVersion: &quot;120&quot; → &quot;120.0.6099.129&quot;</li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>Promise that resolves when update is complete</p>
 						</li>
 					</ul>
 				</section>
@@ -148,6 +190,9 @@
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="useragentparser.html#getparserresult" class="tsd-kind-icon">get<wbr>Parser<wbr>Result</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="useragentparser.html#updatewithhighentropyvalues" class="tsd-kind-icon">update<wbr>With<wbr>High<wbr>Entropy<wbr>Values</a>
 							</li>
 						</ul>
 					</li>

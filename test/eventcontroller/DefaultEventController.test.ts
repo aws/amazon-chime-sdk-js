@@ -158,14 +158,14 @@ describe('DefaultEventController', () => {
       mockBuilder.cleanup();
     });
 
-    it('can report event', () => {
+    it('can report event', async () => {
       const eventReporter = new NoOpEventReporter();
       eventController = new DefaultEventController(emptyConfiguration, logger, eventReporter);
       const eventName = 'audioInputFailed';
       const audioInputErrorMessage = 'Something went wrong';
       const attributes = { audioInputErrorMessage };
       const spy = sinon.spy(eventReporter, 'reportEvent');
-      eventController.publishEvent(eventName, attributes);
+      await eventController.publishEvent(eventName, attributes);
       assert(spy.calledOnce);
     });
   });

@@ -8,7 +8,6 @@ class AuthenticateUserStep extends AppTestStep {
     attendee_id,
     useSimulcastFlag = false,
     useWebAudioFlag = false,
-    enableEventReporting = true,
     region = '',
     useStereoMusicAudioProfile = false,
   ) {
@@ -16,7 +15,6 @@ class AuthenticateUserStep extends AppTestStep {
     this.attendee_id = attendee_id;
     this.useSimulcastFlag = useSimulcastFlag;
     this.useWebAudioFlag = useWebAudioFlag;
-    this.enableEventReporting = enableEventReporting;
     this.region = region;
     this.useStereoMusicAudioProfile = useStereoMusicAudioProfile;
   }
@@ -27,7 +25,6 @@ class AuthenticateUserStep extends AppTestStep {
     attendee_id,
     useSimulcastFlag = false,
     useWebAudioFlag = false,
-    enableEventReporting = true,
     region = '',
     useStereoMusicAudioProfile = false,
   ) {
@@ -37,7 +34,6 @@ class AuthenticateUserStep extends AppTestStep {
       attendee_id,
       useSimulcastFlag,
       useWebAudioFlag,
-      enableEventReporting,
       region,
       useStereoMusicAudioProfile
     );
@@ -67,10 +63,6 @@ class AuthenticateUserStep extends AppTestStep {
     if (this.useWebAudioFlag) {
       this.logger("choose to use Web Audio");
       await this.page.chooseUseWebAudio();
-    }
-    if (this.enableEventReporting) {
-      this.logger("Event reporting enabled");
-      await this.page.chooseEnableEventReporting();
     }
     if (this.useStereoMusicAudioProfile) {
       this.logger("Using stereo music audio profile");

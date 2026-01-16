@@ -55,6 +55,8 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
   private ingestionURL: string;
   private lock: boolean = false;
   private metadata: EventsIngestionMetadata;
+  private highEntropyUpdated: boolean = false;
+  private userAgentParser: DefaultUserAgentParser;
   private type: string;
   private v: number;
   private beaconEventListener: undefined | ((e: Event) => void);
@@ -70,7 +72,8 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     importantEvents: MeetingHistoryState[],
     logger: Logger
   ) {
-    const userAgentParserResult = new DefaultUserAgentParser(logger).getParserResult();
+    this.userAgentParser = new DefaultUserAgentParser(logger);
+    const userAgentParserResult = this.userAgentParser.getParserResult();
     const { browserMajorVersion: _browserMajorVersion, ...clientMetadata } = userAgentParserResult;
     const { type, v, ...rest } = eventsClientConfiguration.toJSON();
     this.authenticationToken = eventsClientConfiguration.getAuthenticationToken();
@@ -97,6 +100,18 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     this.currentIngestionEvent = this.initializeAndGetCurrentIngestionEvent();
     this.beaconEventListener = (e: Event) => this.beaconEventHandler(e);
     this.addEventListeners();
+  }
+
+  private async updateMetadataWithHighEntropyValues(): Promise<void> {
+    if (this.highEntropyUpdated) {
+      return;
+    }
+    this.highEntropyUpdated = true;
+    await this.userAgentParser.updateWithHighEntropyValues();
+    const userAgentParserResult = this.userAgentParser.getParserResult();
+    const { browserMajorVersion: _browserMajorVersion, ...clientMetadata } = userAgentParserResult;
+    // Update metadata with high entropy values
+    this.metadata = { ...this.metadata, ...clientMetadata };
   }
 
   private addEventListeners(): void {
@@ -301,6 +316,9 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
       return;
     }
     this.lock = true;
+
+    await this.updateMetadataWithHighEntropyValues();
+
     const body = this.makeRequestBody(batch);
     let failed = false;
 
@@ -377,6 +395,9 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
         item
       )}`
     );
+
+    await this.updateMetadataWithHighEntropyValues();
+
     const { name, ts, attributes } = item;
     const event: JSONIngestionEvent = {
       type: this.type,

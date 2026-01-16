@@ -55,7 +55,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
   }
 
   async run(): Promise<void> {
-    const indexFrame = await new Promise<SdkIndexFrame>((resolve, reject) => {
+    const indexFrame = await new Promise<SdkIndexFrame>(async (resolve, reject) => {
       const context = this.context;
       context.turnCredentials = null;
       class IndexFrameInterceptor implements SignalingClientObserver, TaskCanceler {
@@ -153,6 +153,8 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       const join = new SignalingClientJoin(
         this.context.meetingSessionConfiguration.applicationMetadata
       );
+      join.browserBehavior = this.context.browserBehavior;
+
       if (
         this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption !== undefined &&
         this.context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions !== undefined

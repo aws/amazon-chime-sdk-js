@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { detect } from 'detect-browser';
-import { UAParser } from 'ua-parser-js';
 
+import NoOpLogger from '../logger/NoOpLogger';
+import DefaultUserAgentParser from '../useragentparser/DefaultUserAgentParser';
+import UserAgentParser, { USER_AGENT_PARSER_UNAVAILABLE } from '../useragentparser/UserAgentParser';
 import BrowserBehavior from './BrowserBehavior';
 import ExtendedBrowserBehavior from './ExtendedBrowserBehavior';
 
@@ -14,9 +16,13 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     version: 'unknown',
     os: 'unknown',
   };
+
   private readonly browser = detect() || this.FALLBACK_BROWSER;
-  private readonly uaParserResult =
-    navigator && navigator.userAgent ? new UAParser(navigator.userAgent).getResult() : null;
+  private readonly userAgentParser: UserAgentParser;
+
+  constructor(userAgentParser?: UserAgentParser) {
+    this.userAgentParser = userAgentParser ?? new DefaultUserAgentParser(new NoOpLogger());
+  }
 
   private browserSupport: { [id: string]: number } = {
     chrome: 78,
@@ -61,23 +67,39 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   private static MIN_IOS_NON_SAFARI_SUPPORT_CANVAS_STREAM_PLAYBACK = 106;
 
   version(): string {
-    return this.browser.version;
+    const ver = this.userAgentParser.getParserResult().browserVersion;
+    return ver === USER_AGENT_PARSER_UNAVAILABLE ? '' : ver;
   }
 
   majorVersion(): number {
-    return this.version() !== null ? parseInt(this.version().split('.')[0]) : -1;
+    return parseInt(this.userAgentParser.getParserResult().browserMajorVersion);
   }
 
   osMajorVersion(): number {
-    return parseInt(this.uaParserResult.os.version.split('.')[0]);
+    return parseInt(this.osVersion().split('.')[0]);
+  }
+
+  deviceName(): string {
+    const name = this.userAgentParser.getParserResult().deviceName;
+    return name === USER_AGENT_PARSER_UNAVAILABLE ? '' : name;
+  }
+
+  osName(): string {
+    const name = this.userAgentParser.getParserResult().osName;
+    return name === USER_AGENT_PARSER_UNAVAILABLE ? '' : name;
+  }
+
+  osVersion(): string {
+    const ver = this.userAgentParser.getParserResult().osVersion;
+    return ver === USER_AGENT_PARSER_UNAVAILABLE ? '' : ver;
   }
 
   private engine(): string {
-    return this.uaParserResult.engine.name;
+    return this.userAgentParser.getParserResult().engineName ?? '';
   }
 
   private engineMajorVersion(): number {
-    return parseInt(this.uaParserResult.engine.version.split('.')[0]);
+    return parseInt(this.userAgentParser.getParserResult().engineMajorVersion ?? '0');
   }
 
   name(): string {
@@ -263,7 +285,12 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   requiresDisablingH264Encoding(): boolean {
-    return this.isIOS() && (this.version() === '15.1.0' || /( OS 15_1)/i.test(navigator.userAgent));
+    return (
+      this.isIOS() &&
+      (this.version() === '15.1.0' ||
+        this.version() === '15.1' ||
+        /( OS 15_1)/i.test(navigator.userAgent))
+    );
   }
 
   // In Safari, a hidden video element can show a black screen.
@@ -288,6 +315,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   isVideoFxSupportedBrowser(): boolean {
     // Not supported on safari 15 and on environments without canvas capture playback
     return this.supportsBackgroundFilter();
+  }
+
+  async updateWithHighEntropyValues(alwaysOverride: boolean = false): Promise<void> {
+    await this.userAgentParser.updateWithHighEntropyValues?.(alwaysOverride);
   }
 
   // These helpers should be kept private to encourage
