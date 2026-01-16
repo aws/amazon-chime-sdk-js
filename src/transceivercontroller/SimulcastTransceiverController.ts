@@ -122,7 +122,7 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
       });
 
       if (this.encodedTransformWorkerManager?.isEnabled()) {
-        this.encodedTransformWorkerManager?.setupVideoSenderTransform(
+        this.encodedTransformWorkerManager.setupVideoSenderTransform(
           this._localCameraTransceiver.sender
         );
       }
