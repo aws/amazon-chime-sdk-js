@@ -1877,12 +1877,12 @@ export class DemoMeetingApp
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     configuration.enableSVC = this.enableSVC;
     if (this.usePriorityBasedDownlinkPolicy) {
-        this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
+      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
     } else {
-        this.allHighestDownlinkPolicy = new AllHighestVideoBandwidthPolicy(configuration.credentials.attendeeId);
-        configuration.videoDownlinkBandwidthPolicy = this.allHighestDownlinkPolicy;
+      this.allHighestDownlinkPolicy = new AllHighestVideoBandwidthPolicy(configuration.credentials.attendeeId);
+      configuration.videoDownlinkBandwidthPolicy = this.allHighestDownlinkPolicy;
     }
     configuration.disablePeriodicKeyframeRequestOnContentSender = this.disablePeriodicKeyframeRequestOnContentSender;
 

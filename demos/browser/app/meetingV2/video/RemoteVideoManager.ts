@@ -89,7 +89,7 @@ export default class RemoteVideoManager {
             }
         }
         this.downlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
-    } else {
+    } else if (this.downlinkPolicy?.chooseRemoteVideoSources){
         // Just convert this list to  the simpler 'VideoSource' class used by all highest policy
         let videoSources: VideoSource[] = [];
         for (const attendeeId of this.attendeeIdToVideoPreference.keys()) {

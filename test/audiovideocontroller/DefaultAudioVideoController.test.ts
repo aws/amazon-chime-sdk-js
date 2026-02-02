@@ -769,7 +769,7 @@ describe('DefaultAudioVideoController', () => {
       expect(uplink instanceof DefaultSimulcastUplinkPolicy).to.be.true;
       // @ts-ignore
       const downlink = audioVideoController.meetingSessionContext.videoDownlinkBandwidthPolicy;
-      expect(downlink instanceof VideoAdaptiveProbePolicy).to.be.true;
+      expect(downlink instanceof VideoPriorityBasedPolicy).to.be.true;
 
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);

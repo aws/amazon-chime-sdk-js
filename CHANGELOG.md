@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored Encoded Transform management into it's own component for better support of non-redundant audio transforms.
 - Add scalability mode fallback when SVC is enabled. Limit SVC for content share to AV1 temporal scalability only.
 - Completed migration to mocha tests
+- Enable VideoPriorityBasedPolicy by default when SVC or simulcast is enabled.
 
 ### Fixed
 
