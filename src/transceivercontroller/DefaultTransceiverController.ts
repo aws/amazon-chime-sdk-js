@@ -67,6 +67,11 @@ export default class DefaultTransceiverController implements TransceiverControll
           if (changed.networkPriority !== undefined) {
             existing.networkPriority = changed.networkPriority;
           }
+          // @ts-ignore
+          if (changed.scalabilityMode !== undefined) {
+            // @ts-ignore
+            existing.scalabilityMode = changed.scalabilityMode;
+          }
         }
       }
     }

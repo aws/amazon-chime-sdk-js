@@ -266,7 +266,7 @@ export default class MonitorTask
 
     for (const policy of this.videoEncodingHealthPolicies) {
       this.applyHealthPolicy(policy, connectionHealthData, () => {
-        this.degradeVideoCodec(policy.name);
+        this.degradeVideoEncoding(policy.name);
         switch (policy.name) {
           case VideoEncodingConnectionHealthPolicyName.VideoEncodingCpuHealth:
             this.context.statsCollector.videoCodecDegradationHighEncodeCpuDidReceive();
@@ -460,9 +460,18 @@ export default class MonitorTask
   };
 
   /**
-   * Degrade video codec to an alternative codec
+   * Degrade video Encoding to an alternative scalability mode or codec
    */
-  private degradeVideoCodec(cause: string): void {
+  private degradeVideoEncoding(cause: string): void {
+    if (
+      this.context.videoUplinkBandwidthPolicy?.degradeScalabilityMode &&
+      this.context.videoUplinkBandwidthPolicy.degradeScalabilityMode()
+    ) {
+      this.context.audioVideoController.update({ needsRenegotiation: false });
+      // No need to degrade video codec if there is an alternative scalability mode
+      return;
+    }
+
     // Degrade video codec if there are other codec options and current codec is not H264 CBP or VP8
     if (
       this.context.meetingSupportedVideoSendCodecPreferences !== undefined &&
