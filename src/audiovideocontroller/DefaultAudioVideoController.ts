@@ -1769,7 +1769,7 @@ export default class DefaultAudioVideoController
     }
 
     // Trigger reconnect to recreate peer connection without transforms
-    const status = new MeetingSessionStatus(MeetingSessionStatusCode.TaskFailed);
+    const status = new MeetingSessionStatus(MeetingSessionStatusCode.EncodedTransformManagerFailed);
     this.reconnect(status, error);
   }
 }

@@ -198,6 +198,18 @@ export default class AudioVideoControllerState {
   // and subscribe-ack)
   isSessionConnected: boolean = false;
 
+  /**
+   * Helper method to determine if audio redundancy should be enabled.
+   * Audio redundancy requires both the audio profile to have redundancy enabled
+   * and the encoded transform worker manager to be enabled.
+   */
+  enableAudioRedundancy(): boolean {
+    return (
+      this.audioProfile?.hasRedundancyEnabled() &&
+      !!this.encodedTransformWorkerManager?.isEnabled()
+    );
+  }
+
   /*
    * Reset state corresponding to state that is dependent on a individual connection
    * and may not be valid for others, e.g. on a reconnection.

@@ -728,25 +728,25 @@ export default class StatsCollector
       metricKey: string;
     }> = [
       {
-        source: metrics.audioSender,
+        source: metrics.audioSendMetrics,
         kind: 'audio',
         type: 'outbound-rtp-transform',
         metricKey: 'audioSentTransformPps',
       },
       {
-        source: metrics.audioReceiver,
+        source: metrics.audioReceiveMetrics,
         kind: 'audio',
         type: 'inbound-rtp-transform',
         metricKey: 'audioReceivedTransformPps',
       },
       {
-        source: metrics.videoSender,
+        source: metrics.videoSendMetrics,
         kind: 'video',
         type: 'outbound-rtp-transform',
         metricKey: 'videoSentTransformPps',
       },
       {
-        source: metrics.videoReceiver,
+        source: metrics.videoReceiveMetrics,
         kind: 'video',
         type: 'inbound-rtp-transform',
         metricKey: 'videoReceivedTransformPps',

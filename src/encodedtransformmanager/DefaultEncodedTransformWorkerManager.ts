@@ -57,14 +57,14 @@ export default class DefaultEncodedTransformWorkerManager implements EncodedTran
 
   async start(disabledTransforms?: DisabledEncodedTransformsConfiguration): Promise<void> {
     this.disabledTransforms = disabledTransforms || {};
-    await this.createWorker();
+    const worker = await this.createWorker();
 
     // Create transform managers based on disabled configuration
     if (!disabledTransforms?.redundantAudio) {
-      this.redManager = new RedundantAudioEncodedTransformManager(this.worker!, this.logger);
+      this.redManager = new RedundantAudioEncodedTransformManager(worker, this.logger);
       await this.redManager.start();
     }
-    this.metricsManager = new MediaMetricsTransformManager(this.worker!, this.logger);
+    this.metricsManager = new MediaMetricsTransformManager(worker, this.logger);
     await this.metricsManager.start();
 
     this.logger.info('DefaultEncodedTransformManager initialized');
@@ -218,7 +218,7 @@ export default class DefaultEncodedTransformWorkerManager implements EncodedTran
   /**
    * Create a new Web Worker instance
    */
-  private async createWorker(): Promise<void> {
+  private async createWorker(): Promise<Worker> {
     try {
       this.workerURL = URL.createObjectURL(
         new Blob([EncodedTransformWorkerCode], { type: 'application/javascript' })
@@ -228,6 +228,7 @@ export default class DefaultEncodedTransformWorkerManager implements EncodedTran
       this.worker.onerror = this.handleWorkerError.bind(this);
 
       this.logger.info('Web Worker created');
+      return this.worker;
     } catch (error) {
       this.logger.error(`Failed to create Web Worker: ${error}`);
       this.disable();

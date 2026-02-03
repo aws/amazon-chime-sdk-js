@@ -1240,10 +1240,10 @@ describe('StatsCollector', () => {
 
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
-        audioReceiver: { 2001: { ssrc: 2001, packetCount: 200, timestamp: 1000 } },
-        videoSender: { 3001: { ssrc: 3001, packetCount: 300, timestamp: 1000 } },
-        videoReceiver: { 4001: { ssrc: 4001, packetCount: 400, timestamp: 1000 } },
+        audioSendMetrics: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
+        audioReceiveMetrics: { 2001: { ssrc: 2001, packetCount: 200, timestamp: 1000 } },
+        videoSendMetrics: { 3001: { ssrc: 3001, packetCount: 300, timestamp: 1000 } },
+        videoReceiveMetrics: { 4001: { ssrc: 4001, packetCount: 400, timestamp: 1000 } },
       });
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
     });
@@ -1268,10 +1268,10 @@ describe('StatsCollector', () => {
 
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
+        audioSendMetrics: { 1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 } },
+        audioReceiveMetrics: {},
+        videoSendMetrics: {},
+        videoReceiveMetrics: {},
       });
       // Set the last timestamp to match the current timestamp to simulate already processed
       statsCollector['lastEncodedTransformMediaMetricsTimestamp'] =
@@ -1325,13 +1325,13 @@ describe('StatsCollector', () => {
 
       statsCollector = new StatsCollector(audioVideoController, logger, interval);
       statsCollector.encodedTransformMediaMetricsDidReceive({
-        audioSender: {
+        audioSendMetrics: {
           1001: { ssrc: 1001, packetCount: 100, timestamp: 1000 },
           1002: { ssrc: 1002, packetCount: 150, timestamp: 1000 },
         },
-        audioReceiver: {},
-        videoSender: {},
-        videoReceiver: {},
+        audioReceiveMetrics: {},
+        videoSendMetrics: {},
+        videoReceiveMetrics: {},
       });
       statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
     });

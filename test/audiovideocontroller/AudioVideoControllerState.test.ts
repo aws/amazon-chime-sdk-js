@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
 import TransceiverController from '../../src/transceivercontroller/TransceiverController';
@@ -11,6 +12,67 @@ import VideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/Vid
 
 describe('AudioVideoControllerState', () => {
   const expect: Chai.ExpectStatic = chai.expect;
+
+  describe('enableAudioRedundancy', () => {
+    it('returns false when audioProfile is null', () => {
+      const state = new AudioVideoControllerState();
+      state.audioProfile = null;
+      expect(state.enableAudioRedundancy()).to.be.false;
+    });
+
+    it('returns false when audioProfile has redundancy disabled', () => {
+      const state = new AudioVideoControllerState();
+      state.audioProfile = AudioProfile.fullbandSpeechMono(false);
+      expect(state.enableAudioRedundancy()).to.be.false;
+    });
+
+    it('returns false when encodedTransformWorkerManager is null', () => {
+      const state = new AudioVideoControllerState();
+      state.audioProfile = AudioProfile.fullbandSpeechMono(true);
+      state.encodedTransformWorkerManager = null;
+      expect(state.enableAudioRedundancy()).to.be.false;
+    });
+
+    it('returns false when encodedTransformWorkerManager is disabled', () => {
+      const state = new AudioVideoControllerState();
+      state.audioProfile = AudioProfile.fullbandSpeechMono(true);
+      const mockManager: EncodedTransformWorkerManager = {
+        isEnabled: () => false,
+        start: async () => {},
+        redundantAudioEncodeTransformManager: () => undefined,
+        metricsTransformManager: () => undefined,
+        setupAudioSenderTransform: () => {},
+        setupAudioReceiverTransform: () => {},
+        setupVideoSenderTransform: () => {},
+        setupVideoReceiverTransform: () => {},
+        addObserver: () => {},
+        removeObserver: () => {},
+        stop: async () => {},
+      };
+      state.encodedTransformWorkerManager = mockManager;
+      expect(state.enableAudioRedundancy()).to.be.false;
+    });
+
+    it('returns true when audioProfile has redundancy enabled and encodedTransformWorkerManager is enabled', () => {
+      const state = new AudioVideoControllerState();
+      state.audioProfile = AudioProfile.fullbandSpeechMono(true);
+      const mockManager: EncodedTransformWorkerManager = {
+        isEnabled: () => true,
+        start: async () => {},
+        redundantAudioEncodeTransformManager: () => undefined,
+        metricsTransformManager: () => undefined,
+        setupAudioSenderTransform: () => {},
+        setupAudioReceiverTransform: () => {},
+        setupVideoSenderTransform: () => {},
+        setupVideoReceiverTransform: () => {},
+        addObserver: () => {},
+        removeObserver: () => {},
+        stop: async () => {},
+      };
+      state.encodedTransformWorkerManager = mockManager;
+      expect(state.enableAudioRedundancy()).to.be.true;
+    });
+  });
 
   describe('encodedTransformWorkerManager', () => {
     it('is null by default', () => {

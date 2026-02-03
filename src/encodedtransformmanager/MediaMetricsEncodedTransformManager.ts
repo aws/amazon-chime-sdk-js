@@ -22,22 +22,22 @@ export interface EncodedTransformMediaMetrics {
   /**
    * Outbound audio stream metrics.
    */
-  audioSender: Record<number, EncodedTransformMediaStreamMetrics>;
+  audioSendMetrics: Record<number, EncodedTransformMediaStreamMetrics>;
 
   /**
    * Inbound audio stream metrics.
    */
-  audioReceiver: Record<number, EncodedTransformMediaStreamMetrics>;
+  audioReceiveMetrics: Record<number, EncodedTransformMediaStreamMetrics>;
 
   /**
    * Outbound video stream metrics.
    */
-  videoSender: Record<number, EncodedTransformMediaStreamMetrics>;
+  videoSendMetrics: Record<number, EncodedTransformMediaStreamMetrics>;
 
   /**
    * Inbound video stream metrics.
    */
-  videoReceiver: Record<number, EncodedTransformMediaStreamMetrics>;
+  videoReceiveMetrics: Record<number, EncodedTransformMediaStreamMetrics>;
 }
 
 /**
@@ -55,10 +55,10 @@ export interface EncodedTransformMediaMetricsObserver {
  * Consolidates packet-level metrics from the Web Worker.
  */
 export default class MediaMetricsTransformManager extends EncodedTransformManager {
-  private audioSender: Record<number, EncodedTransformMediaStreamMetrics> = {};
-  private audioReceiver: Record<number, EncodedTransformMediaStreamMetrics> = {};
-  private videoSender: Record<number, EncodedTransformMediaStreamMetrics> = {};
-  private videoReceiver: Record<number, EncodedTransformMediaStreamMetrics> = {};
+  private audioSendMetrics: Record<number, EncodedTransformMediaStreamMetrics> = {};
+  private audioReceiveMetrics: Record<number, EncodedTransformMediaStreamMetrics> = {};
+  private videoSendMetrics: Record<number, EncodedTransformMediaStreamMetrics> = {};
+  private videoReceiveMetrics: Record<number, EncodedTransformMediaStreamMetrics> = {};
 
   private observers: Set<EncodedTransformMediaMetricsObserver> = new Set();
   private metricsReportingScheduler: IntervalScheduler | null = null;
@@ -107,16 +107,16 @@ export default class MediaMetricsTransformManager extends EncodedTransformManage
 
       switch (message.transformName) {
         case TRANSFORM_NAMES.AUDIO_SENDER:
-          this.audioSender = metrics;
+          this.audioSendMetrics = metrics;
           break;
         case TRANSFORM_NAMES.AUDIO_RECEIVER:
-          this.audioReceiver = metrics;
+          this.audioReceiveMetrics = metrics;
           break;
         case TRANSFORM_NAMES.VIDEO_SENDER:
-          this.videoSender = metrics;
+          this.videoSendMetrics = metrics;
           break;
         case TRANSFORM_NAMES.VIDEO_RECEIVER:
-          this.videoReceiver = metrics;
+          this.videoReceiveMetrics = metrics;
           break;
       }
     } catch (e) {
@@ -153,10 +153,10 @@ export default class MediaMetricsTransformManager extends EncodedTransformManage
    */
   private reportMetrics(): void {
     const metrics: EncodedTransformMediaMetrics = {
-      audioSender: { ...this.audioSender },
-      audioReceiver: { ...this.audioReceiver },
-      videoSender: { ...this.videoSender },
-      videoReceiver: { ...this.videoReceiver },
+      audioSendMetrics: { ...this.audioSendMetrics },
+      audioReceiveMetrics: { ...this.audioReceiveMetrics },
+      videoSendMetrics: { ...this.videoSendMetrics },
+      videoReceiveMetrics: { ...this.videoReceiveMetrics },
     };
 
     for (const observer of this.observers) {
@@ -180,9 +180,9 @@ export default class MediaMetricsTransformManager extends EncodedTransformManage
     this.observers.clear();
 
     // Reset all metrics to initial state
-    this.audioSender = {};
-    this.audioReceiver = {};
-    this.videoSender = {};
-    this.videoReceiver = {};
+    this.audioSendMetrics = {};
+    this.audioReceiveMetrics = {};
+    this.videoSendMetrics = {};
+    this.videoReceiveMetrics = {};
   }
 }

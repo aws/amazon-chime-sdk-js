@@ -25,8 +25,6 @@ export default class RedundantAudioEncoder {
   private readonly redPacketizationTime = 960;
 
   // distance between redundant payloads, Opus FEC handles a distance of 1
-  // TODO(https://issues.amazon.com/issues/ChimeSDKAudio-55):
-  // Consider making this dynamic
   private readonly redPacketDistance = 2;
 
   // maximum number of redundant payloads per RTP packet

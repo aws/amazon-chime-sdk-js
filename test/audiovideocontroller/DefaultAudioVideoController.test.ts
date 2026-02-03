@@ -6300,9 +6300,11 @@ describe('DefaultAudioVideoController', () => {
       );
 
       let reconnectCalled = false;
+      let capturedStatus: MeetingSessionStatus | null = null;
       const originalReconnect = audioVideoController.reconnect.bind(audioVideoController);
       audioVideoController.reconnect = (status: MeetingSessionStatus, error: Error | null) => {
         reconnectCalled = true;
+        capturedStatus = status;
         return originalReconnect(status, error);
       };
 
@@ -6310,6 +6312,7 @@ describe('DefaultAudioVideoController', () => {
       mockManager.triggerFailure(new Error('Worker failed'));
       await delay(defaultDelay);
       expect(reconnectCalled).to.be.true;
+      expect(capturedStatus?.statusCode()).to.equal(MeetingSessionStatusCode.EncodedTransformManagerFailed);
       await stop();
     });
 

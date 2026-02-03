@@ -95,7 +95,7 @@ describe('MediaMetricsTransformManager', () => {
 
       const stub = observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub;
       expect(stub.called).to.be.true;
-      expect(stub.firstCall.args[0].audioSender[12345]).to.deep.equal(metricsData[12345]);
+      expect(stub.firstCall.args[0].audioSendMetrics[12345]).to.deep.equal(metricsData[12345]);
     });
 
     it('updates audioReceiver metrics', async () => {
@@ -115,7 +115,7 @@ describe('MediaMetricsTransformManager', () => {
 
       expect(
         (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).firstCall.args[0]
-          .audioReceiver[12345]
+          .audioReceiveMetrics[12345]
       ).to.deep.equal(metricsData[12345]);
     });
 
@@ -136,7 +136,7 @@ describe('MediaMetricsTransformManager', () => {
 
       expect(
         (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).firstCall.args[0]
-          .videoSender[67890]
+          .videoSendMetrics[67890]
       ).to.deep.equal(metricsData[67890]);
     });
 
@@ -157,7 +157,7 @@ describe('MediaMetricsTransformManager', () => {
 
       expect(
         (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).firstCall.args[0]
-          .videoReceiver[11111]
+          .videoReceiveMetrics[11111]
       ).to.deep.equal(metricsData[11111]);
     });
 
@@ -244,7 +244,7 @@ describe('MediaMetricsTransformManager', () => {
       const receivedMetrics = (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub)
         .firstCall?.args[0];
       if (receivedMetrics) {
-        expect(Object.keys(receivedMetrics.audioSender).length).to.equal(0);
+        expect(Object.keys(receivedMetrics.audioSendMetrics).length).to.equal(0);
       }
     });
 
