@@ -18,12 +18,12 @@ import VideoFrameProcessorPipelineObserver from './VideoFrameProcessorPipelineOb
  * It transform the input {@link Device} with an array of {@link VideoFrameProcessor} to produce a `MediaStream`.
  */
 export default class DefaultVideoTransformDevice
-  implements VideoTransformDevice, VideoFrameProcessorPipelineObserver {
+  implements VideoTransformDevice, VideoFrameProcessorPipelineObserver
+{
   private pipe: VideoFrameProcessorPipeline;
   private inputMediaStream: MediaStream;
-  private observers: Set<DefaultVideoTransformDeviceObserver> = new Set<
-    DefaultVideoTransformDeviceObserver
-  >();
+  private observers: Set<DefaultVideoTransformDeviceObserver> =
+    new Set<DefaultVideoTransformDeviceObserver>();
 
   constructor(
     private logger: Logger,

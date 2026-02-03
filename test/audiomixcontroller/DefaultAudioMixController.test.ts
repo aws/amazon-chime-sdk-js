@@ -405,9 +405,8 @@ describe('DefaultAudioMixController', () => {
   describe('audioOutputDidChange', () => {
     it('Handle audio output change event', () => {
       class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
-        private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
-          MediaStreamBrokerObserver
-        >();
+        private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> =
+          new Set<MediaStreamBrokerObserver>();
         addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
           this.mediaStreamBrokerObservers.add(observer);
         }

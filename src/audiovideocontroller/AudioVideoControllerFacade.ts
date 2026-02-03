@@ -116,7 +116,7 @@ export default interface AudioVideoControllerFacade {
    * If there is no overlap between what is passed in and what is supported by the browser, this function
    * may not have any effect, and the default set of codecs for this browser will be used.
    *
-   * @param Array of [[VideoCodecCapability]].
+   * @param preferences Array of [[VideoCodecCapability]].
    */
   setVideoCodecSendPreferences?(preferences: VideoCodecCapability[]): void;
 }

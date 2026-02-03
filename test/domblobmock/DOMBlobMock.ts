@@ -10,7 +10,10 @@ export default class DOMBlobMock implements Blob {
     return '';
   }
 
-  constructor(public readonly blobParts?: BlobPart[], public readonly options?: BlobPropertyBag) {}
+  constructor(
+    public readonly blobParts?: BlobPart[],
+    public readonly options?: BlobPropertyBag
+  ) {}
 
   slice(_start?: number, _end?: number, _contentType?: string): Blob {
     return new Blob();
@@ -29,6 +32,10 @@ export default class DOMBlobMock implements Blob {
   }
 
   text(): Promise<string> {
+    throw new Error('Unimplemented.');
+  }
+
+  bytes(): Promise<Uint8Array> {
     throw new Error('Unimplemented.');
   }
 }

@@ -61,10 +61,11 @@ describe('BackgroundReplacementProcessor', () => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     backgroundFilterCommon.setSandbox(sandbox);
-    sandbox
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .stub(BackgroundReplacementFilter as any, 'loadImageExecutor')
-      .callsFake(resolve => resolve(new Image()));
+    (
+      sandbox
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .stub(BackgroundReplacementFilter as any, 'loadImageExecutor') as sinon.SinonStub
+    ).callsFake(resolve => resolve(new Image()));
   });
 
   afterEach(() => {
@@ -73,11 +74,11 @@ describe('BackgroundReplacementProcessor', () => {
   });
 
   const stubSupported = (supported: boolean): void => {
-    sandbox.stub(BackgroundReplacementVideoFrameProcessor, 'isSupported').callsFake(
-      (): Promise<boolean> => {
+    sandbox
+      .stub(BackgroundReplacementVideoFrameProcessor, 'isSupported')
+      .callsFake((): Promise<boolean> => {
         return Promise.resolve(supported);
-      }
-    );
+      });
   };
 
   describe('BackgroundReplacementFilter', () => {
@@ -86,7 +87,8 @@ describe('BackgroundReplacementProcessor', () => {
     it('set image blob', async () => {
       backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
       stubSupported(true);
-      const brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+      const brprocessor =
+        (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
       await brprocessor.loadAssets();
 
       const origUrl: string = brprocessor['replacementObjectUrl'];
@@ -116,7 +118,8 @@ describe('BackgroundReplacementProcessor', () => {
         stubSupported(true);
 
         // create processor with default
-        let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        let brprocessor =
+          (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
         await brprocessor.destroy();
         brprocessor = (await BackgroundReplacementVideoFrameProcessor.create(
           null,
@@ -131,7 +134,8 @@ describe('BackgroundReplacementProcessor', () => {
         // create processor with default configuration
         configuration = makeSessionConfiguration();
         eventController = new DefaultEventController(configuration, noOpLogger);
-        let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        let brprocessor =
+          (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
         brprocessor.setEventController(eventController);
         await brprocessor.destroy();
         brprocessor = (await BackgroundReplacementVideoFrameProcessor.create(
@@ -148,7 +152,8 @@ describe('BackgroundReplacementProcessor', () => {
         configuration = makeSessionConfiguration();
         eventController = new DefaultEventController(configuration, noOpLogger);
         const eventController2 = new DefaultEventController(configuration, noOpLogger);
-        let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        let brprocessor =
+          (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
         brprocessor.setEventController(eventController);
         brprocessor.setEventController(eventController2);
         await brprocessor.destroy();
@@ -250,7 +255,8 @@ describe('BackgroundReplacementProcessor', () => {
       it('not supported is no op', async () => {
         backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(false);
-        const processor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        const processor =
+          (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
         expect(processor['replacementBlob']).is.undefined;
 
         // this is a no op call here just for coverage and making sure it does not blow up.
@@ -268,7 +274,8 @@ describe('BackgroundReplacementProcessor', () => {
         canvas.width = 960;
 
         // When replacement image is not passed
-        let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        let brprocessor =
+          (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
         let frameCounter = brprocessor['frameCounter'];
 
         let output = await brprocessor.process(buffers);
@@ -306,7 +313,8 @@ describe('BackgroundReplacementProcessor', () => {
         canvas.width = 960;
 
         // When replacement image is not passed
-        let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+        let brprocessor =
+          (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
 
         // When replacement image is passed
         brprocessor = (await BackgroundReplacementVideoFrameProcessor.create(

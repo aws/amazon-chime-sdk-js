@@ -43,7 +43,7 @@ import UserMediaState from '../dommock/UserMediaState';
 
 interface AudioElementWithSinkId extends HTMLAudioElement {
   sinkId: string;
-  setSinkId: (id: string) => void;
+  setSinkId: (id: string) => Promise<void>;
 }
 
 describe('DefaultMeetingReadinessChecker', () => {
@@ -224,9 +224,10 @@ describe('DefaultMeetingReadinessChecker', () => {
   describe('checks audio input', () => {
     it('granted permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
-      const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
-        getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
-      );
+      const audioCheckFeedback: CheckAudioInputFeedback =
+        await meetingReadinessCheckerController.checkAudioInput(
+          getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
+        );
       expect(audioCheckFeedback).to.equal(CheckAudioInputFeedback.Succeeded);
     });
 
@@ -234,18 +235,18 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = true;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 100;
-      const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
-        getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
-      );
+      const audioCheckFeedback: CheckAudioInputFeedback =
+        await meetingReadinessCheckerController.checkAudioInput(
+          getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
+        );
       expect(audioCheckFeedback).to.equal(CheckAudioInputFeedback.Succeeded);
     });
 
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
-      const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
-        new MediaDeviceInfo()
-      );
+      const audioCheckFeedback: CheckAudioInputFeedback =
+        await meetingReadinessCheckerController.checkAudioInput(new MediaDeviceInfo());
       expect(audioCheckFeedback).to.equal(CheckAudioInputFeedback.PermissionDenied);
     });
 
@@ -253,9 +254,10 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 600;
-      const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
-        getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
-      );
+      const audioCheckFeedback: CheckAudioInputFeedback =
+        await meetingReadinessCheckerController.checkAudioInput(
+          getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
+        );
       expect(audioCheckFeedback).to.equal(CheckAudioInputFeedback.PermissionDenied);
     });
 
@@ -265,9 +267,8 @@ describe('DefaultMeetingReadinessChecker', () => {
         new TestMeetingSession(makeSessionConfiguration(), logger, new NoOpDeviceController())
       );
 
-      const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
-        null
-      );
+      const audioCheckFeedback: CheckAudioInputFeedback =
+        await meetingReadinessCheckerController.checkAudioInput(null);
       expect(audioCheckFeedback).to.equal(CheckAudioInputFeedback.Failed);
     });
   });
@@ -276,20 +277,19 @@ describe('DefaultMeetingReadinessChecker', () => {
     it('successful after playing tone', async () => {
       const successCallback = (): Promise<boolean> => Promise.resolve(true);
 
-      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
-        getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
-        successCallback
-      );
+      const audioOutputFeedback: CheckAudioOutputFeedback =
+        await meetingReadinessCheckerController.checkAudioOutput(
+          getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
+          successCallback
+        );
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
     });
 
     it('successful after playing tone with string deviceId', async () => {
       const successCallback = (): Promise<boolean> => Promise.resolve(true);
 
-      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
-        'deviceId',
-        successCallback
-      );
+      const audioOutputFeedback: CheckAudioOutputFeedback =
+        await meetingReadinessCheckerController.checkAudioOutput('deviceId', successCallback);
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
     });
 
@@ -318,11 +318,12 @@ describe('DefaultMeetingReadinessChecker', () => {
     it('use null device id if unavailable', async () => {
       const successCallback = (): Promise<boolean> => Promise.resolve(true);
 
-      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
-        undefined,
-        successCallback,
-        new Audio()
-      );
+      const audioOutputFeedback: CheckAudioOutputFeedback =
+        await meetingReadinessCheckerController.checkAudioOutput(
+          undefined,
+          successCallback,
+          new Audio()
+        );
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
     });
 
@@ -337,25 +338,27 @@ describe('DefaultMeetingReadinessChecker', () => {
       // We need to do this so that code inside the AudioMixController knows
       // that we support sinkId.
       audio.sinkId = '';
-      audio.setSinkId = (_id: string): void => {
+      audio.setSinkId = (_id: string): Promise<void> => {
         throw new Error('oh no');
       };
 
-      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
-        getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
-        successCallback,
-        audio
-      );
+      const audioOutputFeedback: CheckAudioOutputFeedback =
+        await meetingReadinessCheckerController.checkAudioOutput(
+          getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
+          successCallback,
+          audio
+        );
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
     });
 
     it('unsuccessful after playing tone', async () => {
       const failureCallback = (): Promise<boolean> => Promise.resolve(false);
 
-      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
-        getMediaDeviceInfo('foobar', 'audiooutput', 'label', 'group-id'),
-        failureCallback
-      );
+      const audioOutputFeedback: CheckAudioOutputFeedback =
+        await meetingReadinessCheckerController.checkAudioOutput(
+          getMediaDeviceInfo('foobar', 'audiooutput', 'label', 'group-id'),
+          failureCallback
+        );
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Failed);
     });
 
@@ -374,10 +377,11 @@ describe('DefaultMeetingReadinessChecker', () => {
       );
       const failureCallback = (): Promise<boolean> => Promise.reject(new Error());
 
-      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
-        getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
-        failureCallback
-      );
+      const audioOutputFeedback: CheckAudioOutputFeedback =
+        await meetingReadinessCheckerController.checkAudioOutput(
+          getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
+          failureCallback
+        );
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Failed);
     });
 
@@ -386,10 +390,11 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.createMediaStreamDestinationSuccess = false;
       const successCallback = (): Promise<boolean> => Promise.resolve(true);
 
-      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
-        getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
-        successCallback
-      );
+      const audioOutputFeedback: CheckAudioOutputFeedback =
+        await meetingReadinessCheckerController.checkAudioOutput(
+          getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
+          successCallback
+        );
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Failed);
     });
   });
@@ -397,27 +402,28 @@ describe('DefaultMeetingReadinessChecker', () => {
   describe('checks video input', () => {
     it('granted permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
-      const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
-        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id')
-      );
+      const videoCheckFeedback: CheckVideoInputFeedback =
+        await meetingReadinessCheckerController.checkVideoInput(
+          getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id')
+        );
       expect(videoCheckFeedback).to.equal(CheckVideoInputFeedback.Succeeded);
     });
 
     it('granted permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
       domMockBehavior.asyncWaitMs = 100;
-      const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
-        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id')
-      );
+      const videoCheckFeedback: CheckVideoInputFeedback =
+        await meetingReadinessCheckerController.checkVideoInput(
+          getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id')
+        );
       expect(videoCheckFeedback).to.equal(CheckVideoInputFeedback.Succeeded);
     });
 
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
-      const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
-        new MediaDeviceInfo()
-      );
+      const videoCheckFeedback: CheckVideoInputFeedback =
+        await meetingReadinessCheckerController.checkVideoInput(new MediaDeviceInfo());
       expect(videoCheckFeedback).to.equal(CheckVideoInputFeedback.PermissionDenied);
     });
 
@@ -425,9 +431,8 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 600;
-      const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
-        new MediaDeviceInfo()
-      );
+      const videoCheckFeedback: CheckVideoInputFeedback =
+        await meetingReadinessCheckerController.checkVideoInput(new MediaDeviceInfo());
       expect(videoCheckFeedback).to.equal(CheckVideoInputFeedback.PermissionDenied);
     });
 
@@ -437,9 +442,8 @@ describe('DefaultMeetingReadinessChecker', () => {
         new TestMeetingSession(makeSessionConfiguration(), logger, new NoOpDeviceController())
       );
 
-      const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
-        null
-      );
+      const videoCheckFeedback: CheckVideoInputFeedback =
+        await meetingReadinessCheckerController.checkVideoInput(null);
       expect(videoCheckFeedback).to.equal(CheckVideoInputFeedback.Failed);
     });
   });
@@ -447,43 +451,43 @@ describe('DefaultMeetingReadinessChecker', () => {
   describe('check camera resolution', () => {
     it('checks for 240 x 320 resolution - success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
-      const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
-        240,
-        320
-      );
+      const cameraResolutionFeedback: CheckCameraResolutionFeedback =
+        await meetingReadinessCheckerController.checkCameraResolution(
+          getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
+          240,
+          320
+        );
       expect(cameraResolutionFeedback).to.equal(CheckCameraResolutionFeedback.Succeeded);
     });
 
     it('checks for 240 x 320 resolution with string input - success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
-      const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        'deviceId',
-        240,
-        320
-      );
+      const cameraResolutionFeedback: CheckCameraResolutionFeedback =
+        await meetingReadinessCheckerController.checkCameraResolution('deviceId', 240, 320);
       expect(cameraResolutionFeedback).to.equal(CheckCameraResolutionFeedback.Succeeded);
     });
 
     it('checks for 240 x 320 resolution - failure', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.Failure;
-      const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
-        240,
-        320
-      );
+      const cameraResolutionFeedback: CheckCameraResolutionFeedback =
+        await meetingReadinessCheckerController.checkCameraResolution(
+          getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
+          240,
+          320
+        );
       expect(cameraResolutionFeedback).to.equal(CheckCameraResolutionFeedback.Failed);
     });
 
     it('checks for 7680 × 4320 resolution - overconstrained', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
-      const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
-        7680,
-        4320
-      );
+      const cameraResolutionFeedback: CheckCameraResolutionFeedback =
+        await meetingReadinessCheckerController.checkCameraResolution(
+          getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
+          7680,
+          4320
+        );
       expect(cameraResolutionFeedback).to.equal(
         CheckCameraResolutionFeedback.ResolutionNotSupported
       );
@@ -492,11 +496,12 @@ describe('DefaultMeetingReadinessChecker', () => {
     it('checks for 240 x 320 resolution - permission denied', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.NotAllowedError;
-      const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
-        240,
-        320
-      );
+      const cameraResolutionFeedback: CheckCameraResolutionFeedback =
+        await meetingReadinessCheckerController.checkCameraResolution(
+          getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
+          240,
+          320
+        );
       expect(cameraResolutionFeedback).to.equal(CheckCameraResolutionFeedback.PermissionDenied);
     });
 
@@ -508,11 +513,12 @@ describe('DefaultMeetingReadinessChecker', () => {
         logger,
         meetingSession
       );
-      const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
-        240,
-        320
-      );
+      const cameraResolutionFeedback: CheckCameraResolutionFeedback =
+        await meetingReadinessCheckerController.checkCameraResolution(
+          getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
+          240,
+          320
+        );
       expect(cameraResolutionFeedback).to.equal(CheckCameraResolutionFeedback.Succeeded);
     });
   });
@@ -520,39 +526,43 @@ describe('DefaultMeetingReadinessChecker', () => {
   describe('checks content share connectivity', () => {
     it('permission denied', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.PermissionDenied;
-      const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
+      const result: CheckContentShareConnectivityFeedback =
+        await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.PermissionDenied);
     });
 
     it('failure', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.Failure;
-      const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
+      const result: CheckContentShareConnectivityFeedback =
+        await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.Failed);
     });
 
     it('start content share success', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.Success;
-      const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
+      const result: CheckContentShareConnectivityFeedback =
+        await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.Succeeded);
     });
 
     it('start content share success with source id', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.Success;
-      const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity(
-        'sourceId'
-      );
+      const result: CheckContentShareConnectivityFeedback =
+        await meetingReadinessCheckerController.checkContentShareConnectivity('sourceId');
       expect(result).to.equal(CheckContentShareConnectivityFeedback.Succeeded);
     });
 
     it('connection failure', async () => {
       attendeeAudioVideoController.skipStart = true;
-      const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
+      const result: CheckContentShareConnectivityFeedback =
+        await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.ConnectionFailed);
     });
 
     it('start content share timed out', async () => {
       contentAudioVideoController.attendeePresenceId = 'attendeeId2';
-      const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
+      const result: CheckContentShareConnectivityFeedback =
+        await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.TimedOut);
     });
   });

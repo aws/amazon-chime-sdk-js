@@ -26,7 +26,6 @@ export default class DOMMockBehavior {
   undefinedDocument: boolean = false;
   supportsAudioRedCodec: boolean = true;
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
   FakeTURNCredentialsBody: Promise<object> = new Promise((resolve, _reject) => {
     const obj = new Object({
       username: 'fakeUsername',

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Refactored DefaultUserAgentParser to utilize userAgentData when possible, e.g. to get Chrome minor version. Refactored all previous use of UAParser to use DefaultUserAgentParser. This does not change existing dimensions on event reporting. 
+- Updated to Typescript 5.x and node >= 20
 
 ### Fixed
 

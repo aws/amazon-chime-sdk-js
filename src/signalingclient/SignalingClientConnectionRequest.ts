@@ -10,7 +10,10 @@ export default class SignalingClientConnectionRequest {
    * @param signalingURL The URL of the signaling proxy.
    * @param joinToken The join token that will authenticate the connection.
    */
-  constructor(public signalingURL: string, public joinToken: string) {}
+  constructor(
+    public signalingURL: string,
+    public joinToken: string
+  ) {}
 
   /** Gets the signaling URL representing this request.*/
   url(): string {

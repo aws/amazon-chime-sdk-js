@@ -13,7 +13,11 @@ import TaskStatus from './TaskStatus';
 export default class SerialGroupTask extends BaseTask {
   private currentTask: Task | null = null;
 
-  constructor(logger: Logger, protected taskName: string, private tasksToRunSerially: Task[]) {
+  constructor(
+    logger: Logger,
+    protected taskName: string,
+    private tasksToRunSerially: Task[]
+  ) {
     super(logger);
     for (const task of tasksToRunSerially) {
       task.setParent(this);

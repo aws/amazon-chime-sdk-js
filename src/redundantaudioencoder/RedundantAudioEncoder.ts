@@ -318,8 +318,8 @@ export default class RedundantAudioEncoder {
     let payloadOffset = 0;
     let gotLastBlock = false;
     const encodings = new Array<RedundantAudioEncoder.Encoding>();
-    const redundantEncodingBlockLengths = new Array();
-    const redundantEncodingTimestamps = new Array();
+    const redundantEncodingBlockLengths = [];
+    const redundantEncodingTimestamps = [];
 
     while (payloadSizeBytes > 0) {
       gotLastBlock = (payload.getUint8(payloadOffset) & 0x80) === 0;
@@ -451,8 +451,8 @@ export default class RedundantAudioEncoder {
     let headerSizeBytes = this.redLastHeaderSizeBytes;
     let payloadSizeBytes = primaryPayloadSize;
     let bytesAvailable = this.maxAudioPayloadSizeBytes - primaryPayloadSize - headerSizeBytes;
-    const redundantEncodingTimestamps: Array<number> = new Array();
-    const redundantEncodingPayloads: Array<ArrayBuffer> = new Array();
+    const redundantEncodingTimestamps: Array<number> = [];
+    const redundantEncodingPayloads: Array<ArrayBuffer> = [];
 
     // If redundancy is disabled then only send the primary payload
     if (this.redundancyEnabled) {

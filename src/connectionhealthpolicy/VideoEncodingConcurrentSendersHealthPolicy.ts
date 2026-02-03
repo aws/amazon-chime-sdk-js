@@ -9,7 +9,8 @@ import VideoEncodingConnectionHealthPolicyName from './VideoEncodingConnectionHe
 
 export default class VideoEncodingConcurrentSendersHealthPolicy
   extends BaseConnectionHealthPolicy
-  implements ConnectionHealthPolicy {
+  implements ConnectionHealthPolicy
+{
   private readonly concurrentVideoSendersThreshold: number;
 
   constructor(configuration: ConnectionHealthPolicyConfiguration, data: ConnectionHealthData) {

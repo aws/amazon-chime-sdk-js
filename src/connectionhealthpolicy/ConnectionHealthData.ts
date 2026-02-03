@@ -91,9 +91,8 @@ export default class ConnectionHealthData {
     cloned.lastNoSignalTimestampMs = this.lastNoSignalTimestampMs;
     cloned.consecutiveMissedPongs = this.consecutiveMissedPongs;
     cloned.packetsReceivedInLastMinute = this.packetsReceivedInLastMinute.slice(0);
-    cloned.fractionPacketsLostInboundInLastMinute = this.fractionPacketsLostInboundInLastMinute.slice(
-      0
-    );
+    cloned.fractionPacketsLostInboundInLastMinute =
+      this.fractionPacketsLostInboundInLastMinute.slice(0);
     cloned.audioSpeakerDelayMs = this.audioSpeakerDelayMs;
     cloned.isVideoEncoderHardware = this.isVideoEncoderHardware;
     cloned.videoEncodingTimeInMs = this.videoEncodingTimeInMs;

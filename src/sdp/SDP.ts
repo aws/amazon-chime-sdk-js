@@ -564,7 +564,7 @@ export default class SDP {
     });
 
     // Add the rtx payloads corresponding to the H264 codec to the remove list
-    const payloadTypesToRemove: Set<Number> = new Set();
+    const payloadTypesToRemove: Set<number> = new Set();
     for (const type of payloadTypesForH264) {
       payloadTypesToRemove.add(type);
 

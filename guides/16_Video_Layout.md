@@ -96,7 +96,7 @@ Refer to code sample in [Use case 16](https://github.com/aws/amazon-chime-sdk-js
 
 The `videoTileDidUpdate` and `videoTileWasRemoved` callbacks are already handled by the React Components Library. If you don’t have the content sharing functionality in your application, you can use the [`VideoTileGrid`](https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-components-videotilegrid--page) component with the `standard` layout from the React Components Library.
 
-```jsx
+```javascript
 import {
   MeetingProvider,
   VideoTileGrid
@@ -111,7 +111,7 @@ const App = () => (
 
 Otherwise, you need to build a custom video grid using the components and hooks from the React Components Library.
 
-```jsx
+```javascript
 import {
   LocalVideo,
   RemoteVideos,
@@ -178,7 +178,7 @@ If you don’t have content sharing functionality in your application, you can u
 
 Create a `meetingConfig` object to store the configuration of `MeetingProvider`. This configuration is passed down to the `MeetingManager` and is used to initialize the `MeetingSession` when joining a meeting.
 
-```jsx
+```javascript
 // Create a file named 'meetingConfig.ts'.
 
 import {
@@ -201,7 +201,7 @@ export default meetingConfig;
 
 Setup the `MeetingProvider` using the `meetingConfig`.
 
-```jsx
+```javascript
 import { MeetingProvider } from 'amazon-chime-sdk-component-library-react';
 import meetingConfig from './meetingConfig';
 
@@ -220,7 +220,7 @@ Create a [`Context Provider`](https://reactjs.org/docs/context.html#contextprovi
 
    - Note: You may want to keep the content sharing in your `roster`, depending on your needs.
 
-```jsx
+```javascript
 import { useAudioVideo } from 'amazon-chime-sdk-component-library-react';
 import { priorityBasedPolicy } from './meetingConfig';
 
@@ -301,7 +301,7 @@ VideoPreference(attendeeId, priority, targetSize?)
 
 - Note: The `targetSize` doesn't work in this example, since `NScaleVideoUplinkBandwidthPolicy` only publishes one layer.
 
-```jsx
+```javascript
 // In this example, only render up to ten remote video sources.
 
 const updateVideoPreferences = () => {
@@ -421,7 +421,7 @@ You can use the [`VideoTileGrid`](https://aws.github.io/amazon-chime-sdk-compone
 
 - Note: The `featured` layout `VideoTileGrid` component displays either the content sharing video or the active speaker video in the featured tile. If both are present, the content sharing video is displayed. If neither is present, there is no featured tile and all video tiles are of fixed and equal size, like in the gallery layout.
 
-```jsx
+```javascript
 import {
   MeetingProvider,
   VideoTileGrid
@@ -442,7 +442,7 @@ Listen to the changes in active speakers and track their states.
 
 - The React Components Library provides the [`useActiveSpeakersState`](https://aws.github.io/amazon-chime-sdk-component-library-react/?path=/story/sdk-hooks-useactivespeakersstate--page) hook that returns a list of attendee IDs of the active speaker. Use this hook directly.
 
-```jsx
+```javascript
 import { useAudioVideo, useActiveSpeakersState } from 'amazon-chime-sdk-component-library-react';
 import { priorityBasedPolicy } from './meetingConfig';
 
@@ -541,7 +541,7 @@ Setup `VideoPriorityBasedPolicy`, as described in [case 2](#react-components-lib
 
 Update the `meetingConfig` object to use `SimulcastUplinkPolicy`.
 
-```jsx
+```javascript
 // In 'meetingConfig.ts' file.
 
 import {
@@ -565,7 +565,7 @@ export default meetingConfig;
 
 Setup the `MeetingProvider` using the `meetingConfig`.
 
-```jsx
+```javascript
 import { MeetingProvider } from 'amazon-chime-sdk-component-library-react';
 import meetingConfig from './meetingConfig';
 

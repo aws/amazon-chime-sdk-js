@@ -3,7 +3,6 @@
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import type { MockRequest } from 'fetch-mock';
 import fetchMock from 'fetch-mock';
 import { SinonStub, spy, stub } from 'sinon';
 
@@ -29,6 +28,12 @@ import { MockLogger } from './MockLogger';
 
 chai.use(chaiAsPromised);
 chai.should();
+
+// Save native fetch and ReadableStream at module load time, before any tests modify them
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const nativeFetch = (globalThis as any).fetch;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const nativeReadableStream = (globalThis as any).ReadableStream;
 const expect = chai.expect;
 
 // This is the mock User-Agent we'll plug in to `window.navigator` and `globalThis.navigator`.
@@ -59,22 +64,31 @@ function getQueryParams(): string {
 }
 
 function mockWindowAndNavigator(): void {
-  const navigator: Navigator = ({
+  const navigator: Navigator = {
     userAgent: MOCK_UA,
-  } as unknown) as Navigator;
+  } as unknown as Navigator;
 
   globalThis.navigator = navigator;
 
   // Oh, Node.
-  globalThis.window = ({
-    URL: ({ createObjectURL: (url: string) => url } as unknown) as typeof URL,
+  globalThis.window = {
+    URL: { createObjectURL: (url: string) => url } as unknown as typeof URL,
     navigator,
-  } as unknown) as Window & typeof globalThis;
+  } as unknown as Window & typeof globalThis;
+
+  // Set self with an origin that's different from the VoiceFocus CDN
+  // This ensures the library will try to fetch the worker instead of creating it directly
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).self = {
+    origin: 'https://example.com',
+  };
 }
 
 function resetWindowAndNavigator(): void {
   delete globalThis['window'];
   delete globalThis['navigator'];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  delete (globalThis as any)['self'];
 }
 
 describe('VoiceFocusDeviceTransformer', () => {
@@ -89,7 +103,7 @@ describe('VoiceFocusDeviceTransformer', () => {
   it('is not supported in Node', async () => {
     // No AudioWorklet etc. in Node. This will fail before making any network requests,
     // so an invalid spec is fine.
-    const invalidSpec = ({ category: 'ayyyno' } as unknown) as VoiceFocusSpec;
+    const invalidSpec = { category: 'ayyyno' } as unknown as VoiceFocusSpec;
 
     expect(await VoiceFocusDeviceTransformer.isSupported(invalidSpec, undefined)).to.be.false;
 
@@ -113,22 +127,25 @@ describe('VoiceFocusDeviceTransformer', () => {
     const awn = globalThis.AudioWorkletNode;
     const worker = globalThis.Worker;
 
-    before(() => {
-      globalThis.WebAssembly = ({
+    beforeEach(() => {
+      // Set up the mocks that VoiceFocus needs - must be in beforeEach to ensure
+      // they're set up fresh for each test, even after other tests have run
+      globalThis.WebAssembly = {
         compile: () => {},
         compileStreaming: () => {},
-      } as unknown) as typeof WebAssembly;
+      } as unknown as typeof WebAssembly;
 
-      globalThis.AudioWorklet = ({} as unknown) as typeof AudioWorklet;
-      globalThis.AudioWorkletNode = ({} as unknown) as typeof AudioWorkletNode;
-      globalThis.Worker = (class MockWorker {
+      globalThis.AudioWorklet = {} as unknown as typeof AudioWorklet;
+      globalThis.AudioWorkletNode = {} as unknown as typeof AudioWorkletNode;
+      globalThis.Worker = class MockWorker {
         constructor(_thing: unknown) {}
 
         terminate(): void {}
-      } as unknown) as typeof Worker;
+      } as unknown as typeof Worker;
     });
 
-    after(() => {
+    afterEach(() => {
+      // Restore the original globals
       globalThis.WebAssembly = wa;
       globalThis.AudioWorklet = aw;
       globalThis.AudioWorkletNode = awn;
@@ -137,25 +154,42 @@ describe('VoiceFocusDeviceTransformer', () => {
 
     describe('with working worker', () => {
       beforeEach(() => {
+        // Restore native fetch and ReadableStream before setting up fetch-mock
+        // This ensures mockGlobal() saves the correct original fetch
+        // and that fetch responses can properly use blob()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (globalThis as any).fetch = nativeFetch;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (globalThis as any).ReadableStream = nativeReadableStream;
+
+        // Clear any previous routes and set up new ones
+        fetchMock.removeRoutes();
+        fetchMock.clearHistory();
+
         fetchMock
-          .get(/\/worker-v1\.js/, (_url: string, _request: MockRequest) => {
+          .get(/\/worker-v1\.js/, () => {
             return {
               status: 200,
               'content-type': 'application/javascript',
               body: 'function(){}',
             };
           })
-          .get(/\/estimator-v1.js/, (_url: string, _request: MockRequest) => {
+          .get(/\/estimator-v1.js/, () => {
             return {
               status: 200,
               'content-type': 'application/javascript',
               body: 'function(){}',
             };
-          });
+          })
+          .catch(404)
+          .mockGlobal();
       });
 
       afterEach(() => {
-        fetchMock.restore();
+        // Use fetch-mock's unmockGlobal to properly restore fetch
+        fetchMock.unmockGlobal();
+        fetchMock.removeRoutes();
+        fetchMock.clearHistory();
       });
 
       it('is supported if the appropriate mocks exist', async () => {
@@ -163,10 +197,6 @@ describe('VoiceFocusDeviceTransformer', () => {
       });
 
       describe('with configuration', () => {
-        afterEach(() => {
-          fetchMock.restore();
-        });
-
         const goodConfig: VoiceFocusConfig = {
           fetchConfig: {
             paths: {
@@ -224,8 +254,7 @@ describe('VoiceFocusDeviceTransformer', () => {
             name: 'default',
             variant: 'c100',
             simd: true,
-            url:
-              'https://static.sdkassets.chime.aws/static/voicefocus-default-c100-v1_simd-e7bad7b961a128cf.wasm',
+            url: 'https://static.sdkassets.chime.aws/static/voicefocus-default-c100-v1_simd-e7bad7b961a128cf.wasm',
           },
           processor: 'voicefocus-inline-processor',
           executionQuanta: 3,
@@ -234,19 +263,12 @@ describe('VoiceFocusDeviceTransformer', () => {
 
         it('can be constructed with a config with URL, and no fetch to the non-explicit URL occurs', async () => {
           const assetFilter = 'https://static.sdkassets.chime.aws/wasm/.*';
-          fetchMock
-            .get(assetFilter, () => {
-              return {
-                status: 400,
-              };
-            })
-            .get(/\/worker-v1\.js/, (_url: string, _request: MockRequest) => {
-              return {
-                status: 200,
-                'content-type': 'application/javascript',
-                body: 'function(){}',
-              };
-            });
+          // Add routes for this specific test
+          fetchMock.get(assetFilter, () => {
+            return {
+              status: 400,
+            };
+          });
 
           const logger = new MockLogger();
           const spec: VoiceFocusSpec = {
@@ -266,7 +288,7 @@ describe('VoiceFocusDeviceTransformer', () => {
           expect(transformer.getConfiguration()).to.eventually.deep.equal(configWithURL);
 
           await transformer.createTransformDevice('default');
-          expect(fetchMock.called(assetFilter)).to.be.false;
+          expect(fetchMock.callHistory.called(assetFilter)).to.be.false;
         });
 
         it('can be constructed with an unsupported config', async () => {
@@ -378,35 +400,33 @@ describe('VoiceFocusDeviceTransformer', () => {
       });
 
       describe('configure', () => {
-        before(() => {
+        beforeEach(() => {
+          // Add HEAD routes for this test - must be in beforeEach because
+          // the parent beforeEach calls removeRoutes()
           fetchMock
-            .head(/https:\/\/static\.somewhere\.chime\.aws\/wasm\/12345.wasm\??.*/, () => {
-              return {
-                status: 200,
-                'content-type': 'application/wasm',
-              };
+            .head(/https:\/\/static\.somewhere\.chime\.aws\/wasm\/12345.wasm\??.*/, {
+              status: 200,
+              headers: { 'content-type': 'application/wasm' },
             })
             .head(
               /https:\/\/somewhere\.chime\.aws\/wasm\/voicefocus-default-c10-v1_simd.wasm\?.*/,
-              () => {
-                return {
-                  status: 302,
-                  redirectUrl: 'https://static.somewhere.chime.aws/wasm/12345.wasm',
-                };
+              {
+                // Simulate a followed redirect by returning 200 with redirectUrl
+                // This sets response.url to the redirect target, simulating what
+                // the browser does when it follows a 302 redirect
+                status: 200,
+                redirectUrl: 'https://static.somewhere.chime.aws/wasm/12345.wasm',
+                headers: { 'content-type': 'application/wasm' },
               }
             );
         });
 
         afterEach(() => {
-          fetchMock.resetHistory();
-        });
-
-        after(() => {
-          fetchMock.restore();
+          fetchMock.clearHistory();
         });
 
         it('provides a static method to create a config', async () => {
-          expect(fetchMock.called()).to.be.false;
+          expect(fetchMock.callHistory.called()).to.be.false;
           const config = await VoiceFocusDeviceTransformer.configure(
             {
               variant: 'c10',
@@ -434,7 +454,7 @@ describe('VoiceFocusDeviceTransformer', () => {
           expect(config.executionQuanta).to.eql(3);
           expect(config.model.url).to.equal('https://static.somewhere.chime.aws/wasm/12345.wasm');
 
-          expect(fetchMock.called()).to.be.true;
+          expect(fetchMock.callHistory.called()).to.be.true;
         });
       });
 
@@ -515,20 +535,34 @@ describe('VoiceFocusDeviceTransformer', () => {
 
     describe('with failing network', () => {
       before(() => {
-        fetchMock.get('*', (_url: string, _request: MockRequest) => {
-          return {
-            status: 503,
-            body: {},
-          };
-        });
+        // Restore native fetch and ReadableStream before setting up fetch-mock
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (globalThis as any).fetch = nativeFetch;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (globalThis as any).ReadableStream = nativeReadableStream;
+
+        // Clear previous routes and set up failing network
+        fetchMock.removeRoutes();
+        fetchMock.clearHistory();
+
+        fetchMock
+          .get('*', () => {
+            return {
+              status: 503,
+              body: {},
+            };
+          })
+          .mockGlobal();
       });
 
       afterEach(() => {
-        fetchMock.resetHistory();
+        fetchMock.clearHistory();
       });
 
       after(() => {
-        fetchMock.restore();
+        // Use fetch-mock's unmockGlobal to properly restore fetch
+        fetchMock.unmockGlobal();
+        fetchMock.removeRoutes();
       });
 
       it('makes a network request if the appropriate mocks exist', async () => {
@@ -538,16 +572,14 @@ describe('VoiceFocusDeviceTransformer', () => {
         const workerBase = 'https://static.sdkassets.chime.aws/workers/worker-v1.js';
         const workerQuery = getQueryParams();
         const workerURL = `${workerBase}?${workerQuery}`;
-        expect(fetchMock.lastCall(undefined, 'GET')[0]).to.equal(workerURL);
+        const lastCall = fetchMock.callHistory.lastCall();
+        expect(lastCall?.url).to.equal(workerURL);
 
         expect(
           logger.debug.calledOnceWith(
             'Loading VoiceFocusTestWorker worker from https://static.sdkassets.chime.aws/workers/worker-v1.js.'
           )
         ).to.be.true;
-
-        // Because we don't have `self.origin`.
-        expect(logger.error.calledWith('Could not compare origins. {}')).to.be.true;
 
         // Because the fetch returned a 503.
         expect(logger.info.calledWith('Failed to fetch and instantiate test worker {}')).to.be.true;
@@ -565,13 +597,14 @@ describe('VoiceFocusDeviceTransformer', () => {
         const estimatorQuery = getQueryParams();
         const estimatorURL = `${estimatorBase}?${estimatorQuery}`;
 
-        expect(fetchMock.lastCall(undefined, 'GET')[0]).to.equal(estimatorURL);
+        const lastCall = fetchMock.callHistory.lastCall();
+        expect(lastCall?.url).to.equal(estimatorURL);
       });
     });
   });
 
   it('rejects for invalid spec', () => {
-    const invalidSpec = ({ category: 'ayyyno' } as unknown) as VoiceFocusSpec;
+    const invalidSpec = { category: 'ayyyno' } as unknown as VoiceFocusSpec;
     const promise = VoiceFocusDeviceTransformer.create(invalidSpec, {});
     return expect(promise).to.eventually.be.rejectedWith('Unrecognized category ayyyno');
   });
@@ -655,7 +688,7 @@ describe('VoiceFocusDeviceTransformer', () => {
 
       const result = await VoiceFocusDeviceTransformer.create(
         {},
-        { logger: (console as unknown) as Logger }
+        { logger: console as unknown as Logger }
       );
       expect(configure.calledOnce).to.be.true;
       expect(init.calledOnce).to.be.true;
@@ -831,7 +864,7 @@ describe('VoiceFocusDeviceTransformer', () => {
     it('observe and unobserve MeetingAudio', async () => {
       const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
       const streamDefault = { id: 'default' } as MediaStream;
-      const audioVideo = ({
+      const audioVideo = {
         getCurrentMeetingAudioStream() {
           return streamDefault;
         },
@@ -841,12 +874,12 @@ describe('VoiceFocusDeviceTransformer', () => {
         removeAudioMixObserver(_observer: AudioMixObserver) {
           return;
         },
-      } as unknown) as AudioVideoFacade;
+      } as unknown as AudioVideoFacade;
       const device = await getDevice('foo', options, true);
       await device.observeMeetingAudio(audioVideo);
       await device.unObserveMeetingAudio(audioVideo);
 
-      const audioVideo2 = ({
+      const audioVideo2 = {
         getCurrentMeetingAudioStream() {
           return null as unknown;
         },
@@ -856,7 +889,7 @@ describe('VoiceFocusDeviceTransformer', () => {
         removeAudioMixObserver(_observer: AudioMixObserver) {
           return;
         },
-      } as unknown) as AudioVideoFacade;
+      } as unknown as AudioVideoFacade;
 
       await device.observeMeetingAudio(audioVideo2);
       await device.unObserveMeetingAudio(audioVideo2);
@@ -871,8 +904,8 @@ describe('VoiceFocusDeviceTransformer', () => {
 
       expect(device).to.not.be.undefined;
 
-      const contextA = ({ foo: 1 } as unknown) as AudioContext;
-      const contextC = ({ foo: 2 } as unknown) as AudioContext;
+      const contextA = { foo: 1 } as unknown as AudioContext;
+      const contextC = { foo: 2 } as unknown as AudioContext;
 
       const { start: startA, end: endA } = await device.createAudioNode(contextA);
 
@@ -897,7 +930,7 @@ describe('VoiceFocusDeviceTransformer', () => {
     it('gives a node via its inner VoiceFocus instance', async () => {
       const device = await getDevice('foo');
 
-      const context = ({} as unknown) as AudioContext;
+      const context = {} as unknown as AudioContext;
 
       const { start, end } = await device.createAudioNode(context);
 
@@ -907,7 +940,7 @@ describe('VoiceFocusDeviceTransformer', () => {
       // Our subgraph is unit.
       expect(start).to.eq(end);
 
-      const node: MockVoiceFocusNode = (start as unknown) as MockVoiceFocusNode;
+      const node: MockVoiceFocusNode = start as unknown as MockVoiceFocusNode;
 
       // The node can be muted. When it is, `disable` will be called.
       expect(node.disable.notCalled).to.be.true;
@@ -932,7 +965,7 @@ describe('VoiceFocusDeviceTransformer', () => {
       const device = await transformer.createTransformDevice('foo');
 
       try {
-        await device.createAudioNode(({} as unknown) as AudioContext);
+        await device.createAudioNode({} as unknown as AudioContext);
       } catch (e) {}
 
       // Nothing happens, of course.
@@ -996,7 +1029,7 @@ describe('VoiceFocusDeviceTransformer', () => {
       const device = await getDevice('foo', options);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ((device as unknown) as any).failed = true;
+      (device as unknown as any).failed = true;
 
       const inner = await device.intrinsicDevice();
 
@@ -1185,14 +1218,14 @@ describe('VoiceFocusDeviceTransformer', () => {
       const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
       const streamDefault = { id: 'default' } as MediaStream;
       const streamDefault2 = { id: 'default2' } as MediaStream;
-      const context = ({
+      const context = {
         createMediaStreamDestination() {
           return new MockMediaStreamNode();
         },
         createMediaStreamSource(_stream: MediaStream) {
           return new MockMediaStreamNode();
         },
-      } as unknown) as AudioContext;
+      } as unknown as AudioContext;
       const device = await getDevice('foo', options, true);
       await device.meetingAudioStreamBecameActive(streamDefault);
       await device.meetingAudioStreamBecameActive(undefined);
@@ -1213,14 +1246,14 @@ describe('VoiceFocusDeviceTransformer', () => {
 
       const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
       const streamDefault = { id: 'default' } as MediaStream;
-      const context = ({
+      const context = {
         createMediaStreamDestination() {
           return new MockMediaStreamNode();
         },
         createMediaStreamSource(_stream: MediaStream) {
           return new MockMediaStreamNode();
         },
-      } as unknown) as AudioContext;
+      } as unknown as AudioContext;
       const device = await getDevice('foo', options, true);
       await device.createAudioNode(context);
 
@@ -1308,7 +1341,7 @@ class MockVoiceFocus {
     if (this.throwInCreateNode) {
       throw new Error('Oh no');
     }
-    return (new MockVoiceFocusNode(context) as unknown) as VoiceFocusAudioWorkletNode;
+    return new MockVoiceFocusNode(context) as unknown as VoiceFocusAudioWorkletNode;
   }
 
   async applyToStream(

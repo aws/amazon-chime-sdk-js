@@ -131,11 +131,8 @@ export default class DefaultEventController implements EventController, Destroya
           meetingId,
           credentials: { attendeeId, joinToken },
         } = configuration;
-        const meetingEventsClientConfiguration: EventsClientConfiguration = new MeetingEventsClientConfiguration(
-          meetingId,
-          attendeeId,
-          joinToken
-        );
+        const meetingEventsClientConfiguration: EventsClientConfiguration =
+          new MeetingEventsClientConfiguration(meetingId, attendeeId, joinToken);
         const eventIngestionConfiguration = new EventIngestionConfiguration(
           meetingEventsClientConfiguration,
           eventIngestionURL

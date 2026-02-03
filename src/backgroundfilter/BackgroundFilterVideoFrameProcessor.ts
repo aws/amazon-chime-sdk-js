@@ -120,7 +120,7 @@ export default class BackgroundFilterVideoFrameProcessor {
   /**
    * This method will detect the environment in which it is being used and determine if background
    * blur/replacement can be used.
-   * @param spec The {@link BackgroundBlurSpec} spec that will be used to initialize assets
+   * @param spec The {@link BackgroundFilterSpec} spec that will be used to initialize assets
    * @param options options such as logger
    * @returns a boolean promise that will resolve to true if supported and false if not
    */

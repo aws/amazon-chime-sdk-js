@@ -261,7 +261,7 @@ describe('DefaultPingPong', () => {
       const clientSpy = sinon.spy(signalingClient, 'pingPong');
       const pingPong = new DefaultPingPong(signalingClient, defaultIntervalMs, logger);
       const frame = SdkSignalFrame.create();
-      frame.type = -1;
+      frame.type = -1 as SdkSignalFrame.Type;
       pingPong.handleSignalingClientEvent(
         new SignalingClientEvent(
           signalingClient,

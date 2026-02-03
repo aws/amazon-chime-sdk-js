@@ -8,11 +8,15 @@ import Logger from '../logger/Logger';
 import DevicePixelRatioMonitor from './DevicePixelRatioMonitor';
 
 export default class DefaultDevicePixelRatioMonitor
-  implements DevicePixelRatioMonitor, Destroyable {
+  implements DevicePixelRatioMonitor, Destroyable
+{
   private observerQueue = new Set<DevicePixelRatioObserver>();
   private mediaQueryList: undefined | MediaQueryList;
 
-  constructor(private devicePixelRatioSource: DevicePixelRatioSource, logger: Logger) {
+  constructor(
+    private devicePixelRatioSource: DevicePixelRatioSource,
+    logger: Logger
+  ) {
     if (typeof window === 'undefined') {
       return;
     }

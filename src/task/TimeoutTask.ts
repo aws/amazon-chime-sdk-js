@@ -13,7 +13,11 @@ import Task from './Task';
 export default class TimeoutTask extends BaseTask {
   protected taskName: string;
 
-  constructor(logger: Logger, private taskToRunBeforeTimeout: Task, private timeoutMs: number) {
+  constructor(
+    logger: Logger,
+    private taskToRunBeforeTimeout: Task,
+    private timeoutMs: number
+  ) {
     super(logger);
     this.taskName = `Timeout${this.timeoutMs}ms`;
     taskToRunBeforeTimeout.setParent(this);

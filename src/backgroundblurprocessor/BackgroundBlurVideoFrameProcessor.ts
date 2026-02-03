@@ -20,7 +20,8 @@ import BlurStrength from './BackgroundBlurStrength';
 /** @internal */
 class NoOpBackgroundBlurProcessor
   extends NoOpVideoFrameProcessor
-  implements BackgroundBlurProcessor {
+  implements BackgroundBlurProcessor
+{
   /**
    * no-op
    */
@@ -55,7 +56,7 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
    * initialize the worker, wasm, and ML models. Upon completion of the initialization the promise will either
    * be resolved or rejected.
    * @param spec The spec defines the assets that will be used for adding background blur to a frame
-   * @param blurStrength How much blur to apply to a frame
+   * @param options Background blur options including blur strength
    * @returns
    */
   static async create(
@@ -109,7 +110,7 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
   /**
    * This method will detect the environment in which it is being used and determine if background
    * blur can be used.
-   * @param spec The {@link BackgroundBlurSpec} spec that will be used to initialize assets
+   * @param spec The {@link BackgroundFilterSpec} spec that will be used to initialize assets
    * @param options options such as logger
    * @returns a boolean promise that will resolve to true if supported and false if not
    */

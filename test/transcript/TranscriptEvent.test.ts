@@ -82,7 +82,7 @@ describe('TranscriptEvent', () => {
   });
 
   it('handles one transcript event with invalid status type', async () => {
-    const events = [makeSdkTranscriptionStatus(0)];
+    const events = [makeSdkTranscriptionStatus(0 as SdkTranscriptionStatus.Type)];
     const data = SdkTranscriptFrame.encode(makeSdkTranscriptFrame(events)).finish();
     logBase64FromUint8Array(data);
 

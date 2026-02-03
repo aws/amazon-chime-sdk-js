@@ -36,7 +36,10 @@ export class MutingTransformDevice extends BaseMockNodeTransformDevice {
 }
 
 export class MockNodeTransformDevice extends BaseMockNodeTransformDevice {
-  constructor(inner: Device, private delay?: number) {
+  constructor(
+    inner: Device,
+    private delay?: number
+  ) {
     super(inner);
   }
 

@@ -9,14 +9,9 @@ import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamB
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import AudioMixController from './AudioMixController';
 
-/** @internal */
-interface AudioElementWithSinkId extends HTMLAudioElement {
-  sinkId: string;
-  setSinkId: (id: string) => void;
-}
-
 export default class DefaultAudioMixController
-  implements AudioMixController, MediaStreamBrokerObserver {
+  implements AudioMixController, MediaStreamBrokerObserver
+{
   private audioDevice: MediaDeviceInfo | null = null;
   private audioElement: HTMLAudioElement | null = null;
   private audioStream: MediaStream | null = null;
@@ -115,20 +110,16 @@ export default class DefaultAudioMixController
     // In usual operation, the output device is undefined, and so is the element
     // sink ID. In this case, don't throw an error -- we're being called as a side
     // effect of just binding the audio element, not choosing an output device.
-    const shouldSetSinkId =
-      this.audioDevice?.deviceId !== (this.audioElement as AudioElementWithSinkId).sinkId;
+    const shouldSetSinkId = this.audioDevice?.deviceId !== this.audioElement.sinkId;
 
-    if (
-      shouldSetSinkId &&
-      typeof (this.audioElement as AudioElementWithSinkId).sinkId === 'undefined'
-    ) {
+    if (shouldSetSinkId && typeof this.audioElement.sinkId === 'undefined') {
       throw new Error(
         'Cannot select audio output device. This browser does not support setSinkId.'
       );
     }
 
     const newSinkId = this.audioDevice ? this.audioDevice.deviceId : '';
-    const oldSinkId: string = (this.audioElement as AudioElementWithSinkId).sinkId;
+    const oldSinkId: string = this.audioElement.sinkId;
     if (newSinkId === oldSinkId) {
       return;
     }
@@ -136,8 +127,7 @@ export default class DefaultAudioMixController
     // Take the existing stream and temporarily unbind it while we change
     // the sink ID.
 
-    const existingAudioElement: AudioElementWithSinkId = this
-      .audioElement as AudioElementWithSinkId;
+    const existingAudioElement = this.audioElement;
     const existingStream = this.audioStream;
     if (this.browserBehavior.hasChromiumWebRTC()) {
       existingAudioElement.srcObject = null;

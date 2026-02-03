@@ -23,7 +23,8 @@ import BackgroundBlurVideoFrameProcessorObserver from './BackgroundBlurVideoFram
 /** @internal */
 export default class BackgroundBlurProcessorProvided
   extends BackgroundFilterProcessor
-  implements BackgroundBlurProcessor {
+  implements BackgroundBlurProcessor
+{
   protected blurAmount = 0;
   protected _blurStrength: number;
 

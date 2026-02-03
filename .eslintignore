@@ -17,3 +17,4 @@ rust
 screensignalingprotocol
 signalingprotocol
 test/redundantaudioencoder/OpusTestPackets.ts
+test/test-build

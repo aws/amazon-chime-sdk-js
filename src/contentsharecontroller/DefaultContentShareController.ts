@@ -23,7 +23,8 @@ import ContentShareController from './ContentShareController';
 import ContentShareMediaStreamBroker from './ContentShareMediaStreamBroker';
 
 export default class DefaultContentShareController
-  implements ContentShareController, AudioVideoObserver, Destroyable {
+  implements ContentShareController, AudioVideoObserver, Destroyable
+{
   static createContentShareMeetingSessionConfigure(
     configuration: MeetingSessionConfiguration
   ): MeetingSessionConfiguration {
@@ -67,10 +68,11 @@ export default class DefaultContentShareController
   ): void {
     if (enable) {
       this.contentAudioVideo.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-      this.contentAudioVideo.configuration.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicyForContentShare(
-        this.contentAudioVideo.logger,
-        encodingParams
-      );
+      this.contentAudioVideo.configuration.videoUplinkBandwidthPolicy =
+        new DefaultSimulcastUplinkPolicyForContentShare(
+          this.contentAudioVideo.logger,
+          encodingParams
+        );
     } else {
       this.contentAudioVideo.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
       this.contentAudioVideo.configuration.videoUplinkBandwidthPolicy = undefined;

@@ -17,7 +17,8 @@ import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import TransceiverController from './TransceiverController';
 
 export default class DefaultTransceiverController
-  implements TransceiverController, AudioVideoObserver {
+  implements TransceiverController, AudioVideoObserver
+{
   protected _localCameraTransceiver: RTCRtpTransceiver | null = null;
   protected _localAudioTransceiver: RTCRtpTransceiver | null = null;
   protected videoSubscriptions: number[] = [];
@@ -31,10 +32,9 @@ export default class DefaultTransceiverController
     timestampMs: number;
     totalPacketsSent: number;
     totalPacketsLost: number;
-  }> = new Array();
-  private redMetricsObservers: Set<RedundantAudioRecoveryMetricsObserver> = new Set<
-    RedundantAudioRecoveryMetricsObserver
-  >();
+  }> = [];
+  private redMetricsObservers: Set<RedundantAudioRecoveryMetricsObserver> =
+    new Set<RedundantAudioRecoveryMetricsObserver>();
   private audioRedEnabled: boolean;
   private currentNumRedundantEncodings: number = 0;
   private lastRedHolddownTimerStartTimestampMs: number = 0;
@@ -74,18 +74,24 @@ export default class DefaultTransceiverController
           if ((existing.rid || changed.rid) && existing.rid !== changed.rid) {
             continue;
           }
-          let key: keyof RTCRtpEncodingParameters;
-          for (key in changed) {
-            // These properties can't be changed.
-            if (key === 'rid' || key === 'codecPayloadType') {
-              continue;
-            }
-            /* istanbul ignore else */
-            if (changed.hasOwnProperty(key)) {
-              (existing[key] as RTCRtpEncodingParameters[keyof RTCRtpEncodingParameters]) = changed[
-                key
-              ];
-            }
+          // Explicitly copy mutable encoding parameters
+          if (changed.active !== undefined) {
+            existing.active = changed.active;
+          }
+          if (changed.maxBitrate !== undefined) {
+            existing.maxBitrate = changed.maxBitrate;
+          }
+          if (changed.maxFramerate !== undefined) {
+            existing.maxFramerate = changed.maxFramerate;
+          }
+          if (changed.scaleResolutionDownBy !== undefined) {
+            existing.scaleResolutionDownBy = changed.scaleResolutionDownBy;
+          }
+          if (changed.priority !== undefined) {
+            existing.priority = changed.priority;
+          }
+          if (changed.networkPriority !== undefined) {
+            existing.networkPriority = changed.networkPriority;
           }
         }
       }
@@ -572,8 +578,8 @@ export default class DefaultTransceiverController
         { type: 'ReceiverTransform' }
       );
       // eslint-disable-next-line
-    } else /* istanbul ignore else */ if (supportsInsertableStreams) {
-      // @ts-ignore
+    } else if (supportsInsertableStreams) {
+      /* istanbul ignore else */ // @ts-ignore
       const sendStreams = this._localAudioTransceiver.sender.createEncodedStreams();
       // @ts-ignore
       const receiveStreams = this._localAudioTransceiver.receiver.createEncodedStreams();
@@ -627,8 +633,8 @@ export default class DefaultTransceiverController
         });
       }
       // eslint-disable-next-line
-    } else /* istanbul ignore else */ if (supportsInsertableStreams) {
-      // @ts-ignore
+    } else if (supportsInsertableStreams) {
+      /* istanbul ignore else */ // @ts-ignore
       if (!this.peer.getConfiguration()?.encodedInsertableStreams) return transceiver;
 
       // @ts-ignore
@@ -749,10 +755,8 @@ export default class DefaultTransceiverController
     // number of encodings on loss recovery.
     const maxLossPercent = Math.max(lossPercent5sTimewindow, lossPercent15sTimewindow);
 
-    const [
-      newNumRedundantEncodings,
-      shouldTurnOffRed,
-    ] = RedundantAudioEncoder.getNumRedundantEncodingsForPacketLoss(maxLossPercent);
+    const [newNumRedundantEncodings, shouldTurnOffRed] =
+      RedundantAudioEncoder.getNumRedundantEncodingsForPacketLoss(maxLossPercent);
 
     if (shouldTurnOffRed) {
       this.lastHighPacketLossEventTimestampMs = currentTimestampMs;
@@ -812,15 +816,12 @@ export default class DefaultTransceiverController
     if (this.audioMetricsHistory.length < 2) {
       return 0;
     }
-    const latestReceiverReportTimestampMs: number = this.audioMetricsHistory[
-      this.audioMetricsHistory.length - 1
-    ].timestampMs;
-    const currentTotalPacketsSent: number = this.audioMetricsHistory[
-      this.audioMetricsHistory.length - 1
-    ].totalPacketsSent;
-    const currentTotalPacketsLost: number = this.audioMetricsHistory[
-      this.audioMetricsHistory.length - 1
-    ].totalPacketsLost;
+    const latestReceiverReportTimestampMs: number =
+      this.audioMetricsHistory[this.audioMetricsHistory.length - 1].timestampMs;
+    const currentTotalPacketsSent: number =
+      this.audioMetricsHistory[this.audioMetricsHistory.length - 1].totalPacketsSent;
+    const currentTotalPacketsLost: number =
+      this.audioMetricsHistory[this.audioMetricsHistory.length - 1].totalPacketsLost;
 
     // Iterate backwards in the metrics history, from the report immediately preceeding
     // the latest one, until we find the first metric report whose timestamp differs

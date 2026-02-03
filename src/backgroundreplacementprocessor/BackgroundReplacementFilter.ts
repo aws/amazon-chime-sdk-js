@@ -21,7 +21,8 @@ import BackgroundReplacementVideoFrameProcessorObserver from './BackgroundReplac
 /** @internal */
 export default class BackgroundReplacementFilter
   extends BackgroundFilterProcessor
-  implements BackgroundReplacementProcessor {
+  implements BackgroundReplacementProcessor
+{
   private replacementBlob?: Blob;
   private replacementObjectUrl?: string;
   /**

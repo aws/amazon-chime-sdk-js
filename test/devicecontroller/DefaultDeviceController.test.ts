@@ -1295,7 +1295,7 @@ describe('DefaultDeviceController', () => {
 
       const processor1 = new NoOpVideoFrameProcessor();
       const processor2 = new NoOpVideoFrameProcessor();
-      const transform1 = new DefaultVideoTransformDevice(logger, (s1 as unknown) as MediaStream, [
+      const transform1 = new DefaultVideoTransformDevice(logger, s1 as unknown as MediaStream, [
         processor1,
       ]);
       const transform2 = new DefaultVideoTransformDevice(logger, 'default', [processor2]);

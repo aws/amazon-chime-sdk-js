@@ -8,7 +8,7 @@
 export default interface MediaStreamBrokerObserver {
   /**
    * Called when the video input stream is changed.
-   * @param videoStream: The new video input media stream
+   * @param videoStream The new video input media stream
    */
   videoInputDidChange?(videoStream: MediaStream | undefined): void;
 

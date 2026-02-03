@@ -28,7 +28,10 @@
  * ```
  */
 export default class ApplicationMetadata {
-  private constructor(public readonly appName: string, public readonly appVersion: string) {}
+  private constructor(
+    public readonly appName: string,
+    public readonly appVersion: string
+  ) {}
   /**
    *
    * @param appName Builder's application name.
@@ -49,7 +52,8 @@ export default class ApplicationMetadata {
       throw new Error(`appName must satisfy ${APP_NAME_REGEX} regular expression`);
     }
 
-    const APP_VERSION_REGEX = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/gm;
+    const APP_VERSION_REGEX =
+      /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/gm;
     if (!appVersion || appVersion.length > 32) {
       throw new Error(`appVersion should be a valid string and 1 to 32 characters in length`);
     }

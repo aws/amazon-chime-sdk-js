@@ -3,8 +3,7 @@
 
 import VideoCaptureAndEncodeParameter from './VideoCaptureAndEncodeParameter';
 
-export default class DefaultVideoCaptureAndEncodeParameter
-  implements VideoCaptureAndEncodeParameter {
+export default class DefaultVideoCaptureAndEncodeParameter implements VideoCaptureAndEncodeParameter {
   constructor(
     private cameraWidth: number,
     private cameraHeight: number,

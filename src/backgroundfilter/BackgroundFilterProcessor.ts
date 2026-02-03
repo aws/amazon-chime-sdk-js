@@ -434,7 +434,10 @@ interface MonitorCpuObserver {
 /** @internal */
 export class BackgroundFilterMonitor implements BackgroundFilterVideoFrameProcessorObserver {
   private lastCPUChangeTimestamp: number = 0;
-  constructor(private monitoringPeriodMillis: number, private observer: MonitorCpuObserver) {}
+  constructor(
+    private monitoringPeriodMillis: number,
+    private observer: MonitorCpuObserver
+  ) {}
 
   filterCPUUtilizationHigh(): void {
     const timestamp = Date.now();

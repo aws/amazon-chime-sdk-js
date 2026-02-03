@@ -39,7 +39,8 @@ type StatsReportItem = any;
  * [[StatsCollector]] gathers statistics and sends metrics.
  */
 export default class StatsCollector
-  implements RedundantAudioRecoveryMetricsObserver, VideoTileResolutionObserver {
+  implements RedundantAudioRecoveryMetricsObserver, VideoTileResolutionObserver
+{
   private static readonly INTERVAL_MS = 1000;
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
 
@@ -47,7 +48,8 @@ export default class StatsCollector
   private signalingClient: SignalingClient;
   private videoStreamIndex: VideoStreamIndex;
   private clientMetricReport: ClientMetricReport;
-  private redRecoveryMetricReport: RedundantAudioRecoveryMetricReport = new RedundantAudioRecoveryMetricReport();
+  private redRecoveryMetricReport: RedundantAudioRecoveryMetricReport =
+    new RedundantAudioRecoveryMetricReport();
   private lastRedRecoveryMetricReportConsumedTimestampMs: number = 0;
   private videoCodecDegradationHighEncodeCpuCount: number = 0;
   private videoCodecDegradationEncodeFailureCount: number = 0;
@@ -314,9 +316,8 @@ export default class StatsCollector
       }
       const isStream = this.isStreamRawMetricReport(rawMetricReport);
       if (isStream) {
-        const existingStreamMetricReport = this.clientMetricReport.streamMetricReports[
-          Number(rawMetricReport.ssrc)
-        ];
+        const existingStreamMetricReport =
+          this.clientMetricReport.streamMetricReports[Number(rawMetricReport.ssrc)];
         if (!existingStreamMetricReport) {
           const streamMetricReport = new StreamMetricReport();
           streamMetricReport.mediaType = this.getMediaType(rawMetricReport);
@@ -339,9 +340,8 @@ export default class StatsCollector
               );
             }
           }
-          this.clientMetricReport.streamMetricReports[
-            Number(rawMetricReport.ssrc)
-          ] = streamMetricReport;
+          this.clientMetricReport.streamMetricReports[Number(rawMetricReport.ssrc)] =
+            streamMetricReport;
         } else {
           // Update stream ID in case we have overridden it locally in the case of remote video
           // updates completed without a negotiation
@@ -601,9 +601,8 @@ export default class StatsCollector
     // the previous handling of raw metrics reports. This would lead to the addition of custom metrics
     // for streams that may no longer exist, e.g. after a reconnection, which will then stick around
     // perpetually
-    const videoUpstreamSsrc = this.getVideoUpstreamSsrcFromRawMetricReports(
-      filteredRawMetricReports
-    );
+    const videoUpstreamSsrc =
+      this.getVideoUpstreamSsrcFromRawMetricReports(filteredRawMetricReports);
     if (videoUpstreamSsrc !== null) {
       this.addVideoCodecDegradationMetrics(customStatsReports, videoUpstreamSsrc);
     }
@@ -679,7 +678,8 @@ export default class StatsCollector
       totalAudioPacketsRecoveredFec: this.redRecoveryMetricReport.totalAudioPacketsRecoveredFec,
     });
 
-    this.lastRedRecoveryMetricReportConsumedTimestampMs = this.redRecoveryMetricReport.currentTimestampMs;
+    this.lastRedRecoveryMetricReportConsumedTimestampMs =
+      this.redRecoveryMetricReport.currentTimestampMs;
   }
 
   /**

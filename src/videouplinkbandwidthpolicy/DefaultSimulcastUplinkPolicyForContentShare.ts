@@ -19,7 +19,10 @@ export default class DefaultSimulcastUplinkPolicyForContentShare implements Simu
   private defaultHiTargetBitrateKbps: number = 1200;
   private defaultLowTargetBitrateKbps: number = 300;
 
-  constructor(_logger: Logger, private encodingParams?: ContentShareSimulcastEncodingParameters) {}
+  constructor(
+    _logger: Logger,
+    private encodingParams?: ContentShareSimulcastEncodingParameters
+  ) {}
 
   updateConnectionMetric(_metrics: ConnectionMetrics): void {}
 

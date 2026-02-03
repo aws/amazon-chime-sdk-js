@@ -76,16 +76,14 @@ describe('BackgroundBlurProcessor', () => {
   });
 
   const stubSupported = (supported: boolean, providedSupported: boolean = true): void => {
-    sandbox.stub(BackgroundBlurVideoFrameProcessor, 'isSupported').callsFake(
-      (): Promise<boolean> => {
+    sandbox
+      .stub(BackgroundBlurVideoFrameProcessor, 'isSupported')
+      .callsFake((): Promise<boolean> => {
         return Promise.resolve(supported);
-      }
-    );
-    sandbox.stub(BackgroundBlurProcessorProvided, 'isSupported').callsFake(
-      (): Promise<boolean> => {
-        return Promise.resolve(providedSupported);
-      }
-    );
+      });
+    sandbox.stub(BackgroundBlurProcessorProvided, 'isSupported').callsFake((): Promise<boolean> => {
+      return Promise.resolve(providedSupported);
+    });
   };
 
   describe('BackgroundBlurProcessorProvided', () => {
@@ -162,15 +160,17 @@ describe('BackgroundBlurProcessor', () => {
         backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
-        let bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
+        let bbprocessor =
+          (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
         bbprocessor['worker'] = null;
         bbprocessor['targetCanvas'] = null;
         bbprocessor['scaledCanvas'] = null;
         await bbprocessor.destroy();
 
-        bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
-        (bbprocessor['worker'] = await loader.loadWorker(null, null, null)),
-          (bbprocessor['targetCanvas'] = document.createElement('canvas'));
+        bbprocessor =
+          (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
+        ((bbprocessor['worker'] = await loader.loadWorker(null, null, null)),
+          (bbprocessor['targetCanvas'] = document.createElement('canvas')));
         bbprocessor['scaledCanvas'] = document.createElement('canvas');
         await bbprocessor.destroy();
       });
@@ -254,7 +254,8 @@ describe('BackgroundBlurProcessor', () => {
         };
 
         // create processor with defaults
-        let bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
+        let bbprocessor =
+          (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
         await bbprocessor.destroy();
         await expectProcessorResults(bbprocessor, {
           ...expectedResults,
@@ -915,7 +916,8 @@ describe('BackgroundBlurProcessor', () => {
       configuration = makeSessionConfiguration();
       eventController = new DefaultEventController(configuration, noOpLogger);
       const eventController2 = new DefaultEventController(configuration, noOpLogger);
-      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
+      const bbprocessor =
+        (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
       // first event controller, publishEvent happens
       bbprocessor.setEventController(eventController);
       // second event controller, only change of controller occurs
@@ -926,7 +928,8 @@ describe('BackgroundBlurProcessor', () => {
       backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
       stubSupported(true);
 
-      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
+      const bbprocessor =
+        (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
       bbprocessor.addObserver({});
       const frameCounter = bbprocessor['frameCounter'];
       const framerate = 15;
@@ -949,7 +952,8 @@ describe('BackgroundBlurProcessor', () => {
       canvas.height = 540;
       canvas.width = 960;
 
-      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
+      const bbprocessor =
+        (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
       const output = await bbprocessor.process(buffers);
       expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
 
@@ -969,7 +973,8 @@ describe('BackgroundBlurProcessor', () => {
       const canvas = document.createElement('canvas');
       const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
 
-      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
+      const bbprocessor =
+        (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
       await bbprocessor.process(buffers);
       expect(bbprocessor['_blurStrength']).to.be.equal(BlurStrength.MEDIUM);
       expect(bbprocessor['modelInitialized']).to.be.true;
@@ -995,7 +1000,8 @@ describe('BackgroundBlurProcessor', () => {
 
       // Verify `stop` is called for BackgroundBlurProcessorBuiltIn
       // when `blurCanvas` is null.
-      let bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
+      let bbprocessor =
+        (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
       bbprocessor['blurCanvas'] = null;
       await bbprocessor.destroy();
 
@@ -1010,7 +1016,8 @@ describe('BackgroundBlurProcessor', () => {
 
       // Verify `stop` is called for BackgroundBlurProcessorBuiltIn
       // when `blurCanvas` is not null.
-      bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
+      bbprocessor =
+        (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
       bbprocessor['blurCanvas'] = document.createElement('canvas');
       await bbprocessor.destroy();
 
@@ -1038,7 +1045,8 @@ describe('BackgroundBlurProcessor', () => {
       canvas.height = 540;
       canvas.width = 960;
 
-      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
+      const bbprocessor =
+        (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
 
       let output = await bbprocessor.process(buffers);
       expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);

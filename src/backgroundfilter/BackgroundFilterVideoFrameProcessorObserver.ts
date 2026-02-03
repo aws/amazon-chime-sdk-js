@@ -17,7 +17,7 @@ export interface FilterFrameDurationHighEvent {
 /**
  * An observer for the background filter video frame processor.
  *
- * Use {@link BackgroundFilterVideoFrameProcessor.addObserver} to register an
+ * Use `BackgroundFilterVideoFrameProcessor.addObserver` to register an
  * observer with the processor.
  */
 export default interface BackgroundFilterVideoFrameProcessorObserver {
@@ -28,7 +28,7 @@ export default interface BackgroundFilterVideoFrameProcessorObserver {
    * to apply background filter, then a very large portion of each frame's maximum processing time is taken up by
    * processing background filter.
    *
-   * The observer will be called a maximum of once per {@link periodMillis}. In the event that the {@link avgFilterDurationMillis}
+   * The observer will be called a maximum of once per `periodMillis`. In the event that the `avgFilterDurationMillis`
    * is larger than expected the builder can use this event as a trigger to disable the background filter.
    *
    * @param event

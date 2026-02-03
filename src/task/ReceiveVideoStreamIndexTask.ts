@@ -27,7 +27,8 @@ import BaseTask from './BaseTask';
  */
 export default class ReceiveVideoStreamIndexTask
   extends BaseTask
-  implements SignalingClientObserver, RemovableObserver {
+  implements SignalingClientObserver, RemovableObserver
+{
   protected taskName = 'ReceiveVideoStreamIndexTask';
 
   // See comment above invocation of `pauseIngestion` in `DefaultAudioVideoController`
@@ -100,11 +101,8 @@ export default class ReceiveVideoStreamIndexTask
       );
     });
 
-    const {
-      videoStreamIndex,
-      videoDownlinkBandwidthPolicy,
-      videoUplinkBandwidthPolicy,
-    } = this.context;
+    const { videoStreamIndex, videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy } =
+      this.context;
 
     const oldVideoSources = videoStreamIndex.allVideoSendingSourcesExcludingSelf(selfAttendeeId);
     videoStreamIndex.integrateIndexFrame(indexFrame);
@@ -179,7 +177,8 @@ export default class ReceiveVideoStreamIndexTask
       );
     }
 
-    this.context.videoCaptureAndEncodeParameter = videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
+    this.context.videoCaptureAndEncodeParameter =
+      videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
     this.logger.info(
       `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}] captureParams=${JSON.stringify(
         this.context.videoCaptureAndEncodeParameter
@@ -262,7 +261,8 @@ export default class ReceiveVideoStreamIndexTask
       ) {
         willNeedUpdate = true;
       }
-      this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
+      this.context.meetingSupportedVideoSendCodecPreferences =
+        newMeetingSupportedVideoSendCodecPreferences;
     } else {
       this.logger.warn(
         'Interesection of meeting receive codec support and send codec preferences has no overlap, falling back to just values provided in `setVideoCodecSendPreferences`'
@@ -283,7 +283,8 @@ export default class ReceiveVideoStreamIndexTask
   }
 
   private handleIndexVideosPausedAtSource(): void {
-    const streamsPausedAtSource: VideoStreamIdSet = this.context.videoStreamIndex.streamsPausedAtSource();
+    const streamsPausedAtSource: VideoStreamIdSet =
+      this.context.videoStreamIndex.streamsPausedAtSource();
     for (const tile of this.context.videoTileController.getAllVideoTiles()) {
       const tileState = tile.state();
       if (streamsPausedAtSource.contain(tileState.streamId)) {

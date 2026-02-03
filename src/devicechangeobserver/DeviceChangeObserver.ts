@@ -31,7 +31,7 @@ export default interface DeviceChangeObserver {
    * If the selected input device is a `MediaStream`, it will be passed here as
    * the value of `device`. Otherwise, the selected device ID will be provided.
    *
-   * @param deviceId the currently selected audio input device.
+   * @param device the currently selected audio input device.
    * @param muteState whether the input device is known to be muted.
    */
   audioInputMuteStateChanged?(device: string | MediaStream, muteState: boolean): void;

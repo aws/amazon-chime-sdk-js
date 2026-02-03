@@ -10,7 +10,11 @@ import Task from './Task';
  * stops any currently running tasks.
  */
 export default class ParallelGroupTask extends BaseTask {
-  constructor(logger: Logger, protected taskName: string, private tasksToRunParallel: Task[]) {
+  constructor(
+    logger: Logger,
+    protected taskName: string,
+    private tasksToRunParallel: Task[]
+  ) {
     super(logger);
     for (const task of tasksToRunParallel) {
       task.setParent(this);

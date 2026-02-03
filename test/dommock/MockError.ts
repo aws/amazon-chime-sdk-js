@@ -9,7 +9,10 @@ export default class MockError extends Error {
 }
 
 export class OverconstrainedError extends Error {
-  constructor(message: string, public constraint: string) {
+  constructor(
+    message: string,
+    public constraint: string
+  ) {
     super(message);
     this.name = 'OverconstrainedError';
   }

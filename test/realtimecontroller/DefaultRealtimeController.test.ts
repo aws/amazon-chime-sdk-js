@@ -508,7 +508,7 @@ describe('DefaultRealtimeController', () => {
       const sentMuted = false;
       const sentSignalStrength = 1;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.volumeIndicatorCallbacks = {};
       const callback1 = (
         attendeeId: string,
@@ -545,7 +545,7 @@ describe('DefaultRealtimeController', () => {
       const sentMuted = false;
       const sentSignalStrength = 1;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.volumeIndicatorCallbacks = {};
       const callback = (
         attendeeId: string,
@@ -1222,7 +1222,7 @@ describe('DefaultRealtimeController', () => {
 
       // Break it.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.attendeeIdChangesCallbacks = undefined;
 
       rt.realtimeSubscribeToAttendeeIdPresence((_a, _p) => {});
@@ -1243,7 +1243,7 @@ describe('DefaultRealtimeController', () => {
 
       // Break it.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.setCanUnmuteLocalAudioCallbacks = undefined;
 
       rt.realtimeSubscribeToSetCanUnmuteLocalAudio(_m => {});
@@ -1269,7 +1269,7 @@ describe('DefaultRealtimeController', () => {
 
       // Break it.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.localSignalStrengthChangeCallbacks = undefined;
 
       rt.realtimeSubscribeToLocalSignalStrengthChange(_s => {});
@@ -1303,7 +1303,7 @@ describe('DefaultRealtimeController', () => {
 
       // Break it.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.receiveDataMessageCallbacks = undefined;
 
       rt.realtimeSubscribeToReceiveDataMessage('a', _data => {});
@@ -1329,7 +1329,7 @@ describe('DefaultRealtimeController', () => {
 
       // Break it.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.sendDataMessageCallbacks = undefined;
 
       rt.realtimeSubscribeToSendDataMessage((_topic, _data) => {});
@@ -1355,7 +1355,7 @@ describe('DefaultRealtimeController', () => {
 
       // Break it.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.muteAndUnmuteLocalAudioCallbacks = undefined;
 
       rt.realtimeSubscribeToMuteAndUnmuteLocalAudio(_m => {});
@@ -1378,13 +1378,13 @@ describe('DefaultRealtimeController', () => {
     it('handles broken fatal callbacks', () => {
       // Break it.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      const state: RealtimeState = (rt as unknown as any).state as RealtimeState;
       state.fatalErrorCallbacks = undefined;
 
       const stub = sinon.stub();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ((rt as unknown) as any).onError = stub;
+      (rt as unknown as any).onError = stub;
 
       const cb = (): void => {
         throw new Error('bad');

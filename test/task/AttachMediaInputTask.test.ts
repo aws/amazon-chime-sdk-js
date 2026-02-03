@@ -51,7 +51,7 @@ describe('AttachMediaInputTask', () => {
           username: context.turnCredentials.username,
           credential: context.turnCredentials.password,
           credentialType: 'password',
-        },
+        } as RTCIceServer,
       ],
       iceTransportPolicy: 'relay',
     };
@@ -113,7 +113,8 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('sendrecv');
         expect(audioTransceiver.sender.track).to.equal(context.activeAudioInput.getTracks()[0]);
         done();
@@ -125,7 +126,8 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('inactive');
         expect(audioTransceiver.sender.track).to.equal(null);
         done();
@@ -136,7 +138,8 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('sendrecv');
         expect(videoTransceiver.sender.track).to.equal(context.activeVideoInput.getTracks()[0]);
         done();
@@ -148,7 +151,8 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('inactive');
         expect(videoTransceiver.sender.track).to.equal(null);
         done();
@@ -160,7 +164,8 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('inactive');
         expect(audioTransceiver.sender.track).to.equal(null);
         done();
@@ -172,7 +177,8 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('inactive');
         expect(videoTransceiver.sender.track).to.equal(null);
         done();
@@ -181,7 +187,8 @@ describe('AttachMediaInputTask', () => {
 
     it('sets the correct audio codec preference if audio redundancy is disabled', done => {
       task.run().then(() => {
-        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localAudioTransceiver();
         // @ts-ignore
         const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
         expect(audioTransceiverCodecs[0].mimeType).to.equal('audio/opus');
@@ -198,7 +205,8 @@ describe('AttachMediaInputTask', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.audioProfile = new AudioProfile();
       task.run().then(() => {
-        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localAudioTransceiver();
         // @ts-ignore
         const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
         expect(audioTransceiverCodecs[0].mimeType).to.equal('audio/red');
@@ -213,7 +221,8 @@ describe('AttachMediaInputTask', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.audioProfile = new AudioProfile();
       task.run().then(() => {
-        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localAudioTransceiver();
         // @ts-ignore
         const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
         expect(audioTransceiverCodecs.length).to.equal(0);

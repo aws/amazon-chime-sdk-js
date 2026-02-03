@@ -113,7 +113,6 @@ describe('CreatePeerConnectionTask', () => {
         expect(configuration.iceServers[0].urls).to.deep.equal(credentials.uris);
         expect(configuration.iceServers[0].username).to.equal(credentials.username);
         expect(configuration.iceServers[0].credential).to.equal(credentials.password);
-        expect(configuration.iceServers[0].credentialType).to.equal('password');
         expect(configuration.iceTransportPolicy).to.equal('relay');
         expect(configuration.bundlePolicy).to.equal(context.browserBehavior.requiresBundlePolicy());
         done();

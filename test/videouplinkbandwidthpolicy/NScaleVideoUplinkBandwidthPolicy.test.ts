@@ -445,6 +445,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
     });
 
     it('Do not scale resolution if there is no setting height info', () => {
+      domMockBuilder.cleanup();
       domMockBehavior.mediaStreamTrackSettings = {};
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       policy.setTransceiverController(transceiverController);
@@ -488,6 +489,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
     });
 
     it('Scale resolution with default value', () => {
+      domMockBuilder.cleanup();
       domMockBehavior.mediaStreamTrackSettings = {
         width: 540,
         height: 960,

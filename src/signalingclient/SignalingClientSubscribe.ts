@@ -19,7 +19,7 @@ export default class SignalingClientSubscribe {
    * @param audioCheckin Whether audio is in checked-in state
    * @param receiveStreamIds Which video streams to receive
    * @param localVideoEnabled Whether to send a video stream for the local camera
-   * @param array of local video stream description
+   * @param videoStreamDescriptions array of local video stream description
    * @param connectionTypeHasVideo Whether connection type has video
    * @param compressedSdpOffer Compressed version of the SDP offer which was created by WebRTC
    */

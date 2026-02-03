@@ -16,7 +16,8 @@ import BaseTask from './BaseTask';
 
 export default class SendAndReceiveDataMessagesTask
   extends BaseTask
-  implements RemovableObserver, SignalingClientObserver {
+  implements RemovableObserver, SignalingClientObserver
+{
   protected taskName = 'SendAndReceiveDataMessagesTask';
 
   private static TOPIC_REGEX = new RegExp(/^[a-zA-Z0-9_-]{1,36}$/);

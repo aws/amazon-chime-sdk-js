@@ -725,21 +725,7 @@ describe('MonitorTask', () => {
       context.audioVideoController.addObserver(new TestObserver());
       const connectionHealthData = new ConnectionHealthData();
       connectionHealthData.packetsReceivedInLastMinute = [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       ];
       task.connectionHealthDidChange(connectionHealthData);
 
@@ -760,21 +746,7 @@ describe('MonitorTask', () => {
 
       const connectionHealthData = new ConnectionHealthData();
       connectionHealthData.packetsReceivedInLastMinute = [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       ];
       task.connectionHealthDidChange(connectionHealthData);
 
@@ -803,21 +775,7 @@ describe('MonitorTask', () => {
       context.audioVideoController.addObserver(new TestObserver());
       const connectionHealthData = new ConnectionHealthData();
       connectionHealthData.packetsReceivedInLastMinute = [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       ];
       task.connectionHealthDidChange(connectionHealthData);
       expect(notifiedPoor).to.equal(1);
@@ -829,21 +787,7 @@ describe('MonitorTask', () => {
 
       new TimeoutScheduler(testConfig.cooldownTimeMs + 10).start(() => {
         connectionHealthData.packetsReceivedInLastMinute = [
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
-          10,
+          10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
         ];
 
         task.connectionHealthDidChange(connectionHealthData);
@@ -881,21 +825,7 @@ describe('MonitorTask', () => {
 
       const connectionHealthData = new ConnectionHealthData();
       connectionHealthData.packetsReceivedInLastMinute = [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       ];
       task.connectionHealthDidChange(connectionHealthData);
     });

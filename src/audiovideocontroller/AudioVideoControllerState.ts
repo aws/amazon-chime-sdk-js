@@ -116,10 +116,8 @@ export default class AudioVideoControllerState {
   // video update a differential message (i.e. only sending changes)
   //
   // This is stored as a map keyed by group ID for convenience
-  lastVideoSubscriptionConfiguration: Map<
-    number,
-    SignalingClientVideoSubscriptionConfiguration
-  > = new Map();
+  lastVideoSubscriptionConfiguration: Map<number, SignalingClientVideoSubscriptionConfiguration> =
+    new Map();
 
   // The video subscription limit is set by the backend and is subject to change in future.
   // This value is set in the `JoinAndReceiveIndexTask` when we process the `SdkJoinAckFrame`
