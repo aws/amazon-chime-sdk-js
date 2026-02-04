@@ -33,7 +33,7 @@
     "postbuild": "tsc -p config/tsconfig.import.json",
     "predoc": "rimraf docs && node script/build-guides.js",
     "doc": "ruby script/generate-docs",
-    "postdoc": "node script/update-typedoc-link.js",
+    "postdoc": "node script/postprocess-docs.js",
     "test": "npm run test:fast",
     "test:glob": "cross-env TS_NODE_PROJECT=test/tsconfig.json TS_NODE_CACHE=false nyc mocha --stack-trace-limit=1000  --async-stack-traces -v -r esm -rv ts-node/register -- ",
     "test:fast": "npm run test:glob \"test/**/*.test.ts\"",

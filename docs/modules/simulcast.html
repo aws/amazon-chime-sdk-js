@@ -1,0 +1,160 @@
+<!DOCTYPE html><html class="default" lang="en" data-base=".."><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Simulcast | amazon-chime-sdk-js</title><meta name="description" content="Documentation for amazon-chime-sdk-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search"><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">amazon-chime-sdk-js</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><ul class="tsd-breadcrumb"><li><a href="../modules.html">amazon-chime-sdk-js</a></li><li><a href="simulcast.html">Simulcast</a></li></ul><h1>Namespace Simulcast</h1></div><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography"><a id="video-simulcast" class="tsd-anchor"></a><h1 class="tsd-anchor-link">Video Simulcast<a href="#video-simulcast" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1><p>In multi-party video calls, attendees can enable the simulcast feature to enhance the overall video quality. Simulcast is a standardized technique where the video publishers create multiple renditions, or layers, of the same video source and video subscribers have the flexibility to choose the rendition that best fits their needs based on such factors as available bandwidth, compute and screen size.
+The uplink policy controls the configuration of the renditions through camera capture and encoding parameters. The simulcast-enabled uplink policy is <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>.</p>
+<p>Simulcast is currently disabled by default. To enable it <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers">MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers</a> must be set. Currently, only Chrome 76 and above is supported.</p>
+<p>When enabling simulcast, you should use <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy">VideoPriorityBasedPolicy</a> to allow switching between layers in response to application use-cases or network adaptation. More details about priority-based downlink policy can be
+found <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html">here</a>.</p>
+<ul>
+<li><a href="#video-simulcast">Video Simulcast</a>
+<ul>
+<li><a href="#details">Details</a>
+<ul>
+<li><a href="#simulcast-overview">Simulcast overview</a></li>
+<li><a href="#simulcast-resolutions-and-behavior">Simulcast resolutions and behavior</a></li>
+<li><a href="#downlink--bandwidth-policy">Downlink  Bandwidth Policy</a></li>
+<li><a href="#creating-a-simulcast-enabled-meeting">Creating a simulcast enabled meeting</a></li>
+<li><a href="#receive-upstream-simulcast-layer-change-notification">Receive upstream simulcast layer change notification</a></li>
+<li><a href="#custom-simulcast-policy">Custom Simulcast Policy</a></li>
+<li><a href="#enable-simulcast-for-content-share">Enable Simulcast For Content Share</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a id="details" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Details<a href="#details" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><a id="simulcast-overview" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Simulcast overview<a href="#simulcast-overview" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Simulcast support is built into the WebRTC library in the majority of browsers.  The video input resolution is used to initially configure the attributes and maximum number of allowed simulcast streams.  In WebRTC, if the RTCRtpSender is configured to have three layers of encoding, then the top layer is specified by the video input resolution. The resolution of the middle layer is scaled down by two vertically and horizontally by WebRTC. The lower layer is scaled down by four.  The WebRTC library supports a maximum of three simulcast layers, and only when the input resolution is 960x540 or higher will all three be available.</p>
+<p>The recommended resolution in JS SDK is 1280x720. This resolution will provide the most flexibility and allow subscribers to maintain smoother video quality transitions.  In certain circumstances, like mobile browsers, the input resolution may not be high enough to support all desired simulcast streams, so the logic will adapt appropriately to send as many as possible.</p>
+<p>The SimulcastUplinkPolicy configures RTCRtpSender to have three encoding layers, but only ever enables two of them.  Which two are enabled is based on a variety of factors.   Experiments show that configuring RTCRtpSender with three encoding layers up front and dynamically enabling and disabling layers provides a better experience and reduces the burden of having to dynamically  manage capture resolution and encoding parameters.</p>
+<a id="simulcast-resolutions-and-behavior" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Simulcast resolutions and behavior<a href="#simulcast-resolutions-and-behavior" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>WebRTC ultimately controls how much data is being sent to the network based on its bandwidth estimation algorithm. It's very hard to circumvent the estimated bandwidth or trick WebRTC into sending more than it estimates. Most browsers expose WebRTC peer connection statistics which developers can access to retrieve the estimated available bandwidths for uplink or downlink.</p>
+<p>The estimated available bandwidth reveals some information of the health of the E2E network and can trigger various WebRTC behaviors when facing network adversity or in recovering from a network glitch. SimulcastUplinkPolicy does its best to anticipate and react to the underlying WebRTC behavior and work with it to avoid further impact on the video quality of services.</p>
+<p>The SimulcastUplinkPolicy implements the following logic:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Publishers/Attendees</th>
+<th style="text-align:center">Estimated Uplink Bandwidth</th>
+<th style="text-align:center">Simulcast stream 1</th>
+<th style="text-align:center">Simulcast stream 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">Attendees &lt;= 2</td>
+<td style="text-align:center">Any</td>
+<td style="text-align:center">1280x720@15fps 1200 kbps</td>
+<td style="text-align:center">Not used</td>
+</tr>
+<tr>
+<td style="text-align:right">Publishers &lt;= 4 and</td>
+<td style="text-align:center">&gt;= 1000 kbps</td>
+<td style="text-align:center">1280x720@15fps 1200 kbps</td>
+<td style="text-align:center">320x180@15fps 300 kbps</td>
+</tr>
+<tr>
+<td style="text-align:right">Publishers  &lt;= 6 and</td>
+<td style="text-align:center">&gt;= 350 kbps</td>
+<td style="text-align:center">640x360@15fps 600 kbps</td>
+<td style="text-align:center">320x180@15fps 200 kbps</td>
+</tr>
+<tr>
+<td style="text-align:right">Publishers  &lt;= 6 and</td>
+<td style="text-align:center">&gt; 300 kbps</td>
+<td style="text-align:center">640x360@15fps 600 kbps</td>
+<td style="text-align:center">320x180@15fps 150 kbps</td>
+</tr>
+<tr>
+<td style="text-align:right">Publishers &gt; 6  and</td>
+<td style="text-align:center">&gt;= 350 kbps</td>
+<td style="text-align:center">640x360@15fps 350 kbps</td>
+<td style="text-align:center">320x180@15fps 200 kbps</td>
+</tr>
+<tr>
+<td style="text-align:right">Publishers &gt; 6  and</td>
+<td style="text-align:center">&gt;= 300 kbps</td>
+<td style="text-align:center">640x360@15fps 350 kbps</td>
+<td style="text-align:center">320x180@15fps 150 kbps</td>
+</tr>
+<tr>
+<td style="text-align:right">Any number publishers</td>
+<td style="text-align:center">&lt; 300 kbps</td>
+<td style="text-align:center">Not used</td>
+<td style="text-align:center">320x180@15fps 300 kbps</td>
+</tr>
+</tbody>
+</table>
+<p>The table entries represent the maximum configuration.  When CPU and bandwidth consumption is overused, WebRTC will dynamically adjust bitrate, disable a layer or scale down resolution. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.</p>
+<p>Note that simulcast is disabled when there are only 2 or fewer attendees.  This is because WebRTC has additional functionality to request lower bitrates from the remote end, and we will forward these requests if there are no competing receivers (i.e. if the receiving estimates it has 200kbps downlink bandwidth available, this will be sent and relayed in a message to the sending client).  Therefore there is no need for simulcast based adaption.</p>
+<a id="creating-a-simulcast-enabled-meeting" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Creating a simulcast enabled meeting<a href="#creating-a-simulcast-enabled-meeting" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>First, create a meeting session configuration.</p>
+<pre><code class="javascript"><span class="hl-2">import</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">ConsoleLogger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">DefaultDeviceController</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">DefaultMeetingSession</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">LogLevel</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">MeetingSessionConfiguration</span><br/><span class="hl-1">} </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">logger</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">ConsoleLogger</span><span class="hl-1">(</span><span class="hl-3">&#39;MyLogger&#39;</span><span class="hl-1">, </span><span class="hl-0">LogLevel</span><span class="hl-1">.</span><span class="hl-5">INFO</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">deviceController</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultDeviceController</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">);</span><br/><br/><span class="hl-7">// You need responses from server-side Chime API. See &#39;Getting responses from your server application&#39; in the README.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">meetingResponse</span><span class="hl-1"> = </span><span class="hl-7">// The response from the CreateMeeting API action.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">attendeeResponse</span><span class="hl-1"> = </span><span class="hl-7">// The response from the CreateAttendee or BatchCreateAttendee API action.</span><br/><br/><span class="hl-7">// This meeting session configuration will be used to enable simulcast in the next step.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">configuration</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">MeetingSessionConfiguration</span><span class="hl-1">(</span><span class="hl-0">meetingResponse</span><span class="hl-1">, </span><span class="hl-0">attendeeResponse</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Now enable <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> feature flag
+in the created <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html">MeetingSessionConfiguration</a>.</p>
+<pre><code class="javascript"><span class="hl-0">configuration</span><span class="hl-1">.</span><span class="hl-0">enableSimulcastForUnifiedPlanChromiumBasedBrowsers</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><br/><span class="hl-7">// Specify the apdative probe downlink policy</span><br/><span class="hl-0">configuration</span><span class="hl-1">.</span><span class="hl-0">videoDownlinkBandwidthPolicy</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">VideoPriorityBasedPolicy</span><span class="hl-1">(</span><span class="hl-0">logger</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Now create a meeting session with the simulcast enabled meeting session configuration.</p>
+<pre><code class="javascript"><span class="hl-7">// In the examples below, you will use this meetingSession object.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">meetingSession</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultMeetingSession</span><span class="hl-1">(</span><br/><span class="hl-1">  </span><span class="hl-0">configuration</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">logger</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">deviceController</span><br/><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<p>This <code>meetingSession</code> is now simulcast enabled and will have the <code>videoUplinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultsimulcastuplinkPolicy.html">DefaultSimulcastUplinkPolicy</a>. Due to these policies, the local and remote video resolutions may change. The video resolution depends on the available simulcast streams. The available simlucast streams are dependent on the number of attendees and the current bandwidth estimations. Check &quot;Simulcast resolutions and behavior&quot; section in this guide for more information.</p>
+<a id="receive-upstream-simulcast-layer-change-notification" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Receive upstream simulcast layer change notification<a href="#receive-upstream-simulcast-layer-change-notification" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>The active simulcast streams are represented by the <a href="https://aws.github.io/amazon-chime-sdk-js/enums/simulcastlayers.html">SimulcastLayers</a> enum. Currently, the active upstream simulcast layers will only be either &quot;Low and High&quot;, or &quot;Low and Medium&quot; or &quot;Low&quot;. To receive upstream simulcast layer change notification do the following steps:</p>
+<ul>
+<li>
+<p>Implement the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingsimulcastlayersdidchange">encodingSimulcastLayersDidChange</a> method from the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a> interface.</p>
+</li>
+<li>
+<p>Then, add an instance of the <code>AudioVideoObserver</code> using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addobserver">addObserver</a> method so you can receive the changed simulcast layer notification.</p>
+</li>
+<li>
+<p>Now when you are in a simulcast enabled meeting and your upstream simulcast layer is changed, you will be notified in the <code>encodingSimulcastLayersDidChange</code> callback with the updated simulcast layer.</p>
+</li>
+</ul>
+<pre><code class="javascript"><span class="hl-2">import</span><span class="hl-1"> { </span><span class="hl-0">SimulcastLayers</span><span class="hl-1"> } </span><span class="hl-2">from</span><span class="hl-1"> </span><span class="hl-3">&#39;amazon-chime-sdk-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">SimulcastLayersMapping</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.Low]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Low&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.LowAndMedium]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Low and Medium&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.LowAndHigh]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Low and High&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.Medium]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Medium&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.MediumAndHigh]:</span><span class="hl-1"> </span><span class="hl-3">&#39;Medium and High&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">[SimulcastLayers.High]:</span><span class="hl-1"> </span><span class="hl-3">&#39;High&#39;</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">observer</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-6">encodingSimulcastLayersDidChange</span><span class="hl-0">:</span><span class="hl-1"> </span><span class="hl-0">simulcastLayers</span><span class="hl-1"> </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`current active simulcast layers changed to: </span><span class="hl-4">${</span><span class="hl-0">SimulcastLayersMapping</span><span class="hl-9">[</span><span class="hl-0">simulcastLayers</span><span class="hl-9">]</span><span class="hl-4">}</span><span class="hl-3">`</span><span class="hl-1">);</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">addObserver</span><span class="hl-1">(</span><span class="hl-0">observer</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<a id="custom-simulcast-policy" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Custom Simulcast Policy<a href="#custom-simulcast-policy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>If the default simulcast uplink policy does not work for you, you can create your own simulcast video uplink policy
+by implementing <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>
+and set the video uplink policy via <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy">MeetingSessionConfiguration.videoUplinkBandwidthPolicy</a>.</p>
+<pre><code class="typescript"><span class="hl-2">export</span><span class="hl-1"> </span><span class="hl-2">default</span><span class="hl-1"> </span><span class="hl-4">class</span><span class="hl-1"> </span><span class="hl-12">MySimulcastUplinkPolicy</span><span class="hl-1"> </span><span class="hl-4">implements</span><span class="hl-1"> </span><span class="hl-12">SimulcastUplinkPolicy</span><span class="hl-1"> {</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">browserBehavior</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">DefaultBrowserBehavior</span><span class="hl-1">();</span><br/><br/><span class="hl-2">if</span><span class="hl-1"> (</span><span class="hl-0">browserBehavior</span><span class="hl-1">.</span><span class="hl-6">isSimulcastSupported</span><span class="hl-1">()) {</span><br/><span class="hl-1">  </span><span class="hl-0">meetingConfiguration</span><span class="hl-1">.</span><span class="hl-0">enableSimulcastForUnifiedPlanChromiumBasedBrowsers</span><span class="hl-1"> = </span><span class="hl-4">true</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><span class="hl-0">meetingConfiguration</span><span class="hl-1">.</span><span class="hl-0">videoUplinkBandwidthPolicy</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">MySimulcastUplinkPolicy</span><span class="hl-1">();</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<a id="enable-simulcast-for-content-share" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Enable Simulcast For Content Share<a href="#enable-simulcast-for-content-share" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>You can use <code>enableSimulcastForContentShare</code> to toggle simulcast on/off for content share. Note that you don't have
+to set <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> yourself as this configuration will be set automatically
+for content share attendee as part of <code>enableSimulcastForContentShare</code>.</p>
+<pre><code class="js"><span class="hl-7">// Enable simulcast</span><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">enableSimulcastForContentShare</span><span class="hl-1">(</span><span class="hl-4">true</span><span class="hl-1">);</span><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">startContentShareFromScreenCapture</span><span class="hl-1">();</span><br/><br/><span class="hl-7">// Disable simulcast</span><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">enableSimulcastForContentShare</span><span class="hl-1">(</span><span class="hl-4">false</span><span class="hl-1">);</span><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">startContentShareFromScreenCapture</span><span class="hl-1">();</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Below is the default simulcast encoding parameters:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Encoding Parameters</th>
+<th style="text-align:center">Simulcast stream 1</th>
+<th style="text-align:center">Simulcast stream 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Max bitrate</td>
+<td style="text-align:center">1200 kbps</td>
+<td style="text-align:center">300 kbps</td>
+</tr>
+<tr>
+<td style="text-align:center">Scale resolution down by</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+</tr>
+<tr>
+<td style="text-align:center">Max framerate</td>
+<td style="text-align:center">Same as capture framerate (default is 15fps)</td>
+<td style="text-align:center">5</td>
+</tr>
+</tbody>
+</table>
+<p>You can override the encoding parameters to tailor to the type of content.
+For example, for motion content, you may want to scale resolution down more but keep a high framerate for the low
+quality layer but for static content, you may want to only reduce the framerate and keep a high resolution.</p>
+<pre><code class="js"><span class="hl-7">// Enable simulcast and override the low layer encoding parameters</span><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">enableSimulcastForContentShare</span><span class="hl-1">(</span><span class="hl-4">true</span><span class="hl-1">, {</span><br/><span class="hl-1">  </span><span class="hl-0">low:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">maxBitrateKbps:</span><span class="hl-1"> </span><span class="hl-10">350</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">scaleResolutionDownBy:</span><span class="hl-1"> </span><span class="hl-10">4</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">maxFramerate:</span><span class="hl-1"> </span><span class="hl-10">10</span><span class="hl-1">,</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">});</span><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">meetingSession</span><span class="hl-1">.</span><span class="hl-0">audioVideo</span><span class="hl-1">.</span><span class="hl-6">startContentShareFromScreenCapture</span><span class="hl-1">();</span>
+</code><button type="button">Copy</button></pre>
+
+<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Simulcast%20feedback">Give feedback on this guide</a></p>
+</div><div class="tsd-comment tsd-typography"></div></section></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#video-simulcast"><span>Video <wbr/>Simulcast</span></a><ul><li><a href="#details"><span>Details</span></a></li><li><ul><li><a href="#simulcast-overview"><span>Simulcast overview</span></a></li><li><a href="#simulcast-resolutions-and-behavior"><span>Simulcast resolutions and behavior</span></a></li><li><a href="#creating-a-simulcast-enabled-meeting"><span>Creating a simulcast enabled meeting</span></a></li><li><a href="#receive-upstream-simulcast-layer-change-notification"><span>Receive upstream simulcast layer change notification</span></a></li><li><a href="#custom-simulcast-policy"><span>Custom <wbr/>Simulcast <wbr/>Policy</span></a></li><li><a href="#enable-simulcast-for-content-share"><span>Enable <wbr/>Simulcast <wbr/>For <wbr/>Content <wbr/>Share</span></a></li></ul></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="../modules.html">amazon-chime-sdk-js</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
