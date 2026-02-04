@@ -91,7 +91,8 @@ export default class SetLocalDescriptionTask extends BaseTask {
 
       if (this.context.enableAudioRedundancy()) {
         const audioPayloadMap = new SDP(sdp).getAudioPayloadTypes();
-        const redManager = this.context.encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
+        const redManager =
+          this.context.encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
         if (redManager) {
           redManager.setAudioPayloadTypes(audioPayloadMap);
         }

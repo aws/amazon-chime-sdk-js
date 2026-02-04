@@ -6312,7 +6312,9 @@ describe('DefaultAudioVideoController', () => {
       mockManager.triggerFailure(new Error('Worker failed'));
       await delay(defaultDelay);
       expect(reconnectCalled).to.be.true;
-      expect(capturedStatus?.statusCode()).to.equal(MeetingSessionStatusCode.EncodedTransformManagerFailed);
+      expect(capturedStatus?.statusCode()).to.equal(
+        MeetingSessionStatusCode.EncodedTransformManagerFailed
+      );
       await stop();
     });
 

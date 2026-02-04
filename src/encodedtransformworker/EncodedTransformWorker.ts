@@ -45,10 +45,20 @@ export default class EncodedTransformWorker {
 
     // Check the DedicatedWorkerGlobalScope for existence of RTCRtpScriptTransformer interface. If exists, then
     // RTCRtpScriptTransform is supported by this browser.
-    // @ts-ignore
+    // @ts-ignore - RTCRtpScriptTransformer may not be in all TS lib.dom.d.ts versions
     if (self.RTCRtpScriptTransformer) {
-      // @ts-ignore
-      self.onrtctransform = (event: RTCTransformEvent) => {
+      // @ts-ignore - onrtctransform may not be in all TS lib.dom.d.ts versions
+      self.onrtctransform = (event: {
+        transformer: {
+          readable: ReadableStream;
+          writable: WritableStream;
+          options: {
+            operation: string;
+            mediaType: string;
+            disabledTransforms?: DisabledEncodedTransformsConfiguration;
+          };
+        };
+      }) => {
         const transformer = event.transformer;
         const options = transformer.options;
         const disabledTransforms: DisabledEncodedTransformsConfiguration =
@@ -138,7 +148,6 @@ export default class EncodedTransformWorker {
    * @param msg The message to log
    */
   static log(msg: string): void {
-    // @ts-ignore
     self.postMessage({
       type: COMMON_MESSAGE_TYPES.LOG,
       transformName: 'EncodedTransformWorker',
@@ -153,8 +162,7 @@ export default class EncodedTransformWorker {
    * @param disabledTransforms Configuration for disabled transforms
    */
   private static setupAudioSenderPipeline(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformer: any,
+    transformer: { readable: ReadableStream; writable: WritableStream },
     disabledTransforms: DisabledEncodedTransformsConfiguration
   ): void {
     const metricsTransform = new TransformStream({
@@ -183,8 +191,10 @@ export default class EncodedTransformWorker {
    * Sets up video sender pipeline: encoder → metrics → network.
    * @param transformer The RTCRtpScriptTransformer or legacy streams object
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static setupVideoSenderPipeline(transformer: any): void {
+  private static setupVideoSenderPipeline(transformer: {
+    readable: ReadableStream;
+    writable: WritableStream;
+  }): void {
     const metricsTransform = new TransformStream({
       transform: EncodedTransformWorker.videoSenderMetricsTransform!.transform.bind(
         EncodedTransformWorker.videoSenderMetricsTransform
@@ -200,8 +210,7 @@ export default class EncodedTransformWorker {
    * @param disabledTransforms Configuration for disabled transforms
    */
   private static setupAudioReceiverPipeline(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformer: any,
+    transformer: { readable: ReadableStream; writable: WritableStream },
     disabledTransforms: DisabledEncodedTransformsConfiguration
   ): void {
     const metricsTransform = new TransformStream({
@@ -214,9 +223,10 @@ export default class EncodedTransformWorker {
       transformer.readable.pipeThrough(metricsTransform).pipeTo(transformer.writable);
     } else {
       const redDecodeTransform = new TransformStream({
-        transform: EncodedTransformWorker.redundantAudioEncodedTransform!.receivePacketLogTransform.bind(
-          EncodedTransformWorker.redundantAudioEncodedTransform
-        ),
+        transform:
+          EncodedTransformWorker.redundantAudioEncodedTransform!.receivePacketLogTransform.bind(
+            EncodedTransformWorker.redundantAudioEncodedTransform
+          ),
       });
 
       transformer.readable
@@ -230,8 +240,10 @@ export default class EncodedTransformWorker {
    * Sets up video receiver pipeline: network → metrics → decoder.
    * @param transformer The RTCRtpScriptTransformer or legacy streams object
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static setupVideoReceiverPipeline(transformer: any): void {
+  private static setupVideoReceiverPipeline(transformer: {
+    readable: ReadableStream;
+    writable: WritableStream;
+  }): void {
     const metricsTransform = new TransformStream({
       transform: EncodedTransformWorker.videoReceiverMetricsTransform!.transform.bind(
         EncodedTransformWorker.videoReceiverMetricsTransform

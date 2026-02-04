@@ -138,12 +138,12 @@ describe('SetLocalDescriptionTask', () => {
       context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
       context.audioProfile = new AudioProfile(null, true);
       const setAudioPayloadTypesSpy = sinon.stub();
-      context.encodedTransformWorkerManager = ({
+      context.encodedTransformWorkerManager = {
         isEnabled: () => true,
         redundantAudioEncodeTransformManager: () => ({
           setAudioPayloadTypes: setAudioPayloadTypesSpy,
         }),
-      } as unknown) as EncodedTransformWorkerManager;
+      } as unknown as EncodedTransformWorkerManager;
       await task.run();
       expect(setAudioPayloadTypesSpy.calledOnce).to.be.true;
     });
@@ -164,9 +164,9 @@ describe('SetLocalDescriptionTask', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
       context.audioProfile = new AudioProfile(null, true);
-      context.encodedTransformWorkerManager = ({
+      context.encodedTransformWorkerManager = {
         isEnabled: () => false,
-      } as unknown) as EncodedTransformWorkerManager;
+      } as unknown as EncodedTransformWorkerManager;
       await task.run();
     });
 
@@ -176,11 +176,11 @@ describe('SetLocalDescriptionTask', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.sdpOfferInit = { type: 'offer', sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO };
       context.audioProfile = new AudioProfile(null, true);
-      context.encodedTransformWorkerManager = ({
+      context.encodedTransformWorkerManager = {
         isEnabled: () => true,
         // @ts-ignore
         redundantAudioEncodeTransformManager: () => null,
-      } as unknown) as EncodedTransformWorkerManager;
+      } as unknown as EncodedTransformWorkerManager;
       // Should not throw
       await task.run();
     });

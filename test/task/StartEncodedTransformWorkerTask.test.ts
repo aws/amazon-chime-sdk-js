@@ -119,7 +119,7 @@ describe('StartEncodedTransformWorkerTask', () => {
         isEnabled: () => true,
         start: sinon.stub().resolves(),
         redundantAudioEncodeTransformManager: () =>
-          (mockRedundantManager as unknown) as RedundantAudioEncodedTransformManager,
+          mockRedundantManager as unknown as RedundantAudioEncodedTransformManager,
         metricsTransformManager: () => null,
       };
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
@@ -155,7 +155,7 @@ describe('StartEncodedTransformWorkerTask', () => {
         isEnabled: () => true,
         start: sinon.stub().resolves(),
         redundantAudioEncodeTransformManager: () =>
-          (mockRedundantManager as unknown) as RedundantAudioEncodedTransformManager,
+          mockRedundantManager as unknown as RedundantAudioEncodedTransformManager,
         metricsTransformManager: () => null,
       };
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
@@ -189,7 +189,7 @@ describe('StartEncodedTransformWorkerTask', () => {
         isEnabled: () => true,
         start: sinon.stub().resolves(),
         redundantAudioEncodeTransformManager: () =>
-          (mockRedundantManager as unknown) as RedundantAudioEncodedTransformManager,
+          mockRedundantManager as unknown as RedundantAudioEncodedTransformManager,
         metricsTransformManager: () => null,
       };
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
@@ -210,11 +210,11 @@ describe('StartEncodedTransformWorkerTask', () => {
         start: sinon.stub().resolves(),
         redundantAudioEncodeTransformManager: () => null,
         metricsTransformManager: () =>
-          (mockMetricsManager as unknown) as MediaMetricsTransformManager,
+          mockMetricsManager as unknown as MediaMetricsTransformManager,
       };
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
       context.audioProfile = new AudioProfile(null, false);
-      context.statsCollector = (mockStatsCollector as unknown) as StatsCollector;
+      context.statsCollector = mockStatsCollector as unknown as StatsCollector;
 
       await task.run();
 
@@ -232,7 +232,7 @@ describe('StartEncodedTransformWorkerTask', () => {
       };
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
       context.audioProfile = new AudioProfile(null, false);
-      context.statsCollector = (mockStatsCollector as unknown) as StatsCollector;
+      context.statsCollector = mockStatsCollector as unknown as StatsCollector;
 
       // Should not throw
       await task.run();
@@ -247,7 +247,7 @@ describe('StartEncodedTransformWorkerTask', () => {
         start: sinon.stub().resolves(),
         redundantAudioEncodeTransformManager: () => null,
         metricsTransformManager: () =>
-          (mockMetricsManager as unknown) as MediaMetricsTransformManager,
+          mockMetricsManager as unknown as MediaMetricsTransformManager,
       };
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
       context.audioProfile = new AudioProfile(null, false);
@@ -267,12 +267,12 @@ describe('StartEncodedTransformWorkerTask', () => {
         isEnabled: () => true,
         start: sinon.stub().resolves(),
         redundantAudioEncodeTransformManager: () =>
-          (mockRedundantManager as unknown) as RedundantAudioEncodedTransformManager,
+          mockRedundantManager as unknown as RedundantAudioEncodedTransformManager,
         metricsTransformManager: () => null,
       };
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
       context.audioProfile = new AudioProfile(null, false);
-      context.statsCollector = (mockStatsCollector as unknown) as StatsCollector;
+      context.statsCollector = mockStatsCollector as unknown as StatsCollector;
 
       await task.run();
 
@@ -288,7 +288,7 @@ describe('StartEncodedTransformWorkerTask', () => {
         isEnabled: () => true,
         start: sinon.stub().resolves(),
         redundantAudioEncodeTransformManager: () =>
-          (mockRedundantManager as unknown) as RedundantAudioEncodedTransformManager,
+          mockRedundantManager as unknown as RedundantAudioEncodedTransformManager,
         metricsTransformManager: () => null,
       };
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;

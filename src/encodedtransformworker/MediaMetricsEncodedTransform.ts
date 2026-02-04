@@ -45,8 +45,10 @@ abstract class BaseMetricsTransform extends EncodedTransform {
   protected abstract transformName(): string;
 
   /** Processes frames, collects per-SSRC metrics, and forwards unchanged. */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transform(frame: any, controller: any): void {
+  transform(
+    frame: RTCEncodedAudioFrame | RTCEncodedVideoFrame,
+    controller: TransformStreamDefaultController<RTCEncodedAudioFrame | RTCEncodedVideoFrame>
+  ): void {
     const ssrc = frame.getMetadata?.().synchronizationSource || 0;
 
     // Get or create metrics for this SSRC
@@ -56,7 +58,6 @@ abstract class BaseMetricsTransform extends EncodedTransform {
       this.metricsMap.set(ssrc, metrics);
       this.log(`Created metrics for SSRC ${ssrc}`);
 
-      // @ts-ignore
       self.postMessage({
         type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
         transformName: this.transformName(),
@@ -85,7 +86,6 @@ abstract class BaseMetricsTransform extends EncodedTransform {
       metricsObject[ssrc] = { ssrc, ...metrics };
     }
 
-    // @ts-ignore
     self.postMessage({
       type: COMMON_MESSAGE_TYPES.METRICS,
       transformName: this.transformName(),

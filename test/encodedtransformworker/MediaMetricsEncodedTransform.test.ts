@@ -51,10 +51,12 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
-      expect(controller.enqueue.calledOnceWith(frame)).to.be.true;
+      transform.transform(frame as RTCEncodedAudioFrame, controller);
+      expect((controller.enqueue as sinon.SinonStub).calledOnceWith(frame)).to.be.true;
     });
 
     it('creates metrics for new SSRC and posts NEW_SSRC message', () => {
@@ -63,9 +65,11 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
+      transform.transform(frame as RTCEncodedAudioFrame, controller);
 
       const newSsrcCall = postMessageStub
         .getCalls()
@@ -82,14 +86,16 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
       // Process first frame - no metrics report yet
-      transform.transform(frame, controller);
+      transform.transform(frame as RTCEncodedAudioFrame, controller);
 
       // Advance time by 500ms and process another frame to trigger report
       clock.tick(500);
-      transform.transform(frame, controller);
+      transform.transform(frame as RTCEncodedAudioFrame, controller);
 
       const metricsCall = postMessageStub
         .getCalls()
@@ -105,11 +111,13 @@ describe('MediaMetricsEncodedTransform', () => {
         data: new ArrayBuffer(10),
         timestamp: 12345,
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
       // @ts-ignore - testing missing getMetadata
       transform.transform(frame, controller);
-      expect(controller.enqueue.calledOnce).to.be.true;
+      expect((controller.enqueue as sinon.SinonStub).calledOnce).to.be.true;
     });
 
     it('handles frames with getMetadata returning no synchronizationSource', () => {
@@ -118,10 +126,12 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({}),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
-      expect(controller.enqueue.calledOnce).to.be.true;
+      transform.transform(frame as RTCEncodedAudioFrame, controller);
+      expect((controller.enqueue as sinon.SinonStub).calledOnce).to.be.true;
     });
 
     it('tracks multiple SSRCs separately', () => {
@@ -135,10 +145,12 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12346,
         getMetadata: () => ({ synchronizationSource: 222 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame1, controller);
-      transform.transform(frame2, controller);
+      transform.transform(frame1 as RTCEncodedAudioFrame, controller);
+      transform.transform(frame2 as RTCEncodedAudioFrame, controller);
 
       const newSsrcCalls = postMessageStub
         .getCalls()
@@ -160,10 +172,12 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
-      expect(controller.enqueue.calledOnceWith(frame)).to.be.true;
+      transform.transform(frame as RTCEncodedAudioFrame, controller);
+      expect((controller.enqueue as sinon.SinonStub).calledOnceWith(frame)).to.be.true;
     });
 
     it('uses correct transform name', () => {
@@ -172,9 +186,11 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
+      transform.transform(frame as RTCEncodedAudioFrame, controller);
 
       const newSsrcCall = postMessageStub
         .getCalls()
@@ -196,10 +212,12 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
-      expect(controller.enqueue.calledOnceWith(frame)).to.be.true;
+      transform.transform(frame as RTCEncodedVideoFrame, controller);
+      expect((controller.enqueue as sinon.SinonStub).calledOnceWith(frame)).to.be.true;
     });
 
     it('uses correct transform name', () => {
@@ -208,9 +226,11 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
+      transform.transform(frame as RTCEncodedVideoFrame, controller);
 
       const newSsrcCall = postMessageStub
         .getCalls()
@@ -232,10 +252,12 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
-      expect(controller.enqueue.calledOnceWith(frame)).to.be.true;
+      transform.transform(frame as RTCEncodedVideoFrame, controller);
+      expect((controller.enqueue as sinon.SinonStub).calledOnceWith(frame)).to.be.true;
     });
 
     it('uses correct transform name', () => {
@@ -244,9 +266,11 @@ describe('MediaMetricsEncodedTransform', () => {
         timestamp: 12345,
         getMetadata: () => ({ synchronizationSource: 1234567890 }),
       };
-      const controller = { enqueue: sinon.stub() };
+      const controller = { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController<
+        RTCEncodedAudioFrame | RTCEncodedVideoFrame
+      >;
 
-      transform.transform(frame, controller);
+      transform.transform(frame as RTCEncodedVideoFrame, controller);
 
       const newSsrcCall = postMessageStub
         .getCalls()

@@ -417,12 +417,12 @@ describe('DefaultEncodedTransformWorkerManager', () => {
       };
       manager.addObserver(observer);
       // @ts-ignore
-      manager['worker'].onerror(({
+      manager['worker'].onerror({
         message: 'Test error',
         filename: 'test.js',
         lineno: 1,
         colno: 1,
-      } as unknown) as ErrorEvent);
+      } as unknown as ErrorEvent);
       expect(manager.isEnabled()).to.be.false;
       expect((observer.onEncodedTransformWorkerManagerFailed as sinon.SinonStub).calledOnce).to.be
         .true;
@@ -436,12 +436,12 @@ describe('DefaultEncodedTransformWorkerManager', () => {
         },
       });
       // @ts-ignore
-      manager['worker'].onerror(({
+      manager['worker'].onerror({
         message: 'Test error',
         filename: 'test.js',
         lineno: 1,
         colno: 1,
-      } as unknown) as ErrorEvent);
+      } as unknown as ErrorEvent);
     });
   });
 });

@@ -870,9 +870,9 @@ describe('CreatePeerConnectionTask', () => {
 
       context.audioProfile = new AudioProfile(null, true);
       // Set up mock encodedTransformWorkerManager
-      context.encodedTransformWorkerManager = ({
+      context.encodedTransformWorkerManager = {
         isEnabled: () => true,
-      } as unknown) as EncodedTransformWorkerManager;
+      } as unknown as EncodedTransformWorkerManager;
       task = new CreatePeerConnectionTask(context);
 
       await task.run();
@@ -893,9 +893,9 @@ describe('CreatePeerConnectionTask', () => {
       context.browserBehavior = new DefaultBrowserBehavior();
 
       context.audioProfile = new AudioProfile(null, true);
-      context.encodedTransformWorkerManager = ({
+      context.encodedTransformWorkerManager = {
         isEnabled: () => true,
-      } as unknown) as EncodedTransformWorkerManager;
+      } as unknown as EncodedTransformWorkerManager;
       task = new CreatePeerConnectionTask(context);
 
       await task.run();
@@ -969,9 +969,9 @@ describe('CreatePeerConnectionTask', () => {
       delete window.RTCRtpScriptTransform;
 
       context.audioProfile = new AudioProfile(null, true);
-      context.encodedTransformWorkerManager = ({
+      context.encodedTransformWorkerManager = {
         isEnabled: () => false,
-      } as unknown) as EncodedTransformWorkerManager;
+      } as unknown as EncodedTransformWorkerManager;
       task = new CreatePeerConnectionTask(context);
 
       await task.run();

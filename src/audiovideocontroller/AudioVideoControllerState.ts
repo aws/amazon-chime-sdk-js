@@ -204,9 +204,8 @@ export default class AudioVideoControllerState {
    * and the encoded transform worker manager to be enabled.
    */
   enableAudioRedundancy(): boolean {
-    return (
-      this.audioProfile?.hasRedundancyEnabled() &&
-      !!this.encodedTransformWorkerManager?.isEnabled()
+    return !!(
+      this.audioProfile?.hasRedundancyEnabled() && this.encodedTransformWorkerManager?.isEnabled()
     );
   }
 

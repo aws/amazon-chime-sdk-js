@@ -206,9 +206,9 @@ describe('AttachMediaInputTask', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.audioProfile = new AudioProfile();
       // Set up mock encodedTransformWorkerManager
-      context.encodedTransformWorkerManager = ({
+      context.encodedTransformWorkerManager = {
         isEnabled: () => true,
-      } as unknown) as EncodedTransformWorkerManager;
+      } as unknown as EncodedTransformWorkerManager;
       task.run().then(() => {
         const audioTransceiver: RTCRtpTransceiver =
           context.transceiverController.localAudioTransceiver();
@@ -227,7 +227,8 @@ describe('AttachMediaInputTask', () => {
       context.audioProfile = new AudioProfile();
       // encodedTransformWorkerManager is undefined
       task.run().then(() => {
-        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localAudioTransceiver();
         // @ts-ignore
         const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
         // RED should not be first since encodedTransformWorkerManager is not enabled
@@ -242,11 +243,12 @@ describe('AttachMediaInputTask', () => {
       domMockBehavior.supportsAudioRedCodec = true;
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.audioProfile = new AudioProfile();
-      context.encodedTransformWorkerManager = ({
+      context.encodedTransformWorkerManager = {
         isEnabled: () => false,
-      } as unknown) as EncodedTransformWorkerManager;
+      } as unknown as EncodedTransformWorkerManager;
       task.run().then(() => {
-        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver =
+          context.transceiverController.localAudioTransceiver();
         // @ts-ignore
         const audioTransceiverCodecs: RTCRtpCodecCapability[] = audioTransceiver['codecs'];
         // RED should not be first since encodedTransformWorkerManager is disabled

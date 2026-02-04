@@ -43,8 +43,10 @@ export default abstract class EncodedTransform {
   /**
    * Processes an encoded frame. Implements TransformStream transformer interface.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  abstract transform(frame: any, controller: any): void;
+  abstract transform(
+    frame: RTCEncodedAudioFrame | RTCEncodedVideoFrame,
+    controller: TransformStreamDefaultController<RTCEncodedAudioFrame | RTCEncodedVideoFrame>
+  ): void;
 
   /**
    * Handles configuration messages from the main thread. Override in subclasses.
@@ -56,7 +58,6 @@ export default abstract class EncodedTransform {
   protected log(message: string): void {
     if (!this.shouldLog) return;
 
-    // @ts-ignore
     self.postMessage({
       type: COMMON_MESSAGE_TYPES.LOG,
       transformName: this.transformName(),

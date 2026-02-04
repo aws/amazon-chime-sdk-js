@@ -1119,13 +1119,13 @@ describe('DefaultTransceiverController', () => {
         transform: undefined as unknown,
       };
       // Create a mock track event object (RTCTrackEvent constructor not available in test env)
-      const trackEvent = ({
+      const trackEvent = {
         type: 'track',
         track: videoTrack,
         receiver: mockReceiver,
         transceiver: peer.getTransceivers()[0],
         streams: [],
-      } as unknown) as RTCTrackEvent;
+      } as unknown as RTCTrackEvent;
 
       // Trigger the track event handler
       tcWithManager['handleTrack'](trackEvent);
@@ -1167,13 +1167,13 @@ describe('DefaultTransceiverController', () => {
         transform: {}, // Transform already set
       };
       // Create a mock track event object (RTCTrackEvent constructor not available in test env)
-      const trackEvent = ({
+      const trackEvent = {
         type: 'track',
         track: videoTrack,
         receiver: mockReceiver,
         transceiver: peer.getTransceivers()[0],
         streams: [],
-      } as unknown) as RTCTrackEvent;
+      } as unknown as RTCTrackEvent;
 
       // Trigger the track event handler
       tcWithManager['handleTrack'](trackEvent);
@@ -1213,13 +1213,13 @@ describe('DefaultTransceiverController', () => {
         track: audioTrack,
         transform: undefined as unknown,
       };
-      const trackEvent = ({
+      const trackEvent = {
         type: 'track',
         track: audioTrack,
         receiver: mockReceiver,
         transceiver: peer.getTransceivers()[0],
         streams: [],
-      } as unknown) as RTCTrackEvent;
+      } as unknown as RTCTrackEvent;
 
       tcWithManager['handleTrack'](trackEvent);
 
@@ -1247,13 +1247,13 @@ describe('DefaultTransceiverController', () => {
         track: videoTrack,
         transform: undefined as unknown,
       };
-      const trackEvent = ({
+      const trackEvent = {
         type: 'track',
         track: videoTrack,
         receiver: mockReceiver,
         transceiver: peer.getTransceivers()[0],
         streams: [],
-      } as unknown) as RTCTrackEvent;
+      } as unknown as RTCTrackEvent;
 
       // Should not throw when encodedTransformWorkerManager is undefined
       tcWithoutManager['handleTrack'](trackEvent);

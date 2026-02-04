@@ -704,7 +704,8 @@ export default class StatsCollector
       totalAudioPacketsRecoveredFec: this.redRecoveryMetricReport.totalAudioPacketsRecoveredFec,
     });
 
-    this.lastRedRecoveryMetricReportConsumedTimestampMs = this.redRecoveryMetricReport.currentTimestampMs;
+    this.lastRedRecoveryMetricReportConsumedTimestampMs =
+      this.redRecoveryMetricReport.currentTimestampMs;
   }
 
   /**

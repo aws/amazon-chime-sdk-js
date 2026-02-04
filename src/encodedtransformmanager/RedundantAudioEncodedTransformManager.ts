@@ -30,7 +30,8 @@ export interface RedundantAudioMetrics {
  */
 export default class RedundantAudioEncodedTransformManager
   extends EncodedTransformManager
-  implements AudioVideoObserver {
+  implements AudioVideoObserver
+{
   private numRedundantEncodings: number = 0;
   private redundancyEnabled: boolean = true;
   private metrics: RedundantAudioMetrics = {
@@ -223,10 +224,8 @@ export default class RedundantAudioEncodedTransformManager
     // number of encodings on loss recovery.
     const maxLossPercent = Math.max(lossPercent5sTimewindow, lossPercent15sTimewindow);
 
-    const [
-      newNumRedundantEncodings,
-      shouldTurnOffRed,
-    ] = RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(maxLossPercent);
+    const [newNumRedundantEncodings, shouldTurnOffRed] =
+      RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(maxLossPercent);
 
     if (shouldTurnOffRed) {
       this.lastHighPacketLossEventTimestampMs = currentTimestampMs;
@@ -266,15 +265,12 @@ export default class RedundantAudioEncodedTransformManager
     if (this.audioMetricsHistory.length < 2) {
       return 0;
     }
-    const latestReceiverReportTimestampMs: number = this.audioMetricsHistory[
-      this.audioMetricsHistory.length - 1
-    ].timestampMs;
-    const currentTotalPacketsSent: number = this.audioMetricsHistory[
-      this.audioMetricsHistory.length - 1
-    ].totalPacketsSent;
-    const currentTotalPacketsLost: number = this.audioMetricsHistory[
-      this.audioMetricsHistory.length - 1
-    ].totalPacketsLost;
+    const latestReceiverReportTimestampMs: number =
+      this.audioMetricsHistory[this.audioMetricsHistory.length - 1].timestampMs;
+    const currentTotalPacketsSent: number =
+      this.audioMetricsHistory[this.audioMetricsHistory.length - 1].totalPacketsSent;
+    const currentTotalPacketsLost: number =
+      this.audioMetricsHistory[this.audioMetricsHistory.length - 1].totalPacketsLost;
 
     // Iterate backwards in the metrics history, from the report immediately preceeding
     // the latest one, until we find the first metric report whose timestamp differs

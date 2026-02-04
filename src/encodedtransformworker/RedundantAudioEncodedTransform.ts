@@ -128,8 +128,10 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
   }
 
   /** Not used directly - use senderTransform or receivePacketLogTransform. */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transform(_frame: any, _controller: any): void {
+  transform(
+    _frame: RTCEncodedAudioFrame | RTCEncodedVideoFrame,
+    _controller: TransformStreamDefaultController<RTCEncodedAudioFrame | RTCEncodedVideoFrame>
+  ): void {
     // Not used - use senderTransform or receivePacketLogTransform
   }
 
@@ -180,9 +182,8 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
    * encounter this error and will permanently stop sending or receiving audio.
    */
   private enqueueAudioFrameIfPayloadSizeIsValid(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    frame: any,
-    controller: TransformStreamDefaultController
+    frame: RTCEncodedAudioFrame,
+    controller: TransformStreamDefaultController<RTCEncodedAudioFrame>
   ): void {
     if (frame.data.byteLength > this.maxAudioPayloadSizeBytes) return;
     controller.enqueue(frame);
@@ -192,12 +193,10 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
    * Receives encoded frames and modifies as needed before sending to transport.
    */
   senderTransform(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    frame: any,
-    controller: TransformStreamDefaultController
+    frame: RTCEncodedAudioFrame,
+    controller: TransformStreamDefaultController<RTCEncodedAudioFrame>
   ): void {
     const frameMetadata = frame.getMetadata();
-    // @ts-ignore
     if (frameMetadata.payloadType !== this.redPayloadType) {
       this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
       return;
@@ -552,17 +551,14 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
 
   /** Receiver transform: logs packets for loss/recovery stats without modifying frames. */
   receivePacketLogTransform(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    frame: any,
-    controller: TransformStreamDefaultController
+    frame: RTCEncodedAudioFrame,
+    controller: TransformStreamDefaultController<RTCEncodedAudioFrame>
   ): void {
     const frameMetadata = frame.getMetadata();
-    // @ts-ignore
     if (frameMetadata.payloadType !== this.redPayloadType) {
       this.enqueueAudioFrameIfPayloadSizeIsValid(frame, controller);
       return;
     }
-    // @ts-ignore
     const encodings = this.splitEncodings(
       frame.timestamp,
       frame.data,
@@ -665,7 +661,6 @@ export default class RedundantAudioEncodedTransform extends EncodedTransform {
     )
       return;
 
-    // @ts-ignore
     self.postMessage({
       type: COMMON_MESSAGE_TYPES.METRICS,
       transformName: TRANSFORM_NAMES.REDUNDANT_AUDIO,

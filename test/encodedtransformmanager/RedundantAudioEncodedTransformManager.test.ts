@@ -207,37 +207,29 @@ describe('RedundantAudioEncodedTransformManager', () => {
 
   describe('getNumRedundantEncodingsForPacketLoss', () => {
     it('returns 0 encodings for packet loss <= 8%', () => {
-      const [
-        encodings,
-        shouldTurnOff,
-      ] = RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(5);
+      const [encodings, shouldTurnOff] =
+        RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(5);
       expect(encodings).to.equal(0);
       expect(shouldTurnOff).to.be.false;
     });
 
     it('returns 1 encoding for packet loss > 8% and <= 18%', () => {
-      const [
-        encodings,
-        shouldTurnOff,
-      ] = RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(15);
+      const [encodings, shouldTurnOff] =
+        RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(15);
       expect(encodings).to.equal(1);
       expect(shouldTurnOff).to.be.false;
     });
 
     it('returns 2 encodings for packet loss > 18% and <= 75%', () => {
-      const [
-        encodings,
-        shouldTurnOff,
-      ] = RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(50);
+      const [encodings, shouldTurnOff] =
+        RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(50);
       expect(encodings).to.equal(2);
       expect(shouldTurnOff).to.be.false;
     });
 
     it('returns 0 encodings and shouldTurnOff for packet loss > 75%', () => {
-      const [
-        encodings,
-        shouldTurnOff,
-      ] = RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(80);
+      const [encodings, shouldTurnOff] =
+        RedundantAudioEncodedTransformManager.getNumRedundantEncodingsForPacketLoss(80);
       expect(encodings).to.equal(0);
       expect(shouldTurnOff).to.be.true;
     });

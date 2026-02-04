@@ -119,15 +119,15 @@ describe('AudioVideoControllerState', () => {
       state.encodedTransformWorkerManager = mockManager;
 
       // Initialize required properties for resetConnectionSpecificState
-      state.transceiverController = ({
+      state.transceiverController = {
         reset: (): void => {},
-      } as unknown) as TransceiverController;
-      state.videoDownlinkBandwidthPolicy = ({
+      } as unknown as TransceiverController;
+      state.videoDownlinkBandwidthPolicy = {
         reset: (): void => {},
-      } as unknown) as VideoDownlinkBandwidthPolicy;
-      state.videoUplinkBandwidthPolicy = ({
+      } as unknown as VideoDownlinkBandwidthPolicy;
+      state.videoUplinkBandwidthPolicy = {
         reset: (): void => {},
-      } as unknown) as VideoUplinkBandwidthPolicy;
+      } as unknown as VideoUplinkBandwidthPolicy;
 
       state.resetConnectionSpecificState();
 

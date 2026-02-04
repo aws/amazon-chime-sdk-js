@@ -29,19 +29,22 @@ export default class StartEncodedTransformWorkerTask extends BaseTask {
     });
 
     if (this.context.audioProfile?.hasRedundancyEnabled()) {
-      const redundantAudioEncodeTransformManager = this.context.encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
+      const redundantAudioEncodeTransformManager =
+        this.context.encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
       if (redundantAudioEncodeTransformManager) {
         this.context.audioVideoController?.addObserver(redundantAudioEncodeTransformManager);
       }
     }
 
     // Add observers after start() so the managers are initialized
-    const metricsTransformManager = this.context.encodedTransformWorkerManager.metricsTransformManager();
+    const metricsTransformManager =
+      this.context.encodedTransformWorkerManager.metricsTransformManager();
     if (metricsTransformManager && this.context.statsCollector) {
       metricsTransformManager.addObserver(this.context.statsCollector);
     }
 
-    const redundantAudioEncodeTransformManager = this.context.encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
+    const redundantAudioEncodeTransformManager =
+      this.context.encodedTransformWorkerManager.redundantAudioEncodeTransformManager();
     if (redundantAudioEncodeTransformManager && this.context.statsCollector) {
       redundantAudioEncodeTransformManager.addObserver(this.context.statsCollector);
     }

@@ -61,6 +61,7 @@ const ignoredTypes = [
   'VideoSenderMetricsTransform',
   'VideoReceiverMetricsTransform',
   'MediaMetricsEncodedTransform',
+  'WebRTCEncodedTransformTypes',
 
   // Events ingestion buffer's JSON interfaces.
   'JSONIngestionPayloadItem',

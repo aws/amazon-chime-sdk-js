@@ -49,7 +49,7 @@ describe('RedundantAudioEncodedTransform', () => {
   // Helper to create mock controller
   // @ts-ignore
   const createMockController = (): TransformStreamDefaultController => {
-    return ({ enqueue: sinon.stub() } as unknown) as TransformStreamDefaultController;
+    return { enqueue: sinon.stub() } as unknown as TransformStreamDefaultController;
   };
 
   beforeEach(() => {
@@ -187,7 +187,7 @@ describe('RedundantAudioEncodedTransform', () => {
 
   describe('transform', () => {
     it('is a no-op (use senderTransform or receivePacketLogTransform)', () => {
-      const frame = { data: new ArrayBuffer(10) };
+      const frame = { data: new ArrayBuffer(10) } as unknown as RTCEncodedAudioFrame;
       const controller = createMockController();
       transform.transform(frame, controller);
       // @ts-ignore

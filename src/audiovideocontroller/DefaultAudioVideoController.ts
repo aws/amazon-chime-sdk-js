@@ -107,7 +107,8 @@ export default class DefaultAudioVideoController
     SimulcastUplinkObserver,
     MediaStreamBrokerObserver,
     EncodedTransformWorkerManagerObserver,
-    Destroyable {
+    Destroyable
+{
   private _logger: Logger;
   private _configuration: MeetingSessionConfiguration;
   private _webSocketAdapter: WebSocketAdapter;
@@ -535,7 +536,7 @@ export default class DefaultAudioVideoController
             this.logger,
             this.meetingSessionContext.browserBehavior,
             this.meetingSessionContext,
-          this._encodedTransformWorkerManager
+            this._encodedTransformWorkerManager
           );
       } else {
         this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
