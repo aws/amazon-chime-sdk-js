@@ -37,7 +37,7 @@ The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) ca
 - [Understanding security in Amazon Chime Application and SDK](https://aws.amazon.com/blogs/business-productivity/understanding-security-in-the-amazon-chime-application-and-sdk/)
 - [Pricing](https://aws.amazon.com/chime/chime-sdk/pricing/)
 - [Supported Browsers](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html#mtg-browsers)
-- [Getting Started Guides](guides/20_Builders_Journey.md)
+- [Getting Started Guides](https://github.com/aws/amazon-chime-sdk-js/blob/main/guides/20_Builders_Journey.md)
 - [Developer Guide](https://docs.aws.amazon.com/chime-sdk/latest/dg/meetings-sdk.html)
 - [Control Plane API Reference](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/welcome.html)
 - [Frequently Asked Questions (FAQ)](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
