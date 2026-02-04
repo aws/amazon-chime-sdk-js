@@ -10,9 +10,7 @@ import VideoFXEventAttributes from './VideoFXEventAttributes';
  * [[EventAttributes]] describes the event.
  */
 export default interface EventAttributes
-  extends VideoFXEventAttributes,
-    AudioVideoEventAttributes,
-    DeviceEventAttributes {
+  extends VideoFXEventAttributes, AudioVideoEventAttributes, DeviceEventAttributes {
   attendeeId?: string;
   browserMajorVersion?: string;
   browserName?: string;

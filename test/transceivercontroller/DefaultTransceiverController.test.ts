@@ -1100,7 +1100,7 @@ describe('DefaultTransceiverController', () => {
           codecPayloadType: 1,
           scaleResolutionDownBy: 1,
           maxBitrate: 1_400_000,
-        })
+        } as RTCRtpEncodingParameters)
       );
 
       expect(setParamSpy.calledOnce).to.be.true;
@@ -1115,14 +1115,65 @@ describe('DefaultTransceiverController', () => {
           codecPayloadType: 2,
           scaleResolutionDownBy: 2,
           maxBitrate: 600_000,
-        })
+        } as RTCRtpEncodingParameters)
       );
       expect(setParamSpy.calledTwice).to.be.true;
       params = localSender.getParameters();
       expect(params.encodings.length).to.be.equal(1);
       expect(params.encodings[0].maxBitrate).to.be.equal(600_000);
       expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(2);
-      expect(params.encodings[0].codecPayloadType).to.be.equal(1);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((params.encodings[0] as any).codecPayloadType).to.be.equal(1);
+    });
+
+    it('Can update all mutable encoding parameters', async () => {
+      const newVideoTrack = new MediaStreamTrack();
+      await tc.setVideoInput(newVideoTrack);
+
+      const localSender = tc.localVideoTransceiver().sender;
+
+      // Set all mutable encoding parameters
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          active: true,
+          maxBitrate: 1_400_000,
+          maxFramerate: 30,
+          scaleResolutionDownBy: 1,
+          priority: 'high',
+          networkPriority: 'high',
+        })
+      );
+
+      expect(setParamSpy.calledOnce).to.be.true;
+      let params = localSender.getParameters();
+      expect(params.encodings.length).to.be.equal(1);
+      expect(params.encodings[0].active).to.be.equal(true);
+      expect(params.encodings[0].maxBitrate).to.be.equal(1_400_000);
+      expect(params.encodings[0].maxFramerate).to.be.equal(30);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(1);
+      expect(params.encodings[0].priority).to.be.equal('high');
+      expect(params.encodings[0].networkPriority).to.be.equal('high');
+
+      // Update all parameters to different values
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          active: false,
+          maxBitrate: 600_000,
+          maxFramerate: 15,
+          scaleResolutionDownBy: 2,
+          priority: 'low',
+          networkPriority: 'low',
+        })
+      );
+
+      expect(setParamSpy.calledTwice).to.be.true;
+      params = localSender.getParameters();
+      expect(params.encodings[0].active).to.be.equal(false);
+      expect(params.encodings[0].maxBitrate).to.be.equal(600_000);
+      expect(params.encodings[0].maxFramerate).to.be.equal(15);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(2);
+      expect(params.encodings[0].priority).to.be.equal('low');
+      expect(params.encodings[0].networkPriority).to.be.equal('low');
     });
   });
 

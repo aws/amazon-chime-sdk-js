@@ -395,12 +395,12 @@ describe('VideoFxProcessor', () => {
 
       it('can validate/set back and forth between url to default color', async () => {
         // Stub the load image call to successfully process
-        sandbox.stub(fxProcessor['canvasOpsManager'], 'loadImage').callsFake(
-          (): Promise<HTMLImageElement> => {
+        sandbox
+          .stub(fxProcessor['canvasOpsManager'], 'loadImage')
+          .callsFake((): Promise<HTMLImageElement> => {
             const imageElement = new HTMLImageElement();
             return Promise.resolve(imageElement);
-          }
-        );
+          });
 
         // Set to green
         fxConfig.backgroundReplacement.defaultColor = 'green';
@@ -585,24 +585,24 @@ describe('VideoFxProcessor', () => {
 
     // Stub a succesful segmentation within the processor
     function stubSuccessfulSegmentation(): void {
-      sandbox.stub(fxProcessor['segmentationRequestPromise'], 'getPromise').callsFake(
-        (): Promise<ImageData> => {
+      sandbox
+        .stub(fxProcessor['segmentationRequestPromise'], 'getPromise')
+        .callsFake((): Promise<ImageData> => {
           return Promise.resolve(
             new ImageData(SEGMENTATION_MODEL.WIDTH_IN_PIXELS, SEGMENTATION_MODEL.HEIGHT_IN_PIXELS)
           );
-        }
-      );
+        });
     }
 
     // Stub a succesful background image load within the processor
     function stubSuccessfulImageLoad(): void {
       // Stub the load image call to successfully process
-      sandbox.stub(fxProcessor['canvasOpsManager'], 'loadImage').callsFake(
-        (): Promise<HTMLImageElement> => {
+      sandbox
+        .stub(fxProcessor['canvasOpsManager'], 'loadImage')
+        .callsFake((): Promise<HTMLImageElement> => {
           const imageElement = new HTMLImageElement();
           return Promise.resolve(imageElement);
-        }
-      );
+        });
     }
 
     // Set the sinon spys onto the sab and non-sab paths within the processor
@@ -845,11 +845,11 @@ describe('VideoFxProcessor', () => {
         fxProcessor = await VideoFxProcessor.create(logger, fxConfig);
 
         // Force processor to successfully perform the segmentation
-        sandbox.stub(fxProcessor['segmentationRequestPromise'], 'getPromise').callsFake(
-          (): Promise<ImageData> => {
+        sandbox
+          .stub(fxProcessor['segmentationRequestPromise'], 'getPromise')
+          .callsFake((): Promise<ImageData> => {
             return Promise.reject('Bad Segmentation');
-          }
-        );
+          });
 
         // Process
         await expect(fxProcessor.process(buffers)).to.be.rejected;
@@ -880,20 +880,18 @@ describe('VideoFxProcessor', () => {
       buffers = [new CanvasVideoFrameBuffer(canvas)];
 
       // Configure the timing of the operation (start )
-      sandbox.stub(fxProcessor['segmentationRequestPromise'], 'getPromise').callsFake(
-        (): Promise<ImageData> => {
+      sandbox
+        .stub(fxProcessor['segmentationRequestPromise'], 'getPromise')
+        .callsFake((): Promise<ImageData> => {
           clock.tick(segmentationMs);
           return Promise.resolve(
             new ImageData(SEGMENTATION_MODEL.WIDTH_IN_PIXELS, SEGMENTATION_MODEL.HEIGHT_IN_PIXELS)
           );
-        }
-      );
-      sandbox.stub(fxProcessor['renderer'], 'render').callsFake(
-        (): Promise<void> => {
-          clock.tick(2); // arbitrary small amount of time in ms
-          return Promise.resolve();
-        }
-      );
+        });
+      sandbox.stub(fxProcessor['renderer'], 'render').callsFake((): Promise<void> => {
+        clock.tick(2); // arbitrary small amount of time in ms
+        return Promise.resolve();
+      });
     });
 
     afterEach(async () => {

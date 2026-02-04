@@ -41,9 +41,8 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
 
   private sourceBuffers: VideoFrameBuffer[] = [];
   private destBuffers: VideoFrameBuffer[] = [];
-  private observers: Set<VideoFrameProcessorPipelineObserver> = new Set<
-    VideoFrameProcessorPipelineObserver
-  >();
+  private observers: Set<VideoFrameProcessorPipelineObserver> =
+    new Set<VideoFrameProcessorPipelineObserver>();
 
   private hasStarted: boolean = false;
   private timer: VideoFrameProcessorTimer;
@@ -249,8 +248,8 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     }
 
     // finally draws the image
-    const frameWidth = imageSource.width as number;
-    const frameHeight = imageSource.height as number;
+    const frameWidth = (imageSource as HTMLCanvasElement | HTMLVideoElement).width as number;
+    const frameHeight = (imageSource as HTMLCanvasElement | HTMLVideoElement).height as number;
     if (frameWidth !== 0 && frameHeight !== 0) {
       if (this.canvasOutput.width !== frameWidth && this.canvasOutput.height !== frameHeight) {
         this.canvasOutput.width = frameWidth;

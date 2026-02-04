@@ -17,12 +17,9 @@ describe('RunnableTask', () => {
   });
 
   describe('#run', () => {
-    const subject = new RunnableTask<void>(
-      logger,
-      (): Promise<void> => {
-        return Promise.resolve();
-      }
-    );
+    const subject = new RunnableTask<void>(logger, (): Promise<void> => {
+      return Promise.resolve();
+    });
 
     it('is fulfilled', (done: Mocha.Done) => {
       chai.expect(subject.run()).to.eventually.be.fulfilled.and.notify(done);
@@ -30,12 +27,9 @@ describe('RunnableTask', () => {
   });
 
   describe('#setParent', () => {
-    const subject = new RunnableTask<void>(
-      logger,
-      (): Promise<void> => {
-        return Promise.resolve();
-      }
-    );
+    const subject = new RunnableTask<void>(logger, (): Promise<void> => {
+      return Promise.resolve();
+    });
 
     it('sets', () => {
       subject.setParent(Substitute.for<Task>());
@@ -59,12 +53,9 @@ describe('RunnableTask', () => {
 
       describe('without constructor param', () => {
         it('is formatted', () => {
-          const subject = new RunnableTask<void>(
-            logger,
-            (): Promise<void> => {
-              return Promise.resolve();
-            }
-          );
+          const subject = new RunnableTask<void>(logger, (): Promise<void> => {
+            return Promise.resolve();
+          });
           chai.expect(subject.name()).to.eq('RunnableTask');
         });
       });
@@ -73,12 +64,9 @@ describe('RunnableTask', () => {
     describe('with parent', () => {
       it('is formatted', () => {
         const parent = Substitute.for<Task>();
-        const subject = new RunnableTask<void>(
-          logger,
-          (): Promise<void> => {
-            return Promise.resolve();
-          }
-        );
+        const subject = new RunnableTask<void>(logger, (): Promise<void> => {
+          return Promise.resolve();
+        });
         parent.name().returns('value');
         subject.setParent(parent);
         chai.expect(subject.name()).to.eq('value/RunnableTask');
@@ -89,12 +77,9 @@ describe('RunnableTask', () => {
   describe('#cancel', () => {
     describe('without parent', () => {
       it('cancels', () => {
-        const subject = new RunnableTask<void>(
-          logger,
-          (): Promise<void> => {
-            return Promise.resolve();
-          }
-        );
+        const subject = new RunnableTask<void>(logger, (): Promise<void> => {
+          return Promise.resolve();
+        });
         subject.cancel();
       });
     });

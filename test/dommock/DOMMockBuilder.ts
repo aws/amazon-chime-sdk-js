@@ -59,10 +59,10 @@ export class MockMediaStream {
 
   id: string = uuidv1();
   constraints: MockMediaStreamConstraints = {};
-  tracks: typeof GlobalAny.MediaStreamTrack[] = [];
+  tracks: (typeof GlobalAny.MediaStreamTrack)[] = [];
   active: boolean = false;
 
-  constructor(tracks: typeof GlobalAny.MediaStreamTrack[] = []) {
+  constructor(tracks: (typeof GlobalAny.MediaStreamTrack)[] = []) {
     this.tracks = tracks;
   }
 
@@ -87,15 +87,15 @@ export class MockMediaStream {
     }
   }
 
-  getTracks(): typeof GlobalAny.MediaStreamTrack[] {
+  getTracks(): (typeof GlobalAny.MediaStreamTrack)[] {
     return this.tracks;
   }
 
-  getVideoTracks(): typeof GlobalAny.MediaStreamTrack[] {
+  getVideoTracks(): (typeof GlobalAny.MediaStreamTrack)[] {
     return this.tracks;
   }
 
-  getAudioTracks(): typeof GlobalAny.MediaStreamTrack[] {
+  getAudioTracks(): (typeof GlobalAny.MediaStreamTrack)[] {
     return this.tracks;
   }
 
@@ -114,7 +114,16 @@ export class MockMediaStream {
 }
 
 export default class DOMMockBuilder {
+  // Save native globals at module load time, before any tests run
+  private static savedFetch = GlobalAny.fetch;
+  private static savedResponse = GlobalAny.Response;
+  private static savedReadableStream = GlobalAny.ReadableStream;
+  private static savedWritableStream = GlobalAny.WritableStream;
+  private static savedTransformStream = GlobalAny.TransformStream;
+  private static instanceCount = 0;
+
   constructor(mockBehavior?: DOMMockBehavior) {
+    DOMMockBuilder.instanceCount++;
     mockBehavior = mockBehavior || new DOMMockBehavior();
     const asyncWait = (func: () => void): void => {
       new TimeoutScheduler(mockBehavior.asyncWaitMs).start(func);
@@ -127,7 +136,10 @@ export default class DOMMockBuilder {
     GlobalAny.MessageEvent = class MockMessageEvent {
       data: ArrayBuffer;
 
-      constructor(public type: string, init: MockMessageEventInit = {}) {
+      constructor(
+        public type: string,
+        init: MockMessageEventInit = {}
+      ) {
         this.data = init.data;
       }
     };
@@ -136,7 +148,10 @@ export default class DOMMockBuilder {
       code: number;
       reason: string;
 
-      constructor(public type: string, init: MockCloseEventInit = {}) {
+      constructor(
+        public type: string,
+        init: MockCloseEventInit = {}
+      ) {
         this.code = init.code;
         this.reason = init.reason;
       }
@@ -182,7 +197,10 @@ export default class DOMMockBuilder {
 
       readyState: number = MockWebSocket.CONNECTING;
 
-      constructor(public readonly url: string, public protocols?: string | string[]) {
+      constructor(
+        public readonly url: string,
+        public protocols?: string | string[]
+      ) {
         if (mockBehavior.webSocketOpenSucceeds) {
           asyncWait(() => {
             this.readyState = MockWebSocket.OPEN;
@@ -281,7 +299,10 @@ export default class DOMMockBuilder {
     GlobalAny.devicechange = class MockMessageEvent {
       data: ArrayBuffer;
 
-      constructor(public type: string, init: MockMessageEventInit = {}) {
+      constructor(
+        public type: string,
+        init: MockMessageEventInit = {}
+      ) {
         this.data = init.data;
       }
     };
@@ -297,8 +318,9 @@ export default class DOMMockBuilder {
       readonly kind: string = '';
       readonly constraints: MockMediaStreamConstraints = {};
       readonly label: string = '';
+      contentHint: string = '';
 
-      constructor(id: string, kind: string) {
+      constructor(id: string = uuidv1(), kind: string = '') {
         this.id = id;
         this.kind = kind;
       }
@@ -563,13 +585,13 @@ export default class DOMMockBuilder {
         });
       }
 
-      async enumerateDevices(): Promise<typeof GlobalAny.MediaDeviceInfo[]> {
+      async enumerateDevices(): Promise<(typeof GlobalAny.MediaDeviceInfo)[]> {
         if (!mockBehavior.enumerateDevicesSupported) {
           throw new Error('simulating enumerate devices not supported');
         }
         await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
         if (mockBehavior.enumerateDevicesSucceeds) {
-          let deviceLists: typeof GlobalAny.MediaDeviceInfo[];
+          let deviceLists: (typeof GlobalAny.MediaDeviceInfo)[];
           if (mockBehavior.enumerateDeviceList) {
             deviceLists = mockBehavior.enumerateDeviceList;
           } else {
@@ -715,8 +737,11 @@ export default class DOMMockBuilder {
 
     GlobalAny.Event = class MockEvent {
       track: typeof GlobalAny.MediaStreamTrack;
-      streams: typeof GlobalAny.MediaStream[] = [];
-      constructor(public type: string, _eventInitDict?: EventInit) {}
+      streams: (typeof GlobalAny.MediaStream)[] = [];
+      constructor(
+        public type: string,
+        _eventInitDict?: EventInit
+      ) {}
     };
 
     GlobalAny.ReadableStream = class MockReadableStream {
@@ -998,7 +1023,11 @@ export default class DOMMockBuilder {
 
     GlobalAny.RTCTransformEvent = class MockRTCTransformEvent extends Event {
       // @ts-ignore
-      constructor(type: string, public readonly transformer: RTCRtpScriptTransformer) {
+      constructor(
+        type: string,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        public readonly transformer: any
+      ) {
         super(type);
       }
     };
@@ -1006,7 +1035,8 @@ export default class DOMMockBuilder {
     // This mock is based on the specification at https://www.w3.org/TR/webrtc-encoded-transform/.
     GlobalAny.RTCRtpScriptTransform = class MockRTCRtpScriptTransform
       // @ts-ignore
-      implements RTCRtpScriptTransformer {
+      implements RTCRtpScriptTransformer
+    {
       readonly readable: ReadableStream;
       readonly writable: WritableStream;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1032,7 +1062,7 @@ export default class DOMMockBuilder {
       readonly sender: RTCRtpSender;
       readonly mid: string;
       currentDirection: string;
-      codecs: RTCRtpCodecCapability[] = [];
+      codecs: RTCRtpCodec[] = [];
 
       constructor(trackOrKind: MediaStreamTrack | string, init?: RTCRtpTransceiverInit) {
         this.direction = init.direction;
@@ -1043,7 +1073,7 @@ export default class DOMMockBuilder {
         this.sender = new GlobalAny.RTCRtpSender(
           new GlobalAny.MediaStreamTrack('mock-track-id', trackOrKind)
         );
-        if (!!sendEncodings) {
+        if (sendEncodings) {
           this.sender.setParameters({
             transactionId: undefined,
             codecs: undefined,
@@ -1055,7 +1085,7 @@ export default class DOMMockBuilder {
         this.mid = 'mock-mid-id';
       }
 
-      setCodecPreferences(codecs: RTCRtpCodecCapability[]): void {
+      setCodecPreferences(codecs: RTCRtpCodec[]): void {
         this.codecs = codecs;
       }
     };
@@ -1153,7 +1183,7 @@ export default class DOMMockBuilder {
             clockRate: 8000,
             mimeType: 'audio/telephone-event',
           },
-        ] as RTCRtpCodecCapability;
+        ] as RTCRtpCodec[];
         if (mockBehavior?.supportsAudioRedCodec) {
           const redCodec = {
             channels: 2,
@@ -1300,7 +1330,11 @@ export default class DOMMockBuilder {
     }
 
     GlobalAny.ImageData = class MockImageData {
-      constructor(public data: Uint8ClampedArray, public width: number, public height: number) {}
+      constructor(
+        public data: Uint8ClampedArray,
+        public width: number,
+        public height: number
+      ) {}
     };
 
     GlobalAny.Image = class MockImage {
@@ -1308,7 +1342,10 @@ export default class DOMMockBuilder {
       onload(): void {}
       onerror(): void {}
 
-      constructor(public width?: number, public height?: number) {
+      constructor(
+        public width?: number,
+        public height?: number
+      ) {
         asyncWait(() => {
           if (this.listeners.hasOwnProperty('load')) {
             this.listeners.load.forEach((listener: MockListener) =>
@@ -1338,10 +1375,12 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.URL = class MockURL extends URL {
-      static createObjectURL(url: string): string {
-        return url;
+      private static objectUrlCounter = 0;
+      static createObjectURL(_obj: Blob | MediaSource): string {
+        // Generate a unique URL for each call to properly simulate browser behavior
+        return `blob:mock-url-${++MockURL.objectUrlCounter}`;
       }
-      static revokeObjectURL(): void {}
+      static revokeObjectURL(_url: string): void {}
     };
 
     GlobalAny.requestAnimationFrame = function mockRequestAnimationFrame(callback: () => void) {
@@ -1375,7 +1414,7 @@ export default class DOMMockBuilder {
       createAnalyser(): AnalyserNode {
         // @ts-ignore
         return {
-          context: (this as unknown) as BaseAudioContext,
+          context: this as unknown as BaseAudioContext,
         };
       }
 
@@ -1386,7 +1425,7 @@ export default class DOMMockBuilder {
       createGain(): GainNode {
         // @ts-ignore
         return {
-          context: (this as unknown) as BaseAudioContext,
+          context: this as unknown as BaseAudioContext,
           // @ts-ignore
           connect(_destinationParam: AudioParam, _output?: number): void {},
           // @ts-ignore
@@ -1412,7 +1451,7 @@ export default class DOMMockBuilder {
         const listeners: EventListener[] = [];
         // @ts-ignore
         return {
-          context: (this as unknown) as BaseAudioContext,
+          context: this as unknown as BaseAudioContext,
           // @ts-ignore
           start(_when?: number): void {},
           stop(_when?: number): void {
@@ -1488,7 +1527,7 @@ export default class DOMMockBuilder {
       createGain(): GainNode {
         // @ts-ignore
         return {
-          context: (this as unknown) as BaseAudioContext,
+          context: this as unknown as BaseAudioContext,
           // @ts-ignore
           connect(_destinationParam: AudioParam, _output?: number): void {},
           // @ts-ignore
@@ -1829,7 +1868,10 @@ export default class DOMMockBuilder {
     GlobalAny.WebGLProgram = class MockWebGLProgram {};
     GlobalAny.WebGLUniformLocation = class MockWebGLUniformLocation {};
     GlobalAny.HTMLImageElement = class MockImageElement {
-      constructor(public width: number, public height: number) {}
+      constructor(
+        public width: number,
+        public height: number
+      ) {}
     };
     GlobalAny.performance = Date;
 
@@ -1855,10 +1897,39 @@ export default class DOMMockBuilder {
     //
     /*
     delete GlobalAny.WebSocket;
-    delete GlobalAny.fetch;
-    delete GlobalAny.Response;
-    delete GlobalAny.navigator;
      */
+    // Restore native fetch, Response, and stream classes for fetch-mock compatibility
+    // Only restore if this is the last instance being cleaned up
+    DOMMockBuilder.instanceCount--;
+    if (DOMMockBuilder.instanceCount === 0) {
+      if (DOMMockBuilder.savedFetch) {
+        GlobalAny.fetch = DOMMockBuilder.savedFetch;
+      } else {
+        delete GlobalAny.fetch;
+      }
+      if (DOMMockBuilder.savedResponse) {
+        GlobalAny.Response = DOMMockBuilder.savedResponse;
+      } else {
+        delete GlobalAny.Response;
+      }
+      if (DOMMockBuilder.savedReadableStream) {
+        GlobalAny.ReadableStream = DOMMockBuilder.savedReadableStream;
+      } else {
+        delete GlobalAny.ReadableStream;
+      }
+      if (DOMMockBuilder.savedWritableStream) {
+        GlobalAny.WritableStream = DOMMockBuilder.savedWritableStream;
+      } else {
+        delete GlobalAny.WritableStream;
+      }
+      if (DOMMockBuilder.savedTransformStream) {
+        GlobalAny.TransformStream = DOMMockBuilder.savedTransformStream;
+      } else {
+        delete GlobalAny.TransformStream;
+      }
+    }
+    // Note: navigator is kept to avoid issues with other tests
+    // delete GlobalAny.navigator;
     delete GlobalAny.window;
     delete GlobalAny.self;
     delete GlobalAny.RTCPeerConnectionIceEvent;

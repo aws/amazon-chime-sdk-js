@@ -74,7 +74,6 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
               urls: this.context.turnCredentials.uris,
               username: this.context.turnCredentials.username,
               credential: this.context.turnCredentials.password,
-              credentialType: 'password',
             },
           ],
           iceTransportPolicy: 'relay',

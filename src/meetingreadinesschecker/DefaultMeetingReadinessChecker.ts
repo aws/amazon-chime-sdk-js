@@ -543,7 +543,10 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     class CheckForConditionTask extends BaseTask {
       private isCancelled = false;
 
-      constructor(logger: Logger, private waitDurationMs: number) {
+      constructor(
+        logger: Logger,
+        private waitDurationMs: number
+      ) {
         super(logger);
       }
 

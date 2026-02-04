@@ -5,7 +5,7 @@ import { SdkVideoCodecCapability } from '../signalingprotocol/SignalingProtocol'
 import { Eq } from '../utils/Types';
 
 /**
- * `VideoCodecCapability` represents a higher level type to wrap `RTCRtpCodecCapability`
+ * `VideoCodecCapability` represents a higher level type to wrap `RTCRtpCodec`
  * and the codec name used in the SDP, while also namespacing static create functions
  * for codecs supported in the SDK.
  *
@@ -14,7 +14,7 @@ import { Eq } from '../utils/Types';
 export default class VideoCodecCapability implements Eq {
   constructor(
     public readonly codecName: string,
-    public readonly codecCapability: RTCRtpCodecCapability
+    public readonly codecCapability: RTCRtpCodec
   ) {}
 
   equals(other: this): boolean {

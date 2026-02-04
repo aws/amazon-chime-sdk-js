@@ -15,7 +15,10 @@ export default class DefaultReconnectController implements ReconnectController {
   private backoffTimer: TimeoutScheduler | null = null;
   private backoffCancel: () => void = null;
 
-  constructor(private reconnectTimeoutMs: number, private backoffPolicy: BackoffPolicy) {
+  constructor(
+    private reconnectTimeoutMs: number,
+    private backoffPolicy: BackoffPolicy
+  ) {
     this.reset();
   }
 

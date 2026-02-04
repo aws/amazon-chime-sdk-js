@@ -27,11 +27,8 @@ export default class DefaultMeetingEventReporter implements EventReporter, Destr
   destroyed = false;
 
   constructor(eventIngestionConfiguration: EventIngestionConfiguration, logger: Logger) {
-    const {
-      eventsClientConfiguration,
-      ingestionURL,
-      eventBufferConfiguration,
-    } = eventIngestionConfiguration;
+    const { eventsClientConfiguration, ingestionURL, eventBufferConfiguration } =
+      eventIngestionConfiguration;
     const { eventsToIgnore } = eventsClientConfiguration;
     this.eventBuffer = new InMemoryJSONEventBuffer(
       eventBufferConfiguration,

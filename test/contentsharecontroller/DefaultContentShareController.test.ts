@@ -119,9 +119,10 @@ describe('DefaultContentShareController', () => {
 
   it('content share meeting session configure', () => {
     const meetingSessionConfigure = makeSessionConfiguration();
-    const contentShareMeetingSessionConfigure = DefaultContentShareController.createContentShareMeetingSessionConfigure(
-      meetingSessionConfigure
-    );
+    const contentShareMeetingSessionConfigure =
+      DefaultContentShareController.createContentShareMeetingSessionConfigure(
+        meetingSessionConfigure
+      );
     expect(contentShareMeetingSessionConfigure.meetingId).to.equal(
       meetingSessionConfigure.meetingId
     );
@@ -141,9 +142,10 @@ describe('DefaultContentShareController', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
       const meetingSessionConfigure = makeSessionConfiguration();
-      contentShareMeetingSessionConfigure = DefaultContentShareController.createContentShareMeetingSessionConfigure(
-        meetingSessionConfigure
-      );
+      contentShareMeetingSessionConfigure =
+        DefaultContentShareController.createContentShareMeetingSessionConfigure(
+          meetingSessionConfigure
+        );
 
       contentShareMediaStreamBroker = new ContentShareMediaStreamBrokerMock(new NoOpLogger());
       attendeeAudioVideoController = new NoOpAudioVideoController(meetingSessionConfigure);
@@ -220,7 +222,8 @@ describe('DefaultContentShareController', () => {
           contentShareMeetingSessionConfigure.videoUplinkBandwidthPolicy instanceof
             DefaultSimulcastUplinkPolicyForContentShare
         ).to.be.true;
-        const policy = contentShareMeetingSessionConfigure.videoUplinkBandwidthPolicy as DefaultSimulcastUplinkPolicyForContentShare;
+        const policy =
+          contentShareMeetingSessionConfigure.videoUplinkBandwidthPolicy as DefaultSimulcastUplinkPolicyForContentShare;
         // @ts-ignore
         expect(policy.encodingParams).to.deep.equal(encodingParams);
       });

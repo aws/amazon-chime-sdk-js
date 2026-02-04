@@ -64,6 +64,7 @@ describe('CreateSDPTask', () => {
   describe('run', () => {
     it('can be run and received parameters are correct', done => {
       class TestPeerConnectionMock extends RTCPeerConnection {
+        // @ts-ignore - overriding with simplified signature for testing
         createOffer(options?: RTCOfferOptions): Promise<RTCSessionDescriptionInit> {
           expect(options.offerToReceiveAudio).to.be.equal(true);
           expect(options.offerToReceiveVideo).to.be.equal(false);
@@ -72,14 +73,14 @@ describe('CreateSDPTask', () => {
           });
         }
       }
-      const peer: RTCPeerConnection = new TestPeerConnectionMock();
-      context.peer = peer;
+      context.peer = new TestPeerConnectionMock() as unknown as RTCPeerConnection;
       task.run().then(() => done());
     });
 
     it('can be run without audio in peer connection', async () => {
       context.meetingSessionConfiguration.urls = null;
       class TestPeerConnectionMock extends RTCPeerConnection {
+        // @ts-ignore - overriding with simplified signature for testing
         createOffer(options?: RTCOfferOptions): Promise<RTCSessionDescriptionInit> {
           expect(options.offerToReceiveAudio).to.be.equal(false);
           expect(options.offerToReceiveVideo).to.be.equal(false);
@@ -88,8 +89,7 @@ describe('CreateSDPTask', () => {
           });
         }
       }
-      const peer: RTCPeerConnection = new TestPeerConnectionMock();
-      context.peer = peer;
+      context.peer = new TestPeerConnectionMock() as unknown as RTCPeerConnection;
       await new CreateSDPTask(context).run();
       context.meetingSessionConfiguration.urls = null;
       await new CreateSDPTask(context).run();
@@ -108,6 +108,7 @@ describe('CreateSDPTask', () => {
 
     it('can throw error during failure to create offer', done => {
       class TestPeerConnectionMock extends RTCPeerConnection {
+        // @ts-ignore - overriding with simplified signature for testing
         createOffer(options?: RTCOfferOptions): Promise<RTCSessionDescriptionInit> {
           expect(options.offerToReceiveAudio).to.be.equal(true);
           expect(options.offerToReceiveVideo).to.be.equal(true);
@@ -116,8 +117,7 @@ describe('CreateSDPTask', () => {
           });
         }
       }
-      const peer: RTCPeerConnection = new TestPeerConnectionMock();
-      context.peer = peer;
+      context.peer = new TestPeerConnectionMock() as unknown as RTCPeerConnection;
       task.run().catch(() => done());
     });
   });

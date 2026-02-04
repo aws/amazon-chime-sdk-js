@@ -61,7 +61,7 @@ describe('DefaultBrowserBehavior', () => {
   };
 
   const setHasGlobalChrome = (yes: boolean): void => {
-    const window = (global as unknown) as LimitedWindow;
+    const window = global as unknown as LimitedWindow;
     if (yes) {
       window.chrome = { foo: 1 };
     } else {

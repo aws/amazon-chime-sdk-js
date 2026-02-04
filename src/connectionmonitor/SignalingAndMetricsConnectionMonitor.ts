@@ -13,7 +13,8 @@ import { Maybe } from '../utils/Types';
 import ConnectionMonitor from './ConnectionMonitor';
 
 export default class SignalingAndMetricsConnectionMonitor
-  implements ConnectionMonitor, PingPongObserver, AudioVideoObserver {
+  implements ConnectionMonitor, PingPongObserver, AudioVideoObserver
+{
   private isActive = false;
   private hasSeenValidCandidatePairMetricsBefore = false;
   private lastTotalBytesReceived = 0;
@@ -175,7 +176,8 @@ export default class SignalingAndMetricsConnectionMonitor
   }
 
   private updateVideoEncodingHealth(clientMetricReport: ClientMetricReport): void {
-    const isLocalVideoTileStarted = this.audioVideoController.videoTileController.hasStartedLocalVideoTile();
+    const isLocalVideoTileStarted =
+      this.audioVideoController.videoTileController.hasStartedLocalVideoTile();
     const ssrcs = clientMetricReport.getVideoUpstreamSsrcs();
     if (!isLocalVideoTileStarted || ssrcs.length === 0) {
       this.connectionHealthData.setIsVideoEncoderHardware(false);

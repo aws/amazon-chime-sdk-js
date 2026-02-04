@@ -428,11 +428,11 @@ describe('DefaultSignalingClient', () => {
             });
             const signalingClientJoin = new SignalingClientJoin();
             // Provide a minimal browserBehavior without optional methods
-            signalingClientJoin.browserBehavior = ({
+            signalingClientJoin.browserBehavior = {
               name: () => 'test-browser',
               version: () => '1.0.0',
               // deviceName, osName, osVersion are intentionally omitted
-            } as unknown) as BrowserBehavior;
+            } as unknown as BrowserBehavior;
             event.client.join(signalingClientJoin);
           }
         }

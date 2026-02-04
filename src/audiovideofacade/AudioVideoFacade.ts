@@ -10,7 +10,8 @@ import RealtimeControllerFacade from '../realtimecontroller/RealtimeControllerFa
 import VideoTileControllerFacade from '../videotilecontroller/VideoTileControllerFacade';
 
 export default interface AudioVideoFacade
-  extends AudioVideoControllerFacade,
+  extends
+    AudioVideoControllerFacade,
     VideoTileControllerFacade,
     AudioMixControllerFacade,
     RealtimeControllerFacade,

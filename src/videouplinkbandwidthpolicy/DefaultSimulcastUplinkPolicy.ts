@@ -47,7 +47,10 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
   private lowTargetBitrateKbps: number = DefaultSimulcastUplinkPolicy.kLowTargetBitrateKbpsHd;
   private enableFhdVideo: boolean = false;
 
-  constructor(private selfAttendeeId: string, private logger: Logger) {
+  constructor(
+    private selfAttendeeId: string,
+    private logger: Logger
+  ) {
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, true);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, true);
     this.currentQualityMap = this.fillEncodingParamWithBitrates([

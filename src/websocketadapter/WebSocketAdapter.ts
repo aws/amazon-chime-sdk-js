@@ -18,7 +18,7 @@ export default interface WebSocketAdapter {
   /**
    * Sends a raw byte message.
    *
-   * @param send byte or string message to send
+   * @param message byte or string message to send
    * @returns Whether the data was queued for sending
    */
   send(message: Uint8Array | string): boolean;

@@ -159,13 +159,17 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
         this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption !== undefined &&
         this.context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions !== undefined
       ) {
-        join.serverSideNetworkAdaption = this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption();
-        join.supportedServerSideNetworkAdaptions = this.context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions();
+        join.serverSideNetworkAdaption =
+          this.context.videoDownlinkBandwidthPolicy.getServerSideNetworkAdaption();
+        join.supportedServerSideNetworkAdaptions =
+          this.context.videoDownlinkBandwidthPolicy.supportedServerSideNetworkAdaptions();
       }
       if (this.context.videoDownlinkBandwidthPolicy.wantsAllTemporalLayersInIndex !== undefined) {
-        join.wantsAllTemporalLayersInIndex = this.context.videoDownlinkBandwidthPolicy.wantsAllTemporalLayersInIndex();
+        join.wantsAllTemporalLayersInIndex =
+          this.context.videoDownlinkBandwidthPolicy.wantsAllTemporalLayersInIndex();
       }
-      join.disablePeriodicKeyframeRequestOnContentSender = this.context.meetingSessionConfiguration.disablePeriodicKeyframeRequestOnContentSender;
+      join.disablePeriodicKeyframeRequestOnContentSender =
+        this.context.meetingSessionConfiguration.disablePeriodicKeyframeRequestOnContentSender;
       this.context.signalingClient.join(join);
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);

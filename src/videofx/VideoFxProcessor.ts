@@ -340,7 +340,7 @@ export default class VideoFxProcessor implements VideoFrameProcessor {
    * Update the [[VideoFxProcessor]] to apply a new set of effects by updating the instance property
    * [[VideoFxConfig]]. If the effectConfig parameter fails validation, an error is thrown and there is
    * no update.
-   * @Param effectConfig updated [[VideoFxConfig]] with new video effects
+   * @param effectConfig updated [[VideoFxConfig]] with new video effects
    */
   async setEffectConfig(effectConfig: VideoFxConfig): Promise<void> {
     if (this.sameVideoFxConfig(effectConfig, this.effectConfig)) {

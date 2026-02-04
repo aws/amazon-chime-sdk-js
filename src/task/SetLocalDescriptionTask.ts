@@ -36,8 +36,9 @@ export default class SetLocalDescriptionTask extends BaseTask {
     if (this.context.browserBehavior.supportsVideoLayersAllocationRtpHeaderExtension()) {
       // This will be negotiatiated with backend, and we will only use it to skip resubscribes
       // if we confirm support/negotiation via `RTCRtpTranceiver.sender.getParams`
-      sdp = new SDP(sdp).withVideoLayersAllocationRtpHeaderExtension(this.context.previousSdpOffer)
-        .sdp;
+      sdp = new SDP(sdp).withVideoLayersAllocationRtpHeaderExtension(
+        this.context.previousSdpOffer
+      ).sdp;
     }
     // We will remove the dependency descriptor RTP header extension after set if this branch is not hit, as
     // browsers will not remove it from the send section. We don't do it here, so that we don't lose track of
@@ -48,8 +49,9 @@ export default class SetLocalDescriptionTask extends BaseTask {
         undefined &&
       this.context.videoUplinkBandwidthPolicy.wantsVideoDependencyDescriptorRtpHeaderExtension()
     ) {
-      sdp = new SDP(sdp).withDependencyDescriptorRtpHeaderExtension(this.context.previousSdpOffer)
-        .sdp;
+      sdp = new SDP(sdp).withDependencyDescriptorRtpHeaderExtension(
+        this.context.previousSdpOffer
+      ).sdp;
     }
     if (new DefaultBrowserBehavior().requiresDisablingH264Encoding()) {
       sdp = new SDP(sdp).removeH264SupportFromSendSection().sdp;

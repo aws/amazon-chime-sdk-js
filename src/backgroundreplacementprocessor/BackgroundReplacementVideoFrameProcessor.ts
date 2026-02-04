@@ -17,7 +17,8 @@ import BackgroundReplacementOptions from './BackgroundReplacementOptions';
 /** @internal */
 class NoOpBackgroundReplacementProcessor
   extends NoOpVideoFrameProcessor
-  implements BackgroundReplacementProcessor {
+  implements BackgroundReplacementProcessor
+{
   /**
    * no-op
    * @returns
@@ -54,7 +55,7 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
    * initialize the worker, wasm, and ML models. Upon completion of the initialization the promise will either
    * be resolved or rejected.
    * @param spec The spec defines the assets that will be used for adding background filter to a frame
-   * @param imagePath The background replacement image path
+   * @param options Background replacement options including image path
    */
   static async create(
     spec?: BackgroundFilterSpec,

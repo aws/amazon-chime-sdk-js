@@ -8,7 +8,8 @@ import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfigu
 
 export default class UnusableAudioWarningConnectionHealthPolicy
   extends BaseConnectionHealthPolicy
-  implements ConnectionHealthPolicy {
+  implements ConnectionHealthPolicy
+{
   private coolDownTimeMs: number;
   private pastSamplesToConsider: number;
   private fractionalLoss: number;

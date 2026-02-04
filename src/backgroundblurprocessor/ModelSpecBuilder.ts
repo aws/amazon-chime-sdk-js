@@ -77,7 +77,7 @@ export default class ModelSpecBuilder {
 
   /**
    * A method to override the output shape to the segmentation model.
-   * @param input An object that defines input shape of the segmentation model.
+   * @param output An object that defines output shape of the segmentation model.
    * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.builder().withOutput({}).build()).
    */
   withOutput(output: ModelShape): ModelSpecBuilder {

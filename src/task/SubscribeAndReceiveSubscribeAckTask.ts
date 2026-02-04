@@ -122,13 +122,14 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.videoDownlinkBandwidthPolicy.getVideoPreferences !== undefined
     ) {
       // Set initial configuration for the receive streams indicated by the rest of the subscribe
-      subscribe.videoSubscriptionConfiguration = convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
-        this.context,
-        videoSubscriptions.map((streamId: number) => {
-          return streamId === 0 ? 0 : this.context.videoStreamIndex.groupIdForStreamId(streamId);
-        }),
-        this.context.videoDownlinkBandwidthPolicy.getVideoPreferences()
-      );
+      subscribe.videoSubscriptionConfiguration =
+        convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration(
+          this.context,
+          videoSubscriptions.map((streamId: number) => {
+            return streamId === 0 ? 0 : this.context.videoStreamIndex.groupIdForStreamId(streamId);
+          }),
+          this.context.videoDownlinkBandwidthPolicy.getVideoPreferences()
+        );
     }
     this.context.logger.info(`sending subscribe: ${JSON.stringify(subscribe)}`);
     this.context.signalingClient.subscribe(subscribe);

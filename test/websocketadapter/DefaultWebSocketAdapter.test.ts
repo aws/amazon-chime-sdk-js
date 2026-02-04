@@ -19,7 +19,6 @@ describe('DefaultWebSocketAdapter', () => {
   const testMessage = 'ᚻᛖ ᚳᚹᚫᚦ ᚦᚫᛏ ᚻᛖ ᛒᚢᛞᛖ ᚩᚾ ᚦᚫᛗ ᛚᚪᚾᛞᛖ ᚾᚩᚱᚦᚹᛖᚪᚱᛞᚢᛗ ᚹᛁᚦ ᚦᚪ ᚹᛖᛥᚫ';
 
   before(() => {
-    domMockBuilder = new DOMMockBuilder();
     expect = chai.expect;
   });
 

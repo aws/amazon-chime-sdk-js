@@ -7,8 +7,7 @@ import MeetingEventsClientConfigurationAttributes from '../eventsclientconfigura
  * [[EventsIngestionMetadata]] contains the necessary metadata information
  * to be sent with events to the ingestion service.
  */
-export default interface EventsIngestionMetadata
-  extends MeetingEventsClientConfigurationAttributes {
+export default interface EventsIngestionMetadata extends MeetingEventsClientConfigurationAttributes {
   sdkVersion?: string;
   sdkName?: string;
   osName?: string;

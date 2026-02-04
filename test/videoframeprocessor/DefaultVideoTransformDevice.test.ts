@@ -337,13 +337,13 @@ describe('DefaultVideoTransformDevice', () => {
       const processor: VideoFxProcessor = await VideoFxProcessor.create(logger, fxConfig);
 
       // Mock segmentation successfully
-      sandbox.stub(processor['segmentationRequestPromise'], 'getPromise').callsFake(
-        (): Promise<ImageData> => {
+      sandbox
+        .stub(processor['segmentationRequestPromise'], 'getPromise')
+        .callsFake((): Promise<ImageData> => {
           return Promise.resolve(
             new ImageData(SEGMENTATION_MODEL.WIDTH_IN_PIXELS, SEGMENTATION_MODEL.HEIGHT_IN_PIXELS)
           );
-        }
-      );
+        });
 
       // Set up video transform device
       const transformDevice = new DefaultVideoTransformDevice(logger, 'test', [processor]);

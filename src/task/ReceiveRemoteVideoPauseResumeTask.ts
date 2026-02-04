@@ -19,7 +19,8 @@ import BaseTask from './BaseTask';
  */
 export default class ReceiveRemoteVideoPauseResume
   extends BaseTask
-  implements SignalingClientObserver, RemovableObserver {
+  implements SignalingClientObserver, RemovableObserver
+{
   protected taskName = 'ReceiveRemoteVideoPauseResume';
 
   private serverPausedVideoTileIds = new Set<number>();

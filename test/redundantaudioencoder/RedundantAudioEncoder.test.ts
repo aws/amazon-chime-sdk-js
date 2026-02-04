@@ -256,19 +256,27 @@ describe('RedundantAudioEncoder', () => {
         type: 'PassthroughTransform',
       });
 
-      expect(senderTransform.readable.locked).to.be.true;
-      expect(senderTransform.writable.locked).to.be.true;
-      expect(receiverTransform.readable.locked).to.be.true;
-      expect(receiverTransform.writable.locked).to.be.true;
-      expect(passthroughTransform.readable.locked).to.be.true;
-      expect(passthroughTransform.writable.locked).to.be.true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((senderTransform as any).readable.locked).to.be.true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((senderTransform as any).writable.locked).to.be.true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((receiverTransform as any).readable.locked).to.be.true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((receiverTransform as any).writable.locked).to.be.true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((passthroughTransform as any).readable.locked).to.be.true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((passthroughTransform as any).writable.locked).to.be.true;
 
       // @ts-ignore
       const invalidTransform = new RTCRtpScriptTransform(audioRedWorker, {
         type: 'InvalidTransform',
       });
-      expect(invalidTransform.readable.locked).to.be.false;
-      expect(invalidTransform.writable.locked).to.be.false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((invalidTransform as any).readable.locked).to.be.false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((invalidTransform as any).writable.locked).to.be.false;
 
       const redPayloadType = 63;
       let newRedPayloadType: number;

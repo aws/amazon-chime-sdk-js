@@ -9,7 +9,8 @@ import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfigu
 
 export default class SendingAudioFailureConnectionHealthPolicy
   extends BaseConnectionHealthPolicy
-  implements ConnectionHealthPolicy {
+  implements ConnectionHealthPolicy
+{
   private readonly sendingAudioFailureSamplesToConsider: number;
   private readonly sendingAudioFailureInitialWaitTimeMs: number;
   private readonly coolDownTimeMs: number;

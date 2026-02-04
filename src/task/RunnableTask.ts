@@ -8,7 +8,11 @@ import BaseTask from './BaseTask';
  * [[RunnableTask]] Task wrapper for any Promised-operation
  */
 export default class RunnableTask<T> extends BaseTask {
-  constructor(logger: Logger, private fn: () => Promise<T>, taskName: string = 'RunnableTask') {
+  constructor(
+    logger: Logger,
+    private fn: () => Promise<T>,
+    taskName: string = 'RunnableTask'
+  ) {
     super(logger);
     this.taskName = taskName;
   }

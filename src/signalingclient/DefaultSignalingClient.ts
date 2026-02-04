@@ -57,7 +57,10 @@ export default class DefaultSignalingClient implements SignalingClient {
   private connectionRequestQueue: SignalingClientConnectionRequest[];
   private audioSessionId: number;
 
-  constructor(private webSocket: WebSocketAdapter, private logger: Logger) {
+  constructor(
+    private webSocket: WebSocketAdapter,
+    private logger: Logger
+  ) {
     this.observerQueue = new Set<SignalingClientObserver>();
     this.connectionRequestQueue = [];
     this.resetConnection();
@@ -125,9 +128,10 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.serverSideNetworkAdaption = convertServerSideNetworkAdaptionEnumToSignaled(
       settings.serverSideNetworkAdaption
     );
-    joinFrame.supportedServerSideNetworkAdaptions = settings.supportedServerSideNetworkAdaptions.map(
-      convertServerSideNetworkAdaptionEnumToSignaled
-    );
+    joinFrame.supportedServerSideNetworkAdaptions =
+      settings.supportedServerSideNetworkAdaptions.map(
+        convertServerSideNetworkAdaptionEnumToSignaled
+      );
     joinFrame.wantsAllTemporalLayersInIndex = settings.wantsAllTemporalLayersInIndex;
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;

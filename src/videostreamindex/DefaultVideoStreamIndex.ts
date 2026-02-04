@@ -227,9 +227,8 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       }
     }
 
-    const attendeeToStreamDescriptorMap = this.buildAttendeeToSortedStreamDescriptorMapExcludingSelf(
-      selfAttendeeId
-    );
+    const attendeeToStreamDescriptorMap =
+      this.buildAttendeeToSortedStreamDescriptorMapExcludingSelf(selfAttendeeId);
     const selectionMap = new Map<string, ISdkStreamDescriptor>();
 
     let usage = 0;
@@ -288,7 +287,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   }
 
   numberOfParticipants(): number {
-    if (!!this.currentIndex.numParticipants) {
+    if (this.currentIndex.numParticipants) {
       return this.currentIndex.numParticipants;
     }
 
@@ -371,7 +370,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     }
 
     // If wasn't found in current index, then it could be in index used in last subscribe
-    if (!!this.indexForSubscribe) {
+    if (this.indexForSubscribe) {
       for (const source of this.indexForSubscribe.sources) {
         if (source.streamId === streamId) {
           return source.groupId;
@@ -380,7 +379,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     }
 
     // Lastly check if it can be found in the index last used for remote video update
-    if (!!this.indexForLastRemoteVideoUpdate) {
+    if (this.indexForLastRemoteVideoUpdate) {
       for (const source of this.indexForLastRemoteVideoUpdate.sources) {
         if (source.streamId === streamId) {
           return source.groupId;
@@ -507,7 +506,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     const map = new Map<number, string>();
     if (indexFrame) {
       for (const source of indexFrame.sources) {
-        if (!!source.externalUserId) {
+        if (source.externalUserId) {
           map.set(source.streamId, source.externalUserId);
         }
       }

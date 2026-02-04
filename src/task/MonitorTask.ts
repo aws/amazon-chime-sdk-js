@@ -38,7 +38,8 @@ import BaseTask from './BaseTask';
  */
 export default class MonitorTask
   extends BaseTask
-  implements AudioVideoObserver, RemovableObserver, SignalingClientObserver {
+  implements AudioVideoObserver, RemovableObserver, SignalingClientObserver
+{
   protected taskName = 'MonitorTask';
 
   private reconnectionHealthPolicy: ReconnectionHealthPolicy;
@@ -161,7 +162,8 @@ export default class MonitorTask
     const resubscribeForDownlink = this.context.videoDownlinkBandwidthPolicy.wantsResubscribe();
     needResubscribe = needResubscribe || resubscribeForDownlink;
     if (resubscribeForDownlink) {
-      const videoSubscriptionIdSet = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+      const videoSubscriptionIdSet =
+        this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
       // Same logic as in `ReceiveVideoStreamIndexTask`, immediately truncating rather then truncating on subscribe
       // avoids any issues with components (e.g. transceiver controller) along the way.
       this.context.videosToReceive = videoSubscriptionIdSet.truncate(
@@ -384,7 +386,7 @@ export default class MonitorTask
         }
         return;
       }
-      if (!!event.message.bitrates) {
+      if (event.message.bitrates) {
         const bitrateFrame: ISdkBitrateFrame = event.message.bitrates;
         this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);
         this.context.videoDownlinkBandwidthPolicy.updateIndex(this.context.videoStreamIndex);
@@ -423,8 +425,8 @@ export default class MonitorTask
         ? AudioLogEvent.RedmicStartLoss
         : null
       : isPrevSignalBad
-      ? AudioLogEvent.RedmicEndLoss
-      : null;
+        ? AudioLogEvent.RedmicEndLoss
+        : null;
 
     if (signalStrengthEventType) {
       this.context.statsCollector.logAudioEvent(signalStrengthEventType);
@@ -485,7 +487,8 @@ export default class MonitorTask
         this.context.degradedVideoSendCodecs.push(
           this.context.meetingSupportedVideoSendCodecPreferences[0]
         );
-        this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
+        this.context.meetingSupportedVideoSendCodecPreferences =
+          newMeetingSupportedVideoSendCodecPreferences;
 
         if (this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs) {
           this.context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(

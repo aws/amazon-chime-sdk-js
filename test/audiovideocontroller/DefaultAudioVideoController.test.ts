@@ -6,6 +6,7 @@ import chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import {
+  DefaultBrowserBehavior,
   DefaultDevicePixelRatioMonitor,
   DefaultSignalingClient,
   DefaultTransceiverController,
@@ -1612,7 +1613,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([2]);
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
 
       audioVideoController.update({ needsRenegotiation: false });
 
@@ -1665,7 +1667,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
@@ -1717,7 +1720,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
@@ -1770,7 +1774,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
 
       // One that requires subscribe
       audioVideoController.update({ needsRenegotiation: false });
@@ -1841,7 +1846,8 @@ describe('DefaultAudioVideoController', () => {
       }
 
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
         1,
@@ -1902,7 +1908,8 @@ describe('DefaultAudioVideoController', () => {
       }
 
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
         1,
@@ -1947,7 +1954,8 @@ describe('DefaultAudioVideoController', () => {
       }
 
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
         1,
@@ -2022,18 +2030,17 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        2,
-        4,
+        2, 4,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2119,7 +2126,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2194,7 +2202,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2261,7 +2270,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2321,7 +2331,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2409,7 +2420,8 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2510,18 +2522,17 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2629,13 +2640,13 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2751,13 +2762,13 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2880,18 +2891,17 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -2979,19 +2989,17 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
-        5,
+        1, 3, 5,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        4,
-        6,
+        4, 6,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -3094,19 +3102,17 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
-        5,
+        1, 3, 5,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        4,
-        6,
+        4, 6,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -3213,20 +3219,17 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
-        5,
+        1, 3, 5,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        0,
-        1,
-        4,
+        0, 1, 4,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -3333,16 +3336,15 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
-        0,
-        1,
-        4,
+        0, 1, 4,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -3428,13 +3430,15 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.meetingSessionContext.videoDownlinkBandwidthPolicy = policy;
 
       // @ts-ignore
-      audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet();
+      audioVideoController.meetingSessionContext.lastVideosToReceive =
+        new DefaultVideoStreamIdSet();
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -3519,18 +3523,17 @@ describe('DefaultAudioVideoController', () => {
 
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
-        1,
-        3,
+        1, 3,
       ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
-      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      audioVideoController.meetingSessionContext.transceiverController =
+        new TestTransceiverController(logger, new DefaultBrowserBehavior());
       // @ts-ignore
       audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
         webSocketAdapter,
@@ -3841,7 +3844,8 @@ describe('DefaultAudioVideoController', () => {
       expect(audioVideoController.rtcPeerConnection).to.not.be.null;
 
       // @ts-ignore mutate the context state to trigger rejection
-      audioVideoController.meetingSessionContext.transceiverController._localAudioTransceiver = null;
+      audioVideoController.meetingSessionContext.transceiverController._localAudioTransceiver =
+        null;
       await expect(audioVideoController.replaceLocalAudio(stream)).to.be.rejectedWith(
         'Failed to replace audio track'
       );
@@ -5967,9 +5971,8 @@ describe('DefaultAudioVideoController', () => {
   describe('audioInputDidChange', () => {
     let mediaStreamBroker: ObserverMediaStreamBroker = undefined;
     class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
-      private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
-        MediaStreamBrokerObserver
-      >();
+      private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> =
+        new Set<MediaStreamBrokerObserver>();
       addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
         this.mediaStreamBrokerObservers.add(observer);
       }
@@ -6077,9 +6080,8 @@ describe('DefaultAudioVideoController', () => {
   describe('videoInputDidChange', () => {
     let mediaStreamBroker: ObserverMediaStreamBroker = undefined;
     class ObserverMediaStreamBroker extends NoOpMediaStreamBroker {
-      private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
-        MediaStreamBrokerObserver
-      >();
+      private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> =
+        new Set<MediaStreamBrokerObserver>();
       addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
         this.mediaStreamBrokerObservers.add(observer);
       }

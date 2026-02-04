@@ -66,7 +66,7 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
     );
 
     // If video sources are not chosen, then use all of them.
-    const videoSources = !!this.videoSources
+    const videoSources = this.videoSources
       ? this.videoSources
       : this.videoIndex.allVideoSendingSourcesExcludingSelf(this.selfAttendeeId);
 

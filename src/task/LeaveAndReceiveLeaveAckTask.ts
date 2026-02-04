@@ -40,7 +40,10 @@ export default class LeaveAndReceiveLeaveAckTask extends BaseTask {
   private receiveLeaveAck(): Promise<void> {
     return new Promise((resolve, reject) => {
       class Interceptor implements SignalingClientObserver, TaskCanceler {
-        constructor(private signalingClient: SignalingClient, private logger: Logger) {}
+        constructor(
+          private signalingClient: SignalingClient,
+          private logger: Logger
+        ) {}
 
         cancel(): void {
           this.signalingClient.removeObserver(this);

@@ -84,13 +84,8 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     this.ingestionURL = ingestionURL;
     this.logger = logger;
     this.importantEvents = new Set<MeetingHistoryState>(importantEvents);
-    const {
-      maxBufferCapacityKb,
-      totalBufferItems,
-      flushSize,
-      flushIntervalMs,
-      retryCountLimit,
-    } = eventBufferConfiguration;
+    const { maxBufferCapacityKb, totalBufferItems, flushSize, flushIntervalMs, retryCountLimit } =
+      eventBufferConfiguration;
     this.maxBufferCapacityBytes = maxBufferCapacityKb * 1024;
     this.totalBufferItems = totalBufferItems;
     this.maxBufferItemCapacityBytes = Math.round(this.maxBufferCapacityBytes / totalBufferItems);

@@ -9,7 +9,8 @@ import VideoEncodingConnectionHealthPolicyName from './VideoEncodingConnectionHe
 
 export default class VideoEncodingFramerateConnectionHealthPolicy
   extends BaseConnectionHealthPolicy
-  implements ConnectionHealthPolicy {
+  implements ConnectionHealthPolicy
+{
   private readonly consecutiveVideoEncodingFailureThreshold: number;
   private consecutiveEncodeFailureCnt = 0;
 

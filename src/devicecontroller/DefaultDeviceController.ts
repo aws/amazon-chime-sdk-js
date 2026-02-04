@@ -34,7 +34,8 @@ import VideoTransformDevice, { isVideoTransformDevice } from './VideoTransformDe
 type Thunk = () => void;
 
 export default class DefaultDeviceController
-  implements DeviceControllerBasedMediaStreamBroker, Destroyable {
+  implements DeviceControllerBasedMediaStreamBroker, Destroyable
+{
   private static permissionDeniedOriginDetectionThresholdMs = 500;
   private static defaultVideoWidth = 960;
   private static defaultVideoHeight = 540;
@@ -57,9 +58,8 @@ export default class DefaultDeviceController
   private chosenVideoTransformDevice: VideoTransformDevice | null = null;
   private audioOutputDeviceId: string | undefined = undefined;
   private deviceChangeObservers: Set<DeviceChangeObserver> = new Set<DeviceChangeObserver>();
-  private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
-    MediaStreamBrokerObserver
-  >();
+  private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> =
+    new Set<MediaStreamBrokerObserver>();
   private deviceLabelTrigger = (): Promise<MediaStream> => {
     return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
   };
@@ -691,9 +691,8 @@ export default class DefaultDeviceController
   }
 
   private toggleLocalAudioInputStream(enabled: boolean): void {
-    let audioDevice: MediaStreamAudioDestinationNode | DeviceSelection = this.activeDevices[
-      'audio'
-    ];
+    let audioDevice: MediaStreamAudioDestinationNode | DeviceSelection =
+      this.activeDevices['audio'];
     if (this.useWebAudio) {
       audioDevice = this.getMediaStreamDestinationNode();
     }
@@ -735,7 +734,8 @@ export default class DefaultDeviceController
       return deviceIdConstraints;
     }
 
-    const constraintStringParams: ConstrainDOMStringParameters = deviceIdConstraints as ConstrainDOMStringParameters;
+    const constraintStringParams: ConstrainDOMStringParameters =
+      deviceIdConstraints as ConstrainDOMStringParameters;
     if (
       typeof constraintStringParams.exact === 'string' ||
       Array.isArray(constraintStringParams.exact)
@@ -1464,9 +1464,8 @@ export default class DefaultDeviceController
 
   private attachAudioInputStreamToAudioContext(stream: MediaStream): void {
     this.audioInputSourceNode?.disconnect();
-    this.audioInputSourceNode = DefaultDeviceController.getAudioContext().createMediaStreamSource(
-      stream
-    );
+    this.audioInputSourceNode =
+      DefaultDeviceController.getAudioContext().createMediaStreamSource(stream);
     const output = this.getMediaStreamOutputNode();
     this.audioInputSourceNode.connect(output);
   }
@@ -1476,7 +1475,8 @@ export default class DefaultDeviceController
    */
   private getMediaStreamDestinationNode(): MediaStreamAudioDestinationNode {
     if (!this.audioInputDestinationNode) {
-      this.audioInputDestinationNode = DefaultDeviceController.getAudioContext().createMediaStreamDestination();
+      this.audioInputDestinationNode =
+        DefaultDeviceController.getAudioContext().createMediaStreamDestination();
     }
     return this.audioInputDestinationNode;
   }
@@ -1521,9 +1521,11 @@ export default class DefaultDeviceController
       if (DefaultDeviceController.defaultLatencyHint) {
         options.latencyHint = DefaultDeviceController.defaultLatencyHint;
       }
-      DefaultDeviceController.audioContext = new (window.AudioContext ||
+      DefaultDeviceController.audioContext = new (
+        window.AudioContext ||
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).webkitAudioContext)(options);
+        (window as any).webkitAudioContext
+      )(options);
     }
     return DefaultDeviceController.audioContext;
   }

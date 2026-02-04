@@ -9,7 +9,8 @@ import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfigu
 
 export default class ReconnectionHealthPolicy
   extends BaseConnectionHealthPolicy
-  implements ConnectionHealthPolicy {
+  implements ConnectionHealthPolicy
+{
   private static CONNECTION_UNHEALTHY_THRESHOLD: number;
   private static CONNECTION_WAIT_TIME_MS: number;
   private static MISSED_PONGS_THRESHOLD: number;

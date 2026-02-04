@@ -62,7 +62,6 @@
 
 The goal of this document is to help you work through the various phases of a builder's journey using the Amazon Chime SDK. These follow the Amazon Chime SDK Builder's Journey path:
 
-![](RackMultipart20220816-1-gyffxg_html_e7f73c9f1864449d.png)
 | Phase | Action  | Gate  |
 |:----------|:----------|:----------|
 | Awareness   | Learn about Audio / Video offerings and what's possible |     |
@@ -215,8 +214,6 @@ We do not specify hardware requirements because they are dependent on the requir
 ### 2.4 Media and Control Planes for Meetings
 
 The Amazon Chime SDK consists of Control Planes and a Media Planes. The control plane is used to set up a meeting and the medial Plane is where the meeting actually happens. The available regions for each can be found in [https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html](https://docs.aws.amazon.com/chime-sdk/latest/dg/sdk-available-regions.html). Additional information and guidance on selecting a region can be found here: [https://docs.aws.amazon.com/chime-sdk/latest/dg/chime-sdk-meetings-regions.html](https://docs.aws.amazon.com/chime-sdk/latest/dg/chime-sdk-meetings-regions.html).
-
-![](RackMultipart20220816-1-gyffxg_html_46f0e418fa28f44a.png)
 
 ### 2.5 Messaging
 

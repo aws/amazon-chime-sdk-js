@@ -44,6 +44,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
       // max width and height even if input resolution is already under the limits.
       // Adding ideal resizeMode as none to use the original resoluion when possible
       // and avoid unexpected scaling.
+      // @ts-ignore - resizeMode is valid but not in all TS lib versions
       resizeMode: { ideal: 'none' },
       width: { max: videoQualitySettings.videoWidth },
       height: { max: videoQualitySettings.videoHeight },
@@ -60,7 +61,6 @@ export default class ReceiveVideoInputTask extends BaseTask {
   }
 
   async run(): Promise<void> {
-    // TODO: move videoDuplexMode and videoCaptureAndEncodeParameters to video tile controller
     const receiveEnabled =
       this.context.videoDuplexMode === SdkStreamServiceType.RX ||
       this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX;
@@ -69,9 +69,10 @@ export default class ReceiveVideoInputTask extends BaseTask {
         ? SdkStreamServiceType.DUPLEX
         : SdkStreamServiceType.TX;
     } else {
-      this.context.videoDuplexMode = receiveEnabled ? SdkStreamServiceType.RX : 0;
+      this.context.videoDuplexMode = SdkStreamServiceType.RX;
     }
-    this.context.videoCaptureAndEncodeParameter = this.context.videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
+    this.context.videoCaptureAndEncodeParameter =
+      this.context.videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
 
     if (!this.context.videoTileController.hasStartedLocalVideoTile()) {
       this.context.logger.info('has not started local video tile');
@@ -126,8 +127,8 @@ export default class ReceiveVideoInputTask extends BaseTask {
         trackSettings.frameRate
       );
 
-      const externalUserId = this.context.audioVideoController.configuration.credentials
-        .externalUserId;
+      const externalUserId =
+        this.context.audioVideoController.configuration.credentials.externalUserId;
       localTile.bindVideoStream(
         attendeeId,
         true,

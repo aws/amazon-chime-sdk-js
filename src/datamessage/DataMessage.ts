@@ -53,14 +53,14 @@ export default class DataMessage {
   }
 
   /**
-   * Helper conversion methods to convert {@link Uint8Array} data to string
+   * Helper conversion method to convert `Uint8Array` data to string
    */
   text(): string {
     return new TextDecoder().decode(this.data);
   }
 
   /**
-   * Helper conversion methods to convert {@link Uint8Array} data to JSON
+   * Helper conversion method to convert `Uint8Array` data to JSON
    */
   json(): any {
     return JSON.parse(new TextDecoder().decode(this.data));

@@ -9,7 +9,8 @@ import VideoEncodingConnectionHealthPolicyName from './VideoEncodingConnectionHe
 
 export default class VideoEncodingCpuConnectionHealthPolicy
   extends BaseConnectionHealthPolicy
-  implements ConnectionHealthPolicy {
+  implements ConnectionHealthPolicy
+{
   private readonly consecutiveHighEncodeCpuThreshold: number;
   private readonly highEncodeCpuMsThreshold: number;
   private readonly highEncodeCpuMsPerFrameThreshold: number;

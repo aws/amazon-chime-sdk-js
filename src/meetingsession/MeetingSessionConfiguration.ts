@@ -51,7 +51,8 @@ export default class MeetingSessionConfiguration {
    * Configuration for connection health policies: reconnection, unusable audio warning connection,
    * and signal strength bars connection.
    */
-  connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
+  connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration =
+    new ConnectionHealthPolicyConfiguration();
 
   /**
    * Maximum amount of time in milliseconds to allow for reconnecting.

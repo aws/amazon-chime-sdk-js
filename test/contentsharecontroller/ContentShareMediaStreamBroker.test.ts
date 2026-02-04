@@ -105,7 +105,8 @@ describe('ContentShareMediaStreamBroker', () => {
   describe('acquireVideoInputStream', () => {
     it('Return media stream', async () => {
       contentShareMediaStreamBroker.mediaStream = mediaStream;
-      const videoStream: MediaStream = await contentShareMediaStreamBroker.acquireVideoInputStream();
+      const videoStream: MediaStream =
+        await contentShareMediaStreamBroker.acquireVideoInputStream();
       expect(videoStream).to.equal(mediaStream);
     });
   });

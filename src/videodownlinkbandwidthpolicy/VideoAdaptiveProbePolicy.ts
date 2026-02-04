@@ -40,13 +40,13 @@ export default class VideoAdaptiveProbePolicy extends VideoPriorityBasedPolicy {
     // We use a static function to create config because Typescript requires
     // super(...) calls to be the first line in constructors
     super(logger, VideoAdaptiveProbePolicy.createConfig());
-    super.shouldPauseTiles = false;
+    this.shouldPauseTiles = false;
     this.videoPreferences = undefined;
   }
 
   reset(): void {
     super.reset();
-    super.shouldPauseTiles = false;
+    this.shouldPauseTiles = false;
     this.videoPreferences = undefined;
   }
 

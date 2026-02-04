@@ -289,7 +289,10 @@ export default class DefaultVideoTileController implements VideoTileController {
 
   private createResolutionMonitor(tileId: number): VideoElementResolutionMonitor {
     const observer = new (class implements VideoElementResolutionObserver {
-      constructor(private controller: DefaultVideoTileController, private tileId: number) {}
+      constructor(
+        private controller: DefaultVideoTileController,
+        private tileId: number
+      ) {}
 
       videoElementResolutionChanged(newWidth: number, newHeight: number): void {
         const tile = this.controller.getVideoTile(this.tileId);

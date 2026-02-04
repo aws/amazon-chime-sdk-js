@@ -16,8 +16,8 @@ export default interface BackgroundReplacementProcessor extends VideoFrameProces
   addObserver(observer: BackgroundReplacementVideoFrameProcessorObserver): void;
 
   /**
-   * Remove an existing observer. If the observer has not been previously {@link
-   * BackgroundReplacementVideoFrameProcessorObserver.addObserver|added}, this method call has no effect.
+   * Remove an existing observer. If the observer has not been previously
+   * added via `addObserver`, this method call has no effect.
    */
   removeObserver(observer: BackgroundReplacementVideoFrameProcessorObserver): void;
 

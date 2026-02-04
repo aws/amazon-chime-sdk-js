@@ -9,7 +9,7 @@
   ],
   "typedocOptions": {
     "out": "../docs",
-    "readme": "README.md",
+    "readme": "../README.md",
     "entryPoints": [
       "../src/index.ts",
       "./docs.ts"
@@ -20,7 +20,6 @@
       "src/signalingprotocol/ScreenSignalingProtocol.js",
       "src/signalingprotocol/ScreenSignalingProtocol.d.ts"
     ],
-    "excludePrivate": true,
-    "media": "./media",
+    "excludePrivate": true
   }
 }

@@ -41,7 +41,7 @@ describe('DefaultVideoFrameProcessorTimer', () => {
   describe('using worker thread timer', () => {
     beforeEach(() => {
       const dummyProcessID = 2;
-      globalThis.Worker = (class {
+      globalThis.Worker = class {
         private timeoutId: NodeJS.Timeout | null = null;
         constructor(private onmessage = (_: { data: number }) => {}) {}
         terminate(): void {
@@ -53,7 +53,7 @@ describe('DefaultVideoFrameProcessorTimer', () => {
             this.onmessage({ data: dummyProcessID });
           }, duration);
         }
-      } as unknown) as typeof Worker;
+      } as unknown as typeof Worker;
     });
 
     runTests();
