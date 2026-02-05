@@ -52,6 +52,17 @@ const ignoredTypes = [
   'index',
   'ScreenSignalingProtocol',
 
+  // Worker transform classes - these are bundled into the worker and shouldn't be exported directly
+  'RedundantAudioEncoder',
+  'EncodedTransform',
+  'EncodedTransformWorker',
+  'AudioSenderMetricsTransform',
+  'AudioReceiverMetricsTransform',
+  'VideoSenderMetricsTransform',
+  'VideoReceiverMetricsTransform',
+  'MediaMetricsEncodedTransform',
+  'WebRTCEncodedTransformTypes',
+
   // Events ingestion buffer's JSON interfaces.
   'JSONIngestionPayloadItem',
   'JSONIngestionEvent',

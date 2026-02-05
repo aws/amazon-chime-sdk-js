@@ -200,6 +200,13 @@ export enum MeetingSessionStatusCode {
    * Reserved.
    */
   AudioDisconnectAudio,
+
+  /**
+   * The encoded transform worker manager failed during the meeting. This may indicate an issue with
+   * media processing or browser compatibility with encoded transforms. The audio video controller
+   * will attempt to reconnect without transforms.
+   */
+  EncodedTransformManagerFailed,
 }
 
 export default MeetingSessionStatusCode;

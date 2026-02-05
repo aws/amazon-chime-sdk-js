@@ -33,6 +33,11 @@ import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolic
 import ContentShareConstants from '../../src/contentsharecontroller/ContentShareConstants';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
+import EncodedTransformWorkerManager, {
+  EncodedTransformWorkerManagerObserver,
+} from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
+import MediaMetricsTransformManager from '../../src/encodedtransformmanager/MediaMetricsEncodedTransformManager';
+import RedundantAudioEncodedTransformManager from '../../src/encodedtransformmanager/RedundantAudioEncodedTransformManager';
 import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventController from '../../src/eventcontroller/EventController';
@@ -6179,6 +6184,182 @@ describe('DefaultAudioVideoController', () => {
 
     afterEach(() => {
       mediaStreamBroker = undefined;
+    });
+  });
+
+  describe('encodedTransformWorkerManager integration', () => {
+    /**
+     * Mock implementation of EncodedTransformWorkerManager for testing
+     */
+    class MockEncodedTransformWorkerManager implements EncodedTransformWorkerManager {
+      private observers: Set<EncodedTransformWorkerManagerObserver> = new Set();
+      private enabled: boolean = true;
+      startCalled: boolean = false;
+      stopCalled: boolean = false;
+      setupAudioSenderCalled: boolean = false;
+      setupAudioReceiverCalled: boolean = false;
+      setupVideoSenderCalled: boolean = false;
+      setupVideoReceiverCalled: boolean = false;
+
+      isEnabled(): boolean {
+        return this.enabled;
+      }
+
+      setEnabled(enabled: boolean): void {
+        this.enabled = enabled;
+      }
+
+      async start(): Promise<void> {
+        this.startCalled = true;
+      }
+
+      async stop(): Promise<void> {
+        this.stopCalled = true;
+      }
+
+      redundantAudioEncodeTransformManager(): RedundantAudioEncodedTransformManager | undefined {
+        return undefined;
+      }
+
+      metricsTransformManager(): MediaMetricsTransformManager | undefined {
+        return undefined;
+      }
+
+      setupAudioSenderTransform(_sender: RTCRtpSender): void {
+        this.setupAudioSenderCalled = true;
+      }
+
+      setupAudioReceiverTransform(_receiver: RTCRtpReceiver): void {
+        this.setupAudioReceiverCalled = true;
+      }
+
+      setupVideoSenderTransform(_sender: RTCRtpSender): void {
+        this.setupVideoSenderCalled = true;
+      }
+
+      setupVideoReceiverTransform(_receiver: RTCRtpReceiver): void {
+        this.setupVideoReceiverCalled = true;
+      }
+
+      addObserver(observer: EncodedTransformWorkerManagerObserver): void {
+        this.observers.add(observer);
+      }
+
+      removeObserver(observer: EncodedTransformWorkerManagerObserver): void {
+        this.observers.delete(observer);
+      }
+
+      triggerFailure(error: Error): void {
+        for (const observer of this.observers) {
+          observer.onEncodedTransformWorkerManagerFailed?.(error);
+        }
+      }
+    }
+
+    it('can be constructed with an encodedTransformWorkerManager', () => {
+      const mockManager = new MockEncodedTransformWorkerManager();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController,
+        mockManager
+      );
+      expect(audioVideoController).to.not.be.null;
+    });
+
+    it('stops encodedTransformWorkerManager when session stops', async () => {
+      const mockManager = new MockEncodedTransformWorkerManager();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController,
+        mockManager
+      );
+      await start();
+      expect(mockManager.stopCalled).to.be.false;
+      await stop();
+      expect(mockManager.stopCalled).to.be.true;
+    });
+
+    it('triggers reconnect when encodedTransformWorkerManager fails', async () => {
+      const mockManager = new MockEncodedTransformWorkerManager();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController,
+        mockManager
+      );
+
+      let reconnectCalled = false;
+      let capturedStatus: MeetingSessionStatus | null = null;
+      const originalReconnect = audioVideoController.reconnect.bind(audioVideoController);
+      audioVideoController.reconnect = (status: MeetingSessionStatus, error: Error | null) => {
+        reconnectCalled = true;
+        capturedStatus = status;
+        return originalReconnect(status, error);
+      };
+
+      await start();
+      mockManager.triggerFailure(new Error('Worker failed'));
+      await delay(defaultDelay);
+      expect(reconnectCalled).to.be.true;
+      expect(capturedStatus?.statusCode()).to.equal(
+        MeetingSessionStatusCode.EncodedTransformManagerFailed
+      );
+      await stop();
+    });
+
+    it('does not trigger reconnect when encodedTransformWorkerManager fails and session is not connected', async () => {
+      const mockManager = new MockEncodedTransformWorkerManager();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController,
+        mockManager
+      );
+
+      let reconnectCalled = false;
+      const originalReconnect = audioVideoController.reconnect.bind(audioVideoController);
+      audioVideoController.reconnect = (status: MeetingSessionStatus, error: Error | null) => {
+        reconnectCalled = true;
+        return originalReconnect(status, error);
+      };
+
+      // Call the observer method directly since observer isn't registered until start
+      audioVideoController.onEncodedTransformWorkerManagerFailed(new Error('Worker failed'));
+      await delay(defaultDelay);
+      expect(reconnectCalled).to.be.false;
+    });
+
+    it('sets encodedTransformWorkerManager in meeting session context', async () => {
+      const mockManager = new MockEncodedTransformWorkerManager();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController,
+        eventController,
+        mockManager
+      );
+      await start();
+      // @ts-ignore - accessing private property for testing
+      expect(audioVideoController.meetingSessionContext.encodedTransformWorkerManager).to.equal(
+        mockManager
+      );
+      await stop();
     });
   });
 });

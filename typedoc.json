@@ -34,6 +34,10 @@
     "VideoTileResolutionObserver",
     "SetBuilder",
     "FilterCPUUtilizationHighEvent",
-    "FilterFrameDurationHighEvent"
+    "FilterFrameDurationHighEvent",
+    "EncodedTransformWorkerManagerObserver",
+    "DisabledEncodedTransformsConfiguration",
+    "EncodedTransformMessage",
+    "EncodedTransformMediaMetricsObserver"
   ]
 }

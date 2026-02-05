@@ -65,7 +65,7 @@ export default class AttachMediaInputTask extends BaseTask {
   private setAudioCodecPreferences(): void {
     const supportsSetCodecPreferences =
       window.RTCRtpTransceiver && 'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
-    const enableAudioRedundancy = this.context.audioProfile.hasRedundancyEnabled();
+
     /* istanbul ignore if */
     if (!supportsSetCodecPreferences) {
       this.context.logger.warn(`Setting codec preferences not supported`);
@@ -83,7 +83,7 @@ export default class AttachMediaInputTask extends BaseTask {
     if (redCodecIndex >= 0) {
       const redCodec = codecs[redCodecIndex];
       codecs.splice(redCodecIndex, 1);
-      if (enableAudioRedundancy) {
+      if (this.context.enableAudioRedundancy()) {
         // Add to the beginning of the codec list to
         // signify that this is the preferred codec.
         // Media backend enables RED only if the preference

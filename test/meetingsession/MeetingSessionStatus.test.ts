@@ -41,6 +41,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.AudioVideoDisconnectedWhilePromoted,
     MeetingSessionStatusCode.AudioDisconnectAudio,
     MeetingSessionStatusCode.SignalingChannelClosedUnexpectedly,
+    MeetingSessionStatusCode.EncodedTransformManagerFailed,
   ];
 
   describe('isFailure', () => {

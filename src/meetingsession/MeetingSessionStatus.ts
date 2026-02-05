@@ -124,6 +124,8 @@ export default class MeetingSessionStatus {
         return 'The audio connection failed.';
       case MeetingSessionStatusCode.SignalingChannelClosedUnexpectedly:
         return 'The signaling channel was closed unexpectedly. This may be due to a network change or backend detected failure.';
+      case MeetingSessionStatusCode.EncodedTransformManagerFailed:
+        return 'The encoded transform worker manager failed. The connection will be reconnected without transforms.';
       /* istanbul ignore next */
       default: {
         // You get a compile-time error if you do not handle any status code.

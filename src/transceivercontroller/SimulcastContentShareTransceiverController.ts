@@ -3,6 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
+import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import Logger from '../logger/Logger';
 import SimulcastTransceiverController from './SimulcastTransceiverController';
 
@@ -13,9 +14,10 @@ export default class SimulcastContentShareTransceiverController extends Simulcas
   constructor(
     logger: Logger,
     browserBehavior: BrowserBehavior,
-    meetingSessionContext?: AudioVideoControllerState
+    meetingSessionContext?: AudioVideoControllerState,
+    encodedTransformWorkerManager?: EncodedTransformWorkerManager
   ) {
-    super(logger, browserBehavior, meetingSessionContext);
+    super(logger, browserBehavior, meetingSessionContext, encodedTransformWorkerManager);
     let scale = 2;
     this.videoQualityControlParameterMap = new Map<string, RTCRtpEncodingParameters>();
     for (let i = 0; i < SimulcastContentShareTransceiverController.NAME_ARR_ASCENDING.length; i++) {

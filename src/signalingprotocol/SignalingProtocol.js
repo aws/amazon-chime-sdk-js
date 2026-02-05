@@ -7807,6 +7807,10 @@ $root.SdkMetric = (function() {
             case 106:
             case 107:
             case 108:
+            case 109:
+            case 110:
+            case 111:
+            case 112:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -8142,6 +8146,22 @@ $root.SdkMetric = (function() {
         case 108:
             message.type = 108;
             break;
+        case "AUDIO_SENT_TRANSFORM_PPS":
+        case 109:
+            message.type = 109;
+            break;
+        case "AUDIO_RECEIVED_TRANSFORM_PPS":
+        case 110:
+            message.type = 110;
+            break;
+        case "VIDEO_SENT_TRANSFORM_PPS":
+        case 111:
+            message.type = 111;
+            break;
+        case "VIDEO_RECEIVED_TRANSFORM_PPS":
+        case 112:
+            message.type = 112;
+            break;
         }
         if (object.value != null)
             message.value = Number(object.value);
@@ -8279,6 +8299,10 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_RENDER_WIDTH=106 VIDEO_RENDER_WIDTH value
      * @property {number} VIDEO_INPUT_WIDTH=107 VIDEO_INPUT_WIDTH value
      * @property {number} VIDEO_SENT_JITTER_MS=108 VIDEO_SENT_JITTER_MS value
+     * @property {number} AUDIO_SENT_TRANSFORM_PPS=109 AUDIO_SENT_TRANSFORM_PPS value
+     * @property {number} AUDIO_RECEIVED_TRANSFORM_PPS=110 AUDIO_RECEIVED_TRANSFORM_PPS value
+     * @property {number} VIDEO_SENT_TRANSFORM_PPS=111 VIDEO_SENT_TRANSFORM_PPS value
+     * @property {number} VIDEO_RECEIVED_TRANSFORM_PPS=112 VIDEO_RECEIVED_TRANSFORM_PPS value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -8359,6 +8383,10 @@ $root.SdkMetric = (function() {
         values[valuesById[106] = "VIDEO_RENDER_WIDTH"] = 106;
         values[valuesById[107] = "VIDEO_INPUT_WIDTH"] = 107;
         values[valuesById[108] = "VIDEO_SENT_JITTER_MS"] = 108;
+        values[valuesById[109] = "AUDIO_SENT_TRANSFORM_PPS"] = 109;
+        values[valuesById[110] = "AUDIO_RECEIVED_TRANSFORM_PPS"] = 110;
+        values[valuesById[111] = "VIDEO_SENT_TRANSFORM_PPS"] = 111;
+        values[valuesById[112] = "VIDEO_RECEIVED_TRANSFORM_PPS"] = 112;
         return values;
     })();
 

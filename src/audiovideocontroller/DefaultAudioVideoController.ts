@@ -14,6 +14,9 @@ import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import Destroyable from '../destroyable/Destroyable';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
+import EncodedTransformWorkerManager, {
+  EncodedTransformWorkerManagerObserver,
+} from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import AudioVideoEventAttributes, {
   audioVideoEventAttributesFromState,
 } from '../eventcontroller/AudioVideoEventAttributes';
@@ -69,6 +72,7 @@ import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTa
 import SerialGroupTask from '../task/SerialGroupTask';
 import SetLocalDescriptionTask from '../task/SetLocalDescriptionTask';
 import SetRemoteDescriptionTask from '../task/SetRemoteDescriptionTask';
+import StartEncodedTransformWorkerTask from '../task/StartEncodedTransformWorkerTask';
 import SubscribeAndReceiveSubscribeAckTask from '../task/SubscribeAndReceiveSubscribeAckTask';
 import Task from '../task/Task';
 import TimeoutTask from '../task/TimeoutTask';
@@ -98,7 +102,12 @@ import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
 
 export default class DefaultAudioVideoController
-  implements AudioVideoController, SimulcastUplinkObserver, MediaStreamBrokerObserver, Destroyable
+  implements
+    AudioVideoController,
+    SimulcastUplinkObserver,
+    MediaStreamBrokerObserver,
+    EncodedTransformWorkerManagerObserver,
+    Destroyable
 {
   private _logger: Logger;
   private _configuration: MeetingSessionConfiguration;
@@ -111,6 +120,7 @@ export default class DefaultAudioVideoController
   private _audioMixController: DefaultAudioMixController;
   private _eventController: EventController;
   private _audioProfile: AudioProfile = new AudioProfile();
+  private _encodedTransformWorkerManager: EncodedTransformWorkerManager;
 
   private connectionHealthData = new ConnectionHealthData();
   private observerQueue: Set<AudioVideoObserver> = new Set<AudioVideoObserver>();
@@ -157,11 +167,14 @@ export default class DefaultAudioVideoController
     webSocketAdapter: WebSocketAdapter,
     mediaStreamBroker: MediaStreamBroker,
     reconnectController: ReconnectController,
-    eventController?: EventController
+    eventController?: EventController,
+    encodedTransformWorkerManager?: EncodedTransformWorkerManager
   ) {
     this._logger = logger;
     this.sessionStateController = new DefaultSessionStateController(this._logger);
     this._configuration = configuration;
+
+    this._encodedTransformWorkerManager = encodedTransformWorkerManager;
 
     this._webSocketAdapter = webSocketAdapter;
     this._realtimeController = new DefaultRealtimeController(mediaStreamBroker);
@@ -313,6 +326,8 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
     this.meetingSessionContext.videoSendCodecPreferences = this.videoSendCodecPreferences;
     this.meetingSessionContext.audioProfile = this._audioProfile;
+    this.meetingSessionContext.encodedTransformWorkerManager = this._encodedTransformWorkerManager;
+    this._encodedTransformWorkerManager?.addObserver(this);
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
@@ -405,6 +420,7 @@ export default class DefaultAudioVideoController
 
     // Second layer.
     const receiveAudioInput = new ReceiveAudioInputTask(context).once();
+    const startEncodedTransformWorker = new StartEncodedTransformWorkerTask(context).once();
     this.receiveIndexTask = new ReceiveVideoStreamIndexTask(context);
     // See declaration (unpaused in actionFinishConnecting)
     this.monitorTask.pauseResubscribeCheck();
@@ -419,7 +435,10 @@ export default class DefaultAudioVideoController
     ]).once();
 
     // Third layer.
-    const createPeerConnection = new CreatePeerConnectionTask(context).once(signaling);
+    const createPeerConnection = new CreatePeerConnectionTask(context).once(
+      signaling,
+      startEncodedTransformWorker
+    );
     const attachMediaInput = new AttachMediaInputTask(context).once(
       createPeerConnection,
       receiveAudioInput
@@ -502,7 +521,8 @@ export default class DefaultAudioVideoController
       this.meetingSessionContext.transceiverController = new VideoOnlyTransceiverController(
         this.logger,
         this.meetingSessionContext.browserBehavior,
-        this.meetingSessionContext
+        this.meetingSessionContext,
+        this._encodedTransformWorkerManager
       );
     } else if (this.enableSimulcast) {
       this.logger.info(`Using transceiver controller with simulcast support`);
@@ -515,13 +535,15 @@ export default class DefaultAudioVideoController
           new SimulcastContentShareTransceiverController(
             this.logger,
             this.meetingSessionContext.browserBehavior,
-            this.meetingSessionContext
+            this.meetingSessionContext,
+            this._encodedTransformWorkerManager
           );
       } else {
         this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
           this.logger,
           this.meetingSessionContext.browserBehavior,
-          this.meetingSessionContext
+          this.meetingSessionContext,
+          this._encodedTransformWorkerManager
         );
       }
     } else {
@@ -529,7 +551,8 @@ export default class DefaultAudioVideoController
       this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
         this.logger,
         this.meetingSessionContext.browserBehavior,
-        this.meetingSessionContext
+        this.meetingSessionContext,
+        this._encodedTransformWorkerManager
       );
     }
 
@@ -848,6 +871,9 @@ export default class DefaultAudioVideoController
       /* istanbul ignore next */
       this.logger.info('fail to clean');
     }
+
+    await this._encodedTransformWorkerManager?.stop();
+
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
         this.notifyStop(status, error);
@@ -1730,5 +1756,21 @@ export default class DefaultAudioVideoController
       }
     }
     await this.replaceLocalAudio(audioStream);
+  }
+
+  /**
+   * Handle worker failures after initialization by triggering reconnect
+   */
+  onEncodedTransformWorkerManagerFailed(error: Error): void {
+    this.logger.error(`Encoded transform worker failed: ${error.message}`);
+
+    if (this.sessionStateController.state() !== SessionStateControllerState.Connected) {
+      this.logger.info('Skipping reconnect for worker failure - session not connected');
+      return;
+    }
+
+    // Trigger reconnect to recreate peer connection without transforms
+    const status = new MeetingSessionStatus(MeetingSessionStatusCode.EncodedTransformManagerFailed);
+    this.reconnect(status, error);
   }
 }

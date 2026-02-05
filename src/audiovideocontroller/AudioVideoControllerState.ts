@@ -6,6 +6,7 @@ import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import ConnectionMonitor from '../connectionmonitor/ConnectionMonitor';
+import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTransformWorkerManager';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
@@ -70,6 +71,8 @@ export default class AudioVideoControllerState {
   audioMixController: AudioMixController | null = null;
 
   transceiverController: TransceiverController | null = null;
+
+  encodedTransformWorkerManager: EncodedTransformWorkerManager | null = null;
 
   indexFrame: SdkIndexFrame | null = null;
 
@@ -194,6 +197,17 @@ export default class AudioVideoControllerState {
   // Indicates whether the session has completed initial connection (i.e. signal channel open and first subscribe
   // and subscribe-ack)
   isSessionConnected: boolean = false;
+
+  /**
+   * Helper method to determine if audio redundancy should be enabled.
+   * Audio redundancy requires both the audio profile to have redundancy enabled
+   * and the encoded transform worker manager to be enabled.
+   */
+  enableAudioRedundancy(): boolean {
+    return !!(
+      this.audioProfile?.hasRedundancyEnabled() && this.encodedTransformWorkerManager?.isEnabled()
+    );
+  }
 
   /*
    * Reset state corresponding to state that is dependent on a individual connection

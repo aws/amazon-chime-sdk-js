@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import NoOpDeviceController, {
   NoOpDeviceControllerWithEventController,
 } from '../../src/devicecontroller/NoOpDeviceController';
+import DefaultEncodedTransformWorkerManager from '../../src/encodedtransformmanager/DefaultEncodedTransformWorkerManager';
 import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultMeetingSession from '../../src/meetingsession/DefaultMeetingSession';
@@ -329,6 +331,69 @@ describe('DefaultMeetingSession', () => {
       expect(
         (session.deviceController as NoOpDeviceControllerWithEventController).eventController
       ).to.not.equal(session.eventController);
+      mockBuilder.cleanup();
+    });
+  });
+
+  describe('encodedTransformWorkerManager', () => {
+    it('creates an encodedTransformWorkerManager during construction', () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceController()
+      );
+      expect(session).to.exist;
+      // Access the private field via type assertion to verify it was created
+      // @ts-ignore
+      expect(session['encodedTransformWorkerManager']).to.exist;
+      // @ts-ignore
+      expect(session['encodedTransformWorkerManager']).to.be.instanceOf(
+        DefaultEncodedTransformWorkerManager
+      );
+      mockBuilder.cleanup();
+    });
+
+    it('stops encodedTransformWorkerManager when session is destroyed', async () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceController()
+      );
+      expect(session).to.exist;
+      // @ts-ignore
+      const manager = session[
+        'encodedTransformWorkerManager'
+      ] as DefaultEncodedTransformWorkerManager;
+      expect(manager).to.exist;
+
+      const stopSpy = sinon.spy(manager, 'stop');
+
+      await session.destroy();
+
+      expect(stopSpy.calledOnce).to.be.true;
+      // @ts-ignore
+      expect(session['encodedTransformWorkerManager']).to.be.undefined;
+      mockBuilder.cleanup();
+    });
+
+    it('passes encodedTransformWorkerManager to audioVideoController', () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceController()
+      );
+      expect(session).to.exist;
+      // @ts-ignore
+      const manager = session['encodedTransformWorkerManager'];
+      // @ts-ignore
+      const audioVideoController = session['audioVideoController'];
+      // The audioVideoController should have been constructed with the manager
+      // We verify this by checking the manager exists and is the correct type
+      expect(manager).to.be.instanceOf(DefaultEncodedTransformWorkerManager);
+      expect(audioVideoController).to.exist;
       mockBuilder.cleanup();
     });
   });

@@ -9,6 +9,7 @@ import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
+import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
@@ -868,6 +869,10 @@ describe('CreatePeerConnectionTask', () => {
       delete window.RTCRtpScriptTransform;
 
       context.audioProfile = new AudioProfile(null, true);
+      // Set up mock encodedTransformWorkerManager
+      context.encodedTransformWorkerManager = {
+        isEnabled: () => true,
+      } as unknown as EncodedTransformWorkerManager;
       task = new CreatePeerConnectionTask(context);
 
       await task.run();
@@ -888,6 +893,9 @@ describe('CreatePeerConnectionTask', () => {
       context.browserBehavior = new DefaultBrowserBehavior();
 
       context.audioProfile = new AudioProfile(null, true);
+      context.encodedTransformWorkerManager = {
+        isEnabled: () => true,
+      } as unknown as EncodedTransformWorkerManager;
       task = new CreatePeerConnectionTask(context);
 
       await task.run();
@@ -910,6 +918,60 @@ describe('CreatePeerConnectionTask', () => {
       delete window.RTCRtpScriptTransform;
 
       context.audioProfile = new AudioProfile(null, false);
+      task = new CreatePeerConnectionTask(context);
+
+      await task.run();
+
+      expect(context.peer).to.not.be.null;
+      // @ts-ignore
+      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.false;
+
+      // @ts-ignore
+      window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+    });
+
+    it('sets encodedInsertableStreams to false when encodedTransformWorkerManager is not enabled', async () => {
+      // Use Chrome browser for consistency
+      domMockBuilder.cleanup();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.browserBehavior = new DefaultBrowserBehavior();
+
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
+      context.audioProfile = new AudioProfile(null, true);
+      // encodedTransformWorkerManager is undefined
+      task = new CreatePeerConnectionTask(context);
+
+      await task.run();
+
+      expect(context.peer).to.not.be.null;
+      // @ts-ignore
+      expect(context.peer.getConfiguration().encodedInsertableStreams).to.be.false;
+
+      // @ts-ignore
+      window.RTCRtpScriptTransform = RTCRtpScriptTransform;
+    });
+
+    it('sets encodedInsertableStreams to false when encodedTransformWorkerManager.isEnabled returns false', async () => {
+      // Use Chrome browser for consistency
+      domMockBuilder.cleanup();
+      domMockBehavior.browserName = 'chrome116';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      context.browserBehavior = new DefaultBrowserBehavior();
+
+      // @ts-ignore
+      const RTCRtpScriptTransform = window.RTCRtpScriptTransform;
+      // @ts-ignore
+      delete window.RTCRtpScriptTransform;
+
+      context.audioProfile = new AudioProfile(null, true);
+      context.encodedTransformWorkerManager = {
+        isEnabled: () => false,
+      } as unknown as EncodedTransformWorkerManager;
       task = new CreatePeerConnectionTask(context);
 
       await task.run();
