@@ -75,13 +75,6 @@ export default class SetRemoteDescriptionTask extends BaseTask {
           // @ts-ignore
           videoTrack.contentHint = 'text';
           this.logger.info(`Setting content hint to text for AV1, attendee: ${attendeeId}`);
-        } else if (this.context.audioVideoController.configuration.enableSVC) {
-          // Set content hint to `motion` as a workaround for the issue Chrome cannot enable
-          // temporal scalability for screen share
-          // https://bugs.chromium.org/p/chromium/issues/detail?id=1433486
-          // @ts-ignore
-          videoTrack.contentHint = 'motion';
-          this.logger.info(`Setting content hint to motion to enable SVC, attendee: ${attendeeId}`);
         }
       }
     }

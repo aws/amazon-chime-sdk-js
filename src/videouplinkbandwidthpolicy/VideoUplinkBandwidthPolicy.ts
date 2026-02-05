@@ -119,4 +119,10 @@ export default interface VideoUplinkBandwidthPolicy {
     meetingSupportedVideoSendCodecs: VideoCodecCapability[] | undefined,
     videoSendCodecPreferences: VideoCodecCapability[]
   ): void;
+
+  /**
+   * Called when the policy wants to adjust the scalability mode for the video stream.
+   * @returns true if there is alternative scalability mode to degrade to, false otherwise.
+   */
+  degradeScalabilityMode?(): boolean;
 }

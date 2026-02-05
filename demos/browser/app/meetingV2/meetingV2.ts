@@ -3819,24 +3819,30 @@ export class DemoMeetingApp
   private setSimulcastAndSVC(): void {
     const chosenVideoSendCodec = (document.getElementById('videoCodecSelect') as HTMLSelectElement).value;
     const chosenContentSendCodec = (document.getElementById('contentCodecSelect') as HTMLSelectElement).value;
-    const enableSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC()
-      && !(chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
+    const enableVideoSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC()
+      && !(chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0' || chosenVideoSendCodec === 'default');
+    const enableContentSimulcastConfig = this.defaultBrowserBehavior.hasChromiumWebRTC()
+      && !(chosenContentSendCodec === 'av1Main' || chosenContentSendCodec === 'vp9Profile0' || chosenContentSendCodec === 'default');
 
-    if (enableSimulcastConfig) {
+    if (enableVideoSimulcastConfig) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = false;
-      (document.getElementById('content-simulcast-config') as HTMLInputElement).style.display = 'block';
     } else {
       (document.getElementById('simulcast') as HTMLInputElement).checked = false;
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
+    }
+
+    if (enableContentSimulcastConfig) {
+      (document.getElementById('content-simulcast-config') as HTMLInputElement).style.display = 'block';
+    } else {
       (document.getElementById('content-simulcast-config') as HTMLInputElement).style.display = 'none';
     }
 
     const enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
 
     const enableVideoSVCConfig = this.defaultBrowserBehavior.supportsScalableVideoCoding()
-      && (chosenVideoSendCodec === 'av1Main' || chosenVideoSendCodec === 'vp9Profile0');
+      && (chosenVideoSendCodec === 'vp9Profile0' || chosenVideoSendCodec === 'default');
     const enableContentSVCConfig = this.defaultBrowserBehavior.supportsScalableVideoCoding()
-      && (chosenContentSendCodec === 'av1Main' || chosenContentSendCodec === 'vp9Profile0');
+      && (chosenContentSendCodec === 'av1Main' || chosenContentSendCodec === 'default');
 
     if (enableContentSVCConfig) {
       (document.getElementById('content-svc-config')).style.display = 'block';
@@ -3944,7 +3950,6 @@ export class DemoMeetingApp
           return [VideoCodecCapability.vp9Profile0(), VideoCodecCapability.h264ConstrainedBaselineProfile(), VideoCodecCapability.vp8()];
         default:
           // If left on 'Meeting Default', use the existing behavior when `setVideoCodecSendPreferences` is not called
-          // which should be equivalent to `this.videoCodecPreferences = [VideoCodecCapability.h264ConstrainedBaselineProfile()]`
           return [];
       }
     }

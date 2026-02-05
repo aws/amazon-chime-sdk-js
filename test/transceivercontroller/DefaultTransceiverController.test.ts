@@ -844,6 +844,8 @@ describe('DefaultTransceiverController', () => {
         new Map<string, RTCRtpEncodingParameters>().set('video', {
           scaleResolutionDownBy: 1,
           maxBitrate: 1_400_000,
+          // @ts-ignore
+          scalabilityMode: 'L1T1',
         })
       );
 
@@ -852,11 +854,15 @@ describe('DefaultTransceiverController', () => {
       expect(params.encodings.length).to.be.equal(1);
       expect(params.encodings[0].maxBitrate).to.be.equal(1_400_000);
       expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(1);
+      // @ts-ignore
+      expect(params.encodings[0].scalabilityMode).to.be.equal('L1T1');
 
       await tc.setEncodingParameters(
         new Map<string, RTCRtpEncodingParameters>().set('video', {
           scaleResolutionDownBy: 2,
           maxBitrate: 600_000,
+          // @ts-ignore
+          scalabilityMode: 'L1T3',
         })
       );
       expect(setParamSpy.calledTwice).to.be.true;
@@ -864,6 +870,8 @@ describe('DefaultTransceiverController', () => {
       expect(params.encodings.length).to.be.equal(1);
       expect(params.encodings[0].maxBitrate).to.be.equal(600_000);
       expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(2);
+      // @ts-ignore
+      expect(params.encodings[0].scalabilityMode).to.be.equal('L1T3');
     });
 
     it('Only set encoding parameters with the same rid', async () => {

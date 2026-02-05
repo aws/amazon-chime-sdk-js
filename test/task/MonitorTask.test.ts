@@ -1543,17 +1543,17 @@ describe('MonitorTask', () => {
     });
   });
 
-  describe('degradeVideoCodec', () => {
+  describe('degradeVideoEncoding', () => {
     it('should ignore if meeting supported video send codec preferences is not defined', async () => {
       context.meetingSupportedVideoSendCodecPreferences = undefined;
       // @ts-ignore
-      task.degradeVideoCodec();
+      task.degradeVideoEncoding();
     });
 
     it('should ignore if meeting supported video send codec preferences have only one codec', async () => {
       context.meetingSupportedVideoSendCodecPreferences = [VideoCodecCapability.vp9Profile0()];
       // @ts-ignore
-      task.degradeVideoCodec();
+      task.degradeVideoEncoding();
       expect(
         context.meetingSupportedVideoSendCodecPreferences[0].equals(
           VideoCodecCapability.vp9Profile0()
@@ -1567,7 +1567,7 @@ describe('MonitorTask', () => {
         VideoCodecCapability.h264ConstrainedBaselineProfile(),
       ];
       // @ts-ignore
-      task.degradeVideoCodec();
+      task.degradeVideoEncoding();
       expect(
         context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
       ).to.be.true;
@@ -1576,7 +1576,7 @@ describe('MonitorTask', () => {
         VideoCodecCapability.vp8(),
       ];
       // @ts-ignore
-      task.degradeVideoCodec();
+      task.degradeVideoEncoding();
       expect(
         context.meetingSupportedVideoSendCodecPreferences[0].equals(
           VideoCodecCapability.h264ConstrainedBaselineProfile()
@@ -1584,7 +1584,7 @@ describe('MonitorTask', () => {
       ).to.be.true;
     });
 
-    it('should degrade when there is more than one codec preferences with NScaleVideoUplinkBandwidthPolicy', async () => {
+    it('should degrade codec when there is more than one codec preferences with NScaleVideoUplinkBandwidthPolicy with SVC disabled', async () => {
       context.meetingSupportedVideoSendCodecPreferences = [
         VideoCodecCapability.vp9Profile0(),
         VideoCodecCapability.vp8(),
@@ -1599,13 +1599,79 @@ describe('MonitorTask', () => {
         logger
       );
       // @ts-ignore
-      task.degradeVideoCodec();
+      task.degradeVideoEncoding();
       expect(
         context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
       ).to.be.true;
     });
 
-    it('should degrade when there is more than one codec preferences with DefaultSimulcastUplinkPolicy', async () => {
+    it('should degrade scalability mode when SVC is enabled with NScaleVideoUplinkBandwidthPolicy', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.vp9Profile0(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+        'self',
+        true,
+        logger
+      );
+      context.videoUplinkBandwidthPolicy.setSVCEnabled(true);
+      context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
+        context.meetingSupportedVideoSendCodecPreferences,
+        context.videoSendCodecPreferences
+      );
+      // @ts-ignore
+      context.videoUplinkBandwidthPolicy.numParticipants = 3;
+      // @ts-ignore
+      task.degradeVideoEncoding();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(
+          VideoCodecCapability.vp9Profile0()
+        )
+      ).to.be.true;
+      expect(
+        // @ts-ignore
+        context.videoUplinkBandwidthPolicy.currentScalabilityModeIndex === 1
+      ).to.be.true;
+    });
+
+    it('should degrade scalability mode when SVC is enabled with NScaleVideoUplinkBandwidthPolicy for content share', async () => {
+      context.meetingSupportedVideoSendCodecPreferences = [
+        VideoCodecCapability.av1Main(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoSendCodecPreferences = [
+        VideoCodecCapability.av1Main(),
+        VideoCodecCapability.vp8(),
+      ];
+      context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+        'self#content',
+        true,
+        null
+      );
+      context.videoUplinkBandwidthPolicy.setSVCEnabled(true);
+      context.videoUplinkBandwidthPolicy.setMeetingSupportedVideoSendCodecs(
+        context.meetingSupportedVideoSendCodecPreferences,
+        context.videoSendCodecPreferences
+      );
+      // @ts-ignore
+      context.videoUplinkBandwidthPolicy.numParticipants = 3;
+      // @ts-ignore
+      task.degradeVideoEncoding();
+      expect(
+        context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.av1Main())
+      ).to.be.true;
+      expect(
+        // @ts-ignore
+        context.videoUplinkBandwidthPolicy.currentScalabilityModeIndex === 1
+      ).to.be.true;
+    });
+
+    it('should degrade codec when there is more than one codec preferences with DefaultSimulcastUplinkPolicy', async () => {
       context.meetingSupportedVideoSendCodecPreferences = [
         VideoCodecCapability.vp9Profile0(),
         VideoCodecCapability.vp8(),
@@ -1616,7 +1682,7 @@ describe('MonitorTask', () => {
       ];
       context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy('self', logger);
       // @ts-ignore
-      task.degradeVideoCodec();
+      task.degradeVideoEncoding();
       expect(
         context.meetingSupportedVideoSendCodecPreferences[0].equals(VideoCodecCapability.vp8())
       ).to.be.true;
@@ -1630,7 +1696,7 @@ describe('MonitorTask', () => {
       context.videoSendCodecPreferences = [VideoCodecCapability.vp9Profile0()];
       context.degradedVideoSendCodecs = [VideoCodecCapability.vp9Profile0()];
       // @ts-ignore
-      task.degradeVideoCodec();
+      task.degradeVideoEncoding();
       expect(
         context.meetingSupportedVideoSendCodecPreferences[0].equals(
           VideoCodecCapability.vp9Profile0()

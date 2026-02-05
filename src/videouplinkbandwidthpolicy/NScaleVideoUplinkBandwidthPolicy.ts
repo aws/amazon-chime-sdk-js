@@ -3,6 +3,7 @@
 
 import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import Logger from '../logger/Logger';
+import DefaultModality from '../modality/DefaultModality';
 import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
@@ -47,7 +48,11 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     [180, 270], // 24
     [180, 270], // 25
   ];
-  static readonly SVCCodecNames: string[] = ['VP9'];
+  // Do not enable SVC for AV1 for camera videos since there is decoder performance issues with multiple AV1 streams with SVC
+  static readonly videoSVCCodecNames: string[] = ['VP9'];
+  // Do not enable SVC for VP9 in content share since Chrome cannot enable temporal scalability for screen share
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1433486
+  static readonly contentSVCCodecNames: string[] = ['AV1'];
 
   private numberOfPublishedVideoSources: number | undefined = undefined;
   private optimalParameters: DefaultVideoAndEncodeParameter;
@@ -59,6 +64,8 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private enableHighResolutionFeature: boolean = false;
   private enableSVC: boolean = false;
   private isUsingSVCCodec: boolean = true;
+  private scalabilityModePreferences: string[];
+  private currentScalabilityModeIndex = 0;
   private numParticipants: number = 0;
 
   constructor(
@@ -67,6 +74,14 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     private logger: Logger | undefined = undefined,
     private browserBehavior: ExtendedBrowserBehavior | undefined = undefined
   ) {
+    if (this.isContentShare()) {
+      // Only enable temporal scalability for content share since resolution is typically preferred over framerate
+      // in such use cases and spatial scalability may cause blurry content due to scaling.
+      this.scalabilityModePreferences = ['L1T3', 'L1T1'];
+    } else {
+      // Enable spatial and temporal scalability for camera video.
+      this.scalabilityModePreferences = ['L3T3', 'L1T3', 'L1T1'];
+    }
     this.reset();
   }
 
@@ -78,6 +93,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, {
       maxBitrate: 0,
     });
+    this.currentScalabilityModeIndex = 0;
   }
 
   updateConnectionMetric(_metrics: ConnectionMetrics): void {
@@ -141,7 +157,10 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       this.maxBandwidthKbps(),
       false,
       scale,
-      this.enableSVC && this.numParticipants > 2 && this.isUsingSVCCodec
+      this.enableSVC &&
+        this.numParticipants > 2 &&
+        this.isUsingSVCCodec &&
+        this.scalabilityModePreferences[this.currentScalabilityModeIndex] !== 'L1T1'
     );
   }
 
@@ -265,7 +284,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
         scalabilityMode = 'L1T1';
       } else {
         // We do not limit the number of layers depending on input resolution, however Chrome will drop anything below around 135p.
-        scalabilityMode = 'L3T3';
+        scalabilityMode = this.scalabilityModePreferences[this.currentScalabilityModeIndex];
       }
       this.logger?.info(
         `calculateEncodingParameters: SVC: ${this.enableSVC}    participants: ${
@@ -297,6 +316,10 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     return this.numberOfPublishedVideoSources ?? 0;
   }
 
+  private isContentShare(): boolean {
+    return new DefaultModality(this.selfAttendeeId).hasModality(DefaultModality.MODALITY_CONTENT);
+  }
+
   wantsVideoDependencyDescriptorRtpHeaderExtension(): boolean {
     return this.enableSVC;
   }
@@ -308,11 +331,29 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     const codecs = meetingSupportedVideoSendCodecPreferences ?? videoSendCodecPreferences;
 
     const isUsingSVCCodec =
-      codecs.length > 0 &&
-      NScaleVideoUplinkBandwidthPolicy.SVCCodecNames.includes(codecs[0].codecName);
+      codecs.length > 0 && this.isContentShare()
+        ? NScaleVideoUplinkBandwidthPolicy.contentSVCCodecNames.includes(codecs[0].codecName)
+        : NScaleVideoUplinkBandwidthPolicy.videoSVCCodecNames.includes(codecs[0].codecName);
+
     if (isUsingSVCCodec !== this.isUsingSVCCodec) {
       this.isUsingSVCCodec = isUsingSVCCodec;
       this.updateOptimalParameters();
     }
+  }
+
+  degradeScalabilityMode(): boolean {
+    if (
+      this.isUsingSVCCodec &&
+      this.numParticipants >= 3 &&
+      this.currentScalabilityModeIndex + 1 < this.scalabilityModePreferences.length
+    ) {
+      this.logger?.info(
+        `Degrading scalability mode from ${this.scalabilityModePreferences[this.currentScalabilityModeIndex]} to ${this.scalabilityModePreferences[this.currentScalabilityModeIndex + 1]}`
+      );
+      this.currentScalabilityModeIndex++;
+      this.updateOptimalParameters();
+      return true;
+    }
+    return false;
   }
 }
