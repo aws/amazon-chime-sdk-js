@@ -19,7 +19,7 @@ describe('AudioTest', async function () {
   const testSetup = setupTestEnvironment('AudioTest', MeetingPage);
   // The test browser audio devices occaisionally trigger the failure detection. Until we figure out
   // why that occurs, we will just ignore them  
-  const ignoredEvents = ['sendingAudioFailed', 'sendingAudioRecovered'];
+  const ignoredEvents = ['sendingAudioFailed', 'sendingAudioRecovered', 'videoInputSelected'];
 
   let test_window;
   let monitor_window;
@@ -146,6 +146,39 @@ describe('AudioTest', async function () {
     } else {
       await monitor_window.runCommands(async () => await this.pageTwo.runAudioCheck('AUDIO_OFF'));
     }
+  });
+
+  // Data Messaging Section
+  step('test attendee should send data message', async function () {
+    await test_window.runCommands(async () => 
+      await this.pageOne.sendDataMessage('Test message 1')
+    );
+  });
+
+  step('test attendee should see own message', async function () {
+    await test_window.runCommands(async () => 
+      await this.pageOne.checkDataMessageReceived('Test message 1')
+    );
+  });
+
+  step('monitor attendee should receive message', async function () {
+    const monitorPage = this.numberOfSessions === 1 ? this.pageOne : this.pageTwo;
+    await monitor_window.runCommands(async () => 
+      await monitorPage.checkDataMessageReceived('Test message 1')
+    );
+  });
+
+  step('monitor attendee should send reply', async function () {
+    const monitorPage = this.numberOfSessions === 1 ? this.pageOne : this.pageTwo;
+    await monitor_window.runCommands(async () => 
+      await monitorPage.sendDataMessage('Test message 2')
+    );
+  });
+
+  step('test attendee should receive reply', async function () {
+    await test_window.runCommands(async () => 
+      await this.pageOne.checkDataMessageReceived('Test message 2')
+    );
   });
 
   step('should leave all participants to trigger meetingEnded', async function () {

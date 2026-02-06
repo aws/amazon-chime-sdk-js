@@ -2,7 +2,7 @@ const { describe } = require('mocha');
 const { step } = require('mocha-steps');
 const { v4: uuidv4 } = require('uuid');
 const { Window } = require('../utils/Window');
-const { MeetingPage, VideoState} = require('../pages/MeetingPage');
+const { MeetingPage, VideoState, ContentShareState } = require('../pages/MeetingPage');
 const setupTestEnvironment = require('./TestSetup');
 
 /*
@@ -146,6 +146,95 @@ describe('VideoTest', async function () {
       await monitor_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.OFF, test_attendee_id));
     } else {
       await monitor_window.runCommands(async () => await this.pageTwo.checkVideoState(VideoState.OFF, test_attendee_id));
+    }
+  });
+
+  // Content Share Section
+  step('test attendee should start content share', async function () {
+    await test_window.runCommands(async () => await this.pageOne.startContentShareTestVideo());
+  });
+
+  step('both attendees should see content share', async function () {
+    await test_window.runCommands(async () => 
+      await this.pageOne.checkContentShareVideoState(ContentShareState.PLAY, test_attendee_id)
+    );
+    if (this.numberOfSessions === 1) {
+      await monitor_window.runCommands(async () => 
+        await this.pageOne.checkContentShareVideoState(ContentShareState.PLAY, test_attendee_id)
+      );
+    } else {
+      await monitor_window.runCommands(async () => 
+        await this.pageTwo.checkContentShareVideoState(ContentShareState.PLAY, test_attendee_id)
+      );
+    }
+  });
+
+  // Content Share Pause/Resume Section
+  step('test attendee should pause content share', async function () {
+    await test_window.runCommands(async () => await this.pageOne.toggleContentSharePause());
+  });
+
+  step('both attendees should see paused content', async function () {
+    await test_window.runCommands(async () => 
+      await this.pageOne.checkContentShareVideoState(ContentShareState.PAUSE, test_attendee_id)
+    );
+    if (this.numberOfSessions === 1) {
+      await monitor_window.runCommands(async () => 
+        await this.pageOne.checkContentShareVideoState(ContentShareState.PAUSE, test_attendee_id)
+      );
+    } else {
+      await monitor_window.runCommands(async () => 
+        await this.pageTwo.checkContentShareVideoState(ContentShareState.PAUSE, test_attendee_id)
+      );
+    }
+  });
+
+  // Content Share Stop Section
+  step('test attendee should stop content share', async function () {
+    await test_window.runCommands(async () => await this.pageOne.stopContentShare());
+  });
+
+  step('content share should be stopped for both', async function () {
+    await test_window.runCommands(async () => 
+      await this.pageOne.checkContentShareVideoState(ContentShareState.OFF, test_attendee_id)
+    );
+    if (this.numberOfSessions === 1) {
+      await monitor_window.runCommands(async () => 
+        await this.pageOne.checkContentShareVideoState(ContentShareState.OFF, test_attendee_id)
+      );
+    } else {
+      await monitor_window.runCommands(async () => 
+        await this.pageTwo.checkContentShareVideoState(ContentShareState.OFF, test_attendee_id)
+      );
+    }
+  });
+
+  // Video Processing Section - Background Blur
+  step('test attendee should turn video back on for filter test', async function () {
+    await test_window.runCommands(async () => await this.pageOne.turnVideoOn());
+  });
+
+  step('test attendee should verify local video is on before applying filter', async function () {
+    await test_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.PLAY, test_attendee_id));
+  });
+
+  step('test attendee should enable background blur', async function () {
+    await test_window.runCommands(async () => await this.pageOne.enableBackgroundBlur());
+  });
+
+  step('background blur should be active', async function () {
+    await test_window.runCommands(async () => await this.pageOne.checkVideoFilterApplied('backgroundBlur'));
+  });
+
+  step('video should still be playing with filter', async function () {
+    await test_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.PLAY, test_attendee_id));
+  });
+
+  step('monitor attendee should see filtered video', async function () {
+    if (this.numberOfSessions === 1) {
+      await monitor_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.PLAY, test_attendee_id));
+    } else {
+      await monitor_window.runCommands(async () => await this.pageTwo.checkVideoState(VideoState.PLAY, test_attendee_id));
     }
   });
 });
