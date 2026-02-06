@@ -30,7 +30,7 @@ export default class DefaultEventController implements EventController, Destroya
   private _eventReporter: EventReporter;
   private userAgentParser: DefaultUserAgentParser;
   private parserResult: { [key: string]: string };
-  private highEntropyUpdated = false;
+  private highEntropyUpdated: Promise<void> | null = null;
   destroyed = false;
 
   constructor(
@@ -46,13 +46,14 @@ export default class DefaultEventController implements EventController, Destroya
     this.parserResult = this.userAgentParser.getParserResult();
   }
 
-  private async updateAttributesWithHighEntropyValues(): Promise<void> {
-    if (this.highEntropyUpdated) {
-      return;
+  private updateAttributesWithHighEntropyValues(): Promise<void> {
+    if (!this.highEntropyUpdated) {
+      this.highEntropyUpdated = (async () => {
+        await this.userAgentParser.updateWithHighEntropyValues();
+        this.parserResult = this.userAgentParser.getParserResult();
+      })();
     }
-    this.highEntropyUpdated = true;
-    await this.userAgentParser.updateWithHighEntropyValues();
-    this.parserResult = this.userAgentParser.getParserResult();
+    return this.highEntropyUpdated;
   }
 
   addObserver(observer: EventObserver): void {
