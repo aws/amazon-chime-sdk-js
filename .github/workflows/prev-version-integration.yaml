@@ -38,19 +38,19 @@ jobs:
           echo "prev_version=$prev_version" >> $GITHUB_OUTPUT
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+        uses: filipstefansson/uuid-action@d602cbfeeaa16f19d88cf31cfdd6689a40c414ef  # v1.1
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
         run: echo "${{ steps.create-job-id.outputs.uuid }}"
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
           role-session-name: ${{ env.TEST_TYPE }}
           aws-region: us-east-1
       - name: Setup Sauce Connect
-        uses: saucelabs/sauce-connect-action@v2
+        uses: saucelabs/sauce-connect-action@v3
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
