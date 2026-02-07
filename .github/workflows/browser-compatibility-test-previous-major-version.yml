@@ -312,7 +312,7 @@ jobs:
       - name: Send Slack Message
         run: node .github/script/send-test-report.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_PREV_VER_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }}
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
           aws-region: us-east-1

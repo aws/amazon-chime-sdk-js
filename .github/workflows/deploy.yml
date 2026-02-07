@@ -20,7 +20,7 @@ jobs:
         NAME: DEMO
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
           role-session-name: deploy-demo-app
@@ -46,7 +46,7 @@ jobs:
         GAMMA_CHIME_SERVICE_PRINCIPAL: ${{secrets.GAMMA_CHIME_SERVICE_PRINCIPAL}}
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
           role-session-name: deploy-demo-app
