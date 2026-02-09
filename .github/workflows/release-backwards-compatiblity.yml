@@ -74,23 +74,11 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           noSSLBumpDomains: all
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-      - name: Install Kite
-        run: integration/js/script/install-kite
       - name: Clean Install
         run: npm ci
-      - name: Run Audio Integration Test
-        run: npm run test:integration-audio
-      - name: Run Video Integ Test
-        run: npm run test:integration-video
-      - name: Run Content Share Integration Test Job One
-        run: npm run test:integration-content-share-test-suite-one
-      - name: Run Content Share Integration Test Job Two
-        run: npm run test:integration-content-share-test-suite-two
-      - name: Run Data Message Integration Test
-        run: npm run test:integration-data-message
-      - name: Run Meeting Readiness Checker Integration Test
-        run: npm run test:integration-meeting-readiness-checker
-      - name: Setup userArn
-        run: integration/js/script/test-setup
-      - name: Run Messaging Integration Test
-        run: npm run test:integration-messaging
+      - name: Run Audio Test
+        working-directory: ./integration/mocha-tests
+        run: npm run test -- --test-name AudioTest --host saucelabs --test-type browser-compatibility
+      - name: Run Video Test
+        working-directory: ./integration/mocha-tests
+        run: npm run test -- --test-name VideoTest --host saucelabs --test-type browser-compatibility

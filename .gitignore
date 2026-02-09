@@ -17,10 +17,6 @@ demos/react/public/app.js
 dist
 doc
 integration-test-results/
-integration/js/logs/
-integration/js/node_modules
-integration/js/temp
-integration/kite-allure-reports
 integration/logs
 node_modules
 src/versioning/version.ts

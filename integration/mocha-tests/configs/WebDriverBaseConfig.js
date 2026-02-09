@@ -27,9 +27,12 @@ const config = {
               '--use-fake-ui-for-media-stream',
               '--headless=new',
               '--window-size=1920,1080',
-              '--disable-gpu',
               '--no-sandbox',
               '--disable-dev-shm-usage',
+              '--enable-webgl',
+              '--enable-webgl2-compute-context',
+              '--use-gl=angle',
+              '--use-angle=swiftshader',
             ]
           : [
               '--use-fake-device-for-media-stream',

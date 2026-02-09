@@ -461,7 +461,8 @@ export default class VideoTileCollection implements AudioVideoObserver {
     // result in tile callbacks as well.
     for (let videoTile of this.tileIndexToDemoVideoTile.values()) {
         if (attendeesToShow.includes(videoTile.attendeeId)) {
-            videoTile.show(false);
+            const isContent = videoTile.attendeeId.endsWith('#content');
+            videoTile.show(isContent);
         } else {
             videoTile.hide();
         }

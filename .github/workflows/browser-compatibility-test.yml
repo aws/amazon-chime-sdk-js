@@ -44,3 +44,6 @@ jobs:
       - name: Run Video Test
         working-directory: ./integration/mocha-tests
         run: npm run test -- --test-name VideoTest --host saucelabs --test-type browser-compatibility
+      - name: Run Video Processing Test
+        working-directory: ./integration/mocha-tests
+        run: npm run test -- --test-name VideoProcessingTest --host saucelabs --test-type browser-compatibility

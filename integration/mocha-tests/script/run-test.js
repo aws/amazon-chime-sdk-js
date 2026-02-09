@@ -33,6 +33,7 @@ let testType = 'integration-test'; // Type of test to run (integration-test or b
 let testConfig = '';          // Custom test configuration file
 let retry = undefined;        // Number of retries for failed tests
 let sessions = undefined;     // Number of browser sessions to use
+let appName = '';             // Name of the demo app to run (default: meetingV2)
 let logger;                   // Logger instance
 
 
@@ -51,6 +52,7 @@ const usage = () => {
   console.log(`  --test-implementation     Name of mocha test file stored in the tests folder [Optional]`);
   console.log(`  --config                  Name of custom config stored in configs folder [Optional]`);
   console.log(`  --headless                Run tests in headless mode [Optional] [default: false]`);
+  console.log(`  --app                     Demo app to run [Optional] [default: meetingV2]`);
   console.log(`Values:`);
   console.log(`  --test-name`);
   console.log(`    AudioTest: Test name\n`);
@@ -74,6 +76,9 @@ const usage = () => {
   console.log(`  --headless`);
   console.log(`    true: Run browser in headless mode (useful for CI environments)`);
   console.log(`    false: Run browser in normal mode with visible UI (default)`);
+  console.log(`  --app`);
+  console.log(`    meetingV2: Default meeting demo app`);
+  console.log(`    meetingReadinessChecker: Meeting readiness checker app`);
 };
 
 /**
@@ -129,6 +134,11 @@ const parseArgs = () => {
         const headless = value === 'true' || value === true;
         process.env.HEADLESS_MODE = headless;
         logger.log(`Setting headless mode to ${headless}`, LogLevel.INFO);
+        break;
+
+      case 'app':
+        appName = value;
+        logger.log(`Setting demo app to ${appName}`, LogLevel.INFO);
         break;
 
       default:
@@ -201,9 +211,17 @@ function startTestDemo() {
   runSync('npm', ['install'], { cwd: pathToTestDemoFolder });
 
   logger.log('Starting the test demo');
+  
+  // Build the environment for the demo process
+  const demoEnv = { ...process.env };
+  if (appName) {
+    demoEnv.npm_config_app = appName;
+    logger.log(`Starting demo with app: ${appName}`, LogLevel.INFO);
+  }
+  
   // The test demo will keep running until the process is terminated,
   // so we should execute this command asynchronously without blocking other commands.
-  runAsync('npm', ['run', 'start'], { cwd: pathToTestDemoFolder })
+  runAsync('npm', ['run', 'start'], { cwd: pathToTestDemoFolder, env: demoEnv })
     .catch(error => {
       // Check if this is a termination signal (code 143 = 128 + SIGTERM(15))
       if (error.message && error.message.includes('exit code 143')) {
@@ -308,7 +326,7 @@ const runTest = async (test, clients) => {
     logger.log(`Starting ${test.name} on browser name = ${client.browserName}, version = ${client.browserVersion}, and platform = ${client.platform}`);
 
     try {
-      testResult = await runAsync('mocha', [test.testImpl], { cwd: pathToIntegrationFolder, timeout: 300000, color: true, bail: true });
+      testResult = await runAsync('npx', ['mocha', test.testImpl], { cwd: pathToIntegrationFolder, timeout: 300000, color: true, bail: true });
     }
     catch (error) {
       logger.log(`Mocha run command failed: ${error.message || error}`, LogLevel.ERROR);

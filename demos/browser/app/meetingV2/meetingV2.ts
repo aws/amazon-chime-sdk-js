@@ -39,6 +39,7 @@ import {
   EventAttributes,
   EventIngestionConfiguration,
   EventName,
+  EventObserver,
   EventReporter,
   isAudioTransformDevice,
   isDestroyable,
@@ -121,6 +122,7 @@ export let fatal: (e: Error) => void;
 declare global {
   interface Window {
     webkitAudioContext: typeof AudioContext
+    pendingEventObserver?: EventObserver
   }
 }
 
@@ -1890,11 +1892,16 @@ export class DemoMeetingApp
       configuration.keepLastFrameWhenPaused = true;
     }
 
+    const eventController = new DefaultEventController(configuration, this.meetingLogger, this.eventReporter);
+    if (window.pendingEventObserver) {
+      eventController.addObserver(window.pendingEventObserver);
+    }
+
     this.meetingSession = new DefaultMeetingSession(
         configuration,
         this.meetingLogger,
         this.deviceController,
-        new DefaultEventController(configuration, this.meetingLogger, this.eventReporter)
+        eventController
     );
 
     const enableAudioRedundancy = !((document.getElementById('disable-audio-redundancy') as HTMLInputElement).checked);

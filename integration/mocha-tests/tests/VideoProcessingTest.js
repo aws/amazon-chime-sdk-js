@@ -1,61 +1,138 @@
 const { describe } = require('mocha');
 const { step } = require('mocha-steps');
-const { v4: uuidv4 } = require('uuid');
-const { Window } = require('../utils/Window');
-const { MeetingPage, VideoState } = require('../pages/MeetingPage');
+const { MeetingPage } = require('../pages/MeetingPage');
 const setupTestEnvironment = require('./TestSetup');
+const { 
+  addAllSetupSteps, 
+  addCleanupSteps,
+  baseIgnoredEvents
+} = require('./steps/SetupSteps');
+
+const ignoredEvents = baseIgnoredEvents;
 
 /*
- * VideoProcessingTest - Standalone Background Blur Test
+ * VideoProcessingTest - Tests VideoFx video processing filters (blur and replacement)
  * 
- * Verifies background blur video processing works with a single participant.
- * Tests the video processing pipeline in isolation (no peer connection needed).
+ * Verifies that VideoFx background blur and background replacement filters can be enabled/disabled.
+ * Uses pixel-based verification to ensure filters are actually applied to the video output.
+ * Only tests VideoFx (2.0) filters - the newer, more performant video processing pipeline.
  */
 describe('VideoProcessingTest', async function () {
   const testSetup = setupTestEnvironment('VideoProcessingTest', MeetingPage);
-
-  let test_window;
-  let test_attendee_id;
+  const ctx = {};
+  let rawVideoSum = null;
 
   testSetup.setupBaseTest();
+  
+  // Use the standard setup steps
+  addAllSetupSteps(ctx, { ignoredEvents });
 
-  step('should open the meeting demo', async function () {
-    test_window = await Window.existing(this.driverFactoryOne.driver, this.logger, 'TEST');
-    await test_window.runCommands(async () => await this.pageOne.open(this.driverFactoryOne.url));
+  // Turn on video first
+  step('test attendee should turn on video', async function () {
+    await ctx.test_window.runCommands(async () => await this.pageOne.turnVideoOn());
   });
 
-  step('should authenticate user', async function () {
-    test_attendee_id = 'Video Processing Test - ' + uuidv4();
-    await test_window.runCommands(async () => await this.pageOne.enterMeetingId(uuidv4()));
-    await test_window.runCommands(async () => await this.pageOne.enterAttendeeName(test_attendee_id));
-    await test_window.runCommands(async () => await this.pageOne.authenticate());
+  step('should validate videoInputSelected event', async function () {
+    await ctx.test_window.runCommands(async () => {
+      await this.pageOne.validateEvents(['videoInputSelected'], ignoredEvents, {});
+    });
   });
 
-  step('should join meeting', async function () {
-    await test_window.runCommands(async () => await this.pageOne.joinMeeting());
+  // Capture raw video sum before applying any filter (for VideoFx difference-based checks)
+  step('capture raw video sum before applying VideoFx blur', async function () {
+    await ctx.test_window.runCommands(async () => {
+      rawVideoSum = await this.pageOne.computeVideoSum(ctx.test_attendee_id);
+    });
   });
 
-  step('should turn on video', async function () {
-    await test_window.runCommands(async () => await this.pageOne.turnVideoOn());
+  // Test VideoFx Background Blur
+  step('test attendee should enable VideoFx background blur', async function () {
+    await ctx.test_window.runCommands(async () => await this.pageOne.enableVideoFxBackgroundBlur('Low'));
   });
 
-  step('should verify local video is on', async function () {
-    await test_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.PLAY, test_attendee_id));
+  step('should validate VideoFx background blur filter events', async function () {
+    await ctx.test_window.runCommands(async () => {
+      // Enabling VideoFx blur triggers backgroundFilterConfigSelected and videoInputSelected
+      await this.pageOne.validateEvents(
+        ['backgroundFilterConfigSelected', 'videoInputSelected'], 
+        ignoredEvents, 
+        {}
+      );
+    });
   });
 
-  step('should enable background blur filter', async function () {
-    await test_window.runCommands(async () => await this.pageOne.enableBackgroundBlur());
+  step('VideoFx background blur should be active', async function () {
+    await ctx.test_window.runCommands(async () => 
+      await this.pageOne.checkVideoFilterApplied('backgroundBlur')
+    );
   });
 
-  step('background blur should be active', async function () {
-    await test_window.runCommands(async () => await this.pageOne.checkVideoFilterApplied('backgroundBlur'));
+  // Required pixel-based VideoFx background blur verification
+  step('VideoFx background blur should be verified with pixel check', async function () {
+    await ctx.test_window.runCommands(async () => {
+      const blurPassed = await this.pageOne.videoFxBackgroundBlurCheck(ctx.test_attendee_id, rawVideoSum);
+      if (!blurPassed) {
+        throw new Error('VideoFx background blur pixel check failed - filter not properly applied');
+      }
+    });
   });
 
-  step('should verify video processing pipeline is active', async function () {
-    await test_window.runCommands(async () => await this.pageOne.checkVideoState(VideoState.PLAY, test_attendee_id));
+  // Capture new raw video sum before switching to replacement
+  step('capture raw video sum before applying VideoFx replacement', async function () {
+    // First disable the current filter
+    await ctx.test_window.runCommands(async () => await this.pageOne.disableVideoFilter());
+    // Wait for filter to be fully disabled
+    await ctx.test_window.runCommands(async () => 
+      await this.pageOne.checkVideoFilterDisabled()
+    );
+    // Capture the raw video sum
+    await ctx.test_window.runCommands(async () => {
+      rawVideoSum = await this.pageOne.computeVideoSum(ctx.test_attendee_id);
+    });
   });
 
-  step('should verify processed video output', async function () {
-    await test_window.runCommands(async () => await this.pageOne.verifyBackgroundBlurApplied());
+  // Test VideoFx Background Replacement
+  step('test attendee should enable VideoFx background replacement', async function () {
+    await ctx.test_window.runCommands(async () => await this.pageOne.enableVideoFxBackgroundReplacement('Default'));
   });
+
+  step('should validate VideoFx background replacement filter events', async function () {
+    await ctx.test_window.runCommands(async () => {
+      // Enabling replacement triggers videoInputSelected and backgroundFilterConfigSelected
+      await this.pageOne.validateEvents(
+        ['videoInputSelected', 'backgroundFilterConfigSelected'], 
+        ignoredEvents, 
+        {}
+      );
+    });
+  });
+
+  step('VideoFx background replacement should be active', async function () {
+    await ctx.test_window.runCommands(async () => 
+      await this.pageOne.checkVideoFilterApplied('backgroundReplacement')
+    );
+  });
+
+  // Required pixel-based VideoFx background replacement verification
+  step('VideoFx background replacement should be verified with pixel check', async function () {
+    await ctx.test_window.runCommands(async () => {
+      const replacementPassed = await this.pageOne.videoFxBackgroundReplacementCheck(ctx.test_attendee_id, rawVideoSum);
+      if (!replacementPassed) {
+        throw new Error('VideoFx background replacement pixel check failed - filter not properly applied');
+      }
+    });
+  });
+
+  // Disable filter
+  step('test attendee should disable video filter', async function () {
+    await ctx.test_window.runCommands(async () => await this.pageOne.disableVideoFilter());
+  });
+
+  step('video filter should be disabled', async function () {
+    await ctx.test_window.runCommands(async () => 
+      await this.pageOne.checkVideoFilterDisabled()
+    );
+  });
+
+  addCleanupSteps(ctx, { ignoredEvents, additionalIgnored: ['videoInputSelected'] });
 });
