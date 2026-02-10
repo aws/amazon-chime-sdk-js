@@ -84,8 +84,8 @@ import VideoOnlyTransceiverController from '../transceivercontroller/VideoOnlyTr
 import { Maybe } from '../utils/Types';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
-import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import { convertVideoPreferencesToSignalingClientVideoSubscriptionConfiguration } from '../videodownlinkbandwidthpolicy/VideoPreferences';
+import VideoPriorityBasedPolicy from '../videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
@@ -584,12 +584,6 @@ export default class DefaultAudioVideoController
 
       simulcastPolicy.addObserver(this);
 
-      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
-        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
-          this.meetingSessionContext.logger
-        );
-      }
-
       this.meetingSessionContext.videoStreamIndex = new SimulcastVideoStreamIndex(this.logger);
     } else {
       this.meetingSessionContext.enableSimulcast = false;
@@ -605,10 +599,6 @@ export default class DefaultAudioVideoController
           );
         this.meetingSessionContext.videoUplinkBandwidthPolicy.setSVCEnabled(this.enableSVC);
       }
-      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
-        this.meetingSessionContext.videoDownlinkBandwidthPolicy =
-          new AllHighestVideoBandwidthPolicy(this.configuration.credentials.attendeeId);
-      }
 
       if (
         this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController &&
@@ -620,6 +610,13 @@ export default class DefaultAudioVideoController
         );
       }
       this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+
+    if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
+      this.meetingSessionContext.videoDownlinkBandwidthPolicy =
+        this.enableSVC || this.enableSimulcast
+          ? new VideoPriorityBasedPolicy(this.meetingSessionContext.logger)
+          : new AllHighestVideoBandwidthPolicy(this.configuration.credentials.attendeeId);
     }
 
     if (
