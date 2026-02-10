@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
@@ -16,10 +17,10 @@ import SignalingClientEventType from '../../src/signalingclient/SignalingClientE
 import { SdkLeaveAckFrame, SdkSignalFrame } from '../../src/signalingprotocol/SignalingProtocol.js';
 import LeaveAndReceiveLeaveAckTask from '../../src/task/LeaveAndReceiveLeaveAckTask';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('LeaveAndReceiveLeaveAckTask', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -28,6 +29,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder;
   const behavior = new DOMMockBehavior();
+  let clock: sinon.SinonFakeTimers;
 
   let webSocketAdapter: DefaultWebSocketAdapter;
   let signalingClient: SignalingClient;
@@ -48,6 +50,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
   }
 
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBuilder = new DOMMockBuilder(behavior);
     context = new AudioVideoControllerState();
     context.browserBehavior = new DefaultBrowserBehavior();
@@ -69,40 +72,47 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     domMockBuilder.cleanup();
   });
 
   describe('run', () => {
     it('can be run', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
       leaveAckBuffer = makeLeaveAckFrame();
       new TimeoutScheduler(100).start(() => webSocketAdapter.send(leaveAckBuffer));
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 150);
+      await runPromise;
     });
 
     it('completes when the connection is closed while waiting for ack', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
       new TimeoutScheduler(50).start(() => webSocketAdapter.close());
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 100);
+      await runPromise;
     });
 
     it('completes when receiving closing event while waiting for ack', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
       new TimeoutScheduler(50).start(() => context.signalingClient.closeConnection());
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 100);
+      await runPromise;
     });
 
     it('completes when receiving error event while waiting for ack', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
@@ -110,11 +120,13 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
         behavior.webSocketSendSucceeds = false;
         webSocketAdapter.send(new Uint8Array([0]));
       });
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 100);
+      await runPromise;
     });
 
     it('completes when receiving failed event while waiting for ack', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
@@ -128,11 +140,13 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
           )
         );
       });
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 100);
+      await runPromise;
     });
 
     it('completes when the connection is already closed', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       context.signalingClient.closeConnection();
@@ -143,18 +157,20 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
 
   describe('cancel', () => {
     it('should cancel the task and throw the reject', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
       const task = new LeaveAndReceiveLeaveAckTask(context);
       new TimeoutScheduler(100).start(() => task.cancel());
+      const runPromise = task.run();
+      await tick(clock, 150);
       try {
-        await task.run();
+        await runPromise;
         assert.fail();
       } catch (_err) {}
     });
 
     it('will cancel idempotently', async () => {
-      await delay(waitTimeMs);
+      await tick(clock, waitTimeMs);
       const task = new LeaveAndReceiveLeaveAckTask(context);
       task.cancel();
       task.cancel();

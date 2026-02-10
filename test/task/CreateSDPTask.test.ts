@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import CreateSDPTask from '../../src/task/CreateSDPTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -123,27 +123,38 @@ describe('CreateSDPTask', () => {
   });
 
   describe('cancel', () => {
-    it('cancels a task when the session is timed out', done => {
-      let called = false;
+    it('cancels a task when the session is timed out', async () => {
+      const clock = sinon.useFakeTimers();
+      try {
+        let called = false;
 
-      domMockBehavior.asyncWaitMs = 500;
-      new TimeoutScheduler(50).start(() => {
-        task.cancel();
-      });
+        domMockBehavior.asyncWaitMs = 500;
 
-      task
-        .run()
-        .then(() => {
-          done(new Error('This line should not be reached.'));
-        })
-        .catch(() => {
-          called = true;
-        });
+        // Schedule the cancel after 50ms
+        setTimeout(() => {
+          task.cancel();
+        }, 50);
 
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 50).start(() => {
+        const runPromise = task
+          .run()
+          .then(() => {
+            throw new Error('This line should not be reached.');
+          })
+          .catch(() => {
+            called = true;
+          });
+
+        // Advance time to trigger the cancel
+        await clock.tickAsync(50);
+
+        // Advance time to complete the async operation
+        await clock.tickAsync(domMockBehavior.asyncWaitMs + 50);
+
+        await runPromise;
         expect(called).to.be.true;
-        done();
-      });
+      } finally {
+        clock.restore();
+      }
     });
   });
 });

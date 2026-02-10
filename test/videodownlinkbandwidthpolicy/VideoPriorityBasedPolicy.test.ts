@@ -21,7 +21,6 @@ import {
   SdkStreamDescriptor,
   SdkStreamMediaType,
 } from '../../src/signalingprotocol/SignalingProtocol';
-import { wait } from '../../src/utils/Utils';
 import TargetDisplaySize from '../../src/videodownlinkbandwidthpolicy/TargetDisplaySize';
 import VideoDownlinkObserver from '../../src/videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoPreference from '../../src/videodownlinkbandwidthpolicy/VideoPreference';
@@ -50,6 +49,7 @@ describe('VideoPriorityBasedPolicy', () => {
   }
   let originalDateNow: DateNow;
   let startTime: number;
+  let clock: sinon.SinonFakeTimers;
 
   function mockDateNow(): number {
     return startTime;
@@ -301,6 +301,10 @@ describe('VideoPriorityBasedPolicy', () => {
   }
 
   beforeEach(() => {
+    clock = sinon.useFakeTimers({
+      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
+      shouldClearNativeTimers: true,
+    });
     startTime = Date.now();
     originalDateNow = Date.now;
     Date.now = mockDateNow;
@@ -318,6 +322,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
   afterEach(() => {
     Date.now = originalDateNow;
+    clock.restore();
   });
 
   describe('construction', () => {
@@ -528,8 +533,10 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.forEachObserver((observer: VideoDownlinkObserver) => {
         observer.tileWillBePausedByDownlinkPolicy(1);
       });
+      const observerCalledAfterRemove = called(observer.tileWillBePausedByDownlinkPolicy);
       try {
-        await observerCalled;
+        await clock.tickAsync(1100);
+        await observerCalledAfterRemove;
         throw new Error('should not be called');
       } catch (error) {}
 
@@ -545,6 +552,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
       await observerCalled;
       try {
+        await clock.tickAsync(1100);
         await obs2Called;
       } catch (error) {}
 
@@ -1161,7 +1169,7 @@ describe('VideoPriorityBasedPolicy', () => {
           expect(state.paused).to.equal(false);
         }
       }
-      await wait(5);
+      await clock.tickAsync(5);
       expect(spyPause.calledOnceWith(attendee3TileId)).to.be.true;
 
       incrementTime(3000);
@@ -1182,7 +1190,7 @@ describe('VideoPriorityBasedPolicy', () => {
         const state = tile.state();
         expect(state.paused).to.equal(false);
       }
-      await wait(5);
+      await clock.tickAsync(5);
       expect(spyUnpause.calledOnceWith(attendee3TileId)).to.be.true;
       domMockBuilder.cleanup();
       spyPause.restore();

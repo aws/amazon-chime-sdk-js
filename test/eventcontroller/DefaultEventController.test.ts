@@ -12,7 +12,6 @@ import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
-import { wait as delay } from '../../src/utils/Utils';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -25,8 +24,13 @@ describe('DefaultEventController', () => {
   let logger: NoOpDebugLogger;
   let eventController: DefaultEventController;
   let emptyConfiguration: MeetingSessionConfiguration;
+  let clock: sinon.SinonFakeTimers;
 
   beforeEach(() => {
+    clock = sinon.useFakeTimers({
+      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
+      shouldClearNativeTimers: true,
+    });
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     logger = new NoOpDebugLogger();
@@ -45,6 +49,7 @@ describe('DefaultEventController', () => {
   afterEach(() => {
     eventController.destroy();
     domMockBuilder.cleanup();
+    clock.restore();
   });
 
   describe('construction', () => {
@@ -94,25 +99,28 @@ describe('DefaultEventController', () => {
   });
 
   describe('publishEvent', () => {
-    it('can receive the event', done => {
+    it('can receive the event', async () => {
       const eventName = 'audioInputFailed';
       const audioInputErrorMessage = 'Something went wrong';
 
       eventController = new DefaultEventController(emptyConfiguration, logger);
+      let receivedName: EventName | undefined;
+      let receivedAttributes: EventAttributes | undefined;
       eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          expect(name).to.equal(eventName);
-          expect(attributes.audioInputErrorMessage).to.equal(audioInputErrorMessage);
-          eventController.destroy();
-          done();
+          receivedName = name;
+          receivedAttributes = attributes;
         },
       });
       eventController.publishEvent(eventName, {
         audioInputErrorMessage,
       });
+      await clock.tickAsync(100);
+      expect(receivedName).to.equal(eventName);
+      expect(receivedAttributes?.audioInputErrorMessage).to.equal(audioInputErrorMessage);
     });
 
-    it('can receive the event even without the user agent', done => {
+    it('can receive the event even without the user agent', async () => {
       // @ts-ignore
       delete navigator.userAgent;
 
@@ -120,17 +128,20 @@ describe('DefaultEventController', () => {
       const videoInputErrorMessage = 'Camera does not work';
 
       eventController = new DefaultEventController(emptyConfiguration, logger);
+      let receivedName: EventName | undefined;
+      let receivedAttributes: EventAttributes | undefined;
       eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          expect(name).to.equal(eventName);
-          expect(attributes.videoInputErrorMessage).to.equal(videoInputErrorMessage);
-          eventController.destroy();
-          done();
+          receivedName = name;
+          receivedAttributes = attributes;
         },
       });
       eventController.publishEvent(eventName, {
         videoInputErrorMessage,
       });
+      await clock.tickAsync(100);
+      expect(receivedName).to.equal(eventName);
+      expect(receivedAttributes?.videoInputErrorMessage).to.equal(videoInputErrorMessage);
     });
 
     it('only gets events when observing', async () => {
@@ -149,11 +160,11 @@ describe('DefaultEventController', () => {
       eventController = new DefaultEventController(emptyConfiguration, logger);
       eventController.addObserver(eventObserver);
       eventController.publishEvent(eventName);
-      await delay(100);
+      await clock.tickAsync(100);
       expect(eventObserver.events).to.equal(1);
       eventController.removeObserver(eventObserver);
       eventController.publishEvent(eventName);
-      await delay(100);
+      await clock.tickAsync(100);
       expect(eventObserver.events).to.equal(1);
       mockBuilder.cleanup();
     });
@@ -171,38 +182,46 @@ describe('DefaultEventController', () => {
   });
 
   describe('device names', () => {
-    it('can get the full device name', done => {
+    it('can get the full device name', async () => {
       // @ts-ignore
       navigator.userAgent =
         'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1';
       const eventName = 'meetingStartRequested';
 
       eventController = new DefaultEventController(emptyConfiguration, logger);
+      let receivedName: EventName | undefined;
+      let receivedAttributes: EventAttributes | undefined;
       eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          expect(name).to.equal(eventName);
-          expect(attributes.deviceName).to.equal('Apple iPhone');
-          done();
+          receivedName = name;
+          receivedAttributes = attributes;
         },
       });
       eventController.publishEvent(eventName);
+      await clock.tickAsync(100);
+      expect(receivedName).to.equal(eventName);
+      expect(receivedAttributes?.deviceName).to.equal('Apple iPhone');
     });
 
-    it('can get the vendor name only', done => {
+    it('can get the vendor name only', async () => {
       // @ts-ignore
       navigator.userAgent =
         'Mozilla/4.0 (compatible; MSIE 7.0; Windows Phone OS 7.0; Trident/3.1; IEMobile/7.0; DELL; Venue Pro)';
       const eventName = 'meetingStartRequested';
 
       eventController = new DefaultEventController(emptyConfiguration, logger);
+      let receivedName: EventName | undefined;
+      let receivedAttributes: EventAttributes | undefined;
       eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          expect(name).to.equal(eventName);
-          expect(attributes.deviceName).to.equal('DELL');
-          done();
+          receivedName = name;
+          receivedAttributes = attributes;
         },
       });
       eventController.publishEvent(eventName);
+      await clock.tickAsync(100);
+      expect(receivedName).to.equal(eventName);
+      expect(receivedAttributes?.deviceName).to.equal('DELL');
     });
   });
 

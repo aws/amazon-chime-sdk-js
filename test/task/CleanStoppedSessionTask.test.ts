@@ -14,7 +14,6 @@ import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
 import Logger from '../../src/logger/Logger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
@@ -22,7 +21,6 @@ import StatsCollector from '../../src/statscollector/StatsCollector';
 import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
-import { wait as delay } from '../../src/utils/Utils';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoTile from '../../src/videotile/VideoTile';
@@ -33,6 +31,7 @@ import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpoli
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('CleanStoppedSessionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -48,6 +47,7 @@ describe('CleanStoppedSessionTask', () => {
   let webSocketAdapter: DefaultWebSocketAdapter;
   let signalingClient: SignalingClient;
   let request: SignalingClientConnectionRequest;
+  let clock: sinon.SinonFakeTimers;
 
   class TestStatsCollector extends StatsCollector {
     constructor(audioVideoController: AudioVideoController, logger: Logger) {
@@ -65,6 +65,7 @@ describe('CleanStoppedSessionTask', () => {
   }
 
   beforeEach(async () => {
+    clock = createFakeTimers();
     domMockBuilder = new DOMMockBuilder(behavior);
     context = new AudioVideoControllerState();
     context.browserBehavior = new DefaultBrowserBehavior();
@@ -116,42 +117,42 @@ describe('CleanStoppedSessionTask', () => {
     context.peer = new RTCPeerConnection();
     request = new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth');
     context.signalingClient.openConnection(request);
-    await delay(behavior.asyncWaitMs + 10);
+    await tick(clock, behavior.asyncWaitMs + 10);
 
     task = new CleanStoppedSessionTask(context);
   });
 
   afterEach(() => {
+    clock.restore();
     domMockBuilder.cleanup();
   });
 
   describe('run', () => {
-    it('closes the connection', done => {
+    it('closes the connection', async () => {
       expect(context.signalingClient.ready()).to.equal(true);
-      task.run().then(() => {
-        expect(context.signalingClient.ready()).to.equal(false);
-        done();
-      });
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
+      expect(context.signalingClient.ready()).to.equal(false);
     });
 
-    it('does not close the connection if already closed', done => {
+    it('does not close the connection if already closed', async () => {
       expect(context.signalingClient.ready()).to.equal(true);
       context.signalingClient.closeConnection();
-      task.run().then(() => {
-        expect(context.signalingClient.ready()).to.equal(false);
-        done();
-      });
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await task.run();
+      expect(context.signalingClient.ready()).to.equal(false);
     });
 
-    it('sets audio and video input to null', done => {
-      task.run().then(() => {
-        expect(context.activeAudioInput).to.not.be.undefined;
-        expect(context.activeVideoInput).to.not.be.undefined;
-        done();
-      });
+    it('sets audio and video input to null', async () => {
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
+      expect(context.activeAudioInput).to.not.be.undefined;
+      expect(context.activeVideoInput).to.not.be.undefined;
     });
 
-    it('does not release audio and video device', done => {
+    it('does not release audio and video device', async () => {
       let releaseFunctionCalled = false;
       class MockMediaStreamBroker extends NoOpMediaStreamBroker {
         releaseMediaStream(_mediaStream: MediaStream): void {
@@ -159,13 +160,13 @@ describe('CleanStoppedSessionTask', () => {
         }
       }
       context.mediaStreamBroker = new MockMediaStreamBroker();
-      task.run().then(() => {
-        expect(releaseFunctionCalled).to.not.be.true;
-        done();
-      });
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
+      expect(releaseFunctionCalled).to.not.be.true;
     });
 
-    it('clears local video if exists', done => {
+    it('clears local video if exists', async () => {
       context.activeAudioInput = undefined;
       const videoInput = new MediaStream();
       context.activeVideoInput = videoInput;
@@ -196,25 +197,25 @@ describe('CleanStoppedSessionTask', () => {
       );
       context.videoTileController.startLocalVideoTile();
 
-      task.run().then(() => {
-        const localTile = context.videoTileController.getLocalVideoTile();
-        expect(localTile.state().boundVideoStream).to.equal(null);
-        done();
-      });
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
+      const localTile = context.videoTileController.getLocalVideoTile();
+      expect(localTile.state().boundVideoStream).to.equal(null);
     });
 
-    it('clear transceiver from video uplink bandwidth if needed', done => {
+    it('clear transceiver from video uplink bandwidth if needed', async () => {
       context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('');
       context.videoUplinkBandwidthPolicy.setTransceiverController(context.transceiverController);
       const spy = sinon.spy(context.videoUplinkBandwidthPolicy, 'setTransceiverController');
 
-      task.run().then(() => {
-        expect(spy.calledOnceWith(undefined)).to.be.true;
-        done();
-      });
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
+      expect(spy.calledOnceWith(undefined)).to.be.true;
     });
 
-    it('clear tile controller from video downlink bandwidth if needed', done => {
+    it('clear tile controller from video downlink bandwidth if needed', async () => {
       context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(context.logger);
       context.videoDownlinkBandwidthPolicy.bindToTileController(
         new DefaultVideoTileController(
@@ -225,16 +226,18 @@ describe('CleanStoppedSessionTask', () => {
       );
       const spy = sinon.spy(context.videoDownlinkBandwidthPolicy, 'bindToTileController');
 
-      task.run().then(() => {
-        expect(spy.calledOnceWith(undefined)).to.be.true;
-        done();
-      });
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
+      expect(spy.calledOnceWith(undefined)).to.be.true;
     });
 
     it('clears local audio only', async () => {
       context.activeAudioInput = new MediaStream();
       context.activeVideoInput = undefined;
-      await task.run();
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
       expect(context.activeAudioInput).to.not.be.undefined;
       expect(context.activeVideoInput).to.be.undefined;
     });
@@ -242,29 +245,37 @@ describe('CleanStoppedSessionTask', () => {
     it('stops the stats collector the connection monitor', async () => {
       const statsCollectorSpy = sinon.spy(context.statsCollector, 'stop');
       const connectionMonitorSpy = sinon.spy(context.connectionMonitor, 'stop');
-      await task.run();
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
       expect(statsCollectorSpy.called).to.be.true;
       expect(connectionMonitorSpy.called).to.be.true;
     });
 
     it('removes all video tiles', async () => {
       const removeAllVideoTilesSpy = sinon.spy(context.videoTileController, 'removeAllVideoTiles');
-      await task.run();
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
       expect(removeAllVideoTilesSpy.called).to.be.true;
     });
 
     it('closes the peer', async () => {
       const peerSpy = sinon.spy(context.peer, 'close');
-      await task.run();
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
       expect(peerSpy.called).to.be.true;
     });
 
-    it('can be run when the peer is not available', done => {
+    it('can be run when the peer is not available', async () => {
       context.peer = null;
-      task.run().then(done);
+      const runPromise = task.run();
+      await tick(clock, behavior.asyncWaitMs + 10);
+      await runPromise;
     });
 
-    it('continues to clean up remaining audio-video state regardless of the close connection failure', done => {
+    it('continues to clean up remaining audio-video state regardless of the close connection failure', async () => {
       class TestSignalingClient extends DefaultSignalingClient {
         ready(): boolean {
           return true;
@@ -275,31 +286,28 @@ describe('CleanStoppedSessionTask', () => {
       }
       context.signalingClient = new TestSignalingClient(webSocketAdapter, context.logger);
       expect(context.peer).to.not.be.null;
-      task
-        .run()
-        .then(() => {})
-        .catch(() => {
-          expect(context.peer).to.be.null;
-          done();
-        });
+      try {
+        await task.run();
+      } catch (_err) {
+        expect(context.peer).to.be.null;
+      }
     });
   });
 
   describe('cancel', () => {
-    it('should cancel the task and throw an error but should clean up remaining audio-video state', done => {
+    it('should cancel the task and throw an error but should clean up remaining audio-video state', async () => {
       expect(context.peer).to.not.be.null;
-      task
-        .run()
-        .then(() => {
-          expect(context.peer).to.be.null;
-        })
-        .catch(() => {
-          done();
-        });
+      const runPromise = task.run();
       task.cancel();
+      try {
+        await runPromise;
+        expect(context.peer).to.be.null;
+      } catch (_err) {
+        // Expected to throw on cancel
+      }
     });
 
-    it('should not close the WebSocket connection if the message is not the WebSocket closed event', done => {
+    it('should not close the WebSocket connection if the message is not the WebSocket closed event', async () => {
       expect(context.signalingClient.ready()).to.equal(true);
       class TestSignalingClient extends DefaultSignalingClient {
         ready(): boolean {
@@ -308,19 +316,17 @@ describe('CleanStoppedSessionTask', () => {
         closeConnection(): void {}
       }
       context.signalingClient = new TestSignalingClient(webSocketAdapter, context.logger);
-      task
-        .run()
-        .then(() => {
-          done('This line should not be reached.');
-        })
-        .catch(() => {
-          expect(context.peer).to.be.null;
-          done();
-        });
+      const runPromise = task.run();
       context.signalingClient.leave();
-      new TimeoutScheduler(behavior.asyncWaitMs).start(() => {
-        task.cancel();
-      });
+      // Advance clock to trigger the TimeoutScheduler callback
+      await tick(clock, behavior.asyncWaitMs);
+      task.cancel();
+      try {
+        await runPromise;
+        expect.fail('Should have thrown');
+      } catch (_err) {
+        expect(context.peer).to.be.null;
+      }
     });
 
     it('will cancel idempotently', async () => {

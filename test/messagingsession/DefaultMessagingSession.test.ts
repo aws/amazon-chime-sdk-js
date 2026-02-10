@@ -16,12 +16,12 @@ import MessagingSessionConfiguration from '../../src/messagingsession/MessagingS
 import PrefetchOn from '../../src/messagingsession/PrefetchOn';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
 import ReconnectController from '../../src/reconnectcontroller/ReconnectController';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import SigV4 from '../../src/sigv4/SigV4';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('DefaultMessagingSession', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -42,6 +42,7 @@ describe('DefaultMessagingSession', () => {
   let dommMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
   let getMessSessionCnt = 0;
+  let clock: sinon.SinonFakeTimers;
 
   const v3ChimeClient = {
     config: {
@@ -138,6 +139,7 @@ describe('DefaultMessagingSession', () => {
   }
 
   beforeEach(() => {
+    clock = createFakeTimers();
     dommMockBehavior = new DOMMockBehavior();
     dommMockBehavior.webSocketSendEcho = true;
     domMockBuilder = new DOMMockBuilder(dommMockBehavior);
@@ -166,6 +168,7 @@ describe('DefaultMessagingSession', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     if (domMockBuilder) {
       domMockBuilder.cleanup();
       domMockBuilder = null;
@@ -180,62 +183,70 @@ describe('DefaultMessagingSession', () => {
   });
 
   describe('start', () => {
-    it('Can start', done => {
+    it('Can start', async () => {
+      let didStart = false;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(getMessSessionCnt).to.be.eq(1);
-          done();
+          didStart = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 50);
+      expect(didStart).to.be.true;
+      expect(getMessSessionCnt).to.be.eq(1);
     });
 
-    it('Can start with v3 client with v2 style', done => {
+    it('Can start with v3 client with v2 style', async () => {
       configuration.chimeClient = v3ChimeClientV2style;
+      let didStart = false;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(getMessSessionCnt).to.be.eq(1);
-          done();
+          didStart = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 50);
+      expect(didStart).to.be.true;
+      expect(getMessSessionCnt).to.be.eq(1);
     });
 
-    it('Can start with v2 client', done => {
+    it('Can start with v2 client', async () => {
       configuration.chimeClient = v2ChimeClient;
+      let didStart = false;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(getMessSessionCnt).to.be.eq(1);
-          done();
+          didStart = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 50);
+      expect(didStart).to.be.true;
+      expect(getMessSessionCnt).to.be.eq(1);
     });
 
-    it('Can start with hardcoded config url', done => {
+    it('Can start with hardcoded config url', async () => {
       configuration.endpointUrl = ENDPOINT_URL;
+      let didStart = false;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(getMessSessionCnt).to.be.eq(0);
-          done();
+          didStart = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 50);
+      expect(didStart).to.be.true;
+      expect(getMessSessionCnt).to.be.eq(0);
     });
 
-    it('Can start with prefetch on', done => {
+    it('Can start with prefetch on', async () => {
       const prefetchConfiguration = new MessagingSessionConfiguration(
         'userArn',
         '123',
@@ -251,20 +262,22 @@ describe('DefaultMessagingSession', () => {
         reconnectController,
         testSigV4
       );
+      let didStart = false;
       prefetchMessagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
-          done();
+          didStart = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       prefetchMessagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 50);
+      expect(didStart).to.be.true;
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
     });
 
-    it('Can start with prefetch on sort by unread', done => {
+    it('Can start with prefetch on sort by unread', async () => {
       const prefetchConfiguration = new MessagingSessionConfiguration(
         'userArn',
         '123',
@@ -281,22 +294,24 @@ describe('DefaultMessagingSession', () => {
         reconnectController,
         testSigV4
       );
+      let didStart = false;
       prefetchMessagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by')[0]).to.be.eq('unread');
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by').length).to.be.eq(1);
-          done();
+          didStart = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       prefetchMessagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 50);
+      expect(didStart).to.be.true;
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by')[0]).to.be.eq('unread');
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by').length).to.be.eq(1);
     });
 
-    it('Can start with prefetch on sort by last-message-timestamp', done => {
+    it('Can start with prefetch on sort by last-message-timestamp', async () => {
       const prefetchConfiguration = new MessagingSessionConfiguration(
         'userArn',
         '123',
@@ -313,27 +328,30 @@ describe('DefaultMessagingSession', () => {
         reconnectController,
         testSigV4
       );
+      let didStart = false;
       prefetchMessagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by')[0]).to.be.eq(
-            'last-message-timestamp'
-          );
-          expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by').length).to.be.eq(1);
-          done();
+          didStart = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       prefetchMessagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 50);
+      expect(didStart).to.be.true;
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-on')[0]).to.be.eq('connect');
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-on').length).to.be.eq(1);
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by')[0]).to.be.eq(
+        'last-message-timestamp'
+      );
+      expect(testSigV4.lastSignedQueryParams.get('prefetch-sort-by').length).to.be.eq(1);
     });
 
-    it('can reconnect with failures on getMessagingSession', done => {
+    it('can reconnect with failures on getMessagingSession', async () => {
       configuration.chimeClient = v3ChimeClientV2style;
       let didStartCount = 0;
       let didStartConnecting = 0;
+      let didStop = false;
       const savedClientBehavior = v3ChimeClientV2style.getMessagingSessionEndpoint;
       messagingSession.addObserver({
         messagingSessionDidStartConnecting(reconnecting: boolean): void {
@@ -353,9 +371,9 @@ describe('DefaultMessagingSession', () => {
               webSocket.send(SESSION_SUBSCRIBED_MSG);
             });
             webSocket.addEventListener('message', (_event: MessageEvent) => {
-              new TimeoutScheduler(10).start(() => {
+              setTimeout(() => {
                 messagingSession.stop();
-              });
+              }, 10);
             });
           }
         },
@@ -363,39 +381,42 @@ describe('DefaultMessagingSession', () => {
           didStartCount++;
         },
         messagingSessionDidStop(_event: CloseEvent): void {
-          expect(didStartConnecting).to.be.eq(2);
-          expect(didStartCount).to.be.eq(1);
-          expect(getMessSessionCnt).to.be.eq(2);
-          done();
+          didStop = true;
         },
       });
       messagingSession.start();
+      // Advance time to allow reconnection and all callbacks to complete
+      await tick(clock, 500);
+      expect(didStartConnecting).to.be.eq(2);
+      expect(didStartCount).to.be.eq(1);
+      expect(getMessSessionCnt).to.be.eq(2);
+      expect(didStop).to.be.true;
     });
 
-    it('Queue messages before SESSION_ESTABLISH', done => {
+    it('Queue messages before SESSION_ESTABLISH', async () => {
       let messageCount = 0;
+      let didStart = false;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
-          expect(messageCount).to.be.eq(0);
+          didStart = true;
         },
         messagingSessionDidReceiveMessage(_message: Message): void {
           messageCount++;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(createChannelMessage('message1'));
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
-      new TimeoutScheduler(200).start(() => {
-        expect(messageCount).to.be.eq(2);
-        done();
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(createChannelMessage('message1'));
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 200);
+      expect(didStart).to.be.true;
+      expect(messageCount).to.be.eq(2);
     });
 
-    it('Trigger DidStart only once', done => {
+    it('Trigger DidStart only once', async () => {
       let count = 0;
       let messageCount = 0;
+      let didStop = false;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
           count++;
@@ -407,78 +428,84 @@ describe('DefaultMessagingSession', () => {
           }
         },
         messagingSessionDidStop(_event: CloseEvent): void {
-          expect(count).to.be.eq(1);
-          done();
+          didStop = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-        webSocket.send(createChannelMessage('message1'));
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      webSocket.send(createChannelMessage('message1'));
+      await tick(clock, 100);
+      expect(count).to.be.eq(1);
+      expect(didStop).to.be.true;
     });
 
-    it('Do not trigger DidStart before receive first message', done => {
+    it('Do not trigger DidStart before receive first message', async () => {
       let count = 0;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
           count++;
         },
       });
-      webSocket.addEventListener('close', (_event: CloseEvent) => {
-        expect(count).to.be.eq(0);
-      });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.close(4401);
-      });
+      let closeEventReceived = false;
+      let catchCalled = false;
       messagingSession.start().catch(event => {
+        catchCalled = true;
         expect(event.code).to.be.eq(4401);
-        done();
       });
+      // Wait for websocket to be created and opened
+      await tick(clock, 20);
+      // Now add close event listener after websocket is created
+      webSocket.addEventListener('close', (_event: CloseEvent) => {
+        closeEventReceived = true;
+      });
+      webSocket.close(4401);
+      await tick(clock, 50);
+      expect(count).to.be.eq(0);
+      expect(closeEventReceived).to.be.true;
+      expect(catchCalled).to.be.true;
     });
 
     it('Do not start if there is an existing connection', async () => {
       const logSpy = sinon.spy(logger, 'info');
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
-      await messagingSession.start();
+      messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 10);
       await messagingSession.start();
       expect(logSpy.calledWith('messaging session already started'));
       logSpy.restore();
     });
 
-    it('Log error if websocket encounters an error', done => {
+    it('Log error if websocket encounters an error', async () => {
       dommMockBehavior.webSocketOpenSucceeds = false;
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
-      messagingSession.start().then(() => {
-        new TimeoutScheduler(10).start(() => {
-          expect(logSpy.calledOnce).to.be.true;
-          logSpy.restore();
-          done();
-        });
-      });
+      messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 20);
+      expect(logSpy.calledOnce).to.be.true;
+      logSpy.restore();
     });
   });
 
   describe('stop', () => {
-    it('can stop', done => {
+    it('can stop', async () => {
+      let didStop = false;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
           messagingSession.stop();
         },
         messagingSessionDidStop(_event: CloseEvent): void {
-          done();
+          didStop = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 100);
+      expect(didStop).to.be.true;
     });
 
     it('Do not stop if there is nothing to close', () => {
@@ -490,9 +517,10 @@ describe('DefaultMessagingSession', () => {
   });
 
   describe('reconnect', () => {
-    it('can reconnect', done => {
+    it('can reconnect', async () => {
       let didStartCount = 0;
       let didStartConnecting = 0;
+      let didStop = false;
       messagingSession.addObserver({
         messagingSessionDidStartConnecting(reconnecting: boolean): void {
           didStartConnecting++;
@@ -505,9 +533,9 @@ describe('DefaultMessagingSession', () => {
               webSocket.send(SESSION_SUBSCRIBED_MSG);
             });
             webSocket.addEventListener('message', (_event: MessageEvent) => {
-              new TimeoutScheduler(10).start(() => {
+              setTimeout(() => {
                 messagingSession.stop();
-              });
+              }, 10);
             });
           }
         },
@@ -515,17 +543,20 @@ describe('DefaultMessagingSession', () => {
           didStartCount++;
         },
         messagingSessionDidStop(_event: CloseEvent): void {
-          expect(didStartConnecting).to.be.eq(2);
-          expect(didStartCount).to.be.eq(1);
-          expect(getMessSessionCnt).to.be.eq(2);
-          done();
+          didStop = true;
         },
       });
       messagingSession.start();
+      await tick(clock, 500);
+      expect(didStartConnecting).to.be.eq(2);
+      expect(didStartCount).to.be.eq(1);
+      expect(getMessSessionCnt).to.be.eq(2);
+      expect(didStop).to.be.true;
     });
 
-    it('will not reconnect', done => {
+    it('will not reconnect', async () => {
       let didStartConnecting = 0;
+      let didStop = false;
       messagingSession.addObserver({
         messagingSessionDidStartConnecting(_reconnecting: boolean): void {
           didStartConnecting++;
@@ -534,21 +565,24 @@ describe('DefaultMessagingSession', () => {
               webSocket.send(SESSION_SUBSCRIBED_MSG);
             });
             webSocket.addEventListener('message', (_event: MessageEvent) => {
-              new TimeoutScheduler(10).start(() => {
+              setTimeout(() => {
                 webSocket.close(1005);
-              });
+              }, 10);
             });
           }
         },
         messagingSessionDidStop(_event: CloseEvent): void {
-          expect(didStartConnecting).to.be.eq(1);
-          done();
+          didStop = true;
         },
       });
       messagingSession.start();
+      await tick(clock, 500);
+      expect(didStartConnecting).to.be.eq(1);
+      expect(didStop).to.be.true;
     });
 
-    it('reconnect will stop after timeout', done => {
+    it('reconnect will stop after timeout', async () => {
+      let didStop = false;
       messagingSession.addObserver({
         messagingSessionDidStartConnecting(reconnecting: boolean): void {
           if (reconnecting) {
@@ -562,18 +596,19 @@ describe('DefaultMessagingSession', () => {
           webSocket.close(1006);
         },
         messagingSessionDidStop(_event: CloseEvent): void {
-          done();
+          didStop = true;
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 500);
+      expect(didStop).to.be.true;
     });
   });
 
   describe('observer', () => {
-    it('will not receive event if remove observers', done => {
+    it('will not receive event if remove observers', async () => {
       let didStart = 0;
       const observer = {
         messagingSessionDidStart(): void {
@@ -581,46 +616,41 @@ describe('DefaultMessagingSession', () => {
         },
       };
       messagingSession.addObserver(observer);
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
-      messagingSession.start().then(() => {
-        messagingSession.removeObserver(observer);
-        expect(didStart).to.be.eq(0);
-        done();
-      });
+      messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 10);
+      messagingSession.removeObserver(observer);
+      expect(didStart).to.be.eq(0);
     });
 
-    it('will not call observer method if it is not implemented', done => {
+    it('will not call observer method if it is not implemented', async () => {
+      let didStart = false;
       messagingSession.addObserver({
         messagingSessionDidStart(): void {
+          didStart = true;
           messagingSession.stop();
-          new TimeoutScheduler(10).start(() => {
-            done();
-          });
         },
       });
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
       messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 20);
+      expect(didStart).to.be.true;
     });
   });
 
   describe('message', () => {
-    it('Catch JSON parse error', done => {
+    it('Catch JSON parse error', async () => {
       const logSpy = sinon.spy(logger, 'error');
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-      });
-      messagingSession.start().then(() => {
-        webSocket.send(INVALID_MSG);
-        new TimeoutScheduler(10).start(() => {
-          expect(logSpy.calledOnce).to.be.true;
-          logSpy.restore();
-          done();
-        });
-      });
+      messagingSession.start();
+      await tick(clock, 10);
+      webSocket.send(SESSION_SUBSCRIBED_MSG);
+      await tick(clock, 10);
+      webSocket.send(INVALID_MSG);
+      await tick(clock, 10);
+      expect(logSpy.calledOnce).to.be.true;
+      logSpy.restore();
     });
   });
 });

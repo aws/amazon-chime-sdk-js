@@ -21,7 +21,6 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import { Maybe } from '../../src/utils/Types';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultSimulcastUplinkPolicyForContentShare from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
@@ -37,6 +36,7 @@ describe('DefaultContentShareController', () => {
   let attendeeAudioVideoController: AudioVideoController;
   let mediaStream: MediaStream;
   let domMockBuilder: DOMMockBuilder;
+  let clock: sinon.SinonFakeTimers;
 
   const defaultDelay = domMockBehavior.asyncWaitMs * 5;
 
@@ -88,7 +88,7 @@ describe('DefaultContentShareController', () => {
     }
 
     async start(): Promise<void> {
-      await delay(1);
+      await clock.tickAsync(1);
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
       });
@@ -139,6 +139,10 @@ describe('DefaultContentShareController', () => {
     let contentShareMeetingSessionConfigure: MeetingSessionConfiguration = undefined;
 
     beforeEach(() => {
+      clock = sinon.useFakeTimers({
+        toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
+        shouldClearNativeTimers: true,
+      });
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
       const meetingSessionConfigure = makeSessionConfiguration();
@@ -170,6 +174,7 @@ describe('DefaultContentShareController', () => {
         domMockBuilder = null;
       }
       contentShareController.removeContentShareObserver(contentShareObserver);
+      clock.restore();
     });
 
     it('can be constructed', () => {
@@ -256,7 +261,7 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.notCalled).to.be.true;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.notCalled).to.be.true;
       expect(videoTileSpy.notCalled).to.be.true;
       expect(selfVideoTileSpy.notCalled).to.be.true;
@@ -277,7 +282,7 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
       expect(videoTileSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.calledOnce).to.be.true;
@@ -297,7 +302,7 @@ describe('DefaultContentShareController', () => {
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
       expect(videoTileSpy.notCalled).to.be.true;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.notCalled).to.be.true;
     });
@@ -317,7 +322,7 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       contentShareController.startContentShare(mediaStream);
       contentShareMediaStreamBroker.mediaStream = null;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(audioVideoSpy.calledOnce).to.be.true;
       expect(videoTileSpy.notCalled).to.be.true;
       expect(contentShareObserverSpy.calledOnce).to.be.true;
@@ -338,7 +343,7 @@ describe('DefaultContentShareController', () => {
       await contentShareController.startContentShare(null);
       expect(audioVideoSpy.notCalled).to.be.true;
       expect(videoTileSpy.notCalled).to.be.true;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.notCalled).to.be.true;
       expect(selfVideoTileSpy.notCalled).to.be.true;
     });
@@ -358,7 +363,7 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
       expect(videoTileSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.calledOnce).to.be.true;
@@ -395,7 +400,7 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
       expect(videoTileSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.calledOnce).to.be.true;
@@ -439,7 +444,7 @@ describe('DefaultContentShareController', () => {
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShareFromScreenCapture();
       expect(mediaStreamBrokerSpy.calledOnce).to.be.true;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
@@ -450,7 +455,7 @@ describe('DefaultContentShareController', () => {
       contentShareController.stopContentShare();
       expect(audioVideoSpy.calledOnce).to.be.true;
       expect(mediaStreamBrokerSpy.calledOnce).to.be.true;
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
@@ -465,9 +470,9 @@ describe('DefaultContentShareController', () => {
       const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
       mediaStream.addTrack(mediaVideoTrack);
       await contentShareController.startContentShare(mediaStream);
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       (mediaVideoTrack as StoppableMediaStreamTrack).externalStop();
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareControllerSpy.calledOnce).to.be.true;
       expect(contentShareObserverSpy.calledOnce).to.be.true;
       expect(selfVideoTileSpy.calledOnce).to.be.true;
@@ -483,7 +488,7 @@ describe('DefaultContentShareController', () => {
       contentShareMediaStreamBroker.mediaStream = mediaStream;
       contentShareController.pauseContentShare();
       mediaStreamBrokerSpy.calledOnceWith(true);
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
@@ -497,7 +502,7 @@ describe('DefaultContentShareController', () => {
       contentShareMediaStreamBroker.mediaStream = mediaStream;
       contentShareController.pauseContentShare();
       mediaStreamBrokerSpy.calledOnceWith(true);
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.notCalled).to.be.true;
     });
 
@@ -511,7 +516,7 @@ describe('DefaultContentShareController', () => {
       contentShareMediaStreamBroker.mediaStream = mediaStream;
       contentShareController.unpauseContentShare();
       mediaStreamBrokerSpy.calledOnceWith(false);
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
@@ -525,7 +530,7 @@ describe('DefaultContentShareController', () => {
       contentShareMediaStreamBroker.mediaStream = mediaStream;
       contentShareController.unpauseContentShare();
       mediaStreamBrokerSpy.calledOnceWith(false);
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.notCalled).to.be.true;
     });
 
@@ -538,7 +543,7 @@ describe('DefaultContentShareController', () => {
       contentShareMediaStreamBroker.mediaStream = mediaStream;
       contentShareController.pauseContentShare();
       contentShareController.removeContentShareObserver(contentShareObserver);
-      await delay(defaultDelay);
+      await clock.tickAsync(defaultDelay);
       expect(contentShareObserverSpy.notCalled).to.be.true;
     });
 

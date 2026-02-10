@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import fetchMock from 'fetch-mock';
+import * as sinon from 'sinon';
 import { SinonStub, spy, stub } from 'sinon';
 
 // For mocking.
@@ -16,7 +17,6 @@ import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
 import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
 import Device from '../../src/devicecontroller/Device';
 import Logger from '../../src/logger/Logger';
-import { wait as delay } from '../../src/utils/Utils';
 import Versioning from '../../src/versioning/Versioning';
 import AGCOptions from '../../src/voicefocus/AGCOptions';
 import VoiceFocusDeviceTransformer from '../../src/voicefocus/VoiceFocusDeviceTransformer';
@@ -618,6 +618,7 @@ describe('VoiceFocusDeviceTransformer', () => {
     let configure: SinonStub;
     let init: SinonStub;
     let isSupported: SinonStub;
+    let clock: sinon.SinonFakeTimers;
 
     const supportedConfig: VoiceFocusConfig = {
       fetchConfig: undefined,
@@ -642,10 +643,18 @@ describe('VoiceFocusDeviceTransformer', () => {
       isSupported = stub(VoiceFocus, 'isSupported');
     });
 
+    beforeEach(() => {
+      clock = sinon.useFakeTimers({
+        toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
+        shouldClearNativeTimers: true,
+      });
+    });
+
     afterEach(() => {
       configure.reset();
       init.reset();
       isSupported.reset();
+      if (clock) clock.restore();
     });
 
     after(() => {
@@ -1230,7 +1239,7 @@ describe('VoiceFocusDeviceTransformer', () => {
       await device.meetingAudioStreamBecameActive(streamDefault);
       await device.meetingAudioStreamBecameActive(undefined);
       await device.createAudioNode(context);
-      await delay(100);
+      await clock.tickAsync(100);
       await device.meetingAudioStreamBecameInactive(streamDefault2);
       await device.meetingAudioStreamBecameInactive(streamDefault);
 
@@ -1258,7 +1267,7 @@ describe('VoiceFocusDeviceTransformer', () => {
       await device.createAudioNode(context);
 
       await device.meetingAudioStreamBecameActive(streamDefault);
-      await delay(100);
+      await clock.tickAsync(100);
       await device.meetingAudioStreamBecameInactive(streamDefault);
       DefaultDeviceController.closeAudioContext();
       if (domMockBuilder) {

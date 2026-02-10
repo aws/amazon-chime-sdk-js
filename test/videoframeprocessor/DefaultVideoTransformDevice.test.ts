@@ -474,25 +474,38 @@ describe('DefaultVideoTransformDevice', () => {
     });
 
     it('processingLatencyTooHigh', async () => {
-      class Observer2 implements DefaultVideoTransformDeviceObserver {}
-      const obs = new MockObserver();
+      const clock = sinon.useFakeTimers();
+      try {
+        class Observer2 implements DefaultVideoTransformDeviceObserver {}
+        const obs = new MockObserver();
 
-      const latencyCallback = called(obs.processingLatencyTooHigh);
+        const processingDelay = (1000 / 15) * 3; // ~200ms
 
-      class WrongProcessor extends NoOpVideoFrameProcessor {
-        async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
-          await new Promise(resolve => setTimeout(resolve, (1000 / 15) * 3));
-          return buffers;
+        class WrongProcessor extends NoOpVideoFrameProcessor {
+          async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
+            await new Promise(resolve => setTimeout(resolve, processingDelay));
+            return buffers;
+          }
         }
-      }
 
-      const procs = [new WrongProcessor()];
-      const device = new DefaultVideoTransformDevice(logger, 'test', procs);
-      device.addObserver(obs);
-      device.addObserver(new Observer2());
-      await device.transformStream(mockVideoStream);
-      await latencyCallback;
-      await device.stop();
+        const procs = [new WrongProcessor()];
+        const device = new DefaultVideoTransformDevice(logger, 'test', procs);
+        device.addObserver(obs);
+        device.addObserver(new Observer2());
+
+        const transformPromise = device.transformStream(mockVideoStream);
+
+        // Advance time to allow processing to start and trigger latency callback
+        await clock.tickAsync(processingDelay + 100);
+
+        expect(obs.processingLatencyTooHigh.called).to.be.true;
+
+        await device.stop();
+        await clock.tickAsync(100);
+        await transformPromise;
+      } finally {
+        clock.restore();
+      }
     });
   });
 });

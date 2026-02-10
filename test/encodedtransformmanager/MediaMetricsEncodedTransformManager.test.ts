@@ -22,8 +22,13 @@ describe('MediaMetricsTransformManager', () => {
   let domMockBuilder: DOMMockBuilder | null = null;
   let mockWorker: Worker;
   let manager: MediaMetricsTransformManager;
+  let clock: sinon.SinonFakeTimers;
 
   beforeEach(() => {
+    clock = sinon.useFakeTimers({
+      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
+      shouldClearNativeTimers: true,
+    });
     domMockBuilder = new DOMMockBuilder(new DOMMockBehavior());
     // @ts-ignore
     mockWorker = new Worker('test-url');
@@ -36,6 +41,7 @@ describe('MediaMetricsTransformManager', () => {
       domMockBuilder.cleanup();
       domMockBuilder = null;
     }
+    clock.restore();
   });
 
   describe('constructor', () => {
@@ -91,7 +97,7 @@ describe('MediaMetricsTransformManager', () => {
         encodedTransformMediaMetricsDidReceive: sinon.stub(),
       };
       manager.addObserver(observer);
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await clock.tickAsync(1100);
 
       const stub = observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub;
       expect(stub.called).to.be.true;
@@ -111,7 +117,7 @@ describe('MediaMetricsTransformManager', () => {
         encodedTransformMediaMetricsDidReceive: sinon.stub(),
       };
       manager.addObserver(observer);
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await clock.tickAsync(1100);
 
       expect(
         (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).firstCall.args[0]
@@ -132,7 +138,7 @@ describe('MediaMetricsTransformManager', () => {
         encodedTransformMediaMetricsDidReceive: sinon.stub(),
       };
       manager.addObserver(observer);
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await clock.tickAsync(1100);
 
       expect(
         (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).firstCall.args[0]
@@ -153,7 +159,7 @@ describe('MediaMetricsTransformManager', () => {
         encodedTransformMediaMetricsDidReceive: sinon.stub(),
       };
       manager.addObserver(observer);
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await clock.tickAsync(1100);
 
       expect(
         (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).firstCall.args[0]
@@ -177,11 +183,11 @@ describe('MediaMetricsTransformManager', () => {
         encodedTransformMediaMetricsDidReceive: sinon.stub(),
       };
       manager.addObserver(observer);
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await clock.tickAsync(1100);
       expect((observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).called).to.be
         .true;
       manager.removeObserver(observer);
-    }).timeout(5000);
+    });
   });
 
   describe('reportMetrics', () => {
@@ -196,7 +202,7 @@ describe('MediaMetricsTransformManager', () => {
       manager.addObserver(observer1);
       manager.addObserver(observer2);
 
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await clock.tickAsync(1100);
       expect((observer1.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).called).to.be
         .true;
       expect((observer2.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).called).to.be
@@ -215,7 +221,7 @@ describe('MediaMetricsTransformManager', () => {
       };
       manager.addObserver(workingObserver);
 
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await clock.tickAsync(1100);
       expect((workingObserver.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).called).to
         .be.true;
     });
@@ -239,7 +245,7 @@ describe('MediaMetricsTransformManager', () => {
       await manager.stop();
 
       (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub).resetHistory();
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await clock.tickAsync(1100);
 
       const receivedMetrics = (observer.encodedTransformMediaMetricsDidReceive as sinon.SinonStub)
         .firstCall?.args[0];

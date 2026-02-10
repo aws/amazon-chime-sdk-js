@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import {
   AllHighestVideoBandwidthPolicy,
@@ -25,7 +26,6 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import ServerSideNetworkAdaption from '../../src/signalingclient/ServerSideNetworkAdaption';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
@@ -40,7 +40,6 @@ import {
   SdkSubscribeAckFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SubscribeAndReceiveSubscribeAckTask from '../../src/task/SubscribeAndReceiveSubscribeAckTask';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoQualityAdaptationPreference from '../../src/videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
@@ -49,6 +48,7 @@ import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import FirefoxSDPMock from '../sdp/FirefoxSDPMock';
 import SDPMock from '../sdp/SDPMock';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('SubscribeAndReceiveSubscribeAckTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -67,6 +67,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
   let context: AudioVideoControllerState;
   let webSocketAdapter: DefaultWebSocketAdapter;
   let subscribeAckBuffer: Uint8Array;
+  let clock: sinon.SinonFakeTimers;
 
   class TestSignalingClient extends DefaultSignalingClient {
     settings: SignalingClientSubscribe;
@@ -78,6 +79,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
   }
 
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBuilder = new DOMMockBuilder(behavior);
 
     context = new AudioVideoControllerState();
@@ -136,18 +138,23 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
 
   afterEach(async () => {
     context.signalingClient.closeConnection();
-    await delay(behavior.asyncWaitMs);
+    await clock.tickAsync(behavior.asyncWaitMs);
     domMockBuilder.cleanup();
+    clock.restore();
   });
 
   describe('run', () => {
     it('can subscribe SdkSubscribeAckFrame', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      setTimeout(() => {
+        webSocketAdapter.send(subscribeAckBuffer);
+      }, waitTimeMs);
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -163,12 +170,16 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       context.serverSupportsCompression = true;
       context.previousSdpOffer = null;
 
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      setTimeout(() => {
+        webSocketAdapter.send(subscribeAckBuffer);
+      }, waitTimeMs);
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -187,12 +198,16 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
 
       context.previousSdpOffer = new SDP(description.sdp);
 
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      setTimeout(() => {
+        webSocketAdapter.send(subscribeAckBuffer);
+      }, waitTimeMs);
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -202,7 +217,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('can subscribe SdkSubscribeAckFrame with SDP', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const description: RTCSessionDescriptionInit = {
         type: 'offer',
@@ -213,8 +228,12 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       context.videoSubscriptions = [1, 2, 3, -1];
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      setTimeout(() => {
+        webSocketAdapter.send(subscribeAckBuffer);
+      }, waitTimeMs);
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -227,7 +246,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('can subscribe SdkSubscribeAckFrame with SDP with no subscriptions', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const description: RTCSessionDescriptionInit = {
         type: 'offer',
@@ -238,8 +257,12 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       context.videoSubscriptions = [0, 0, 0];
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      setTimeout(() => {
+        webSocketAdapter.send(subscribeAckBuffer);
+      }, waitTimeMs);
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -252,7 +275,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('can subscribe SdkSubscribeAckFrame with SDP without getMidForStreamId', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const description: RTCSessionDescriptionInit = {
         type: 'offer',
@@ -264,8 +287,12 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       context.transceiverController.getMidForStreamId = undefined;
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      setTimeout(() => {
+        webSocketAdapter.send(subscribeAckBuffer);
+      }, waitTimeMs);
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -278,7 +305,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('can subscribe SdkSubscribeAckFrame with remote video subscriptions', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       class TestDownlinkPolicy extends AllHighestVideoBandwidthPolicy {
         getServerSideNetworkAdaption(): ServerSideNetworkAdaption {
           return ServerSideNetworkAdaption.BandwidthProbing;
@@ -340,8 +367,12 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy('self');
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      setTimeout(() => {
+        webSocketAdapter.send(subscribeAckBuffer);
+      }, waitTimeMs);
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -367,7 +398,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('can subscribe SdkSubscribeAckFrame with remote video subscriptions except no getMidForStreamId', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       class TestDownlinkPolicy extends AllHighestVideoBandwidthPolicy {
         getServerSideNetworkAdaption(): ServerSideNetworkAdaption {
           return ServerSideNetworkAdaption.BandwidthProbing;
@@ -415,8 +446,11 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy('self');
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      webSocketAdapter.send(subscribeAckBuffer);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -424,11 +458,14 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('can receive SdkSubscribeAckFrame', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      webSocketAdapter.send(subscribeAckBuffer);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
+      await taskPromise;
       expect(context.sdpAnswer).to.equal(sdpAnswer);
     });
 
@@ -449,11 +486,14 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       subscribeAckBuffer[0] = 0x5;
       subscribeAckBuffer.set(buffer, 1);
 
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      webSocketAdapter.send(subscribeAckBuffer);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -479,12 +519,15 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       subscribeAckBuffer[0] = 0x5;
       subscribeAckBuffer.set(buffer, 1);
 
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      webSocketAdapter.send(subscribeAckBuffer);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       try {
-        await task.run();
+        await taskPromise;
       } catch {
         expect(context.previousSdpAnswerAsString).to.be.equal('');
       }
@@ -493,12 +536,15 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     it('can subscribe without videoCaptureAndEncodeParameter', async () => {
       context.videoCaptureAndEncodeParameter = null;
 
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      webSocketAdapter.send(subscribeAckBuffer);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -514,15 +560,18 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       navigator.userAgent =
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
       context.browserBehavior = new DefaultBrowserBehavior();
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const description: RTCSessionDescriptionInit = { type: 'offer', sdp: 'sdp-offer' };
       context.peer = new RTCPeerConnection();
       context.peer.setLocalDescription(description);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
-      await task.run();
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      webSocketAdapter.send(subscribeAckBuffer);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
+      await taskPromise;
 
       const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
         .settings;
@@ -544,19 +593,18 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         receivedStatus = true;
         return true;
       };
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() =>
-        webSocketAdapter.close(4500, 'service unavailable')
-      );
-      new TimeoutScheduler(200).start(() => {
-        // Simulate task cancellation due to close message being received
-        task.cancel();
-      });
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      webSocketAdapter.close(4500, 'service unavailable');
+      await clock.tickAsync(200);
+      // Simulate task cancellation due to close message being received
+      task.cancel();
       try {
-        await task.run();
+        await taskPromise;
         expect(false).to.equal(true);
       } catch {
         expect(receivedStatus).to.equal(true);
@@ -574,17 +622,18 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         receivedStatus = true;
         return true;
       };
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => context.signalingClient.closeConnection());
-      new TimeoutScheduler(200).start(() => {
-        // Simulate task cancellation due to close message being received
-        task.cancel();
-      });
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      context.signalingClient.closeConnection();
+      await clock.tickAsync(200);
+      // Simulate task cancellation due to close message being received
+      task.cancel();
       try {
-        await task.run();
+        await taskPromise;
         expect(false).to.equal(true);
       } catch {
         expect(receivedStatus).to.equal(true);
@@ -602,20 +651,19 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         receivedStatus = true;
         return true;
       };
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => {
-        behavior.webSocketSendSucceeds = false;
-        webSocketAdapter.send(new Uint8Array([0]));
-      });
-      new TimeoutScheduler(200).start(() => {
-        // Simulate task cancellation due to close message being received
-        task.cancel();
-      });
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      behavior.webSocketSendSucceeds = false;
+      webSocketAdapter.send(new Uint8Array([0]));
+      await clock.tickAsync(200);
+      // Simulate task cancellation due to close message being received
+      task.cancel();
       try {
-        await task.run();
+        await taskPromise;
         expect(false).to.equal(true);
       } catch {
         expect(receivedStatus).to.equal(true);
@@ -633,26 +681,25 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         receivedStatus = true;
         return true;
       };
-      await delay(behavior.asyncWaitMs + 200);
+      await clock.tickAsync(behavior.asyncWaitMs + 200);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => {
-        // @ts-ignore
-        context.signalingClient.sendEvent(
-          new SignalingClientEvent(
-            context.signalingClient,
-            SignalingClientEventType.WebSocketFailed,
-            null
-          )
-        );
-      });
-      new TimeoutScheduler(200).start(() => {
-        // Simulate task cancellation due to close message being received
-        task.cancel();
-      });
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      // @ts-ignore
+      context.signalingClient.sendEvent(
+        new SignalingClientEvent(
+          context.signalingClient,
+          SignalingClientEventType.WebSocketFailed,
+          null
+        )
+      );
+      await clock.tickAsync(200);
+      // Simulate task cancellation due to close message being received
+      task.cancel();
       try {
-        await task.run();
+        await taskPromise;
         expect(false).to.equal(true);
       } catch {
         expect(receivedStatus).to.equal(true);
@@ -670,17 +717,17 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         receivedStatus = true;
         return true;
       };
-      await delay(behavior.asyncWaitMs + 20);
+      await clock.tickAsync(behavior.asyncWaitMs + 20);
       expect(context.signalingClient.ready()).to.equal(true);
 
       context.signalingClient.closeConnection();
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(200).start(() => {
-        // Simulate task cancellation due to close message being received
-        task.cancel();
-      });
+      const taskPromise = task.run();
+      await clock.tickAsync(200);
+      // Simulate task cancellation due to close message being received
+      task.cancel();
       try {
-        await task.run();
+        await taskPromise;
         expect(false).to.equal(true);
       } catch {
         expect(receivedStatus).to.equal(true);
@@ -690,18 +737,20 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
 
   describe('cancel', () => {
     it('should cancel the task and throw the reject', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
-      new TimeoutScheduler(waitTimeMs).start(() => task.cancel());
+      const taskPromise = task.run();
+      await clock.tickAsync(waitTimeMs);
+      task.cancel();
       try {
-        await task.run();
+        await taskPromise;
         assert.fail();
       } catch (_err) {}
     });
 
     it('will cancel idempotently', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await clock.tickAsync(behavior.asyncWaitMs + 10);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
       task.cancel();

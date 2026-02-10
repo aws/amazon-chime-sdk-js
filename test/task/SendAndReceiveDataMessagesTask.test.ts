@@ -19,10 +19,10 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol';
 import SendAndReceiveDataMessagesTask from '../../src/task/SendAndReceiveDataMessagesTask';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('SendAndReceiveDataMessagesTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -74,7 +74,10 @@ describe('SendAndReceiveDataMessagesTask', () => {
     return dataMessageFrame;
   }
 
+  let clock: sinon.SinonFakeTimers;
+
   beforeEach(async () => {
+    clock = createFakeTimers();
     domMockBuilder = new DOMMockBuilder(behavior);
     webSocketAdapter = new DefaultWebSocketAdapter(logger);
 
@@ -90,11 +93,12 @@ describe('SendAndReceiveDataMessagesTask', () => {
       new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth')
     );
 
-    await delay(behavior.asyncWaitMs + 10);
+    await tick(clock, behavior.asyncWaitMs + 10);
     expect(context.signalingClient.ready()).to.equal(true);
   });
 
   afterEach(() => {
+    clock.restore();
     context.signalingClient.closeConnection();
     domMockBuilder.cleanup();
   });
@@ -108,7 +112,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text1));
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text2));
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text3));
-    await delay(behavior.asyncWaitMs + 10);
+    await tick(clock, behavior.asyncWaitMs + 10);
     expect(spy.callCount).to.equal(3);
     expect(spy.getCall(0).args[0].text()).to.eql(text1);
     expect(spy.getCall(1).args[0].text()).to.eql(text2);
@@ -122,7 +126,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
     const text2 = 'Test message 2';
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text1));
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text2, true));
-    await delay(behavior.asyncWaitMs + 10);
+    await tick(clock, behavior.asyncWaitMs + 10);
     expect(spy.callCount).to.equal(2);
     expect(spy.getCall(0).args[0].text()).to.eql(text1);
     expect(spy.getCall(0).args[0].throttled).to.be.false;

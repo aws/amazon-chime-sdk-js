@@ -13,9 +13,9 @@ import EventsClientConfiguration from '../../src/eventsclientconfiguration/Event
 import MeetingEventsClientConfiguration from '../../src/eventsclientconfiguration/MeetingEventsClientConfiguration';
 import Logger from '../../src/logger/Logger';
 import NoOpLogger from '../../src/logger/NoOpLogger';
-import { wait as delay } from '../../src/utils/Utils';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('InMemoryJSONEventBuffer', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -24,6 +24,7 @@ describe('InMemoryJSONEventBuffer', () => {
   let logger: Logger;
   let eventBufferConfiguration: EventBufferConfiguration;
   let meetingEventsClientConfiguration: EventsClientConfiguration;
+  let clock: sinon.SinonFakeTimers;
   const meetingId = 'meetingId';
   const attendeeId = 'attendeeId';
   const joinToken = 'joinToken';
@@ -50,6 +51,7 @@ describe('InMemoryJSONEventBuffer', () => {
   }
 
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     meetingEventsClientConfiguration = new MeetingEventsClientConfiguration(
@@ -72,6 +74,7 @@ describe('InMemoryJSONEventBuffer', () => {
   afterEach(() => {
     buffer.stop();
     domMockBuilder.cleanup();
+    clock.restore();
   });
 
   describe('constructor', () => {
@@ -198,13 +201,17 @@ describe('InMemoryJSONEventBuffer', () => {
         const item3 = getItemEvent('audioInputUnselected');
         const item4 = getItemEvent('meetingStartRequested');
         buffer.addItem(item1);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item2);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item3);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item4);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
       });
 
       it('events are sent once scheduled interval is reached and not added to cancellable events if not firefox', async () => {
@@ -225,13 +232,17 @@ describe('InMemoryJSONEventBuffer', () => {
         const item3 = getItemEvent('audioInputUnselected');
         const item4 = getItemEvent('meetingStartRequested');
         buffer.addItem(item1);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item2);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item3);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item4);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
       });
 
       it('catches fetch failure', async () => {
@@ -249,13 +260,17 @@ describe('InMemoryJSONEventBuffer', () => {
         const item3 = getItemEvent('audioInputUnselected');
         const item4 = getItemEvent('meetingStartRequested');
         buffer.addItem(item1);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item2);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item3);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item4);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
       });
 
       it('handles failed events with a status code which we do not want to retry', async () => {
@@ -274,13 +289,17 @@ describe('InMemoryJSONEventBuffer', () => {
         const item3 = getItemEvent('audioInputUnselected');
         const item4 = getItemEvent('meetingStartRequested');
         buffer.addItem(item1);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item2);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item3);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item4);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
       });
 
       it('handles event sending retries for retryable response status codes', async () => {
@@ -300,13 +319,17 @@ describe('InMemoryJSONEventBuffer', () => {
         const item4 = getItemEvent('meetingStartRequested');
 
         buffer.addItem(item1);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item2);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item3);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         buffer.addItem(item4);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
       });
     });
 
@@ -343,7 +366,7 @@ describe('InMemoryJSONEventBuffer', () => {
           importantEvents,
           logger
         );
-        buffer.start();
+        // Don't start the buffer to avoid IntervalScheduler interference
         domMockBehavior.fetchSucceeds = false;
         const argument = getItemEvent('meetingFailed', {
           maxVideoTileCount: 0,
@@ -359,9 +382,56 @@ describe('InMemoryJSONEventBuffer', () => {
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
         const spy = sinon.spy(navigator, 'sendBeacon');
-        buffer.addItem(argument);
-        await delay(100);
+        // Start addItem (don't await yet)
+        const addItemPromise = buffer.addItem(argument);
+        // Advance time to allow fetch to fail
+        await clock.nextAsync();
+        // Wait for addItem to complete
+        await addItemPromise;
         expect(spy.calledOnce).to.be.true;
+      });
+
+      it('handles important event sending failure when sendBeacon returns false in firefox', async () => {
+        buffer = new InMemoryJSONEventBuffer(
+          new EventBufferConfiguration(0),
+          meetingEventsClientConfiguration,
+          ingestionURL,
+          importantEvents,
+          logger
+        );
+        domMockBehavior.fetchSucceeds = false;
+        domMockBehavior.beaconQueuedSuccess = false;
+        const argument = getItemEvent('meetingFailed', {
+          meetingDurationMs: 100,
+          meetingStatus: 'TaskFailed',
+        });
+        const addItemPromise = buffer.addItem(argument);
+        await clock.nextAsync();
+        await addItemPromise;
+      });
+
+      it('handles important event sending failure when sendBeacon throws in firefox', async () => {
+        buffer = new InMemoryJSONEventBuffer(
+          new EventBufferConfiguration(0),
+          meetingEventsClientConfiguration,
+          ingestionURL,
+          importantEvents,
+          logger
+        );
+        domMockBehavior.fetchSucceeds = false;
+        const argument = getItemEvent('meetingFailed', {
+          meetingDurationMs: 100,
+          meetingStatus: 'TaskFailed',
+        });
+        // Stub sendBeacon to throw an error
+        const originalSendBeacon = navigator.sendBeacon;
+        navigator.sendBeacon = () => {
+          throw new Error('sendBeacon error');
+        };
+        const addItemPromise = buffer.addItem(argument);
+        await clock.nextAsync();
+        await addItemPromise;
+        navigator.sendBeacon = originalSendBeacon;
       });
 
       it('important event sending is marked failed if beaconing fails after fetch failure', async () => {
@@ -390,7 +460,8 @@ describe('InMemoryJSONEventBuffer', () => {
         });
         navigator = null;
         buffer.addItem(argument);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
       });
 
       it('catches error when important event beaconing fails after fetch failure', async () => {
@@ -418,7 +489,8 @@ describe('InMemoryJSONEventBuffer', () => {
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
         buffer.addItem(argument);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
       });
 
       it('important event is not beaconed when fetch fails if the browser is not firefox', async () => {
@@ -448,7 +520,8 @@ describe('InMemoryJSONEventBuffer', () => {
         });
         const spy = sinon.spy(navigator, 'sendBeacon');
         buffer.addItem(argument);
-        await delay(100);
+        await clock.nextAsync();
+        await clock.nextAsync();
         expect(spy.calledOnce).to.be.false;
       });
 
@@ -460,7 +533,6 @@ describe('InMemoryJSONEventBuffer', () => {
           importantEvents,
           logger
         );
-        buffer.start();
         domMockBehavior.fetchSucceeds = true;
         domMockBehavior.responseStatusCode = 404;
         const argument = getItemEvent('meetingFailed', {
@@ -476,8 +548,11 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingErrorMessage:
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
-        buffer.addItem(argument);
-        await delay(100);
+        // Don't start the buffer to avoid IntervalScheduler interference
+        // Properly await the addItem to ensure the sendEventImmediately completes
+        const addItemPromise = buffer.addItem(argument);
+        await clock.tickAsync(20);
+        await addItemPromise;
       });
 
       it('handles important event sending failure if response received is retryable', async () => {
@@ -505,7 +580,8 @@ describe('InMemoryJSONEventBuffer', () => {
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
         await buffer.addItem(argument);
-        await delay(1000);
+        await clock.nextAsync();
+        await clock.nextAsync();
       });
 
       it('retries with backoff when an important event POST fetch fails and response received is retryable but eventually succeeds', async () => {
@@ -516,7 +592,7 @@ describe('InMemoryJSONEventBuffer', () => {
           importantEvents,
           logger
         );
-        buffer.start();
+        // Don't start the buffer to avoid IntervalScheduler interference
         domMockBehavior.fetchSucceeds = true;
         domMockBehavior.responseStatusCode = 429;
         const argument = getItemEvent('meetingFailed', {
@@ -532,11 +608,20 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingErrorMessage:
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
-        await buffer.addItem(argument);
-        await delay(5000);
+        // Start the addItem call (don't await yet)
+        const addItemPromise = buffer.addItem(argument);
+        // Advance through several retry attempts with backoff (max backoff is 15000ms)
+        // Need to advance enough time for multiple retries - use runAllAsync to process all pending timers
+        for (let i = 0; i < 5; i++) {
+          await clock.tickAsync(16000);
+        }
         domMockBehavior.responseStatusCode = 200;
-        await delay(2000);
-      }).timeout(10000);
+        // Allow the successful retry to complete
+        for (let i = 0; i < 5; i++) {
+          await clock.tickAsync(16000);
+        }
+        await addItemPromise;
+      });
 
       it('handles retry count limit reaching when an important event POST fetch fails and response received is retryable', async () => {
         buffer = new InMemoryJSONEventBuffer(
@@ -546,7 +631,7 @@ describe('InMemoryJSONEventBuffer', () => {
           importantEvents,
           logger
         );
-        buffer.start();
+        // Don't start the buffer to avoid IntervalScheduler interference
         domMockBehavior.fetchSucceeds = true;
         domMockBehavior.responseStatusCode = 429;
         const argument = getItemEvent('meetingFailed', {
@@ -562,13 +647,251 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingErrorMessage:
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
-        await buffer.addItem(argument);
-        await delay(5000);
-      }).timeout(7000);
+        // Start the addItem call and advance clock through all retry attempts
+        const addItemPromise = buffer.addItem(argument);
+        // Advance through retry attempts until limit is reached (3 retries * max 15000ms backoff)
+        // Use multiple tickAsync calls to ensure all timers are processed
+        for (let i = 0; i < 5; i++) {
+          await clock.tickAsync(16000);
+        }
+        await addItemPromise;
+      });
+    });
+  });
+
+  describe('destroy', () => {
+    it('calls reset and cleans up resources', async () => {
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      buffer.start();
+      const item1 = getItemEvent('audioInputSelected');
+      buffer.addItem(item1);
+      // @ts-ignore - access private method for testing
+      await buffer.destroy();
+    });
+  });
+
+  describe('updateMetadataWithHighEntropyValues', () => {
+    it('returns early if already updated', async () => {
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(0),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      // First call to sendEventImmediately will call updateMetadataWithHighEntropyValues
+      const argument1 = getItemEvent('meetingFailed', { meetingDurationMs: 100 });
+      await buffer.addItem(argument1);
+      // Second call should hit the early return
+      const argument2 = getItemEvent('meetingEnded', { meetingDurationMs: 200 });
+      await buffer.addItem(argument2);
+    });
+  });
+
+  describe('sendEvents success path', () => {
+    it('handles successful event sending with ok response via IntervalScheduler', async () => {
+      // Use a configuration that will trigger buffer flush
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(5000, 100, 64, 100, 15),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      domMockBehavior.fetchSucceeds = true;
+      domMockBehavior.responseStatusCode = 200;
+      // Add enough items to trigger buffer threshold (MAX_PAYLOAD_ITEMS = 2)
+      const item1 = getItemEvent('audioInputSelected');
+      const item2 = getItemEvent('videoInputSelected');
+      const item3 = getItemEvent('audioInputUnselected');
+      buffer.addItem(item1);
+      buffer.addItem(item2);
+      buffer.addItem(item3);
+      // Directly call sendEvents to test the success path
+      // @ts-ignore - access private method for testing
+      const sendEventsPromise = buffer.sendEvents();
+      // Advance time to allow fetch to complete (asyncWaitMs = 10)
+      await clock.tickAsync(20);
+      await sendEventsPromise;
+    });
+
+    it('handles sendEvents with Firefox browser for cancellable events success path', async () => {
+      // Set Firefox user agent before creating buffer
+      // @ts-ignore
+      navigator.userAgent =
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0';
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(5000, 100, 64, 100, 15),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      domMockBehavior.fetchSucceeds = true;
+      domMockBehavior.responseStatusCode = 200;
+      const item1 = getItemEvent('audioInputSelected');
+      const item2 = getItemEvent('videoInputSelected');
+      const item3 = getItemEvent('audioInputUnselected');
+      buffer.addItem(item1);
+      buffer.addItem(item2);
+      buffer.addItem(item3);
+      // Directly call sendEvents to test the success path
+      // @ts-ignore - access private method for testing
+      const sendEventsPromise = buffer.sendEvents();
+      await clock.tickAsync(20);
+      await sendEventsPromise;
+    });
+
+    it('handles sendEvents with non-ok response', async () => {
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(5000, 100, 64, 100, 1),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      domMockBehavior.fetchSucceeds = true;
+      domMockBehavior.responseStatusCode = 404;
+      const item1 = getItemEvent('audioInputSelected');
+      const item2 = getItemEvent('videoInputSelected');
+      buffer.addItem(item1);
+      buffer.addItem(item2);
+      // @ts-ignore - access private method for testing
+      const sendEventsPromise = buffer.sendEvents();
+      await clock.tickAsync(20);
+      await sendEventsPromise;
+    });
+
+    it('handles sendEvents when send throws error', async () => {
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(5000, 100, 64, 100, 1),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      domMockBehavior.fetchSucceeds = false;
+      const item1 = getItemEvent('audioInputSelected');
+      const item2 = getItemEvent('videoInputSelected');
+      buffer.addItem(item1);
+      buffer.addItem(item2);
+      // @ts-ignore - access private method for testing
+      const sendEventsPromise = buffer.sendEvents();
+      await clock.tickAsync(20);
+      await sendEventsPromise;
+    });
+  });
+
+  describe('sendEventImmediately success path', () => {
+    it('handles successful important event sending with ok response', async () => {
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(0),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      domMockBehavior.fetchSucceeds = true;
+      domMockBehavior.responseStatusCode = 200;
+      const argument = getItemEvent('meetingFailed', {
+        meetingDurationMs: 100,
+        meetingStatus: 'TaskFailed',
+      });
+      await buffer.addItem(argument);
+      // Advance time to allow fetch to complete
+      await clock.tickAsync(20);
     });
   });
 
   describe('beacon', () => {
+    it('handles addEventListeners when beaconEventListener is undefined', () => {
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      // @ts-ignore - access private property for testing
+      buffer.beaconEventListener = undefined;
+      // @ts-ignore - access private method for testing
+      buffer.addEventListeners();
+    });
+
+    it('handles addEventListeners when window.addEventListener is undefined', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GlobalAny = global as any;
+      const originalAddEventListener = GlobalAny['window']['addEventListener'];
+      delete GlobalAny['window']['addEventListener'];
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      // @ts-ignore - access private method for testing
+      buffer.addEventListeners();
+      GlobalAny['window']['addEventListener'] = originalAddEventListener;
+    });
+
+    it('handles removeEventListeners when beaconEventListener is undefined', () => {
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      // @ts-ignore - access private property for testing
+      buffer.beaconEventListener = undefined;
+      // @ts-ignore - access private method for testing
+      buffer.removeEventListeners();
+    });
+
+    it('handles removeEventListeners when window.removeEventListener is undefined', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GlobalAny = global as any;
+      const originalRemoveEventListener = GlobalAny['window']['removeEventListener'];
+      delete GlobalAny['window']['removeEventListener'];
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      // @ts-ignore - access private method for testing
+      buffer.removeEventListeners();
+      GlobalAny['window']['removeEventListener'] = originalRemoveEventListener;
+    });
+
+    it('handles sendBeacon error when navigator.sendBeacon throws', async () => {
+      buffer = new InMemoryJSONEventBuffer(
+        new EventBufferConfiguration(),
+        meetingEventsClientConfiguration,
+        ingestionURL,
+        importantEvents,
+        logger
+      );
+      const item1 = getItemEvent('audioInputSelected');
+      buffer.addItem(item1);
+      // Stub sendBeacon to throw an error
+      const originalSendBeacon = navigator.sendBeacon;
+      navigator.sendBeacon = () => {
+        throw new Error('sendBeacon error');
+      };
+      // @ts-ignore - access private method for testing
+      await buffer.sendBeacon();
+      navigator.sendBeacon = originalSendBeacon;
+    });
+
     it('adds and removes event listeners correctly', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const GlobalAny = global as any;

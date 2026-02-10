@@ -40,6 +40,7 @@ import DisplayMediaState from '../dommock/DisplayMediaState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import UserMediaState from '../dommock/UserMediaState';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 interface AudioElementWithSinkId extends HTMLAudioElement {
   sinkId: string;
@@ -232,13 +233,16 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('granted permission by user', async () => {
+      const clock = createFakeTimers();
       domMockBehavior.getUserMediaSucceeds = true;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 100;
-      const audioCheckFeedback: CheckAudioInputFeedback =
-        await meetingReadinessCheckerController.checkAudioInput(
-          getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
-        );
+      const checkPromise = meetingReadinessCheckerController.checkAudioInput(
+        getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
+      );
+      await tick(clock, domMockBehavior.asyncWaitMs + 10);
+      const audioCheckFeedback: CheckAudioInputFeedback = await checkPromise;
+      clock.restore();
       expect(audioCheckFeedback).to.equal(CheckAudioInputFeedback.Succeeded);
     });
 
@@ -251,13 +255,16 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('denies the permission by user', async () => {
+      const clock = createFakeTimers();
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 600;
-      const audioCheckFeedback: CheckAudioInputFeedback =
-        await meetingReadinessCheckerController.checkAudioInput(
-          getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
-        );
+      const checkPromise = meetingReadinessCheckerController.checkAudioInput(
+        getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
+      );
+      await tick(clock, domMockBehavior.asyncWaitMs + 10);
+      const audioCheckFeedback: CheckAudioInputFeedback = await checkPromise;
+      clock.restore();
       expect(audioCheckFeedback).to.equal(CheckAudioInputFeedback.PermissionDenied);
     });
 
@@ -410,12 +417,15 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('granted permission by user', async () => {
+      const clock = createFakeTimers();
       domMockBehavior.getUserMediaSucceeds = true;
       domMockBehavior.asyncWaitMs = 100;
-      const videoCheckFeedback: CheckVideoInputFeedback =
-        await meetingReadinessCheckerController.checkVideoInput(
-          getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id')
-        );
+      const checkPromise = meetingReadinessCheckerController.checkVideoInput(
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id')
+      );
+      await tick(clock, domMockBehavior.asyncWaitMs + 10);
+      const videoCheckFeedback: CheckVideoInputFeedback = await checkPromise;
+      clock.restore();
       expect(videoCheckFeedback).to.equal(CheckVideoInputFeedback.Succeeded);
     });
 
@@ -428,11 +438,14 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('denies the permission by user', async () => {
+      const clock = createFakeTimers();
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 600;
-      const videoCheckFeedback: CheckVideoInputFeedback =
-        await meetingReadinessCheckerController.checkVideoInput(new MediaDeviceInfo());
+      const checkPromise = meetingReadinessCheckerController.checkVideoInput(new MediaDeviceInfo());
+      await tick(clock, domMockBehavior.asyncWaitMs + 10);
+      const videoCheckFeedback: CheckVideoInputFeedback = await checkPromise;
+      clock.restore();
       expect(videoCheckFeedback).to.equal(CheckVideoInputFeedback.PermissionDenied);
     });
 

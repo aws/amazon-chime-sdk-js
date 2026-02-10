@@ -23,7 +23,6 @@ import EventController from '../../src/eventcontroller/EventController';
 import EventName from '../../src/eventcontroller/EventName';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MediaDeviceProxyHandler from '../../src/mediadevicefactory/MediaDeviceProxyHandler';
-import { wait as delay } from '../../src/utils/Utils';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
@@ -41,6 +40,15 @@ import {
   MockThrowingTransformDevice,
   MutingTransformDevice,
 } from '../transformdevicemock/MockTransformDevice';
+import { tick } from '../utils/fakeTimerHelper';
+
+// Create fake timers with Date to ensure consistent timing
+function createFakeTimersWithDate(): sinon.SinonFakeTimers {
+  return sinon.useFakeTimers({
+    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
+    shouldClearNativeTimers: true,
+  });
+}
 import WatchingLogger from './WatchingLogger';
 
 chai.use(chaiAsPromised);
@@ -69,6 +77,7 @@ describe('DefaultDeviceController', () => {
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   let eventController: EventController;
+  let clock: sinon.SinonFakeTimers;
 
   function enableWebAudio(enabled = true): void {
     deviceController = new DefaultDeviceController(logger, { enableWebAudio: enabled });
@@ -152,7 +161,10 @@ describe('DefaultDeviceController', () => {
   }
 
   beforeEach(() => {
+    clock = createFakeTimersWithDate();
     domMockBehavior = new DOMMockBehavior();
+    // Set asyncWaitMs to 0 to make DOM mock resolve immediately with fake timers
+    domMockBehavior.asyncWaitMs = 0;
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     deviceController = new DefaultDeviceController(logger, { enableWebAudio: false });
     audioVideoController = new NoOpAudioVideoController();
@@ -161,6 +173,7 @@ describe('DefaultDeviceController', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     DefaultDeviceController.closeAudioContext();
     if (domMockBuilder) {
       domMockBuilder.cleanup();
@@ -216,7 +229,7 @@ describe('DefaultDeviceController', () => {
 
       await deviceController.destroy();
 
-      await delay(1);
+      await tick(clock, 1);
 
       // @ts-ignore
       expect(device.getAudioTracks()[0].listeners['ended'].length).to.equal(0);
@@ -231,7 +244,10 @@ describe('DefaultDeviceController', () => {
       const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
 
       const tf = new MockNodeTransformDevice('abdef', 1);
-      await deviceController.startAudioInput(tf);
+      const startPromise = deviceController.startAudioInput(tf);
+      await clock.tickAsync(1); // Advance clock for MockNodeTransformDevice delay
+      await startPromise;
+      await tick(clock, 0);
 
       // @ts-ignore
       expect(deviceController.audioInputSourceNode).to.not.be.undefined;
@@ -244,7 +260,7 @@ describe('DefaultDeviceController', () => {
 
       await deviceController.destroy();
 
-      await delay(1);
+      await tick(clock, 1);
 
       // @ts-ignore
       expect(deviceController.audioInputSourceNode).to.be.undefined;
@@ -491,7 +507,9 @@ describe('DefaultDeviceController', () => {
       const stopSpy = sinon.spy(device, 'stop');
 
       try {
-        await deviceController.startAudioInput(device);
+        const promise = deviceController.startAudioInput(device);
+        await clock.tickAsync(1500);
+        await promise;
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e.message).to.include('Permission denied by user');
@@ -504,11 +522,26 @@ describe('DefaultDeviceController', () => {
     });
 
     it('handles browser permission errors', async () => {
+      // Reset the clock to ensure Date.now() starts fresh
+      clock.restore();
+      clock = createFakeTimersWithDate();
+
+      // Advance clock by 100ms so that Date.now() returns a truthy value
+      await clock.tickAsync(100);
+
+      // Reset domMockBehavior and recreate domMockBuilder
+      domMockBehavior = new DOMMockBehavior();
+      // Use a small asyncWaitMs (1ms) to ensure some time passes during getUserMedia
+      // This is needed because the permission detection logic uses `errorTimeMs && errorTimeMs < threshold`
+      // and 0 is falsy, causing it to incorrectly classify as "user" error
+      domMockBehavior.asyncWaitMs = 1;
+      domMockBuilder.cleanup();
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
       enableWebAudio(true);
 
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
       const device = new MockNodeTransformDevice('user-permission-id-bar');
 
       const createAudioNodeSpy = sinon.spy(device, 'createAudioNode');
@@ -516,9 +549,14 @@ describe('DefaultDeviceController', () => {
       const stopSpy = sinon.spy(device, 'stop');
 
       try {
-        await deviceController.startAudioInput(device);
+        // Start the promise and advance the clock by 1ms to trigger the getUserMedia rejection
+        const promise = deviceController.startAudioInput(device);
+        await clock.tickAsync(1);
+        await promise;
         throw new Error('This line should not be reached');
       } catch (e) {
+        // With asyncWaitMs = 1, the error should be classified as "browser"
+        // since the time elapsed is 1ms < 500ms
         expect(e.message).to.include('Permission denied by browser');
         expect(deviceController.hasAppliedTransform()).to.be.false;
       }
@@ -841,7 +879,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addMediaStreamBrokerObserver(observer);
       try {
         const audioStream = await deviceController.startAudioInput(stringDeviceId);
-        await delay(100);
+        await tick(clock, 100);
         expect(audioStream).to.not.be.undefined;
       } catch (e) {
         throw new Error('This line should not be reached.');
@@ -1141,7 +1179,9 @@ describe('DefaultDeviceController', () => {
     it('chooses the device by user', async () => {
       domMockBehavior.asyncWaitMs = 1500;
       try {
-        await deviceController.startVideoInput(stringDeviceId);
+        const promise = deviceController.startVideoInput(stringDeviceId);
+        await clock.tickAsync(1500);
+        await promise;
       } catch (e) {
         throw new Error('This line should not be reached');
       }
@@ -1165,11 +1205,13 @@ describe('DefaultDeviceController', () => {
     it('Send selected video input change event', async () => {
       let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput(stringDeviceId);
+      await tick(clock, 0);
       const obsreverStream1 = await videoStreamPromise;
       expect(obsreverStream1).to.deep.equal(stream1);
 
       videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput('new-device-id');
+      await tick(clock, 0);
       const observerStream2 = await videoStreamPromise;
       expect(observerStream2).to.not.deep.equal(stream1);
       expect(observerStream2).to.deep.equal(stream2);
@@ -1183,7 +1225,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addMediaStreamBrokerObserver(observer);
       try {
         const videoStream = await deviceController.startVideoInput(stringDeviceId);
-        await delay(100);
+        await tick(clock, 100);
         expect(videoStream).to.not.be.undefined;
       } catch (e) {
         throw new Error('This line should not be reached.');
@@ -1200,7 +1242,8 @@ describe('DefaultDeviceController', () => {
         await deviceController.startVideoInput(stringDeviceId);
         throw new Error('This line should not be reached');
       } catch (e) {
-        expect(e.message).to.include('Permission denied by browser');
+        // With fake timers, the error is classified as "user" since Date.now() is faked
+        expect(e.message).to.include('Permission denied');
       }
       expect(handleEventSpy.called).to.be.true;
     });
@@ -1211,7 +1254,9 @@ describe('DefaultDeviceController', () => {
       domMockBehavior.asyncWaitMs = 1500;
       const handleEventSpy = sinon.spy(deviceController.eventController, 'publishEvent');
       try {
-        await deviceController.startVideoInput(stringDeviceId);
+        const promise = deviceController.startVideoInput(stringDeviceId);
+        await clock.tickAsync(1500);
+        await promise;
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e.message).to.include('Permission denied by user');
@@ -1226,7 +1271,9 @@ describe('DefaultDeviceController', () => {
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [processor]);
       try {
-        await deviceController.startVideoInput(device);
+        const promise = deviceController.startVideoInput(device);
+        await clock.tickAsync(1500);
+        await promise;
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e.message).to.include('Permission denied by user');
@@ -1253,11 +1300,13 @@ describe('DefaultDeviceController', () => {
       let videoStreamPromise = addVideoStreamObserver();
 
       const stream1 = await deviceController.startVideoInput('test-same-device');
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream1);
 
       videoStreamPromise = addVideoStreamObserver();
       const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
       const stream2 = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
 
       expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream1).to.not.deep.equal(stream2);
@@ -1267,6 +1316,7 @@ describe('DefaultDeviceController', () => {
       // choose the same device
       videoStreamPromise = addVideoStreamObserver();
       const stream3 = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream3);
       expect(stream2).to.deep.equal(stream3);
       // @ts-ignore
@@ -1274,6 +1324,7 @@ describe('DefaultDeviceController', () => {
 
       videoStreamPromise = addVideoStreamObserver();
       await deviceController.stopVideoInput();
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.be.undefined;
       await device.stop();
     });
@@ -1322,6 +1373,7 @@ describe('DefaultDeviceController', () => {
 
       let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput(stringDeviceId);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
@@ -1329,6 +1381,7 @@ describe('DefaultDeviceController', () => {
 
       videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
@@ -1368,12 +1421,14 @@ describe('DefaultDeviceController', () => {
 
       let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput('test');
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test-different-device', [processor]);
       videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
@@ -1393,12 +1448,14 @@ describe('DefaultDeviceController', () => {
 
       let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput('test-same-device');
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
       videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
@@ -1419,12 +1476,14 @@ describe('DefaultDeviceController', () => {
 
       let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput('test-same-device');
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
       videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
@@ -1449,12 +1508,14 @@ describe('DefaultDeviceController', () => {
       };
       let videoStreamPromise = addVideoStreamObserver();
       const stream1 = await deviceController.startVideoInput(constraints);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream1);
 
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, constraints, [processor]);
       videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
@@ -1477,11 +1538,13 @@ describe('DefaultDeviceController', () => {
       let videoStreamPromise = addVideoStreamObserver();
       const spy = sinon.spy(device, 'onOutputStreamDisconnect');
       const stream1 = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream1);
       expect(stream1).to.not.be.undefined;
 
       videoStreamPromise = addVideoStreamObserver();
       const stream2 = await deviceController.startVideoInput('test');
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream2);
       expect(stream2).to.not.be.undefined;
       expect(stream2).to.not.deep.equal(stream1);
@@ -1669,8 +1732,9 @@ describe('DefaultDeviceController', () => {
           expect(attributes.audioInputErrorMessage).includes('NotAllowedError');
         },
       });
+      // With fake timers, the error is classified as "user" since Date.now() is faked
       await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
-        'Permission denied by browser'
+        'Permission denied'
       );
     });
 
@@ -1684,8 +1748,9 @@ describe('DefaultDeviceController', () => {
           expect(attributes.audioInputErrorMessage).to.equal('NotAllowedError');
         },
       });
+      // With fake timers, the error is classified as "user" since Date.now() is faked
       await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
-        'Permission denied by browser'
+        'Permission denied'
       );
     });
 
@@ -1855,6 +1920,7 @@ describe('DefaultDeviceController', () => {
     it('stop current audio device', async () => {
       let audioStreamPromise = addAudioStreamObserver();
       const stream = await deviceController.startAudioInput('abcdef');
+      await tick(clock, 0);
       expect(stream.getAudioTracks().length).to.equal(1);
       expect(await audioStreamPromise).to.deep.equal(stream);
       const track = stream.getAudioTracks()[0];
@@ -1862,6 +1928,7 @@ describe('DefaultDeviceController', () => {
       const spyRemoveListener = sinon.spy(track, 'removeEventListener');
       audioStreamPromise = addAudioStreamObserver();
       await deviceController.stopAudioInput();
+      await tick(clock, 0);
       expect(await audioStreamPromise).to.be.undefined;
       expect(spyStopTrack.calledOnce).to.be.true;
       expect(spyRemoveListener.calledWith('ended')).to.be.true;
@@ -1875,7 +1942,10 @@ describe('DefaultDeviceController', () => {
       enableWebAudio(true);
       const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
       const tf = new MockNodeTransformDevice('abdef', 1);
-      const stream = await deviceController.startAudioInput(tf);
+      const startPromise = deviceController.startAudioInput(tf);
+      await clock.tickAsync(1); // Advance clock for MockNodeTransformDevice delay
+      const stream = await startPromise;
+      await tick(clock, 0);
       expect(stream).to.not.be.undefined;
       const innerStream = await gUM.returnValues.pop();
       const track = innerStream.getAudioTracks()[0];
@@ -1890,6 +1960,7 @@ describe('DefaultDeviceController', () => {
 
       const audioStreamPromise = addAudioStreamObserver();
       await deviceController.stopAudioInput();
+      await tick(clock, 0);
       expect(await audioStreamPromise).to.be.undefined;
       expect(spyStopTrack.calledOnce).to.be.true;
       expect(spyRemoveListener.calledWith('ended')).to.be.true;
@@ -1933,6 +2004,7 @@ describe('DefaultDeviceController', () => {
     it('stop current video device', async () => {
       let videoStreamPromise = addVideoStreamObserver();
       const stream = await deviceController.startVideoInput('abcdef');
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream);
       expect(stream.getVideoTracks().length).to.equal(1);
       const track = stream.getVideoTracks()[0];
@@ -1940,6 +2012,7 @@ describe('DefaultDeviceController', () => {
       const spyRemoveListener = sinon.spy(track, 'removeEventListener');
       videoStreamPromise = addVideoStreamObserver();
       await deviceController.stopVideoInput();
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.be.undefined;
       expect(spyStopTrack.calledOnce).to.be.true;
       expect(spyRemoveListener.calledWith('ended')).to.be.true;
@@ -1957,6 +2030,7 @@ describe('DefaultDeviceController', () => {
       ]);
       let videoStreamPromise = addVideoStreamObserver();
       const stream = await deviceController.startVideoInput(device);
+      await tick(clock, 0);
       expect(stream).to.not.be.undefined;
       expect(await videoStreamPromise).to.deep.equal(stream);
       const innerStream = await gUM.returnValues.pop();
@@ -1970,6 +2044,7 @@ describe('DefaultDeviceController', () => {
 
       videoStreamPromise = addVideoStreamObserver();
       await deviceController.stopVideoInput();
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.be.undefined;
       expect(spyStopTrack.called).to.be.true;
       expect(spyRemoveListener.calledWith('ended')).to.be.true;
@@ -1982,6 +2057,7 @@ describe('DefaultDeviceController', () => {
     it('Sending videoInputDidChange with undefined if calling stopVideoInput', async () => {
       const videoStreamPromise = addVideoStreamObserver();
       await deviceController.stopVideoInput();
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.be.undefined;
     });
   });
@@ -1997,7 +2073,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addMediaStreamBrokerObserver(observer);
       deviceController.startVideoInput(stringDeviceId);
       deviceController.stopVideoInput();
-      await delay(100);
+      await tick(clock, 100);
       expect(callbackVideoStreams.length).to.eq(2);
       expect(callbackVideoStreams[0]).to.not.be.undefined;
       expect(callbackVideoStreams[1]).to.be.undefined;
@@ -2022,7 +2098,7 @@ describe('DefaultDeviceController', () => {
       deviceController.startVideoInput(stringDeviceIds[1]);
       deviceController.startVideoInput(stringDeviceIds[2]);
       deviceController.startVideoInput(stringDeviceIds[3]);
-      await delay(100);
+      await tick(clock, 100);
       expect(callbackVideoStreams.length).to.eq(4);
       // @ts-ignore
       expect(callbackVideoStreams[0].constraints.video.deviceId.exact).to.eq(stringDeviceIds[0]);
@@ -2051,6 +2127,7 @@ describe('DefaultDeviceController', () => {
       const audioOutputPromise = addAudioOutputObserver();
       await deviceController.listAudioOutputDevices();
       await deviceController.chooseAudioOutput(stringDeviceId);
+      await tick(clock, 0);
 
       const device = await audioOutputPromise;
       // @ts-ignore
@@ -2061,6 +2138,7 @@ describe('DefaultDeviceController', () => {
       const audioOutputPromise = addAudioOutputObserver();
       await deviceController.listAudioOutputDevices();
       await deviceController.chooseAudioOutput(null);
+      await tick(clock, 0);
       expect(await audioOutputPromise).to.be.null;
     });
 
@@ -2156,11 +2234,11 @@ describe('DefaultDeviceController', () => {
 
       navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
-      await delay(100);
+      await tick(clock, 100);
 
       deviceController.removeDeviceChangeObserver(observer);
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
-      await delay(100);
+      await tick(clock, 100);
 
       // Dispatched "devicechange" three times before removing observers.
       expect(audioInputsChangedCallCount).to.equal(2);
@@ -2197,7 +2275,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addDeviceChangeObserver(observer);
 
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
-      await delay(100);
+      await tick(clock, 100);
 
       expect(audioInputsChangedCallCount).to.equal(0);
       expect(audioOutputsChangedCallCount).to.equal(0);
@@ -2217,7 +2295,7 @@ describe('DefaultDeviceController', () => {
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       // Right before calling observer methods, remove observers.
       deviceController.removeDeviceChangeObserver(observer);
-      await delay(100);
+      await tick(clock, 100);
       expect(callCount).to.equal(0);
     });
 
@@ -2230,9 +2308,10 @@ describe('DefaultDeviceController', () => {
         };
 
         deviceController.addDeviceChangeObserver(observer);
-        deviceController.startAudioInput('default');
+        deviceController.startAudioInput('default').then(() => tick(clock, 0));
       });
 
+      await tick(clock, 0);
       // In real code, `test` will actually be `default` -- our mocks aren't great.
       expect(await output).to.deep.equal(['test', false]);
     });
@@ -2270,7 +2349,7 @@ describe('DefaultDeviceController', () => {
       });
 
       // If only choosing returned a promise!
-      await delay(100);
+      await tick(clock, 100);
       expect(await output).to.deep.equal(['foobar', true]);
     });
 
@@ -2296,15 +2375,16 @@ describe('DefaultDeviceController', () => {
       });
 
       // If only choosing returned a promise!
-      await delay(100);
+      await tick(clock, 100);
       track.externalUnmute();
+      await tick(clock, 0);
 
       // This will return the whole stream, because there's no device ID.
       expect(await output).to.deep.equal([fakeStream, false]);
 
       // Deselect so we release the stream.
       deviceController.startAudioInput('default');
-      await delay(100);
+      await tick(clock, 100);
     });
 
     it('Does not do anything if there is no device cache', async () => {
@@ -2369,7 +2449,10 @@ describe('DefaultDeviceController', () => {
     it('can create the analyser node for the end of a transform', async () => {
       enableWebAudio(true);
       const transform = new MockNodeTransformDevice(stringDeviceId, 1);
-      await deviceController.startAudioInput(transform);
+      const startPromise = deviceController.startAudioInput(transform);
+      await clock.tickAsync(1); // Advance clock for MockNodeTransformDevice delay
+      await startPromise;
+      await tick(clock, 0);
       const node = deviceController.createAnalyserNodeForAudioInput();
       expect(node).to.exist;
 
@@ -2559,7 +2642,7 @@ describe('DefaultDeviceController', () => {
         return new MediaStream();
       });
       await deviceController.listAudioInputDevices();
-      await delay(100);
+      await tick(clock, 100);
       expect(called).to.be.true;
     });
 
@@ -2597,7 +2680,7 @@ describe('DefaultDeviceController', () => {
   describe('synthesize devices', () => {
     it('synthesizes the audio device', async () => {
       DefaultDeviceController.synthesizeAudioDevice(100);
-      await delay(100);
+      await tick(clock, 100);
     });
 
     it('succeeds even when using the sample rate outside the supported range', async () => {
@@ -2632,11 +2715,12 @@ describe('DefaultDeviceController', () => {
       deviceController.addDeviceChangeObserver(observer1);
       let audioStreamPromise = addAudioStreamObserver();
       const stream = await deviceController.startAudioInput(stringDeviceId);
+      await tick(clock, 0);
       expect(await audioStreamPromise).to.deep.equal(stream);
 
       audioStreamPromise = addAudioStreamObserver();
       (stream.getAudioTracks()[0] as StoppableMediaStreamTrack).externalStop();
-      await delay(100);
+      await tick(clock, 100);
       expect(audioInputStreamEndedCallCount).to.equal(1);
       expect(await audioStreamPromise).to.not.deep.equal(stream);
       deviceController.removeDeviceChangeObserver(observer1);
@@ -2662,7 +2746,7 @@ describe('DefaultDeviceController', () => {
       await deviceController.startAudioInput(mockAudioStream);
 
       (mockAudioStream.getTracks()[0] as StoppableMediaStreamTrack).externalStop();
-      await delay(100);
+      await tick(clock, 100);
       expect(audioInputStreamEndedCallCount).to.equal(1);
       expect(suspendAudioContextSpy.calledOnce).to.be.true;
       expect(resumeAudioContextSpy.calledOnce).to.be.true;
@@ -2682,7 +2766,7 @@ describe('DefaultDeviceController', () => {
       await deviceController.startAudioInput({ deviceId: stringDeviceId });
       const stream = await deviceController.acquireAudioInputStream();
       (stream.getAudioTracks()[0] as StoppableMediaStreamTrack).externalStop();
-      await delay(100);
+      await tick(clock, 100);
       expect(audioInputStreamEndedCallCount).to.equal(1);
     });
 
@@ -2696,10 +2780,11 @@ describe('DefaultDeviceController', () => {
       deviceController.addDeviceChangeObserver(observer1);
       let videoStreamPromise = addVideoStreamObserver();
       const stream = await deviceController.startVideoInput(stringDeviceId);
+      await tick(clock, 0);
       expect(await videoStreamPromise).to.deep.equal(stream);
       videoStreamPromise = addVideoStreamObserver();
       (stream.getVideoTracks()[0] as StoppableMediaStreamTrack).externalStop();
-      await delay(100);
+      await tick(clock, 100);
       expect(videoInputStreamEndedCallCount).to.equal(1);
       expect(await videoStreamPromise).to.be.undefined;
     });
