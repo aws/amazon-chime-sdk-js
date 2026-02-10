@@ -56,7 +56,7 @@ describe('DefaultReconnectController', () => {
           () => {}
         )
       ).to.equal(true);
-      await clock.tickAsync(0);
+      await clock.tickAsync(10);
       expect(called).to.be.true;
     });
 
@@ -98,6 +98,7 @@ describe('DefaultReconnectController', () => {
       controller.startedConnectionAttempt(true);
       expect(controller.hasStartedConnectionAttempt()).to.equal(true);
       expect(controller.isFirstConnection()).to.equal(true);
+      await clock.tickAsync(50); // Move past the 50ms deadline
       let attempts = 0;
       const tryAgain = (): void => {
         if (
