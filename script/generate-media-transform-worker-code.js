@@ -32,7 +32,6 @@ const workerTsconfigContent = `{
 `;
 fs.writeFileSync(`${configDir}/${workerTsconfig}`, workerTsconfigContent);
 
-// Run the `prebuild` script to generate `node_modules` since we will be using the `tsc` command from `node_modules`.
 function runCommandWithLogs(command) {
   try {
     console.log(`Running command: ${command}`);
@@ -45,10 +44,10 @@ function runCommandWithLogs(command) {
     process.exit(1);
   }
 }
-runCommandWithLogs('npm run prebuild');
 
 // Transpile media transform worker TypeScript files.
-let tscPath = path.resolve(`${runCommandWithLogs('npm root').replace(/\n/g, "")}/.bin/tsc`);
+// Note: prebuild runs via npm lifecycle before build, so node_modules is already available
+let tscPath = path.resolve(`${execSync('npm root').toString().trim()}/.bin/tsc`);
 runCommandWithLogs(`${tscPath} --build config/${workerTsconfig}`);
 
 // Remove the temporary tsconfig file.

@@ -1,14 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * Post-processes generated TypeDoc documentation:
- * 1. Normalizes git blob references to use 'main' branch
- * 2. Converts HTML filenames to lowercase for URL consistency
- * 3. Updates all internal links to use lowercase paths
- * 4. Formats search.js for better readability
- * 5. Creates globals.html alias for backward compatibility
- */
-
 const fs = require('fs-extra');
 const path = require('path');
 
@@ -39,28 +30,29 @@ function buildRenameMap(htmlFiles) {
   return renameMap;
 }
 
-function updateFileContent(file, renameMap) {
+function processFile(file, renameMapObj) {
   let content = fs.readFileSync(file, 'utf8');
+  const original = content;
 
-  // Normalize git blob references to main branch
   content = content.replace(/blob\/[0-9a-f]{5,40}\//g, 'blob/main/');
 
-  // Update links to use lowercase filenames
-  for (const [original, lowercase] of renameMap) {
-    const escaped = original.replace('.', '\\.');
+  for (const [orig, lower] of Object.entries(renameMapObj)) {
+    const escaped = orig.replace('.', '\\.');
     // Handle href="path/File.html" and href="File.html" (without anchors)
     content = content.replace(
       new RegExp(`(href=["'][^"']*/?)${escaped}(["'])`, 'g'),
-      `$1${lowercase}$2`
+      `$1${lower}$2`
     );
     // Handle href="path/File.html#anchor" (with anchors)
     content = content.replace(
       new RegExp(`(href=["'][^"']*/?)${escaped}(#[^"']*["'])`, 'g'),
-      `$1${lowercase}$2`
+      `$1${lower}$2`
     );
   }
 
-  fs.writeFileSync(file, content, 'utf8');
+  if (content !== original) {
+    fs.writeFileSync(file, content, 'utf8');
+  }
 }
 
 function renameToLowercase(htmlFiles, renameMap) {
@@ -87,12 +79,10 @@ function updateAssetFile(filePath, renameMap) {
         const decoded = Buffer.from(match[1], 'base64');
         let jsonStr = pako.inflate(decoded, { to: 'string' });
 
-        // Update references to lowercase in the JSON
         for (const [original, lowercase] of renameMap) {
           jsonStr = jsonStr.replace(new RegExp(original.replace('.', '\\.'), 'g'), lowercase);
         }
 
-        // Re-compress and encode
         const compressed = pako.deflate(jsonStr);
         const encoded = Buffer.from(compressed).toString('base64');
         content = `window.navigationData = "${encoded}"`;
@@ -104,13 +94,11 @@ function updateAssetFile(filePath, renameMap) {
     }
   }
 
-  // Format for readability (search.js specific)
   if (filePath.endsWith('search.js')) {
     content = content.replace(/","/g, '",\n"');
     content = content.replace(/},{/g, '},\n{');
   }
 
-  // Update references to lowercase
   for (const [original, lowercase] of renameMap) {
     content = content.replace(new RegExp(original.replace('.', '\\.'), 'g'), lowercase);
   }
@@ -118,23 +106,20 @@ function updateAssetFile(filePath, renameMap) {
   fs.writeFileSync(filePath, content, 'utf8');
 }
 
-function main() {
+async function main() {
   const htmlFiles = walkDir(DOCS_DIR).filter(f => f.endsWith('.html'));
   const renameMap = buildRenameMap(htmlFiles);
+  const renameMapObj = Object.fromEntries(renameMap);
 
-  // Update content in all HTML files
   for (const file of htmlFiles) {
-    updateFileContent(file, renameMap);
+    processFile(file, renameMapObj);
   }
 
-  // Rename files to lowercase
   renameToLowercase(htmlFiles, renameMap);
 
-  // Update asset files
   updateAssetFile(path.join(DOCS_DIR, 'assets', 'search.js'), renameMap);
   updateAssetFile(path.join(DOCS_DIR, 'assets', 'navigation.js'), renameMap);
 
-  // Create globals.html alias for backward compatibility
   const modulesPath = path.join(DOCS_DIR, 'modules.html');
   const globalsPath = path.join(DOCS_DIR, 'globals.html');
   if (fs.existsSync(modulesPath)) {

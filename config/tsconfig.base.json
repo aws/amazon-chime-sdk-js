@@ -16,6 +16,8 @@
     "inlineSources": true,
     "stripInternal": true,
     "target": "ES2018",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "incremental": true,
+    "composite": true
   }
 }
