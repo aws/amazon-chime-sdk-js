@@ -9,6 +9,7 @@ __data*
 build
 config/tsconfig.red.json
 coverage
+docs
 demos/browser/logs/
 demos/components/node_modules
 demos/react/node_modules
