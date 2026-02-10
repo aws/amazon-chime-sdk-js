@@ -21,7 +21,6 @@ import {
   SdkStreamDescriptor,
   SdkStreamMediaType,
 } from '../../src/signalingprotocol/SignalingProtocol';
-import { wait } from '../../src/utils/Utils';
 import TargetDisplaySize from '../../src/videodownlinkbandwidthpolicy/TargetDisplaySize';
 import VideoDownlinkObserver from '../../src/videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoPreference from '../../src/videodownlinkbandwidthpolicy/VideoPreference';
@@ -33,6 +32,7 @@ import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideo
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('VideoPriorityBasedPolicy', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -50,6 +50,7 @@ describe('VideoPriorityBasedPolicy', () => {
   }
   let originalDateNow: DateNow;
   let startTime: number;
+  let clock: sinon.SinonFakeTimers;
 
   function mockDateNow(): number {
     return startTime;
@@ -301,6 +302,7 @@ describe('VideoPriorityBasedPolicy', () => {
   }
 
   beforeEach(() => {
+    clock = createFakeTimers();
     startTime = Date.now();
     originalDateNow = Date.now;
     Date.now = mockDateNow;
@@ -318,6 +320,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
   afterEach(() => {
     Date.now = originalDateNow;
+    clock.restore();
   });
 
   describe('construction', () => {
@@ -528,8 +531,10 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.forEachObserver((observer: VideoDownlinkObserver) => {
         observer.tileWillBePausedByDownlinkPolicy(1);
       });
+      const observerCalledAfterRemove = called(observer.tileWillBePausedByDownlinkPolicy);
       try {
-        await observerCalled;
+        await clock.tickAsync(1100);
+        await observerCalledAfterRemove;
         throw new Error('should not be called');
       } catch (error) {}
 
@@ -545,6 +550,7 @@ describe('VideoPriorityBasedPolicy', () => {
 
       await observerCalled;
       try {
+        await clock.tickAsync(1100);
         await obs2Called;
       } catch (error) {}
 
@@ -1161,7 +1167,7 @@ describe('VideoPriorityBasedPolicy', () => {
           expect(state.paused).to.equal(false);
         }
       }
-      await wait(5);
+      await clock.tickAsync(5);
       expect(spyPause.calledOnceWith(attendee3TileId)).to.be.true;
 
       incrementTime(3000);
@@ -1182,7 +1188,7 @@ describe('VideoPriorityBasedPolicy', () => {
         const state = tile.state();
         expect(state.paused).to.equal(false);
       }
-      await wait(5);
+      await clock.tickAsync(5);
       expect(spyUnpause.calledOnceWith(attendee3TileId)).to.be.true;
       domMockBuilder.cleanup();
       spyPause.restore();
@@ -1528,6 +1534,32 @@ describe('VideoPriorityBasedPolicy', () => {
   });
 
   describe('VideoPriorityBasedPolicyConfig', () => {
+    it('exits startup period when bandwidth stops increasing after timeout', () => {
+      incrementTime(1000); // Start with non-zero time to avoid sentinel value collision
+      const policyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
+      policyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
+      policy.setVideoPriorityBasedPolicyConfigs(policyConfig);
+      updateIndexFrame(videoStreamIndex, 1, 0, 1200);
+      policy.updateIndex(videoStreamIndex);
+      policy.wantsResubscribe();
+      policy.chooseSubscriptions();
+
+      const metricReport = new ClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      // First call - set initial bandwidth below DEFAULT_BANDWIDTH_KBPS (2800)
+      metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 1000 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      policy.wantsResubscribe();
+
+      // Second call - after startup period, bandwidth not increasing
+      incrementTime(6100);
+      metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 1000 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      policy.wantsResubscribe();
+    });
+
     it('will not instantly drop videos caused by dip during startup period', () => {
       const policyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
       policyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;

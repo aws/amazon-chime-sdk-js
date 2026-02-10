@@ -8,9 +8,19 @@ import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoOpTask from '../../src/task/NoOpTask';
 import OnceTask from '../../src/task/OnceTask';
-import { wait as delay } from '../../src/utils/Utils';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('OnceTask', () => {
+  let clock: sinon.SinonFakeTimers;
+
+  beforeEach(() => {
+    clock = createFakeTimers();
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
+
   describe('deps', () => {
     const logger = new NoOpLogger();
 
@@ -49,7 +59,7 @@ describe('OnceTask', () => {
       it('asynchronously cancels the inner task', async () => {
         const cancel = sinon.spy(inner, 'cancel');
         once.cancel();
-        await delay(0);
+        await tick(clock, 0);
         expect(cancel.called).to.be.true;
       });
     });

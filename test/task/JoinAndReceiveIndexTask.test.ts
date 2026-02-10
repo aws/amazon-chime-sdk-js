@@ -15,7 +15,6 @@ import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSession
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import ServerSideNetworkAdaption from '../../src/signalingclient/ServerSideNetworkAdaption';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
@@ -27,10 +26,10 @@ import {
   SdkTurnCredentials,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import JoinAndReceiveIndexTask from '../../src/task/JoinAndReceiveIndexTask';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('JoinAndReceiveIndexTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -45,8 +44,10 @@ describe('JoinAndReceiveIndexTask', () => {
   let domMockBuilder: DOMMockBuilder | null = null;
   let joinAckSignalBuffer: Uint8Array;
   let indexSignalBuffer: Uint8Array;
+  let clock: sinon.SinonFakeTimers;
 
   beforeEach(async () => {
+    clock = createFakeTimers();
     // use the default 10 ms async wait
     domMockBuilder = new DOMMockBuilder(behavior);
     webSocketAdapter = new DefaultWebSocketAdapter(logger);
@@ -94,6 +95,7 @@ describe('JoinAndReceiveIndexTask', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     signalingClient.closeConnection();
     if (domMockBuilder) {
       domMockBuilder.cleanup();
@@ -113,17 +115,20 @@ describe('JoinAndReceiveIndexTask', () => {
         receivedStatus = true;
         return true;
       };
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      // Schedule close and cancel using fake timers
+      setTimeout(() => {
         webSocketAdapter.close(4410, 'meeting unavailable');
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         // Simulate task cancellation due to close message being received
         task.cancel();
-      });
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
       try {
-        await task.run();
+        await taskPromise;
         expect(false).to.equal(true);
       } catch {
         expect(context.indexFrame).to.equal(null);
@@ -144,17 +149,19 @@ describe('JoinAndReceiveIndexTask', () => {
         receivedStatus = true;
         return true;
       };
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.close(4500, 'service unavailable');
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         // Simulate task cancellation due to close message being received
         task.cancel();
-      });
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
       try {
-        await task.run();
+        await taskPromise;
         expect(false).to.equal(true);
       } catch {
         expect(context.indexFrame).to.equal(null);
@@ -175,17 +182,19 @@ describe('JoinAndReceiveIndexTask', () => {
         receivedStatus = true;
         return true;
       };
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.close(4400, 'bad request');
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         // Simulate task cancellation due to close message being received
         task.cancel();
-      });
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
       try {
-        await task.run();
+        await taskPromise;
         expect(false).to.equal(true);
       } catch {
         expect(context.indexFrame).to.equal(null);
@@ -196,15 +205,17 @@ describe('JoinAndReceiveIndexTask', () => {
     });
 
     it('can run and receive join ack and index frame', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(context.indexFrame).to.not.equal(null);
       expect(context.turnCredentials.username).to.equal('fake-username');
       expect(context.turnCredentials.password).to.equal('fake-password');
@@ -222,15 +233,17 @@ describe('JoinAndReceiveIndexTask', () => {
       joinAckSignalBuffer[0] = 0x5;
       joinAckSignalBuffer.set(joinAckBuffer, 1);
 
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(context.indexFrame).to.not.equal(null);
       expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
     });
@@ -248,15 +261,17 @@ describe('JoinAndReceiveIndexTask', () => {
       joinAckSignalBuffer[0] = 0x5;
       joinAckSignalBuffer.set(joinAckBuffer, 1);
 
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(context.indexFrame).to.not.equal(null);
       expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
     });
@@ -274,15 +289,17 @@ describe('JoinAndReceiveIndexTask', () => {
       joinAckSignalBuffer[0] = 0x5;
       joinAckSignalBuffer.set(joinAckBuffer, 1);
 
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(context.indexFrame).to.not.equal(null);
       expect(context.serverSupportsCompression).to.equal(true);
     });
@@ -292,15 +309,17 @@ describe('JoinAndReceiveIndexTask', () => {
         return ServerSideNetworkAdaption.BandwidthProbing;
       };
       const signalingSpy = sinon.spy(context.signalingClient, 'join');
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(signalingSpy.called).to.be.true;
     });
 
@@ -309,15 +328,17 @@ describe('JoinAndReceiveIndexTask', () => {
         return ServerSideNetworkAdaption.None;
       };
       const signalingSpy = sinon.spy(context.signalingClient, 'join');
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(signalingSpy.called).to.be.true;
     });
 
@@ -352,33 +373,37 @@ describe('JoinAndReceiveIndexTask', () => {
       altJoinAckSignalBuffer.set(joinAckBuffer, 1);
 
       const signalingSpy = sinon.spy(context.signalingClient, 'join');
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(altJoinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(signalingSpy.called).to.be.true;
     });
 
     it('can run and send join with application metadata if valid', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
+      }, 200);
       context.meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create(
         'AmazonChimeJSSDKDemoApp',
         '1.0.0'
       );
       const { appName, appVersion } = context.meetingSessionConfiguration.applicationMetadata;
-      await task.run();
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(appName).to.eq('AmazonChimeJSSDKDemoApp');
       expect(appVersion).to.eq('1.0.0');
       expect(context.indexFrame).to.not.equal(null);
@@ -395,34 +420,37 @@ describe('JoinAndReceiveIndexTask', () => {
       context.meetingSessionConfiguration.disablePeriodicKeyframeRequestOnContentSender = true;
 
       const signalingSpy = sinon.spy(context.signalingClient, 'join');
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(signalingSpy.getCall(0).args[0].disablePeriodicKeyframeRequestOnContentSender).to.be
         .true;
     });
 
     it('can run and only handle SdkIndexFrame', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      const leaveSignalTimer = new TimeoutScheduler(100);
-      leaveSignalTimer.start(() => {
+      setTimeout(() => {
         signalingClient.leave();
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(300).start(() => {
+      }, 200);
+      setTimeout(() => {
         expect(context.indexFrame).to.equal(null);
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 300);
+      const taskPromise = task.run();
+      await tick(clock, 350);
+      await taskPromise;
       expect(context.indexFrame).to.not.equal(null);
     });
 
@@ -432,15 +460,17 @@ describe('JoinAndReceiveIndexTask', () => {
         return [`${url}-expanded-1`, `${url}-expanded-2`];
       };
 
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(context.turnCredentials.uris).to.deep.equal([
         'fake-turn-expanded-1',
         'fake-turn-expanded-2',
@@ -455,15 +485,17 @@ describe('JoinAndReceiveIndexTask', () => {
         return [url];
       };
 
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(context.turnCredentials.uris).to.deep.equal(['fake-turn']);
     });
 
@@ -473,15 +505,17 @@ describe('JoinAndReceiveIndexTask', () => {
         return `${url}-rewritten`;
       };
 
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(context.turnCredentials.uris).to.deep.equal([
         'fake-turn-rewritten',
         'fake-turns-rewritten',
@@ -494,29 +528,32 @@ describe('JoinAndReceiveIndexTask', () => {
         return url;
       };
 
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      new TimeoutScheduler(100).start(() => {
+      setTimeout(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
-      });
-      new TimeoutScheduler(200).start(() => {
+      }, 100);
+      setTimeout(() => {
         webSocketAdapter.send(indexSignalBuffer);
-      });
-      await task.run();
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
       expect(context.turnCredentials.uris).to.deep.equal(['fake-turn']);
     });
   });
 
   describe('cancel', () => {
     it('should cancel the task and throw the reject', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
-      const timer = new TimeoutScheduler(100);
-      timer.start(() => {
+      setTimeout(() => {
         task.cancel();
-      });
+      }, 100);
+      const taskPromise = task.run();
+      await tick(clock, 150);
       try {
-        await task.run();
+        await taskPromise;
       } catch (err) {
         expect(err.toString()).to.equal(
           `Error: JoinAndReceiveIndexTask got canceled while waiting for SdkIndexFrame`
@@ -525,7 +562,7 @@ describe('JoinAndReceiveIndexTask', () => {
     });
 
     it('should immediately throw the reject if task was canceled before running', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
 
       task.cancel();

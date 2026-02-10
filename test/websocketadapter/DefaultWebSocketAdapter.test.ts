@@ -5,16 +5,16 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import NoOpLogger from '../../src/logger/NoOpLogger';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
-import { wait } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketReadyState from '../../src/websocketadapter/WebSocketReadyState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('DefaultWebSocketAdapter', () => {
   let expect: Chai.ExpectStatic;
   let domMockBuilder: DOMMockBuilder | null = null;
+  let clock: sinon.SinonFakeTimers;
   const socket: DefaultWebSocketAdapter = new DefaultWebSocketAdapter(new NoOpLogger());
   const testMessage = 'ᚻᛖ ᚳᚹᚫᚦ ᚦᚫᛏ ᚻᛖ ᛒᚢᛞᛖ ᚩᚾ ᚦᚫᛗ ᛚᚪᚾᛞᛖ ᚾᚩᚱᚦᚹᛖᚪᚱᛞᚢᛗ ᚹᛁᚦ ᚦᚪ ᚹᛖᛥᚫ';
 
@@ -22,14 +22,19 @@ describe('DefaultWebSocketAdapter', () => {
     expect = chai.expect;
   });
 
+  beforeEach(() => {
+    clock = createFakeTimers();
+  });
+
   afterEach(() => {
+    if (clock) clock.restore();
     if (domMockBuilder) {
       domMockBuilder.cleanup();
       domMockBuilder = null;
     }
   });
 
-  it('can be created', done => {
+  it('can be created', async () => {
     const asyncWaitMs = 10;
     const behavior = new DOMMockBehavior();
     behavior.asyncWaitMs = asyncWaitMs;
@@ -37,10 +42,8 @@ describe('DefaultWebSocketAdapter', () => {
     socket.create('http://example.com', ['testProtocol']);
     expect(socket.readyState()).to.equal(WebSocketReadyState.Connecting);
 
-    new TimeoutScheduler(asyncWaitMs + 10).start(() => {
-      expect(socket.readyState()).to.equal(WebSocketReadyState.Open);
-      done();
-    });
+    await tick(clock, asyncWaitMs + 10);
+    expect(socket.readyState()).to.equal(WebSocketReadyState.Open);
   });
 
   it('can send a Uint8Array message', () => {
@@ -94,13 +97,13 @@ describe('DefaultWebSocketAdapter', () => {
     };
     socket.addEventListener('close', handler);
     socket.close();
-    await wait(10);
+    await tick(clock, 10);
     socket.removeEventListener('close', handler);
     socket.close();
     expect(callCount).to.equal(1);
   });
 
-  it('will call close on the websocket', done => {
+  it('will call close on the websocket', async () => {
     domMockBuilder = new DOMMockBuilder();
     const spy = sinon.spy(WebSocket.prototype, 'close');
     socket.create('http://example.com', ['testProtocol']);
@@ -108,9 +111,12 @@ describe('DefaultWebSocketAdapter', () => {
     expect(socket.readyState()).to.equal(WebSocketReadyState.Closing);
     expect(spy.called).to.be.true;
 
+    let closeCalled = false;
     socket.addEventListener('close', () => {
-      expect(socket.readyState()).to.equal(WebSocketReadyState.Closed);
-      done();
+      closeCalled = true;
     });
+    await tick(clock, 10);
+    expect(closeCalled).to.be.true;
+    expect(socket.readyState()).to.equal(WebSocketReadyState.Closed);
   });
 });

@@ -61,6 +61,7 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import CreateMeetingResponseMock from '../meetingsession/CreateMeetingResponseMock';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 import { MockLogger } from '../voicefocus/MockLogger';
 
 function createSignalingEventForBitrateFrame(logger: Logger): SignalingClientEvent {
@@ -754,12 +755,17 @@ describe('MonitorTask', () => {
       task.connectionHealthDidChange(connectionHealthData);
     });
 
-    it('notifies the connection is good when changed from poor', done => {
+    it('notifies the connection is good when changed from poor', async () => {
+      const clock = createFakeTimers();
       const testConfig = new ConnectionHealthPolicyConfiguration();
       testConfig.cooldownTimeMs = 500;
       testConfig.pastSamplesToConsider = 15;
       testConfig.packetsExpected = 10;
       task = new MonitorTask(context, testConfig, new ConnectionHealthData());
+
+      // Advance past connectionWaitTimeMs so connection is not considered "recently started"
+      await tick(clock, testConfig.connectionWaitTimeMs + 100);
+
       let notifiedPoor = 0;
       let notifiedGood = 0;
       class TestObserver implements AudioVideoObserver {
@@ -785,21 +791,20 @@ describe('MonitorTask', () => {
       expect(notifiedPoor).to.equal(1);
       expect(notifiedGood).to.equal(0);
 
-      new TimeoutScheduler(testConfig.cooldownTimeMs + 10).start(() => {
-        connectionHealthData.packetsReceivedInLastMinute = [
-          10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-        ];
+      await tick(clock, testConfig.cooldownTimeMs + 10);
+      connectionHealthData.packetsReceivedInLastMinute = [
+        10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      ];
 
-        task.connectionHealthDidChange(connectionHealthData);
-        expect(notifiedPoor).to.equal(1);
-        expect(notifiedGood).to.equal(1);
+      task.connectionHealthDidChange(connectionHealthData);
+      expect(notifiedPoor).to.equal(1);
+      expect(notifiedGood).to.equal(1);
 
-        task.connectionHealthDidChange(connectionHealthData);
-        expect(notifiedPoor).to.equal(1);
-        expect(notifiedGood).to.equal(1);
+      task.connectionHealthDidChange(connectionHealthData);
+      expect(notifiedPoor).to.equal(1);
+      expect(notifiedGood).to.equal(1);
 
-        done();
-      });
+      clock.restore();
     });
 
     it('suggests turning off video', done => {

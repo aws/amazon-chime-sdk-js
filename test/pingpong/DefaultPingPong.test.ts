@@ -8,7 +8,6 @@ import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultPingPong from '../../src/pingpong/DefaultPingPong';
 import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../../src/signalingclient/SignalingClientEventType';
@@ -18,24 +17,28 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import { Maybe } from '../../src/utils/Types';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('DefaultPingPong', () => {
   let expect: Chai.ExpectStatic;
   const defaultIntervalMs = 10000;
   const logger = new NoOpLogger(LogLevel.DEBUG);
   let domMockBuilder: DOMMockBuilder | null = null;
+  let clock: sinon.SinonFakeTimers;
+
   before(() => {
     expect = chai.expect;
   });
 
   beforeEach(() => {
     domMockBuilder = new DOMMockBuilder();
+    clock = createFakeTimers();
   });
 
   afterEach(() => {
+    clock.restore();
     if (domMockBuilder) {
       domMockBuilder.cleanup();
       domMockBuilder = null;
@@ -75,7 +78,7 @@ describe('DefaultPingPong', () => {
       expect(pingPong.consecutivePongsUnaccountedFor).to.equal(0);
     });
 
-    it('can keep pinging once gets started', done => {
+    it('can keep pinging once gets started', async () => {
       class TestSignalingClient extends DefaultSignalingClient {
         ready(): boolean {
           return true;
@@ -95,13 +98,11 @@ describe('DefaultPingPong', () => {
       const pingPong = new DefaultPingPong(signalingClient, intervalMs, logger);
       pingPong.addObserver(observer);
       pingPong.start();
-      new TimeoutScheduler(intervalMs * 2.5).start(() => {
-        expect(pingPong.consecutivePongsUnaccountedFor).to.equal(3);
-        expect(called).to.be.true;
-        pingPong.stop();
-        pingPong.removeObserver(observer);
-        done();
-      });
+      await tick(clock, intervalMs * 2.5);
+      expect(pingPong.consecutivePongsUnaccountedFor).to.equal(3);
+      expect(called).to.be.true;
+      pingPong.stop();
+      pingPong.removeObserver(observer);
     });
 
     it('cannot start if the signaling client is not ready', () => {
@@ -119,7 +120,7 @@ describe('DefaultPingPong', () => {
       pingPong.stop();
     });
 
-    it('can be started by the WebSocketOpen event', done => {
+    it('can be started by the WebSocketOpen event', async () => {
       class TestSignalingClient extends DefaultSignalingClient {
         ready(): boolean {
           return false;
@@ -134,11 +135,9 @@ describe('DefaultPingPong', () => {
       pingPong.handleSignalingClientEvent(
         new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketOpen, null)
       );
-      new TimeoutScheduler(intervalMs * 2.5).start(() => {
-        expect(pingPong.pingId).to.equal(3);
-        pingPong.stop();
-        done();
-      });
+      await tick(clock, intervalMs * 2.5);
+      expect(pingPong.pingId).to.equal(3);
+      pingPong.stop();
     });
 
     it('can add and remove observers', () => {
@@ -170,17 +169,17 @@ describe('DefaultPingPong', () => {
       pingPong.handleSignalingClientEvent(
         new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketOpen, null)
       );
-      await delay(intervalMs * 2.5);
+      await tick(clock, intervalMs * 2.5);
       expect(pingPong.pingId).to.equal(3);
       pingPong.handleSignalingClientEvent(
         new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketClosed, null)
       );
-      await delay(intervalMs * 2.5);
+      await tick(clock, intervalMs * 2.5);
       expect(pingPong.pingId).to.equal(0);
       pingPong.handleSignalingClientEvent(
         new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketOpen, null)
       );
-      await delay(intervalMs * 2.5);
+      await tick(clock, intervalMs * 2.5);
       expect(pingPong.pingId).to.equal(3);
       pingPong.stop();
     });
@@ -274,17 +273,21 @@ describe('DefaultPingPong', () => {
       clientSpy.restore();
     });
 
-    it('should process the PONG frame when receive Signal PONG frame after ping', done => {
+    it('should process the PONG frame when receive Signal PONG frame after ping', async () => {
       const pingTimestampLocalMs = 10000;
       const pingPong = new DefaultPingPong(signalingClient, defaultIntervalMs, logger);
 
+      let receivedPong = false;
+      let receivedId = 0;
+      let receivedLatencyMs = 0;
+      let receivedClockSkewMs = 0;
+
       class TestObserver implements PingPongObserver {
         didReceivePong(id: number, latencyMs: number, clockSkewMs: number): void {
-          expect(id).to.equal(1);
-          expect(latencyMs).to.equal(0);
-          expect(clockSkewMs).to.equal(2000);
-          pingPong.stop();
-          done();
+          receivedPong = true;
+          receivedId = id;
+          receivedLatencyMs = latencyMs;
+          receivedClockSkewMs = clockSkewMs;
         }
       }
 
@@ -311,12 +314,20 @@ describe('DefaultPingPong', () => {
       pongEvent.timestampMs = pingTimestampLocalMs + 2000;
       pingPong.handleSignalingClientEvent(pongEvent);
       expect(pingPong.consecutivePongsUnaccountedFor).to.equal(0);
+      // Advance time to allow AsyncScheduler.nextTick callbacks to execute
+      await tick(clock, 0);
+      expect(receivedPong).to.be.true;
+      expect(receivedId).to.equal(1);
+      expect(receivedLatencyMs).to.equal(0);
+      expect(receivedClockSkewMs).to.equal(2000);
+      pingPong.stop();
     });
 
-    it('should ignore the PONG frame when receive Signal PONG frame but pingId does not match', done => {
+    it('should ignore the PONG frame when receive Signal PONG frame but pingId does not match', () => {
+      let didReceivePongCalled = false;
       class TestObserver implements PingPongObserver {
         didReceivePong(_id: number, _latencyMs: number, _clockSkewMs: number): void {
-          done();
+          didReceivePongCalled = true;
         }
       }
       const pingPong = new DefaultPingPong(signalingClient, defaultIntervalMs, logger);
@@ -339,14 +350,15 @@ describe('DefaultPingPong', () => {
         )
       );
       expect(pingPong.consecutivePongsUnaccountedFor).to.equal(1);
+      expect(didReceivePongCalled).to.be.false;
       pingPong.stop();
-      done();
     });
 
-    it('should ignore Signal PONG frame with null timestampMs', done => {
+    it('should ignore Signal PONG frame with null timestampMs', () => {
+      let didReceivePongCalled = false;
       class TestObserver implements PingPongObserver {
         didReceivePong(_id: number, _latencyMs: number, _clockSkewMs: number): void {
-          done();
+          didReceivePongCalled = true;
         }
       }
       const pingPong = new DefaultPingPong(signalingClient, defaultIntervalMs, logger);
@@ -369,8 +381,9 @@ describe('DefaultPingPong', () => {
         )
       );
       expect(pingPong.consecutivePongsUnaccountedFor).to.equal(0);
+      // didReceivePong should not be called when timestampMs is undefined
+      expect(didReceivePongCalled).to.be.false;
       pingPong.stop();
-      done();
     });
   });
 });

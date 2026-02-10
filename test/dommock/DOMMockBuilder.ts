@@ -502,7 +502,11 @@ export default class DOMMockBuilder {
       async getUserMedia(
         constraints: MockMediaStreamConstraints
       ): Promise<typeof GlobalAny.MediaStream> {
-        await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
+        if (mockBehavior.asyncWaitMs > 0) {
+          await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
+        } else {
+          await Promise.resolve();
+        }
         return new Promise<typeof GlobalAny.MediaStream>((resolve, reject) => {
           if (constraints === null) {
             reject(
@@ -589,7 +593,11 @@ export default class DOMMockBuilder {
         if (!mockBehavior.enumerateDevicesSupported) {
           throw new Error('simulating enumerate devices not supported');
         }
-        await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
+        if (mockBehavior.asyncWaitMs > 0) {
+          await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
+        } else {
+          await Promise.resolve();
+        }
         if (mockBehavior.enumerateDevicesSucceeds) {
           let deviceLists: (typeof GlobalAny.MediaDeviceInfo)[];
           if (mockBehavior.enumerateDeviceList) {
@@ -1297,8 +1305,7 @@ export default class DOMMockBuilder {
       async setSinkId(deviceId: string): Promise<void> {
         if (mockBehavior.setSinkIdSucceeds) {
           this.sinkId = deviceId;
-          await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs * 10));
-          return undefined;
+          await Promise.resolve();
         } else {
           throw new Error('Failed to set sinkId');
         }

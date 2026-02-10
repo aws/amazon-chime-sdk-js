@@ -12,7 +12,6 @@ import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import {
   convertServerSideNetworkAdaptionEnumFromSignaled,
@@ -37,13 +36,13 @@ import {
   SdkStreamMediaType,
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
-import { wait } from '../../src/utils/Utils';
 import VideoQualityAdaptationPreference from '../../src/videodownlinkbandwidthpolicy/VideoQualityAdaptationPreference';
 import VideoStreamDescription from '../../src/videostreamindex/VideoStreamDescription';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 interface TestConfigs {
   adapterSendSucceeds: boolean;
@@ -848,43 +847,61 @@ describe('DefaultSignalingClient', () => {
     });
 
     it('does not do anything when closeConnection on an already-closed connection', async () => {
-      let called = false;
-      const testObjects = createTestObjects();
-      class TestObserver implements SignalingClientObserver {
-        handleSignalingClientEvent(event: SignalingClientEvent): void {
-          if (
-            event.type === SignalingClientEventType.WebSocketClosed ||
-            event.type === SignalingClientEventType.WebSocketClosing
-          ) {
-            called = true;
+      const clock = createFakeTimers();
+      try {
+        let called = false;
+        const testObjects = createTestObjects();
+        class TestObserver implements SignalingClientObserver {
+          handleSignalingClientEvent(event: SignalingClientEvent): void {
+            if (
+              event.type === SignalingClientEventType.WebSocketClosed ||
+              event.type === SignalingClientEventType.WebSocketClosing
+            ) {
+              called = true;
+            }
           }
         }
-      }
 
-      testObjects.signalingClient.registerObserver(new TestObserver());
-      testObjects.signalingClient.closeConnection();
-      await wait(10);
-      expect(called).to.be.false;
+        testObjects.signalingClient.registerObserver(new TestObserver());
+        testObjects.signalingClient.closeConnection();
+        await tick(clock, 10);
+        expect(called).to.be.false;
+      } finally {
+        clock.restore();
+      }
     });
 
-    it('continues closing the connection even when WebSocket does not receive the "close" event', function (done) {
-      this.timeout(5000);
-      const behavior = new DOMMockBehavior();
-      behavior.webSocketCloseSucceeds = false;
-      domMockBuilder = new DOMMockBuilder(behavior);
+    it('continues closing the connection even when WebSocket does not receive the "close" event', async () => {
+      const clock = createFakeTimers();
+      try {
+        const behavior = new DOMMockBehavior();
+        behavior.webSocketCloseSucceeds = false;
+        domMockBuilder = new DOMMockBuilder(behavior);
 
-      const testObjects = createTestObjects();
-      class TestObserver implements SignalingClientObserver {
-        handleSignalingClientEvent(event: SignalingClientEvent): void {
-          if (event.type === SignalingClientEventType.WebSocketOpen) {
-            event.client.closeConnection();
-          } else if (event.type === SignalingClientEventType.WebSocketClosed) {
-            done();
+        const testObjects = createTestObjects();
+        let closedEventReceived = false;
+        let openEventReceived = false;
+        class TestObserver implements SignalingClientObserver {
+          handleSignalingClientEvent(event: SignalingClientEvent): void {
+            if (event.type === SignalingClientEventType.WebSocketOpen) {
+              openEventReceived = true;
+            } else if (event.type === SignalingClientEventType.WebSocketClosed) {
+              closedEventReceived = true;
+            }
           }
         }
+        testObjects.signalingClient.registerObserver(new TestObserver());
+        testObjects.signalingClient.openConnection(testObjects.request);
+        // Wait for WebSocket to open
+        await tick(clock, 100);
+        expect(openEventReceived).to.be.true;
+        testObjects.signalingClient.closeConnection();
+        // Advance time past the 2000ms close timeout
+        await tick(clock, 2100);
+        expect(closedEventReceived).to.be.true;
+      } finally {
+        clock.restore();
       }
-      testObjects.signalingClient.registerObserver(new TestObserver());
-      testObjects.signalingClient.openConnection(testObjects.request);
     });
 
     it('closes the connection when WebSocket receives the "close" event, e.g., from media backend', done => {
@@ -1110,29 +1127,48 @@ describe('DefaultSignalingClient', () => {
       testObjects.signalingClient.openConnection(testObjects.request);
     });
 
-    it('will not send WebSocketError and WebSocketFailed if an error occurs during the closing state', done => {
-      const testConfigs: TestConfigs = {
-        adapterSendSucceeds: true,
-        adapterDestroySucceeds: false,
-      };
-      const testObjects = createTestObjects(testConfigs);
-      class TestObserver implements SignalingClientObserver {
-        handleSignalingClientEvent(event: SignalingClientEvent): void {
-          if (event.type === SignalingClientEventType.WebSocketOpen) {
-            testObjects.signalingClient.closeConnection();
-          } else if (event.type === SignalingClientEventType.WebSocketClosed) {
-            testObjects.webSocketAdapter.send(new Uint8Array([0]));
-            new TimeoutScheduler(10).start(done);
-          } else if (
-            event.type === SignalingClientEventType.WebSocketError ||
-            event.type === SignalingClientEventType.WebSocketFailed
-          ) {
-            done(new Error('WebSocketError or WebSocketFailed should not be sent.'));
+    it('will not send WebSocketError and WebSocketFailed if an error occurs during the closing state', async () => {
+      const clock = createFakeTimers();
+      try {
+        const testConfigs: TestConfigs = {
+          adapterSendSucceeds: true,
+          adapterDestroySucceeds: false,
+        };
+        const testObjects = createTestObjects(testConfigs);
+        let errorReceived = false;
+        let closedReceived = false;
+        let openReceived = false;
+        class TestObserver implements SignalingClientObserver {
+          handleSignalingClientEvent(event: SignalingClientEvent): void {
+            if (event.type === SignalingClientEventType.WebSocketOpen) {
+              openReceived = true;
+            } else if (event.type === SignalingClientEventType.WebSocketClosed) {
+              closedReceived = true;
+            } else if (
+              event.type === SignalingClientEventType.WebSocketError ||
+              event.type === SignalingClientEventType.WebSocketFailed
+            ) {
+              errorReceived = true;
+            }
           }
         }
+        testObjects.signalingClient.registerObserver(new TestObserver());
+        testObjects.signalingClient.openConnection(testObjects.request);
+        // Wait for WebSocket to open
+        await tick(clock, 100);
+        expect(openReceived).to.be.true;
+        testObjects.signalingClient.closeConnection();
+        // Wait for close event
+        await tick(clock, 100);
+        expect(closedReceived).to.be.true;
+        // Send after closed
+        testObjects.webSocketAdapter.send(new Uint8Array([0]));
+        // Advance time to ensure no error events are triggered
+        await tick(clock, 100);
+        expect(errorReceived).to.be.false;
+      } finally {
+        clock.restore();
       }
-      testObjects.signalingClient.registerObserver(new TestObserver());
-      testObjects.signalingClient.openConnection(testObjects.request);
     });
   });
 

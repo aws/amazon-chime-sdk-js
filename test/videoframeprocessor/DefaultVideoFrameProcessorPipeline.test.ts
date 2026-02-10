@@ -15,6 +15,7 @@ import VideoFrameProcessorPipelineObserver from '../../src/videoframeprocessor/V
 import VideoFrameProcessorTimer from '../../src/videoframeprocessor/VideoFrameProcessorTimer';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 /**
  * [[MockVideoFrameProcessorTimer]] uses just `setTimeout` to avoid the complexity of
@@ -199,38 +200,48 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     });
 
     it('can fail to start pipeline and fire callback if buffers are destroyed', async () => {
-      class DummyProcessor implements VideoFrameProcessor {
-        destroy(): Promise<void> {
-          return;
-        }
-        width = 1280;
-        height = 720;
-        count = 0;
-        canvas = document.createElement('canvas');
-        process(_buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
-          this.canvas.width = this.width;
-          this.canvas.height = this.height;
-          this.count += 1;
-          const buffer = new CanvasVideoFrameBuffer(this.canvas);
-          if (this.count === 5) {
-            buffer.destroy();
+      const clock = createFakeTimers();
+      try {
+        class DummyProcessor implements VideoFrameProcessor {
+          destroy(): Promise<void> {
+            return;
           }
-          return Promise.resolve([buffer]);
+          width = 1280;
+          height = 720;
+          count = 0;
+          canvas = document.createElement('canvas');
+          process(_buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
+            this.canvas.width = this.width;
+            this.canvas.height = this.height;
+            this.count += 1;
+            const buffer = new CanvasVideoFrameBuffer(this.canvas);
+            if (this.count === 5) {
+              buffer.destroy();
+            }
+            return Promise.resolve([buffer]);
+          }
         }
+
+        class EmptyMockObserver implements VideoFrameProcessorPipelineObserver {}
+        const pipeObserver = new MockObserver();
+        const pipeObserver2 = new EmptyMockObserver();
+
+        const procs = [new DummyProcessor()];
+        pipe.processors = procs;
+        pipe.addObserver(pipeObserver);
+        pipe.addObserver(pipeObserver2);
+
+        const setInputPromise = pipe.setInputMediaStream(mockVideoStream);
+
+        // Advance time to allow 5+ processing cycles (each ~67ms at 15fps)
+        // Need enough time for the 5th frame to trigger the failure
+        await clock.tickAsync(500);
+
+        expect(pipeObserver.processingDidFailToStart.called).to.be.true;
+        await setInputPromise;
+      } finally {
+        clock.restore();
       }
-
-      class EmptyMockObserver implements VideoFrameProcessorPipelineObserver {}
-      const pipeObserver = new MockObserver();
-      const pipeObserver2 = new EmptyMockObserver();
-
-      const failToStartCallback = called(pipeObserver.processingDidFailToStart);
-
-      const procs = [new DummyProcessor()];
-      pipe.processors = procs;
-      pipe.addObserver(pipeObserver);
-      pipe.addObserver(pipeObserver2);
-      await pipe.setInputMediaStream(mockVideoStream);
-      await failToStartCallback;
     });
 
     it('execute callbacks', async () => {
@@ -385,35 +396,47 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     });
 
     it('can set slow processor and fires processingLatencyTooHigh', async () => {
-      class PipeObserver2 implements VideoFrameProcessorPipelineObserver {
-        processingDidStart = sinon.stub();
-      }
-
-      const pipeObserver = new MockObserver();
-      const pipeObserver2 = new PipeObserver2();
-
-      const latencyCallback = called(pipeObserver.processingLatencyTooHigh);
-      const startCallback = called(pipeObserver.processingDidStart);
-
-      pipe.addObserver(pipeObserver);
-      pipe.addObserver(pipeObserver2);
-
-      class WrongProcessor implements VideoFrameProcessor {
-        destroy(): Promise<void> {
-          return Promise.resolve();
+      const clock = createFakeTimers();
+      try {
+        class PipeObserver2 implements VideoFrameProcessorPipelineObserver {
+          processingDidStart = sinon.stub();
         }
-        async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
-          await new Promise(resolve => setTimeout(resolve, (1000 / 15) * 3));
-          return buffers;
+
+        const pipeObserver = new MockObserver();
+        const pipeObserver2 = new PipeObserver2();
+
+        pipe.addObserver(pipeObserver);
+        pipe.addObserver(pipeObserver2);
+
+        const processingDelay = (1000 / 15) * 3; // ~200ms
+
+        class WrongProcessor implements VideoFrameProcessor {
+          destroy(): Promise<void> {
+            return Promise.resolve();
+          }
+          async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
+            await new Promise(resolve => setTimeout(resolve, processingDelay));
+            return buffers;
+          }
         }
+        const procs = [new WrongProcessor()];
+        pipe.processors = procs;
+
+        pipe.setInputMediaStream(mockVideoStream);
+
+        // Advance time to trigger processing cycles and latency detection
+        // Need enough cycles for latency to be detected (processing > half frame time)
+        for (let i = 0; i < 10; i++) {
+          await clock.tickAsync(100);
+        }
+
+        expect(pipeObserver.processingDidStart.called).to.be.true;
+        expect(pipeObserver.processingLatencyTooHigh.called).to.be.true;
+
+        pipe.setInputMediaStream(null);
+      } finally {
+        clock.restore();
       }
-      const procs = [new WrongProcessor()];
-      pipe.processors = procs;
-
-      await pipe.setInputMediaStream(mockVideoStream);
-      await Promise.all([startCallback, latencyCallback]);
-
-      await pipe.setInputMediaStream(null);
     });
   });
 

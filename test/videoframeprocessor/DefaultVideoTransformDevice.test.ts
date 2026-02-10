@@ -23,6 +23,7 @@ import MockEngineWorker from '../../test/videofx/MockEngineWorker';
 import MockFxLib from '../../test/videofx/MockFxLib';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultVideoTransformDevice', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -474,25 +475,38 @@ describe('DefaultVideoTransformDevice', () => {
     });
 
     it('processingLatencyTooHigh', async () => {
-      class Observer2 implements DefaultVideoTransformDeviceObserver {}
-      const obs = new MockObserver();
+      const clock = createFakeTimers();
+      try {
+        class Observer2 implements DefaultVideoTransformDeviceObserver {}
+        const obs = new MockObserver();
 
-      const latencyCallback = called(obs.processingLatencyTooHigh);
+        const processingDelay = (1000 / 15) * 3; // ~200ms
 
-      class WrongProcessor extends NoOpVideoFrameProcessor {
-        async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
-          await new Promise(resolve => setTimeout(resolve, (1000 / 15) * 3));
-          return buffers;
+        class WrongProcessor extends NoOpVideoFrameProcessor {
+          async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
+            await new Promise(resolve => setTimeout(resolve, processingDelay));
+            return buffers;
+          }
         }
-      }
 
-      const procs = [new WrongProcessor()];
-      const device = new DefaultVideoTransformDevice(logger, 'test', procs);
-      device.addObserver(obs);
-      device.addObserver(new Observer2());
-      await device.transformStream(mockVideoStream);
-      await latencyCallback;
-      await device.stop();
+        const procs = [new WrongProcessor()];
+        const device = new DefaultVideoTransformDevice(logger, 'test', procs);
+        device.addObserver(obs);
+        device.addObserver(new Observer2());
+
+        device.transformStream(mockVideoStream);
+
+        // Advance time to trigger processing cycles and latency detection
+        for (let i = 0; i < 10; i++) {
+          await clock.tickAsync(100);
+        }
+
+        expect(obs.processingLatencyTooHigh.called).to.be.true;
+
+        await device.stop();
+      } finally {
+        clock.restore();
+      }
     });
   });
 });

@@ -2,17 +2,27 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import PromiseQueue from '../../src/utils/PromiseQueue';
-import { wait as delay } from '../../src/utils/Utils';
+import { createFakeTimers } from './fakeTimerHelper';
 
 describe('PromiseQueue', () => {
   let assert: Chai.AssertStatic;
   let expect: Chai.ExpectStatic;
+  let clock: sinon.SinonFakeTimers;
 
   before(() => {
     assert = chai.assert;
     expect = chai.expect;
+  });
+
+  beforeEach(() => {
+    clock = createFakeTimers();
+  });
+
+  afterEach(() => {
+    clock.restore();
   });
 
   it('can be constructed', () => {
@@ -58,7 +68,7 @@ describe('PromiseQueue', () => {
     queue.add(() => func(1, 50));
     queue.add(() => func(2, 10));
     queue.add(() => func(3, 1));
-    await delay(100);
+    await clock.tickAsync(100);
     expect(result).to.eq(3);
     expect(callCount).to.eq(3);
   });
@@ -88,7 +98,7 @@ describe('PromiseQueue', () => {
     queue.add(() => func1(1, 50));
     queue.add(() => func2(10));
     queue.add(() => func1(3, 1));
-    await delay(100);
+    await clock.tickAsync(100);
     expect(result).to.eq(3);
     expect(resolveCount).to.eq(2);
     expect(rejectCount).to.eq(1);

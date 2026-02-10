@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import { MeetingSessionStatusCode } from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
@@ -23,10 +24,10 @@ import {
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import PromoteToPrimaryMeetingTask from '../../src/task/PromoteToPrimaryMeetingTask';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('PromoteToPrimaryMeetingTask', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -58,7 +59,10 @@ describe('PromoteToPrimaryMeetingTask', () => {
     return primaryMeetingJoinAck;
   }
 
+  let clock: sinon.SinonFakeTimers;
+
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBuilder = new DOMMockBuilder(behavior);
     context = new AudioVideoControllerState();
     context.browserBehavior = new DefaultBrowserBehavior();
@@ -80,12 +84,13 @@ describe('PromoteToPrimaryMeetingTask', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     domMockBuilder.cleanup();
   });
 
   describe('run', () => {
     it('runs successfully in normal case', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       let completionCallbackCalled = false;
@@ -99,13 +104,15 @@ describe('PromoteToPrimaryMeetingTask', () => {
       );
       primaryMeetingJoinAck = makePrimaryMeetingJoinAckFrame();
       new TimeoutScheduler(100).start(() => webSocketAdapter.send(primaryMeetingJoinAck));
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 150);
+      await runPromise;
 
       expect(completionCallbackCalled).to.be.true;
     });
 
     it('runs and propagates error returned in normal case', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       let completionCallbackCalled = false;
@@ -121,13 +128,15 @@ describe('PromoteToPrimaryMeetingTask', () => {
       );
       primaryMeetingJoinAck = makePrimaryMeetingJoinAckFrame(403);
       new TimeoutScheduler(100).start(() => webSocketAdapter.send(primaryMeetingJoinAck));
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 150);
+      await runPromise;
 
       expect(completionCallbackCalled).to.be.true;
     });
 
     it('completes when the connection is closed while waiting for ack', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       let completionCallbackCalled = false;
@@ -140,13 +149,15 @@ describe('PromoteToPrimaryMeetingTask', () => {
         }
       );
       new TimeoutScheduler(50).start(() => webSocketAdapter.close());
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 100);
+      await runPromise;
 
       expect(completionCallbackCalled).to.be.true;
     });
 
     it('completes when receiving closing event while waiting for ack', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       let completionCallbackCalled = false;
@@ -159,13 +170,15 @@ describe('PromoteToPrimaryMeetingTask', () => {
         }
       );
       new TimeoutScheduler(50).start(() => context.signalingClient.closeConnection());
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 100);
+      await runPromise;
 
       expect(completionCallbackCalled).to.be.true;
     });
 
     it('completes when receiving error event while waiting for ack', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       let completionCallbackCalled = false;
@@ -181,13 +194,15 @@ describe('PromoteToPrimaryMeetingTask', () => {
         behavior.webSocketSendSucceeds = false;
         webSocketAdapter.send(new Uint8Array([0]));
       });
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 100);
+      await runPromise;
 
       expect(completionCallbackCalled).to.be.true;
     });
 
     it('completes when receiving failed event while waiting for ack', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       let completionCallbackCalled = false;
@@ -209,13 +224,15 @@ describe('PromoteToPrimaryMeetingTask', () => {
           )
         );
       });
-      await task.run().then(() => {});
+      const runPromise = task.run();
+      await tick(clock, 100);
+      await runPromise;
 
       expect(completionCallbackCalled).to.be.true;
     });
 
     it('completes when the connection is already closed', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       context.signalingClient.closeConnection();
@@ -236,7 +253,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
 
   describe('cancel', () => {
     it('should cancel the task and throw the reject', async () => {
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       let completionCallbackCalled = false;
@@ -249,8 +266,10 @@ describe('PromoteToPrimaryMeetingTask', () => {
         }
       );
       new TimeoutScheduler(100).start(() => task.cancel());
+      const runPromise = task.run();
+      await tick(clock, 150);
       try {
-        await task.run();
+        await runPromise;
         assert.fail();
       } catch (_err) {}
 
@@ -258,7 +277,7 @@ describe('PromoteToPrimaryMeetingTask', () => {
     });
 
     it('will cancel idempotently', async () => {
-      await delay(50);
+      await tick(clock, 50);
       let completionCallbackCalled = false;
       const task = new PromoteToPrimaryMeetingTask(
         context,

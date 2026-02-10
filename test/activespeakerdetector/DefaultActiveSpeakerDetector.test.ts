@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import DefaultActiveSpeakerDetector from '../../src/activespeakerdetector/DefaultActiveSpeakerDetector';
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import IntervalScheduler from '../../src/scheduler/IntervalScheduler';
-import { wait as delay } from '../../src/utils/Utils';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('DefaultActiveSpeakerDetector', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -18,6 +19,15 @@ describe('DefaultActiveSpeakerDetector', () => {
   const bandwidthPriorityCallback = (): void => {};
   const talkingVolumeSimulator = (i: number, volume: number): number =>
     volume * (0.5 + 0.5 * (i % 2));
+  let clock: sinon.SinonFakeTimers;
+
+  beforeEach(() => {
+    clock = createFakeTimers();
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
 
   describe('construction', () => {
     it('can be constructed', () => {
@@ -238,7 +248,7 @@ describe('DefaultActiveSpeakerDetector', () => {
           null
         );
       }
-      await delay(1000);
+      await tick(clock, 1000);
       expect(steps.length).to.equal(2);
       expect(steps.every(step => step === true)).to.be.true;
       detector.unsubscribe(callback);

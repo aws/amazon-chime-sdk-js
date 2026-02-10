@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import MediaDeviceProxyHandler from '../../src/mediadevicefactory/MediaDeviceProxyHandler';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('MediaDeviceProxyHandler', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -13,6 +15,7 @@ describe('MediaDeviceProxyHandler', () => {
   let mediaDeviceWrapper: MediaDevices;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
+  let clock: sinon.SinonFakeTimers;
 
   function getMediaDeviceInfo(
     deviceId: string,
@@ -28,6 +31,7 @@ describe('MediaDeviceProxyHandler', () => {
   }
 
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     mediaDeviceWrapper = new Proxy<MediaDevices>(
@@ -37,18 +41,13 @@ describe('MediaDeviceProxyHandler', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     if (domMockBuilder) {
       try {
         domMockBuilder.cleanup();
       } catch (e) {}
     }
   });
-
-  async function wait(msec = domMockBehavior.asyncWaitMs): Promise<void> {
-    return new Promise((resolve, _reject) => {
-      setTimeout(resolve, msec);
-    });
-  }
 
   describe('Using MediaDevices.ondevicechange', () => {
     it('receives a device change event', async () => {
@@ -57,11 +56,11 @@ describe('MediaDeviceProxyHandler', () => {
         callCount += 1;
       });
 
-      await wait();
+      await clock.tickAsync(domMockBehavior.asyncWaitMs);
       navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
-      await wait();
+      await clock.tickAsync(domMockBehavior.asyncWaitMs);
       expect(callCount).to.equal(3);
     });
 
@@ -72,10 +71,10 @@ describe('MediaDeviceProxyHandler', () => {
       };
       mediaDeviceWrapper.addEventListener('devicechange', listener);
 
-      await wait();
+      await clock.tickAsync(domMockBehavior.asyncWaitMs);
       navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       mediaDeviceWrapper.removeEventListener('devicechange', listener);
-      await wait();
+      await clock.tickAsync(domMockBehavior.asyncWaitMs);
       navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       expect(callCount).to.equal(1);
@@ -107,10 +106,10 @@ describe('MediaDeviceProxyHandler', () => {
         getMediaDeviceInfo('3', 'audiooutput', 'label'),
       ];
       mediaDeviceWrapper.addEventListener('devicechange', listener);
-      await wait(2500);
+      await clock.tickAsync(2500);
       mediaDeviceWrapper.removeEventListener('devicechange', listener);
       expect(callCount).to.equal(0);
-    }).timeout(5000);
+    });
 
     it('receives an event if a device list changes', async () => {
       let callCount1 = 0;
@@ -133,7 +132,7 @@ describe('MediaDeviceProxyHandler', () => {
       mediaDeviceWrapper.addEventListener('devicechange', listener1);
       mediaDeviceWrapper.addEventListener('devicechange', listener2);
       mediaDeviceWrapper.addEventListener('devicechange', listener3);
-      await wait(1500);
+      await clock.tickAsync(1500);
 
       // Only the ID changes.
       domMockBehavior.enumerateDeviceList = [
@@ -141,13 +140,13 @@ describe('MediaDeviceProxyHandler', () => {
         getMediaDeviceInfo('1', 'videoinput', 'label'),
         getMediaDeviceInfo('3', 'audiooutput', 'label'),
       ];
-      await wait(1000);
+      await clock.tickAsync(1000);
       mediaDeviceWrapper.removeEventListener('devicechange', listener1);
 
       // The number of devices changes.
       domMockBehavior.enumerateDeviceList = [];
 
-      await wait(1000);
+      await clock.tickAsync(1000);
       mediaDeviceWrapper.removeEventListener('devicechange', listener2);
       mediaDeviceWrapper.removeEventListener('devicechange', listener3);
 
@@ -155,7 +154,7 @@ describe('MediaDeviceProxyHandler', () => {
       expect(callCount1).to.equal(1);
       expect(callCount2).to.equal(2);
       expect(callCount3).to.equal(2);
-    }).timeout(5000);
+    });
 
     it('handles events other than devicechange', async () => {
       let callCount = 0;
@@ -164,10 +163,10 @@ describe('MediaDeviceProxyHandler', () => {
       };
       mediaDeviceWrapper.addEventListener('testevent', listener);
       mediaDeviceWrapper.dispatchEvent(new Event('testevent'));
-      await wait(2500);
+      await clock.tickAsync(2500);
       mediaDeviceWrapper.removeEventListener('testevent', listener);
       expect(callCount).to.equal(1);
-    }).timeout(5000);
+    });
 
     it('handles an EventListenerObject listener', async () => {
       let callCount = 0;
@@ -182,12 +181,12 @@ describe('MediaDeviceProxyHandler', () => {
         getMediaDeviceInfo('3', 'audiooutput', 'label'),
       ];
       mediaDeviceWrapper.addEventListener('devicechange', listener);
-      await wait(1500);
+      await clock.tickAsync(1500);
       domMockBehavior.enumerateDeviceList = [];
-      await wait(1000);
+      await clock.tickAsync(1000);
       mediaDeviceWrapper.removeEventListener('devicechange', listener);
       expect(callCount).to.equal(1);
-    }).timeout(5000);
+    });
   });
 
   describe('Common', () => {

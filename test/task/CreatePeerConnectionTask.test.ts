@@ -15,7 +15,6 @@ import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessi
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import VideoTile from '../../src/videotile/VideoTile';
@@ -26,6 +25,7 @@ import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTile
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 import SDPMock from '../sdp/SDPMock';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('CreatePeerConnectionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -44,6 +44,7 @@ describe('CreatePeerConnectionTask', () => {
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder | null = null;
   let task: Task;
+  let clock: sinon.SinonFakeTimers;
 
   function makeICEEvent(candidateStr: string | null): RTCPeerConnectionIceEvent {
     let iceCandidate: RTCIceCandidate = null;
@@ -59,6 +60,7 @@ describe('CreatePeerConnectionTask', () => {
   }
 
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     context = new AudioVideoControllerState();
@@ -93,6 +95,7 @@ describe('CreatePeerConnectionTask', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     domMockBuilder.cleanup();
   });
 
@@ -189,8 +192,9 @@ describe('CreatePeerConnectionTask', () => {
         );
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(addVideoTileSpy.called).to.be.false;
       });
 
@@ -218,8 +222,9 @@ describe('CreatePeerConnectionTask', () => {
         context.activeVideoInput = activeVideoInput;
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(addVideoTileSpy.called).to.be.true;
       });
 
@@ -243,8 +248,9 @@ describe('CreatePeerConnectionTask', () => {
         );
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(addVideoTileSpy.called).to.be.false;
       });
 
@@ -256,8 +262,9 @@ describe('CreatePeerConnectionTask', () => {
 
         domMockBehavior.hasInactiveTransceiver = true;
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(addVideoTileSpy.called).to.be.false;
       });
 
@@ -293,8 +300,9 @@ describe('CreatePeerConnectionTask', () => {
         const bindVideoStreamSpy = sinon.spy(tile, 'bindVideoStream');
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(called).to.be.true;
         expect(addVideoTileSpy.called).to.be.false;
         expect(bindVideoStreamSpy.called).to.be.false;
@@ -334,8 +342,9 @@ describe('CreatePeerConnectionTask', () => {
         const bindVideoStreamSpy = sinon.spy(tile, 'bindVideoStream');
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(called).to.be.true;
         expect(addVideoTileSpy.called).to.be.false;
         expect(bindVideoStreamSpy.called).to.be.true;
@@ -384,8 +393,9 @@ describe('CreatePeerConnectionTask', () => {
         const bindVideoStreamSpy = sinon.spy(tile, 'bindVideoStream');
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(called).to.be.true;
         expect(addVideoTileSpy.called).to.be.false;
         expect(
@@ -488,8 +498,9 @@ describe('CreatePeerConnectionTask', () => {
         context.videoTileController = videoTileController;
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(hasVideoTileCalled).to.be.true;
         expect(addVideoTileCalled).to.be.false;
       });
@@ -520,8 +531,9 @@ describe('CreatePeerConnectionTask', () => {
         );
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(tile.state().streamId).to.equal(streamId);
       });
 
@@ -555,8 +567,9 @@ describe('CreatePeerConnectionTask', () => {
         );
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(tile.state().videoStreamContentWidth).to.equal(
           domMockBehavior.mediaStreamTrackCapabilities.width
         );
@@ -598,8 +611,9 @@ describe('CreatePeerConnectionTask', () => {
         );
 
         await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(tile.state().videoStreamContentWidth).to.equal(
           domMockBehavior.mediaStreamTrackSettings.width
         );
@@ -622,8 +636,9 @@ describe('CreatePeerConnectionTask', () => {
           const track = event.track;
           (track as StoppableMediaStreamTrack).externalStop();
         });
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
       });
 
       it('has externalUserId for an attendee', async () => {
@@ -647,8 +662,9 @@ describe('CreatePeerConnectionTask', () => {
           const track = event.track;
           (track as StoppableMediaStreamTrack).externalStop();
         });
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(called).to.be.true;
         expect(addVideoTileSpy.called).to.be.true;
       });
@@ -660,8 +676,9 @@ describe('CreatePeerConnectionTask', () => {
           const track = event.track;
           (track as StoppableMediaStreamTrack).externalMute();
         });
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
         expect(logSpy.called).to.be.true;
         expect(logSpy.calledWith('received the mute event for tile=1 id=0 streamId=null'));
         logSpy.restore();
@@ -669,8 +686,9 @@ describe('CreatePeerConnectionTask', () => {
     });
 
     describe('stopping a track', () => {
-      it('removes stream ID from the paused video stream ID set if stream ID exists', done => {
+      it('removes stream ID from the paused video stream ID set if stream ID exists', async () => {
         let called = false;
+        let removeVideoTileCalled = false;
         const attendeeIdForTrack = 'attendee-id';
         class TestVideoStreamIndex extends DefaultVideoStreamIndex {
           streamIdForTrack(_trackId: string): number {
@@ -695,7 +713,7 @@ describe('CreatePeerConnectionTask', () => {
           removeVideoTile(tileId: number): void {
             expect(tile.id()).to.equal(tileId);
             expect(called).to.be.true;
-            done();
+            removeVideoTileCalled = true;
           }
         }
         context.videoTileController = new TestVideoTileController(
@@ -711,17 +729,20 @@ describe('CreatePeerConnectionTask', () => {
         }
         context.videosPaused = new TestVideoStreamIdSet();
 
-        task.run().then(() => {
-          context.peer.addEventListener('track', (event: RTCTrackEvent) => {
-            const track = event.track;
-            const stream = event.streams[0];
-            stream.removeTrack(track);
-          });
-          context.peer.setRemoteDescription(videoRemoteDescription);
+        await task.run();
+        context.peer.addEventListener('track', (event: RTCTrackEvent) => {
+          const track = event.track;
+          const stream = event.streams[0];
+          stream.removeTrack(track);
         });
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
+        expect(removeVideoTileCalled).to.be.true;
       });
 
-      it('uses a stream for handling the "removetrack" event and removing stream ID from the paused video stream ID set', done => {
+      it('uses a stream for handling the "removetrack" event and removing stream ID from the paused video stream ID set', async () => {
+        let removeVideoTileCalled = false;
         class TestTransceiverController extends DefaultTransceiverController {
           useTransceivers(): boolean {
             return true;
@@ -741,7 +762,7 @@ describe('CreatePeerConnectionTask', () => {
 
           removeVideoTile(tileId: number): void {
             expect(tile.id()).to.equal(tileId);
-            done();
+            removeVideoTileCalled = true;
           }
         }
         context.videoTileController = new TestVideoTileController(
@@ -750,14 +771,16 @@ describe('CreatePeerConnectionTask', () => {
           logger
         );
 
-        task.run().then(() => {
-          context.peer.addEventListener('track', (event: RTCTrackEvent) => {
-            const track = event.track;
-            const stream = event.streams[0];
-            stream.removeTrack(track);
-          });
-          context.peer.setRemoteDescription(videoRemoteDescription);
+        await task.run();
+        context.peer.addEventListener('track', (event: RTCTrackEvent) => {
+          const track = event.track;
+          const stream = event.streams[0];
+          stream.removeTrack(track);
         });
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
+        expect(removeVideoTileCalled).to.be.true;
       });
     });
   });
@@ -766,8 +789,9 @@ describe('CreatePeerConnectionTask', () => {
     it('binds a stream for a newly-added audio track', async () => {
       const spy: sinon.SinonSpy = sinon.spy(context.audioMixController, 'bindAudioStream');
       await task.run();
-      await context.peer.setRemoteDescription(audioRemoteDescription);
-      await delay(domMockBehavior.asyncWaitMs + 10);
+      const setRemotePromise = context.peer.setRemoteDescription(audioRemoteDescription);
+      await tick(clock, domMockBehavior.asyncWaitMs + 10);
+      await setRemotePromise;
       expect(spy.called).to.be.true;
     });
   });
@@ -786,8 +810,9 @@ describe('CreatePeerConnectionTask', () => {
 
       await task.run();
       context.removableObservers[0].removeObserver();
-      await context.peer.setRemoteDescription(videoRemoteDescription);
-      await delay(domMockBehavior.asyncWaitMs + 10);
+      const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+      await tick(clock, domMockBehavior.asyncWaitMs + 10);
+      await setRemotePromise;
       expect(called).to.be.false;
     });
 
@@ -816,8 +841,9 @@ describe('CreatePeerConnectionTask', () => {
         const track = event.track;
         (track as StoppableMediaStreamTrack).externalStop();
       });
-      await context.peer.setRemoteDescription(videoRemoteDescription);
-      await delay(domMockBehavior.asyncWaitMs + 10);
+      const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+      await tick(clock, domMockBehavior.asyncWaitMs + 10);
+      await setRemotePromise;
       expect(called).to.be.true;
       expect(peerRemoveEventListenerSpy.called).to.be.true;
     });
@@ -848,8 +874,9 @@ describe('CreatePeerConnectionTask', () => {
         const track = event.track;
         (track as StoppableMediaStreamTrack).externalStop();
       });
-      await context.peer.setRemoteDescription(videoRemoteDescription);
-      await delay(domMockBehavior.asyncWaitMs + 10);
+      const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+      await tick(clock, domMockBehavior.asyncWaitMs + 10);
+      await setRemotePromise;
       expect(called).to.be.true;
       expect(peerRemoveEventListenerSpy.called).to.be.false;
     });

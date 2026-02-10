@@ -8,17 +8,18 @@ import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoC
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import VideoQualitySettings from '../../src/devicecontroller/VideoQualitySettings';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import VideoTileState from '../../src/videotile/VideoTileState';
 import VideoTileController, {
   VideoTileResolutionObserver,
 } from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultVideoTileController', () => {
   const assert: Chai.AssertStatic = chai.assert;
   const expect: Chai.ExpectStatic = chai.expect;
+  let clock: sinon.SinonFakeTimers;
   const videoElementFactory = new NoOpVideoElementFactory();
   let audioVideoController: AudioVideoTileController;
   let tileController: VideoTileController;
@@ -35,6 +36,7 @@ describe('DefaultVideoTileController', () => {
   })();
 
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBuilder = new DOMMockBuilder();
     global.ResizeObserver = class MockResizeObserver {
       constructor(callback: (entries: ResizeObserverEntry[]) => void) {
@@ -57,10 +59,11 @@ describe('DefaultVideoTileController', () => {
     tileController.removeVideoTileResolutionObserver(observer);
     await (audioVideoController as NoOpAudioVideoTileController).destroy();
     domMockBuilder.cleanup();
+    clock.restore();
   });
 
   describe('bindVideoElement', () => {
-    it('binds a video element', done => {
+    it('binds a video element', async () => {
       let called = 0;
       const videoElement = videoElementFactory.create();
 
@@ -68,7 +71,6 @@ describe('DefaultVideoTileController', () => {
         videoTileDidUpdate(tileState: VideoTileState): void {
           if (called === 1) {
             expect(tileState.boundVideoElement).to.equal(videoElement);
-            done();
           }
           called += 1;
         }
@@ -84,9 +86,11 @@ describe('DefaultVideoTileController', () => {
           contentRect: { width: 1280, height: 720 },
         } as ResizeObserverEntry,
       ]);
+      await clock.tickAsync(0);
+      expect(called).to.equal(2);
     });
 
-    it('binds a null video element', done => {
+    it('binds a null video element', async () => {
       let called = 0;
       const videoElement = videoElementFactory.create();
 
@@ -94,7 +98,6 @@ describe('DefaultVideoTileController', () => {
         videoTileDidUpdate(tileState: VideoTileState): void {
           if (called === 2) {
             expect(tileState.boundVideoElement).to.equal(null);
-            done();
           }
           called += 1;
         }
@@ -111,9 +114,11 @@ describe('DefaultVideoTileController', () => {
           contentRect: { width: 1280, height: 720 },
         } as ResizeObserverEntry,
       ]);
+      await clock.tickAsync(0);
+      expect(called).to.equal(3);
     });
 
-    it('ignores binding to a non-existent tile', done => {
+    it('ignores binding to a non-existent tile', async () => {
       let called = 0;
 
       class Observer implements AudioVideoObserver {
@@ -127,12 +132,13 @@ describe('DefaultVideoTileController', () => {
       }
       audioVideoController.addObserver(new Observer());
       tileController.bindVideoElement(0, null);
-      new TimeoutScheduler(10).start(done);
+      await clock.tickAsync(10);
+      expect(called).to.equal(0);
     });
   });
 
   describe('unbindVideoElement', () => {
-    it('unbinds a video element', done => {
+    it('unbinds a video element', async () => {
       let called = 0;
       const videoElement = videoElementFactory.create();
 
@@ -140,7 +146,6 @@ describe('DefaultVideoTileController', () => {
         videoTileDidUpdate(tileState: VideoTileState): void {
           if (called === 2) {
             expect(tileState.boundVideoElement).to.equal(null);
-            done();
           }
           called += 1;
         }
@@ -151,6 +156,8 @@ describe('DefaultVideoTileController', () => {
       const tileId = tileController.addVideoTile().id();
       tileController.bindVideoElement(tileId, videoElement);
       tileController.unbindVideoElement(tileId);
+      await clock.tickAsync(0);
+      expect(called).to.equal(3);
     });
 
     it('default - clears srcObject with unbindVideoElement', () => {
@@ -186,24 +193,22 @@ describe('DefaultVideoTileController', () => {
   });
 
   describe('startLocalVideoTile', () => {
-    it('starts, stops, and removes a local tile', done => {
+    it('starts, stops, and removes a local tile', async () => {
       tileController.startLocalVideoTile();
 
-      new TimeoutScheduler(10).start(() => {
-        expect(tileController.getLocalVideoTile()).to.not.equal(null);
-        tileController.stopLocalVideoTile();
+      await clock.tickAsync(10);
+      expect(tileController.getLocalVideoTile()).to.not.equal(null);
+      tileController.stopLocalVideoTile();
 
-        new TimeoutScheduler(10).start(() => {
-          expect(tileController.getLocalVideoTile()).to.not.equal(null);
-          tileController.removeLocalVideoTile();
-          expect(tileController.getLocalVideoTile()).to.equal(null);
-          done();
-        });
-      });
+      await clock.tickAsync(10);
+      expect(tileController.getLocalVideoTile()).to.not.equal(null);
+      tileController.removeLocalVideoTile();
+      expect(tileController.getLocalVideoTile()).to.equal(null);
     });
 
-    it('becomes active after starting and binding it and inactive after stopping it', done => {
+    it('becomes active after starting and binding it and inactive after stopping it', async () => {
       let waitingForActiveToBecomeFalse = false;
+      let inactiveCalled = false;
       class Observer implements AudioVideoObserver {
         videoTileDidUpdate(tileState: VideoTileState): void {
           if (tileState.active) {
@@ -211,7 +216,7 @@ describe('DefaultVideoTileController', () => {
             waitingForActiveToBecomeFalse = true;
             expect(tileController.getLocalVideoTile().state().active).to.equal(false);
           } else if (waitingForActiveToBecomeFalse) {
-            done();
+            inactiveCalled = true;
           }
         }
         videoTileWasRemoved(_tileId: number): void {}
@@ -220,14 +225,15 @@ describe('DefaultVideoTileController', () => {
 
       tileController.startLocalVideoTile();
 
-      new TimeoutScheduler(10).start(() => {
+      setTimeout(() => {
         tileController.getLocalVideoTile().bindVideoElement(videoElementFactory.create());
-
         tileController
           .getLocalVideoTile()
-          // @ts-ignore
           .bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
-      });
+      }, 10);
+
+      await clock.tickAsync(20);
+      expect(inactiveCalled).to.be.true;
     });
 
     it('returns the same local tile ID if it has already started', () => {
@@ -235,22 +241,19 @@ describe('DefaultVideoTileController', () => {
       expect(tileController.startLocalVideoTile()).to.equal(tileId);
     });
 
-    it('will ignore the call if video is disabled', done => {
+    it('will ignore the call if video is disabled', async () => {
       audioVideoController.configuration.meetingFeatures.videoMaxResolution =
         VideoQualitySettings.VideoDisabled;
       tileController.startLocalVideoTile();
 
-      new TimeoutScheduler(10).start(() => {
-        expect(tileController.getLocalVideoTile()).to.equal(null);
-        tileController.stopLocalVideoTile();
+      await clock.tickAsync(10);
+      expect(tileController.getLocalVideoTile()).to.equal(null);
+      tileController.stopLocalVideoTile();
 
-        new TimeoutScheduler(10).start(() => {
-          expect(tileController.getLocalVideoTile()).to.equal(null);
-          tileController.removeLocalVideoTile();
-          expect(tileController.getLocalVideoTile()).to.equal(null);
-          done();
-        });
-      });
+      await clock.tickAsync(10);
+      expect(tileController.getLocalVideoTile()).to.equal(null);
+      tileController.removeLocalVideoTile();
+      expect(tileController.getLocalVideoTile()).to.equal(null);
     });
   });
 
@@ -354,18 +357,21 @@ describe('DefaultVideoTileController', () => {
       expect(tileController.getVideoTile(tileId)).to.equal(null);
     });
 
-    it('sends a tile removed callback for a removed tile', done => {
+    it('sends a tile removed callback for a removed tile', async () => {
       let tileIdToRemove = 0;
+      let removeCalled = false;
       class Observer implements AudioVideoObserver {
         videoTileDidUpdate(_tileState: VideoTileState): void {}
         videoTileWasRemoved(tileId: number): void {
           expect(tileId === tileIdToRemove).to.equal(true);
-          done();
+          removeCalled = true;
         }
       }
       audioVideoController.addObserver(new Observer());
       tileIdToRemove = tileController.addVideoTile().id();
       tileController.removeVideoTile(tileIdToRemove);
+      await clock.tickAsync(0);
+      expect(removeCalled).to.be.true;
     });
 
     it('does not throw an error when a tile does not exist', () => {
@@ -374,13 +380,14 @@ describe('DefaultVideoTileController', () => {
   });
 
   describe('removeVideoTilesByAttendeeId', () => {
-    it('sends a tile removed callback for a tile removed by attendee id', done => {
+    it('sends a tile removed callback for a tile removed by attendee id', async () => {
       let tileIdToRemove = 0;
+      let removeCalled = false;
       class Observer implements AudioVideoObserver {
         videoTileDidUpdate(_tileState: VideoTileState): void {}
         videoTileWasRemoved(tileId: number): void {
           expect(tileId === tileIdToRemove).to.equal(true);
-          done();
+          removeCalled = true;
         }
       }
       audioVideoController.addObserver(new Observer());
@@ -394,11 +401,13 @@ describe('DefaultVideoTileController', () => {
       if (tileIdsRemoved.length !== 1 && tileIdsRemoved[0] !== tileIdToRemove) {
         assert.fail();
       }
+      await clock.tickAsync(0);
+      expect(removeCalled).to.be.true;
     });
   });
 
   describe('removeAllVideoTiles', () => {
-    it('returns null for all previously added tiles', done => {
+    it('returns null for all previously added tiles', async () => {
       const tiles = [];
       for (let i = 0; i < 16; i++) {
         tiles.push(tileController.addVideoTile().id());
@@ -416,7 +425,7 @@ describe('DefaultVideoTileController', () => {
           return;
         }
       }
-      done();
+      await clock.tickAsync(0);
     });
   });
 
@@ -446,40 +455,47 @@ describe('DefaultVideoTileController', () => {
   });
 
   describe('sendTileStateUpdate', () => {
-    it('sends a tile state update to session observers for the session set on the tile manager', done => {
+    it('sends a tile state update to session observers for the session set on the tile manager', async () => {
+      let updateCalled = false;
       class Observer implements AudioVideoObserver {
         videoTileDidUpdate(_tileState: VideoTileState): void {
-          done();
+          updateCalled = true;
         }
         videoTileWasRemoved(_tileId: number): void {}
       }
       audioVideoController.addObserver(new Observer());
       tileController.sendTileStateUpdate(new VideoTileState());
+      await clock.tickAsync(0);
+      expect(updateCalled).to.be.true;
     });
   });
 
   describe('sendTileStateUpdate', () => {
-    it('sends a tile state update to session observers for the session set on the tile manager', done => {
+    it('sends a tile state update to session observers for the session set on the tile manager', async () => {
+      let updateCalled = false;
       class Observer implements AudioVideoObserver {
         videoTileDidUpdate(_tileState: VideoTileState): void {
-          done();
+          updateCalled = true;
         }
         videoTileWasRemoved(_tileId: number): void {}
       }
       audioVideoController.addObserver(new Observer());
       tileController.sendTileStateUpdate(new VideoTileState());
+      await clock.tickAsync(0);
+      expect(updateCalled).to.be.true;
     });
   });
 
   describe('captureVideoTile', () => {
-    it('captures a tile', done => {
+    it('captures a tile', async () => {
+      let captured = false;
       class Observer implements AudioVideoObserver {
         videoTileDidUpdate(tileState: VideoTileState): void {
           if (tileState.active) {
             const image = tileController.captureVideoTile(tileState.tileId);
             expect(image.width).to.equal(tileState.boundVideoElement.width);
             expect(image.height).to.equal(tileState.boundVideoElement.height);
-            done();
+            captured = true;
           }
         }
         videoTileWasRemoved(_tileId: number): void {}
@@ -487,14 +503,15 @@ describe('DefaultVideoTileController', () => {
       audioVideoController.addObserver(new Observer());
       tileController.startLocalVideoTile();
 
-      new TimeoutScheduler(50).start(() => {
+      setTimeout(() => {
         tileController.getLocalVideoTile().bindVideoElement(videoElementFactory.create());
-
         tileController
           .getLocalVideoTile()
-          // @ts-ignore
           .bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
-      });
+      }, 50);
+
+      await clock.tickAsync(100);
+      expect(captured).to.be.true;
     });
   });
 

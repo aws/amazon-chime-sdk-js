@@ -10,9 +10,9 @@ import AudioMixObserver from '../../src/audiomixobserver/AudioMixObserver';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import MediaStreamBrokerObserver from '../../src/mediastreambrokerobserver/MediaStreamBrokerObserver';
-import { wait as delay } from '../../src/utils/Utils';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultAudioMixController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -23,8 +23,10 @@ describe('DefaultAudioMixController', () => {
   let element: HTMLAudioElement;
   let device: MediaDeviceInfo;
   let stream: MediaStream;
+  let clock: sinon.SinonFakeTimers;
 
   beforeEach(() => {
+    clock = createFakeTimers();
     behavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(behavior);
     defaultAudioMixController = new DefaultAudioMixController(logger);
@@ -36,6 +38,7 @@ describe('DefaultAudioMixController', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     domMockBuilder.cleanup();
   });
 
@@ -302,7 +305,8 @@ describe('DefaultAudioMixController', () => {
     await defaultAudioMixController.addAudioMixObserver(observer);
     await defaultAudioMixController.bindAudioElement(element);
     defaultAudioMixController.unbindAudioElement();
-    await delay(100);
+    // Advance fake timers to process async observer callbacks scheduled via setTimeout(callback, 0)
+    await clock.tickAsync(10);
     expect(audioMixCount).to.equal(0);
   });
 
@@ -325,16 +329,17 @@ describe('DefaultAudioMixController', () => {
     expect(audioMixCount).to.equal(0);
     await defaultAudioMixController.addAudioMixObserver(observer);
     await defaultAudioMixController.bindAudioStream(stream);
-    await delay(100);
+    // Advance fake timers to process async observer callbacks scheduled via setTimeout(callback, 0)
+    await clock.tickAsync(10);
     expect(audioMixCount).to.equal(1);
 
     const stream2 = new MediaStream();
     await defaultAudioMixController.bindAudioStream(stream2);
-    await delay(100);
+    await clock.tickAsync(10);
     expect(audioMixCount).to.equal(1);
 
     defaultAudioMixController.unbindAudioElement();
-    await delay(100);
+    await clock.tickAsync(10);
     expect(audioMixCount).to.equal(0);
 
     defaultAudioMixController.removeAudioMixObserver(observer);

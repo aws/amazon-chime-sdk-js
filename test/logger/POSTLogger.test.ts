@@ -2,24 +2,31 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import LogLevel from '../../src/logger/LogLevel';
 import POSTLogger from '../../src/logger/POSTLogger';
-import { wait } from '../../src/utils/Utils';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('POSTLogger', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   let domMockBuilder: DOMMockBuilder | null = null;
   let domMockBehavior: DOMMockBehavior | null = null;
+  let clock: sinon.SinonFakeTimers;
   const url = 'base_url';
   const intervalMs = 50;
   const batchSize = 2;
 
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
+  });
+
+  afterEach(() => {
+    clock.restore();
   });
 
   after(() => {
@@ -154,7 +161,7 @@ describe('POSTLogger', () => {
     // The batch sending interval is 50ms, hence wait for 100-200ms in this test suite.
     it('should start publishing logs', async () => {
       const logger = new POSTLogger({ url, batchSize, intervalMs });
-      await wait(100);
+      await clock.tickAsync(100);
       await logger.destroy();
     });
 
@@ -174,7 +181,7 @@ describe('POSTLogger', () => {
       logger.info('first log');
       logger.info('second log');
       logger.info('third log');
-      await wait(200);
+      await clock.tickAsync(200);
       await logger.destroy();
     });
 
@@ -183,7 +190,7 @@ describe('POSTLogger', () => {
       domMockBehavior.fetchSucceeds = false;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
-      await wait(200);
+      await clock.tickAsync(200);
       await logger.destroy();
     });
 
@@ -191,7 +198,7 @@ describe('POSTLogger', () => {
       const logger = new POSTLogger({ url, batchSize, intervalMs });
       domMockBehavior.fetchSucceeds = false;
       expect(logger.getLogCaptureSize()).is.equal(0);
-      await wait(200);
+      await clock.tickAsync(200);
       await logger.destroy();
     });
 
@@ -201,7 +208,7 @@ describe('POSTLogger', () => {
       domMockBehavior.responseSuccess = true;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
-      await wait(200);
+      await clock.tickAsync(200);
       await logger.destroy();
     });
 
@@ -218,7 +225,7 @@ describe('POSTLogger', () => {
       domMockBehavior.responseSuccess = true;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
-      await wait(200);
+      await clock.tickAsync(200);
       await logger.destroy();
     });
 
@@ -229,7 +236,7 @@ describe('POSTLogger', () => {
       domMockBehavior.responseStatusCode = 500;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
-      await wait(200);
+      await clock.tickAsync(200);
       await logger.destroy();
     });
 
@@ -238,7 +245,7 @@ describe('POSTLogger', () => {
       logger.setLogLevel(LogLevel.DEBUG);
       logger.debug(undefined);
       expect(logger.getLogCaptureSize()).to.equal(1);
-      await wait(100);
+      await clock.tickAsync(100);
       await logger.destroy();
     });
 
@@ -263,12 +270,12 @@ describe('POSTLogger', () => {
       GlobalAny['window']['removeEventListener'] = (type: string) => {
         expect(type).to.equal('unload');
       };
-      await wait(200);
+      await clock.tickAsync(200);
       const logger = new POSTLogger({ url, batchSize, intervalMs });
       await logger.destroy();
-      await wait(600);
+      await clock.tickAsync(600);
       callbackToCall();
-      await wait(800);
+      await clock.tickAsync(800);
       expect(added).to.be.true;
       delete GlobalAny['window']['addEventListener'];
       delete GlobalAny['window']['removeEventListener'];
@@ -285,9 +292,9 @@ describe('POSTLogger', () => {
         callbackToCall = callback;
       };
       const logger = new POSTLogger({ url, batchSize, intervalMs });
-      await wait(60);
+      await clock.tickAsync(60);
       callbackToCall(new Event('unload'));
-      await wait(80);
+      await clock.tickAsync(80);
       expect(added).to.be.true;
       delete GlobalAny['window']['addEventListener'];
       await logger.destroy();

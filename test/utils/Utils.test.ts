@@ -12,19 +12,32 @@ import {
   toLowerCasePropertyNames,
   wait,
 } from '../../src/utils/Utils';
+import { createFakeTimers } from './fakeTimerHelper';
 
 describe('Utils', () => {
   const expect: Chai.ExpectStatic = chai.expect;
+  let clock: sinon.SinonFakeTimers;
 
   describe('wait', () => {
-    it('atleast waits for the specified delay in milliseconds', async () => {
-      const startTime = new Date().getTime();
-      const delay = 500;
-      await wait(delay);
-      const endTime = new Date().getTime();
+    beforeEach(() => {
+      clock = createFakeTimers();
+    });
 
-      // Timing is imprecise. Allow 2 milliseconds of fudge. I have seen this run in 499.
-      expect(endTime - startTime).to.gte(delay - 2);
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it('waits for the specified delay in milliseconds', async () => {
+      const delay = 10;
+      let resolved = false;
+      const waitPromise = wait(delay).then(() => {
+        resolved = true;
+      });
+
+      expect(resolved).to.be.false;
+      await clock.tickAsync(delay);
+      await waitPromise;
+      expect(resolved).to.be.true;
     });
   });
 

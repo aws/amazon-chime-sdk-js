@@ -19,11 +19,11 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import ListenForVolumeIndicatorsTask from '../../src/task/ListenForVolumeIndicatorsTask';
-import { wait as delay } from '../../src/utils/Utils';
 import DefaultVolumeIndicatorAdapter from '../../src/volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 describe('ListenForVolumeIndicatorsTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -75,7 +75,10 @@ describe('ListenForVolumeIndicatorsTask', () => {
     return indexSignalBuffer;
   }
 
+  let clock: sinon.SinonFakeTimers;
+
   beforeEach(async () => {
+    clock = createFakeTimers();
     domMockBuilder = new DOMMockBuilder(behavior);
     webSocketAdapter = new DefaultWebSocketAdapter(logger);
 
@@ -97,11 +100,12 @@ describe('ListenForVolumeIndicatorsTask', () => {
       new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth')
     );
 
-    await delay(behavior.asyncWaitMs + 10);
+    await tick(clock, behavior.asyncWaitMs + 10);
     expect(context.signalingClient.ready()).to.equal(true);
   });
 
   afterEach(() => {
+    clock.restore();
     context.signalingClient.closeConnection();
     domMockBuilder.cleanup();
   });
@@ -117,7 +121,7 @@ describe('ListenForVolumeIndicatorsTask', () => {
       for (let i = 0; i < count; i++) {
         webSocketAdapter.send(makeAudioStreamIdInfoFrame());
       }
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(spy.callCount).to.equal(3);
     });
 
@@ -128,7 +132,7 @@ describe('ListenForVolumeIndicatorsTask', () => {
       for (let i = 0; i < count; i++) {
         webSocketAdapter.send(makeAudioMetadataFrame());
       }
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(spy.callCount).to.equal(3);
     });
 
@@ -140,7 +144,7 @@ describe('ListenForVolumeIndicatorsTask', () => {
       const spy2 = sinon.spy(context.volumeIndicatorAdapter, 'sendRealtimeUpdatesForAudioMetadata');
       await task.run();
       webSocketAdapter.send(makeIndexFrame());
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
       expect(spy1.called).to.be.false;
       expect(spy2.called).to.be.false;
     });
@@ -154,7 +158,7 @@ describe('ListenForVolumeIndicatorsTask', () => {
       context.realtimeController.realtimeUnmuteLocalAudio();
       expect(spy.calledWith(false)).to.be.true;
       expect(spy.callCount).to.equal(2);
-      await delay(behavior.asyncWaitMs + 10);
+      await tick(clock, behavior.asyncWaitMs + 10);
     });
 
     it('can remove observer', async () => {

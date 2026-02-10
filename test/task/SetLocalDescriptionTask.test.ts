@@ -16,6 +16,7 @@ import Task from '../../src/task/Task';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import SDPMock from '../sdp/SDPMock';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 chai.use(chaiAsPromised);
 chai.should();
@@ -213,12 +214,16 @@ describe('SetLocalDescriptionTask', () => {
     });
 
     it('cancels a task when the session is timed out', async () => {
+      const clock = createFakeTimers();
       domMockBehavior.asyncWaitMs = 500;
       new TimeoutScheduler(50).start(() => {
         task.cancel();
       });
 
-      expect(task.run()).to.eventually.be.rejected;
+      const runPromise = task.run();
+      await tick(clock, 100);
+      clock.restore();
+      expect(runPromise).to.eventually.be.rejected;
     });
   });
 });

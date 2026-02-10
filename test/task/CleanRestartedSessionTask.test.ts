@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import { NScaleVideoUplinkBandwidthPolicy } from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
@@ -17,12 +18,12 @@ import StatsCollector from '../../src/statscollector/StatsCollector';
 import CleanRestartedSessionTask from '../../src/task/CleanRestartedSessionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
-import { wait as delay } from '../../src/utils/Utils';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers, tick } from '../utils/fakeTimerHelper';
 
 class TestPingPong implements PingPong {
   addObserver(_observer: PingPongObserver): void {}
@@ -38,8 +39,10 @@ describe('CleanRestartedSessionTask', () => {
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   let task: Task;
+  let clock: sinon.SinonFakeTimers;
 
   beforeEach(() => {
+    clock = createFakeTimers();
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     context = new AudioVideoControllerState();
@@ -71,6 +74,7 @@ describe('CleanRestartedSessionTask', () => {
   });
 
   afterEach(() => {
+    clock.restore();
     domMockBuilder.cleanup();
   });
 
@@ -78,8 +82,9 @@ describe('CleanRestartedSessionTask', () => {
     it('closes the peer connection', async () => {
       const peer = new RTCPeerConnection();
       context.peer = peer;
-      await task.run();
-      await delay(domMockBehavior.asyncWaitMs * 2);
+      const runPromise = task.run();
+      await tick(clock, domMockBehavior.asyncWaitMs * 2);
+      await runPromise;
       expect(peer.connectionState).to.equal('closed');
       expect(context.peer).to.equal(null);
     });
