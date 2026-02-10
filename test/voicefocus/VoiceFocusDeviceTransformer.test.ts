@@ -24,6 +24,7 @@ import VoiceFocusSpec from '../../src/voicefocus/VoiceFocusSpec';
 import VoiceFocusTransformDevice from '../../src/voicefocus/VoiceFocusTransformDevice';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 import { MockLogger } from './MockLogger';
 
 chai.use(chaiAsPromised);
@@ -644,10 +645,7 @@ describe('VoiceFocusDeviceTransformer', () => {
     });
 
     beforeEach(() => {
-      clock = sinon.useFakeTimers({
-        toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
-        shouldClearNativeTimers: true,
-      });
+      clock = createFakeTimers();
     });
 
     afterEach(() => {

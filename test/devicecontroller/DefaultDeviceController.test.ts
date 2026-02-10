@@ -163,8 +163,7 @@ describe('DefaultDeviceController', () => {
   beforeEach(() => {
     clock = createFakeTimersWithDate();
     domMockBehavior = new DOMMockBehavior();
-    // Set asyncWaitMs to 0 to make DOM mock resolve immediately with fake timers
-    domMockBehavior.asyncWaitMs = 0;
+    domMockBehavior.asyncWaitMs = 0; // Most tests expect instant resolution with fake timers
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     deviceController = new DefaultDeviceController(logger, { enableWebAudio: false });
     audioVideoController = new NoOpAudioVideoController();
@@ -522,26 +521,13 @@ describe('DefaultDeviceController', () => {
     });
 
     it('handles browser permission errors', async () => {
-      // Reset the clock to ensure Date.now() starts fresh
-      clock.restore();
-      clock = createFakeTimersWithDate();
-
-      // Advance clock by 100ms so that Date.now() returns a truthy value
-      await clock.tickAsync(100);
-
-      // Reset domMockBehavior and recreate domMockBuilder
-      domMockBehavior = new DOMMockBehavior();
-      // Use a small asyncWaitMs (1ms) to ensure some time passes during getUserMedia
-      // This is needed because the permission detection logic uses `errorTimeMs && errorTimeMs < threshold`
-      // and 0 is falsy, causing it to incorrectly classify as "user" error
-      domMockBehavior.asyncWaitMs = 1;
-      domMockBuilder.cleanup();
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
-
       enableWebAudio(true);
 
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
+      domMockBehavior.asyncWaitMs = 100; // < 500ms threshold = browser denial
+      domMockBuilder.cleanup();
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
       const device = new MockNodeTransformDevice('user-permission-id-bar');
 
       const createAudioNodeSpy = sinon.spy(device, 'createAudioNode');
@@ -549,14 +535,11 @@ describe('DefaultDeviceController', () => {
       const stopSpy = sinon.spy(device, 'stop');
 
       try {
-        // Start the promise and advance the clock by 1ms to trigger the getUserMedia rejection
         const promise = deviceController.startAudioInput(device);
-        await clock.tickAsync(1);
+        await clock.tickAsync(100);
         await promise;
         throw new Error('This line should not be reached');
       } catch (e) {
-        // With asyncWaitMs = 1, the error should be classified as "browser"
-        // since the time elapsed is 1ms < 500ms
         expect(e.message).to.include('Permission denied by browser');
         expect(deviceController.hasAppliedTransform()).to.be.false;
       }
@@ -1237,13 +1220,15 @@ describe('DefaultDeviceController', () => {
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
+      domMockBehavior.asyncWaitMs = 100; // < 500ms = browser denial
       const handleEventSpy = sinon.spy(deviceController.eventController, 'publishEvent');
       try {
-        await deviceController.startVideoInput(stringDeviceId);
+        const promise = deviceController.startVideoInput(stringDeviceId);
+        await clock.tickAsync(100);
+        await promise;
         throw new Error('This line should not be reached');
       } catch (e) {
-        // With fake timers, the error is classified as "user" since Date.now() is faked
-        expect(e.message).to.include('Permission denied');
+        expect(e.message).to.include('Permission denied by browser');
       }
       expect(handleEventSpy.called).to.be.true;
     });
@@ -1725,6 +1710,7 @@ describe('DefaultDeviceController', () => {
       const errorMessage = 'Permission denied';
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
+      domMockBehavior.asyncWaitMs = 100; // < 500ms = browser denial
       eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           expect(name).to.equal('audioInputFailed');
@@ -1732,26 +1718,25 @@ describe('DefaultDeviceController', () => {
           expect(attributes.audioInputErrorMessage).includes('NotAllowedError');
         },
       });
-      // With fake timers, the error is classified as "user" since Date.now() is faked
-      await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
-        'Permission denied'
-      );
+      const promise = deviceController.startAudioInput(stringDeviceId);
+      await clock.tickAsync(100);
+      await expect(promise).to.be.rejectedWith('Permission denied by browser');
     });
 
     it('receives the error name only if the message is empty', async () => {
       const errorMessage = '';
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
+      domMockBehavior.asyncWaitMs = 100; // < 500ms = browser denial
       eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           expect(name).to.equal('audioInputFailed');
           expect(attributes.audioInputErrorMessage).to.equal('NotAllowedError');
         },
       });
-      // With fake timers, the error is classified as "user" since Date.now() is faked
-      await expect(deviceController.startAudioInput(stringDeviceId)).to.be.rejectedWith(
-        'Permission denied'
-      );
+      const promise = deviceController.startAudioInput(stringDeviceId);
+      await clock.tickAsync(100);
+      await expect(promise).to.be.rejectedWith('Permission denied by browser');
     });
 
     it('receives the error message only if the error name is empty', async () => {

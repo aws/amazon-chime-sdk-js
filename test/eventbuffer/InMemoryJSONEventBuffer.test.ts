@@ -366,7 +366,7 @@ describe('InMemoryJSONEventBuffer', () => {
           importantEvents,
           logger
         );
-        // Don't start the buffer to avoid IntervalScheduler interference
+        // Don't start - these tests focus on immediate sending, not periodic flushing
         domMockBehavior.fetchSucceeds = false;
         const argument = getItemEvent('meetingFailed', {
           maxVideoTileCount: 0,
@@ -382,11 +382,8 @@ describe('InMemoryJSONEventBuffer', () => {
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
         const spy = sinon.spy(navigator, 'sendBeacon');
-        // Start addItem (don't await yet)
         const addItemPromise = buffer.addItem(argument);
-        // Advance time to allow fetch to fail
         await clock.nextAsync();
-        // Wait for addItem to complete
         await addItemPromise;
         expect(spy.calledOnce).to.be.true;
       });
@@ -548,8 +545,7 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingErrorMessage:
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
-        // Don't start the buffer to avoid IntervalScheduler interference
-        // Properly await the addItem to ensure the sendEventImmediately completes
+        // Don't start - test focuses on immediate sending
         const addItemPromise = buffer.addItem(argument);
         await clock.tickAsync(20);
         await addItemPromise;
@@ -563,7 +559,7 @@ describe('InMemoryJSONEventBuffer', () => {
           importantEvents,
           logger
         );
-        buffer.start();
+        // Don't start - test focuses on immediate retry logic
         domMockBehavior.fetchSucceeds = true;
         domMockBehavior.responseStatusCode = 429;
         const argument = getItemEvent('meetingFailed', {
@@ -592,7 +588,7 @@ describe('InMemoryJSONEventBuffer', () => {
           importantEvents,
           logger
         );
-        // Don't start the buffer to avoid IntervalScheduler interference
+        // Don't start - test focuses on immediate retry logic
         domMockBehavior.fetchSucceeds = true;
         domMockBehavior.responseStatusCode = 429;
         const argument = getItemEvent('meetingFailed', {
@@ -608,19 +604,16 @@ describe('InMemoryJSONEventBuffer', () => {
           meetingErrorMessage:
             'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
         });
-        // Start the addItem call (don't await yet)
         const addItemPromise = buffer.addItem(argument);
-        // Advance through several retry attempts with backoff (max backoff is 15000ms)
-        // Need to advance enough time for multiple retries - use runAllAsync to process all pending timers
         for (let i = 0; i < 5; i++) {
           await clock.tickAsync(16000);
         }
         domMockBehavior.responseStatusCode = 200;
-        // Allow the successful retry to complete
         for (let i = 0; i < 5; i++) {
           await clock.tickAsync(16000);
         }
         await addItemPromise;
+        buffer.stop();
       });
 
       it('handles retry count limit reaching when an important event POST fetch fails and response received is retryable', async () => {
@@ -631,7 +624,7 @@ describe('InMemoryJSONEventBuffer', () => {
           importantEvents,
           logger
         );
-        // Don't start the buffer to avoid IntervalScheduler interference
+        // Don't start - test focuses on immediate retry logic
         domMockBehavior.fetchSucceeds = true;
         domMockBehavior.responseStatusCode = 429;
         const argument = getItemEvent('meetingFailed', {

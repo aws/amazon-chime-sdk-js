@@ -15,6 +15,7 @@ import { MEDIA_METRICS_MESSAGE_TYPES } from '../../src/encodedtransformworker/Me
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('MediaMetricsTransformManager', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -25,10 +26,7 @@ describe('MediaMetricsTransformManager', () => {
   let clock: sinon.SinonFakeTimers;
 
   beforeEach(() => {
-    clock = sinon.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
-      shouldClearNativeTimers: true,
-    });
+    clock = createFakeTimers();
     domMockBuilder = new DOMMockBuilder(new DOMMockBehavior());
     // @ts-ignore
     mockWorker = new Worker('test-url');

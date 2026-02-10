@@ -14,6 +14,7 @@ import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCr
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultEventController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -27,10 +28,7 @@ describe('DefaultEventController', () => {
   let clock: sinon.SinonFakeTimers;
 
   beforeEach(() => {
-    clock = sinon.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
-      shouldClearNativeTimers: true,
-    });
+    clock = createFakeTimers();
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     logger = new NoOpDebugLogger();

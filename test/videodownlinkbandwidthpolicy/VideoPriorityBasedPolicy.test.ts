@@ -32,6 +32,7 @@ import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideo
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('VideoPriorityBasedPolicy', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -301,10 +302,7 @@ describe('VideoPriorityBasedPolicy', () => {
   }
 
   beforeEach(() => {
-    clock = sinon.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
-      shouldClearNativeTimers: true,
-    });
+    clock = createFakeTimers();
     startTime = Date.now();
     originalDateNow = Date.now;
     Date.now = mockDateNow;

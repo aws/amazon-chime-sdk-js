@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import PromiseQueue from '../../src/utils/PromiseQueue';
+import { createFakeTimers } from './fakeTimerHelper';
 
 describe('PromiseQueue', () => {
   let assert: Chai.AssertStatic;
@@ -17,10 +18,7 @@ describe('PromiseQueue', () => {
   });
 
   beforeEach(() => {
-    clock = sinon.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
-      shouldClearNativeTimers: true,
-    });
+    clock = createFakeTimers();
   });
 
   afterEach(() => {

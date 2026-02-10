@@ -12,6 +12,7 @@ import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBr
 import MediaStreamBrokerObserver from '../../src/mediastreambrokerobserver/MediaStreamBrokerObserver';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultAudioMixController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -25,10 +26,7 @@ describe('DefaultAudioMixController', () => {
   let clock: sinon.SinonFakeTimers;
 
   beforeEach(() => {
-    clock = sinon.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
-      shouldClearNativeTimers: true,
-    });
+    clock = createFakeTimers();
     behavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(behavior);
     defaultAudioMixController = new DefaultAudioMixController(logger);

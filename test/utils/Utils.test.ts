@@ -12,6 +12,7 @@ import {
   toLowerCasePropertyNames,
   wait,
 } from '../../src/utils/Utils';
+import { createFakeTimers } from './fakeTimerHelper';
 
 describe('Utils', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -19,26 +20,22 @@ describe('Utils', () => {
 
   describe('wait', () => {
     beforeEach(() => {
-      clock = sinon.useFakeTimers();
+      clock = createFakeTimers();
     });
 
     afterEach(() => {
       clock.restore();
     });
 
-    it('atleast waits for the specified delay in milliseconds (500ms)', async () => {
-      const delay = 500;
+    it('waits for the specified delay in milliseconds', async () => {
+      const delay = 10;
       let resolved = false;
       const waitPromise = wait(delay).then(() => {
         resolved = true;
       });
 
-      // Should not be resolved yet
       expect(resolved).to.be.false;
-
-      // Advance time
       await clock.tickAsync(delay);
-
       await waitPromise;
       expect(resolved).to.be.true;
     });

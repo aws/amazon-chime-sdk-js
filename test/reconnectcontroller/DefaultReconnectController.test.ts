@@ -2,21 +2,26 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultReconnectController', () => {
   let expect: Chai.ExpectStatic;
-  let timeout: number;
+  let clock: sinon.SinonFakeTimers;
   const defaultController = (): DefaultReconnectController => {
     return new DefaultReconnectController(50, new FullJitterBackoff(10, 0, 0));
   };
 
   beforeEach(() => {
     expect = chai.expect;
-    timeout = 50;
+    clock = createFakeTimers();
+  });
+
+  afterEach(() => {
+    clock.restore();
   });
   it('can be constructed', () => {
     expect(defaultController).to.not.equal(null);
@@ -41,71 +46,81 @@ describe('DefaultReconnectController', () => {
   });
 
   describe('retryWithBackoff', () => {
-    it('calls the retry func', done => {
+    it('calls the retry func', async () => {
+      let called = false;
       expect(
         defaultController().retryWithBackoff(
           () => {
-            done();
+            called = true;
           },
           () => {}
         )
       ).to.equal(true);
+      await clock.tickAsync(0);
+      expect(called).to.be.true;
     });
 
-    it('calls the cancel func if canceled after starting retry', done => {
+    it('calls the cancel func if canceled after starting retry', async () => {
       const controller = defaultController();
+      let cancelCalled = false;
       expect(
         controller.retryWithBackoff(
           () => {},
           () => {
-            new TimeoutScheduler(timeout).start(() => {
-              done();
-            });
+            cancelCalled = true;
           }
         )
       ).to.equal(true);
       controller.cancel();
-      controller.cancel(); // this shouldn't trigger backoffCancel again
+      controller.cancel();
+      await clock.tickAsync(0);
+      expect(cancelCalled).to.be.true;
     });
 
-    it('does not call the retry func if reconnect is disabled', done => {
+    it('does not call the retry func if reconnect is disabled', async () => {
       const controller = defaultController();
       controller.disableReconnect();
+      let retryCalled = false;
       expect(
         controller.retryWithBackoff(
-          () => {},
+          () => {
+            retryCalled = true;
+          },
           () => {}
         )
       ).to.equal(false);
-      new TimeoutScheduler(timeout).start(() => {
-        done();
-      });
+      await clock.tickAsync(100);
+      expect(retryCalled).to.be.false;
     });
 
-    it('stops calling the retry func if it is past the deadline', done => {
+    it('stops calling the retry func if it is past the deadline', async () => {
       const controller = defaultController();
       controller.startedConnectionAttempt(true);
       expect(controller.hasStartedConnectionAttempt()).to.equal(true);
       expect(controller.isFirstConnection()).to.equal(true);
+      let attempts = 0;
       const tryAgain = (): void => {
-        controller.retryWithBackoff(
-          () => {},
-          () => {}
-        )
-          ? new TimeoutScheduler(10).start(() => {
-              tryAgain();
-            })
-          : done();
+        if (
+          controller.retryWithBackoff(
+            () => {
+              attempts++;
+            },
+            () => {}
+          )
+        ) {
+          setTimeout(tryAgain, 10);
+        }
       };
       tryAgain();
-      new TimeoutScheduler(2 * timeout).start(() => {});
+      await clock.tickAsync(100);
       controller.startedConnectionAttempt(false);
       expect(controller.isFirstConnection()).to.equal(false);
+      expect(attempts).to.equal(0);
     });
 
     it('does not retry if it has been inactive for a while', () => {
       const controller = defaultController();
-      controller.setLastActiveTimestampMs(Date.now() - timeout * 2);
+      controller.setLastActiveTimestampMs(Date.now() - 100);
       expect(
         controller.retryWithBackoff(
           () => {},

@@ -15,6 +15,7 @@ import VideoFrameProcessorPipelineObserver from '../../src/videoframeprocessor/V
 import VideoFrameProcessorTimer from '../../src/videoframeprocessor/VideoFrameProcessorTimer';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 /**
  * [[MockVideoFrameProcessorTimer]] uses just `setTimeout` to avoid the complexity of
@@ -199,7 +200,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     });
 
     it('can fail to start pipeline and fire callback if buffers are destroyed', async () => {
-      const clock = sinon.useFakeTimers();
+      const clock = createFakeTimers();
       try {
         class DummyProcessor implements VideoFrameProcessor {
           destroy(): Promise<void> {
@@ -395,7 +396,7 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     });
 
     it('can set slow processor and fires processingLatencyTooHigh', async () => {
-      const clock = sinon.useFakeTimers();
+      const clock = createFakeTimers();
       try {
         class PipeObserver2 implements VideoFrameProcessorPipelineObserver {
           processingDidStart = sinon.stub();
@@ -421,18 +422,18 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
         const procs = [new WrongProcessor()];
         pipe.processors = procs;
 
-        const setInputPromise = pipe.setInputMediaStream(mockVideoStream);
+        pipe.setInputMediaStream(mockVideoStream);
 
-        // Advance time to allow processing to start and trigger latency callback
-        await clock.tickAsync(processingDelay + 100);
+        // Advance time to trigger processing cycles and latency detection
+        // Need enough cycles for latency to be detected (processing > half frame time)
+        for (let i = 0; i < 10; i++) {
+          await clock.tickAsync(100);
+        }
 
-        // Wait for the callbacks to be called
         expect(pipeObserver.processingDidStart.called).to.be.true;
         expect(pipeObserver.processingLatencyTooHigh.called).to.be.true;
 
-        await pipe.setInputMediaStream(null);
-        await clock.tickAsync(100);
-        await setInputPromise;
+        pipe.setInputMediaStream(null);
       } finally {
         clock.restore();
       }

@@ -504,6 +504,8 @@ export default class DOMMockBuilder {
       ): Promise<typeof GlobalAny.MediaStream> {
         if (mockBehavior.asyncWaitMs > 0) {
           await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
+        } else {
+          await Promise.resolve();
         }
         return new Promise<typeof GlobalAny.MediaStream>((resolve, reject) => {
           if (constraints === null) {
@@ -593,6 +595,8 @@ export default class DOMMockBuilder {
         }
         if (mockBehavior.asyncWaitMs > 0) {
           await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
+        } else {
+          await Promise.resolve();
         }
         if (mockBehavior.enumerateDevicesSucceeds) {
           let deviceLists: (typeof GlobalAny.MediaDeviceInfo)[];
@@ -1301,8 +1305,7 @@ export default class DOMMockBuilder {
       async setSinkId(deviceId: string): Promise<void> {
         if (mockBehavior.setSinkIdSucceeds) {
           this.sinkId = deviceId;
-          // Resolve immediately - no timer needed for mock
-          return Promise.resolve();
+          await Promise.resolve();
         } else {
           throw new Error('Failed to set sinkId');
         }

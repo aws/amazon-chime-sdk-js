@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import * as sinon from 'sinon';
 
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
@@ -16,6 +15,7 @@ import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStre
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import CreateMeetingResponseMock from '../meetingsession/CreateMeetingResponseMock';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('CreateSDPTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -124,7 +124,7 @@ describe('CreateSDPTask', () => {
 
   describe('cancel', () => {
     it('cancels a task when the session is timed out', async () => {
-      const clock = sinon.useFakeTimers();
+      const clock = createFakeTimers();
       try {
         let called = false;
 

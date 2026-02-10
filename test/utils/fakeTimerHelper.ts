@@ -38,7 +38,7 @@ export function createFakeTimers(): sinon.SinonFakeTimers {
   }
 
   currentClock = sinon.useFakeTimers({
-    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
+    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date', 'performance'],
     shouldClearNativeTimers: true,
   });
   return currentClock;

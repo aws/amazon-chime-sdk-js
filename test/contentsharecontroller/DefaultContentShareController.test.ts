@@ -24,6 +24,7 @@ import { Maybe } from '../../src/utils/Types';
 import DefaultSimulcastUplinkPolicyForContentShare from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicyForContentShare';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultContentShareController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -139,10 +140,7 @@ describe('DefaultContentShareController', () => {
     let contentShareMeetingSessionConfigure: MeetingSessionConfiguration = undefined;
 
     beforeEach(() => {
-      clock = sinon.useFakeTimers({
-        toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
-        shouldClearNativeTimers: true,
-      });
+      clock = createFakeTimers();
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
       const meetingSessionConfigure = makeSessionConfiguration();

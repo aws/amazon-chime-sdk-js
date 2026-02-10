@@ -23,6 +23,7 @@ import MockEngineWorker from '../../test/videofx/MockEngineWorker';
 import MockFxLib from '../../test/videofx/MockFxLib';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
+import { createFakeTimers } from '../utils/fakeTimerHelper';
 
 describe('DefaultVideoTransformDevice', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -474,7 +475,7 @@ describe('DefaultVideoTransformDevice', () => {
     });
 
     it('processingLatencyTooHigh', async () => {
-      const clock = sinon.useFakeTimers();
+      const clock = createFakeTimers();
       try {
         class Observer2 implements DefaultVideoTransformDeviceObserver {}
         const obs = new MockObserver();
@@ -493,16 +494,16 @@ describe('DefaultVideoTransformDevice', () => {
         device.addObserver(obs);
         device.addObserver(new Observer2());
 
-        const transformPromise = device.transformStream(mockVideoStream);
+        device.transformStream(mockVideoStream);
 
-        // Advance time to allow processing to start and trigger latency callback
-        await clock.tickAsync(processingDelay + 100);
+        // Advance time to trigger processing cycles and latency detection
+        for (let i = 0; i < 10; i++) {
+          await clock.tickAsync(100);
+        }
 
         expect(obs.processingLatencyTooHigh.called).to.be.true;
 
         await device.stop();
-        await clock.tickAsync(100);
-        await transformPromise;
       } finally {
         clock.restore();
       }
