@@ -78,6 +78,32 @@ function updateAssetFile(filePath, renameMap) {
 
   let content = fs.readFileSync(filePath, 'utf8');
 
+  // Handle compressed navigation.js (base64 + pako)
+  if (filePath.endsWith('navigation.js')) {
+    const match = content.match(/window\.navigationData = "([^"]+)"/);
+    if (match) {
+      try {
+        const pako = require('pako');
+        const decoded = Buffer.from(match[1], 'base64');
+        let jsonStr = pako.inflate(decoded, { to: 'string' });
+
+        // Update references to lowercase in the JSON
+        for (const [original, lowercase] of renameMap) {
+          jsonStr = jsonStr.replace(new RegExp(original.replace('.', '\\.'), 'g'), lowercase);
+        }
+
+        // Re-compress and encode
+        const compressed = pako.deflate(jsonStr);
+        const encoded = Buffer.from(compressed).toString('base64');
+        content = `window.navigationData = "${encoded}"`;
+        fs.writeFileSync(filePath, content, 'utf8');
+        return;
+      } catch (e) {
+        console.warn('Failed to process navigation.js:', e.message);
+      }
+    }
+  }
+
   // Format for readability (search.js specific)
   if (filePath.endsWith('search.js')) {
     content = content.replace(/","/g, '",\n"');
