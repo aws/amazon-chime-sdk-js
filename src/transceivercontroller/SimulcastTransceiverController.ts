@@ -7,6 +7,9 @@ import EncodedTransformWorkerManager from '../encodedtransformmanager/EncodedTra
 import Logger from '../logger/Logger';
 import DefaultTransceiverController from './DefaultTransceiverController';
 
+/**
+ * @deprecated Simulcast is deprecated in favor of scalable video coding (SVC).
+ */
 export default class SimulcastTransceiverController extends DefaultTransceiverController {
   static readonly LOW_LEVEL_NAME: string = 'low';
   static readonly MID_LEVEL_NAME: string = 'mid';

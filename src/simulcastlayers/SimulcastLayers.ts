@@ -3,6 +3,8 @@
 
 /**
  * [[SimulcastLayers]] represents simulcast layers for selected simulcast video streams.
+ *
+ * @deprecated Simulcast is deprecated in favor of scalable video coding (SVC).
  */
 export enum SimulcastLayers {
   /**

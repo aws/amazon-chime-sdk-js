@@ -13,6 +13,8 @@ import VideoStreamDescription from './VideoStreamDescription';
 /**
  * [[SimulcastTransceiverController]] implements [[VideoStreamIndex]] to facilitate video stream
  * subscription and includes query functions for stream id and attendee id.
+ *
+ * @deprecated Simulcast is deprecated in favor of scalable video coding (SVC).
  */
 export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
   private streamIdToBitrateKbpsMap: Map<number, number> = new Map<number, number>();

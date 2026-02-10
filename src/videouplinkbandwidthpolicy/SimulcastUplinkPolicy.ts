@@ -4,6 +4,9 @@
 import SimulcastUplinkObserver from './SimulcastUplinkObserver';
 import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 
+/**
+ * @deprecated Simulcast is deprecated in favor of scalable video coding (SVC).
+ */
 export default interface SimulcastUplinkPolicy extends VideoUplinkBandwidthPolicy {
   /**
    * Adds SimulcastUplinkObserver to observe simulcast encoding
