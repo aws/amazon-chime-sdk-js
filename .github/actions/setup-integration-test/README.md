@@ -5,14 +5,16 @@ When an integration test or a browser compatibility test runs on GitHub actions,
 To better perform these steps in a reusable manner we created this composite action. The composite action is called by other workflows to setup the host and then the workflows will run whatever test they are running.
 
 ## Steps Performed
+- Check if integration tests are needed based on changes
 - Pack the Chime JS SDK and install the tarball into demo
-- Create a job ID
+- Create a job ID for SauceLabs
 - Set the job ID as an ENV variable
 - Echo job ID
 - Configure AWS credentials
-- Setup Sauce Connect
-- Install KITE
+- Setup Sauce Connect (for SauceLabs testing)
+- Setup Chrome (for local testing)
 - Clean install
+- Add testsite host to /etc/hosts (Linux only)
 
 ## Sauce Rest URL
 Sauce rest url is the datacenter endpoint used by Sauce Connect Proxy action as a parameter. The default url is https://saucelabs.com/rest/v1 and it is applicable for US-West region. The default url will be overwritten by calling workflows. You can learn more at [Data Center Endpoints](https://docs.saucelabs.com/basics/data-center-endpoints/#headless-us-east-data-center).

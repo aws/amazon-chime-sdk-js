@@ -8,7 +8,6 @@ integration/
 !.eslintignore
 !src/versioning/Versioning.ts
 !README.md
-!integration/js/README.md
 !demos/browser/README.md
 !demos/device/README.md
 !guides/

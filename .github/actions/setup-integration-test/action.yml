@@ -35,8 +35,44 @@ runs:
     - name: Check if integration tests are needed
       id: test_needed
       run: |
-        source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
-        check_if_integ_tests_required
+        # Check if integration tests are required based on changed files
+        base_branch=$(head -n 1 ${GITHUB_WORKSPACE}/.base-branch 2>/dev/null || echo "main")
+        commits=$(git rev-list $base_branch.. 2>/dev/null || echo "")
+        echo 'Commits:' $commits
+
+        requires_integration_test=false
+        if [ -n "$commits" ]; then
+          for commit in $commits
+          do
+            commit_files=$(git diff-tree --no-commit-id --name-only -r ${commit})
+            echo 'Committed files are:' $commit_files
+            matches=false
+            for committed_file in $commit_files
+            do
+              while read -r stem
+              do
+                if [[ $stem =~ ^#.* ]]; then
+                  continue
+                elif [[ $stem = "" ]]; then
+                  continue
+                elif [[ $stem =~ ^!.* ]]; then
+                  stem_string="${stem:1}"
+                  if [[ $committed_file = $stem_string* ]]; then
+                    matches=false
+                  fi
+                elif [[ $committed_file = $stem* ]]; then
+                  matches=true
+                fi
+              done < "${GITHUB_WORKSPACE}/.integration-watchlist"
+              if [[ $matches = true ]]; then
+                requires_integration_test=true
+                break
+              fi
+            done
+          done
+        fi
+
+        echo 'Need integration test:' $requires_integration_test
         echo "integ_test_required=$requires_integration_test" >> $GITHUB_OUTPUT
         echo "Integration tests required: $requires_integration_test"
       shell: bash

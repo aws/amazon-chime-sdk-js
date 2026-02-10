@@ -18,35 +18,41 @@ class MeetingEventManager {
   }
 
   /**
-   * Injects an observer into the page for this tab if not already present.
+   * Sets up event capture by registering an observer in window.pendingEventObserver.
+   * The demo will attach this observer to the eventController when it's created.
+   * Call this BEFORE authentication to capture all events including those that
+   * fire during the auth flow (e.g., videoInputSelected).
    */
   async setupEventCapture() {
     const handle = await this.driver.getWindowHandle();
     if (this.registeredWindowHandles.has(handle)) return;
 
-    for (let i = 0; i < 10; i++) {
-      if (await this.#isMeetingSessionReady()) break;
-      if (i === 9) throw new Error('meetingSession not ready');
-      await new Promise(r => setTimeout(r, 1000));
-    }
-
     const result = await this.driver.executeScript(function () {
       try {
+        // Initialize the captured events array
+        if (!window.__capturedEvents) window.__capturedEvents = [];
+        
+        // Create the observer
+        const observer = {
+          eventDidReceive(name, attributes) {
+            window.__capturedEvents.push({ name, attributes, timestamp: Date.now() });
+            try { console.log('Event captured:', name, attributes); } catch (_) {}
+          }
+        };
+        
+        // Check if eventController already exists
         const s = window.app && window.app.meetingSession;
         const c = s && s.eventController;
-        if (!c) return { status: 'not-ready' };
-        if (!window.__capturedEvents) window.__capturedEvents = [];
-        if (!window.__testEventObserver) {
-          window.__testEventObserver = {
-            eventDidReceive(name, attributes) {
-              window.__capturedEvents.push({ name, attributes, timestamp: Date.now() });
-              try { console.log('Event captured:', name, attributes); } catch (_) {}
-            }
-          };
-          c.addObserver(window.__testEventObserver);
-          return { status: 'ok' };
+        if (c) {
+          c.addObserver(observer);
+          window.__testEventObserver = observer;
+          return { status: 'attached-immediately' };
         }
-        return { status: 'already' };
+        
+        // Register observer to be attached when meetingSession is created
+        window.pendingEventObserver = observer;
+        window.__testEventObserver = observer;
+        return { status: 'registered-pending' };
       } catch (err) {
         try { console.error('setupEventCapture error:', err); } catch (_) {}
         return { status: 'error', message: String(err.message || err) };
@@ -54,11 +60,10 @@ class MeetingEventManager {
     });
 
     this.logger.pushLogs(`setupEventCapture -> ${JSON.stringify(result)}`, LogLevel.INFO);
-    if (result.status === 'ok' || result.status === 'already') {
-      this.registeredWindowHandles.add(handle);
-    } else {
-      throw new Error(`Failed to register event observer: ${JSON.stringify(result)}`);
+    if (result.status === 'error') {
+      throw new Error(`Failed to setup event capture: ${result.message}`);
     }
+    this.registeredWindowHandles.add(handle);
   }
 
   /**
@@ -120,19 +125,6 @@ class MeetingEventManager {
     }
 
     return results;
-  }
-
-  async #isMeetingSessionReady() {
-    try {
-      return await this.driver.executeScript(function () {
-        return !!(window.app &&
-                  window.app.meetingSession &&
-                  window.app.meetingSession.eventController);
-      });
-    } catch (err) {
-      this.logger.pushLogs(`Error checking meeting session: ${err.message}`, LogLevel.ERROR);
-      return false;
-    }
   }
 
   async #syncCapturedEvents() {

@@ -1,6 +1,6 @@
 # Mocha Tests
 
-The Amazon Chime SDK team is transitioning integration tests from KITE to Mocha. Starting with audio tests, we will transition all the integration tests. The `integration/mocha-tests` directory contains the mocha version of integration tests.
+This directory contains the Mocha-based integration tests for the Amazon Chime SDK for JavaScript.
 
 ## Test Types
 There are two types of Mocha tests: integration and browser compatibility.

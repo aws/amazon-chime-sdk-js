@@ -12,6 +12,7 @@
     "@aws-sdk/client-device-farm": "^3.485.0",
     "chalk": "^4.1.2",
     "minimist": "^1.2.8",
+    "mocha": "^10.2.0",
     "selenium-webdriver": "^4.32.0",
     "uuid": "^8.3.2"
   },
