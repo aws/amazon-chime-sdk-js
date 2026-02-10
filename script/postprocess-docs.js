@@ -48,9 +48,14 @@ function updateFileContent(file, renameMap) {
   // Update links to use lowercase filenames
   for (const [original, lowercase] of renameMap) {
     const escaped = original.replace('.', '\\.');
-    // Handle href="path/File.html" and href="File.html"
+    // Handle href="path/File.html" and href="File.html" (without anchors)
     content = content.replace(
       new RegExp(`(href=["'][^"']*/?)${escaped}(["'])`, 'g'),
+      `$1${lowercase}$2`
+    );
+    // Handle href="path/File.html#anchor" (with anchors)
+    content = content.replace(
+      new RegExp(`(href=["'][^"']*/?)${escaped}(#[^"']*["'])`, 'g'),
       `$1${lowercase}$2`
     );
   }
