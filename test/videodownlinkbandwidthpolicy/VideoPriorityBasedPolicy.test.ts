@@ -1534,6 +1534,32 @@ describe('VideoPriorityBasedPolicy', () => {
   });
 
   describe('VideoPriorityBasedPolicyConfig', () => {
+    it('exits startup period when bandwidth stops increasing after timeout', () => {
+      incrementTime(1000); // Start with non-zero time to avoid sentinel value collision
+      const policyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
+      policyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;
+      policy.setVideoPriorityBasedPolicyConfigs(policyConfig);
+      updateIndexFrame(videoStreamIndex, 1, 0, 1200);
+      policy.updateIndex(videoStreamIndex);
+      policy.wantsResubscribe();
+      policy.chooseSubscriptions();
+
+      const metricReport = new ClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      // First call - set initial bandwidth below DEFAULT_BANDWIDTH_KBPS (2800)
+      metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 1000 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      policy.wantsResubscribe();
+
+      // Second call - after startup period, bandwidth not increasing
+      incrementTime(6100);
+      metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 1000 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      policy.wantsResubscribe();
+    });
+
     it('will not instantly drop videos caused by dip during startup period', () => {
       const policyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
       policyConfig.serverSideNetworkAdaption = ServerSideNetworkAdaption.None;

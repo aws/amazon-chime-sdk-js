@@ -227,9 +227,11 @@ describe('DefaultVideoTileController', () => {
 
       setTimeout(() => {
         tileController.getLocalVideoTile().bindVideoElement(videoElementFactory.create());
-        tileController.getLocalVideoTile().bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
+        tileController
+          .getLocalVideoTile()
+          .bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
       }, 10);
-      
+
       await clock.tickAsync(20);
       expect(inactiveCalled).to.be.true;
     });
@@ -503,7 +505,9 @@ describe('DefaultVideoTileController', () => {
 
       setTimeout(() => {
         tileController.getLocalVideoTile().bindVideoElement(videoElementFactory.create());
-        tileController.getLocalVideoTile().bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
+        tileController
+          .getLocalVideoTile()
+          .bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
       }, 50);
 
       await clock.tickAsync(100);
