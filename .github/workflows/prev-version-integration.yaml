@@ -23,11 +23,11 @@ jobs:
 
     steps:
       - name: Setup Node.js - 20.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: 20.x
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get previous version
@@ -38,7 +38,7 @@ jobs:
           echo "prev_version=$prev_version" >> $GITHUB_OUTPUT
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+        uses: filipstefansson/uuid-action@v1
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
@@ -50,7 +50,7 @@ jobs:
           role-session-name: ${{ env.TEST_TYPE }}
           aws-region: us-east-1
       - name: Setup Sauce Connect
-        uses: saucelabs/sauce-connect-action@v2
+        uses: saucelabs/sauce-connect-action@v3
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}

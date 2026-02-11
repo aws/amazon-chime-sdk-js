@@ -28,7 +28,7 @@ jobs:
       previous_version_number: ${{ steps.get-version.outputs.version-number }}
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get Version
@@ -46,7 +46,7 @@ jobs:
       job-status: ${{ job.status }}
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
@@ -91,7 +91,7 @@ jobs:
 
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
@@ -114,7 +114,7 @@ jobs:
 
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
@@ -137,7 +137,7 @@ jobs:
 
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
@@ -160,7 +160,7 @@ jobs:
 
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
@@ -183,7 +183,7 @@ jobs:
 
     steps:
         - name: Checkout Package
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
           with:
             ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
             fetch-depth: 0
@@ -207,7 +207,7 @@ jobs:
 
     steps:
         - name: Checkout Package
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
           with:
             ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
             fetch-depth: 0
@@ -231,7 +231,7 @@ jobs:
 
     steps:
         - name: Checkout Package
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
           with:
             ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
             fetch-depth: 0
@@ -255,7 +255,7 @@ jobs:
       
     steps:
         - name: Checkout Package
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
           with:
             ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
             fetch-depth: 0
@@ -282,11 +282,11 @@ jobs:
 
     steps:
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Node.js - 20.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: 20.x
       - name: Gather Job Status Data
@@ -312,7 +312,7 @@ jobs:
       - name: Send Slack Message
         run: node .github/script/send-test-report.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_PREV_VER_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }}
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SDK_DEV }}
           aws-region: us-east-1
