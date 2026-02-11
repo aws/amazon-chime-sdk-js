@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 
+/**
+ * Post-processes generated documentation files.
+ *
+ * 1. Collects all HTML files and builds a map of filenames that need lowercasing.
+ * 2. Replaces commit hashes in blob URLs with 'main' and updates internal links to use lowercase filenames.
+ * 3. Renames HTML files to lowercase.
+ * 4. Updates search.js and navigation.js asset files with lowercase references.
+ * 5. Copies modules.html to globals.html for backward compatibility.
+ */
+
 const fs = require('fs-extra');
 const path = require('path');
 

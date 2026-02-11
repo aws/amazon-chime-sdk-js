@@ -16,7 +16,6 @@
   },
   "scripts": {
     "clean": "rimraf .nyc_output build node_modules",
-    "copy": "node script/copy-protocol.js",
     "check": "node script/check-code-style.js",
     "login": "node script/login.js",
     "logout": "node script/logout.js",
