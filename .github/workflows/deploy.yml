@@ -26,7 +26,7 @@ jobs:
           role-session-name: deploy-demo-app
           aws-region: us-east-1
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install SAM CLI
@@ -52,7 +52,7 @@ jobs:
           role-session-name: deploy-demo-app
           aws-region: us-east-1
       - name: Checkout Package
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install SAM CLI

@@ -23,6 +23,4 @@ node_modules
 src/versioning/version.ts
 *.tsbuildinfo
 .kiro
-
-# ESLint cache
 .eslintcache
