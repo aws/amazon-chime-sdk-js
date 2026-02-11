@@ -9,22 +9,11 @@ const exec = require('child_process').execSync;
 
 let exitCode = 0;
 
-const ignoreMemo = {};
-const isIgnored = (file) => {
-  if (file in ignoreMemo) {
-    return ignoreMemo[file];
-  }
-  try {
-    // If this returns zero, it means the file is ignored by git; skip it.
-    exec(`git check-ignore -q '${file}'`);
-    ignoreMemo[file] = true;
-    return true;
-  } catch (e) {
-    // It's tracked by git.
-    ignoreMemo[file] = false;
-    return false;
-  }
-};
+// Batch lookup all tracked files once upfront
+const trackedFiles = new Set(
+  exec('git ls-files', { encoding: 'utf-8' }).split('\n').filter(Boolean)
+);
+const isIgnored = (file) => !trackedFiles.has(file);
 
 const walk = (dir) => {
   let results = [];
