@@ -13,6 +13,7 @@ import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionTURNCredentials from '../meetingsession/MeetingSessionTURNCredentials';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
+import MeetingSessionTimingManager from '../meetingsessiontiming/MeetingSessionTimingManager';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import RemovableObserver from '../removableobserver/RemovableObserver';
@@ -73,6 +74,8 @@ export default class AudioVideoControllerState {
   transceiverController: TransceiverController | null = null;
 
   encodedTransformWorkerManager: EncodedTransformWorkerManager | null = null;
+
+  meetingSessionTimingManager: MeetingSessionTimingManager | null = null;
 
   indexFrame: SdkIndexFrame | null = null;
 

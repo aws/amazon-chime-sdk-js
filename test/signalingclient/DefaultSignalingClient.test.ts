@@ -1172,6 +1172,82 @@ describe('DefaultSignalingClient', () => {
     });
   });
 
+  describe('sendMeetingSessionTiming', () => {
+    it('sends a timing frame with all categories', done => {
+      const testObjects = new TestObjects();
+      activeTestObjects.push(testObjects);
+      testObjects.signalingClient.openConnection(testObjects.request);
+      setTimeout(() => {
+        testObjects.signalingClient.sendMeetingSessionTiming({
+          signaling: [
+            {
+              startMs: 1000,
+              joinSentMs: 1010,
+              joinAckReceivedMs: 1020,
+              transportConnectedMs: 1015,
+              createOfferMs: 1025,
+              setLocalDescriptionMs: 1030,
+              setRemoteDescriptionMs: 1040,
+              iceGatheringStartMs: 1030,
+              iceGatheringCompleteMs: 1031,
+              iceConnectedMs: 1050,
+              subscribeSentMs: 1035,
+              subscribeAckMs: 1038,
+              timedOut: false,
+            },
+          ],
+          remoteAudio: [
+            {
+              addedMs: 1000,
+              firstPacketReceivedMs: 1100,
+              timedOut: false,
+            },
+          ],
+          localAudio: [
+            {
+              addedMs: 1000,
+              firstPacketSentMs: 1110,
+              timedOut: false,
+            },
+          ],
+          localVideo: [
+            {
+              addedMs: 1200,
+              firstFrameSentMs: 1300,
+              timedOut: false,
+            },
+          ],
+          remoteVideos: [
+            {
+              groupId: 1,
+              addedMs: 1400,
+              firstPacketReceivedMs: 1450,
+              firstFrameRenderedMs: 1500,
+              timedOut: false,
+            },
+          ],
+        });
+        done();
+      }, 100);
+    });
+
+    it('sends a timing frame with empty categories', done => {
+      const testObjects = new TestObjects();
+      activeTestObjects.push(testObjects);
+      testObjects.signalingClient.openConnection(testObjects.request);
+      setTimeout(() => {
+        testObjects.signalingClient.sendMeetingSessionTiming({
+          signaling: [],
+          remoteAudio: [],
+          localAudio: [],
+          localVideo: [],
+          remoteVideos: [],
+        });
+        done();
+      }, 100);
+    });
+  });
+
   describe('generateNewAudioSessionId', () => {
     it('will generate a random audio session id', done => {
       const randomNumSet = new Set();

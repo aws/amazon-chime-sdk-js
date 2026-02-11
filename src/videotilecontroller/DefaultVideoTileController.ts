@@ -10,6 +10,7 @@ import Logger from '../logger/Logger';
 import { Maybe } from '../utils/Types';
 import DefaultVideoElementResolutionMonitor from '../videotile/DefaultVideoElementResolutionMonitor';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
+import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import VideoElementResolutionMonitor, {
   VideoElementResolutionObserver,
 } from '../videotile/VideoElementResolutionMonitor';
@@ -61,6 +62,14 @@ export default class DefaultVideoTileController implements VideoTileController {
       return;
     }
     tile.bindVideoElement(videoElement);
+    if (videoElement && !tile.state().localTile) {
+      const groupId = tile.state().groupId ?? null;
+      if (groupId !== null) {
+        for (const observer of this.resolutionObservers) {
+          observer.videoTileBound?.(groupId);
+        }
+      }
+    }
   }
 
   unbindVideoElement(tileId: number, cleanUpVideoElement: boolean = true): void {
@@ -70,7 +79,9 @@ export default class DefaultVideoTileController implements VideoTileController {
       return;
     }
     this.logger.info('Unbinding the video element');
-    this.notifyRemoteObserversOfUnbound(tile.state().boundAttendeeId);
+    for (const observer of this.resolutionObservers) {
+      observer.videoTileUnbound(tile.state().boundAttendeeId, tile.state().groupId);
+    }
     const videoElement = tile.stateRef().boundVideoElement;
     tile.bindVideoElement(null);
     if (cleanUpVideoElement) {
@@ -271,22 +282,6 @@ export default class DefaultVideoTileController implements VideoTileController {
     this.resolutionObservers.delete(observer);
   }
 
-  private notifyResolutionObserversOfChange(
-    attendeeId: string,
-    newWidth: number,
-    newHeight: number
-  ): void {
-    for (const observer of this.resolutionObservers) {
-      observer.videoTileResolutionDidChange(attendeeId, newWidth, newHeight);
-    }
-  }
-
-  private notifyRemoteObserversOfUnbound(attendeeId: string): void {
-    for (const observer of this.resolutionObservers) {
-      observer.videoTileUnbound(attendeeId);
-    }
-  }
-
   private createResolutionMonitor(tileId: number): VideoElementResolutionMonitor {
     const observer = new (class implements VideoElementResolutionObserver {
       constructor(
@@ -295,17 +290,60 @@ export default class DefaultVideoTileController implements VideoTileController {
       ) {}
 
       videoElementResolutionChanged(newWidth: number, newHeight: number): void {
-        const tile = this.controller.getVideoTile(this.tileId);
-        if (tile) {
-          const attendeeId = tile.state().boundAttendeeId;
-          this.controller.notifyResolutionObserversOfChange(attendeeId, newWidth, newHeight);
-        }
+        this.controller.handleVideoElementResolutionChanged(this.tileId, newWidth, newHeight);
+      }
+
+      videoElementFirstFrameDidRender(metadata?: VideoFrameCallbackMetadata): void {
+        this.controller.handleVideoFirstFrameDidRender(this.tileId, metadata);
+      }
+
+      videoElementMetricsDidReceive(metrics: VideoElementFrameMetrics): void {
+        this.controller.handleVideoElementFrameMetrics(this.tileId, metrics);
       }
     })(this, tileId);
 
     const resolutionMonitor = new DefaultVideoElementResolutionMonitor();
     resolutionMonitor.registerObserver(observer);
     return resolutionMonitor;
+  }
+
+  private handleVideoElementResolutionChanged(
+    tileId: number,
+    newWidth: number,
+    newHeight: number
+  ): void {
+    const tile = this.getVideoTile(tileId);
+    if (tile) {
+      const attendeeId = tile.state().boundAttendeeId;
+      for (const observer of this.resolutionObservers) {
+        observer.videoTileResolutionDidChange(attendeeId, newWidth, newHeight);
+      }
+    }
+  }
+
+  private handleVideoFirstFrameDidRender(
+    tileId: number,
+    metadata?: VideoFrameCallbackMetadata
+  ): void {
+    const tile = this.getVideoTile(tileId);
+    if (!tile) return;
+    if (tile.state().localTile) return;
+    const groupId = tile.state().groupId ?? null;
+    if (groupId === null) return;
+    for (const observer of this.resolutionObservers) {
+      observer.videoTileFirstFrameDidRender?.(groupId, metadata);
+    }
+  }
+
+  private handleVideoElementFrameMetrics(tileId: number, metrics: VideoElementFrameMetrics): void {
+    const tile = this.getVideoTile(tileId);
+    if (!tile) return;
+    if (tile.state().localTile) return;
+    const groupId = tile.state().groupId ?? null;
+    if (groupId === null) return;
+    for (const observer of this.resolutionObservers) {
+      observer.videoTileRenderMetricsDidReceive?.(groupId, metrics);
+    }
   }
 
   private findOrCreateLocalVideoTile(): VideoTile | null {

@@ -135,6 +135,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     this.context.signalingClient.subscribe(subscribe);
 
     const subscribeAckFrame = await this.receiveSubscribeAck();
+    this.context.meetingSessionTimingManager?.onSubscribeAckReceived();
     this.context.logger.info(`got subscribe ack: ${JSON.stringify(subscribeAckFrame)}`);
 
     let decompressedText = '';

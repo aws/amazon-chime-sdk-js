@@ -120,6 +120,16 @@ walk('src')
     importStrings.push(importLine);
     exportStrings.push(exportLine);
 
+    if (typeToImport === 'MeetingSessionTiming') {
+      importStrings.push(`import { MeetingSessionSignalingTiming, MeetingSessionRemoteAudioTiming, MeetingSessionLocalAudioTiming, MeetingSessionLocalVideoTiming, MeetingSessionRemoteVideoTiming, MeetingSessionTimingObserver } from '${pathToImport}/MeetingSessionTiming';`);
+      exportStrings.push('MeetingSessionSignalingTiming');
+      exportStrings.push('MeetingSessionRemoteAudioTiming');
+      exportStrings.push('MeetingSessionLocalAudioTiming');
+      exportStrings.push('MeetingSessionLocalVideoTiming');
+      exportStrings.push('MeetingSessionRemoteVideoTiming');
+      exportStrings.push('MeetingSessionTimingObserver');
+    }
+
     // Because these two types are very intertwined.
     if (typeToImport === 'VideoPreferences') {
       importStrings.push(`import { MutableVideoPreferences } from '${pathToImport}/VideoPreferences';`);

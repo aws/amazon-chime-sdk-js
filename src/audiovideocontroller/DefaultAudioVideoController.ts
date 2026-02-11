@@ -17,6 +17,7 @@ import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import EncodedTransformWorkerManager, {
   EncodedTransformWorkerManagerObserver,
 } from '../encodedtransformmanager/EncodedTransformWorkerManager';
+import { EncodedTransformMediaMetricsObserver } from '../encodedtransformmanager/MediaMetricsEncodedTransformManager';
 import AudioVideoEventAttributes, {
   audioVideoEventAttributesFromState,
 } from '../eventcontroller/AudioVideoEventAttributes';
@@ -28,6 +29,10 @@ import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfigu
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
+import MeetingSessionTiming, {
+  MeetingSessionTimingObserver,
+} from '../meetingsessiontiming/MeetingSessionTiming';
+import MeetingSessionTimingManager from '../meetingsessiontiming/MeetingSessionTimingManager';
 import DefaultModality from '../modality/DefaultModality';
 import DefaultPingPong from '../pingpong/DefaultPingPong';
 import DefaultRealtimeController from '../realtimecontroller/DefaultRealtimeController';
@@ -91,7 +96,9 @@ import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../videotilecontroller/DefaultVideoTileController';
-import VideoTileController from '../videotilecontroller/VideoTileController';
+import VideoTileController, {
+  VideoTileResolutionObserver,
+} from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
 import DefaultSimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
@@ -107,6 +114,8 @@ export default class DefaultAudioVideoController
     SimulcastUplinkObserver,
     MediaStreamBrokerObserver,
     EncodedTransformWorkerManagerObserver,
+    EncodedTransformMediaMetricsObserver,
+    MeetingSessionTimingObserver,
     Destroyable
 {
   private _logger: Logger;
@@ -121,6 +130,9 @@ export default class DefaultAudioVideoController
   private _eventController: EventController;
   private _audioProfile: AudioProfile = new AudioProfile();
   private _encodedTransformWorkerManager: EncodedTransformWorkerManager;
+  private _meetingSessionTimingManager: MeetingSessionTimingManager;
+
+  private _timingResolutionObserver: VideoTileResolutionObserver | null = null;
 
   private connectionHealthData = new ConnectionHealthData();
   private observerQueue: Set<AudioVideoObserver> = new Set<AudioVideoObserver>();
@@ -175,6 +187,7 @@ export default class DefaultAudioVideoController
     this._configuration = configuration;
 
     this._encodedTransformWorkerManager = encodedTransformWorkerManager;
+    this._meetingSessionTimingManager = new MeetingSessionTimingManager(logger);
 
     this._webSocketAdapter = webSocketAdapter;
     this._realtimeController = new DefaultRealtimeController(mediaStreamBroker);
@@ -220,6 +233,9 @@ export default class DefaultAudioVideoController
   async destroy(): Promise<void> {
     this.observerQueue.clear();
     this._mediaStreamBroker.removeMediaStreamBrokerObserver(this._audioMixController);
+    this._meetingSessionTimingManager.removeObserver(this);
+    this._meetingSessionTimingManager.destroy();
+    this._encodedTransformWorkerManager?.removeObserver(this);
     this.destroyed = true;
   }
 
@@ -332,8 +348,13 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
       this._webSocketAdapter,
-      this.logger
+      this.logger,
+      this._meetingSessionTimingManager
     );
+
+    this._meetingSessionTimingManager.reset();
+    this.meetingSessionContext.meetingSessionTimingManager = this._meetingSessionTimingManager;
+    this._meetingSessionTimingManager.addObserver(this);
   }
 
   private uninstallPreStartObserver(): void {
@@ -516,6 +537,13 @@ export default class DefaultAudioVideoController
 
     const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
 
+    this._meetingSessionTimingManager.onStart();
+    if (useAudioConnection) {
+      // Audio always negotiates sendrecv so local and remote are added together
+      this._meetingSessionTimingManager.onLocalAudioAdded();
+      this._meetingSessionTimingManager.onRemoteAudioAdded();
+    }
+
     if (!useAudioConnection) {
       this.logger.info(`Using video only transceiver controller`);
       this.meetingSessionContext.transceiverController = new VideoOnlyTransceiverController(
@@ -685,6 +713,25 @@ export default class DefaultAudioVideoController
       this.meetingSessionContext.statsCollector
     );
 
+    this._timingResolutionObserver = {
+      videoTileResolutionDidChange: (): void => {},
+      videoTileUnbound: (_attendeeId: string, groupId?: number): void => {
+        if (groupId !== undefined) {
+          this._meetingSessionTimingManager.onRemoteVideoUnbound(groupId);
+        }
+      },
+      videoTileBound: (groupId: number): void => {
+        this._meetingSessionTimingManager.onRemoteVideoBound(groupId);
+      },
+      videoTileFirstFrameDidRender: (
+        groupId: number,
+        metadata?: VideoFrameCallbackMetadata
+      ): void => {
+        this._meetingSessionTimingManager.onRemoteVideoFirstFrameRendered(groupId, metadata);
+      },
+    };
+    this._videoTileController.registerVideoTileResolutionObserver(this._timingResolutionObserver);
+
     if (!reconnecting) {
       this.meetingSessionContext.retryCount = 0;
       this._reconnectController.reset();
@@ -778,6 +825,7 @@ export default class DefaultAudioVideoController
   private actionFinishConnecting(): void {
     this.signalingTask = undefined;
     this.meetingSessionContext.videoDuplexMode = SdkStreamServiceType.RX;
+
     if (!this.meetingSessionContext.enableSimulcast) {
       if (this.useUpdateTransceiverControllerForUplink) {
         this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController();
@@ -880,6 +928,10 @@ export default class DefaultAudioVideoController
     this._videoTileController.removeVideoTileResolutionObserver(
       this.meetingSessionContext.statsCollector
     );
+    if (this._timingResolutionObserver) {
+      this._videoTileController.removeVideoTileResolutionObserver(this._timingResolutionObserver);
+      this._timingResolutionObserver = null;
+    }
   }
 
   update(options: { needsRenegotiation: boolean } = { needsRenegotiation: true }): boolean {
@@ -1769,5 +1821,45 @@ export default class DefaultAudioVideoController
     // Trigger reconnect to recreate peer connection without transforms
     const status = new MeetingSessionStatus(MeetingSessionStatusCode.EncodedTransformManagerFailed);
     this.reconnect(status, error);
+  }
+
+  // Routes first-packet events from the encoded transform layer into the timing manager.
+  onFirstPacketReceived(
+    mediaType: 'audio' | 'video',
+    direction: 'send' | 'receive',
+    ssrc: number
+  ): void {
+    if (mediaType === 'audio' && direction === 'receive') {
+      this._meetingSessionTimingManager.onRemoteAudioFirstPacketReceived();
+    } else if (mediaType === 'audio' && direction === 'send') {
+      this._meetingSessionTimingManager.onLocalAudioFirstPacketSent();
+    } else if (mediaType === 'video' && direction === 'receive') {
+      /* istanbul ignore next */
+      const streamId = this.meetingSessionContext.videoStreamIndex?.streamIdForSSRC(ssrc);
+      if (streamId === undefined) {
+        this.logger.warn(`Received first video packet but no stream ID found for ssrc=${ssrc}`);
+        return;
+      }
+      /* istanbul ignore next */
+      const groupId = this.meetingSessionContext.videoStreamIndex?.groupIdForStreamId(streamId);
+      if (groupId === undefined) {
+        this.logger.warn(
+          `Received first video packet but no group ID found for streamId=${streamId} ssrc=${ssrc}`
+        );
+        return;
+      }
+      this.logger.debug(`Received first video packet for groupId=${groupId} ssrc=${ssrc}`);
+      this._meetingSessionTimingManager.onRemoteVideoFirstPacketReceived(groupId);
+    } else if (mediaType === 'video' && direction === 'send') {
+      this._meetingSessionTimingManager.onLocalVideoFirstFrameSent();
+    }
+  }
+
+  onMeetingSessionTimingReady(timing: MeetingSessionTiming): void {
+    if (!this.meetingSessionContext.signalingClient) {
+      this.logger.warn('Timing data ready but signaling client is not available, discarding');
+      return;
+    }
+    this.meetingSessionContext.signalingClient.sendMeetingSessionTiming(timing);
   }
 }

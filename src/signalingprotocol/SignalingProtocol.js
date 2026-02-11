@@ -39,6 +39,7 @@ $root.SdkSignalFrame = (function() {
      * @property {ISdkPrimaryMeetingJoinAckFrame|null} [primaryMeetingJoinAck] SdkSignalFrame primaryMeetingJoinAck
      * @property {ISdkPrimaryMeetingLeaveFrame|null} [primaryMeetingLeave] SdkSignalFrame primaryMeetingLeave
      * @property {ISdkNotificationFrame|null} [notification] SdkSignalFrame notification
+     * @property {ISdkMeetingSessionTimingFrame|null} [meetingSessionTiming] SdkSignalFrame meetingSessionTiming
      */
 
     /**
@@ -249,6 +250,14 @@ $root.SdkSignalFrame = (function() {
     SdkSignalFrame.prototype.notification = null;
 
     /**
+     * SdkSignalFrame meetingSessionTiming.
+     * @member {ISdkMeetingSessionTimingFrame|null|undefined} meetingSessionTiming
+     * @memberof SdkSignalFrame
+     * @instance
+     */
+    SdkSignalFrame.prototype.meetingSessionTiming = null;
+
+    /**
      * Creates a new SdkSignalFrame instance using the specified properties.
      * @function create
      * @memberof SdkSignalFrame
@@ -318,6 +327,8 @@ $root.SdkSignalFrame = (function() {
             $root.SdkPrimaryMeetingLeaveFrame.encode(message.primaryMeetingLeave, writer.uint32(/* id 28, wireType 2 =*/226).fork()).ldelim();
         if (message.notification != null && Object.hasOwnProperty.call(message, "notification"))
             $root.SdkNotificationFrame.encode(message.notification, writer.uint32(/* id 35, wireType 2 =*/282).fork()).ldelim();
+        if (message.meetingSessionTiming != null && Object.hasOwnProperty.call(message, "meetingSessionTiming"))
+            $root.SdkMeetingSessionTimingFrame.encode(message.meetingSessionTiming, writer.uint32(/* id 44, wireType 2 =*/354).fork()).ldelim();
         return writer;
     };
 
@@ -448,6 +459,10 @@ $root.SdkSignalFrame = (function() {
                     message.notification = $root.SdkNotificationFrame.decode(reader, reader.uint32());
                     break;
                 }
+            case 44: {
+                    message.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.decode(reader, reader.uint32());
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -514,6 +529,7 @@ $root.SdkSignalFrame = (function() {
         case 26:
         case 27:
         case 34:
+        case 43:
             break;
         }
         if (message.error != null && message.hasOwnProperty("error")) {
@@ -625,6 +641,11 @@ $root.SdkSignalFrame = (function() {
             var error = $root.SdkNotificationFrame.verify(message.notification);
             if (error)
                 return "notification." + error;
+        }
+        if (message.meetingSessionTiming != null && message.hasOwnProperty("meetingSessionTiming")) {
+            var error = $root.SdkMeetingSessionTimingFrame.verify(message.meetingSessionTiming);
+            if (error)
+                return "meetingSessionTiming." + error;
         }
         return null;
     };
@@ -745,6 +766,10 @@ $root.SdkSignalFrame = (function() {
         case 34:
             message.type = 34;
             break;
+        case "MEETING_SESSION_TIMING":
+        case 43:
+            message.type = 43;
+            break;
         }
         if (object.error != null) {
             if (typeof object.error !== "object")
@@ -856,6 +881,11 @@ $root.SdkSignalFrame = (function() {
                 throw TypeError(".SdkSignalFrame.notification: object expected");
             message.notification = $root.SdkNotificationFrame.fromObject(object.notification);
         }
+        if (object.meetingSessionTiming != null) {
+            if (typeof object.meetingSessionTiming !== "object")
+                throw TypeError(".SdkSignalFrame.meetingSessionTiming: object expected");
+            message.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.fromObject(object.meetingSessionTiming);
+        }
         return message;
     };
 
@@ -901,6 +931,7 @@ $root.SdkSignalFrame = (function() {
             object.primaryMeetingJoinAck = null;
             object.primaryMeetingLeave = null;
             object.notification = null;
+            object.meetingSessionTiming = null;
         }
         if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
             if (typeof message.timestampMs === "number")
@@ -953,6 +984,8 @@ $root.SdkSignalFrame = (function() {
             object.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.toObject(message.primaryMeetingLeave, options);
         if (message.notification != null && message.hasOwnProperty("notification"))
             object.notification = $root.SdkNotificationFrame.toObject(message.notification, options);
+        if (message.meetingSessionTiming != null && message.hasOwnProperty("meetingSessionTiming"))
+            object.meetingSessionTiming = $root.SdkMeetingSessionTimingFrame.toObject(message.meetingSessionTiming, options);
         return object;
     };
 
@@ -1008,6 +1041,7 @@ $root.SdkSignalFrame = (function() {
      * @property {number} PRIMARY_MEETING_JOIN_ACK=26 PRIMARY_MEETING_JOIN_ACK value
      * @property {number} PRIMARY_MEETING_LEAVE=27 PRIMARY_MEETING_LEAVE value
      * @property {number} NOTIFICATION=34 NOTIFICATION value
+     * @property {number} MEETING_SESSION_TIMING=43 MEETING_SESSION_TIMING value
      */
     SdkSignalFrame.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -1033,6 +1067,7 @@ $root.SdkSignalFrame = (function() {
         values[valuesById[26] = "PRIMARY_MEETING_JOIN_ACK"] = 26;
         values[valuesById[27] = "PRIMARY_MEETING_LEAVE"] = 27;
         values[valuesById[34] = "NOTIFICATION"] = 34;
+        values[valuesById[43] = "MEETING_SESSION_TIMING"] = 43;
         return values;
     })();
 
@@ -7779,6 +7814,8 @@ $root.SdkMetric = (function() {
             case 47:
             case 48:
             case 49:
+            case 52:
+            case 56:
             case 60:
             case 64:
             case 66:
@@ -8034,6 +8071,14 @@ $root.SdkMetric = (function() {
         case 49:
             message.type = 49;
             break;
+        case "VIDEO_LOCAL_RENDER_FPS":
+        case 52:
+            message.type = 52;
+            break;
+        case "VIDEO_REMOTE_RENDER_FPS":
+        case 56:
+            message.type = 56;
+            break;
         case "VIDEO_INPUT_HEIGHT":
         case 60:
             message.type = 60;
@@ -8271,6 +8316,8 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DISCARDED_PPS=47 VIDEO_DISCARDED_PPS value
      * @property {number} VIDEO_PLIS_SENT=48 VIDEO_PLIS_SENT value
      * @property {number} VIDEO_RECEIVED_JITTER_MS=49 VIDEO_RECEIVED_JITTER_MS value
+     * @property {number} VIDEO_LOCAL_RENDER_FPS=52 VIDEO_LOCAL_RENDER_FPS value
+     * @property {number} VIDEO_REMOTE_RENDER_FPS=56 VIDEO_REMOTE_RENDER_FPS value
      * @property {number} VIDEO_INPUT_HEIGHT=60 VIDEO_INPUT_HEIGHT value
      * @property {number} VIDEO_ENCODE_HEIGHT=64 VIDEO_ENCODE_HEIGHT value
      * @property {number} VIDEO_SENT_QP_SUM=66 VIDEO_SENT_QP_SUM value
@@ -8355,6 +8402,8 @@ $root.SdkMetric = (function() {
         values[valuesById[47] = "VIDEO_DISCARDED_PPS"] = 47;
         values[valuesById[48] = "VIDEO_PLIS_SENT"] = 48;
         values[valuesById[49] = "VIDEO_RECEIVED_JITTER_MS"] = 49;
+        values[valuesById[52] = "VIDEO_LOCAL_RENDER_FPS"] = 52;
+        values[valuesById[56] = "VIDEO_REMOTE_RENDER_FPS"] = 56;
         values[valuesById[60] = "VIDEO_INPUT_HEIGHT"] = 60;
         values[valuesById[64] = "VIDEO_ENCODE_HEIGHT"] = 64;
         values[valuesById[66] = "VIDEO_SENT_QP_SUM"] = 66;
@@ -14978,6 +15027,2430 @@ $root.SdkVideoCodecCapability = (function() {
     values[valuesById[8] = "VP9_PROFILE_0"] = 8;
     values[valuesById[11] = "AV1_MAIN_PROFILE"] = 11;
     return values;
+})();
+
+$root.SdkMeetingSessionTimingFrame = (function() {
+
+    /**
+     * Properties of a SdkMeetingSessionTimingFrame.
+     * @name ISdkMeetingSessionTimingFrame
+     * @interface ISdkMeetingSessionTimingFrame
+     * @property {Array.<ISdkMeetingSessionSignalingTiming>|null} [signaling] SdkMeetingSessionTimingFrame signaling
+     * @property {Array.<ISdkMeetingSessionRemoteAudioTiming>|null} [remoteAudio] SdkMeetingSessionTimingFrame remoteAudio
+     * @property {Array.<ISdkMeetingSessionLocalAudioTiming>|null} [localAudio] SdkMeetingSessionTimingFrame localAudio
+     * @property {Array.<ISdkMeetingSessionLocalVideoTiming>|null} [localVideo] SdkMeetingSessionTimingFrame localVideo
+     * @property {Array.<ISdkMeetingSessionRemoteVideoTiming>|null} [remoteVideos] SdkMeetingSessionTimingFrame remoteVideos
+     */
+
+    /**
+     * Constructs a new SdkMeetingSessionTimingFrame.
+     * @name SdkMeetingSessionTimingFrame
+     * @classdesc Represents a SdkMeetingSessionTimingFrame.
+     * @implements ISdkMeetingSessionTimingFrame
+     * @constructor
+     * @param {ISdkMeetingSessionTimingFrame=} [properties] Properties to set
+     */
+    function SdkMeetingSessionTimingFrame(properties) {
+        this.signaling = [];
+        this.remoteAudio = [];
+        this.localAudio = [];
+        this.localVideo = [];
+        this.remoteVideos = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkMeetingSessionTimingFrame signaling.
+     * @member {Array.<ISdkMeetingSessionSignalingTiming>} signaling
+     * @memberof SdkMeetingSessionTimingFrame
+     * @instance
+     */
+    SdkMeetingSessionTimingFrame.prototype.signaling = $util.emptyArray;
+
+    /**
+     * SdkMeetingSessionTimingFrame remoteAudio.
+     * @member {Array.<ISdkMeetingSessionRemoteAudioTiming>} remoteAudio
+     * @memberof SdkMeetingSessionTimingFrame
+     * @instance
+     */
+    SdkMeetingSessionTimingFrame.prototype.remoteAudio = $util.emptyArray;
+
+    /**
+     * SdkMeetingSessionTimingFrame localAudio.
+     * @member {Array.<ISdkMeetingSessionLocalAudioTiming>} localAudio
+     * @memberof SdkMeetingSessionTimingFrame
+     * @instance
+     */
+    SdkMeetingSessionTimingFrame.prototype.localAudio = $util.emptyArray;
+
+    /**
+     * SdkMeetingSessionTimingFrame localVideo.
+     * @member {Array.<ISdkMeetingSessionLocalVideoTiming>} localVideo
+     * @memberof SdkMeetingSessionTimingFrame
+     * @instance
+     */
+    SdkMeetingSessionTimingFrame.prototype.localVideo = $util.emptyArray;
+
+    /**
+     * SdkMeetingSessionTimingFrame remoteVideos.
+     * @member {Array.<ISdkMeetingSessionRemoteVideoTiming>} remoteVideos
+     * @memberof SdkMeetingSessionTimingFrame
+     * @instance
+     */
+    SdkMeetingSessionTimingFrame.prototype.remoteVideos = $util.emptyArray;
+
+    /**
+     * Creates a new SdkMeetingSessionTimingFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {ISdkMeetingSessionTimingFrame=} [properties] Properties to set
+     * @returns {SdkMeetingSessionTimingFrame} SdkMeetingSessionTimingFrame instance
+     */
+    SdkMeetingSessionTimingFrame.create = function create(properties) {
+        return new SdkMeetingSessionTimingFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionTimingFrame message. Does not implicitly {@link SdkMeetingSessionTimingFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {ISdkMeetingSessionTimingFrame} message SdkMeetingSessionTimingFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionTimingFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.signaling != null && message.signaling.length)
+            for (var i = 0; i < message.signaling.length; ++i)
+                $root.SdkMeetingSessionSignalingTiming.encode(message.signaling[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.remoteAudio != null && message.remoteAudio.length)
+            for (var i = 0; i < message.remoteAudio.length; ++i)
+                $root.SdkMeetingSessionRemoteAudioTiming.encode(message.remoteAudio[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+        if (message.localAudio != null && message.localAudio.length)
+            for (var i = 0; i < message.localAudio.length; ++i)
+                $root.SdkMeetingSessionLocalAudioTiming.encode(message.localAudio[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+        if (message.localVideo != null && message.localVideo.length)
+            for (var i = 0; i < message.localVideo.length; ++i)
+                $root.SdkMeetingSessionLocalVideoTiming.encode(message.localVideo[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+        if (message.remoteVideos != null && message.remoteVideos.length)
+            for (var i = 0; i < message.remoteVideos.length; ++i)
+                $root.SdkMeetingSessionRemoteVideoTiming.encode(message.remoteVideos[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionTimingFrame message, length delimited. Does not implicitly {@link SdkMeetingSessionTimingFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {ISdkMeetingSessionTimingFrame} message SdkMeetingSessionTimingFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionTimingFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionTimingFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkMeetingSessionTimingFrame} SdkMeetingSessionTimingFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionTimingFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionTimingFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    if (!(message.signaling && message.signaling.length))
+                        message.signaling = [];
+                    message.signaling.push($root.SdkMeetingSessionSignalingTiming.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 2: {
+                    if (!(message.remoteAudio && message.remoteAudio.length))
+                        message.remoteAudio = [];
+                    message.remoteAudio.push($root.SdkMeetingSessionRemoteAudioTiming.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 3: {
+                    if (!(message.localAudio && message.localAudio.length))
+                        message.localAudio = [];
+                    message.localAudio.push($root.SdkMeetingSessionLocalAudioTiming.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 4: {
+                    if (!(message.localVideo && message.localVideo.length))
+                        message.localVideo = [];
+                    message.localVideo.push($root.SdkMeetingSessionLocalVideoTiming.decode(reader, reader.uint32()));
+                    break;
+                }
+            case 5: {
+                    if (!(message.remoteVideos && message.remoteVideos.length))
+                        message.remoteVideos = [];
+                    message.remoteVideos.push($root.SdkMeetingSessionRemoteVideoTiming.decode(reader, reader.uint32()));
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionTimingFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkMeetingSessionTimingFrame} SdkMeetingSessionTimingFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionTimingFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkMeetingSessionTimingFrame message.
+     * @function verify
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkMeetingSessionTimingFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.signaling != null && message.hasOwnProperty("signaling")) {
+            if (!Array.isArray(message.signaling))
+                return "signaling: array expected";
+            for (var i = 0; i < message.signaling.length; ++i) {
+                var error = $root.SdkMeetingSessionSignalingTiming.verify(message.signaling[i]);
+                if (error)
+                    return "signaling." + error;
+            }
+        }
+        if (message.remoteAudio != null && message.hasOwnProperty("remoteAudio")) {
+            if (!Array.isArray(message.remoteAudio))
+                return "remoteAudio: array expected";
+            for (var i = 0; i < message.remoteAudio.length; ++i) {
+                var error = $root.SdkMeetingSessionRemoteAudioTiming.verify(message.remoteAudio[i]);
+                if (error)
+                    return "remoteAudio." + error;
+            }
+        }
+        if (message.localAudio != null && message.hasOwnProperty("localAudio")) {
+            if (!Array.isArray(message.localAudio))
+                return "localAudio: array expected";
+            for (var i = 0; i < message.localAudio.length; ++i) {
+                var error = $root.SdkMeetingSessionLocalAudioTiming.verify(message.localAudio[i]);
+                if (error)
+                    return "localAudio." + error;
+            }
+        }
+        if (message.localVideo != null && message.hasOwnProperty("localVideo")) {
+            if (!Array.isArray(message.localVideo))
+                return "localVideo: array expected";
+            for (var i = 0; i < message.localVideo.length; ++i) {
+                var error = $root.SdkMeetingSessionLocalVideoTiming.verify(message.localVideo[i]);
+                if (error)
+                    return "localVideo." + error;
+            }
+        }
+        if (message.remoteVideos != null && message.hasOwnProperty("remoteVideos")) {
+            if (!Array.isArray(message.remoteVideos))
+                return "remoteVideos: array expected";
+            for (var i = 0; i < message.remoteVideos.length; ++i) {
+                var error = $root.SdkMeetingSessionRemoteVideoTiming.verify(message.remoteVideos[i]);
+                if (error)
+                    return "remoteVideos." + error;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkMeetingSessionTimingFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkMeetingSessionTimingFrame} SdkMeetingSessionTimingFrame
+     */
+    SdkMeetingSessionTimingFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkMeetingSessionTimingFrame)
+            return object;
+        var message = new $root.SdkMeetingSessionTimingFrame();
+        if (object.signaling) {
+            if (!Array.isArray(object.signaling))
+                throw TypeError(".SdkMeetingSessionTimingFrame.signaling: array expected");
+            message.signaling = [];
+            for (var i = 0; i < object.signaling.length; ++i) {
+                if (typeof object.signaling[i] !== "object")
+                    throw TypeError(".SdkMeetingSessionTimingFrame.signaling: object expected");
+                message.signaling[i] = $root.SdkMeetingSessionSignalingTiming.fromObject(object.signaling[i]);
+            }
+        }
+        if (object.remoteAudio) {
+            if (!Array.isArray(object.remoteAudio))
+                throw TypeError(".SdkMeetingSessionTimingFrame.remoteAudio: array expected");
+            message.remoteAudio = [];
+            for (var i = 0; i < object.remoteAudio.length; ++i) {
+                if (typeof object.remoteAudio[i] !== "object")
+                    throw TypeError(".SdkMeetingSessionTimingFrame.remoteAudio: object expected");
+                message.remoteAudio[i] = $root.SdkMeetingSessionRemoteAudioTiming.fromObject(object.remoteAudio[i]);
+            }
+        }
+        if (object.localAudio) {
+            if (!Array.isArray(object.localAudio))
+                throw TypeError(".SdkMeetingSessionTimingFrame.localAudio: array expected");
+            message.localAudio = [];
+            for (var i = 0; i < object.localAudio.length; ++i) {
+                if (typeof object.localAudio[i] !== "object")
+                    throw TypeError(".SdkMeetingSessionTimingFrame.localAudio: object expected");
+                message.localAudio[i] = $root.SdkMeetingSessionLocalAudioTiming.fromObject(object.localAudio[i]);
+            }
+        }
+        if (object.localVideo) {
+            if (!Array.isArray(object.localVideo))
+                throw TypeError(".SdkMeetingSessionTimingFrame.localVideo: array expected");
+            message.localVideo = [];
+            for (var i = 0; i < object.localVideo.length; ++i) {
+                if (typeof object.localVideo[i] !== "object")
+                    throw TypeError(".SdkMeetingSessionTimingFrame.localVideo: object expected");
+                message.localVideo[i] = $root.SdkMeetingSessionLocalVideoTiming.fromObject(object.localVideo[i]);
+            }
+        }
+        if (object.remoteVideos) {
+            if (!Array.isArray(object.remoteVideos))
+                throw TypeError(".SdkMeetingSessionTimingFrame.remoteVideos: array expected");
+            message.remoteVideos = [];
+            for (var i = 0; i < object.remoteVideos.length; ++i) {
+                if (typeof object.remoteVideos[i] !== "object")
+                    throw TypeError(".SdkMeetingSessionTimingFrame.remoteVideos: object expected");
+                message.remoteVideos[i] = $root.SdkMeetingSessionRemoteVideoTiming.fromObject(object.remoteVideos[i]);
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionTimingFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {SdkMeetingSessionTimingFrame} message SdkMeetingSessionTimingFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkMeetingSessionTimingFrame.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults) {
+            object.signaling = [];
+            object.remoteAudio = [];
+            object.localAudio = [];
+            object.localVideo = [];
+            object.remoteVideos = [];
+        }
+        if (message.signaling && message.signaling.length) {
+            object.signaling = [];
+            for (var j = 0; j < message.signaling.length; ++j)
+                object.signaling[j] = $root.SdkMeetingSessionSignalingTiming.toObject(message.signaling[j], options);
+        }
+        if (message.remoteAudio && message.remoteAudio.length) {
+            object.remoteAudio = [];
+            for (var j = 0; j < message.remoteAudio.length; ++j)
+                object.remoteAudio[j] = $root.SdkMeetingSessionRemoteAudioTiming.toObject(message.remoteAudio[j], options);
+        }
+        if (message.localAudio && message.localAudio.length) {
+            object.localAudio = [];
+            for (var j = 0; j < message.localAudio.length; ++j)
+                object.localAudio[j] = $root.SdkMeetingSessionLocalAudioTiming.toObject(message.localAudio[j], options);
+        }
+        if (message.localVideo && message.localVideo.length) {
+            object.localVideo = [];
+            for (var j = 0; j < message.localVideo.length; ++j)
+                object.localVideo[j] = $root.SdkMeetingSessionLocalVideoTiming.toObject(message.localVideo[j], options);
+        }
+        if (message.remoteVideos && message.remoteVideos.length) {
+            object.remoteVideos = [];
+            for (var j = 0; j < message.remoteVideos.length; ++j)
+                object.remoteVideos[j] = $root.SdkMeetingSessionRemoteVideoTiming.toObject(message.remoteVideos[j], options);
+        }
+        return object;
+    };
+
+    /**
+     * Converts this SdkMeetingSessionTimingFrame to JSON.
+     * @function toJSON
+     * @memberof SdkMeetingSessionTimingFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkMeetingSessionTimingFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionTimingFrame
+     * @function getTypeUrl
+     * @memberof SdkMeetingSessionTimingFrame
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkMeetingSessionTimingFrame.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkMeetingSessionTimingFrame";
+    };
+
+    return SdkMeetingSessionTimingFrame;
+})();
+
+$root.SdkMeetingSessionSignalingTiming = (function() {
+
+    /**
+     * Properties of a SdkMeetingSessionSignalingTiming.
+     * @name ISdkMeetingSessionSignalingTiming
+     * @interface ISdkMeetingSessionSignalingTiming
+     * @property {number|Long|null} [startMs] SdkMeetingSessionSignalingTiming startMs
+     * @property {number|Long|null} [joinSentMs] SdkMeetingSessionSignalingTiming joinSentMs
+     * @property {number|Long|null} [joinAckReceivedMs] SdkMeetingSessionSignalingTiming joinAckReceivedMs
+     * @property {number|Long|null} [transportConnectedMs] SdkMeetingSessionSignalingTiming transportConnectedMs
+     * @property {number|Long|null} [createOfferMs] SdkMeetingSessionSignalingTiming createOfferMs
+     * @property {number|Long|null} [setLocalDescriptionMs] SdkMeetingSessionSignalingTiming setLocalDescriptionMs
+     * @property {number|Long|null} [setRemoteDescriptionMs] SdkMeetingSessionSignalingTiming setRemoteDescriptionMs
+     * @property {number|Long|null} [iceGatheringStartMs] SdkMeetingSessionSignalingTiming iceGatheringStartMs
+     * @property {number|Long|null} [iceGatheringCompleteMs] SdkMeetingSessionSignalingTiming iceGatheringCompleteMs
+     * @property {number|Long|null} [iceConnectedMs] SdkMeetingSessionSignalingTiming iceConnectedMs
+     * @property {number|Long|null} [subscribeSentMs] SdkMeetingSessionSignalingTiming subscribeSentMs
+     * @property {number|Long|null} [subscribeAckMs] SdkMeetingSessionSignalingTiming subscribeAckMs
+     * @property {boolean|null} [timedOut] SdkMeetingSessionSignalingTiming timedOut
+     */
+
+    /**
+     * Constructs a new SdkMeetingSessionSignalingTiming.
+     * @name SdkMeetingSessionSignalingTiming
+     * @classdesc Represents a SdkMeetingSessionSignalingTiming.
+     * @implements ISdkMeetingSessionSignalingTiming
+     * @constructor
+     * @param {ISdkMeetingSessionSignalingTiming=} [properties] Properties to set
+     */
+    function SdkMeetingSessionSignalingTiming(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkMeetingSessionSignalingTiming startMs.
+     * @member {number|Long} startMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.startMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming joinSentMs.
+     * @member {number|Long} joinSentMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.joinSentMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming joinAckReceivedMs.
+     * @member {number|Long} joinAckReceivedMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.joinAckReceivedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming transportConnectedMs.
+     * @member {number|Long} transportConnectedMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.transportConnectedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming createOfferMs.
+     * @member {number|Long} createOfferMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.createOfferMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming setLocalDescriptionMs.
+     * @member {number|Long} setLocalDescriptionMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.setLocalDescriptionMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming setRemoteDescriptionMs.
+     * @member {number|Long} setRemoteDescriptionMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.setRemoteDescriptionMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming iceGatheringStartMs.
+     * @member {number|Long} iceGatheringStartMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.iceGatheringStartMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming iceGatheringCompleteMs.
+     * @member {number|Long} iceGatheringCompleteMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.iceGatheringCompleteMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming iceConnectedMs.
+     * @member {number|Long} iceConnectedMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.iceConnectedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming subscribeSentMs.
+     * @member {number|Long} subscribeSentMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.subscribeSentMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming subscribeAckMs.
+     * @member {number|Long} subscribeAckMs
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.subscribeAckMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionSignalingTiming timedOut.
+     * @member {boolean} timedOut
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     */
+    SdkMeetingSessionSignalingTiming.prototype.timedOut = false;
+
+    /**
+     * Creates a new SdkMeetingSessionSignalingTiming instance using the specified properties.
+     * @function create
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {ISdkMeetingSessionSignalingTiming=} [properties] Properties to set
+     * @returns {SdkMeetingSessionSignalingTiming} SdkMeetingSessionSignalingTiming instance
+     */
+    SdkMeetingSessionSignalingTiming.create = function create(properties) {
+        return new SdkMeetingSessionSignalingTiming(properties);
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionSignalingTiming message. Does not implicitly {@link SdkMeetingSessionSignalingTiming.verify|verify} messages.
+     * @function encode
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {ISdkMeetingSessionSignalingTiming} message SdkMeetingSessionSignalingTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionSignalingTiming.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.startMs != null && Object.hasOwnProperty.call(message, "startMs"))
+            writer.uint32(/* id 1, wireType 0 =*/8).int64(message.startMs);
+        if (message.joinSentMs != null && Object.hasOwnProperty.call(message, "joinSentMs"))
+            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.joinSentMs);
+        if (message.joinAckReceivedMs != null && Object.hasOwnProperty.call(message, "joinAckReceivedMs"))
+            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.joinAckReceivedMs);
+        if (message.transportConnectedMs != null && Object.hasOwnProperty.call(message, "transportConnectedMs"))
+            writer.uint32(/* id 4, wireType 0 =*/32).int64(message.transportConnectedMs);
+        if (message.createOfferMs != null && Object.hasOwnProperty.call(message, "createOfferMs"))
+            writer.uint32(/* id 5, wireType 0 =*/40).int64(message.createOfferMs);
+        if (message.setLocalDescriptionMs != null && Object.hasOwnProperty.call(message, "setLocalDescriptionMs"))
+            writer.uint32(/* id 6, wireType 0 =*/48).int64(message.setLocalDescriptionMs);
+        if (message.setRemoteDescriptionMs != null && Object.hasOwnProperty.call(message, "setRemoteDescriptionMs"))
+            writer.uint32(/* id 7, wireType 0 =*/56).int64(message.setRemoteDescriptionMs);
+        if (message.iceGatheringStartMs != null && Object.hasOwnProperty.call(message, "iceGatheringStartMs"))
+            writer.uint32(/* id 8, wireType 0 =*/64).int64(message.iceGatheringStartMs);
+        if (message.iceGatheringCompleteMs != null && Object.hasOwnProperty.call(message, "iceGatheringCompleteMs"))
+            writer.uint32(/* id 9, wireType 0 =*/72).int64(message.iceGatheringCompleteMs);
+        if (message.iceConnectedMs != null && Object.hasOwnProperty.call(message, "iceConnectedMs"))
+            writer.uint32(/* id 10, wireType 0 =*/80).int64(message.iceConnectedMs);
+        if (message.subscribeSentMs != null && Object.hasOwnProperty.call(message, "subscribeSentMs"))
+            writer.uint32(/* id 11, wireType 0 =*/88).int64(message.subscribeSentMs);
+        if (message.subscribeAckMs != null && Object.hasOwnProperty.call(message, "subscribeAckMs"))
+            writer.uint32(/* id 12, wireType 0 =*/96).int64(message.subscribeAckMs);
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
+            writer.uint32(/* id 13, wireType 0 =*/104).bool(message.timedOut);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionSignalingTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionSignalingTiming.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {ISdkMeetingSessionSignalingTiming} message SdkMeetingSessionSignalingTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionSignalingTiming.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionSignalingTiming message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkMeetingSessionSignalingTiming} SdkMeetingSessionSignalingTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionSignalingTiming.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionSignalingTiming();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    message.startMs = reader.int64();
+                    break;
+                }
+            case 2: {
+                    message.joinSentMs = reader.int64();
+                    break;
+                }
+            case 3: {
+                    message.joinAckReceivedMs = reader.int64();
+                    break;
+                }
+            case 4: {
+                    message.transportConnectedMs = reader.int64();
+                    break;
+                }
+            case 5: {
+                    message.createOfferMs = reader.int64();
+                    break;
+                }
+            case 6: {
+                    message.setLocalDescriptionMs = reader.int64();
+                    break;
+                }
+            case 7: {
+                    message.setRemoteDescriptionMs = reader.int64();
+                    break;
+                }
+            case 8: {
+                    message.iceGatheringStartMs = reader.int64();
+                    break;
+                }
+            case 9: {
+                    message.iceGatheringCompleteMs = reader.int64();
+                    break;
+                }
+            case 10: {
+                    message.iceConnectedMs = reader.int64();
+                    break;
+                }
+            case 11: {
+                    message.subscribeSentMs = reader.int64();
+                    break;
+                }
+            case 12: {
+                    message.subscribeAckMs = reader.int64();
+                    break;
+                }
+            case 13: {
+                    message.timedOut = reader.bool();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionSignalingTiming message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkMeetingSessionSignalingTiming} SdkMeetingSessionSignalingTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionSignalingTiming.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkMeetingSessionSignalingTiming message.
+     * @function verify
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkMeetingSessionSignalingTiming.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.startMs != null && message.hasOwnProperty("startMs"))
+            if (!$util.isInteger(message.startMs) && !(message.startMs && $util.isInteger(message.startMs.low) && $util.isInteger(message.startMs.high)))
+                return "startMs: integer|Long expected";
+        if (message.joinSentMs != null && message.hasOwnProperty("joinSentMs"))
+            if (!$util.isInteger(message.joinSentMs) && !(message.joinSentMs && $util.isInteger(message.joinSentMs.low) && $util.isInteger(message.joinSentMs.high)))
+                return "joinSentMs: integer|Long expected";
+        if (message.joinAckReceivedMs != null && message.hasOwnProperty("joinAckReceivedMs"))
+            if (!$util.isInteger(message.joinAckReceivedMs) && !(message.joinAckReceivedMs && $util.isInteger(message.joinAckReceivedMs.low) && $util.isInteger(message.joinAckReceivedMs.high)))
+                return "joinAckReceivedMs: integer|Long expected";
+        if (message.transportConnectedMs != null && message.hasOwnProperty("transportConnectedMs"))
+            if (!$util.isInteger(message.transportConnectedMs) && !(message.transportConnectedMs && $util.isInteger(message.transportConnectedMs.low) && $util.isInteger(message.transportConnectedMs.high)))
+                return "transportConnectedMs: integer|Long expected";
+        if (message.createOfferMs != null && message.hasOwnProperty("createOfferMs"))
+            if (!$util.isInteger(message.createOfferMs) && !(message.createOfferMs && $util.isInteger(message.createOfferMs.low) && $util.isInteger(message.createOfferMs.high)))
+                return "createOfferMs: integer|Long expected";
+        if (message.setLocalDescriptionMs != null && message.hasOwnProperty("setLocalDescriptionMs"))
+            if (!$util.isInteger(message.setLocalDescriptionMs) && !(message.setLocalDescriptionMs && $util.isInteger(message.setLocalDescriptionMs.low) && $util.isInteger(message.setLocalDescriptionMs.high)))
+                return "setLocalDescriptionMs: integer|Long expected";
+        if (message.setRemoteDescriptionMs != null && message.hasOwnProperty("setRemoteDescriptionMs"))
+            if (!$util.isInteger(message.setRemoteDescriptionMs) && !(message.setRemoteDescriptionMs && $util.isInteger(message.setRemoteDescriptionMs.low) && $util.isInteger(message.setRemoteDescriptionMs.high)))
+                return "setRemoteDescriptionMs: integer|Long expected";
+        if (message.iceGatheringStartMs != null && message.hasOwnProperty("iceGatheringStartMs"))
+            if (!$util.isInteger(message.iceGatheringStartMs) && !(message.iceGatheringStartMs && $util.isInteger(message.iceGatheringStartMs.low) && $util.isInteger(message.iceGatheringStartMs.high)))
+                return "iceGatheringStartMs: integer|Long expected";
+        if (message.iceGatheringCompleteMs != null && message.hasOwnProperty("iceGatheringCompleteMs"))
+            if (!$util.isInteger(message.iceGatheringCompleteMs) && !(message.iceGatheringCompleteMs && $util.isInteger(message.iceGatheringCompleteMs.low) && $util.isInteger(message.iceGatheringCompleteMs.high)))
+                return "iceGatheringCompleteMs: integer|Long expected";
+        if (message.iceConnectedMs != null && message.hasOwnProperty("iceConnectedMs"))
+            if (!$util.isInteger(message.iceConnectedMs) && !(message.iceConnectedMs && $util.isInteger(message.iceConnectedMs.low) && $util.isInteger(message.iceConnectedMs.high)))
+                return "iceConnectedMs: integer|Long expected";
+        if (message.subscribeSentMs != null && message.hasOwnProperty("subscribeSentMs"))
+            if (!$util.isInteger(message.subscribeSentMs) && !(message.subscribeSentMs && $util.isInteger(message.subscribeSentMs.low) && $util.isInteger(message.subscribeSentMs.high)))
+                return "subscribeSentMs: integer|Long expected";
+        if (message.subscribeAckMs != null && message.hasOwnProperty("subscribeAckMs"))
+            if (!$util.isInteger(message.subscribeAckMs) && !(message.subscribeAckMs && $util.isInteger(message.subscribeAckMs.low) && $util.isInteger(message.subscribeAckMs.high)))
+                return "subscribeAckMs: integer|Long expected";
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            if (typeof message.timedOut !== "boolean")
+                return "timedOut: boolean expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkMeetingSessionSignalingTiming message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkMeetingSessionSignalingTiming} SdkMeetingSessionSignalingTiming
+     */
+    SdkMeetingSessionSignalingTiming.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkMeetingSessionSignalingTiming)
+            return object;
+        var message = new $root.SdkMeetingSessionSignalingTiming();
+        if (object.startMs != null)
+            if ($util.Long)
+                (message.startMs = $util.Long.fromValue(object.startMs)).unsigned = false;
+            else if (typeof object.startMs === "string")
+                message.startMs = parseInt(object.startMs, 10);
+            else if (typeof object.startMs === "number")
+                message.startMs = object.startMs;
+            else if (typeof object.startMs === "object")
+                message.startMs = new $util.LongBits(object.startMs.low >>> 0, object.startMs.high >>> 0).toNumber();
+        if (object.joinSentMs != null)
+            if ($util.Long)
+                (message.joinSentMs = $util.Long.fromValue(object.joinSentMs)).unsigned = false;
+            else if (typeof object.joinSentMs === "string")
+                message.joinSentMs = parseInt(object.joinSentMs, 10);
+            else if (typeof object.joinSentMs === "number")
+                message.joinSentMs = object.joinSentMs;
+            else if (typeof object.joinSentMs === "object")
+                message.joinSentMs = new $util.LongBits(object.joinSentMs.low >>> 0, object.joinSentMs.high >>> 0).toNumber();
+        if (object.joinAckReceivedMs != null)
+            if ($util.Long)
+                (message.joinAckReceivedMs = $util.Long.fromValue(object.joinAckReceivedMs)).unsigned = false;
+            else if (typeof object.joinAckReceivedMs === "string")
+                message.joinAckReceivedMs = parseInt(object.joinAckReceivedMs, 10);
+            else if (typeof object.joinAckReceivedMs === "number")
+                message.joinAckReceivedMs = object.joinAckReceivedMs;
+            else if (typeof object.joinAckReceivedMs === "object")
+                message.joinAckReceivedMs = new $util.LongBits(object.joinAckReceivedMs.low >>> 0, object.joinAckReceivedMs.high >>> 0).toNumber();
+        if (object.transportConnectedMs != null)
+            if ($util.Long)
+                (message.transportConnectedMs = $util.Long.fromValue(object.transportConnectedMs)).unsigned = false;
+            else if (typeof object.transportConnectedMs === "string")
+                message.transportConnectedMs = parseInt(object.transportConnectedMs, 10);
+            else if (typeof object.transportConnectedMs === "number")
+                message.transportConnectedMs = object.transportConnectedMs;
+            else if (typeof object.transportConnectedMs === "object")
+                message.transportConnectedMs = new $util.LongBits(object.transportConnectedMs.low >>> 0, object.transportConnectedMs.high >>> 0).toNumber();
+        if (object.createOfferMs != null)
+            if ($util.Long)
+                (message.createOfferMs = $util.Long.fromValue(object.createOfferMs)).unsigned = false;
+            else if (typeof object.createOfferMs === "string")
+                message.createOfferMs = parseInt(object.createOfferMs, 10);
+            else if (typeof object.createOfferMs === "number")
+                message.createOfferMs = object.createOfferMs;
+            else if (typeof object.createOfferMs === "object")
+                message.createOfferMs = new $util.LongBits(object.createOfferMs.low >>> 0, object.createOfferMs.high >>> 0).toNumber();
+        if (object.setLocalDescriptionMs != null)
+            if ($util.Long)
+                (message.setLocalDescriptionMs = $util.Long.fromValue(object.setLocalDescriptionMs)).unsigned = false;
+            else if (typeof object.setLocalDescriptionMs === "string")
+                message.setLocalDescriptionMs = parseInt(object.setLocalDescriptionMs, 10);
+            else if (typeof object.setLocalDescriptionMs === "number")
+                message.setLocalDescriptionMs = object.setLocalDescriptionMs;
+            else if (typeof object.setLocalDescriptionMs === "object")
+                message.setLocalDescriptionMs = new $util.LongBits(object.setLocalDescriptionMs.low >>> 0, object.setLocalDescriptionMs.high >>> 0).toNumber();
+        if (object.setRemoteDescriptionMs != null)
+            if ($util.Long)
+                (message.setRemoteDescriptionMs = $util.Long.fromValue(object.setRemoteDescriptionMs)).unsigned = false;
+            else if (typeof object.setRemoteDescriptionMs === "string")
+                message.setRemoteDescriptionMs = parseInt(object.setRemoteDescriptionMs, 10);
+            else if (typeof object.setRemoteDescriptionMs === "number")
+                message.setRemoteDescriptionMs = object.setRemoteDescriptionMs;
+            else if (typeof object.setRemoteDescriptionMs === "object")
+                message.setRemoteDescriptionMs = new $util.LongBits(object.setRemoteDescriptionMs.low >>> 0, object.setRemoteDescriptionMs.high >>> 0).toNumber();
+        if (object.iceGatheringStartMs != null)
+            if ($util.Long)
+                (message.iceGatheringStartMs = $util.Long.fromValue(object.iceGatheringStartMs)).unsigned = false;
+            else if (typeof object.iceGatheringStartMs === "string")
+                message.iceGatheringStartMs = parseInt(object.iceGatheringStartMs, 10);
+            else if (typeof object.iceGatheringStartMs === "number")
+                message.iceGatheringStartMs = object.iceGatheringStartMs;
+            else if (typeof object.iceGatheringStartMs === "object")
+                message.iceGatheringStartMs = new $util.LongBits(object.iceGatheringStartMs.low >>> 0, object.iceGatheringStartMs.high >>> 0).toNumber();
+        if (object.iceGatheringCompleteMs != null)
+            if ($util.Long)
+                (message.iceGatheringCompleteMs = $util.Long.fromValue(object.iceGatheringCompleteMs)).unsigned = false;
+            else if (typeof object.iceGatheringCompleteMs === "string")
+                message.iceGatheringCompleteMs = parseInt(object.iceGatheringCompleteMs, 10);
+            else if (typeof object.iceGatheringCompleteMs === "number")
+                message.iceGatheringCompleteMs = object.iceGatheringCompleteMs;
+            else if (typeof object.iceGatheringCompleteMs === "object")
+                message.iceGatheringCompleteMs = new $util.LongBits(object.iceGatheringCompleteMs.low >>> 0, object.iceGatheringCompleteMs.high >>> 0).toNumber();
+        if (object.iceConnectedMs != null)
+            if ($util.Long)
+                (message.iceConnectedMs = $util.Long.fromValue(object.iceConnectedMs)).unsigned = false;
+            else if (typeof object.iceConnectedMs === "string")
+                message.iceConnectedMs = parseInt(object.iceConnectedMs, 10);
+            else if (typeof object.iceConnectedMs === "number")
+                message.iceConnectedMs = object.iceConnectedMs;
+            else if (typeof object.iceConnectedMs === "object")
+                message.iceConnectedMs = new $util.LongBits(object.iceConnectedMs.low >>> 0, object.iceConnectedMs.high >>> 0).toNumber();
+        if (object.subscribeSentMs != null)
+            if ($util.Long)
+                (message.subscribeSentMs = $util.Long.fromValue(object.subscribeSentMs)).unsigned = false;
+            else if (typeof object.subscribeSentMs === "string")
+                message.subscribeSentMs = parseInt(object.subscribeSentMs, 10);
+            else if (typeof object.subscribeSentMs === "number")
+                message.subscribeSentMs = object.subscribeSentMs;
+            else if (typeof object.subscribeSentMs === "object")
+                message.subscribeSentMs = new $util.LongBits(object.subscribeSentMs.low >>> 0, object.subscribeSentMs.high >>> 0).toNumber();
+        if (object.subscribeAckMs != null)
+            if ($util.Long)
+                (message.subscribeAckMs = $util.Long.fromValue(object.subscribeAckMs)).unsigned = false;
+            else if (typeof object.subscribeAckMs === "string")
+                message.subscribeAckMs = parseInt(object.subscribeAckMs, 10);
+            else if (typeof object.subscribeAckMs === "number")
+                message.subscribeAckMs = object.subscribeAckMs;
+            else if (typeof object.subscribeAckMs === "object")
+                message.subscribeAckMs = new $util.LongBits(object.subscribeAckMs.low >>> 0, object.subscribeAckMs.high >>> 0).toNumber();
+        if (object.timedOut != null)
+            message.timedOut = Boolean(object.timedOut);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionSignalingTiming message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {SdkMeetingSessionSignalingTiming} message SdkMeetingSessionSignalingTiming
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkMeetingSessionSignalingTiming.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.startMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.startMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.joinSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.joinSentMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.joinAckReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.joinAckReceivedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.transportConnectedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.transportConnectedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.createOfferMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.createOfferMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.setLocalDescriptionMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.setLocalDescriptionMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.setRemoteDescriptionMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.setRemoteDescriptionMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.iceGatheringStartMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.iceGatheringStartMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.iceGatheringCompleteMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.iceGatheringCompleteMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.iceConnectedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.iceConnectedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.subscribeSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.subscribeSentMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.subscribeAckMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.subscribeAckMs = options.longs === String ? "0" : 0;
+            object.timedOut = false;
+        }
+        if (message.startMs != null && message.hasOwnProperty("startMs"))
+            if (typeof message.startMs === "number")
+                object.startMs = options.longs === String ? String(message.startMs) : message.startMs;
+            else
+                object.startMs = options.longs === String ? $util.Long.prototype.toString.call(message.startMs) : options.longs === Number ? new $util.LongBits(message.startMs.low >>> 0, message.startMs.high >>> 0).toNumber() : message.startMs;
+        if (message.joinSentMs != null && message.hasOwnProperty("joinSentMs"))
+            if (typeof message.joinSentMs === "number")
+                object.joinSentMs = options.longs === String ? String(message.joinSentMs) : message.joinSentMs;
+            else
+                object.joinSentMs = options.longs === String ? $util.Long.prototype.toString.call(message.joinSentMs) : options.longs === Number ? new $util.LongBits(message.joinSentMs.low >>> 0, message.joinSentMs.high >>> 0).toNumber() : message.joinSentMs;
+        if (message.joinAckReceivedMs != null && message.hasOwnProperty("joinAckReceivedMs"))
+            if (typeof message.joinAckReceivedMs === "number")
+                object.joinAckReceivedMs = options.longs === String ? String(message.joinAckReceivedMs) : message.joinAckReceivedMs;
+            else
+                object.joinAckReceivedMs = options.longs === String ? $util.Long.prototype.toString.call(message.joinAckReceivedMs) : options.longs === Number ? new $util.LongBits(message.joinAckReceivedMs.low >>> 0, message.joinAckReceivedMs.high >>> 0).toNumber() : message.joinAckReceivedMs;
+        if (message.transportConnectedMs != null && message.hasOwnProperty("transportConnectedMs"))
+            if (typeof message.transportConnectedMs === "number")
+                object.transportConnectedMs = options.longs === String ? String(message.transportConnectedMs) : message.transportConnectedMs;
+            else
+                object.transportConnectedMs = options.longs === String ? $util.Long.prototype.toString.call(message.transportConnectedMs) : options.longs === Number ? new $util.LongBits(message.transportConnectedMs.low >>> 0, message.transportConnectedMs.high >>> 0).toNumber() : message.transportConnectedMs;
+        if (message.createOfferMs != null && message.hasOwnProperty("createOfferMs"))
+            if (typeof message.createOfferMs === "number")
+                object.createOfferMs = options.longs === String ? String(message.createOfferMs) : message.createOfferMs;
+            else
+                object.createOfferMs = options.longs === String ? $util.Long.prototype.toString.call(message.createOfferMs) : options.longs === Number ? new $util.LongBits(message.createOfferMs.low >>> 0, message.createOfferMs.high >>> 0).toNumber() : message.createOfferMs;
+        if (message.setLocalDescriptionMs != null && message.hasOwnProperty("setLocalDescriptionMs"))
+            if (typeof message.setLocalDescriptionMs === "number")
+                object.setLocalDescriptionMs = options.longs === String ? String(message.setLocalDescriptionMs) : message.setLocalDescriptionMs;
+            else
+                object.setLocalDescriptionMs = options.longs === String ? $util.Long.prototype.toString.call(message.setLocalDescriptionMs) : options.longs === Number ? new $util.LongBits(message.setLocalDescriptionMs.low >>> 0, message.setLocalDescriptionMs.high >>> 0).toNumber() : message.setLocalDescriptionMs;
+        if (message.setRemoteDescriptionMs != null && message.hasOwnProperty("setRemoteDescriptionMs"))
+            if (typeof message.setRemoteDescriptionMs === "number")
+                object.setRemoteDescriptionMs = options.longs === String ? String(message.setRemoteDescriptionMs) : message.setRemoteDescriptionMs;
+            else
+                object.setRemoteDescriptionMs = options.longs === String ? $util.Long.prototype.toString.call(message.setRemoteDescriptionMs) : options.longs === Number ? new $util.LongBits(message.setRemoteDescriptionMs.low >>> 0, message.setRemoteDescriptionMs.high >>> 0).toNumber() : message.setRemoteDescriptionMs;
+        if (message.iceGatheringStartMs != null && message.hasOwnProperty("iceGatheringStartMs"))
+            if (typeof message.iceGatheringStartMs === "number")
+                object.iceGatheringStartMs = options.longs === String ? String(message.iceGatheringStartMs) : message.iceGatheringStartMs;
+            else
+                object.iceGatheringStartMs = options.longs === String ? $util.Long.prototype.toString.call(message.iceGatheringStartMs) : options.longs === Number ? new $util.LongBits(message.iceGatheringStartMs.low >>> 0, message.iceGatheringStartMs.high >>> 0).toNumber() : message.iceGatheringStartMs;
+        if (message.iceGatheringCompleteMs != null && message.hasOwnProperty("iceGatheringCompleteMs"))
+            if (typeof message.iceGatheringCompleteMs === "number")
+                object.iceGatheringCompleteMs = options.longs === String ? String(message.iceGatheringCompleteMs) : message.iceGatheringCompleteMs;
+            else
+                object.iceGatheringCompleteMs = options.longs === String ? $util.Long.prototype.toString.call(message.iceGatheringCompleteMs) : options.longs === Number ? new $util.LongBits(message.iceGatheringCompleteMs.low >>> 0, message.iceGatheringCompleteMs.high >>> 0).toNumber() : message.iceGatheringCompleteMs;
+        if (message.iceConnectedMs != null && message.hasOwnProperty("iceConnectedMs"))
+            if (typeof message.iceConnectedMs === "number")
+                object.iceConnectedMs = options.longs === String ? String(message.iceConnectedMs) : message.iceConnectedMs;
+            else
+                object.iceConnectedMs = options.longs === String ? $util.Long.prototype.toString.call(message.iceConnectedMs) : options.longs === Number ? new $util.LongBits(message.iceConnectedMs.low >>> 0, message.iceConnectedMs.high >>> 0).toNumber() : message.iceConnectedMs;
+        if (message.subscribeSentMs != null && message.hasOwnProperty("subscribeSentMs"))
+            if (typeof message.subscribeSentMs === "number")
+                object.subscribeSentMs = options.longs === String ? String(message.subscribeSentMs) : message.subscribeSentMs;
+            else
+                object.subscribeSentMs = options.longs === String ? $util.Long.prototype.toString.call(message.subscribeSentMs) : options.longs === Number ? new $util.LongBits(message.subscribeSentMs.low >>> 0, message.subscribeSentMs.high >>> 0).toNumber() : message.subscribeSentMs;
+        if (message.subscribeAckMs != null && message.hasOwnProperty("subscribeAckMs"))
+            if (typeof message.subscribeAckMs === "number")
+                object.subscribeAckMs = options.longs === String ? String(message.subscribeAckMs) : message.subscribeAckMs;
+            else
+                object.subscribeAckMs = options.longs === String ? $util.Long.prototype.toString.call(message.subscribeAckMs) : options.longs === Number ? new $util.LongBits(message.subscribeAckMs.low >>> 0, message.subscribeAckMs.high >>> 0).toNumber() : message.subscribeAckMs;
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            object.timedOut = message.timedOut;
+        return object;
+    };
+
+    /**
+     * Converts this SdkMeetingSessionSignalingTiming to JSON.
+     * @function toJSON
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkMeetingSessionSignalingTiming.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionSignalingTiming
+     * @function getTypeUrl
+     * @memberof SdkMeetingSessionSignalingTiming
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkMeetingSessionSignalingTiming.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkMeetingSessionSignalingTiming";
+    };
+
+    return SdkMeetingSessionSignalingTiming;
+})();
+
+$root.SdkMeetingSessionRemoteAudioTiming = (function() {
+
+    /**
+     * Properties of a SdkMeetingSessionRemoteAudioTiming.
+     * @name ISdkMeetingSessionRemoteAudioTiming
+     * @interface ISdkMeetingSessionRemoteAudioTiming
+     * @property {number|Long|null} [addedMs] SdkMeetingSessionRemoteAudioTiming addedMs
+     * @property {number|Long|null} [firstPacketReceivedMs] SdkMeetingSessionRemoteAudioTiming firstPacketReceivedMs
+     * @property {number|Long|null} [firstFrameRenderedMs] SdkMeetingSessionRemoteAudioTiming firstFrameRenderedMs
+     * @property {boolean|null} [timedOut] SdkMeetingSessionRemoteAudioTiming timedOut
+     * @property {boolean|null} [removed] SdkMeetingSessionRemoteAudioTiming removed
+     */
+
+    /**
+     * Constructs a new SdkMeetingSessionRemoteAudioTiming.
+     * @name SdkMeetingSessionRemoteAudioTiming
+     * @classdesc Represents a SdkMeetingSessionRemoteAudioTiming.
+     * @implements ISdkMeetingSessionRemoteAudioTiming
+     * @constructor
+     * @param {ISdkMeetingSessionRemoteAudioTiming=} [properties] Properties to set
+     */
+    function SdkMeetingSessionRemoteAudioTiming(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkMeetingSessionRemoteAudioTiming addedMs.
+     * @member {number|Long} addedMs
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteAudioTiming.prototype.addedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionRemoteAudioTiming firstPacketReceivedMs.
+     * @member {number|Long} firstPacketReceivedMs
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteAudioTiming.prototype.firstPacketReceivedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionRemoteAudioTiming firstFrameRenderedMs.
+     * @member {number|Long} firstFrameRenderedMs
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteAudioTiming.prototype.firstFrameRenderedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionRemoteAudioTiming timedOut.
+     * @member {boolean} timedOut
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteAudioTiming.prototype.timedOut = false;
+
+    /**
+     * SdkMeetingSessionRemoteAudioTiming removed.
+     * @member {boolean} removed
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteAudioTiming.prototype.removed = false;
+
+    /**
+     * Creates a new SdkMeetingSessionRemoteAudioTiming instance using the specified properties.
+     * @function create
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {ISdkMeetingSessionRemoteAudioTiming=} [properties] Properties to set
+     * @returns {SdkMeetingSessionRemoteAudioTiming} SdkMeetingSessionRemoteAudioTiming instance
+     */
+    SdkMeetingSessionRemoteAudioTiming.create = function create(properties) {
+        return new SdkMeetingSessionRemoteAudioTiming(properties);
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionRemoteAudioTiming message. Does not implicitly {@link SdkMeetingSessionRemoteAudioTiming.verify|verify} messages.
+     * @function encode
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {ISdkMeetingSessionRemoteAudioTiming} message SdkMeetingSessionRemoteAudioTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionRemoteAudioTiming.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
+            writer.uint32(/* id 1, wireType 0 =*/8).int64(message.addedMs);
+        if (message.firstPacketReceivedMs != null && Object.hasOwnProperty.call(message, "firstPacketReceivedMs"))
+            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.firstPacketReceivedMs);
+        if (message.firstFrameRenderedMs != null && Object.hasOwnProperty.call(message, "firstFrameRenderedMs"))
+            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.firstFrameRenderedMs);
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
+            writer.uint32(/* id 4, wireType 0 =*/32).bool(message.timedOut);
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
+            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.removed);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionRemoteAudioTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionRemoteAudioTiming.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {ISdkMeetingSessionRemoteAudioTiming} message SdkMeetingSessionRemoteAudioTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionRemoteAudioTiming.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionRemoteAudioTiming message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkMeetingSessionRemoteAudioTiming} SdkMeetingSessionRemoteAudioTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionRemoteAudioTiming.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionRemoteAudioTiming();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    message.addedMs = reader.int64();
+                    break;
+                }
+            case 2: {
+                    message.firstPacketReceivedMs = reader.int64();
+                    break;
+                }
+            case 3: {
+                    message.firstFrameRenderedMs = reader.int64();
+                    break;
+                }
+            case 4: {
+                    message.timedOut = reader.bool();
+                    break;
+                }
+            case 5: {
+                    message.removed = reader.bool();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionRemoteAudioTiming message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkMeetingSessionRemoteAudioTiming} SdkMeetingSessionRemoteAudioTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionRemoteAudioTiming.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkMeetingSessionRemoteAudioTiming message.
+     * @function verify
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkMeetingSessionRemoteAudioTiming.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+            if (!$util.isInteger(message.addedMs) && !(message.addedMs && $util.isInteger(message.addedMs.low) && $util.isInteger(message.addedMs.high)))
+                return "addedMs: integer|Long expected";
+        if (message.firstPacketReceivedMs != null && message.hasOwnProperty("firstPacketReceivedMs"))
+            if (!$util.isInteger(message.firstPacketReceivedMs) && !(message.firstPacketReceivedMs && $util.isInteger(message.firstPacketReceivedMs.low) && $util.isInteger(message.firstPacketReceivedMs.high)))
+                return "firstPacketReceivedMs: integer|Long expected";
+        if (message.firstFrameRenderedMs != null && message.hasOwnProperty("firstFrameRenderedMs"))
+            if (!$util.isInteger(message.firstFrameRenderedMs) && !(message.firstFrameRenderedMs && $util.isInteger(message.firstFrameRenderedMs.low) && $util.isInteger(message.firstFrameRenderedMs.high)))
+                return "firstFrameRenderedMs: integer|Long expected";
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            if (typeof message.timedOut !== "boolean")
+                return "timedOut: boolean expected";
+        if (message.removed != null && message.hasOwnProperty("removed"))
+            if (typeof message.removed !== "boolean")
+                return "removed: boolean expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkMeetingSessionRemoteAudioTiming message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkMeetingSessionRemoteAudioTiming} SdkMeetingSessionRemoteAudioTiming
+     */
+    SdkMeetingSessionRemoteAudioTiming.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkMeetingSessionRemoteAudioTiming)
+            return object;
+        var message = new $root.SdkMeetingSessionRemoteAudioTiming();
+        if (object.addedMs != null)
+            if ($util.Long)
+                (message.addedMs = $util.Long.fromValue(object.addedMs)).unsigned = false;
+            else if (typeof object.addedMs === "string")
+                message.addedMs = parseInt(object.addedMs, 10);
+            else if (typeof object.addedMs === "number")
+                message.addedMs = object.addedMs;
+            else if (typeof object.addedMs === "object")
+                message.addedMs = new $util.LongBits(object.addedMs.low >>> 0, object.addedMs.high >>> 0).toNumber();
+        if (object.firstPacketReceivedMs != null)
+            if ($util.Long)
+                (message.firstPacketReceivedMs = $util.Long.fromValue(object.firstPacketReceivedMs)).unsigned = false;
+            else if (typeof object.firstPacketReceivedMs === "string")
+                message.firstPacketReceivedMs = parseInt(object.firstPacketReceivedMs, 10);
+            else if (typeof object.firstPacketReceivedMs === "number")
+                message.firstPacketReceivedMs = object.firstPacketReceivedMs;
+            else if (typeof object.firstPacketReceivedMs === "object")
+                message.firstPacketReceivedMs = new $util.LongBits(object.firstPacketReceivedMs.low >>> 0, object.firstPacketReceivedMs.high >>> 0).toNumber();
+        if (object.firstFrameRenderedMs != null)
+            if ($util.Long)
+                (message.firstFrameRenderedMs = $util.Long.fromValue(object.firstFrameRenderedMs)).unsigned = false;
+            else if (typeof object.firstFrameRenderedMs === "string")
+                message.firstFrameRenderedMs = parseInt(object.firstFrameRenderedMs, 10);
+            else if (typeof object.firstFrameRenderedMs === "number")
+                message.firstFrameRenderedMs = object.firstFrameRenderedMs;
+            else if (typeof object.firstFrameRenderedMs === "object")
+                message.firstFrameRenderedMs = new $util.LongBits(object.firstFrameRenderedMs.low >>> 0, object.firstFrameRenderedMs.high >>> 0).toNumber();
+        if (object.timedOut != null)
+            message.timedOut = Boolean(object.timedOut);
+        if (object.removed != null)
+            message.removed = Boolean(object.removed);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionRemoteAudioTiming message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {SdkMeetingSessionRemoteAudioTiming} message SdkMeetingSessionRemoteAudioTiming
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkMeetingSessionRemoteAudioTiming.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.addedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.firstPacketReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.firstPacketReceivedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.firstFrameRenderedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.firstFrameRenderedMs = options.longs === String ? "0" : 0;
+            object.timedOut = false;
+            object.removed = false;
+        }
+        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+            if (typeof message.addedMs === "number")
+                object.addedMs = options.longs === String ? String(message.addedMs) : message.addedMs;
+            else
+                object.addedMs = options.longs === String ? $util.Long.prototype.toString.call(message.addedMs) : options.longs === Number ? new $util.LongBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0).toNumber() : message.addedMs;
+        if (message.firstPacketReceivedMs != null && message.hasOwnProperty("firstPacketReceivedMs"))
+            if (typeof message.firstPacketReceivedMs === "number")
+                object.firstPacketReceivedMs = options.longs === String ? String(message.firstPacketReceivedMs) : message.firstPacketReceivedMs;
+            else
+                object.firstPacketReceivedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstPacketReceivedMs) : options.longs === Number ? new $util.LongBits(message.firstPacketReceivedMs.low >>> 0, message.firstPacketReceivedMs.high >>> 0).toNumber() : message.firstPacketReceivedMs;
+        if (message.firstFrameRenderedMs != null && message.hasOwnProperty("firstFrameRenderedMs"))
+            if (typeof message.firstFrameRenderedMs === "number")
+                object.firstFrameRenderedMs = options.longs === String ? String(message.firstFrameRenderedMs) : message.firstFrameRenderedMs;
+            else
+                object.firstFrameRenderedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameRenderedMs) : options.longs === Number ? new $util.LongBits(message.firstFrameRenderedMs.low >>> 0, message.firstFrameRenderedMs.high >>> 0).toNumber() : message.firstFrameRenderedMs;
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            object.timedOut = message.timedOut;
+        if (message.removed != null && message.hasOwnProperty("removed"))
+            object.removed = message.removed;
+        return object;
+    };
+
+    /**
+     * Converts this SdkMeetingSessionRemoteAudioTiming to JSON.
+     * @function toJSON
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkMeetingSessionRemoteAudioTiming.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionRemoteAudioTiming
+     * @function getTypeUrl
+     * @memberof SdkMeetingSessionRemoteAudioTiming
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkMeetingSessionRemoteAudioTiming.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkMeetingSessionRemoteAudioTiming";
+    };
+
+    return SdkMeetingSessionRemoteAudioTiming;
+})();
+
+$root.SdkMeetingSessionLocalAudioTiming = (function() {
+
+    /**
+     * Properties of a SdkMeetingSessionLocalAudioTiming.
+     * @name ISdkMeetingSessionLocalAudioTiming
+     * @interface ISdkMeetingSessionLocalAudioTiming
+     * @property {number|Long|null} [addedMs] SdkMeetingSessionLocalAudioTiming addedMs
+     * @property {number|Long|null} [firstFrameCapturedMs] SdkMeetingSessionLocalAudioTiming firstFrameCapturedMs
+     * @property {number|Long|null} [firstPacketSentMs] SdkMeetingSessionLocalAudioTiming firstPacketSentMs
+     * @property {boolean|null} [timedOut] SdkMeetingSessionLocalAudioTiming timedOut
+     * @property {boolean|null} [removed] SdkMeetingSessionLocalAudioTiming removed
+     */
+
+    /**
+     * Constructs a new SdkMeetingSessionLocalAudioTiming.
+     * @name SdkMeetingSessionLocalAudioTiming
+     * @classdesc Represents a SdkMeetingSessionLocalAudioTiming.
+     * @implements ISdkMeetingSessionLocalAudioTiming
+     * @constructor
+     * @param {ISdkMeetingSessionLocalAudioTiming=} [properties] Properties to set
+     */
+    function SdkMeetingSessionLocalAudioTiming(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkMeetingSessionLocalAudioTiming addedMs.
+     * @member {number|Long} addedMs
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalAudioTiming.prototype.addedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionLocalAudioTiming firstFrameCapturedMs.
+     * @member {number|Long} firstFrameCapturedMs
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalAudioTiming.prototype.firstFrameCapturedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionLocalAudioTiming firstPacketSentMs.
+     * @member {number|Long} firstPacketSentMs
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalAudioTiming.prototype.firstPacketSentMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionLocalAudioTiming timedOut.
+     * @member {boolean} timedOut
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalAudioTiming.prototype.timedOut = false;
+
+    /**
+     * SdkMeetingSessionLocalAudioTiming removed.
+     * @member {boolean} removed
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalAudioTiming.prototype.removed = false;
+
+    /**
+     * Creates a new SdkMeetingSessionLocalAudioTiming instance using the specified properties.
+     * @function create
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {ISdkMeetingSessionLocalAudioTiming=} [properties] Properties to set
+     * @returns {SdkMeetingSessionLocalAudioTiming} SdkMeetingSessionLocalAudioTiming instance
+     */
+    SdkMeetingSessionLocalAudioTiming.create = function create(properties) {
+        return new SdkMeetingSessionLocalAudioTiming(properties);
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionLocalAudioTiming message. Does not implicitly {@link SdkMeetingSessionLocalAudioTiming.verify|verify} messages.
+     * @function encode
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {ISdkMeetingSessionLocalAudioTiming} message SdkMeetingSessionLocalAudioTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionLocalAudioTiming.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
+            writer.uint32(/* id 1, wireType 0 =*/8).int64(message.addedMs);
+        if (message.firstFrameCapturedMs != null && Object.hasOwnProperty.call(message, "firstFrameCapturedMs"))
+            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.firstFrameCapturedMs);
+        if (message.firstPacketSentMs != null && Object.hasOwnProperty.call(message, "firstPacketSentMs"))
+            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.firstPacketSentMs);
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
+            writer.uint32(/* id 4, wireType 0 =*/32).bool(message.timedOut);
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
+            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.removed);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionLocalAudioTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionLocalAudioTiming.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {ISdkMeetingSessionLocalAudioTiming} message SdkMeetingSessionLocalAudioTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionLocalAudioTiming.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionLocalAudioTiming message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkMeetingSessionLocalAudioTiming} SdkMeetingSessionLocalAudioTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionLocalAudioTiming.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionLocalAudioTiming();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    message.addedMs = reader.int64();
+                    break;
+                }
+            case 2: {
+                    message.firstFrameCapturedMs = reader.int64();
+                    break;
+                }
+            case 3: {
+                    message.firstPacketSentMs = reader.int64();
+                    break;
+                }
+            case 4: {
+                    message.timedOut = reader.bool();
+                    break;
+                }
+            case 5: {
+                    message.removed = reader.bool();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionLocalAudioTiming message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkMeetingSessionLocalAudioTiming} SdkMeetingSessionLocalAudioTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionLocalAudioTiming.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkMeetingSessionLocalAudioTiming message.
+     * @function verify
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkMeetingSessionLocalAudioTiming.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+            if (!$util.isInteger(message.addedMs) && !(message.addedMs && $util.isInteger(message.addedMs.low) && $util.isInteger(message.addedMs.high)))
+                return "addedMs: integer|Long expected";
+        if (message.firstFrameCapturedMs != null && message.hasOwnProperty("firstFrameCapturedMs"))
+            if (!$util.isInteger(message.firstFrameCapturedMs) && !(message.firstFrameCapturedMs && $util.isInteger(message.firstFrameCapturedMs.low) && $util.isInteger(message.firstFrameCapturedMs.high)))
+                return "firstFrameCapturedMs: integer|Long expected";
+        if (message.firstPacketSentMs != null && message.hasOwnProperty("firstPacketSentMs"))
+            if (!$util.isInteger(message.firstPacketSentMs) && !(message.firstPacketSentMs && $util.isInteger(message.firstPacketSentMs.low) && $util.isInteger(message.firstPacketSentMs.high)))
+                return "firstPacketSentMs: integer|Long expected";
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            if (typeof message.timedOut !== "boolean")
+                return "timedOut: boolean expected";
+        if (message.removed != null && message.hasOwnProperty("removed"))
+            if (typeof message.removed !== "boolean")
+                return "removed: boolean expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkMeetingSessionLocalAudioTiming message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkMeetingSessionLocalAudioTiming} SdkMeetingSessionLocalAudioTiming
+     */
+    SdkMeetingSessionLocalAudioTiming.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkMeetingSessionLocalAudioTiming)
+            return object;
+        var message = new $root.SdkMeetingSessionLocalAudioTiming();
+        if (object.addedMs != null)
+            if ($util.Long)
+                (message.addedMs = $util.Long.fromValue(object.addedMs)).unsigned = false;
+            else if (typeof object.addedMs === "string")
+                message.addedMs = parseInt(object.addedMs, 10);
+            else if (typeof object.addedMs === "number")
+                message.addedMs = object.addedMs;
+            else if (typeof object.addedMs === "object")
+                message.addedMs = new $util.LongBits(object.addedMs.low >>> 0, object.addedMs.high >>> 0).toNumber();
+        if (object.firstFrameCapturedMs != null)
+            if ($util.Long)
+                (message.firstFrameCapturedMs = $util.Long.fromValue(object.firstFrameCapturedMs)).unsigned = false;
+            else if (typeof object.firstFrameCapturedMs === "string")
+                message.firstFrameCapturedMs = parseInt(object.firstFrameCapturedMs, 10);
+            else if (typeof object.firstFrameCapturedMs === "number")
+                message.firstFrameCapturedMs = object.firstFrameCapturedMs;
+            else if (typeof object.firstFrameCapturedMs === "object")
+                message.firstFrameCapturedMs = new $util.LongBits(object.firstFrameCapturedMs.low >>> 0, object.firstFrameCapturedMs.high >>> 0).toNumber();
+        if (object.firstPacketSentMs != null)
+            if ($util.Long)
+                (message.firstPacketSentMs = $util.Long.fromValue(object.firstPacketSentMs)).unsigned = false;
+            else if (typeof object.firstPacketSentMs === "string")
+                message.firstPacketSentMs = parseInt(object.firstPacketSentMs, 10);
+            else if (typeof object.firstPacketSentMs === "number")
+                message.firstPacketSentMs = object.firstPacketSentMs;
+            else if (typeof object.firstPacketSentMs === "object")
+                message.firstPacketSentMs = new $util.LongBits(object.firstPacketSentMs.low >>> 0, object.firstPacketSentMs.high >>> 0).toNumber();
+        if (object.timedOut != null)
+            message.timedOut = Boolean(object.timedOut);
+        if (object.removed != null)
+            message.removed = Boolean(object.removed);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionLocalAudioTiming message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {SdkMeetingSessionLocalAudioTiming} message SdkMeetingSessionLocalAudioTiming
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkMeetingSessionLocalAudioTiming.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.addedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.firstFrameCapturedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.firstFrameCapturedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.firstPacketSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.firstPacketSentMs = options.longs === String ? "0" : 0;
+            object.timedOut = false;
+            object.removed = false;
+        }
+        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+            if (typeof message.addedMs === "number")
+                object.addedMs = options.longs === String ? String(message.addedMs) : message.addedMs;
+            else
+                object.addedMs = options.longs === String ? $util.Long.prototype.toString.call(message.addedMs) : options.longs === Number ? new $util.LongBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0).toNumber() : message.addedMs;
+        if (message.firstFrameCapturedMs != null && message.hasOwnProperty("firstFrameCapturedMs"))
+            if (typeof message.firstFrameCapturedMs === "number")
+                object.firstFrameCapturedMs = options.longs === String ? String(message.firstFrameCapturedMs) : message.firstFrameCapturedMs;
+            else
+                object.firstFrameCapturedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameCapturedMs) : options.longs === Number ? new $util.LongBits(message.firstFrameCapturedMs.low >>> 0, message.firstFrameCapturedMs.high >>> 0).toNumber() : message.firstFrameCapturedMs;
+        if (message.firstPacketSentMs != null && message.hasOwnProperty("firstPacketSentMs"))
+            if (typeof message.firstPacketSentMs === "number")
+                object.firstPacketSentMs = options.longs === String ? String(message.firstPacketSentMs) : message.firstPacketSentMs;
+            else
+                object.firstPacketSentMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstPacketSentMs) : options.longs === Number ? new $util.LongBits(message.firstPacketSentMs.low >>> 0, message.firstPacketSentMs.high >>> 0).toNumber() : message.firstPacketSentMs;
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            object.timedOut = message.timedOut;
+        if (message.removed != null && message.hasOwnProperty("removed"))
+            object.removed = message.removed;
+        return object;
+    };
+
+    /**
+     * Converts this SdkMeetingSessionLocalAudioTiming to JSON.
+     * @function toJSON
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkMeetingSessionLocalAudioTiming.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionLocalAudioTiming
+     * @function getTypeUrl
+     * @memberof SdkMeetingSessionLocalAudioTiming
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkMeetingSessionLocalAudioTiming.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkMeetingSessionLocalAudioTiming";
+    };
+
+    return SdkMeetingSessionLocalAudioTiming;
+})();
+
+$root.SdkMeetingSessionLocalVideoTiming = (function() {
+
+    /**
+     * Properties of a SdkMeetingSessionLocalVideoTiming.
+     * @name ISdkMeetingSessionLocalVideoTiming
+     * @interface ISdkMeetingSessionLocalVideoTiming
+     * @property {number|Long|null} [addedMs] SdkMeetingSessionLocalVideoTiming addedMs
+     * @property {number|Long|null} [firstFrameCapturedMs] SdkMeetingSessionLocalVideoTiming firstFrameCapturedMs
+     * @property {number|Long|null} [firstFrameSentMs] SdkMeetingSessionLocalVideoTiming firstFrameSentMs
+     * @property {boolean|null} [timedOut] SdkMeetingSessionLocalVideoTiming timedOut
+     * @property {boolean|null} [removed] SdkMeetingSessionLocalVideoTiming removed
+     */
+
+    /**
+     * Constructs a new SdkMeetingSessionLocalVideoTiming.
+     * @name SdkMeetingSessionLocalVideoTiming
+     * @classdesc Represents a SdkMeetingSessionLocalVideoTiming.
+     * @implements ISdkMeetingSessionLocalVideoTiming
+     * @constructor
+     * @param {ISdkMeetingSessionLocalVideoTiming=} [properties] Properties to set
+     */
+    function SdkMeetingSessionLocalVideoTiming(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkMeetingSessionLocalVideoTiming addedMs.
+     * @member {number|Long} addedMs
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalVideoTiming.prototype.addedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionLocalVideoTiming firstFrameCapturedMs.
+     * @member {number|Long} firstFrameCapturedMs
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalVideoTiming.prototype.firstFrameCapturedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionLocalVideoTiming firstFrameSentMs.
+     * @member {number|Long} firstFrameSentMs
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalVideoTiming.prototype.firstFrameSentMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionLocalVideoTiming timedOut.
+     * @member {boolean} timedOut
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalVideoTiming.prototype.timedOut = false;
+
+    /**
+     * SdkMeetingSessionLocalVideoTiming removed.
+     * @member {boolean} removed
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionLocalVideoTiming.prototype.removed = false;
+
+    /**
+     * Creates a new SdkMeetingSessionLocalVideoTiming instance using the specified properties.
+     * @function create
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {ISdkMeetingSessionLocalVideoTiming=} [properties] Properties to set
+     * @returns {SdkMeetingSessionLocalVideoTiming} SdkMeetingSessionLocalVideoTiming instance
+     */
+    SdkMeetingSessionLocalVideoTiming.create = function create(properties) {
+        return new SdkMeetingSessionLocalVideoTiming(properties);
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionLocalVideoTiming message. Does not implicitly {@link SdkMeetingSessionLocalVideoTiming.verify|verify} messages.
+     * @function encode
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {ISdkMeetingSessionLocalVideoTiming} message SdkMeetingSessionLocalVideoTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionLocalVideoTiming.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
+            writer.uint32(/* id 1, wireType 0 =*/8).int64(message.addedMs);
+        if (message.firstFrameCapturedMs != null && Object.hasOwnProperty.call(message, "firstFrameCapturedMs"))
+            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.firstFrameCapturedMs);
+        if (message.firstFrameSentMs != null && Object.hasOwnProperty.call(message, "firstFrameSentMs"))
+            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.firstFrameSentMs);
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
+            writer.uint32(/* id 4, wireType 0 =*/32).bool(message.timedOut);
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
+            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.removed);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionLocalVideoTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionLocalVideoTiming.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {ISdkMeetingSessionLocalVideoTiming} message SdkMeetingSessionLocalVideoTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionLocalVideoTiming.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionLocalVideoTiming message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkMeetingSessionLocalVideoTiming} SdkMeetingSessionLocalVideoTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionLocalVideoTiming.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionLocalVideoTiming();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    message.addedMs = reader.int64();
+                    break;
+                }
+            case 2: {
+                    message.firstFrameCapturedMs = reader.int64();
+                    break;
+                }
+            case 3: {
+                    message.firstFrameSentMs = reader.int64();
+                    break;
+                }
+            case 4: {
+                    message.timedOut = reader.bool();
+                    break;
+                }
+            case 5: {
+                    message.removed = reader.bool();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionLocalVideoTiming message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkMeetingSessionLocalVideoTiming} SdkMeetingSessionLocalVideoTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionLocalVideoTiming.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkMeetingSessionLocalVideoTiming message.
+     * @function verify
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkMeetingSessionLocalVideoTiming.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+            if (!$util.isInteger(message.addedMs) && !(message.addedMs && $util.isInteger(message.addedMs.low) && $util.isInteger(message.addedMs.high)))
+                return "addedMs: integer|Long expected";
+        if (message.firstFrameCapturedMs != null && message.hasOwnProperty("firstFrameCapturedMs"))
+            if (!$util.isInteger(message.firstFrameCapturedMs) && !(message.firstFrameCapturedMs && $util.isInteger(message.firstFrameCapturedMs.low) && $util.isInteger(message.firstFrameCapturedMs.high)))
+                return "firstFrameCapturedMs: integer|Long expected";
+        if (message.firstFrameSentMs != null && message.hasOwnProperty("firstFrameSentMs"))
+            if (!$util.isInteger(message.firstFrameSentMs) && !(message.firstFrameSentMs && $util.isInteger(message.firstFrameSentMs.low) && $util.isInteger(message.firstFrameSentMs.high)))
+                return "firstFrameSentMs: integer|Long expected";
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            if (typeof message.timedOut !== "boolean")
+                return "timedOut: boolean expected";
+        if (message.removed != null && message.hasOwnProperty("removed"))
+            if (typeof message.removed !== "boolean")
+                return "removed: boolean expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkMeetingSessionLocalVideoTiming message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkMeetingSessionLocalVideoTiming} SdkMeetingSessionLocalVideoTiming
+     */
+    SdkMeetingSessionLocalVideoTiming.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkMeetingSessionLocalVideoTiming)
+            return object;
+        var message = new $root.SdkMeetingSessionLocalVideoTiming();
+        if (object.addedMs != null)
+            if ($util.Long)
+                (message.addedMs = $util.Long.fromValue(object.addedMs)).unsigned = false;
+            else if (typeof object.addedMs === "string")
+                message.addedMs = parseInt(object.addedMs, 10);
+            else if (typeof object.addedMs === "number")
+                message.addedMs = object.addedMs;
+            else if (typeof object.addedMs === "object")
+                message.addedMs = new $util.LongBits(object.addedMs.low >>> 0, object.addedMs.high >>> 0).toNumber();
+        if (object.firstFrameCapturedMs != null)
+            if ($util.Long)
+                (message.firstFrameCapturedMs = $util.Long.fromValue(object.firstFrameCapturedMs)).unsigned = false;
+            else if (typeof object.firstFrameCapturedMs === "string")
+                message.firstFrameCapturedMs = parseInt(object.firstFrameCapturedMs, 10);
+            else if (typeof object.firstFrameCapturedMs === "number")
+                message.firstFrameCapturedMs = object.firstFrameCapturedMs;
+            else if (typeof object.firstFrameCapturedMs === "object")
+                message.firstFrameCapturedMs = new $util.LongBits(object.firstFrameCapturedMs.low >>> 0, object.firstFrameCapturedMs.high >>> 0).toNumber();
+        if (object.firstFrameSentMs != null)
+            if ($util.Long)
+                (message.firstFrameSentMs = $util.Long.fromValue(object.firstFrameSentMs)).unsigned = false;
+            else if (typeof object.firstFrameSentMs === "string")
+                message.firstFrameSentMs = parseInt(object.firstFrameSentMs, 10);
+            else if (typeof object.firstFrameSentMs === "number")
+                message.firstFrameSentMs = object.firstFrameSentMs;
+            else if (typeof object.firstFrameSentMs === "object")
+                message.firstFrameSentMs = new $util.LongBits(object.firstFrameSentMs.low >>> 0, object.firstFrameSentMs.high >>> 0).toNumber();
+        if (object.timedOut != null)
+            message.timedOut = Boolean(object.timedOut);
+        if (object.removed != null)
+            message.removed = Boolean(object.removed);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionLocalVideoTiming message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {SdkMeetingSessionLocalVideoTiming} message SdkMeetingSessionLocalVideoTiming
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkMeetingSessionLocalVideoTiming.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.addedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.firstFrameCapturedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.firstFrameCapturedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.firstFrameSentMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.firstFrameSentMs = options.longs === String ? "0" : 0;
+            object.timedOut = false;
+            object.removed = false;
+        }
+        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+            if (typeof message.addedMs === "number")
+                object.addedMs = options.longs === String ? String(message.addedMs) : message.addedMs;
+            else
+                object.addedMs = options.longs === String ? $util.Long.prototype.toString.call(message.addedMs) : options.longs === Number ? new $util.LongBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0).toNumber() : message.addedMs;
+        if (message.firstFrameCapturedMs != null && message.hasOwnProperty("firstFrameCapturedMs"))
+            if (typeof message.firstFrameCapturedMs === "number")
+                object.firstFrameCapturedMs = options.longs === String ? String(message.firstFrameCapturedMs) : message.firstFrameCapturedMs;
+            else
+                object.firstFrameCapturedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameCapturedMs) : options.longs === Number ? new $util.LongBits(message.firstFrameCapturedMs.low >>> 0, message.firstFrameCapturedMs.high >>> 0).toNumber() : message.firstFrameCapturedMs;
+        if (message.firstFrameSentMs != null && message.hasOwnProperty("firstFrameSentMs"))
+            if (typeof message.firstFrameSentMs === "number")
+                object.firstFrameSentMs = options.longs === String ? String(message.firstFrameSentMs) : message.firstFrameSentMs;
+            else
+                object.firstFrameSentMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameSentMs) : options.longs === Number ? new $util.LongBits(message.firstFrameSentMs.low >>> 0, message.firstFrameSentMs.high >>> 0).toNumber() : message.firstFrameSentMs;
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            object.timedOut = message.timedOut;
+        if (message.removed != null && message.hasOwnProperty("removed"))
+            object.removed = message.removed;
+        return object;
+    };
+
+    /**
+     * Converts this SdkMeetingSessionLocalVideoTiming to JSON.
+     * @function toJSON
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkMeetingSessionLocalVideoTiming.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionLocalVideoTiming
+     * @function getTypeUrl
+     * @memberof SdkMeetingSessionLocalVideoTiming
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkMeetingSessionLocalVideoTiming.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkMeetingSessionLocalVideoTiming";
+    };
+
+    return SdkMeetingSessionLocalVideoTiming;
+})();
+
+$root.SdkMeetingSessionRemoteVideoTiming = (function() {
+
+    /**
+     * Properties of a SdkMeetingSessionRemoteVideoTiming.
+     * @name ISdkMeetingSessionRemoteVideoTiming
+     * @interface ISdkMeetingSessionRemoteVideoTiming
+     * @property {number|null} [groupId] SdkMeetingSessionRemoteVideoTiming groupId
+     * @property {number|Long|null} [addedMs] SdkMeetingSessionRemoteVideoTiming addedMs
+     * @property {number|Long|null} [firstPacketReceivedMs] SdkMeetingSessionRemoteVideoTiming firstPacketReceivedMs
+     * @property {number|Long|null} [firstFrameRenderedMs] SdkMeetingSessionRemoteVideoTiming firstFrameRenderedMs
+     * @property {boolean|null} [timedOut] SdkMeetingSessionRemoteVideoTiming timedOut
+     * @property {boolean|null} [removed] SdkMeetingSessionRemoteVideoTiming removed
+     */
+
+    /**
+     * Constructs a new SdkMeetingSessionRemoteVideoTiming.
+     * @name SdkMeetingSessionRemoteVideoTiming
+     * @classdesc Represents a SdkMeetingSessionRemoteVideoTiming.
+     * @implements ISdkMeetingSessionRemoteVideoTiming
+     * @constructor
+     * @param {ISdkMeetingSessionRemoteVideoTiming=} [properties] Properties to set
+     */
+    function SdkMeetingSessionRemoteVideoTiming(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkMeetingSessionRemoteVideoTiming groupId.
+     * @member {number} groupId
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteVideoTiming.prototype.groupId = 0;
+
+    /**
+     * SdkMeetingSessionRemoteVideoTiming addedMs.
+     * @member {number|Long} addedMs
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteVideoTiming.prototype.addedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionRemoteVideoTiming firstPacketReceivedMs.
+     * @member {number|Long} firstPacketReceivedMs
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteVideoTiming.prototype.firstPacketReceivedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionRemoteVideoTiming firstFrameRenderedMs.
+     * @member {number|Long} firstFrameRenderedMs
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteVideoTiming.prototype.firstFrameRenderedMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkMeetingSessionRemoteVideoTiming timedOut.
+     * @member {boolean} timedOut
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteVideoTiming.prototype.timedOut = false;
+
+    /**
+     * SdkMeetingSessionRemoteVideoTiming removed.
+     * @member {boolean} removed
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @instance
+     */
+    SdkMeetingSessionRemoteVideoTiming.prototype.removed = false;
+
+    /**
+     * Creates a new SdkMeetingSessionRemoteVideoTiming instance using the specified properties.
+     * @function create
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {ISdkMeetingSessionRemoteVideoTiming=} [properties] Properties to set
+     * @returns {SdkMeetingSessionRemoteVideoTiming} SdkMeetingSessionRemoteVideoTiming instance
+     */
+    SdkMeetingSessionRemoteVideoTiming.create = function create(properties) {
+        return new SdkMeetingSessionRemoteVideoTiming(properties);
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionRemoteVideoTiming message. Does not implicitly {@link SdkMeetingSessionRemoteVideoTiming.verify|verify} messages.
+     * @function encode
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {ISdkMeetingSessionRemoteVideoTiming} message SdkMeetingSessionRemoteVideoTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionRemoteVideoTiming.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.groupId != null && Object.hasOwnProperty.call(message, "groupId"))
+            writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.groupId);
+        if (message.addedMs != null && Object.hasOwnProperty.call(message, "addedMs"))
+            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.addedMs);
+        if (message.firstPacketReceivedMs != null && Object.hasOwnProperty.call(message, "firstPacketReceivedMs"))
+            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.firstPacketReceivedMs);
+        if (message.firstFrameRenderedMs != null && Object.hasOwnProperty.call(message, "firstFrameRenderedMs"))
+            writer.uint32(/* id 4, wireType 0 =*/32).int64(message.firstFrameRenderedMs);
+        if (message.timedOut != null && Object.hasOwnProperty.call(message, "timedOut"))
+            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.timedOut);
+        if (message.removed != null && Object.hasOwnProperty.call(message, "removed"))
+            writer.uint32(/* id 6, wireType 0 =*/48).bool(message.removed);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionRemoteVideoTiming message, length delimited. Does not implicitly {@link SdkMeetingSessionRemoteVideoTiming.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {ISdkMeetingSessionRemoteVideoTiming} message SdkMeetingSessionRemoteVideoTiming message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionRemoteVideoTiming.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionRemoteVideoTiming message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkMeetingSessionRemoteVideoTiming} SdkMeetingSessionRemoteVideoTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionRemoteVideoTiming.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionRemoteVideoTiming();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1: {
+                    message.groupId = reader.uint32();
+                    break;
+                }
+            case 2: {
+                    message.addedMs = reader.int64();
+                    break;
+                }
+            case 3: {
+                    message.firstPacketReceivedMs = reader.int64();
+                    break;
+                }
+            case 4: {
+                    message.firstFrameRenderedMs = reader.int64();
+                    break;
+                }
+            case 5: {
+                    message.timedOut = reader.bool();
+                    break;
+                }
+            case 6: {
+                    message.removed = reader.bool();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionRemoteVideoTiming message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkMeetingSessionRemoteVideoTiming} SdkMeetingSessionRemoteVideoTiming
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionRemoteVideoTiming.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkMeetingSessionRemoteVideoTiming message.
+     * @function verify
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkMeetingSessionRemoteVideoTiming.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.groupId != null && message.hasOwnProperty("groupId"))
+            if (!$util.isInteger(message.groupId))
+                return "groupId: integer expected";
+        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+            if (!$util.isInteger(message.addedMs) && !(message.addedMs && $util.isInteger(message.addedMs.low) && $util.isInteger(message.addedMs.high)))
+                return "addedMs: integer|Long expected";
+        if (message.firstPacketReceivedMs != null && message.hasOwnProperty("firstPacketReceivedMs"))
+            if (!$util.isInteger(message.firstPacketReceivedMs) && !(message.firstPacketReceivedMs && $util.isInteger(message.firstPacketReceivedMs.low) && $util.isInteger(message.firstPacketReceivedMs.high)))
+                return "firstPacketReceivedMs: integer|Long expected";
+        if (message.firstFrameRenderedMs != null && message.hasOwnProperty("firstFrameRenderedMs"))
+            if (!$util.isInteger(message.firstFrameRenderedMs) && !(message.firstFrameRenderedMs && $util.isInteger(message.firstFrameRenderedMs.low) && $util.isInteger(message.firstFrameRenderedMs.high)))
+                return "firstFrameRenderedMs: integer|Long expected";
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            if (typeof message.timedOut !== "boolean")
+                return "timedOut: boolean expected";
+        if (message.removed != null && message.hasOwnProperty("removed"))
+            if (typeof message.removed !== "boolean")
+                return "removed: boolean expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkMeetingSessionRemoteVideoTiming message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkMeetingSessionRemoteVideoTiming} SdkMeetingSessionRemoteVideoTiming
+     */
+    SdkMeetingSessionRemoteVideoTiming.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkMeetingSessionRemoteVideoTiming)
+            return object;
+        var message = new $root.SdkMeetingSessionRemoteVideoTiming();
+        if (object.groupId != null)
+            message.groupId = object.groupId >>> 0;
+        if (object.addedMs != null)
+            if ($util.Long)
+                (message.addedMs = $util.Long.fromValue(object.addedMs)).unsigned = false;
+            else if (typeof object.addedMs === "string")
+                message.addedMs = parseInt(object.addedMs, 10);
+            else if (typeof object.addedMs === "number")
+                message.addedMs = object.addedMs;
+            else if (typeof object.addedMs === "object")
+                message.addedMs = new $util.LongBits(object.addedMs.low >>> 0, object.addedMs.high >>> 0).toNumber();
+        if (object.firstPacketReceivedMs != null)
+            if ($util.Long)
+                (message.firstPacketReceivedMs = $util.Long.fromValue(object.firstPacketReceivedMs)).unsigned = false;
+            else if (typeof object.firstPacketReceivedMs === "string")
+                message.firstPacketReceivedMs = parseInt(object.firstPacketReceivedMs, 10);
+            else if (typeof object.firstPacketReceivedMs === "number")
+                message.firstPacketReceivedMs = object.firstPacketReceivedMs;
+            else if (typeof object.firstPacketReceivedMs === "object")
+                message.firstPacketReceivedMs = new $util.LongBits(object.firstPacketReceivedMs.low >>> 0, object.firstPacketReceivedMs.high >>> 0).toNumber();
+        if (object.firstFrameRenderedMs != null)
+            if ($util.Long)
+                (message.firstFrameRenderedMs = $util.Long.fromValue(object.firstFrameRenderedMs)).unsigned = false;
+            else if (typeof object.firstFrameRenderedMs === "string")
+                message.firstFrameRenderedMs = parseInt(object.firstFrameRenderedMs, 10);
+            else if (typeof object.firstFrameRenderedMs === "number")
+                message.firstFrameRenderedMs = object.firstFrameRenderedMs;
+            else if (typeof object.firstFrameRenderedMs === "object")
+                message.firstFrameRenderedMs = new $util.LongBits(object.firstFrameRenderedMs.low >>> 0, object.firstFrameRenderedMs.high >>> 0).toNumber();
+        if (object.timedOut != null)
+            message.timedOut = Boolean(object.timedOut);
+        if (object.removed != null)
+            message.removed = Boolean(object.removed);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionRemoteVideoTiming message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {SdkMeetingSessionRemoteVideoTiming} message SdkMeetingSessionRemoteVideoTiming
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkMeetingSessionRemoteVideoTiming.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.groupId = 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.addedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.addedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.firstPacketReceivedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.firstPacketReceivedMs = options.longs === String ? "0" : 0;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.firstFrameRenderedMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.firstFrameRenderedMs = options.longs === String ? "0" : 0;
+            object.timedOut = false;
+            object.removed = false;
+        }
+        if (message.groupId != null && message.hasOwnProperty("groupId"))
+            object.groupId = message.groupId;
+        if (message.addedMs != null && message.hasOwnProperty("addedMs"))
+            if (typeof message.addedMs === "number")
+                object.addedMs = options.longs === String ? String(message.addedMs) : message.addedMs;
+            else
+                object.addedMs = options.longs === String ? $util.Long.prototype.toString.call(message.addedMs) : options.longs === Number ? new $util.LongBits(message.addedMs.low >>> 0, message.addedMs.high >>> 0).toNumber() : message.addedMs;
+        if (message.firstPacketReceivedMs != null && message.hasOwnProperty("firstPacketReceivedMs"))
+            if (typeof message.firstPacketReceivedMs === "number")
+                object.firstPacketReceivedMs = options.longs === String ? String(message.firstPacketReceivedMs) : message.firstPacketReceivedMs;
+            else
+                object.firstPacketReceivedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstPacketReceivedMs) : options.longs === Number ? new $util.LongBits(message.firstPacketReceivedMs.low >>> 0, message.firstPacketReceivedMs.high >>> 0).toNumber() : message.firstPacketReceivedMs;
+        if (message.firstFrameRenderedMs != null && message.hasOwnProperty("firstFrameRenderedMs"))
+            if (typeof message.firstFrameRenderedMs === "number")
+                object.firstFrameRenderedMs = options.longs === String ? String(message.firstFrameRenderedMs) : message.firstFrameRenderedMs;
+            else
+                object.firstFrameRenderedMs = options.longs === String ? $util.Long.prototype.toString.call(message.firstFrameRenderedMs) : options.longs === Number ? new $util.LongBits(message.firstFrameRenderedMs.low >>> 0, message.firstFrameRenderedMs.high >>> 0).toNumber() : message.firstFrameRenderedMs;
+        if (message.timedOut != null && message.hasOwnProperty("timedOut"))
+            object.timedOut = message.timedOut;
+        if (message.removed != null && message.hasOwnProperty("removed"))
+            object.removed = message.removed;
+        return object;
+    };
+
+    /**
+     * Converts this SdkMeetingSessionRemoteVideoTiming to JSON.
+     * @function toJSON
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkMeetingSessionRemoteVideoTiming.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for SdkMeetingSessionRemoteVideoTiming
+     * @function getTypeUrl
+     * @memberof SdkMeetingSessionRemoteVideoTiming
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    SdkMeetingSessionRemoteVideoTiming.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/SdkMeetingSessionRemoteVideoTiming";
+    };
+
+    return SdkMeetingSessionRemoteVideoTiming;
 })();
 
 module.exports = $root;

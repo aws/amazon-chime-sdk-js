@@ -3,13 +3,12 @@
 
 import { defineConfig, type Plugin } from 'vite';
 import { resolve } from 'path';
-import { rmSync } from 'fs';
 import { watch } from 'chokidar';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 import ejsSvgPlugin from './plugins/vite-plugin-ejs-svg';
 
 const app = process.env.npm_config_app || process.env.APP || 'meetingV2';
-const watchSdk = process.env.WATCH_SDK === 'true';
+const watchSdk = process.env.SDK_AUTOREFRESH === 'true';
 
 /**
  * This is exactly what we document in the CSP guide.
@@ -89,12 +88,11 @@ function fullReloadPlugin(): Plugin {
         sdkWatcher.on('change', () => {
           if (debounce) clearTimeout(debounce);
           debounce = setTimeout(() => {
-            console.log('[full-reload] SDK build changed, clearing cache and restarting...');
-            try { rmSync(resolve(__dirname, 'node_modules/.vite'), { recursive: true, force: true }); } catch {}
-            server.restart();
+            console.log('[full-reload] SDK build changed, reloading browser...');
+            server.ws.send({ type: 'full-reload' });
           }, 1000);
         });
-        console.log('[full-reload] Watching SDK build output for changes.');
+        console.log('[full-reload] Watching SDK build output for changes (SDK_AUTOREFRESH).');
       }
 
       server.watcher.on('change', () => {
@@ -118,6 +116,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['amazon-chime-sdk-js'],
+    force: true,
   },
   define: {
     global: 'globalThis',

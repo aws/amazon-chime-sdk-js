@@ -20,6 +20,12 @@ export default class NoOpVideoElementFactory implements VideoElementFactory {
       },
       removeAttribute: (): void => {},
       setAttribute: (): void => {},
+      addEventListener: (): void => {},
+      removeEventListener: (): void => {},
+      requestVideoFrameCallback: (_callback: () => void): number => {
+        return 0;
+      },
+      cancelVideoFrameCallback: (): void => {},
       srcObject: false,
       paused: true,
       pause: (): void => {

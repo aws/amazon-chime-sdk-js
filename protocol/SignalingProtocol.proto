@@ -27,6 +27,7 @@ message SdkSignalFrame {
         PRIMARY_MEETING_JOIN_ACK = 26;
         PRIMARY_MEETING_LEAVE = 27;
         NOTIFICATION = 34;
+        MEETING_SESSION_TIMING = 43;
     }
     required uint64 timestamp_ms = 1;
     required Type type = 2;
@@ -52,6 +53,7 @@ message SdkSignalFrame {
     optional SdkPrimaryMeetingJoinAckFrame primary_meeting_join_ack = 27;
     optional SdkPrimaryMeetingLeaveFrame primary_meeting_leave = 28;
     optional SdkNotificationFrame notification = 35;
+    optional SdkMeetingSessionTimingFrame meeting_session_timing = 44;
 }
 
 message SdkErrorFrame {
@@ -283,6 +285,8 @@ message SdkMetric {
         VIDEO_DISCARDED_PPS = 47;
         VIDEO_PLIS_SENT = 48;
         VIDEO_RECEIVED_JITTER_MS = 49;
+        VIDEO_LOCAL_RENDER_FPS = 52;
+        VIDEO_REMOTE_RENDER_FPS = 56;
         VIDEO_INPUT_HEIGHT = 60;
         VIDEO_ENCODE_HEIGHT = 64;
         VIDEO_SENT_QP_SUM = 66;
@@ -503,3 +507,60 @@ enum SdkVideoCodecCapability {
     VP9_PROFILE_0 = 8;
     AV1_MAIN_PROFILE = 11;
 };
+
+message SdkMeetingSessionTimingFrame {
+    repeated SdkMeetingSessionSignalingTiming signaling = 1;
+    repeated SdkMeetingSessionRemoteAudioTiming remote_audio = 2;
+    repeated SdkMeetingSessionLocalAudioTiming local_audio = 3;
+    repeated SdkMeetingSessionLocalVideoTiming local_video = 4;
+    repeated SdkMeetingSessionRemoteVideoTiming remote_videos = 5;
+}
+
+message SdkMeetingSessionSignalingTiming {
+    optional int64 start_ms = 1;
+    optional int64 join_sent_ms = 2;
+    optional int64 join_ack_received_ms = 3;
+    optional int64 transport_connected_ms = 4;
+    optional int64 create_offer_ms = 5;
+    optional int64 set_local_description_ms = 6;
+    optional int64 set_remote_description_ms = 7;
+    optional int64 ice_gathering_start_ms = 8;
+    optional int64 ice_gathering_complete_ms = 9;
+    optional int64 ice_connected_ms = 10;
+    optional int64 subscribe_sent_ms = 11;
+    optional int64 subscribe_ack_ms = 12;
+    optional bool timed_out = 13;
+}
+
+message SdkMeetingSessionRemoteAudioTiming {
+    optional int64 added_ms = 1;
+    optional int64 first_packet_received_ms = 2;
+    optional int64 first_frame_rendered_ms = 3;
+    optional bool timed_out = 4;
+    optional bool removed = 5;
+}
+
+message SdkMeetingSessionLocalAudioTiming {
+    optional int64 added_ms = 1;
+    optional int64 first_frame_captured_ms = 2;
+    optional int64 first_packet_sent_ms = 3;
+    optional bool timed_out = 4;
+    optional bool removed = 5;
+}
+
+message SdkMeetingSessionLocalVideoTiming {
+    optional int64 added_ms = 1;
+    optional int64 first_frame_captured_ms = 2;
+    optional int64 first_frame_sent_ms = 3;
+    optional bool timed_out = 4;
+    optional bool removed = 5;
+}
+
+message SdkMeetingSessionRemoteVideoTiming {
+    optional uint32 group_id = 1;
+    optional int64 added_ms = 2;
+    optional int64 first_packet_received_ms = 3;
+    optional int64 first_frame_rendered_ms = 4;
+    optional bool timed_out = 5;
+    optional bool removed = 6;
+}

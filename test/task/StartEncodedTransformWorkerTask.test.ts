@@ -6,6 +6,7 @@ import chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import AudioProfile from '../../src/audioprofile/AudioProfile';
+import AudioVideoController from '../../src/audiovideocontroller/AudioVideoController';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
@@ -205,6 +206,7 @@ describe('StartEncodedTransformWorkerTask', () => {
         addObserver: sinon.stub(),
       };
       const mockStatsCollector = {};
+      const mockAudioVideoController = {};
       const mockManager: Partial<EncodedTransformWorkerManager> = {
         isEnabled: () => true,
         start: sinon.stub().resolves(),
@@ -215,11 +217,13 @@ describe('StartEncodedTransformWorkerTask', () => {
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
       context.audioProfile = new AudioProfile(null, false);
       context.statsCollector = mockStatsCollector as unknown as StatsCollector;
+      context.audioVideoController = mockAudioVideoController as unknown as AudioVideoController;
 
       await task.run();
 
-      expect(mockMetricsManager.addObserver.calledOnce).to.be.true;
+      expect(mockMetricsManager.addObserver.calledTwice).to.be.true;
       expect(mockMetricsManager.addObserver.calledWith(mockStatsCollector)).to.be.true;
+      expect(mockMetricsManager.addObserver.calledWith(mockAudioVideoController)).to.be.true;
     });
 
     it('does not add metrics observer when metricsTransformManager is null', async () => {
@@ -242,6 +246,7 @@ describe('StartEncodedTransformWorkerTask', () => {
       const mockMetricsManager = {
         addObserver: sinon.stub(),
       };
+      const mockAudioVideoController = {};
       const mockManager: Partial<EncodedTransformWorkerManager> = {
         isEnabled: () => true,
         start: sinon.stub().resolves(),
@@ -252,10 +257,12 @@ describe('StartEncodedTransformWorkerTask', () => {
       context.encodedTransformWorkerManager = mockManager as EncodedTransformWorkerManager;
       context.audioProfile = new AudioProfile(null, false);
       context.statsCollector = null;
+      context.audioVideoController = mockAudioVideoController as unknown as AudioVideoController;
 
       await task.run();
 
-      expect(mockMetricsManager.addObserver.called).to.be.false;
+      expect(mockMetricsManager.addObserver.calledOnce).to.be.true;
+      expect(mockMetricsManager.addObserver.calledWith(mockAudioVideoController)).to.be.true;
     });
 
     it('adds redundantAudioEncodeTransformManager observer when statsCollector is available', async () => {

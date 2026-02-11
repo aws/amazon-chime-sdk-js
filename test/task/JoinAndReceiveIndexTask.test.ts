@@ -15,6 +15,7 @@ import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSession
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
+import MeetingSessionTimingManager from '../../src/meetingsessiontiming/MeetingSessionTimingManager';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import ServerSideNetworkAdaption from '../../src/signalingclient/ServerSideNetworkAdaption';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
@@ -23,6 +24,7 @@ import {
   SdkJoinAckFrame,
   SdkServerSideNetworkAdaption,
   SdkSignalFrame,
+  SdkStreamDescriptor,
   SdkTurnCredentials,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import JoinAndReceiveIndexTask from '../../src/task/JoinAndReceiveIndexTask';
@@ -540,6 +542,37 @@ describe('JoinAndReceiveIndexTask', () => {
       await tick(clock, 250);
       await taskPromise;
       expect(context.turnCredentials.uris).to.deep.equal(['fake-turn']);
+    });
+  });
+
+  describe('timing manager integration', () => {
+    it('calls setExpectingRemoteVideo when index has sources', async () => {
+      const timingManager = new MeetingSessionTimingManager(logger);
+      context.meetingSessionTimingManager = timingManager;
+      const spy = sinon.spy(timingManager, 'setExpectingRemoteVideo');
+
+      const indexFrame = SdkIndexFrame.create();
+      indexFrame.sources = [SdkStreamDescriptor.create({ streamId: 1, groupId: 1 })];
+      const indexSignal = SdkSignalFrame.create();
+      indexSignal.type = SdkSignalFrame.Type.INDEX;
+      indexSignal.index = indexFrame;
+      const indexBuffer = SdkSignalFrame.encode(indexSignal).finish();
+      const indexWithSources = new Uint8Array(indexBuffer.length + 1);
+      indexWithSources[0] = 0x5;
+      indexWithSources.set(indexBuffer, 1);
+
+      await tick(clock, behavior.asyncWaitMs + 10);
+      setTimeout(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      }, 100);
+      setTimeout(() => {
+        webSocketAdapter.send(indexWithSources);
+      }, 200);
+      const taskPromise = task.run();
+      await tick(clock, 250);
+      await taskPromise;
+      expect(spy.calledOnce).to.be.true;
+      timingManager.destroy();
     });
   });
 

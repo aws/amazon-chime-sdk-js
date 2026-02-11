@@ -47,7 +47,16 @@ export interface EncodedTransformMediaMetricsObserver {
   /**
    * Called when new encoded transform media metrics become available.
    */
-  encodedTransformMediaMetricsDidReceive(metrics: EncodedTransformMediaMetrics): void;
+  encodedTransformMediaMetricsDidReceive?(metrics: EncodedTransformMediaMetrics): void;
+
+  /**
+   * Called when the first packet is seen for a new SSRC via encoded transform.
+   */
+  onFirstPacketReceived?(
+    mediaType: 'audio' | 'video',
+    direction: 'send' | 'receive',
+    ssrc: number
+  ): void;
 }
 
 /**
@@ -93,6 +102,46 @@ export default class MediaMetricsTransformManager extends EncodedTransformManage
    */
   handleWorkerMessage(message: EncodedTransformMessage): void {
     if (message.type === MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC) {
+      /* istanbul ignore next */
+      const ssrcStr = message.message?.ssrc;
+      if (!ssrcStr) {
+        this.logger.warn('Received NEW_SSRC message without ssrc, ignoring');
+        return;
+      }
+      const ssrc = parseInt(ssrcStr, 10);
+      if (isNaN(ssrc)) {
+        this.logger.warn(`Received NEW_SSRC message with invalid ssrc: ${ssrcStr}, ignoring`);
+        return;
+      }
+      let mediaType: 'audio' | 'video' | undefined;
+      let direction: 'send' | 'receive' | undefined;
+      switch (message.transformName) {
+        case TRANSFORM_NAMES.AUDIO_SENDER:
+          mediaType = 'audio';
+          direction = 'send';
+          break;
+        case TRANSFORM_NAMES.AUDIO_RECEIVER:
+          mediaType = 'audio';
+          direction = 'receive';
+          break;
+        case TRANSFORM_NAMES.VIDEO_SENDER:
+          mediaType = 'video';
+          direction = 'send';
+          break;
+        case TRANSFORM_NAMES.VIDEO_RECEIVER:
+          mediaType = 'video';
+          direction = 'receive';
+          break;
+      }
+      if (mediaType && direction) {
+        for (const observer of this.observers) {
+          try {
+            observer.onFirstPacketReceived?.(mediaType, direction, ssrc);
+          } catch (e) {
+            this.logger.error(`Error notifying first packet observer: ${e}`);
+          }
+        }
+      }
       return;
     }
 
@@ -161,7 +210,7 @@ export default class MediaMetricsTransformManager extends EncodedTransformManage
 
     for (const observer of this.observers) {
       try {
-        observer.encodedTransformMediaMetricsDidReceive(metrics);
+        observer.encodedTransformMediaMetricsDidReceive?.(metrics);
       } catch (e) {
         this.logger.error(`Error notifying media metrics observer: ${e}`);
       }

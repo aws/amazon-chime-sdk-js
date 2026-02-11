@@ -12,6 +12,7 @@ import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBeha
 import EncodedTransformWorkerManager from '../../src/encodedtransformmanager/EncodedTransformWorkerManager';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
+import MeetingSessionTimingManager from '../../src/meetingsessiontiming/MeetingSessionTimingManager';
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -154,17 +155,27 @@ describe('CreatePeerConnectionTask', () => {
       });
     });
 
-    it('do not log events if peer is null', done => {
-      task.run().then(() => {});
+    it('calls timing manager onIceConnected when ice state is connected', done => {
+      const timingManager = new MeetingSessionTimingManager(logger);
+      context.meetingSessionTimingManager = timingManager;
+      const spy = sinon.spy(timingManager, 'onIceConnected');
+      task.run().then(() => {
+        // @ts-ignore
+        context.peer.iceConnectionState = 'connected';
+        context.peer.dispatchEvent(new Event('iceconnectionstatechange'));
+        expect(spy.calledOnce).to.be.true;
+        timingManager.destroy();
+        done();
+      });
+    });
 
-      context.peer.dispatchEvent(makeICEEvent(null));
-      context.peer.dispatchEvent(makeICEEvent('a=candidate something'));
-      context.peer.dispatchEvent(new Event('iceconnectionstatechange'));
-      context.peer.dispatchEvent(new Event('icegatheringstatechange'));
-      context.peer.dispatchEvent(new Event('negotiationneeded'));
-      context.peer.dispatchEvent(new Event('connectionstatechange'));
-      context.peer = null;
-      done();
+    it('handles ice connected without timing manager', done => {
+      task.run().then(() => {
+        // @ts-ignore
+        context.peer.iceConnectionState = 'connected';
+        context.peer.dispatchEvent(new Event('iceconnectionstatechange'));
+        done();
+      });
     });
   });
 
@@ -739,6 +750,53 @@ describe('CreatePeerConnectionTask', () => {
         await tick(clock, domMockBehavior.asyncWaitMs + 10);
         await setRemotePromise;
         expect(removeVideoTileCalled).to.be.true;
+      });
+
+      it('calls timing manager onRemoteVideoRemoved when track ends with groupId', async () => {
+        const timingManager = new MeetingSessionTimingManager(logger);
+        context.meetingSessionTimingManager = timingManager;
+        const spy = sinon.spy(timingManager, 'onRemoteVideoRemoved');
+        const attendeeIdForTrack = 'attendee-id';
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          streamIdForTrack(_trackId: string): number {
+            return 1;
+          }
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+          groupIdForStreamId(_streamId: number): number {
+            return 5;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+
+        let tile: VideoTile;
+        class TestVideoTileController extends DefaultVideoTileController {
+          addVideoTile(): VideoTile {
+            tile = super.addVideoTile();
+            // Set groupId on the tile state
+            tile.stateRef().groupId = 5;
+            return tile;
+          }
+          removeVideoTile(_tileId: number): void {}
+        }
+        context.videoTileController = new TestVideoTileController(
+          new DefaultVideoTileFactory(),
+          context.audioVideoController,
+          logger
+        );
+
+        await task.run();
+        context.peer.addEventListener('track', (event: RTCTrackEvent) => {
+          const track = event.track;
+          const stream = event.streams[0];
+          stream.removeTrack(track);
+        });
+        const setRemotePromise = context.peer.setRemoteDescription(videoRemoteDescription);
+        await tick(clock, domMockBehavior.asyncWaitMs + 10);
+        await setRemotePromise;
+        expect(spy.calledWith(5)).to.be.true;
+        timingManager.destroy();
       });
 
       it('uses a stream for handling the "removetrack" event and removing stream ID from the paused video stream ID set', async () => {

@@ -124,6 +124,7 @@ export default class SetRemoteDescriptionTask extends BaseTask {
 
       try {
         await this.context.peer.setRemoteDescription(remoteDescription);
+        this.context.meetingSessionTimingManager?.onSetRemoteDescription();
         this.logger.info('set remote description, waiting for ICE connection');
         checkConnectionCompleted();
       } catch (err) {

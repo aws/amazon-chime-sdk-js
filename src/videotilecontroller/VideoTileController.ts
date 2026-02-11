@@ -1,9 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { VideoElementFrameMetrics } from '../videotile/VideoElementFrameMonitor';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
 
+/**
+ * Observer for video tile events including resolution changes, unbinding, first-frame detection,
+ * and render metrics.
+ *
+ * This interface has expanded beyond resolution and eventually should be renamed (e.g. to just VideoTileObserver)
+ */
 export interface VideoTileResolutionObserver {
   /**
    * Called when the resolution of a  video tile changes.
@@ -18,8 +25,35 @@ export interface VideoTileResolutionObserver {
    * Called when a  video tile is unbound from the video element.
    *
    * @param attendeeId The unique identifier for the attendee whose video tile has been unbound.
+   * @param groupId The group ID of the video subscription, if available.
    */
-  videoTileUnbound(attendeeId: string): void;
+  videoTileUnbound(attendeeId: string, groupId?: number): void;
+
+  /**
+   * Called when a remote video tile is bound to a video element.
+   * @param groupId The group ID of the remote video subscription
+   */
+  videoTileBound?(groupId: number): void;
+
+  /**
+   * Called when the first video frame is rendered for a video tile.
+   * For local video, groupId is 0. For remote video, groupId maps to the
+   * remote video subscription group.
+   *
+   * @param groupId The group ID (0 for local, remote group ID otherwise)
+   * @param metadata The VideoFrameCallbackMetadata from requestVideoFrameCallback, if available
+   */
+  videoTileFirstFrameDidRender?(groupId: number, metadata?: VideoFrameCallbackMetadata): void;
+
+  /**
+   * Called periodically with video element metrics for a video tile.
+   * For local video, groupId is 0. For remote video, groupId maps to the
+   * remote video subscription group.
+   *
+   * @param groupId The group ID (0 for local, remote group ID otherwise)
+   * @param metrics The collected metrics
+   */
+  videoTileRenderMetricsDidReceive?(groupId: number, metrics: VideoElementFrameMetrics): void;
 }
 
 /**

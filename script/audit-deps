@@ -6,7 +6,7 @@ end
 
 # Just so the devs can see.
 puts 'Auditing development dependencies. You should address any findings.'
-system('npm audit --omit=prod')
+system('npm audit --include=dev')
 
 puts '---'
 

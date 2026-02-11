@@ -175,6 +175,8 @@ import MeetingSessionLifecycleEventCondition from './meetingsession/MeetingSessi
 import MeetingSessionStatus from './meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from './meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from './meetingsession/MeetingSessionTURNCredentials';
+import MeetingSessionTiming from './meetingsessiontiming/MeetingSessionTiming';
+import MeetingSessionTimingManager from './meetingsessiontiming/MeetingSessionTimingManager';
 import MeetingSessionURLs from './meetingsession/MeetingSessionURLs';
 import MeetingSessionVideoAvailability from './meetingsession/MeetingSessionVideoAvailability';
 import Message from './message/Message';
@@ -297,6 +299,7 @@ import VideoCodecCapability from './sdp/VideoCodecCapability';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
+import VideoElementFrameMonitor from './videotile/VideoElementFrameMonitor';
 import VideoElementResolutionMonitor from './videotile/VideoElementResolutionMonitor';
 import VideoEncodingConcurrentSendersHealthPolicy from './connectionhealthpolicy/VideoEncodingConcurrentSendersHealthPolicy';
 import VideoEncodingConnectionHealthPolicyName from './connectionhealthpolicy/VideoEncodingConnectionHealthPolicyName';
@@ -349,6 +352,7 @@ import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
 import ZLIBTextCompressor from './sdp/ZLIBTextCompressor';
+import { MeetingSessionSignalingTiming, MeetingSessionRemoteAudioTiming, MeetingSessionLocalAudioTiming, MeetingSessionLocalVideoTiming, MeetingSessionRemoteVideoTiming, MeetingSessionTimingObserver } from './meetingsessiontiming/MeetingSessionTiming';
 import { MutableVideoPreferences } from './videodownlinkbandwidthpolicy/VideoPreferences';
 import { Some, None, Maybe, MaybeProvider, Eq, PartialOrd } from './utils/Types';
 import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
@@ -533,9 +537,17 @@ export {
   MeetingSessionCredentials,
   MeetingSessionLifecycleEvent,
   MeetingSessionLifecycleEventCondition,
+  MeetingSessionLocalAudioTiming,
+  MeetingSessionLocalVideoTiming,
+  MeetingSessionRemoteAudioTiming,
+  MeetingSessionRemoteVideoTiming,
+  MeetingSessionSignalingTiming,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionTURNCredentials,
+  MeetingSessionTiming,
+  MeetingSessionTimingManager,
+  MeetingSessionTimingObserver,
   MeetingSessionURLs,
   MeetingSessionVideoAvailability,
   Message,
@@ -662,6 +674,7 @@ export {
   VideoDownlinkBandwidthPolicy,
   VideoDownlinkObserver,
   VideoElementFactory,
+  VideoElementFrameMonitor,
   VideoElementResolutionMonitor,
   VideoEncodingConcurrentSendersHealthPolicy,
   VideoEncodingConnectionHealthPolicyName,

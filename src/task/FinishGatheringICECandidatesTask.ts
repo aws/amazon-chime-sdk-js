@@ -96,6 +96,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       );
       return;
     }
+    this.context.meetingSessionTimingManager?.onIceGatheringStarted();
     try {
       await new Promise<void>((resolve, reject) => {
         this.cancelPromise = (error: Error) => {
@@ -171,6 +172,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       if (this.startTimestampMs) {
         this.context.iceGatheringDurationMs = Math.round(Date.now() - this.startTimestampMs);
       }
+      this.context.meetingSessionTimingManager?.onIceGatheringComplete();
     }
   }
 }

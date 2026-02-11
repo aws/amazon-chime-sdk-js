@@ -20,10 +20,13 @@ const workerTsconfig = 'tsconfig.mediatransformworker.json';
 const workerTsconfigContent = `{
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "module": "ES2015",
+    "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../build",
-    "rootDir": "../src"
+    "outDir": "../build/mediatransformworker",
+    "rootDir": "../src",
+    "tsBuildInfoFile": "./tsconfig.mediatransformworker.tsbuildinfo",
+    "incremental": true,
+    "composite": false
   },
   "include": [
     "../src/encodedtransformworker/**/*.ts"
@@ -55,7 +58,7 @@ fs.unlinkSync(`${configDir}/${workerTsconfig}`);
 
 // Read all transpiled worker files and bundle them inline
 // Order matters: dependencies must come before classes that use them
-const buildDir = './build/encodedtransformworker';
+const buildDir = './build/mediatransformworker/encodedtransformworker';
 const workerFiles = [
   'EncodedTransform.js',
   'RedundantAudioEncodedTransform.js',

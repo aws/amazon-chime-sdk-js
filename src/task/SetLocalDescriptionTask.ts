@@ -116,6 +116,7 @@ export default class SetLocalDescriptionTask extends BaseTask {
 
       try {
         await peer.setLocalDescription(sdpOffer);
+        this.context.meetingSessionTimingManager?.onSetLocalDescription();
         resolve();
       } catch (error) {
         reject(error);

@@ -66,12 +66,140 @@ describe('MediaMetricsTransformManager', () => {
   });
 
   describe('handleWorkerMessage', () => {
-    it('ignores NEW_SSRC message type', () => {
+    it('notifies observer on NEW_SSRC for audio sender', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
       manager.handleWorkerMessage({
         type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
         transformName: TRANSFORM_NAMES.AUDIO_SENDER,
         message: { ssrc: '12345' },
       });
+      expect(spy.calledOnce).to.be.true;
+      expect(spy.firstCall.args).to.deep.equal(['audio', 'send', 12345]);
+    });
+
+    it('notifies observer on NEW_SSRC for audio receiver', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.AUDIO_RECEIVER,
+        message: { ssrc: '100' },
+      });
+      expect(spy.calledWith('audio', 'receive', 100)).to.be.true;
+    });
+
+    it('notifies observer on NEW_SSRC for video sender', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.VIDEO_SENDER,
+        message: { ssrc: '200' },
+      });
+      expect(spy.calledWith('video', 'send', 200)).to.be.true;
+    });
+
+    it('notifies observer on NEW_SSRC for video receiver', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.VIDEO_RECEIVER,
+        message: { ssrc: '300' },
+      });
+      expect(spy.calledWith('video', 'receive', 300)).to.be.true;
+    });
+
+    it('ignores NEW_SSRC without ssrc field', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.AUDIO_SENDER,
+        message: {},
+      });
+      expect(spy.called).to.be.false;
+    });
+
+    it('ignores NEW_SSRC with null message', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.AUDIO_SENDER,
+        message: undefined,
+      });
+      expect(spy.called).to.be.false;
+    });
+
+    it('ignores NEW_SSRC with invalid ssrc', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.AUDIO_SENDER,
+        message: { ssrc: 'not-a-number' },
+      });
+      expect(spy.called).to.be.false;
+    });
+
+    it('ignores NEW_SSRC with unknown transform name', () => {
+      const spy = sinon.stub();
+      const obs: EncodedTransformMediaMetricsObserver = { onFirstPacketReceived: spy };
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: 'UnknownTransform',
+        message: { ssrc: '12345' },
+      });
+      expect(spy.called).to.be.false;
+    });
+
+    it('catches observer error on NEW_SSRC notification', () => {
+      const obs: EncodedTransformMediaMetricsObserver = {
+        onFirstPacketReceived: () => {
+          throw new Error('test');
+        },
+      };
+      manager.addObserver(obs);
+      // Should not throw
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.AUDIO_SENDER,
+        message: { ssrc: '12345' },
+      });
+    });
+
+    it('handles observer without onFirstPacketReceived on NEW_SSRC', () => {
+      const obs: EncodedTransformMediaMetricsObserver = {};
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: MEDIA_METRICS_MESSAGE_TYPES.NEW_SSRC,
+        transformName: TRANSFORM_NAMES.AUDIO_SENDER,
+        message: { ssrc: '12345' },
+      });
+    });
+    it('calls encodedTransformMediaMetricsDidReceive as optional', async () => {
+      await manager.start();
+      const obs: EncodedTransformMediaMetricsObserver = {};
+      manager.addObserver(obs);
+      manager.handleWorkerMessage({
+        type: COMMON_MESSAGE_TYPES.METRICS,
+        transformName: TRANSFORM_NAMES.AUDIO_SENDER,
+        message: {
+          metrics: JSON.stringify({ 12345: { ssrc: 12345, packetCount: 100, timestamp: 1000 } }),
+        },
+      });
+      await clock.tickAsync(1100);
+      // Should not throw even though observer has no encodedTransformMediaMetricsDidReceive
     });
 
     it('ignores non-METRICS message type', () => {
