@@ -2,10 +2,16 @@
   "extends": "../../config/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./build",
-    "rootDir": "../..",
-    "skipLibCheck": true
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "declaration": false,
+    "composite": false,
+    "incremental": false
   },
   "include": [
-    "./app/**/*"
-  ],
+    "./app/**/*",
+    "./plugins/**/*"
+  ]
 }

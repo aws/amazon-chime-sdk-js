@@ -20,7 +20,14 @@ const indexPagePath = `dist/${app}.html`;
 
 console.info('Using index path', indexPagePath);
 
-const indexPage = fs.readFileSync(indexPagePath);
+let indexPage;
+try {
+  indexPage = fs.readFileSync(indexPagePath);
+} catch {
+  // dist may not exist when running via the Vite dev server — that's fine,
+  // Vite serves the HTML directly and proxies API requests here.
+  indexPage = '';
+}
 
 const currentRegion = process.env.REGION || 'us-east-1';
 
