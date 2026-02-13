@@ -3,6 +3,9 @@
 
 import VideoEncodingParameters from './VideoEncodingParameters';
 
+/**
+ * @deprecated Simulcast is deprecated in favor of scalable video coding (SVC).
+ */
 type ContentShareSimulcastEncodingParameters = {
   low?: VideoEncodingParameters;
   high?: VideoEncodingParameters;

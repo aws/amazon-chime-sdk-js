@@ -21,6 +21,8 @@ const enum ActiveStreams {
 /**
  * [[DefaultSimulcastUplinkPolicy]] determines capture and encode
  *  parameters that reacts to estimated uplink bandwidth
+ *
+ * @deprecated Simulcast is deprecated in favor of scalable video coding (SVC).
  */
 export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPolicy {
   static readonly kHiTargetBitrateKbpsHd = 1200;

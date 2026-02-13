@@ -13,6 +13,8 @@ import SimulcastUplinkPolicy from './SimulcastUplinkPolicy';
 /**
  * [[DefaultSimulcastUplinkPolicyForContentShare]] sets the capture and encode
  *  parameters based on constructor input parameters
+ *
+ * @deprecated Simulcast is deprecated in favor of scalable video coding (SVC).
  */
 export default class DefaultSimulcastUplinkPolicyForContentShare implements SimulcastUplinkPolicy {
   private enableUhdContent: boolean = false;
