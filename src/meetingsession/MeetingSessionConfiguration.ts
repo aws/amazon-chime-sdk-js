@@ -76,6 +76,8 @@ export default class MeetingSessionConfiguration {
 
   /**
    * Feature flag to enable Simulcast
+   *
+   * @deprecated Simulcast is deprecated in favor of scalable video coding (SVC) using feature flag `enableSVC`
    */
   enableSimulcastForUnifiedPlanChromiumBasedBrowsers: boolean = false;
 
