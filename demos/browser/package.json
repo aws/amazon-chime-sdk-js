@@ -30,7 +30,7 @@
     "compression": "^1.8.1",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
-    "markdown-it": "^13.0.1",
+    "markdown-it": "^14.1.1",
     "popper.js": "^1.15.0",
     "util": "^0.12.4"
   },
