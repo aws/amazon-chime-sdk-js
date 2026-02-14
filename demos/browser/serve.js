@@ -1,3 +1,3 @@
-const { serve } = require('./server.js');
+const { serve } = require('./api-server.js');
 
 serve();

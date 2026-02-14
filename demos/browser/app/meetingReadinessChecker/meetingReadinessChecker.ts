@@ -32,8 +32,8 @@ import {
   Versioning,
 } from 'amazon-chime-sdk-js';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { v4: uuidv4 } = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
+import markdownit from 'markdown-it';
 
 class SwappableLogger implements Logger {
   constructor(public inner: Logger) {}
@@ -91,8 +91,7 @@ export class DemoMeetingApp {
   enableWebAudio = false;
   enableSimulcast = false;
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  markdown = require('markdown-it')({ linkify: true });
+  markdown = markdownit({ linkify: true });
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   analyserNodeCallback: () => void;

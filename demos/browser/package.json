@@ -4,32 +4,20 @@
   "description": "Amazon Chime SDK JavaScript Demo",
   "scripts": {
     "deps": "cd ../.. && npm run build",
-    "copy-assets": "node script/copy-assets.js",
-    "build:fast": "npm run copy-assets && node script/webpack-wrapper.js",
-    "build": "npm run deps && npm install && tsc && npm run build:fast",
-    "start:fast": "npm run copy-assets && node script/webpack-wrapper.js --serve",
-    "start:hot": "npm run copy-assets && webpack serve --config ./webpack.config.hot.js",
+    "build:fast": "vite build --",
+    "build": "npm run deps && npm install && tsc --noEmit && npm run build:fast",
+    "start:fast": "node dev-server.js",
+    "start:watch": "WATCH_SDK=true node dev-server.js",
     "start": "npm run deps && npm install && npm run start:fast"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.1.6",
     "@types/dom-mediacapture-record": "^1.0.11",
-    "autoprefixer": "^10.2.6",
-    "cross-spawn": "^7.0.6",
-    "csp-html-webpack-plugin": "^5.1.0",
-    "css-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.3.2",
     "open-iconic": "^1.1.1",
-    "postcss-loader": "^6.1.1",
-    "react-dev-utils": "^12.0.1",
     "sass": "^1.26.11",
-    "sass-loader": "^12.1.0",
-    "style-loader": "^3.2.1",
-    "ts-loader": "^9.3.0",
     "typescript": "~5.8.0",
-    "webpack": "^5.105.0",
-    "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^5.2.3"
+    "vite": "^7.3.1",
+    "vite-plugin-singlefile": "^2.3.0"
   },
   "dependencies": {
     "@aws-sdk/client-chime-sdk-media-pipelines": "^3.477.0",

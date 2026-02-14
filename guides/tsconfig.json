@@ -2,14 +2,13 @@
   "extends": "../config/tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "tsBuildInfoFile": "./.tsbuildinfo"
+    "composite": false,
+    "incremental": false,
+    "declaration": false
   },
   "include": [
     "../src/**/*",
     "./docs.ts"
-  ],
-  "references": [
-    { "path": "../config/tsconfig.json" }
   ],
   "typedocOptions": {
     "out": "../docs",

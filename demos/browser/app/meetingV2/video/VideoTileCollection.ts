@@ -13,7 +13,7 @@ import {
 
 import RemoteVideoManager from './RemoteVideoManager';
 import PaginationManager from './PaginationManager';
-import { DemoVideoTile } from './VideoTile'; DemoVideoTile; // Make sure this file is included in webpack
+import { DemoVideoTile } from './VideoTile'; DemoVideoTile; // Make sure this file is included in the bundle
 
 // We use the same config options for multiple settings when configuring
 // video tiles, regardless of what they map to internally

@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import cogSvg from '../../../node_modules/open-iconic/svg/cog.svg?raw';
+
 export class DemoVideoTile extends HTMLElement {
   innerHTMLToInject = `
   <video class="video-tile-video"></video>
@@ -223,7 +225,7 @@ export class DemoVideoTile extends HTMLElement {
 
   async connectedCallback() {
     this.innerHTML = this.innerHTMLToInject;
-    (this.querySelector('.button-video-tile-config-drop') as HTMLElement).innerHTML = require('../../../node_modules/open-iconic/svg/cog.svg');
+    (this.querySelector('.button-video-tile-config-drop') as HTMLElement).innerHTML = cogSvg;
     this.className = 'video-tile';
   }
 }

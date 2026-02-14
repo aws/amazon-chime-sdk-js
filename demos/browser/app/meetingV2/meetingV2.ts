@@ -101,8 +101,9 @@ import {
 } from './util/mediastreamprovider/DemoMediaStreamProviders';
 
 import { BackgroundImageEncoding } from './util/BackgroundImage';
+import markdownit from 'markdown-it';
 
-MeetingToast; // Make sure this file is included in webpack
+MeetingToast; // Make sure this file is included in the bundle
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -369,7 +370,7 @@ export class DemoMeetingApp
   noWordSeparatorForTranscription = false;
   enableMaxContentShare = false;
 
-  markdown = require('markdown-it')({ linkify: true });
+  markdown = markdownit({ linkify: true });
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   lastPacketsSent = 0;
@@ -3704,7 +3705,7 @@ export class DemoMeetingApp
             // @ts-ignore
             window.app_meetingV2 = undefined;
             // @ts-ignore
-            window.webpackHotUpdateapp_meetingV2 = undefined;
+            window.hotUpdateapp_meetingV2 = undefined;
             document.getElementsByTagName('body')[0].innerHTML = '<b>Gone</b>';
             this.removeFatalHandlers();
           }, 2000);
